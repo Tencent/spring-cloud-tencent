@@ -11,7 +11,7 @@ Based on Spring Cloud Tencent, you only need a small configuration to launch Spr
 * **CircuitBreaker Node**：Support circuitbreak's auto-reset ability, ensure the reliability of distributed server
 * **Rate Limiter**：Support rate limit between microservice and access layer, ensure the stability of backend, one can configure policies and traffic data from the control panel
 
-## component
+## Component
 
 **[Polaris](https://github.com/polarismesh)**：Polaris Spring Cloud operation centre, provide solutions to registration, dynamic routing, load balancing and circuitbreaker.
 
