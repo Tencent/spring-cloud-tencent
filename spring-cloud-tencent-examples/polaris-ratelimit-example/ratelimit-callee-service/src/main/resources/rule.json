@@ -1,0 +1,19 @@
+{
+  "service": "RateLimitCalleeService",
+  "namespace": "Production",
+  "priority": 0,
+  "resource": "QPS",
+  "type": "LOCAL",
+  "labels": {
+    "method": {
+      "value": "/business/invoke"
+    }
+  },
+  "amounts": [
+    {
+      "maxAmount": 10,
+      "validDuration": "1s"
+    }
+  ],
+  "action": "REJECT"
+}

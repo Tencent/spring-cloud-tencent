@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "com.tencent.cloud.feign.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "If feign is enabled."
+    }
+  ]
+}

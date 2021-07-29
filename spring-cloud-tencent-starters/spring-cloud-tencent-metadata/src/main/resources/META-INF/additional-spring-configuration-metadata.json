@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.tencent.metadata.content",
+      "type": "java.util.Map",
+      "description": "Custom local metadata content."
+    },
+    {
+      "name": "spring.cloud.tencent.metadata.transitive",
+      "type": "java.util.List",
+      "description": "Custom transitive metadata key list."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "groups": [
+    {
+      "name": "spring.cloud.polaris",
+      "type": "com.tencent.cloud.polaris.context.PolarisContextProperties",
+      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.cloud.polaris.address",
+      "type": "java.lang.String",
+      "description": "polaris server 地址",
+      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+    }
+  ],
+  "hints": []
+}

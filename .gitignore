@@ -1,0 +1,56 @@
+# Eclipse project files
+.project
+.classpath
+.settings
+
+# IntelliJ IDEA project files and directories
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Build targets
+/target
+*/target
+target
+/applog
+*/applog
+applog
+
+# Mac-specific directory that no other operating system needs.
+.DS_Store
+
+# JVM crash logs
+hs_err_pid*.log
+
+dependency-reduced-pom.xml
+
+*/.unison.*
+
+# exclude docker-sync stuff
+.docker-sync
+*/.docker-sync
+
+# exclude vscode files
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.factorypath
+
+# misc
+*classes
+*.class
+.svn
+logs/
+lib/
+applog/
+
+# Maven ignore
+.flattened-pom.xml
+
+# Polaris
+*/backup
+/backup
+backup

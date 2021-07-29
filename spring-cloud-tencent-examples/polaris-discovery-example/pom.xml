@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>spring-cloud-tencent-examples</artifactId>
+        <groupId>com.tencent.cloud</groupId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>polaris-discovery-example</artifactId>
+    <packaging>pom</packaging>
+    <name>Spring Cloud Starter Tencent Polaris Discovery Example</name>
+
+    <modules>
+        <module>discovery-callee-service</module>
+        <module>discovery-caller-service</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--  系统服务监控依赖  -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- feign客户端依赖  -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- 熔断依赖 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        </dependency>
+
+        <!-- 负载均衡依赖-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+        </dependency>
+
+        <!-- 熔断超时后，重试机制依赖-->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>

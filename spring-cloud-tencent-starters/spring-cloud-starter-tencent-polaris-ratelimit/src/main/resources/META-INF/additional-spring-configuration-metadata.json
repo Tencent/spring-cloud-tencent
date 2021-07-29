@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.polaris.ratelimit.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable polaris rate limit or not."
+    }
+  ]
+}

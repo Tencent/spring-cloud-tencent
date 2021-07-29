@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration,\
+  com.tencent.cloud.polaris.ribbon.PolarisDiscoveryRibbonAutoConfiguration,\
+  com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration
+

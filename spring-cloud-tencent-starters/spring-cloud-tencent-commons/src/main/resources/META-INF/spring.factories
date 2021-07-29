@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.tencent.cloud.common.util.ApplicationContextAwareUtils
+
