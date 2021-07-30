@@ -62,12 +62,12 @@ Example List:
 
 ### Version Standard
 
-Adopt a version policy related to Spring Cloud's major version number
+We use a version policy related to Spring Cloud's major version number.
 
-Project version includes major version. minor version. patch version. Correspond with the version of Spring Cloud release.
-major version. minor version. patch version are in numbers, start from 0. This project is in the incubating phase, major version number is set to 0.
-Spring Cloud's version number is the same as the English version number, like Hoxton, Greenwich.
-Release type will include RELEASE, RC, BETA. 
+Project version includes ```${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.${CORRESPONDING_VERSION_OF_SPRING_CLOUD}.${RELEASE_TYPE}```.
+```${MAJOR_VERSION}```, ```${MINOR_VERSION}```, ```${PATCH_VERSION}``` are in numbers starting from 0. This project is in the incubating phase, so the major version is set to 0.
+```${CORRESPONDING_VERSION_OF_SPRING_CLOUD}``` is the same as the version number of Spring Cloud, like Hoxton, Greenwich.
+```${RELEASE_TYPE}``` will be like RELEASE, RC and BETA. 
 
 For example: 0.1.0.Hoxton.BETA
 
