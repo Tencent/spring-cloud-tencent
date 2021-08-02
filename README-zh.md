@@ -2,6 +2,10 @@
 
 [English](./README.md) | 简体中文 
 
+---
+
+## 介绍
+
 Spring Cloud Tencent包含了分布式应用微服务开发过程中所需的组件，基于 Spring Cloud 框架的开发者可以使用这些组件快速进行分布式应用的开发
 
 在Spring Cloud Tencent的基础上，您只需要添加少量配置，就可以将 Spring Cloud 应用接入腾讯云微服务解决方案，通过腾讯云中间件来迅速搭建分布式应用系统。
