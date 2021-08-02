@@ -1,5 +1,9 @@
 # Spring Cloud Tencent
 
+English | [简体中文](./README-zh.md) 
+
+---
+
 Spring Cloud Tencent contains components distributed micro-service applications need during developing phase, developers that built their key architectures based on Spring Cloud can use these components
 
 Based on Spring Cloud Tencent, you only need a small configuration to launch Spring Cloud and micro-service's joint solutions.
