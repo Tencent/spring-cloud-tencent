@@ -4,14 +4,6 @@ English | [简体中文](./README-zh.md)
 
 ---
 
-README：
-
-- [Introduction](#introduction)
-- [Key Features](#key-features)
-- [Components](#components)
-- [How to build](#how-to-build)
-- [How to Use](#how-to-use)
-
 ## Introduction
 
 Spring Cloud Tencent contains components distributed micro-service applications need during developing phase, developers that built their key architectures based on Spring Cloud can use these components
