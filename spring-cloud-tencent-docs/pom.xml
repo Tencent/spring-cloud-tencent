@@ -14,4 +14,8 @@
     <name>Spring Cloud Tencent Documentation</name>
     <packaging>pom</packaging>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
 </project>

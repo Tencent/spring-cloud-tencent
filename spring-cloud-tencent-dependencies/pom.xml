@@ -12,13 +12,13 @@
 
     <groupId>com.tencent.cloud</groupId>
     <artifactId>spring-cloud-tencent-dependencies</artifactId>
-    <version>0.1.0.Hoxton.BETA</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <name>Spring Cloud Tencent Dependencies</name>
     <description>Spring Cloud Tencent Dependencies</description>
 
     <properties>
-        <revision>0.0.1-SNAPSHOT</revision>
+        <revision>1.0.0.Hoxton.SR9</revision>
         <polaris.version>0.8.0-SNAPSHOT</polaris.version>
         <tomcat.version>10.0.0-M6</tomcat.version>
         <powermock.version>2.0.0</powermock.version>
