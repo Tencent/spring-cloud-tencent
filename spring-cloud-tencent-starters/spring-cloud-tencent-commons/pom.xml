@@ -16,7 +16,7 @@
     <properties>
         <commons.collections.version>3.2.2</commons.collections.version>
         <commons.lang.version>2.5</commons.lang.version>
-        <commons.io.version>2.6</commons.io.version>
+        <commons.io.version>2.7</commons.io.version>
     </properties>
 
     <dependencies>
@@ -55,12 +55,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons.io.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>28.0-jre</version>
         </dependency>
     </dependencies>
 
