@@ -25,7 +25,7 @@ Based on Spring Cloud Tencent, you only need a small configuration to launch Spr
 
 * master's branch matches Spring Cloud Hoxton, support lowest at JDK 1.8.
 
-Spring Cloud Tencent uses Maven to construct, the fastest way is to cone project to local files, then execute the following orders:
+Spring Cloud Tencent uses Maven to construct, the fastest way is to clone project to local files, then execute the following orders:
 
 ```bash
 ./mvnw install
