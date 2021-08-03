@@ -1,5 +1,11 @@
 # Spring Cloud Tencent
 
+English | [简体中文](./README-zh.md) 
+
+---
+
+## Introduction
+
 Spring Cloud Tencent contains components distributed micro-service applications need during developing phase, developers that built their key architectures based on Spring Cloud can use these components
 
 Based on Spring Cloud Tencent, you only need a small configuration to launch Spring Cloud and micro-service's joint solutions.
@@ -11,7 +17,7 @@ Based on Spring Cloud Tencent, you only need a small configuration to launch Spr
 * **CircuitBreaker Node**：Support circuitbreak's auto-reset ability, ensure the reliability of distributed server
 * **Rate Limiter**：Support rate limit between microservice and access layer, ensure the stability of backend, one can configure policies and traffic data from the control panel
 
-## Component
+## Components
 
 **[Polaris](https://github.com/polarismesh)**：Polaris Spring Cloud operation centre, provide solutions to registration, dynamic routing, load balancing and circuitbreaker.
 
@@ -19,7 +25,7 @@ Based on Spring Cloud Tencent, you only need a small configuration to launch Spr
 
 * master's branch matches Spring Cloud Hoxton, support lowest at JDK 1.8.
 
-Spring Cloud Tencent uses Maven to construct, the fastest way is to cone project to local files, then execute the following orders:
+Spring Cloud Tencent uses Maven to construct, the fastest way is to clone project to local files, then execute the following orders:
 
 ```bash
 ./mvnw install
