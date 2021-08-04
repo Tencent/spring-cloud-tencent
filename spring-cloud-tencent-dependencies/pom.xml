@@ -33,7 +33,7 @@
         <dependencies>
             <dependency>
                 <artifactId>polaris-dependencies</artifactId>
-                <groupId>com.tencent.nameservice</groupId>
+                <groupId>com.tencent.polaris</groupId>
                 <version>${polaris.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
