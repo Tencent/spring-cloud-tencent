@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation for Polaris Client for service configuration.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

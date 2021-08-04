@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties

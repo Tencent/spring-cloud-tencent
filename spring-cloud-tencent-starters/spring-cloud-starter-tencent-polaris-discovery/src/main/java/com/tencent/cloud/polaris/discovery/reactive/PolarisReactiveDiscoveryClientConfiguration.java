@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Reactive Discovery Client Configuration for Polaris.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnReactiveDiscoveryEnabled

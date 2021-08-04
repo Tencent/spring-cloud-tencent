@@ -29,7 +29,7 @@ import java.util.List;
 import org.springframework.cloud.client.ServiceInstance;
 
 /**
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisServiceDiscovery {
 

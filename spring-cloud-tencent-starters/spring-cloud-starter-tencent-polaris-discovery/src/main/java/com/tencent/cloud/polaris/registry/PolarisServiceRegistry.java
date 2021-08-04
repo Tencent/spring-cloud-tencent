@@ -41,7 +41,7 @@ import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.util.StringUtils;
 
 /**
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 

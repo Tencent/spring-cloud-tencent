@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 /**
  * Discovery Handler for Polaris.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Component
 public class PolarisDiscoveryHandler {

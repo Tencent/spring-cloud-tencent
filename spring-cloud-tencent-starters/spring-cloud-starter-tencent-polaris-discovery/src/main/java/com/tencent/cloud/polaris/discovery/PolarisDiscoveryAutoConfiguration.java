@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Import;
 /**
  * Discovery Auto Configuration for Polaris.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisDiscoveryEnabled

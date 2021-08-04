@@ -27,7 +27,7 @@ import org.springframework.core.env.Environment;
 /**
  * Properties for Polaris.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @ConfigurationProperties("spring.cloud.polaris.discovery")
 public class PolarisProperties {
