@@ -27,12 +27,12 @@
 
         <!-- Polaris dependencies start -->
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-discovery-factory</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-circuitbreaker-factory</artifactId>
         </dependency>
         <!-- Polaris dependencies end -->

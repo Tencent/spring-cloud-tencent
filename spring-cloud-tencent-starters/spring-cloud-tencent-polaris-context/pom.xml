@@ -23,66 +23,66 @@
 
         <!-- Polaris dependencies start -->
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-client</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-plugin-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>connector-polaris-grpc</artifactId>
         </dependency>
 
         <!--依赖resCache插件-->
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>resource-cache-memory</artifactId>
         </dependency>
 
         <!--依赖flowCache插件-->
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>flow-cache-expired</artifactId>
         </dependency>
 
         <!--依赖router插件-->
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>router-isolated</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>router-healthy</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>router-rule</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>router-nearby</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>router-metadata</artifactId>
         </dependency>
 
         <!--依赖负载均衡插件-->
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>loadbalancer-random</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>loadbalancer-ringhash</artifactId>
         </dependency>
         <!-- Polaris dependencies end -->

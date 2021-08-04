@@ -22,7 +22,7 @@
     <dependencies>
         <!-- Polaris dependencies start -->
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-model</artifactId>
         </dependency>
         <!-- Polaris dependencies end -->

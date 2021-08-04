@@ -33,19 +33,19 @@
 
         <!-- Polaris dependencies start -->
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-factory</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-test-common</artifactId>
             <scope>test</scope>
             <optional>true</optional>
         </dependency>
 
         <dependency>
-            <groupId>com.tencent.nameservice</groupId>
+            <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-test-mock-discovery</artifactId>
             <scope>test</scope>
             <optional>true</optional>
