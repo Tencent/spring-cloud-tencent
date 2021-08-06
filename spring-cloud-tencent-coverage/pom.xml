@@ -12,6 +12,7 @@
 
     <artifactId>spring-cloud-tencent-coverage</artifactId>
     <name>Spring Cloud Tencent Coverage</name>
+    <packaging>pom</packaging>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
