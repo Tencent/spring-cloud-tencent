@@ -21,4 +21,8 @@
         <module>polaris-circuitbreaker-example</module>
     </modules>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
 </project>

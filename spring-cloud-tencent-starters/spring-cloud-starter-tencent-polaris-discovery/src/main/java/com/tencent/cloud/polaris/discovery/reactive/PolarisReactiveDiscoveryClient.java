@@ -32,7 +32,7 @@ import reactor.core.scheduler.Schedulers;
 /**
  * Reactive Discovery Client for Polaris.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 

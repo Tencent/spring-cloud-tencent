@@ -26,7 +26,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 /**
  * Discovery Client for Polaris.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisDiscoveryClient implements DiscoveryClient {
 

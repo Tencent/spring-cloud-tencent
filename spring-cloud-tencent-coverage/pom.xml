@@ -10,8 +10,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>spring-cloud-tencent-converage</artifactId>
-    <name>Spring Cloud Tencent Converage</name>
+    <artifactId>spring-cloud-tencent-coverage</artifactId>
+    <name>Spring Cloud Tencent Coverage</name>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 
     <dependencies>
         <dependency>
