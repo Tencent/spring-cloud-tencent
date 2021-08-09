@@ -1,5 +1,4 @@
 # Spring Cloud Tencent
-========================================
 
 [![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/maven.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/maven.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.tencent.cloud/spring-cloud-tencent?label=Maven%20Central)](https://search.maven.org/search?q=g:com.tencent.cloud%20AND%20a:spring-cloud-tencent)
