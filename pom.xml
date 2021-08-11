@@ -71,9 +71,6 @@
         <!-- Spring Cloud -->
         <spring.cloud.version>Hoxton.SR9</spring.cloud.version>
 
-        <!-- Polaris -->
-        <polaris.cient.version>1.0.0-SNAPSHOT</polaris.cient.version>
-
         <!-- Maven Plugin Versions -->
         <jacoco.version>0.8.3</jacoco.version>
         <maven-source-plugin.version>3.2.0</maven-source-plugin.version>
