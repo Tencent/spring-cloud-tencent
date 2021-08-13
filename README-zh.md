@@ -73,7 +73,7 @@ Example 列表：
 对应Spring Cloud的大版本号为Spring Cloud提供的英文版本号，例如Hoxton、Greenwich等。对应Spring Cloud的小版本号为Spring Cloud给出的小版本号，例如 RS9 等。
 发布类型目前包括正式发布和发布候选版（RC）。在实际的版本号中，正式发布版不额外添加发布类型，发布候选版将添加后缀，并从 RC0 开始。
 
-示例：1.0.0.Hoxton.SR9-RC0
+示例：1.0.1.Hoxton.SR9-RC0
 
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
