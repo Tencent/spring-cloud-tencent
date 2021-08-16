@@ -16,9 +16,53 @@
     <packaging>pom</packaging>
     <name>Spring Cloud Tencent Dependencies</name>
     <description>Spring Cloud Tencent Dependencies</description>
+    <url>https://github.com/Tencent/spring-cloud-tencent/tree/main</url>
+
+    <organization>
+        <name>Tencent</name>
+        <url>https://opensource.tencent.com/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The BSD 3-Clause License (BSD3)</name>
+            <url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/main/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/Tencent/spring-cloud-tencent</url>
+        <connection>scm:git:git@github.com:Tencent/spring-cloud-tencent.git</connection>
+        <developerConnection>scm:git:git@github.com:Tencent/spring-cloud-tencent.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>SkyeBeFreeman</id>
+            <name>Haotian Zhang</name>
+            <email>928016560@qq.com</email>
+            <organization>Tencent</organization>
+            <url>https://github.com/SkyeBeFreeman/</url>
+        </developer>
+
+        <developer>
+            <name>Andrew Shan</name>
+            <email>samshan08@126.com</email>
+            <organization>Tencent</organization>
+        </developer>
+
+        <developer>
+            <id>xiaoyao1999hn</id>
+            <name>Jie Cheng</name>
+            <email>348893717@qq.com</email>
+            <organization>Tencent</organization>
+            <url>https://github.com/xiaoyao1999hn/</url>
+        </developer>
+    </developers>
 
     <properties>
-        <revision>1.0.1.Hoxton.SR9</revision>
+        <revision>1.0.2.Hoxton.SR9</revision>
         <polaris.version>1.0.0</polaris.version>
         <tomcat.version>10.0.0-M6</tomcat.version>
         <powermock.version>2.0.0</powermock.version>
