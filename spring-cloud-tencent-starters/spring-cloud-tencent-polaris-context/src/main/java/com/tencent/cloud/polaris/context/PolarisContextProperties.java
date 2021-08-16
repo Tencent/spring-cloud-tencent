@@ -61,7 +61,7 @@ public class PolarisContextProperties {
 
     protected Configuration configuration() {
         ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
-                .defaultConfig(Configuration.DEFAULT_CONFIG_OPENSOURCE);
+                .defaultConfig(Configuration.DEFAULT_CONFIG);
         String defaultHost = getHost();
         configuration.getGlobal().getAPI().setBindIP(defaultHost);
         Collection<PolarisConfigModifier> modifiers = modifierList;

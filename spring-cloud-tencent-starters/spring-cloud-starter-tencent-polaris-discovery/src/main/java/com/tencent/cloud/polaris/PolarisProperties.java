@@ -40,7 +40,7 @@ public class PolarisProperties {
     /**
      * namespace, separation registry of different environments.
      */
-    @Value("${spring.cloud.polaris.discovery.namespace:#{'Production'}}")
+    @Value("${spring.cloud.polaris.discovery.namespace:#{'default'}}")
     private String namespace;
 
     /**

@@ -38,7 +38,7 @@ public class MetadataContextHolder {
     private static MetadataLocalProperties metadataLocalProperties;
 
     public static final String LOCAL_NAMESPACE = ApplicationContextAwareUtils.getProperties("spring.cloud"
-            + ".polaris.discovery.namespace", "Production");
+            + ".polaris.discovery.namespace", "default");
 
     private static final String LOCAL_SPRING_APPLICATION_NAME =
             ApplicationContextAwareUtils.getProperties("spring.application.name", null);

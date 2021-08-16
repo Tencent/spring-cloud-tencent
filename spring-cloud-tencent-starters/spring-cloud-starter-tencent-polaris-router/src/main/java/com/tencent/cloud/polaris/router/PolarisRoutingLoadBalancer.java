@@ -27,9 +27,12 @@ import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.metadata.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
 import com.tencent.cloud.polaris.pojo.PolarisServer;
+import com.tencent.polaris.api.pojo.DefaultInstance;
+import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
+import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
@@ -63,8 +66,33 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
         if (allServers.get(0) instanceof PolarisServer) {
             serviceInstances = ((PolarisServer) allServers.get(0)).getServiceInstances();
         } else {
-            // TODO serviceInstances = DefaultServiceInstancesImpl.createByServerList(allServers);
-            throw new IllegalStateException("PolarisRoutingLoadBalancer only support PolarisServer instances");
+            String serviceName;
+            // notice the difference between different service registries
+            if (StringUtils.isNotBlank(allServers.get(0).getMetaInfo().getServiceIdForDiscovery())) {
+                serviceName = allServers.get(0).getMetaInfo().getServiceIdForDiscovery();
+            } else {
+                serviceName = allServers.get(0).getMetaInfo().getAppName();
+            }
+            if (StringUtils.isBlank(serviceName)) {
+                throw new IllegalStateException(
+                        "PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
+            }
+            ServiceKey serviceKey = new ServiceKey(MetadataContextHolder.LOCAL_NAMESPACE, serviceName);
+            List<Instance> instances = new ArrayList<>(8);
+            for (Server server : allServers) {
+                DefaultInstance instance = new DefaultInstance();
+                instance.setNamespace(MetadataContextHolder.LOCAL_NAMESPACE);
+                instance.setService(serviceName);
+                instance.setHealthy(server.isAlive());
+                instance.setProtocol(server.getScheme());
+                instance.setId(server.getId());
+                instance.setHost(server.getHost());
+                instance.setPort(server.getPort());
+                instance.setZone(server.getZone());
+                instance.setWeight(100);
+                instances.add(instance);
+            }
+            serviceInstances = new DefaultServiceInstances(serviceKey, instances);
         }
         ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
         processRoutersRequest.setDstInstances(serviceInstances);
@@ -81,12 +109,12 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
             processRoutersRequest.setSourceService(serviceInfo);
         }
         ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
-        ServiceInstances filteredInstances = processRoutersResponse.getServiceInstances();
-        List<Server> instances = new ArrayList<>();
-        for (Instance instance : filteredInstances.getInstances()) {
-            instances.add(new PolarisServer(serviceInstances, instance));
+        ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
+        List<Server> filteredInstances = new ArrayList<>();
+        for (Instance instance : filteredServiceInstances.getInstances()) {
+            filteredInstances.add(new PolarisServer(serviceInstances, instance));
         }
-        return instances;
+        return filteredInstances;
     }
 
     @Override
