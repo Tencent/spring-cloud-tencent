@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.context;
 
+import com.tencent.polaris.api.config.ConfigProvider;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.factory.ConfigAPIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -61,7 +62,7 @@ public class PolarisContextProperties {
 
     protected Configuration configuration() {
         ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
-                .defaultConfig(Configuration.DEFAULT_CONFIG);
+                .defaultConfig(ConfigProvider.DEFAULT_CONFIG);
         String defaultHost = getHost();
         configuration.getGlobal().getAPI().setBindIP(defaultHost);
         Collection<PolarisConfigModifier> modifiers = modifierList;
