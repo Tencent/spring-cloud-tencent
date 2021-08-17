@@ -74,7 +74,7 @@ public class MetadataContextHolderTest {
 
     @Test
     public void test2() {
-        Assertions.assertThat(MetadataContextHolder.LOCAL_NAMESPACE).isEqualTo("Production");
+        Assertions.assertThat(MetadataContextHolder.LOCAL_NAMESPACE).isEqualTo("default");
         Assertions.assertThat(MetadataContextHolder.LOCAL_SERVICE).isEqualTo("test");
     }
 

@@ -72,7 +72,7 @@ public class MetadataRestTemplateInterceptorTest {
         String metadata = restTemplate.exchange("http://localhost:" + localServerPort + "/test",
                 HttpMethod.GET, httpEntity, String.class).getBody();
         Assertions.assertThat(metadata).isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
-                + "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"Production\"}");
+                + "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}");
         Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
         Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
         Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a")).isEqualTo("11");
