@@ -20,7 +20,7 @@ Spring Cloud Tencent包含了分布式应用微服务开发过程中所需的组
 
 ## 组件
 
-**[Polaris](https://github.com/polarismesh)**：北极星云原生的服务治理平台，解决远程调用的服务注册发现、动态路由、负载均衡和容错问题。
+**[Polaris](https://github.com/PolarisMesh/polaris)**：北极星云原生的服务治理平台，解决远程调用的服务注册发现、动态路由、负载均衡和容错问题。
 
 ## 如何构建
 
@@ -64,7 +64,7 @@ Example 列表：
 - [Polaris CircuitBreaker Example](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README-zh.md)
 
 - [Polaris RateLimit Example](spring-cloud-tencent-examples/polaris-ratelimit-example/README-zh.md)
-- 
+
 - [Polaris Gateway Example](spring-cloud-tencent-examples/polaris-gateway-example/README-zh.md)
 
 ## 版本号规范

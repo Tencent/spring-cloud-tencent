@@ -21,7 +21,7 @@ Based on Spring Cloud Tencent, you only need a small configuration to launch Spr
 
 ## Components
 
-**[Polaris](https://github.com/polarismesh)**：Polaris Spring Cloud operation centre, provide solutions to registration, dynamic routing, load balancing and circuitbreaker.
+**[Polaris](https://github.com/PolarisMesh/polaris)**：Polaris Spring Cloud operation centre, provide solutions to registration, dynamic routing, load balancing and circuitbreaker.
 
 ## How to build
 
