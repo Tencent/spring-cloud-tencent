@@ -1,6 +1,6 @@
-# Polaris Discovery
+# Spring Cloud Starter Tencent Polaris Discovery
 
-## Module Intro
+## Module Introduction
 
 ```spring-cloud-starter-tencent-polaris-discovery``` is used in Spring Cloud project joint with [Polaris](https://github.com/polarismesh)'s Polaris Discovery component. You can complete Microservice registration at Polaris through dependencies, get visibility and control to the entire Cloud Service Engine.
 
@@ -22,7 +22,7 @@ CLB supports qualified packet forwarding in the service instance. Through set ba
 
 ## User Guide
 
-This chapter will explain how to use Polaris Discovery's features in the Spring Cloud project. Before starting MicroService, one needs to activate Polaris, activation details please refer to [Polaris](https://github.com/polarismesh).
+This chapter will explain how to use Polaris Discovery's features in the Spring Cloud project. Before starting MicroService, one needs to launch Polaris. Please refer to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started).
 
 1. you can add ```spring-cloud-starter-tencent-polaris-discovery```'s  's dependencies in your project to use Polaris's service registration and discovery feature. For example, in Maven's project, add listed configurations in pom:
 

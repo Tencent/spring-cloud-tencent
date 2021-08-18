@@ -1,10 +1,8 @@
-# Polaris RateLimit Example
+# Spring Cloud Polaris RateLimit Example
 
 ## Project Explanation
 
 This project shows how to use ratelimit feature of Polaris to complete Spring Cloud application's rate limit
-
-[Polaris](https://github.com/polarismesh): Polaris is Tencent open source cloud-native's operation centre and component, provide multi dimensional rate limit service and reliability of application firewall
 
 ## Example
 

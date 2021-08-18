@@ -2,7 +2,7 @@
 
 ## Example Introduction
 
-The examples will explain how to use```spring-cloud-starter-tencent-polaris-circuitbreaker``` in Spring Cloud project and other features
+This example shows how to use```spring-cloud-starter-tencent-polaris-circuitbreaker``` in Spring Cloud project and other features
 
 This example is divided to two microservice, ```polaris-circuitbreaker-example-a``` and ```polaris-circuitbreaker-example-b```. In these two microservices, ```polaris-circuitbreaker-example-a``` invokes ```polaris-circuitbreaker-example-b```.
 
@@ -10,7 +10,7 @@ This example is divided to two microservice, ```polaris-circuitbreaker-example-a
 
 ### Configuration
 
-```src/main/resources``` and ```bootstrap.yml``` of two micro-services add the following instructions. ${ip} and ${port} are Polaris backend IP address and port number.
+The configuration is as the following shows. ${ip} and ${port} are Polaris backend IP address and port number.
 
 ```yaml
 spring:
@@ -18,19 +18,18 @@ spring:
     name: ${application.name}
   cloud:
     polaris:
-      server-addr: ${ip}:${port}
+      address: ${ip}:${port}
 ```
 
 ###Launching Example
 
 ###Launching Polaris Backend Service
 
-Reference to [Polaris](https://github.com/polarismesh)
+Reference to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started)
 
 ####Launching Application
 
 Note, because verification is needed for circuit-break feature, therefore, one needs to deploy more than two invoked services (two deployment in this example)
-
 
 Launching```spring-cloud-tencent-examples/polaris-circuitbreaker-example/polaris-circuitbreaker-example-a```'s ServiceA and ```spring-cloud-tencent-examples/polaris-circuitbreaker-example/polaris-circuitbreaker-example-b```'s ServiceB
 
@@ -40,7 +39,7 @@ Two Services B's ```com.tencent.cloud.polaris.circuitbreaker.example.ServiceBCon
 
 - Maven Package Launching
 
-Execute under ``spring-cloud-tencent-examples/polaris-discovery-example```
+Execute under ```spring-cloud-tencent-examples/polaris-discovery-example```
 
 note, Service B needs to launch two. One can adjust the port on the same machine.
 

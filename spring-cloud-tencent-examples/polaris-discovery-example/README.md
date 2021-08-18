@@ -1,8 +1,8 @@
-# Polaris Discovery example
+# Spring Cloud Polaris Discovery example
 
 ## Example Introduction
 
-The examples will explain how to use ```spring-cloud-starter-tencent-polaris-discovery`` in Spring Cloud project for its features.
+This example shows how to use ```spring-cloud-starter-tencent-polaris-discovery`` in Spring Cloud project for its features.
 
 This example is divided to two microservice, discovery-caller-service and discovery-callee-service. In these two microservices, discovery-caller-service invokes discovery-callee-service.
 
@@ -10,7 +10,7 @@ This example is divided to two microservice, discovery-caller-service and discov
 
 ### Configuration
 
-```src/main/resources``` and ```bootstrap.yml``` of two micro-services add the following instructions. ${ip} and ${port} are Polaris backend IP address and port number.
+The configuration is as the following shows. ${ip} and ${port} are Polaris backend IP address and port number.
 
 ```yaml
 spring:
@@ -18,20 +18,20 @@ spring:
     name: ${application.name}
   cloud:
     polaris:
-      server-addr: ${ip}:${port}
+      address: ${ip}:${port}
 ```
 
 ### Launching Example
 
 #### Launching Polaris Backend Service
 
-Reference to [Polaris](https://github.com/polarismesh)
+Reference to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started)
 
 #### Launching Application
 
 - IDEA Launching
 
-Launching ```spring-cloud-tencent-examples/polaris-discovery-example/discovery-caller-service```'s  ``DiscoveryCallerService``` and ``spring-cloud-tencent-examples/polaris-discovery-example/discovery-callee-service```'s ```DiscoveryCalleeService``
+Launching ```spring-cloud-tencent-examples/polaris-discovery-example/discovery-caller-service```'s  ```DiscoveryCallerService``` and ```spring-cloud-tencent-examples/polaris-discovery-example/discovery-callee-service```'s ```DiscoveryCalleeService```
 
 - Maven Package Launching
 

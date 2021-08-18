@@ -1,10 +1,8 @@
-# Polaris RateLimit Example
+# Spring Cloud Polaris RateLimit Example
 
 ## 项目说明
 
 本项目演示如何使用 Polaris ratelimit starter 完成 Spring Cloud 应用的限流管理。
-
-[Polaris](https://github.com/polarismesh)：北极星是腾讯开源的云原生的服务治理平台及组件，提供多维度的服务限流功能，防护应用系统的可靠性。
 
 ## 示例
 

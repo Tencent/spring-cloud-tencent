@@ -1,6 +1,6 @@
-# Polaris CircuitBreaker
+# Spring Cloud Starter Tencent Polaris CircuitBreaker
 
-## Module Intro
+## Module Introduction
 
 ```spring-cloud-starter-tencent-polaris-circuitbreaker```is applied to Spring
 Cloud project joint with [Polaris](https://github.com/polarismesh)'s CircuitBreaker module you can get cloud service engine's rate limit ability by introducing dependency. Recommended using with ```spring-cloud-starter-tencent-polaris-discovery```.
@@ -22,7 +22,7 @@ For configuration, please refer to [Polaris CircuitBreaker](https://github.com/p
 ## User Guide
 
 This chapter will explain how to use Polaris in Spring Cloud project in the simplest way.
-CircuitBreaker's feature. Before starting MicroService, one needs to activate Polaris, activation details please refer to [Polaris](https://github.com/polarismesh).
+CircuitBreaker's feature. Before starting MicroService, one needs to launch Polaris. Please refer to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started).
 
 1. you can add ```spring-cloud-starter-tencent-polaris-circuitbreaker``` 's dependencies in your project to use CircuitBreaker features. For example, in Maven's project, add listed configurations in pom:
 

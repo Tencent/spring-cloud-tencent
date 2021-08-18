@@ -6,16 +6,17 @@
 
 ## 介绍
 
-Spring Cloud Tencent包含了分布式应用微服务开发过程中所需的组件，基于 Spring Cloud 框架的开发者可以使用这些组件快速进行分布式应用的开发
+Spring Cloud Tencent包含了分布式应用微服务开发过程中所需的组件，基于 Spring Cloud 框架的开发者可以使用这些组件快速进行分布式应用的开发。
 
 在Spring Cloud Tencent的基础上，您只需要添加少量配置，就可以将 Spring Cloud 应用接入腾讯云微服务解决方案，通过腾讯云中间件来迅速搭建分布式应用系统。
 
 ## 主要功能
 
-* **服务注册与发现**：基于 Spring Cloud Common的标准进行微服务的注册与发现
-* **服务路由与负载均衡**：基于 Ribbon 的接口标准，提供场景更丰富的动态路由以及负载均衡的能力
-* **故障节点熔断**：提供故障节点的熔断剔除以及主/被动探测恢复的能力，保证分布式服务的可靠性
-* **服务限流**：支持工作于微服务被调接入层的限流功能，保证后台微服务稳定性，可通过控制台动态配置规则，及查看流量监控数据
+* **服务注册与发现**：基于 Spring Cloud Common的标准进行微服务的注册与发现。
+* **服务路由与负载均衡**：基于 Ribbon 的接口标准，提供场景更丰富的动态路由以及负载均衡的能力。
+* **故障节点熔断**：提供故障节点的熔断剔除以及主/被动探测恢复的能力，保证分布式服务的可靠性。
+* **服务限流**：支持工作于微服务被调接入层的限流功能，保证后台微服务稳定性，可通过控制台动态配置规则，及查看流量监控数据。
+* **元数据传递**：支持网关和微服务之间的元数据传递。
 
 ## 组件
 
@@ -58,11 +59,13 @@ Spring Cloud Tencent 项目包含了一个子模块spring-cloud-tencent-examples
 
 Example 列表：
 
-- [Polaris Discovery Example](spring-cloud-tencent-examples/polaris-discovery-example/README.md)
+- [Polaris Discovery Example](spring-cloud-tencent-examples/polaris-discovery-example/README-zh.md)
 
-- [Polaris CircuitBreaker Example](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README.md)
+- [Polaris CircuitBreaker Example](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README-zh.md)
 
-- [Polaris RateLimit Example](spring-cloud-tencent-examples/polaris-ratelimit-example/README.md)
+- [Polaris RateLimit Example](spring-cloud-tencent-examples/polaris-ratelimit-example/README-zh.md)
+- 
+- [Polaris Gateway Example](spring-cloud-tencent-examples/polaris-gateway-example/README-zh.md)
 
 ## 版本号规范
 

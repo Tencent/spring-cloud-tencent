@@ -10,7 +10,7 @@
 
 ### 修改配置
 
-在两个微服务的```src/main/resources```下的```bootstrap.yml```文件中添加如下配置。其中，${ip}和${port}为Polaris后端服务的IP地址与端口号。
+配置如下所示。其中，${ip}和${port}为Polaris后端服务的IP地址与端口号。
 
 ```yaml
 spring:
@@ -18,14 +18,14 @@ spring:
     name: ${application.name}
   cloud:
     polaris:
-      server-addr: ${ip}:${port}
+      address: ${ip}:${port}
 ```
 
 ### 启动样例
 
 #### 启动Polaris后端服务
 
-参考[Polaris](https://github.com/polarismesh)。
+参考[Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started)。
 
 #### 启动应用
 

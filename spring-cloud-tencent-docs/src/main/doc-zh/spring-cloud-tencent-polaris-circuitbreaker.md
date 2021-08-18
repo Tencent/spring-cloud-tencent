@@ -17,12 +17,12 @@ Cloud项目对接服务治理平台[Polaris](https://github.com/polarismesh)的�
 - 连续故障熔断：当实例在上一个时间窗（默认1分钟）内，连续失败的请求数达到或者超过连续故障阈值（默认10个），实例会进入隔离状态。
 - 熔断隔离时间：默认隔离30s，支持可配置。
 
-相关配置请参考[Polaris故障熔断相关文档](https://github.com/polarismesh)
+相关配置请参考[PolarisJava使用文档](https://github.com/PolarisMesh/polaris-java)
 
 ## 快速入门
 
 本章节将介绍如何最简单地在Spring Cloud项目中使用Polaris
-CircuitBreaker的功能。启动微服务之前，需要启动Polaris，具体启动方式参考[Polaris](https://github.com/polarismesh)。
+CircuitBreaker的功能。启动微服务之前，需要启动Polaris，具体启动方式参考[Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started)。
 
 1. 您可以在项目中加入```spring-cloud-starter-tencent-polaris-circuitbreaker```依赖即可使用故障熔断的特性。如Maven项目中，在pom中添加如下配置：
 

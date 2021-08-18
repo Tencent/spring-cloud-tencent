@@ -3,7 +3,7 @@
 ## 模块简介
 
 ```spring-cloud-starter-tencent-polaris-discovery```是用于Spring
-Cloud项目对接服务治理平台[Polaris](https://github.com/polarismesh)的服务发现模块。您可以通过引入依赖即可完成微服务注册到服务治理平台Polaris，获得对整个微服务架构的服务治理能力。
+Cloud项目对接服务治理平台[Polaris](https://github.com/PolarisMesh/polaris)的服务发现模块。您可以通过引入依赖即可完成微服务注册到服务治理平台Polaris，获得对整个微服务架构的服务治理能力。
 
 ## 功能介绍
 
@@ -24,7 +24,7 @@ Cloud项目对接服务治理平台[Polaris](https://github.com/polarismesh)的�
 ## 快速入门
 
 本章节将介绍如何最简单地在Spring Cloud项目中使用Polaris
-Discovery的功能。启动微服务之前，需要启动Polaris，具体启动方式参考[Polaris](https://github.com/polarismesh)。
+Discovery的功能。启动微服务之前，需要启动Polaris，具体启动方式参考[Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started)。
 
 1. 您可以在项目中加入```spring-cloud-starter-tencent-polaris-discovery```依赖即可使用Polaris的服务注册与发现功能。如Maven项目中，在pom中添加如下配置：
 
