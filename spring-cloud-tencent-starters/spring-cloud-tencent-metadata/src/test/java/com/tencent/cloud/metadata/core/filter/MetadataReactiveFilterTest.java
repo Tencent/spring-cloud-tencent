@@ -52,7 +52,7 @@ public class MetadataReactiveFilterTest {
 
     @Before
     public void setUp() {
-        this.metadataReactiveFilter = new MetadataReactiveFilter(this.metadataLocalProperties);
+        this.metadataReactiveFilter = new MetadataReactiveFilter();
     }
 
     @Test
@@ -64,12 +64,7 @@ public class MetadataReactiveFilterTest {
     @Test
     public void test2() {
         // Create mock WebFilterChain
-        WebFilterChain webFilterChain = new WebFilterChain() {
-            @Override
-            public Mono<Void> filter(ServerWebExchange serverWebExchange) {
-                return Mono.empty();
-            }
-        };
+        WebFilterChain webFilterChain = serverWebExchange -> Mono.empty();
 
         // Mock request
         MockServerHttpRequest request = MockServerHttpRequest

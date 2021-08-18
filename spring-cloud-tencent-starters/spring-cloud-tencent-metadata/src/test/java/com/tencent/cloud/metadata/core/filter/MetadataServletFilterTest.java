@@ -57,11 +57,8 @@ public class MetadataServletFilterTest {
     @Test
     public void test1() throws ServletException, IOException {
         // Create mock FilterChain
-        FilterChain filterChain = new FilterChain() {
-            @Override
-            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) {
+        FilterChain filterChain = (servletRequest, servletResponse) -> {
 
-            }
         };
 
         // Mock request

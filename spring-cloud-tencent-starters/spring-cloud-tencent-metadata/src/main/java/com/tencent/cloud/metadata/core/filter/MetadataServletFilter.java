@@ -19,7 +19,6 @@ package com.tencent.cloud.metadata.core.filter;
 
 import com.tencent.cloud.metadata.constant.MetadataConstant;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
-import com.tencent.cloud.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.util.JacksonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +47,6 @@ import static com.tencent.cloud.metadata.constant.MetadataConstant.SystemMetadat
 public class MetadataServletFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetadataServletFilter.class);
-
-    private MetadataLocalProperties metadataLocalProperties;
-
-    public MetadataServletFilter(MetadataLocalProperties metadataLocalProperties) {
-        this.metadataLocalProperties = metadataLocalProperties;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest,

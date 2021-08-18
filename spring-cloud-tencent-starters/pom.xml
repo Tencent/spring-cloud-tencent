@@ -24,6 +24,7 @@
         <module>spring-cloud-starter-tencent-polaris-ratelimit</module>
         <module>spring-cloud-starter-tencent-polaris-circuitbreaker</module>
         <module>spring-cloud-starter-tencent-polaris-router</module>
+        <module>spring-cloud-tencent-polaris-gateway</module>
     </modules>
 
     <build>

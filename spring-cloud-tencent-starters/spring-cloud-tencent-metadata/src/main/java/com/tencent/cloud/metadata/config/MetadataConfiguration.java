@@ -81,7 +81,7 @@ public class MetadataConfiguration {
 
         @Bean
         public MetadataServletFilter metadataServletFilter(MetadataLocalProperties metadataLocalProperties) {
-            return new MetadataServletFilter(metadataLocalProperties);
+            return new MetadataServletFilter();
         }
     }
 
@@ -94,7 +94,7 @@ public class MetadataConfiguration {
 
         @Bean
         public MetadataReactiveFilter metadataReactiveFilter(MetadataLocalProperties metadataLocalProperties) {
-            return new MetadataReactiveFilter(metadataLocalProperties);
+            return new MetadataReactiveFilter();
         }
     }
 

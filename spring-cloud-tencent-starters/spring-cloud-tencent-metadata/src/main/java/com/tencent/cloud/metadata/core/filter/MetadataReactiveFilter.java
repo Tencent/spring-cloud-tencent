@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.metadata.core.filter;
 
-import com.tencent.cloud.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.constant.MetadataConstant;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
 import com.tencent.cloud.metadata.util.JacksonUtils;
@@ -49,12 +48,6 @@ import static com.tencent.cloud.metadata.constant.MetadataConstant.SystemMetadat
 public class MetadataReactiveFilter implements WebFilter, Ordered {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetadataReactiveFilter.class);
-
-    private MetadataLocalProperties metadataLocalProperties;
-
-    public MetadataReactiveFilter(MetadataLocalProperties metadataLocalProperties) {
-        this.metadataLocalProperties = metadataLocalProperties;
-    }
 
     @Override
     public int getOrder() {

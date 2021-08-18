@@ -1,0 +1,31 @@
+server:
+  session-timeout: 1800
+  port: 48083
+spring:
+  application:
+    name: GatewayScgService
+  cloud:
+    polaris:
+      address: grpc://127.0.0.1:8081
+    tencent:
+      metadata:
+        content:
+          a: 1
+        transitive:
+          - a
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: false
+      routes:
+        - id: GatewayCalleeService
+          uri: lb://GatewayCalleeService
+          predicates:
+            - Path=/GatewayCalleeService/**
+          filters:
+            - StripPrefix=1
+
+logging:
+  level:
+    org.springframework.cloud.gateway: trace
