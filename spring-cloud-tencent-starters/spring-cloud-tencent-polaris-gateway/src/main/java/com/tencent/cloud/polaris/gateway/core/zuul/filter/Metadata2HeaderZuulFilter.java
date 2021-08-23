@@ -15,63 +15,65 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.gateway.core.scg.filter;
+package com.tencent.cloud.polaris.gateway.core.zuul.filter;
 
+import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.metadata.constant.MetadataConstant;
 import com.tencent.cloud.metadata.context.MetadataContext;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
 import com.tencent.cloud.metadata.util.JacksonUtils;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
+
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
-/**
- * Scg filter used for writing metadata in HTTP request header.
- *
- * @author Haotian Zhang
- */
-public class MetadataScgFilter extends AbstractGlobalFilter {
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
-    private static final int METADATA_SCG_FILTER_ORDER = 10151;
+/**
+ * Zuul filter used for writing metadata in HTTP request header.
+ *
+ * @author skyehtzhang
+ */
+public class Metadata2HeaderZuulFilter extends ZuulFilter {
 
     @Override
-    public int getOrder() {
-        return METADATA_SCG_FILTER_ORDER;
+    public String filterType() {
+        return ROUTE_TYPE;
     }
 
     @Override
-    public boolean shouldFilter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public int filterOrder() {
+        return RIBBON_ROUTING_FILTER_ORDER - 1;
+    }
+
+    @Override
+    public boolean shouldFilter() {
         return true;
     }
 
     @Override
-    public Mono<Void> doFilter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        // get request builder
-        ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
+    public Object run() {
+        // get request context
+        RequestContext requestContext = RequestContext.getCurrentContext();
 
         // get metadata of current thread
-        MetadataContext metadataContext = exchange.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
+        MetadataContext metadataContext = MetadataContextHolder.get();
 
         // add new metadata and cover old
-        if (metadataContext == null) {
-            metadataContext = MetadataContextHolder.get();
-        }
         Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
         if (!CollectionUtils.isEmpty(customMetadata)) {
             String metadataStr = JacksonUtils.serializeToJson(customMetadata);
             try {
-                builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, URLEncoder.encode(metadataStr, "UTF-8"));
+                requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA,
+                        URLEncoder.encode(metadataStr, "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
+                requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
             }
         }
-
-        return chain.filter(exchange.mutate().request(builder.build()).build());
+        return null;
     }
 }

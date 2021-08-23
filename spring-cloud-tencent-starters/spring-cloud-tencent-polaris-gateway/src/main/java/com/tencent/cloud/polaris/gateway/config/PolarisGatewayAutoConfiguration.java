@@ -19,8 +19,10 @@ package com.tencent.cloud.polaris.gateway.config;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.http.ZuulServlet;
-import com.tencent.cloud.polaris.gateway.core.scg.filter.MetadataScgFilter;
-import com.tencent.cloud.polaris.gateway.core.zuul.filter.MetadataZuulFilter;
+import com.tencent.cloud.polaris.gateway.core.scg.filter.Metadata2HeaderScgFilter;
+import com.tencent.cloud.polaris.gateway.core.zuul.filter.Metadata2HeaderZuulFilter;
+import com.tencent.cloud.polaris.gateway.core.zuul.filter.MetadataFirstZuulFilter;
+import com.tencent.cloud.polaris.gateway.core.zuul.filter.RateLimitZuulFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
@@ -38,8 +40,17 @@ public class PolarisGatewayAutoConfiguration {
     @ConditionalOnClass(ZuulServlet.class)
     static class PolarisGatewayZuulAutoConfiguration {
         @Bean
-        public ZuulFilter metadataZuulFilter() {
-            return new MetadataZuulFilter();
+        public ZuulFilter metadataFirstZuulFilter() {
+            return new MetadataFirstZuulFilter();
+        }
+
+        @Bean
+        public ZuulFilter rateLimitZuulFilter() {
+            return new RateLimitZuulFilter();
+        }
+        @Bean
+        public ZuulFilter metadata2HeaderZuulFilter() {
+            return new Metadata2HeaderZuulFilter();
         }
     }
 
@@ -47,8 +58,8 @@ public class PolarisGatewayAutoConfiguration {
     @ConditionalOnClass(GlobalFilter.class)
     static class PolarisGatewayScgAutoConfiguration {
         @Bean
-        public GlobalFilter metadataScgFilter() {
-            return new MetadataScgFilter();
+        public GlobalFilter metadata2HeaderScgFilter() {
+            return new Metadata2HeaderScgFilter();
         }
     }
 

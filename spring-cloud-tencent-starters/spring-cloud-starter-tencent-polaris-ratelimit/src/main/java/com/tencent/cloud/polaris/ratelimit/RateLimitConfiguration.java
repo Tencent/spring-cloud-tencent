@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration
+@ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled", matchIfMissing = true)
 public class RateLimitConfiguration {
 
     @Bean
@@ -51,7 +52,6 @@ public class RateLimitConfiguration {
      */
     @Configuration
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-    @ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled", matchIfMissing = true)
     static class QuotaCheckFilterConfig {
 
         @Bean

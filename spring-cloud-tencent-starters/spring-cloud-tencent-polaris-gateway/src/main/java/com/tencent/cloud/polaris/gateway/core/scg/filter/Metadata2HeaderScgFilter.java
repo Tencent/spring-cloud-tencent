@@ -15,65 +15,63 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.gateway.core.zuul.filter;
+package com.tencent.cloud.polaris.gateway.core.scg.filter;
 
-import com.netflix.zuul.ZuulFilter;
-import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.metadata.constant.MetadataConstant;
 import com.tencent.cloud.metadata.context.MetadataContext;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
 import com.tencent.cloud.metadata.util.JacksonUtils;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
-
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
-
 /**
- * Zuul filter used for writing metadata in HTTP request header.
+ * Scg filter used for writing metadata in HTTP request header.
  *
- * @author skyehtzhang
+ * @author Haotian Zhang
  */
-public class MetadataZuulFilter extends ZuulFilter {
+public class Metadata2HeaderScgFilter extends AbstractGlobalFilter {
+
+    private static final int METADATA_SCG_FILTER_ORDER = 10152;
 
     @Override
-    public String filterType() {
-        return ROUTE_TYPE;
+    public int getOrder() {
+        return METADATA_SCG_FILTER_ORDER;
     }
 
     @Override
-    public int filterOrder() {
-        return RIBBON_ROUTING_FILTER_ORDER - 1;
-    }
-
-    @Override
-    public boolean shouldFilter() {
+    public boolean shouldFilter(ServerWebExchange exchange, GatewayFilterChain chain) {
         return true;
     }
 
     @Override
-    public Object run() {
-        // get request context
-        RequestContext requestContext = RequestContext.getCurrentContext();
+    public Mono<Void> doFilter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // get request builder
+        ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
 
         // get metadata of current thread
-        MetadataContext metadataContext = MetadataContextHolder.get();
+        MetadataContext metadataContext = exchange.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 
         // add new metadata and cover old
+        if (metadataContext == null) {
+            metadataContext = MetadataContextHolder.get();
+        }
         Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
         if (!CollectionUtils.isEmpty(customMetadata)) {
             String metadataStr = JacksonUtils.serializeToJson(customMetadata);
             try {
-                requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA,
-                        URLEncoder.encode(metadataStr, "UTF-8"));
+                builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, URLEncoder.encode(metadataStr, "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
+                builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
             }
         }
-        return null;
+
+        return chain.filter(exchange.mutate().request(builder.build()).build());
     }
 }

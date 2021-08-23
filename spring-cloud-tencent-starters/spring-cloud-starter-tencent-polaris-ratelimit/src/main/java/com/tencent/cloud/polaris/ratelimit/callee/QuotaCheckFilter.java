@@ -22,8 +22,8 @@ import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import com.tencent.cloud.metadata.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
 import com.tencent.cloud.polaris.ratelimit.utils.Consts;
+import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
-import com.tencent.polaris.ratelimit.api.rpc.QuotaRequest;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResultCode;
 import java.io.IOException;
@@ -59,21 +59,18 @@ public class QuotaCheckFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        QuotaRequest quotaRequest = new QuotaRequest();
         String localNamespace = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.LOCAL_NAMESPACE);
         String localService = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.LOCAL_SERVICE);
-        quotaRequest.setNamespace(localNamespace);
-        quotaRequest.setService(localService);
-        quotaRequest.setCount(1);
-
         String method = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.LOCAL_PATH);
+        Map<String, String> labels = null;
         if (StringUtils.isNotBlank(method)) {
-            Map<String, String> labels = new HashMap<>();
+            labels = new HashMap<>();
             labels.put("method", method);
-            quotaRequest.setLabels(labels);
         }
+
         try {
-            QuotaResponse quotaResponse = limitAPI.getQuota(quotaRequest);
+            QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI, localNamespace, localService, 1, labels,
+                    null);
             if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
                 response.setStatus(TOO_MANY_REQUESTS.value());
                 response.getWriter().write(Consts.QUOTA_LIMITED_INFO + quotaResponse.getInfo());
