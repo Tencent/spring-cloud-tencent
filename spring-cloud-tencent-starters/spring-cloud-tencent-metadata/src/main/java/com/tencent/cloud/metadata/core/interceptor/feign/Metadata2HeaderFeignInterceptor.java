@@ -57,7 +57,7 @@ public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Orde
         if (!CollectionUtils.isEmpty(requestTemplate.headers())
                 && !CollectionUtils.isEmpty(requestTemplate.headers().get(CUSTOM_METADATA))) {
             for (String headerMetadataStr : requestTemplate.headers().get(CUSTOM_METADATA)) {
-                Map<String, String> headerMetadataMap = JacksonUtils.deserializeMetadataMap(headerMetadataStr);
+                Map<String, String> headerMetadataMap = JacksonUtils.deserialize2Map(headerMetadataStr);
                 for (String key : headerMetadataMap.keySet()) {
                     metadataContext.putTransitiveCustomMetadata(key, headerMetadataMap.get(key));
                 }
@@ -66,7 +66,7 @@ public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Orde
 
         Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
         if (!CollectionUtils.isEmpty(customMetadata)) {
-            String metadataStr = JacksonUtils.serializeToJson(customMetadata);
+            String metadataStr = JacksonUtils.serialize2Json(customMetadata);
             requestTemplate.removeHeader(CUSTOM_METADATA);
             try {
                 requestTemplate.header(CUSTOM_METADATA,

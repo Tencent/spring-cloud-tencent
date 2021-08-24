@@ -93,7 +93,7 @@ public class MetadataRestTemplateInterceptorTest {
         public String test(@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
                 throws UnsupportedEncodingException {
             String systemMetadataStr =
-                    JacksonUtils.serializeToJson(MetadataContextHolder.get().getAllSystemMetadata());
+                    JacksonUtils.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
             return URLDecoder.decode(customMetadataStr, "UTF-8") + systemMetadataStr;
         }
 

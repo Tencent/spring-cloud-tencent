@@ -64,7 +64,7 @@ public class MetadataServletFilter extends OncePerRequestFilter {
         LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
         // create custom metadata.
-        Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserializeMetadataMap(customMetadataStr);
+        Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserialize2Map(customMetadataStr);
 
         // create system metadata.
         Map<String, String> systemMetadataMap = new HashMap<>();

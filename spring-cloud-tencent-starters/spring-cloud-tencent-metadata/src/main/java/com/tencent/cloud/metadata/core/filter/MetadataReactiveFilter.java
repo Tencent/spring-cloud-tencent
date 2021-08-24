@@ -70,25 +70,21 @@ public class MetadataReactiveFilter implements WebFilter, Ordered {
         LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
         // create custom metadata.
-        Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserializeMetadataMap(customMetadataStr);
+        Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserialize2Map(customMetadataStr);
 
         // create system metadata.
         Map<String, String> systemMetadataMap = new HashMap<>();
         systemMetadataMap.put(LOCAL_NAMESPACE, MetadataContextHolder.LOCAL_NAMESPACE);
         systemMetadataMap.put(LOCAL_SERVICE, MetadataContextHolder.LOCAL_SERVICE);
-        systemMetadataMap.put(LOCAL_PATH, serverHttpRequest.getURI().getRawPath());
+        systemMetadataMap.put(LOCAL_PATH, serverHttpRequest.getURI().getPath());
 
-        try {
-            MetadataContextHolder.init(upstreamCustomMetadataMap, systemMetadataMap);
+        MetadataContextHolder.init(upstreamCustomMetadataMap, systemMetadataMap);
 
-            // Save to ServerWebExchange.
-            serverWebExchange.getAttributes()
-                    .put(MetadataConstant.HeaderName.METADATA_CONTEXT, MetadataContextHolder.get());
-            return webFilterChain.filter(serverWebExchange).doFinally((type) -> MetadataContextHolder.remove());
-        } catch (RuntimeException e) {
-            throw e;
-        } finally {
-            MetadataContextHolder.remove();
-        }
+        // Save to ServerWebExchange.
+        serverWebExchange.getAttributes()
+                .put(MetadataConstant.HeaderName.METADATA_CONTEXT, MetadataContextHolder.get());
+        return webFilterChain.filter(serverWebExchange)
+                .doOnError(throwable -> LOG.error("handle metadata[{}] error.", MetadataContextHolder.get()))
+                .doFinally((type) -> MetadataContextHolder.remove());
     }
 }

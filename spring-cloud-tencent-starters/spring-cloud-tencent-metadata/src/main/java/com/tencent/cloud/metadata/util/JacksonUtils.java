@@ -45,7 +45,7 @@ public class JacksonUtils {
      * @param <T> type of object
      * @return Json String
      */
-    public static <T> String serializeToJson(T object) {
+    public static <T> String serialize2Json(T object) {
         try {
             return OM.writeValueAsString(object);
         } catch (JsonProcessingException e) {
@@ -60,7 +60,7 @@ public class JacksonUtils {
      * @param jsonStr Json String
      * @return Map
      */
-    public static Map<String, String> deserializeMetadataMap(String jsonStr) {
+    public static Map<String, String> deserialize2Map(String jsonStr) {
         try {
             if (StringUtils.hasText(jsonStr)) {
                 return OM.readValue(jsonStr, Map.class);

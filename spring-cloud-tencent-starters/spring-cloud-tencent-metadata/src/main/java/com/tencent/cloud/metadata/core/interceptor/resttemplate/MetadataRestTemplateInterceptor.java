@@ -59,14 +59,14 @@ public class MetadataRestTemplateInterceptor implements ClientHttpRequestInterce
         // add new metadata and cover old
         String metadataStr = httpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
         if (!StringUtils.isEmpty(metadataStr)) {
-            Map<String, String> headerMetadataMap = JacksonUtils.deserializeMetadataMap(metadataStr);
+            Map<String, String> headerMetadataMap = JacksonUtils.deserialize2Map(metadataStr);
             for (String key : headerMetadataMap.keySet()) {
                 metadataContext.putTransitiveCustomMetadata(key, headerMetadataMap.get(key));
             }
         }
         Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
         if (!CollectionUtils.isEmpty(customMetadata)) {
-            metadataStr = JacksonUtils.serializeToJson(customMetadata);
+            metadataStr = JacksonUtils.serialize2Json(customMetadata);
             try {
                 httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
                         URLEncoder.encode(metadataStr, "UTF-8"));

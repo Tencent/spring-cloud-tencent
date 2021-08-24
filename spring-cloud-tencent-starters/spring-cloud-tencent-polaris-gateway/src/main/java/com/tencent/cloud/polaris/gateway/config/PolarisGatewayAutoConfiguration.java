@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.gateway.config;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.http.ZuulServlet;
 import com.tencent.cloud.polaris.gateway.core.scg.filter.Metadata2HeaderScgFilter;
+import com.tencent.cloud.polaris.gateway.core.scg.filter.MetadataFirstScgFilter;
 import com.tencent.cloud.polaris.gateway.core.zuul.filter.Metadata2HeaderZuulFilter;
 import com.tencent.cloud.polaris.gateway.core.zuul.filter.MetadataFirstZuulFilter;
 import com.tencent.cloud.polaris.gateway.core.zuul.filter.RateLimitZuulFilter;
@@ -57,6 +58,11 @@ public class PolarisGatewayAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(GlobalFilter.class)
     static class PolarisGatewayScgAutoConfiguration {
+        @Bean
+        public GlobalFilter metadataFirstScgFilter() {
+            return new MetadataFirstScgFilter();
+        }
+
         @Bean
         public GlobalFilter metadata2HeaderScgFilter() {
             return new Metadata2HeaderScgFilter();

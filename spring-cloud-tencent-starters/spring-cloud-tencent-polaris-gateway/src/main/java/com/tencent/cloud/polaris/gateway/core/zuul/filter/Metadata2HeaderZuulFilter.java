@@ -66,7 +66,7 @@ public class Metadata2HeaderZuulFilter extends ZuulFilter {
         // add new metadata and cover old
         Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
         if (!CollectionUtils.isEmpty(customMetadata)) {
-            String metadataStr = JacksonUtils.serializeToJson(customMetadata);
+            String metadataStr = JacksonUtils.serialize2Json(customMetadata);
             try {
                 requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA,
                         URLEncoder.encode(metadataStr, "UTF-8"));

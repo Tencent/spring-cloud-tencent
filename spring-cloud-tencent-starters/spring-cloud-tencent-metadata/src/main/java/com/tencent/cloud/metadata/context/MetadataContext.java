@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.metadata.context;
 
+import com.tencent.cloud.metadata.util.JacksonUtils;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,5 +75,13 @@ public class MetadataContext {
 
     public void putAllSystemMetadata(Map<String, String> systemMetadata) {
         this.systemMetadata.putAll(systemMetadata);
+    }
+
+    @Override
+    public String toString() {
+        return "MetadataContext{" +
+                "transitiveCustomMetadata=" + JacksonUtils.serialize2Json(transitiveCustomMetadata) +
+                ", systemMetadata=" + JacksonUtils.serialize2Json(systemMetadata) +
+                '}';
     }
 }

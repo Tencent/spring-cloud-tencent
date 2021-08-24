@@ -47,7 +47,7 @@ public class MetadataUtils {
 
         // Transfer string to map.
         if (StringUtils.hasText(newMetadataStr)) {
-            Map<String, String> requestMetadataMap = JacksonUtils.deserializeMetadataMap(newMetadataStr);
+            Map<String, String> requestMetadataMap = JacksonUtils.deserialize2Map(newMetadataStr);
 
             // metadata from upstream cover local metadata for this thread.
             for (String key : requestMetadataMap.keySet()) {

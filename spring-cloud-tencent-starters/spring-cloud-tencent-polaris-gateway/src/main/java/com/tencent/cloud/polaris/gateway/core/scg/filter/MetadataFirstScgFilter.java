@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.gateway.core.scg.filter;
@@ -20,29 +21,22 @@ package com.tencent.cloud.polaris.gateway.core.scg.filter;
 import com.tencent.cloud.metadata.constant.MetadataConstant;
 import com.tencent.cloud.metadata.context.MetadataContext;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
-import com.tencent.cloud.metadata.util.JacksonUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.util.CollectionUtils;
+import org.springframework.cloud.gateway.route.Route;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
+import static org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter.ROUTE_TO_URL_FILTER_ORDER;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 /**
- * Scg filter used for writing metadata in HTTP request header.
- *
  * @author Haotian Zhang
  */
-public class Metadata2HeaderScgFilter extends AbstractGlobalFilter {
-
-    private static final int METADATA_SCG_FILTER_ORDER = 10152;
+public class MetadataFirstScgFilter extends AbstractGlobalFilter {
 
     @Override
     public int getOrder() {
-        return METADATA_SCG_FILTER_ORDER;
+        return ROUTE_TO_URL_FILTER_ORDER + 1;
     }
 
     @Override
@@ -52,26 +46,21 @@ public class Metadata2HeaderScgFilter extends AbstractGlobalFilter {
 
     @Override
     public Mono<Void> doFilter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        // get request builder
-        ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
+        // get request context
+        Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
 
         // get metadata of current thread
         MetadataContext metadataContext = exchange.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 
-        // add new metadata and cover old
-        if (metadataContext == null) {
-            metadataContext = MetadataContextHolder.get();
-        }
-        Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
-        if (!CollectionUtils.isEmpty(customMetadata)) {
-            String metadataStr = JacksonUtils.serialize2Json(customMetadata);
-            try {
-                builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, URLEncoder.encode(metadataStr, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
-            }
-        }
+        // TODO 对端命名空间暂时与本地命名空间相同
+        metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
+                MetadataContextHolder.get().getSystemMetadata(MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE));
+        metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE, route.getId());
+        metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH,
+                exchange.getRequest().getURI().getPath());
 
-        return chain.filter(exchange.mutate().request(builder.build()).build());
+        exchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT, metadataContext);
+
+        return chain.filter(exchange);
     }
 }
