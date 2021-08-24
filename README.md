@@ -15,8 +15,8 @@ Based on Spring Cloud Tencent, you only need a small configuration to launch Spr
 
 * **Service Registration and Discovery**: Based on Spring Cloud's discovery and registration standard.
 * **Service Routing and LoadBalancer**: Based on ribbon's API port, provide dynamic routing and load balancing use cases.
-* **CircuitBreaker Node**: Support circuitbreak's auto-reset ability, ensure the reliability of distributed server
-* **Rate Limiter**: Support rate limit between microservice and access layer, ensure the stability of backend, one can configure policies and traffic data from the control panel
+* **CircuitBreaker Node**: Support circuitbreaker auto-reset ability, ensure the reliability of distributed server
+* **Rate Limiter**: Support rate limit of microservice and gateway, ensure the stability of backend, one can configure policies and traffic data from the control panel
 * **Metadata Delivery**: Support metadata delivery between gateways and microservices.
 
 ## Components

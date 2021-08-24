@@ -75,3 +75,6 @@ curl -L -X GET 'http://localhost:48083/GatewayCalleeService/gateway/example/call
 {"a":"1","b":2}
 ```
 
+#### 网关限流
+
+参考[Polaris RateLimit Example](../polaris-ratelimit-example/README-zh.md)

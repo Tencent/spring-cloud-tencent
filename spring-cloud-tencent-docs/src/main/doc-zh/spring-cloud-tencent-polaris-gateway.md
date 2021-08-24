@@ -11,6 +11,10 @@
 
 支持网关和微服务之间的元数据传递。
 
+### 网关限流
+
+支持网关转发对应微服务过程的服务限流。
+
 ## 快速入门
 
 本章节将介绍如何最简单地在Spring Cloud项目中使用Spring Cloud Tencent Polaris Gateway的功能。
@@ -33,3 +37,7 @@
 ### 元数据传递
 
 其依赖的是```spring-cloud-tencent-metadata```模块的功能，因此使用上参考[Spring Cloud Tencent Metadata](spring-cloud-tencent-metadata.md)即可。
+
+### 网关限流
+
+其依赖的是```spring-cloud-starter-tencent-polaris-ratelimit```模块的功能，因此使用上参考[Polaris RateLimit](spring-cloud-tencent-polaris-ratelimit.md)即可。

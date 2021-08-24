@@ -12,6 +12,10 @@ You can use Polaris's extension microservice gateway features by importing depen
 
 Support metadata delivery between gateways and microservices.
 
+### Gateway RateLimit
+
+Support rate limit of gateway routing to the corresponding micro-service.
+
 ## User Guide
 
 This chapter will explain how to use Spring Cloud Tencent Polaris Gateway's features in the Spring Cloud project. 
@@ -29,4 +33,15 @@ For example, in Maven's project, add listed configurations in pom:
 </dependency>
 ```
 
-2. For further instructions, please refer to  [Polaris Gateway Example](../../../../spring-cloud-tencent-examples/polaris-gateway-example/README.md)。.
+2. For further instructions, please refer to  [Polaris Gateway Example](../../../../spring-cloud-tencent-examples/polaris-gateway-example/README.md).
+
+## Feature Usage
+
+### Metadata Delivery
+
+Because making use of ```spring-cloud-tencent-metadata```, please refer to [Spring Cloud Tencent Metadata](spring-cloud-tencent-metadata.md).
+
+### Gateway RateLimit
+
+Because making use of ```spring-cloud-starter-tencent-polaris-ratelimit```, please refer to [Spring Cloud Tencent Metadata](spring-cloud-tencent-polaris-ratelimit.md).
+

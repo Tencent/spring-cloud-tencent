@@ -75,3 +75,7 @@ Expected return rate
 {"a":"1","b":2}
 ```
 
+#### Gateway Rate Limit
+
+See [Polaris RateLimit Example](../polaris-ratelimit-example/README.md)
+
