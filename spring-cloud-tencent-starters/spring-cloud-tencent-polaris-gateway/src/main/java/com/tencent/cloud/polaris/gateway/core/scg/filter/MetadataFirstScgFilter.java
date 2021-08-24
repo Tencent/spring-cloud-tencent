@@ -34,9 +34,11 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
  */
 public class MetadataFirstScgFilter extends AbstractGlobalFilter {
 
+    public static final int METADATA_FIRST_FILTER_ORDER = ROUTE_TO_URL_FILTER_ORDER + 1;
+
     @Override
     public int getOrder() {
-        return ROUTE_TO_URL_FILTER_ORDER + 1;
+        return METADATA_FIRST_FILTER_ORDER;
     }
 
     @Override

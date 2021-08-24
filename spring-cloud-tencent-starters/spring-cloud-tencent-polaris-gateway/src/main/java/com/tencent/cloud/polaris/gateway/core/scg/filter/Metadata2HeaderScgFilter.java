@@ -31,6 +31,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
+
 /**
  * Scg filter used for writing metadata in HTTP request header.
  *
@@ -38,7 +40,7 @@ import java.util.Map;
  */
 public class Metadata2HeaderScgFilter extends AbstractGlobalFilter {
 
-    private static final int METADATA_SCG_FILTER_ORDER = 10152;
+    private static final int METADATA_SCG_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
 
     @Override
     public int getOrder() {
