@@ -34,7 +34,7 @@
         <!-- Polaris dependencies start -->
         <dependency>
             <groupId>com.tencent.polaris</groupId>
-            <artifactId>polaris-factory</artifactId>
+            <artifactId>polaris-ratelimit-factory</artifactId>
         </dependency>
 
         <dependency>
