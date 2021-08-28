@@ -71,7 +71,7 @@
 
     <properties>
         <!-- Project revision -->
-        <revision>1.1.0.Hoxton.SR9</revision>
+        <revision>1.1.1.Hoxton.SR9</revision>
 
         <!-- Spring Cloud -->
         <spring.cloud.version>Hoxton.SR9</spring.cloud.version>
