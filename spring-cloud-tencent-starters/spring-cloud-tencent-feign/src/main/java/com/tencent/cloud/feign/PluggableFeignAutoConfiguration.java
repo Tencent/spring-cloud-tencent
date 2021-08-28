@@ -29,18 +29,14 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration
+@ConditionalOnProperty(name = "com.tencent.cloud.feign.enabled", matchIfMissing = true)
+@ConditionalOnClass(Feign.class)
 public class PluggableFeignAutoConfiguration {
 
-    @Configuration
-    @ConditionalOnProperty(name = "com.tencent.cloud.feign.enabled", matchIfMissing = true)
-    static class PluggableFeignConfig {
-
-        @Bean
-        @ConditionalOnMissingBean
-        public Feign.Builder pluggableFeignBuilder() {
-            return PluggableFeign.builder();
-        }
-
+    @Bean
+    @ConditionalOnMissingBean
+    public Feign.Builder pluggableFeignBuilder() {
+        return PluggableFeign.builder();
     }
 
 }
