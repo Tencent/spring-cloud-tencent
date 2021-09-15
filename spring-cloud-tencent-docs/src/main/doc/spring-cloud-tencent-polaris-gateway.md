@@ -22,7 +22,7 @@ This chapter will explain how to use Spring Cloud Tencent Polaris Gateway's feat
 Before starting MicroService, one needs to launch Polaris. 
 Please refer to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started).
 
-1. you can add ```spring-cloud-tencent-polaris-gateway``` in your project to use Polaris's microservice gateway extension features
+1. You can add ```spring-cloud-tencent-polaris-gateway``` in your project to use Polaris's microservice gateway extension features
 (meaning you still need to add microservice gateway modules yourself, such as zuul, spring-cloud-gateway). 
 For example, in Maven's project, add listed configurations in pom:
 

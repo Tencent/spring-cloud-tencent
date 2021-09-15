@@ -37,6 +37,8 @@ Spring Cloud Tencent 使用 Maven 来构建，最快的使用方式是将本项�
 ### 如何引入依赖
 
 在 dependencyManagement 中添加如下配置，然后在 dependencies 中添加自己所需使用的依赖即可使用。
+与此同时，您需要注意Spring Cloud Tencent对应的Spring Cloud版本，进而对应到的Spring Boot版本。
+例如Spring Cloud Tencent的1.0.1.Hoxton.SR9对应Spring Cloud Hoxton版本，需要使用Spring Boot 2.3.x。
 
 ````
     <dependencyManagement>
@@ -66,6 +68,8 @@ Example 列表：
 - [Polaris RateLimit Example](spring-cloud-tencent-examples/polaris-ratelimit-example/README-zh.md)
 
 - [Polaris Gateway Example](spring-cloud-tencent-examples/polaris-gateway-example/README-zh.md)
+
+更加详细的使用方法参考 [使用polaris-java](https://github.com/polarismesh/website/blob/main/docs/zh/doc/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/%E4%BD%BF%E7%94%A8polaris-java.md).
 
 ## 版本号规范
 

@@ -39,7 +39,9 @@ When all the steps are finished, the project will be installed in local Maven re
 
 ### How to Introduce Dependency
 
-Add the following configurations n dependencyManagement, then add the dependencies you need.
+Add the following configurations in dependencyManagement, then add the dependencies you need.
+At the same time, you need to pay attention to the Spring Cloud version corresponding to Spring Cloud Tencent, and then the corresponding Spring Boot version.
+For example, Spring Cloud Tencent's 1.0.1.Hoxton.SR9 corresponds to the Spring Cloud Hoxton version and requires Spring Boot 2.3.x.
 
 ````
     <dependencyManagement>
@@ -69,6 +71,8 @@ Example List:
 - [Polaris RateLimit Example](spring-cloud-tencent-examples/polaris-ratelimit-example/README.md)
 
 - [Polaris Gateway Example](spring-cloud-tencent-examples/polaris-gateway-example/README.md)
+
+For more features, please refer to [使用polaris-java](https://github.com/polarismesh/website/blob/main/docs/zh/doc/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/%E4%BD%BF%E7%94%A8polaris-java.md).
 
 ### Version Standard
 

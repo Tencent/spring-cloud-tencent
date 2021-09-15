@@ -24,7 +24,7 @@ For configuration, please refer to [Polaris CircuitBreaker](https://github.com/p
 This chapter will explain how to use Polaris in Spring Cloud project in the simplest way.
 CircuitBreaker's feature. Before starting MicroService, one needs to launch Polaris. Please refer to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started).
 
-1. you can add ```spring-cloud-starter-tencent-polaris-circuitbreaker``` 's dependencies in your project to use CircuitBreaker features. For example, in Maven's project, add listed configurations in pom:
+1. You can add ```spring-cloud-starter-tencent-polaris-circuitbreaker``` 's dependencies in your project to use CircuitBreaker features. For example, in Maven's project, add listed configurations in pom:
 
 ```XML
 <dependency>

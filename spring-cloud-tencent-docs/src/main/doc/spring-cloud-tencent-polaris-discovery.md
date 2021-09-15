@@ -24,7 +24,7 @@ CLB supports qualified packet forwarding in the service instance. Through set ba
 
 This chapter will explain how to use Polaris Discovery's features in the Spring Cloud project. Before starting MicroService, one needs to launch Polaris. Please refer to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started).
 
-1. you can add ```spring-cloud-starter-tencent-polaris-discovery```'s  's dependencies in your project to use Polaris's service registration and discovery feature. For example, in Maven's project, add listed configurations in pom:
+1. You can add ```spring-cloud-starter-tencent-polaris-discovery```'s dependencies in your project to use Polaris's service registration and discovery feature. For example, in Maven's project, add listed configurations in pom:
 
 ```XML
 <dependency>
@@ -42,6 +42,17 @@ spring:
   cloud:
     polaris:
       server-addr: ${ip}:${port}
+```
+
+3. If you deploy standalone Polaris, you should add this polaris configuration in your project(.../resources/polaris.yml):
+
+```yaml
+global:
+  system:
+    discoverCluster:
+      sameAsBuiltin: true
+    healthCheckCluster:
+      sameAsBuiltin: true
 ```
 
 For further instructions, please refer to [Polaris Discovery Example](../../../../spring-cloud-tencent-examples/polaris-discovery-example/README.md).

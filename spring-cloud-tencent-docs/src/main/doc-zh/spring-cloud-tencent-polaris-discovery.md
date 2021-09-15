@@ -47,6 +47,17 @@ spring:
       address: ${protocol}://${ip}:${port}
 ```
 
+3. 如果您部署的是单机版Polaris，您需要在项目中添加如下Polaris参数（.../resources/polaris.yml）：
+
+```yaml
+global:
+  system:
+    discoverCluster:
+      sameAsBuiltin: true
+    healthCheckCluster:
+      sameAsBuiltin: true
+```
+
 更加详细的使用方法参考 [Polaris Discovery Example](../../../../spring-cloud-tencent-examples/polaris-discovery-example/README-zh.md)。
 
 ## 拓展使用

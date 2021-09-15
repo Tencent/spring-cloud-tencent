@@ -24,7 +24,7 @@ Default introduce spring-cloud-starter-tencent-polaris-ratelimit dependencies ca
 
 This chapter will explain how to use Polaris RateLimit in Spring Cloud project with the easiest way.  Before starting MicroService, one needs to launch Polaris. Please refer to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started).
 
-1. you can add ```spring-cloud-starter-tencent-polaris-ratelimit```‘s dependencies in your project to use the rate limit feature.  For example, in Maven's project, add listed:
+1. You can add ```spring-cloud-starter-tencent-polaris-ratelimit```‘s dependencies in your project to use the rate limit feature.  For example, in Maven's project, add listed:
 
 ```XML
 <dependency>

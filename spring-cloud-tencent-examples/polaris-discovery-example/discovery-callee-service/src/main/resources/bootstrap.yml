@@ -6,7 +6,7 @@ spring:
     name: DiscoveryCalleeService
   cloud:
     polaris:
-      address: grpc://127.0.0.1:8081
+      address: grpc://127.0.0.1:8091
     consul:
       port: 8500
       host: 127.0.0.1
