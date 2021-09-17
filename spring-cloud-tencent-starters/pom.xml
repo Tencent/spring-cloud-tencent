@@ -27,13 +27,6 @@
         <module>spring-cloud-tencent-polaris-gateway</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.tencent.cloud</groupId>
-            <artifactId>spring-cloud-tencent-commons</artifactId>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>

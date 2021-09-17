@@ -17,6 +17,11 @@
         <!-- Spring Cloud Tencent dependencies start -->
         <dependency>
             <groupId>com.tencent.cloud</groupId>
+            <artifactId>spring-cloud-tencent-commons</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-metadata</artifactId>
         </dependency>
 
