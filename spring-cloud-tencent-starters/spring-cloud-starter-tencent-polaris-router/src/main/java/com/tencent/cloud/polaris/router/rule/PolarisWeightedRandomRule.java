@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package com.tencent.cloud.polaris.router.rule;
 
 import com.netflix.client.config.IClientConfig;

@@ -14,13 +14,6 @@
     <name>Spring Cloud Tencent Polaris SDKContext</name>
 
     <dependencies>
-        <!-- Spring Cloud Tencent dependencies start -->
-        <dependency>
-            <groupId>com.tencent.cloud</groupId>
-            <artifactId>spring-cloud-tencent-commons</artifactId>
-        </dependency>
-        <!-- Spring Cloud Tencent dependencies end -->
-
         <!-- Polaris dependencies start -->
         <dependency>
             <groupId>com.tencent.polaris</groupId>
@@ -86,31 +79,6 @@
             <artifactId>loadbalancer-ringhash</artifactId>
         </dependency>
         <!-- Polaris dependencies end -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
