@@ -30,6 +30,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.tencent.cloud.metadata.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
@@ -67,7 +70,9 @@ public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Orde
         Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
         if (!CollectionUtils.isEmpty(customMetadata)) {
             String metadataStr = JacksonUtils.serialize2Json(customMetadata);
-            requestTemplate.removeHeader(CUSTOM_METADATA);
+
+            //empty value, clear the existing values
+            requestTemplate.header(CUSTOM_METADATA, Collections.emptyList());
             try {
                 requestTemplate.header(CUSTOM_METADATA,
                         URLEncoder.encode(metadataStr, "UTF-8"));

@@ -26,9 +26,10 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cloud.commons.util.InetUtilsProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
+import org.springframework.cloud.commons.util.InetUtils;
+
 
 /**
  * Properties for Polaris {@link com.tencent.polaris.client.api.SDKContext}
@@ -44,7 +45,7 @@ public class PolarisContextProperties {
     private String address;
 
     @Autowired
-    private InetUtilsProperties inetUtilsProperties;
+    private InetUtils inetUtils;
 
     @Autowired
     private Environment environment;
@@ -76,7 +77,7 @@ public class PolarisContextProperties {
     }
 
     private String getHost() {
-        String defaultIpAddress = inetUtilsProperties.getDefaultIpAddress();
+        String defaultIpAddress = inetUtils.findFirstNonLoopbackAddress().getHostAddress();
         if (!StringUtils.isBlank(defaultIpAddress) && !defaultIpAddress.equals("127.0.0.1")) {
             return defaultIpAddress;
         }

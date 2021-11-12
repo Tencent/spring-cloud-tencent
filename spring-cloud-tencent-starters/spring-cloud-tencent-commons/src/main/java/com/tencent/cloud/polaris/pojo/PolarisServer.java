@@ -17,13 +17,13 @@
 
 package com.tencent.cloud.polaris.pojo;
 
-import com.google.common.base.Objects;
 import com.netflix.loadbalancer.Server;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Polaris implementation of {@link Server}
@@ -95,12 +95,12 @@ public class PolarisServer extends Server {
             return false;
         }
         PolarisServer that = (PolarisServer) o;
-        return Objects.equal(instance, that.instance);
+        return Objects.equals(instance, that.instance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), instance);
+        return Objects.hash(super.hashCode(), instance);
     }
 
     public ServiceInstances getServiceInstances() {

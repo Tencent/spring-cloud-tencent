@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration()
 @EnableConfigurationProperties
 @ConditionalOnPolarisDiscoveryEnabled
 @ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)

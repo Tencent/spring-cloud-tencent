@@ -43,8 +43,8 @@ public class PluggableFeignContractHolder implements Contract {
     }
 
     @Override
-    public List<MethodMetadata> parseAndValidateMetadata(Class<?> targetType) {
-        List<MethodMetadata> metadataList = delegate.parseAndValidateMetadata(targetType);
+    public List<MethodMetadata> parseAndValidatateMetadata(Class<?> targetType) {
+        List<MethodMetadata> metadataList = delegate.parseAndValidatateMetadata(targetType);
         metadataList.forEach(metadata ->
                 METHOD_METADATA.put(targetType.getPackage().getName() + "." + metadata.configKey(), metadata));
         return metadataList;

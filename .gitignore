@@ -51,6 +51,7 @@ applog/
 .flattened-pom.xml
 
 # Polaris
+polaris
 */backup
 /backup
 backup

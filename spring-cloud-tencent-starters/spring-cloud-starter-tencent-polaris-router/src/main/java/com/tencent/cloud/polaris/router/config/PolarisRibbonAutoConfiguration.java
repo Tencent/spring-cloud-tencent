@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Haotian Zhang
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration()
 @EnableConfigurationProperties
 @ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
 @AutoConfigureAfter(RibbonAutoConfiguration.class)
