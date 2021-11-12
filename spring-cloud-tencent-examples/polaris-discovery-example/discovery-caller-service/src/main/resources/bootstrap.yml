@@ -8,4 +8,4 @@ spring:
     polaris:
       discovery:
         namespace: default
-      address: grpc://192.168.31.15:8091
+      address: grpc://127.0.0.1:8091
