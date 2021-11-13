@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,6 +70,8 @@ public class JacksonUtils {
         } catch (JsonProcessingException e) {
             LOG.error("Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
             throw new RuntimeException("Json to map failed.", e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
