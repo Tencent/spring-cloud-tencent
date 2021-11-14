@@ -69,7 +69,7 @@
     </developers>
 
     <properties>
-        <revision>1.1.4.Hoxton.SR9-SNAPSHOT</revision>
+        <revision>1.0.0.Greenwich-SNAPSHOT</revision>
         <polaris.version>1.2.0</polaris.version>
         <tomcat.version>10.0.0-M6</tomcat.version>
         <powermock.version>2.0.0</powermock.version>
