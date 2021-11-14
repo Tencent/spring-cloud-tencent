@@ -43,7 +43,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
         value = "spring.cloud.polaris.circuitbreaker.enabled",
         havingValue = "true",
         matchIfMissing = true)
-@Configuration(proxyBeanMethods = false)
+@Configuration()
 @AutoConfigureAfter(PolarisContextConfiguration.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 public class PolarisFeignClientAutoConfiguration {

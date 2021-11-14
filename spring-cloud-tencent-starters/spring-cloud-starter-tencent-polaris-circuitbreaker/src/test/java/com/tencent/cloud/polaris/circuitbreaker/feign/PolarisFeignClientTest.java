@@ -19,8 +19,8 @@ package com.tencent.cloud.polaris.circuitbreaker.feign;
 
 import com.tencent.cloud.polaris.circuitbreaker.PolarisFeignClientAutoConfiguration;
 import feign.Client;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,7 +42,7 @@ public class PolarisFeignClientTest {
     @Test
     public void testPolarisFeignBeanPostProcessor() {
         final PolarisFeignBeanPostProcessor postProcessor = springCtx.getBean(PolarisFeignBeanPostProcessor.class);
-        Assertions.assertNotNull(postProcessor, "PolarisFeignBeanPostProcessor");
+        Assert.assertNotNull("PolarisFeignBeanPostProcessor", postProcessor);
     }
 
     @Test
@@ -52,9 +52,6 @@ public class PolarisFeignClientTest {
             return;
         }
         if (client instanceof PolarisLoadBalancerFeignClient) {
-            return;
-        }
-        if (client instanceof PolarisFeignBlockingLoadBalancerClient) {
             return;
         }
         throw new IllegalStateException("Polaris burying failed");
