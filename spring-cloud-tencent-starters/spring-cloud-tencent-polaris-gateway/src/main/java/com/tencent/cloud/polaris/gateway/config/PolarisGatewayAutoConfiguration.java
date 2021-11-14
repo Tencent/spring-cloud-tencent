@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PolarisGatewayAutoConfiguration {
 
-    @Configuration(proxyBeanMethods = false)
+    @Configuration()
     @ConditionalOnClass(ZuulServlet.class)
     static class PolarisGatewayZuulAutoConfiguration {
         @Bean
@@ -56,7 +56,7 @@ public class PolarisGatewayAutoConfiguration {
         }
     }
 
-    @Configuration(proxyBeanMethods = false)
+    @Configuration()
     @ConditionalOnClass(GlobalFilter.class)
     static class PolarisGatewayScgAutoConfiguration {
         @Bean
