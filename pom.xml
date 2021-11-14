@@ -71,7 +71,7 @@
 
     <properties>
         <!-- Project revision -->
-        <revision>1.1.4.Hoxton.SR9-SNAPSHOT</revision>
+        <revision>1.0.0.Greenwich-SNAPSHOT</revision>
 
         <!-- Spring Cloud -->
         <spring.cloud.version>Greenwich.SR5</spring.cloud.version>
