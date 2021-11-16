@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Haotian Zhang
  */
 @ConfigurationProperties("spring.cloud.polaris.ribbon")
-public class PolarisRibbonProperties {
+public class PolarisRouterProperties {
 
     /**
      * 是否开启负载均衡

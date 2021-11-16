@@ -20,7 +20,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -49,12 +49,6 @@
         <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-okhttp</artifactId>
-        </dependency>
-
-        <!-- 负载均衡依赖-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
         </dependency>
 
         <!-- 熔断超时后，重试机制依赖-->

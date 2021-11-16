@@ -15,21 +15,20 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.gateway.example.zuul;
+package com.tencent.cloud.polaris.loadbalancer;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
- * @author Haotian Zhang
+ * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
-@SpringBootApplication
-@EnableZuulProxy
-public class GatewayZuulApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(GatewayZuulApplication.class, args);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+@ConditionalOnProperty(value = "spring.cloud.loadbalancer.polaris.enabled", havingValue = "true")
+public @interface ConditionalOnLoadBalancerPolaris {
 
 }

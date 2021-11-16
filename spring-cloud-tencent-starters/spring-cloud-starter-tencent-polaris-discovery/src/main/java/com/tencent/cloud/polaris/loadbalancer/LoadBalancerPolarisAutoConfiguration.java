@@ -15,23 +15,21 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.ribbon;
+package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
-import org.springframework.cloud.netflix.ribbon.RibbonClients;
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
+@ConditionalOnLoadBalancerPolaris
 @ConditionalOnPolarisDiscoveryEnabled
-@AutoConfigureAfter(RibbonAutoConfiguration.class)
-@RibbonClients(defaultConfiguration = PolarisRibbonServerListConfiguration.class)
-public class PolarisDiscoveryRibbonAutoConfiguration {
+@LoadBalancerClients(defaultConfiguration = PolarisLoadBalancerClientConfiguration.class)
+public class LoadBalancerPolarisAutoConfiguration {
 
 }

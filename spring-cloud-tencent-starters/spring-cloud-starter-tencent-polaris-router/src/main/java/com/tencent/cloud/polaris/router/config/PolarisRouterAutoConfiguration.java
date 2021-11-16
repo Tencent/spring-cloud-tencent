@@ -21,12 +21,9 @@ import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.RouterAPIFactory;
 import com.tencent.polaris.router.api.core.RouterAPI;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
-import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,17 +32,15 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Haotian Zhang
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration()
 @EnableConfigurationProperties
 @ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
-@AutoConfigureAfter(RibbonAutoConfiguration.class)
-@RibbonClients(defaultConfiguration = PolarisRibbonClientConfiguration.class)
-public class PolarisRibbonAutoConfiguration {
+public class PolarisRouterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public PolarisRibbonProperties polarisRibbonProperties() {
-        return new PolarisRibbonProperties();
+    public PolarisRouterProperties polarisRibbonProperties() {
+        return new PolarisRouterProperties();
     }
 
     @Bean(name = "polarisRoute")

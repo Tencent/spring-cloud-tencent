@@ -17,16 +17,9 @@
 
 package com.tencent.cloud.polaris.router;
 
-import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
-import com.netflix.loadbalancer.IPing;
-import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.PollingServerListUpdater;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.metadata.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
-import com.tencent.cloud.polaris.pojo.PolarisServer;
+import com.tencent.cloud.polaris.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
@@ -36,64 +29,48 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author Haotian Zhang
  */
-public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Server> {
+public class PolarisRoutingLoadBalancer {
 
     private final RouterAPI routerAPI;
 
-    public PolarisRoutingLoadBalancer(IClientConfig config, IRule rule, IPing ping,
-            ServerList<Server> serverList, RouterAPI routerAPI) {
-        super(config, rule, ping, serverList, null, new PollingServerListUpdater());
+    public PolarisRoutingLoadBalancer(RouterAPI routerAPI) {
         this.routerAPI = routerAPI;
     }
 
-    @Override
-    public List<Server> getReachableServers() {
-        List<Server> allServers = super.getAllServers();
+    public List<ServiceInstance> chooseInstances(List<ServiceInstance> allServers) {
         if (CollectionUtils.isEmpty(allServers)) {
             return allServers;
         }
         ServiceInstances serviceInstances = null;
-        if (allServers.get(0) instanceof PolarisServer) {
-            serviceInstances = ((PolarisServer) allServers.get(0)).getServiceInstances();
-        } else {
-            String serviceName;
-            // notice the difference between different service registries
-            if (StringUtils.isNotBlank(allServers.get(0).getMetaInfo().getServiceIdForDiscovery())) {
-                serviceName = allServers.get(0).getMetaInfo().getServiceIdForDiscovery();
-            } else {
-                serviceName = allServers.get(0).getMetaInfo().getAppName();
-            }
-            if (StringUtils.isBlank(serviceName)) {
-                throw new IllegalStateException(
-                        "PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
-            }
-            ServiceKey serviceKey = new ServiceKey(MetadataContextHolder.LOCAL_NAMESPACE, serviceName);
-            List<Instance> instances = new ArrayList<>(8);
-            for (Server server : allServers) {
-                DefaultInstance instance = new DefaultInstance();
-                instance.setNamespace(MetadataContextHolder.LOCAL_NAMESPACE);
-                instance.setService(serviceName);
-                instance.setHealthy(server.isAlive());
-                instance.setProtocol(server.getScheme());
-                instance.setId(server.getId());
-                instance.setHost(server.getHost());
-                instance.setPort(server.getPort());
-                instance.setZone(server.getZone());
-                instance.setWeight(100);
-                instances.add(instance);
-            }
-            serviceInstances = new DefaultServiceInstances(serviceKey, instances);
+        String serviceName = allServers.get(0).getServiceId();
+        if (StringUtils.isBlank(serviceName)) {
+            throw new IllegalStateException(
+                    "PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
         }
+        ServiceKey serviceKey = new ServiceKey(MetadataContextHolder.LOCAL_NAMESPACE, serviceName);
+        List<Instance> instances = new ArrayList<>(8);
+        for (ServiceInstance server : allServers) {
+            DefaultInstance instance = new DefaultInstance();
+            instance.setNamespace(MetadataContextHolder.LOCAL_NAMESPACE);
+            instance.setService(serviceName);
+            instance.setProtocol(server.getScheme());
+            instance.setId(server.getInstanceId());
+            instance.setHost(server.getHost());
+            instance.setPort(server.getPort());
+            instance.setWeight(100);
+            instances.add(instance);
+        }
+        serviceInstances = new DefaultServiceInstances(serviceKey, instances);
         ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
         processRoutersRequest.setDstInstances(serviceInstances);
         String srcNamespace = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.LOCAL_NAMESPACE);
@@ -110,15 +87,11 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
         }
         ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
         ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
-        List<Server> filteredInstances = new ArrayList<>();
+        List<ServiceInstance> filteredInstances = new ArrayList<>();
         for (Instance instance : filteredServiceInstances.getInstances()) {
-            filteredInstances.add(new PolarisServer(serviceInstances, instance));
+            filteredInstances.add(new PolarisServiceInstance(instance));
         }
         return filteredInstances;
     }
 
-    @Override
-    public List<Server> getAllServers() {
-        return getReachableServers();
-    }
 }
