@@ -51,9 +51,6 @@ public class PolarisFeignClientTest {
         if (client instanceof PolarisFeignClient) {
             return;
         }
-        if (client instanceof PolarisLoadBalancerFeignClient) {
-            return;
-        }
         if (client instanceof PolarisFeignBlockingLoadBalancerClient) {
             return;
         }

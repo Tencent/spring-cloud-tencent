@@ -17,8 +17,26 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import com.tencent.cloud.constant.LoadbalancerConstant;
+import com.tencent.cloud.polaris.PolarisProperties;
+import com.tencent.polaris.router.api.core.RouterAPI;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.client.ConditionalOnBlockingDiscoveryEnabled;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
+import org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
+import org.springframework.cloud.loadbalancer.core.ReactorLoadBalancer;
+import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 
 /**
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
@@ -26,5 +44,50 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnDiscoveryEnabled
 public class PolarisLoadBalancerClientConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ReactorLoadBalancer<ServiceInstance> nacosLoadBalancer(Environment environment,
+                                                                  LoadBalancerClientFactory loadBalancerClientFactory,
+                                                                  PolarisProperties polarisProperties,
+                                                                  RouterAPI routerAPI) {
+        String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
+        return new PolarisLoadbalancer(
+                name, loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class),
+                polarisProperties, routerAPI);
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnReactiveDiscoveryEnabled
+    @Order(LoadbalancerConstant.DISCOVERY_SERVICE_INSTANCE_SUPPLIER_ORDER)
+    public static class ReactiveSupportConfiguration {
+
+        @Bean
+        @ConditionalOnBean(ReactiveDiscoveryClient.class)
+        @ConditionalOnMissingBean
+        @ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "default", matchIfMissing = true)
+        public ServiceInstanceListSupplier discoveryClientServiceInstanceListSupplier(
+                ConfigurableApplicationContext context) {
+            return ServiceInstanceListSupplier.builder().withDiscoveryClient()
+                    .build(context);
+        }
+
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnBlockingDiscoveryEnabled
+    @Order(LoadbalancerConstant.DISCOVERY_SERVICE_INSTANCE_SUPPLIER_ORDER + 1)
+    public static class BlockingSupportConfiguration {
+
+        @Bean
+        @ConditionalOnBean(DiscoveryClient.class)
+        @ConditionalOnMissingBean
+        @ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "default", matchIfMissing = true)
+        public ServiceInstanceListSupplier discoveryClientServiceInstanceListSupplier(
+                ConfigurableApplicationContext context) {
+            return ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient()
+                    .build(context);
+        }
+    }
 
 }

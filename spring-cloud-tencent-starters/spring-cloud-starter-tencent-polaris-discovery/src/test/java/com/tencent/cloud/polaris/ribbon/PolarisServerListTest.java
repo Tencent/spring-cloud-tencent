@@ -24,13 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.Server;
 import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import java.util.List;
 
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
@@ -73,56 +70,6 @@ public class PolarisServerListTest {
         if (null != namingServer) {
             namingServer.terminate();
         }
-    }
-
-    /**
-     * Test {@link PolarisServerList#getInitialListOfServers()} with empty server list.
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-    public void test1(){
-        this.contextRunner.run(context -> {
-            // mock
-            IClientConfig iClientConfig = mock(IClientConfig.class);
-            when(iClientConfig.getClientName()).thenReturn(SERVICE_PROVIDER);
-            PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
-            PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
-            serverList.initWithNiwsConfig(iClientConfig);
-
-            List<Server> servers = serverList.getInitialListOfServers();
-            assertThat(servers).isEmpty();
-        });
-    }
-
-    /**
-     * Test {@link PolarisServerList#getUpdatedListOfServers()} with server list of size 3.
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-    public void test2() throws Exception {
-        this.contextRunner.run(context -> {
-            // mock
-            IClientConfig iClientConfig = mock(IClientConfig.class);
-            when(iClientConfig.getClientName()).thenReturn(SERVICE_PROVIDER);
-            PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
-            PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
-            serverList.initWithNiwsConfig(iClientConfig);
-
-
-            // add service with 3 instances
-            NamingService.InstanceParameter instanceParameter = new NamingService.InstanceParameter();
-            instanceParameter.setHealthy(true);
-            instanceParameter.setIsolated(false);
-            instanceParameter.setWeight(100);
-            ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER);
-            namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3, instanceParameter);
-
-            List<Server> servers = serverList.getUpdatedListOfServers();
-            assertThat(servers).hasSize(3);
-            assertThat(servers.get(0).getPort()).isEqualTo(PORT);
-            assertThat(servers.get(1).getPort()).isEqualTo(PORT + 1);
-            assertThat(servers.get(2).getPort()).isEqualTo(PORT + 2);
-        });
     }
 
     @Configuration

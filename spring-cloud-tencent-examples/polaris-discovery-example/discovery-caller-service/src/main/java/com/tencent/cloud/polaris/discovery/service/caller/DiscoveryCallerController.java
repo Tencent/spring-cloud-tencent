@@ -18,6 +18,8 @@
 package com.tencent.cloud.polaris.discovery.service.caller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +38,12 @@ public class DiscoveryCallerController {
 
     @Autowired
     private DiscoveryCalleeService discoveryCalleeService;
+
+    @Configuration
+    @LoadBalancerClient(value = "service-provider")
+    class DiscoveryCallerConfiguration {
+
+    }
 
     /**
      * 获取相加完的结果

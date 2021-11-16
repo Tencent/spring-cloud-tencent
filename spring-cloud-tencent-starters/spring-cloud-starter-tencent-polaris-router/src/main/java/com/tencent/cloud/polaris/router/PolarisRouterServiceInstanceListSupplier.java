@@ -34,17 +34,32 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.loadbalancer.Request;
+import org.springframework.cloud.loadbalancer.core.DelegatingServiceInstanceListSupplier;
+import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import org.springframework.util.CollectionUtils;
+import reactor.core.publisher.Flux;
 
 /**
  * @author Haotian Zhang
  */
-public class PolarisRoutingLoadBalancer {
+public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceInstanceListSupplier {
 
     private final RouterAPI routerAPI;
 
-    public PolarisRoutingLoadBalancer(RouterAPI routerAPI) {
+    public PolarisRouterServiceInstanceListSupplier(ServiceInstanceListSupplier delegate, RouterAPI routerAPI) {
+        super(delegate);
         this.routerAPI = routerAPI;
+    }
+
+    @Override
+    public Flux<List<ServiceInstance>> get() {
+        return getDelegate().get().map(this::chooseInstances);
+    }
+
+    @Override
+    public Flux<List<ServiceInstance>> get(Request request) {
+        return super.get(request);
     }
 
     public List<ServiceInstance> chooseInstances(List<ServiceInstance> allServers) {
@@ -93,5 +108,4 @@ public class PolarisRoutingLoadBalancer {
         }
         return filteredInstances;
     }
-
 }

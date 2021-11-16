@@ -18,8 +18,21 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import com.tencent.cloud.metadata.context.MetadataContextHolder;
 import com.tencent.cloud.polaris.PolarisProperties;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import com.tencent.cloud.polaris.pojo.PolarisServiceInstance;
+import com.tencent.polaris.api.pojo.DefaultServiceInstances;
+import com.tencent.polaris.api.pojo.Instance;
+import com.tencent.polaris.api.pojo.ServiceInstances;
+import com.tencent.polaris.api.pojo.ServiceKey;
+import com.tencent.polaris.api.rpc.Criteria;
+import com.tencent.polaris.router.api.core.RouterAPI;
+import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
+import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -30,13 +43,14 @@ import org.springframework.cloud.client.loadbalancer.Request;
 import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
+import org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import reactor.core.publisher.Mono;
 
 /**
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
-public class PolarisLoadbalancer implements ReactorServiceInstanceLoadBalancer {
+public class PolarisLoadbalancer extends RoundRobinLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
     private static final Logger log = LoggerFactory.getLogger(PolarisLoadbalancer.class);
 
@@ -46,16 +60,23 @@ public class PolarisLoadbalancer implements ReactorServiceInstanceLoadBalancer {
 
     private final PolarisProperties discoveryProperties;
 
+    private final RouterAPI routerAPI;
+
     public PolarisLoadbalancer(String serviceId,
-            ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
-            PolarisProperties discoveryProperties) {
+                               ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
+                               PolarisProperties discoveryProperties, RouterAPI routerAPI) {
+        super(supplierObjectProvider, serviceId);
         this.serviceId = serviceId;
         this.supplierObjectProvider = supplierObjectProvider;
         this.discoveryProperties = discoveryProperties;
+        this.routerAPI = routerAPI;
     }
 
     @Override
     public Mono<Response<ServiceInstance>> choose(Request request) {
+        if (!discoveryProperties.getLoadbalancerEnabled()) {
+            return super.choose(request);
+        }
         ServiceInstanceListSupplier supplier = supplierObjectProvider.getIfAvailable(NoopServiceInstanceListSupplier::new);
         return supplier.get().next().map(this::getInstanceResponse);
     }
@@ -66,15 +87,28 @@ public class PolarisLoadbalancer implements ReactorServiceInstanceLoadBalancer {
             return new EmptyResponse();
         }
 
+        ProcessLoadBalanceRequest request = new ProcessLoadBalanceRequest();
+        request.setDstInstances(convertToPolarisServiceInstances(serviceInstances));
+        request.setLbPolicy(discoveryProperties.getPolicy());
+        request.setCriteria(new Criteria());
+
         try {
-            ServiceInstance instance = NacosBalancer.getHostByRandomWeight3(serviceInstances);
-            return new DefaultResponse(instance);
+            ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(request);
+            return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
         }
         catch (Exception e) {
-            log.warn("NacosLoadBalancer error", e);
+            log.warn("PolarisLoadbalancer error", e);
             return new EmptyResponse();
         }
+    }
 
+    private static ServiceInstances convertToPolarisServiceInstances(List<ServiceInstance> serviceInstances) {
+        ServiceKey serviceKey = new ServiceKey(MetadataContextHolder.LOCAL_NAMESPACE, serviceInstances.get(0).getServiceId());
+        List<Instance> polarisInstances = serviceInstances
+                .stream()
+                .map(serviceInstance -> ((PolarisServiceInstance) serviceInstance).getPolarisInstance())
+                .collect(Collectors.toList());
+        return new DefaultServiceInstances(serviceKey, polarisInstances);
     }
 
 }

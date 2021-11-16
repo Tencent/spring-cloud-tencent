@@ -22,13 +22,16 @@ import feign.Contract;
 import feign.Feign;
 import feign.InvocationHandlerFactory;
 import feign.Target;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.cloud.openfeign.FallbackFactory;
+import org.springframework.cloud.openfeign.FeignClientFactoryBean;
 import org.springframework.cloud.openfeign.FeignContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -85,7 +88,10 @@ public class PluggableFeign {
             super.invocationHandlerFactory(new InvocationHandlerFactory() {
                 @Override
                 public InvocationHandler create(Target target, Map<Method, MethodHandler> dispatch) {
-                    Object feignClientFactoryBean = applicationContext.getBean("&" + target.type().getName());
+                    GenericApplicationContext gctx = (GenericApplicationContext) Builder.this.applicationContext;
+                    BeanDefinition def = gctx.getBeanDefinition(target.type().getName());
+
+                    FeignClientFactoryBean feignClientFactoryBean = (FeignClientFactoryBean) def.getAttribute("feignClientsRegistrarFactoryBean");
 
                     Class fallback = (Class) ReflectionUtils.getFieldValue(feignClientFactoryBean, "fallback");
                     Class fallbackFactory = (Class) ReflectionUtils.getFieldValue(feignClientFactoryBean,
@@ -104,8 +110,7 @@ public class PluggableFeign {
                     if (void.class != fallback) {
                         fallbackInstance = getFallbackInstanceFromContext(beanName, "fallback", fallback,
                                 target.type());
-                        return new PluggableFeignInvocationHandler(target, dispatch,
-                                new FallbackFactory.Default<>(fallbackInstance), pluggableFeignPlugins);
+                        return new PluggableFeignInvocationHandler(target, dispatch, (FallbackFactory) fallbackInstance, pluggableFeignPlugins);
                     }
 
                     if (void.class != fallbackFactory) {

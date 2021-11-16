@@ -23,11 +23,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
-import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
-import org.springframework.cloud.openfeign.ribbon.CachingSpringLoadBalancerFactory;
-import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
 
 /**
  * Wrap Spring Bean and decorating proxy for Feign Client.
@@ -50,16 +49,14 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
     }
 
     private Object wrapper(Object bean) {
+
         if (isNeedWrap(bean)) {
-            if (bean instanceof LoadBalancerFeignClient) {
-                LoadBalancerFeignClient client = ((LoadBalancerFeignClient) bean);
-                return new PolarisLoadBalancerFeignClient(createPolarisFeignClient(client.getDelegate()), factory(),
-                        clientFactory());
-            }
             if (bean instanceof FeignBlockingLoadBalancerClient) {
                 FeignBlockingLoadBalancerClient client = (FeignBlockingLoadBalancerClient) bean;
                 return new PolarisFeignBlockingLoadBalancerClient(createPolarisFeignClient(client.getDelegate()),
-                        factory.getBean(BlockingLoadBalancerClient.class));
+                        factory.getBean(BlockingLoadBalancerClient.class),
+                        factory.getBean(LoadBalancerProperties.class),
+                        factory.getBean(LoadBalancerClientFactory.class));
             }
             return createPolarisFeignClient((Client) bean);
         }
@@ -68,8 +65,7 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
 
     private boolean isNeedWrap(Object bean) {
         return bean instanceof Client && !(bean instanceof PolarisFeignClient)
-                && !(bean instanceof PolarisFeignBlockingLoadBalancerClient)
-                && !(bean instanceof PolarisLoadBalancerFeignClient);
+                && !(bean instanceof PolarisFeignBlockingLoadBalancerClient);
     }
 
     private PolarisFeignClient createPolarisFeignClient(Client delegate) {
@@ -79,13 +75,5 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.factory = beanFactory;
-    }
-
-    CachingSpringLoadBalancerFactory factory() {
-        return this.factory.getBean(CachingSpringLoadBalancerFactory.class);
-    }
-
-    SpringClientFactory clientFactory() {
-        return this.factory.getBean(SpringClientFactory.class);
     }
 }
