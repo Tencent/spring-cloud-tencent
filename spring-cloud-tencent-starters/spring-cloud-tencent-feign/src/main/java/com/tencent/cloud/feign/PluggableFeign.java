@@ -110,7 +110,7 @@ public class PluggableFeign {
                     if (void.class != fallback) {
                         fallbackInstance = getFallbackInstanceFromContext(beanName, "fallback", fallback,
                                 target.type());
-                        return new PluggableFeignInvocationHandler(target, dispatch, (FallbackFactory) fallbackInstance, pluggableFeignPlugins);
+                        return new PluggableFeignInvocationHandler(target, dispatch, new FallbackFactory.Default(fallbackInstance), pluggableFeignPlugins);
                     }
 
                     if (void.class != fallbackFactory) {

@@ -27,6 +27,7 @@ import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
+import org.springframework.cloud.openfeign.loadbalancer.RetryableFeignBlockingLoadBalancerClient;
 
 /**
  * Wrap Spring Bean and decorating proxy for Feign Client.
@@ -51,8 +52,8 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
     private Object wrapper(Object bean) {
 
         if (isNeedWrap(bean)) {
-            if (bean instanceof FeignBlockingLoadBalancerClient) {
-                FeignBlockingLoadBalancerClient client = (FeignBlockingLoadBalancerClient) bean;
+            if (bean instanceof RetryableFeignBlockingLoadBalancerClient) {
+                RetryableFeignBlockingLoadBalancerClient client = (RetryableFeignBlockingLoadBalancerClient) bean;
                 return new PolarisFeignBlockingLoadBalancerClient(createPolarisFeignClient(client.getDelegate()),
                         factory.getBean(BlockingLoadBalancerClient.class),
                         factory.getBean(LoadBalancerProperties.class),
