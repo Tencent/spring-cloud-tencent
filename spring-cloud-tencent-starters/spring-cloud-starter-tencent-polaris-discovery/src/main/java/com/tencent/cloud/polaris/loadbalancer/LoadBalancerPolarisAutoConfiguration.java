@@ -23,7 +23,7 @@ import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
