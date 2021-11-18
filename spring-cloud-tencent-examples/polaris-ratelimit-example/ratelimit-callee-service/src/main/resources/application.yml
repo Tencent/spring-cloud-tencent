@@ -7,6 +7,6 @@ spring:
     loadbalancer:
       configurations: default
     polaris:
-      address: grpc://9.135.224.139:8091
+      address: grpc://127.0.0.1:8091
       discovery:
         namespace: default
