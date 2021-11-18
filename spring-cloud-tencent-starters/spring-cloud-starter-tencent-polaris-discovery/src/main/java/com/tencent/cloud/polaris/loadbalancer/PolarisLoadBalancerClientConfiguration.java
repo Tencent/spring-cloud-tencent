@@ -47,7 +47,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReactorLoadBalancer<ServiceInstance> nacosLoadBalancer(Environment environment,
+    public ReactorLoadBalancer<ServiceInstance> polarisLoadBalancer(Environment environment,
                                                                   LoadBalancerClientFactory loadBalancerClientFactory,
                                                                   PolarisProperties polarisProperties,
                                                                   RouterAPI routerAPI) {
