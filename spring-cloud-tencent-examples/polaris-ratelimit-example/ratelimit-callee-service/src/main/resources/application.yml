@@ -1,11 +1,12 @@
 server:
-  session-timeout: 1800
   port: 48081
 spring:
   application:
     name: RateLimitCalleeService
   cloud:
+    loadbalancer:
+      configurations: default
     polaris:
-      address: grpc://127.0.0.1:8091
+      address: grpc://9.135.224.139:8091
       discovery:
-        namespace: Test
+        namespace: default

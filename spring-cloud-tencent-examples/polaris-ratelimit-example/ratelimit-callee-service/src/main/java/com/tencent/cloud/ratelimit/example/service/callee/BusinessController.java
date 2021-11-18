@@ -20,6 +20,8 @@ package com.tencent.cloud.ratelimit.example.service.callee;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +44,12 @@ public class BusinessController {
 
     @Value("${spring.application.name}")
     private String appName;
+
+    @Configuration
+    @LoadBalancerClient(value = "service-provider")
+    class RateLimitCalleeConfiguration {
+
+    }
 
 
     /**

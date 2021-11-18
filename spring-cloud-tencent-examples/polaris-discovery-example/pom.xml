@@ -44,6 +44,11 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
         <!-- 熔断超时后，重试机制依赖-->
         <dependency>
             <groupId>org.springframework.retry</groupId>
