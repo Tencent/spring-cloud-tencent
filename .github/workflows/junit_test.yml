@@ -5,9 +5,9 @@ name: Test with Junit
 
 on:
   push:
-    branches: [ main ]
+    branches: [ greenwich ]
   pull_request:
-    branches: [ main ]
+    branches: [ greenwich ]
 
 jobs:
   build:
