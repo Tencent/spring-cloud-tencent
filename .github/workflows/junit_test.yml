@@ -5,9 +5,9 @@ name: Test with Junit
 
 on:
   push:
-    branches: [ main ]
+    branches: [ 2020.0.x ]
   pull_request:
-    branches: [ main ]
+    branches: [ 2020.0.x ]
 
 jobs:
   build:
