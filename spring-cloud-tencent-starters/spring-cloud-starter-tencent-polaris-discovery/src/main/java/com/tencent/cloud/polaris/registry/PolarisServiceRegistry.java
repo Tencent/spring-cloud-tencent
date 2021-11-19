@@ -175,16 +175,13 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
      * @param heartbeatRequest 心跳请求
      */
     public void heartbeat(InstanceHeartbeatRequest heartbeatRequest) {
-        heartbeatExecutor.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
-                } catch (PolarisException e) {
-                    log.error("polaris heartbeat[{}]", e.getCode(), e);
-                } catch (Exception e) {
-                    log.error("polaris heartbeat runtime error", e);
-                }
+        heartbeatExecutor.scheduleWithFixedDelay(() -> {
+            try {
+                polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
+            } catch (PolarisException e) {
+                log.error("polaris heartbeat[{}]", e.getCode(), e);
+            } catch (Exception e) {
+                log.error("polaris heartbeat runtime error", e);
             }
         }, 0, ttl, TimeUnit.SECONDS);
     }

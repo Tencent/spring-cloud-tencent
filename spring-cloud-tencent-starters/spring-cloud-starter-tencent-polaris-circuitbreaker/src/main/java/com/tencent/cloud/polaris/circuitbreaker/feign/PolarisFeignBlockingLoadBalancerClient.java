@@ -18,7 +18,9 @@
 package com.tencent.cloud.polaris.circuitbreaker.feign;
 
 import feign.Client;
-import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
 
 /**
@@ -28,9 +30,11 @@ import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalance
  */
 public class PolarisFeignBlockingLoadBalancerClient extends FeignBlockingLoadBalancerClient {
 
-    public PolarisFeignBlockingLoadBalancerClient(Client delegate,
-            BlockingLoadBalancerClient loadBalancerClient) {
-        super(delegate, loadBalancerClient);
-    }
 
+    public PolarisFeignBlockingLoadBalancerClient(Client delegate,
+                                                  LoadBalancerClient loadBalancerClient,
+                                                  LoadBalancerProperties properties,
+                                                  LoadBalancerClientFactory loadBalancerClientFactory) {
+        super(delegate, loadBalancerClient, properties, loadBalancerClientFactory);
+    }
 }

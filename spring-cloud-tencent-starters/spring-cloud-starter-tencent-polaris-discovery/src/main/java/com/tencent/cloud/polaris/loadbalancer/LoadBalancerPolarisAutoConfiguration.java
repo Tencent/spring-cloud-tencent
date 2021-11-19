@@ -15,28 +15,21 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.ribbon;
+package com.tencent.cloud.polaris.loadbalancer;
 
-import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerList;
-import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
+import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-@Configuration
-public class PolarisRibbonServerListConfiguration {
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties
+@ConditionalOnLoadBalancerPolaris
+@ConditionalOnPolarisDiscoveryEnabled
+@LoadBalancerClients(defaultConfiguration = PolarisLoadBalancerClientConfiguration.class)
+public class LoadBalancerPolarisAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ServerList<Server> ribbonServerList(PolarisDiscoveryHandler polarisDiscoveryHandler,
-                                               IClientConfig iClientConfig) {
-        PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
-        serverList.initWithNiwsConfig(iClientConfig);
-        return serverList;
-    }
 }

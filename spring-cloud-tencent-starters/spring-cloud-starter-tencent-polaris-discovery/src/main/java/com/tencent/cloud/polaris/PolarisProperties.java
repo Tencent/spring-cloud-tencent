@@ -69,8 +69,8 @@ public class PolarisProperties {
     /**
      * 使用spring cloud监听端口
      */
-    @Value("${server.port:}")
-    private int port;
+    @Value("${server.port:#{-1}}")
+    private int port = -1;
 
     /**
      * 是否开启负载均衡
@@ -78,13 +78,11 @@ public class PolarisProperties {
     @Value("${spring.cloud.polaris.discovery.loadbalancer.enabled:#{true}}")
     private Boolean loadbalancerEnabled;
 
-
     /**
      * loadbalnce strategy
      */
     @Value("${spring.cloud.polaris.discovery.loadbalancer.policy:#{'weightedRandom'}}")
     private String policy;
-
 
     /**
      * loadbalnce strategy

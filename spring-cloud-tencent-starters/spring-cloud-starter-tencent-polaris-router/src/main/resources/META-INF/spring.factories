@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.tencent.cloud.polaris.router.config.PolarisRibbonAutoConfiguration
+  com.tencent.cloud.polaris.router.PolarisRouterAutoConfiguration

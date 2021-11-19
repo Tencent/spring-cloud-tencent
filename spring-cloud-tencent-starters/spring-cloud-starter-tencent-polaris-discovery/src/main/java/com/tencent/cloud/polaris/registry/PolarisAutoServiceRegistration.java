@@ -23,6 +23,7 @@ import org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegis
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -43,9 +44,10 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 
     @Override
     protected PolarisRegistration getRegistration() {
-        if (this.registration.getPort() <= 0) {
+        if (this.registration.getPort() < 0 && this.getPort().get() > 0) {
             this.registration.setPort(this.getPort().get());
         }
+        Assert.isTrue(this.registration.getPort() > 0, "service.port has not been set");
         return this.registration;
     }
 

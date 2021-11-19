@@ -15,23 +15,20 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.feign;
-
-import feign.Client;
-import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
-import org.springframework.cloud.openfeign.ribbon.CachingSpringLoadBalancerFactory;
-import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
+package com.tencent.cloud.constant;
 
 /**
- * Wrap for {@link LoadBalancerFeignClient}
- *
- * @author Haotian Zhang
+ * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
-public class PolarisLoadBalancerFeignClient extends LoadBalancerFeignClient {
+public final class LoadbalancerConstant {
 
-    public PolarisLoadBalancerFeignClient(Client delegate,
-            CachingSpringLoadBalancerFactory lbClientFactory,
-            SpringClientFactory clientFactory) {
-        super(delegate, lbClientFactory, clientFactory);
-    }
+    private LoadbalancerConstant() {}
+
+    public static final int DISCOVERY_SERVICE_INSTANCE_SUPPLIER_ORDER = 193827465 - 1000000;
+
+    /**
+     * We need to ensure that the routing action is performed before the load balancing action can be performed
+     */
+    public static final int ROUTER_SERVICE_INSTANCE_SUPPLIER_ORDER = DISCOVERY_SERVICE_INSTANCE_SUPPLIER_ORDER - 1000000;
+
 }

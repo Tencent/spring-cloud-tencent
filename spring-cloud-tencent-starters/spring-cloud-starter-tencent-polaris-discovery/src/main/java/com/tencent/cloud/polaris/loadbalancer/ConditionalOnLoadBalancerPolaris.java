@@ -15,39 +15,20 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router.rule;
+package com.tencent.cloud.polaris.loadbalancer;
 
-import java.util.Arrays;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
- * @author Haotian Zhang
+ * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
-public enum PolarisLoadBalanceRule {
-
-    /**
-     * 加权随机
-     */
-    WEIGHTED_RANDOM_RULE("weighted_random");
-
-    /**
-     * 策略
-     */
-    String policy;
-
-    PolarisLoadBalanceRule(String strategy) {
-        this.policy = strategy;
-    }
-
-    public static PolarisLoadBalanceRule fromStrategy(String strategy) {
-        return Arrays.stream(values()).filter(t -> t.getPolicy().equals(strategy)).findAny()
-                .orElse(WEIGHTED_RANDOM_RULE);
-    }
-
-    /**
-     * {@link #policy}的getter方法。
-     */
-    public String getPolicy() {
-        return policy;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+@ConditionalOnProperty(value = "spring.cloud.loadbalancer.polaris.enabled", havingValue = "true")
+public @interface ConditionalOnLoadBalancerPolaris {
 
 }

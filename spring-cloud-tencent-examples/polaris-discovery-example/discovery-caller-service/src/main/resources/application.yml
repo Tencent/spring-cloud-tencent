@@ -1,10 +1,11 @@
 server:
-  session-timeout: 1800
   port: 48080
 spring:
   application:
     name: DiscoveryCallerService
   cloud:
+    loadbalancer:
+      configurations: default
     polaris:
       address: grpc://127.0.0.1:8091
     consul:

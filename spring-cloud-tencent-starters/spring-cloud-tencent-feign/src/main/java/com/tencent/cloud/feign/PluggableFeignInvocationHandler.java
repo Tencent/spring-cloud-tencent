@@ -20,9 +20,9 @@ package com.tencent.cloud.feign;
 import feign.FeignException;
 import feign.InvocationHandlerFactory;
 import feign.Target;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -48,7 +48,7 @@ public class PluggableFeignInvocationHandler implements InvocationHandler {
 
     private final Map<Method, InvocationHandlerFactory.MethodHandler> dispatch;
 
-    private FallbackFactory fallbackFactory;
+    private FallbackFactory<?> fallbackFactory;
 
     private Map<Method, Method> fallbackMethodMap;
 
@@ -59,7 +59,7 @@ public class PluggableFeignInvocationHandler implements InvocationHandler {
     private List<PluggableFeignPlugin> exceptionPluggableFeignPlugins;
 
     PluggableFeignInvocationHandler(Target<?> target, Map<Method, InvocationHandlerFactory.MethodHandler> dispatch,
-                                    FallbackFactory fallbackFactory, List<PluggableFeignPlugin> pluggableFeignPlugins) {
+                                    FallbackFactory<?> fallbackFactory, List<PluggableFeignPlugin> pluggableFeignPlugins) {
         this.target = checkNotNull(target, "target");
         this.dispatch = checkNotNull(dispatch, "dispatch");
         this.fallbackFactory = fallbackFactory;
@@ -110,7 +110,9 @@ public class PluggableFeignInvocationHandler implements InvocationHandler {
                 prePlugin.run(context);
             }
 
-            result = this.dispatch.get(method).invoke(args);
+            InvocationHandlerFactory.MethodHandler handler = this.dispatch.get(method);
+
+            result = handler.invoke(args);
 
             context.setResult(result);
 

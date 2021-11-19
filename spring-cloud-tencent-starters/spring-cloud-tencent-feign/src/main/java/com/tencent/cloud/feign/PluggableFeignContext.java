@@ -20,7 +20,7 @@ package com.tencent.cloud.feign;
 import feign.FeignException;
 import feign.InvocationHandlerFactory;
 import feign.Target;
-import feign.hystrix.FallbackFactory;
+import org.springframework.cloud.openfeign.FallbackFactory;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class PluggableFeignContext {
 
     private Map<Method, InvocationHandlerFactory.MethodHandler> dispatch;
 
-    private FallbackFactory fallbackFactory;
+    private FallbackFactory<?> fallbackFactory;
 
     private Map<Method, Method> fallbackMethodMap;
 
@@ -66,11 +66,11 @@ public class PluggableFeignContext {
         this.dispatch = dispatch;
     }
 
-    public FallbackFactory getFallbackFactory() {
+    public FallbackFactory<?> getFallbackFactory() {
         return fallbackFactory;
     }
 
-    public void setFallbackFactory(FallbackFactory fallbackFactory) {
+    public void setFallbackFactory(FallbackFactory<?> fallbackFactory) {
         this.fallbackFactory = fallbackFactory;
     }
 

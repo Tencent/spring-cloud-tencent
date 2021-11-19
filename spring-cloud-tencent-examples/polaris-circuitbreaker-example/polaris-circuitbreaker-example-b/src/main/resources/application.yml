@@ -1,9 +1,9 @@
 server:
   session-timeout: 1800
-  port: 48080
+  port: 48081
 spring:
   application:
-    name: polaris-circuitbreaker-example-a
+    name: polaris-circuitbreaker-example-b
   cloud:
     polaris:
       address: grpc://127.0.0.1:8091
@@ -12,8 +12,6 @@ global:
     timeout: 5s
 
 feign:
-  hystrix:
-    enabled: true #在Feign中开启Hystrix
   compression:
     request:
       enabled: false #是否对请求进行GZIP压缩
@@ -21,20 +19,6 @@ feign:
       min-request-size: 2048 #超过该大小的请求会被压缩
     response:
       enabled: false #是否对响应进行GZIP压缩
-
-ribbon:
-  polaris:
-    enabled: true
-  # 同一实例最大重试次数，不包括首次调用
-  MaxAutoRetries: 1
-  # 重试其他实例的最大重试次数，不包括首次所选的server
-  MaxAutoRetriesNextServer: 2
-  # 是否所有操作都进行重试
-  OkToRetryOnAllOperations: false
-  ConnectionTimeout: 1000
-  ReadTimeout: 1000
-  eager-load:
-    enabled: on
 
 serivceB:
   url: http://localhost:48081
