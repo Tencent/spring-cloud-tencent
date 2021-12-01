@@ -7,6 +7,12 @@
       "description": "the service name to register, default value is ${spring.application.name}."
     },
     {
+      "name": "spring.cloud.polaris.discovery.namespace",
+      "type": "java.lang.String",
+      "defaultValue": "default",
+      "description": "the namespace of service, default value is ${spring.application.name}."
+    },
+    {
       "name": "spring.cloud.polaris.discovery.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,
