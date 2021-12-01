@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * @author Haotian Zhang
  */
-@FeignClient("DiscoveryCalleeService")
+@FeignClient(value = "DiscoveryCalleeService", fallback = DiscoveryCalleeServiceCallback.class)
 public interface DiscoveryCalleeService {
 
     /**
