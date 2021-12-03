@@ -20,6 +20,7 @@
         <module>polaris-ratelimit-example</module>
         <module>polaris-circuitbreaker-example</module>
         <module>polaris-gateway-example</module>
+        <module>polaris-quickstart-example</module>
     </modules>
 
     <properties>

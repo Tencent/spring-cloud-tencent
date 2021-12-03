@@ -8,23 +8,18 @@
 
 Spring Cloud Tencent包含了分布式应用微服务开发过程中所需的组件，基于 Spring Cloud 框架的开发者可以使用这些组件快速进行分布式应用的开发。
 
-在Spring Cloud Tencent的基础上，您只需要添加少量配置，就可以将 Spring Cloud 应用接入腾讯云微服务解决方案，通过腾讯云中间件来迅速搭建分布式应用系统。
-
 ## 主要功能
 
 * **服务注册与发现**：基于 Spring Cloud Common的标准进行微服务的注册与发现。
 * **服务路由与负载均衡**：基于 Ribbon 的接口标准，提供场景更丰富的动态路由以及负载均衡的能力。
 * **故障节点熔断**：提供故障节点的熔断剔除以及主/被动探测恢复的能力，保证分布式服务的可靠性。
 * **服务限流**：支持微服务被调接入层和网关主动调用的限流功能，保证后台微服务稳定性，可通过控制台动态配置规则，及查看流量监控数据。
-* **元数据传递**：支持网关和微服务之间的元数据传递。
-
-## 组件
-
-**[Polaris](https://github.com/PolarisMesh/polaris)**：北极星云原生的服务治理平台，解决远程调用的服务注册发现、动态路由、负载均衡和容错问题。
 
 ## 如何构建
 
-* master 分支对应的是 Spring Cloud Hoxton，最低支持 JDK 1.8。
+* [2020.0.x](https://github.com/Tencent/spring-cloud-tencent/tree/2020.0.x)分支对应的是 Spring Cloud 2020.0版本，编译环境最低支持JDK 1.8。
+* [main](https://github.com/Tencent/spring-cloud-tencent/tree/main) 分支对应的是 Spring Cloud Hoxton版本，编译环境最低支持JDK 1.8。
+* [greenwich](https://github.com/Tencent/spring-cloud-tencent/tree/greenwich) 分支对应的是 Spring Cloud Greenwich版本，编译环境最低支持JDK 1.8。
 
 Spring Cloud Tencent 使用 Maven 来构建，最快的使用方式是将本项目 clone 到本地，然后执行以下命令：
 ```bash
@@ -37,8 +32,6 @@ Spring Cloud Tencent 使用 Maven 来构建，最快的使用方式是将本项�
 ### 如何引入依赖
 
 在 dependencyManagement 中添加如下配置，然后在 dependencies 中添加自己所需使用的依赖即可使用。
-与此同时，您需要注意Spring Cloud Tencent对应的Spring Cloud版本，进而对应到的Spring Boot版本。
-例如Spring Cloud Tencent的1.0.1.Hoxton.SR9对应Spring Cloud Hoxton版本，需要使用Spring Boot 2.3.x。
 
 ````
     <dependencyManagement>
@@ -46,8 +39,7 @@ Spring Cloud Tencent 使用 Maven 来构建，最快的使用方式是将本项�
             <dependency>
                 <groupId>com.tencent.cloud</groupId>
                 <artifactId>spring-cloud-tencent-dependencies</artifactId>
-                <!--版本号需修改成实际依赖的版本号-->
-                <version>${version}</version>
+                <version>1.1.4.Hoxton.SR9</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -61,15 +53,17 @@ Spring Cloud Tencent 项目包含了一个子模块spring-cloud-tencent-examples
 
 Example 列表：
 
-- [Polaris Discovery Example](spring-cloud-tencent-examples/polaris-discovery-example/README-zh.md)
+- [PolarisMesh](https://github.com/polarismesh)接入相关的样例：
 
-- [Polaris CircuitBreaker Example](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README-zh.md)
-
-- [Polaris RateLimit Example](spring-cloud-tencent-examples/polaris-ratelimit-example/README-zh.md)
-
-- [Polaris Gateway Example](spring-cloud-tencent-examples/polaris-gateway-example/README-zh.md)
-
-更加详细的使用方法参考 [使用polaris-java](https://github.com/polarismesh/website/blob/main/docs/zh/doc/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/%E4%BD%BF%E7%94%A8polaris-java.md).
+  - [快速入门](spring-cloud-tencent-examples/polaris-quickstart-example/README-zh.md)
+  
+  - [服务发现](spring-cloud-tencent-examples/polaris-discovery-example/README-zh.md)
+  
+  - [故障熔断](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README-zh.md)
+  
+  - [限流](spring-cloud-tencent-examples/polaris-ratelimit-example/README-zh.md)
+  
+  - [网关](spring-cloud-tencent-examples/polaris-gateway-example/README-zh.md)
 
 ## 版本号规范
 
