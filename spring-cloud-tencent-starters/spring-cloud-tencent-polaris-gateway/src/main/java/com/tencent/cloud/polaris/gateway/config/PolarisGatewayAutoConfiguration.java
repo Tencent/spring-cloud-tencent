@@ -22,11 +22,17 @@ import com.netflix.zuul.http.ZuulServlet;
 import com.tencent.cloud.polaris.gateway.core.scg.filter.Metadata2HeaderScgFilter;
 import com.tencent.cloud.polaris.gateway.core.scg.filter.MetadataFirstScgFilter;
 import com.tencent.cloud.polaris.gateway.core.scg.filter.RateLimitScgFilter;
+import com.tencent.cloud.polaris.gateway.core.zuul.discovery.PolarisProviderDiscovery;
 import com.tencent.cloud.polaris.gateway.core.zuul.filter.Metadata2HeaderZuulFilter;
 import com.tencent.cloud.polaris.gateway.core.zuul.filter.MetadataFirstZuulFilter;
+import com.tencent.cloud.polaris.gateway.core.zuul.filter.PolarisRpcZuulFilter;
 import com.tencent.cloud.polaris.gateway.core.zuul.filter.RateLimitZuulFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.cloud.commons.httpclient.ApacheHttpClientConnectionManagerFactory;
+import org.springframework.cloud.commons.httpclient.ApacheHttpClientFactory;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,9 +56,23 @@ public class PolarisGatewayAutoConfiguration {
         public ZuulFilter rateLimitZuulFilter() {
             return new RateLimitZuulFilter();
         }
+
         @Bean
         public ZuulFilter metadata2HeaderZuulFilter() {
             return new Metadata2HeaderZuulFilter();
+        }
+
+        @Bean
+        public PolarisProviderDiscovery polaprisProviderDiscovery(ZuulProperties zuulProperties) {
+            return new PolarisProviderDiscovery(zuulProperties);
+        }
+
+        @Bean
+        public PolarisRpcZuulFilter polarisRpcZuulFilter(ProxyRequestHelper helper, ZuulProperties zuulProperties,
+                                                         ApacheHttpClientConnectionManagerFactory connectionManagerFactory,
+                                                         ApacheHttpClientFactory httpClientFactory,
+                                                         PolarisProviderDiscovery polarisProviderDiscovery) {
+            return new PolarisRpcZuulFilter(helper, zuulProperties, connectionManagerFactory, httpClientFactory, polarisProviderDiscovery);
         }
     }
 

@@ -18,3 +18,4 @@ zuul:
     GatewayCalleeService:
       serviceId: GatewayCalleeService
       path: /GatewayCalleeService/**
+      # stripPrefix: true

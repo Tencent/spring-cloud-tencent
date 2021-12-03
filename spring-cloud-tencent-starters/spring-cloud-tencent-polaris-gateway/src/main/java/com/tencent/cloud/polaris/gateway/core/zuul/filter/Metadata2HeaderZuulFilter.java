@@ -47,7 +47,7 @@ public class Metadata2HeaderZuulFilter extends ZuulFilter {
 
     @Override
     public int filterOrder() {
-        return RIBBON_ROUTING_FILTER_ORDER - 1;
+        return RIBBON_ROUTING_FILTER_ORDER - 2;
     }
 
     @Override
