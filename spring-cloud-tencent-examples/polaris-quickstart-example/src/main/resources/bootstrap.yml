@@ -1,9 +1,0 @@
-server:
-  session-timeout: 1800
-  port: 47080
-spring:
-  application:
-    name: EchoService
-  cloud:
-    polaris:
-      address: grpc://127.0.0.1:8091

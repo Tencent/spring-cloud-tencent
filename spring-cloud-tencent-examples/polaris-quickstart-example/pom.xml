@@ -10,20 +10,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>polaris-quickstart-example</artifactId>
+    <artifactId>Spring Cloud Tencent Polaris QuickStart Example</artifactId>
+    <name></name>
 
-    <dependencies>
-        <dependency>
-            <artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
-            <groupId>com.tencent.cloud</groupId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-    </dependencies>
+    <packaging>pom</packaging>
+    <modules>
+        <module>quickstart-provider</module>
+        <module>quickstart-consumer</module>
+    </modules>
+
 </project>

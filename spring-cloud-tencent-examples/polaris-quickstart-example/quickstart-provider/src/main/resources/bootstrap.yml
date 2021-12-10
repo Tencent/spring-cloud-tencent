@@ -1,0 +1,9 @@
+server:
+  port: 0
+spring:
+  application:
+    name: EchoServer
+  cloud:
+    polaris:
+      address: grpc://9.134.15.118:8091
+#      address: grpc://127.0.0.1:8091
