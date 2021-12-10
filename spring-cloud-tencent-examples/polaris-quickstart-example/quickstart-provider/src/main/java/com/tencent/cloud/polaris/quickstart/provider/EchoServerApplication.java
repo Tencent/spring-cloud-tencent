@@ -15,31 +15,15 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.quickstart.example;
+package com.tencent.cloud.polaris.quickstart.provider;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@RestController
-@RequestMapping("/quickstart")
-public class EchoController {
+@SpringBootApplication
+public class EchoServerApplication {
 
-    @Autowired
-    private EchoService echoService;
-
-    @GetMapping("/echo")
-    public String echo(@RequestParam String msg) {
-        return "echo: " + msg;
+    public static void main(String[] args) {
+        SpringApplication.run(EchoServerApplication.class, args);
     }
-
-    @GetMapping("/feign")
-    public String feign(@RequestParam String msg) {
-        return echoService.echo(msg);
-    }
-
 }
-
-

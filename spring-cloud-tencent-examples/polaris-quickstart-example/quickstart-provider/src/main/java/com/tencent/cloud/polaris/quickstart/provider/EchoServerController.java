@@ -15,15 +15,23 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.quickstart.example;
+package com.tencent.cloud.polaris.quickstart.provider;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@FeignClient(value = "EchoService")
-public interface EchoService {
+/**
+ * main http controller for EchoService
+ */
+@RestController
+@RequestMapping("/quickstart")
+public class EchoServerController {
 
-    @GetMapping("/quickstart/echo")
-    String echo(@RequestParam("msg") String msg);
+    @GetMapping("/echo")
+    public String echo(@RequestParam(value = "value") String value) {
+        return "echo: " + value;
+    }
+
 }
