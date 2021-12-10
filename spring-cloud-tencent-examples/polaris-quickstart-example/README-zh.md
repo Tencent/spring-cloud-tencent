@@ -1,5 +1,9 @@
 # Spring Cloud Polaris Quickstart example
 
+[English](./README.md) | 简体中文 
+
+---
+
 ## 样例简介
 
 本样例将介绍如何使应用快速接入Spring Cloud Tencent。
@@ -8,7 +12,8 @@
 
 ### 修改配置
 
-在 polaris-quickstart-example/quickstart-provider 以及 polaris-quickstart-example/quickstart-consumer 两个项目中，修改bootstrap.yml，修改后配置如下所示。其中，${ip}和${port}为Polaris后端服务的IP地址与端口号。
+在 ```polaris-quickstart-example/quickstart-provider``` 以及 ```polaris-quickstart-example/quickstart-consumer``` 两个项目中，修改```bootstrap.yml```，修改后配置如下所示。
+其中，```${ip}```和${port}为Polaris后端服务的IP地址与端口号。
 
 ```yaml
 spring:
@@ -25,7 +30,7 @@ spring:
 
 - IDEA启动
 
- 找到 polaris-quickstart-example/quickstart-provider 项目的主类 EchoServerApplication，执行 main 方法启动样例。
+ 找到 ```polaris-quickstart-example/quickstart-provider``` 项目的主类 ```EchoServerApplication```，执行 main 方法启动样例。
 
 - Maven打包启动
 
@@ -47,7 +52,7 @@ java -jar ${app.jar}
 
 - IDEA启动
 
- 找到 polaris-quickstart-example/quickstart-consumer 项目的主类 EchoClientApplication，执行 main 方法启动样例。
+ 找到 ```polaris-quickstart-example/quickstart-consumer``` 项目的主类 ```EchoClientApplication```，执行 main 方法启动样例。
 
 - Maven打包启动
 

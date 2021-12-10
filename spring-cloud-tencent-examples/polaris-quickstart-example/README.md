@@ -1,6 +1,10 @@
 # Spring Cloud Polaris Quickstart example
 
-## Example Introduction
+English | [简体中文](./README-zh.md)
+
+---
+
+## Introduction
 
 This example shows how to make application integrated with spring-cloud-tencent rapidly.
 
@@ -8,7 +12,7 @@ This example shows how to make application integrated with spring-cloud-tencent 
 
 ### Configuration
 
-Modify bootstrap.yml, ${ip} and ${port} is the address of polaris server.
+Modify ```bootstrap.yml```, ${ip} and ${port} is the address of polaris server.
 
 ```yaml
 spring:
@@ -19,17 +23,39 @@ spring:
       address: grpc://${ip}:${port}
 ```
 
-### Launching Example
+### Start Application
 
-#### Launching Application
+#### Start Provider
 
 - Start in IDEA
 
-Find main class EchoServiceApplication in project polaris-quickstart-example, and execute the main method.
+Find main class ```EchoServerApplication``` in project ```polaris-quickstart-example/quickstart-provider```, and execute the main method.
 
 - Start by fatjar
 
-Run build command in ```spring-cloud-tencent-examples/polaris-quickstart-example```:
+Run build command in ```polaris-quickstart-example/quickstart-provider```:
+
+```sh
+mvn clean package
+```
+
+find the generated fatjar, run:
+
+```
+java -jar ${app.jar}
+```
+
+${app.jar} replace to the built jar name.
+
+#### Start Consumer
+
+- Start in IDEA
+
+Find main class ```EchoClientApplication``` in project ```polaris-quickstart-example/quickstart-consumer```, and execute the main method.
+
+- Start by fatjar
+
+Run build command in ```polaris-quickstart-example/quickstart-consumer```:
 
 ```sh
 mvn clean package
@@ -47,8 +73,13 @@ ${app.jar} replace to the built jar name.
 
 #### Invoke by http call
 
+Consumer and Provider application use random generated port, so you need to record the consumer port from start log.
+ ```
+ 11:26:53 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 58838 (http) with context path ''
+ ```
+Invoke http call，replace `${app.port}` to the consumer port.
 ```shell
 curl -L -X GET 'http://localhost:47080/quickstart/feign?msg=hello_world''
 ```
 
-expect：hello_world
+expect：`echo: hello_world`
