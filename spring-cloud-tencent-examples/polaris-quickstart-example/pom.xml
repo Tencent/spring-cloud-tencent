@@ -10,8 +10,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>Spring Cloud Tencent Polaris QuickStart Example</artifactId>
-    <name></name>
+    <artifactId>polaris-quickstart-example</artifactId>
+    <name>Spring Cloud Tencent Polaris QuickStart Example</name>
 
     <packaging>pom</packaging>
     <modules>
