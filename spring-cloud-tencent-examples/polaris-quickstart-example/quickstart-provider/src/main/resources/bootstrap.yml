@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 10100
 spring:
   application:
     name: EchoServer

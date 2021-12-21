@@ -1,4 +1,4 @@
-# Spring Cloud Polaris Quickstart example
+# Spring Cloud Polaris QuickStart example
 
 English | [简体中文](./README-zh.md)
 
