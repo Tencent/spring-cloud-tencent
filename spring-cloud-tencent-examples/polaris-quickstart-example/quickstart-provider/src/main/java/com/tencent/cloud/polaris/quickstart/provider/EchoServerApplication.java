@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EchoServerApplication {
 
     public static void main(String[] args) {
+        //无需额外代码修改，直接启动SpringApplication即可完成北极星的服务注册以及定时心跳上报
         SpringApplication.run(EchoServerApplication.class, args);
     }
 }

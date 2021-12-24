@@ -33,6 +33,7 @@ public class EchoClientController {
 
     @GetMapping("/echo")
     public String echo(@RequestParam String value) {
+        //直接使用feign进行远程调用，可直接走北极星治理能力
         return echoServer.echo(value);
     }
 
