@@ -84,7 +84,7 @@ public class MetadataReactiveFilter implements WebFilter, Ordered {
         serverWebExchange.getAttributes()
                 .put(MetadataConstant.HeaderName.METADATA_CONTEXT, MetadataContextHolder.get());
         return webFilterChain.filter(serverWebExchange)
-                .doOnError(throwable -> LOG.error("handle metadata[{}] error.", MetadataContextHolder.get()))
+                .doOnError(throwable -> LOG.error("handle metadata[{}] error.", MetadataContextHolder.get(), throwable))
                 .doFinally((type) -> MetadataContextHolder.remove());
     }
 }
