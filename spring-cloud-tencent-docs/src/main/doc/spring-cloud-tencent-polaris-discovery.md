@@ -80,10 +80,11 @@ Taking examples like random weight policy, you can add weight at Polaris control
 ## Configuration LIst
 
 | ConfigurationKey                                | default                    | Yes/No required | Configuration Instruction                            |
-| ----------------------------------------------- | -------------------------- | --------------- | ---------------------------------------------------- |
+|-------------------------------------------------|----------------------------|-----------------|------------------------------------------------------|
 | spring.cloud.polaris.server-addr                | false                      | yes             | Polaris backend address                              |
 | spring.cloud.polaris.discovery.service          | ${spring.application.name} | null            | service name                                         |
 | spring.cloud.polaris.discovery.enabled          | true                       | false           | whether to active service registration and discovery |
+| spring.cloud.polaris.discovery.namespace        | default                    | false           | the namespace of service                             |
 | spring.cloud.polaris.discovery.instance-enabled | true                       | false           | can current Microservice be visited                  |
 | spring.cloud.polaris.discovery.token            | false                      | false           | Authentication Token                                 |
 | spring.cloud.polaris.discovery.version          | null                       | false           | Microservice Version                                 |
@@ -91,6 +92,6 @@ Taking examples like random weight policy, you can add weight at Polaris control
 | spring.cloud.polaris.weight                     | 100                        | false           | Microservice weight                                  |
 | spring.cloud.loadbalancer.polaris.enabled       | true                       | false           | whether to open CLB                                  |
 | spring.cloud.loadbalancer.polaris.strategy      | weighted_random            | false           | CLB policy                                           |
-| spring.cloud.tencent.metadata.content           | null                       | false           | custom metadata Map                                |
+| spring.cloud.tencent.metadata.content           | null                       | false           | custom metadata Map                                  |
 | spring.cloud.tencent.metadata.transitive        | null                       | false           | need custom metadata key list                        |
 

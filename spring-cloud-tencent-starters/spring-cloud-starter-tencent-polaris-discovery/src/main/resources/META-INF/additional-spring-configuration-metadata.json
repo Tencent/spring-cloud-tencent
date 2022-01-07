@@ -10,7 +10,7 @@
       "name": "spring.cloud.polaris.discovery.namespace",
       "type": "java.lang.String",
       "defaultValue": "default",
-      "description": "the namespace of service, default value is ${spring.application.name}."
+      "description": "the namespace of service, default value is \"default\"."
     },
     {
       "name": "spring.cloud.polaris.discovery.enabled",

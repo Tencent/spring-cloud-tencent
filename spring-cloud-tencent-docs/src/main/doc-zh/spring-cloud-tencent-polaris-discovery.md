@@ -82,18 +82,19 @@ spring:
 
 ## 配置列表
 
-| 配置项Key                                       | 默认值                     |是否必填| 配置项说明                   |
-| ----------------------------------------------- | -----------------------| --------- | ---------------------------- |
-| spring.cloud.polaris.server-addr                | 无                         |是| Polaris后端地址              |
-| spring.cloud.polaris.discovery.service          | ${spring.application.name} |否| 服务名称                     |
-| spring.cloud.polaris.discovery.enabled          | true                       |否| 是否开启服务注册与发现       |
-| spring.cloud.polaris.discovery.instance-enabled | true                       |否| 当前微服务实例是否可以被访问 |
-| spring.cloud.polaris.discovery.token            | 无                         |否| 鉴权Token                    |
-| spring.cloud.polaris.discovery.version          | null                       |否| 微服务版本                  |
-| spring.cloud.polaris.protocol                   | null                       |否| 微服务协议类型 |
-| spring.cloud.polaris.weight                     | 100                        |否| 微服务权重 |
-| spring.cloud.loadbalancer.polaris.enabled       | true                       |否| 是否开启负载均衡 |
-| spring.cloud.loadbalancer.polaris.strategy      | weighted_random            |否| 负载均衡策略 |
-| spring.cloud.tencent.metadata.content | 无 |否| 自定义元数据，为Map结构 |
-| spring.cloud.tencent.metadata.transitive | 无 |否| 需要传递的自定义元数据的key列表，为List结构 |
+| 配置项Key                                          | 默认值                        | 是否必填 | 配置项说明                     |
+|-------------------------------------------------|----------------------------|------|---------------------------|
+| spring.cloud.polaris.server-addr                | 无                          | 是    | Polaris后端地址               |
+| spring.cloud.polaris.discovery.service          | ${spring.application.name} | 否    | 服务名称                      |
+| spring.cloud.polaris.discovery.enabled          | true                       | 否    | 是否开启服务注册与发现               |
+| spring.cloud.polaris.discovery.namespace        | default                    | 否    | 服务所在的命名空间名称               |
+| spring.cloud.polaris.discovery.instance-enabled | true                       | 否    | 当前微服务实例是否可以被访问            |
+| spring.cloud.polaris.discovery.token            | 无                          | 否    | 鉴权Token                   |
+| spring.cloud.polaris.discovery.version          | null                       | 否    | 微服务版本                     |
+| spring.cloud.polaris.protocol                   | null                       | 否    | 微服务协议类型                   |
+| spring.cloud.polaris.weight                     | 100                        | 否    | 微服务权重                     |
+| spring.cloud.loadbalancer.polaris.enabled       | true                       | 否    | 是否开启负载均衡                  |
+| spring.cloud.loadbalancer.polaris.strategy      | weighted_random            | 否    | 负载均衡策略                    |
+| spring.cloud.tencent.metadata.content           | 无                          | 否    | 自定义元数据，为Map结构             |
+| spring.cloud.tencent.metadata.transitive        | 无                          | 否    | 需要传递的自定义元数据的key列表，为List结构 |
 
