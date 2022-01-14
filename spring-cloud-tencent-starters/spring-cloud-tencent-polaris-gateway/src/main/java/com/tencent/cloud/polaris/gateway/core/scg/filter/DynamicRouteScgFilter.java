@@ -68,7 +68,7 @@ public class DynamicRouteScgFilter implements WebFilter, Ordered {
         String id = pathList[1];
         String path = String.format("/%s/**",id);
 
-        //判断是否已经加载此route
+        //Check whether the route has been loaded
         for(RouteDefinition routeDefinition: gatewayProperties.getRoutes()){
             if (id.equals(routeDefinition.getId())){
                 return webFilterChain.filter(serverWebExchange)
@@ -82,7 +82,7 @@ public class DynamicRouteScgFilter implements WebFilter, Ordered {
         URI uri = URI.create("lb://"+id);
         definition.setUri(uri);
 
-        //定义第一个断言
+        //Define the first assertion
         PredicateDefinition predicate = new PredicateDefinition();
         predicate.setName("Path");
 
@@ -90,7 +90,7 @@ public class DynamicRouteScgFilter implements WebFilter, Ordered {
         predicateParams.put("pattern", path);
         predicate.setArgs(predicateParams);
 
-        //定义Filter
+        //Define Filter
         FilterDefinition filter = new FilterDefinition();
         filter.setName("StripPrefix");
         filter.addArg("parts","1");
