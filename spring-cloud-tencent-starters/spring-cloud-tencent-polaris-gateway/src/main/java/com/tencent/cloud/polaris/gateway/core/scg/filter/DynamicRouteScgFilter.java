@@ -71,9 +71,7 @@ public class DynamicRouteScgFilter implements WebFilter, Ordered {
         //Check whether the route has been loaded
         for(RouteDefinition routeDefinition: gatewayProperties.getRoutes()){
             if (id.equals(routeDefinition.getId())){
-                return webFilterChain.filter(serverWebExchange)
-                        .doOnError(throwable -> LOG.error("handle DynamicRouteFilter[{}] error.", MetadataContextHolder.get(), throwable))
-                        .doFinally((type) -> MetadataContextHolder.remove());
+                return webFilterChain.filter(serverWebExchange);
             }
         }
 
@@ -99,9 +97,7 @@ public class DynamicRouteScgFilter implements WebFilter, Ordered {
         definition.setPredicates(Arrays.asList(predicate));
         dynamicRouteService.add(definition);
 
-        return webFilterChain.filter(serverWebExchange)
-                .doOnError(throwable -> LOG.error("handle DynamicRouteFilter[{}] error.", MetadataContextHolder.get(), throwable))
-                .doFinally((type) -> MetadataContextHolder.remove());
+        return webFilterChain.filter(serverWebExchange);
     }
 
 }
