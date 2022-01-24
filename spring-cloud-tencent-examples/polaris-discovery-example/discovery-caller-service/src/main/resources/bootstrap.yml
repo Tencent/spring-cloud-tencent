@@ -7,6 +7,10 @@ spring:
   cloud:
     polaris:
       address: grpc://127.0.0.1:8091
+      discovery:
+        heartbeat:
+          enabled: true
+        health-check-url: http://localhost:48080/discovery/service/caller/healthCheck
     consul:
       port: 8500
       host: 127.0.0.1
