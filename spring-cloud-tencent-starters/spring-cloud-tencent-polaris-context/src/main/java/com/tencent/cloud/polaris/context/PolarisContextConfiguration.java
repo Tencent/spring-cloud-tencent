@@ -37,6 +37,8 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(PolarisContextProperties.class)
 public class PolarisContextConfiguration {
 
+    private static final String  ADDRESS_SEPARATOR = ",";
+
     @Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
     @ConditionalOnMissingBean
     public SDKContext polarisContext(PolarisContextProperties properties) throws PolarisException {
@@ -57,11 +59,24 @@ public class PolarisContextConfiguration {
         @Override
         public void modify(ConfigurationImpl configuration) {
             if (!StringUtils.isBlank(properties.getAddress())) {
-                URI uri = URI.create(properties.getAddress());
-                List<String> addresses = new ArrayList<>();
-                addresses.add(uri.getAuthority());
-                configuration.getGlobal().getServerConnector().setAddresses(addresses);
+                configuration.getGlobal().getServerConnector().setAddresses(getAddressList(properties.getAddress()));
             }
+        }
+
+        private List<String> getAddressList(String addressInfo) {
+            List<String> addressList = new ArrayList<>();
+            //if not contain ',' then set one ip
+            if (!properties.getAddress().contains(ADDRESS_SEPARATOR)) {
+                URI uri = URI.create(addressInfo.trim());
+                addressList.add(uri.getAuthority());
+            } else {
+                String[] addresses = addressInfo.split(ADDRESS_SEPARATOR);
+                for (String address : addresses) {
+                    URI uri = URI.create(address.trim());
+                    addressList.add(uri.getAuthority());
+                }
+            }
+            return addressList;
         }
     }
 
