@@ -65,16 +65,10 @@ public class PolarisContextConfiguration {
 
         private List<String> getAddressList(String addressInfo) {
             List<String> addressList = new ArrayList<>();
-            //if not contain ',' then set one ip
-            if (!properties.getAddress().contains(ADDRESS_SEPARATOR)) {
-                URI uri = URI.create(addressInfo.trim());
+            String[] addresses = addressInfo.split(ADDRESS_SEPARATOR);
+            for (String address : addresses) {
+                URI uri = URI.create(address.trim());
                 addressList.add(uri.getAuthority());
-            } else {
-                String[] addresses = addressInfo.split(ADDRESS_SEPARATOR);
-                for (String address : addresses) {
-                    URI uri = URI.create(address.trim());
-                    addressList.add(uri.getAuthority());
-                }
             }
             return addressList;
         }
