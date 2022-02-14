@@ -181,7 +181,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
             @Override
             public void run() {
                 try {
-                    String healthCheckUrl = polarisProperties.getHealthCheckUrl();
+                    String healthCheckUrl = String.format("http://%s:%s%s", heartbeatRequest.getHost(), heartbeatRequest.getPort(), polarisProperties.getHealthCheckUrl());
                     //先判断是否配置了health-check-url，如果配置了，需要先进行服务实例健康检查，如果健康检查通过，则进行心跳上报，如果不通过，则不上报心跳
                     if (Strings.isNotEmpty(healthCheckUrl) && !OkHttpUtil.get(healthCheckUrl, null)){
                         log.error("polaris health check failed");

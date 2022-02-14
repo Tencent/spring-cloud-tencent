@@ -10,7 +10,7 @@ spring:
       discovery:
         heartbeat:
           enabled: true
-        health-check-url: http://localhost:48080/discovery/service/caller/healthCheck
+        health-check-url: /discovery/service/caller/healthCheck
     consul:
       port: 8500
       host: 127.0.0.1
