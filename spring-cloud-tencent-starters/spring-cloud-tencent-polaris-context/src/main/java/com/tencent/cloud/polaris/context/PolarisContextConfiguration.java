@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(PolarisContextProperties.class)
 public class PolarisContextConfiguration {
 
-    private static final String  ADDRESS_SEPARATOR = ",";
+    private static final String ADDRESS_SEPARATOR = ",";
 
     @Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
     @ConditionalOnMissingBean
