@@ -23,10 +23,10 @@ import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.pojo.ServiceInfo;
-import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
-import com.tencent.polaris.api.rpc.GetInstancesRequest;
-import com.tencent.polaris.api.rpc.InstancesResponse;
+import com.tencent.polaris.api.rpc.*;
+
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -91,6 +91,20 @@ public class PolarisDiscoveryHandler {
 
     public ProviderAPI getProviderAPI() {
         return providerAPI;
+    }
+
+    /**
+     * Return all service for given namespace
+     *
+     * @return namespace下的服务列表
+     */
+    public ServicesResponse GetServices() {
+        String namespace = polarisProperties.getNamespace();
+        Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
+        GetServicesRequest request = new GetServicesRequest();
+        request.setNamespace(namespace);
+        request.setMetadata(allTransitiveCustomMetadata);
+        return polarisConsumer.getServices(request);
     }
 
 }

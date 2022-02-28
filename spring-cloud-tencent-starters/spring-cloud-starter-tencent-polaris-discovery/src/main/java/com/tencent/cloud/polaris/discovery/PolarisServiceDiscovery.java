@@ -17,15 +17,21 @@
 
 package com.tencent.cloud.polaris.discovery;
 
+import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.cloud.polaris.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
+import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.tencent.polaris.api.rpc.ServicesResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 
 /**
@@ -57,13 +63,18 @@ public class PolarisServiceDiscovery {
     }
 
     /**
-     * TODO Return the names of all services.
+     * Return the names of all services.
      *
      * @return list of service names
      * @throws PolarisException polarisException
      */
     public List<String> getServices() throws PolarisException {
-        return Collections.emptyList();
+        return polarisDiscoveryHandler.
+                GetServices().
+                getServices().
+                stream().
+                map(ServiceInfo::getService).
+                collect(Collectors.toList());
     }
 
 }
