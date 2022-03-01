@@ -100,7 +100,7 @@ public class PolarisDiscoveryHandler {
     /**
      * Return all service for given namespace
      *
-     * @return namespace下的服务列表
+     * @return service list
      */
     public ServicesResponse GetServices() {
         String namespace = polarisProperties.getNamespace();
