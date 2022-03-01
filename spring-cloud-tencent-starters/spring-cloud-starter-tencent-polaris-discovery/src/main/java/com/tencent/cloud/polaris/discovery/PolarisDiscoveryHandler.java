@@ -100,10 +100,8 @@ public class PolarisDiscoveryHandler {
      */
     public ServicesResponse GetServices() {
         String namespace = polarisProperties.getNamespace();
-        Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
         GetServicesRequest request = new GetServicesRequest();
         request.setNamespace(namespace);
-        request.setMetadata(allTransitiveCustomMetadata);
         return polarisConsumer.getServices(request);
     }
 
