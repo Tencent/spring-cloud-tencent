@@ -23,7 +23,11 @@ import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.pojo.ServiceInfo;
-import com.tencent.polaris.api.rpc.*;
+import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
+import com.tencent.polaris.api.rpc.GetInstancesRequest;
+import com.tencent.polaris.api.rpc.InstancesResponse;
+import com.tencent.polaris.api.rpc.ServicesResponse;
+import com.tencent.polaris.api.rpc.GetServicesRequest;
 
 import java.util.Map;
 

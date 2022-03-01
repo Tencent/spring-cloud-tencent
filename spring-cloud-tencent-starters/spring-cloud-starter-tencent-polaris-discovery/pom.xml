@@ -35,7 +35,6 @@
         <dependency>
             <groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-discovery-factory</artifactId>
-            <version>1.2.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
