@@ -94,8 +94,7 @@ public class PolarisServiceDiscoveryTest {
         this.contextRunner.run(context -> {
             PolarisServiceDiscovery polarisServiceDiscovery = context.getBean(PolarisServiceDiscovery.class);
             List<String> services = polarisServiceDiscovery.getServices();
-
-            assertThat(services.size()).isEqualTo(0);
+            assertThat(services.size()).isEqualTo(1);
         });
 
     }
