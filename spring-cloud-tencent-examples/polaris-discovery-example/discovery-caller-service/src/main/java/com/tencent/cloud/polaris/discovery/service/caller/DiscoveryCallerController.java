@@ -59,4 +59,14 @@ public class DiscoveryCallerController {
         return restTemplate.getForObject("http://DiscoveryCalleeService/discovery/service/callee/info", String.class);
     }
 
+
+    /**
+     * health check
+     *
+     * @return 信息
+     */
+    @GetMapping("/healthCheck")
+    public String healthCheck() {
+        return "pk ok";
+    }
 }
