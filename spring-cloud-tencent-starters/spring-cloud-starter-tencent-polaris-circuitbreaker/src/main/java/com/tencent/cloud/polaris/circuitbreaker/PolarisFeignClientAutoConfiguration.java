@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
+
+import com.tencent.cloud.common.constant.ContextConstant.ModifierOrder;
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProcessor;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
@@ -31,8 +34,6 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
  * Configuration for Polaris {@link feign.Feign} which can automatically bring in the call results for reporting
@@ -70,6 +71,11 @@ public class PolarisFeignClientAutoConfiguration {
         public void modify(ConfigurationImpl configuration) {
             //开启熔断配置
             configuration.getConsumer().getCircuitBreaker().setEnable(true);
+        }
+
+        @Override
+        public int getOrder() {
+            return ModifierOrder.CIRCUIT_BREAKER_ORDER;
         }
     }
 }
