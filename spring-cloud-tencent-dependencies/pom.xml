@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://maven.apache.org/POM/4.0.0"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.springframework.cloud</groupId>
@@ -62,8 +62,8 @@
     </developers>
 
     <properties>
-        <revision>1.1.4.Hoxton.SR9-SNAPSHOT</revision>
-        <polaris.version>1.2.4-SNAPSHOT</polaris.version>
+        <revision>1.1.4.Hoxton.SR9</revision>
+        <polaris.version>1.2.4</polaris.version>
         <tomcat.version>10.0.0-M6</tomcat.version>
         <powermock.version>2.0.0</powermock.version>
 
