@@ -22,7 +22,9 @@ import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.factory.ConfigAPIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -67,6 +69,8 @@ public class PolarisContextProperties {
         String defaultHost = getHost();
         configuration.getGlobal().getAPI().setBindIP(defaultHost);
         Collection<PolarisConfigModifier> modifiers = modifierList;
+        modifiers = modifiers.stream().sorted(Comparator.comparingInt(PolarisConfigModifier::getOrder))
+                .collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(modifiers)) {
             for (PolarisConfigModifier modifier : modifiers) {
                 modifier.modify(configuration);

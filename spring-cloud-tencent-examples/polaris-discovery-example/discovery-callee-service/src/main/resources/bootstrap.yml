@@ -13,9 +13,7 @@ spring:
       enabled: true
       discovery:
         register: true
-        health-check-path: /actuator/health
-        health-check-interval: 10s
-        instance-id: ${spring.application.name}:${server.port}
+        instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
         enabled: true
         service-name: ${spring.application.name}
         ip-address: localhost
