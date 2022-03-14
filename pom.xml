@@ -76,11 +76,22 @@
         <!-- Spring Cloud -->
         <spring.cloud.version>Hoxton.SR9</spring.cloud.version>
 
+        <!-- Dependencies -->
+        <logback.version>1.2.7</logback.version>
+
         <!-- Maven Plugin Versions -->
         <jacoco.version>0.8.3</jacoco.version>
         <maven-source-plugin.version>3.2.0</maven-source-plugin.version>
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+    </dependencies>
 
     <dependencyManagement>
         <dependencies>
