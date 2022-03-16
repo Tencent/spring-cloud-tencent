@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.core.env.Environment;
 
 /**
@@ -73,6 +74,11 @@ public class PolarisProperties {
     private int port;
 
     /**
+     * Ip address to be registered.
+     */
+    private String ipAddress;
+
+    /**
      * 是否开启负载均衡
      */
     @Value("${spring.cloud.polaris.discovery.loadbalancer.enabled:#{true}}")
@@ -106,6 +112,12 @@ public class PolarisProperties {
 
     @Autowired
     private Environment environment;
+
+    public PolarisProperties(InetUtils inetUtils) {
+        if (inetUtils != null) {
+            this.ipAddress = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
+        }
+    }
 
     /**
      * init properties
@@ -218,6 +230,14 @@ public class PolarisProperties {
         this.port = port;
     }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
     public String getHealthCheckUrl() {
         return healthCheckUrl;
     }
@@ -237,6 +257,7 @@ public class PolarisProperties {
                 ", version='" + version + '\'' +
                 ", protocol='" + protocol + '\'' +
                 ", port=" + port +
+                ", ipAddress='" + ipAddress + '\'' +
                 ", loadbalancerEnabled=" + loadbalancerEnabled +
                 ", policy='" + policy + '\'' +
                 ", registerEnabled=" + registerEnabled +

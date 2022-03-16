@@ -24,12 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.springframework.cloud.commons.util.InetUtils;
+import org.springframework.cloud.commons.util.InetUtilsProperties;
 
 public class PolarisPropertiesTest {
 
     @Test
     public void testInitAndGetSet() {
-        PolarisProperties temp = new PolarisProperties();
+        PolarisProperties temp = new PolarisProperties(new InetUtils(new InetUtilsProperties()));
         try {
             temp.setNamespace(NAMESPACE_TEST);
             temp.getNamespace();

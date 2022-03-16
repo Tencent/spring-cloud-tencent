@@ -48,6 +48,9 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
     @Override
     public String getHost() {
+        if (StringUtils.isNotBlank(polarisProperties.getIpAddress())) {
+            return polarisProperties.getIpAddress();
+        }
         return polarisContext.getConfig().getGlobal().getAPI().getBindIP();
     }
 
