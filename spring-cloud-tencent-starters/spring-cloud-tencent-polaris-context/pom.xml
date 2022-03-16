@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>spring-cloud-tencent-polaris-context</artifactId>
-    <name>Spring Cloud Tencent Polaris SDKContext</name>
+    <name>Spring Cloud Tencent Polaris SDK Context</name>
 
     <dependencies>
         <!-- Spring Cloud Tencent dependencies start -->

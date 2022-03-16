@@ -25,6 +25,7 @@ import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -41,8 +42,8 @@ public class PolarisDiscoveryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public PolarisProperties polarisDiscoveryProperties() {
-        return new PolarisProperties();
+    public PolarisProperties polarisDiscoveryProperties(InetUtils inetUtils) {
+        return new PolarisProperties(inetUtils);
     }
 
     @Bean(name = "polarisProvider")

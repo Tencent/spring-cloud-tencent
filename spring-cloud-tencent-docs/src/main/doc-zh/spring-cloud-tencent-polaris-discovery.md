@@ -91,6 +91,7 @@ spring:
 | spring.cloud.polaris.discovery.instance-enabled | true                       | 否    | 当前微服务实例是否可以被访问            |
 | spring.cloud.polaris.discovery.token            | 无                          | 否    | 鉴权Token                   |
 | spring.cloud.polaris.discovery.version          | null                       | 否    | 微服务版本                     |
+| spring.cloud.polaris.discovery.ip-address       | null                       | 否    | 注册的IP地址                   |
 | spring.cloud.polaris.protocol                   | null                       | 否    | 微服务协议类型                   |
 | spring.cloud.polaris.weight                     | 100                        | 否    | 微服务权重                     |
 | spring.cloud.loadbalancer.polaris.enabled       | true                       | 否    | 是否开启负载均衡                  |

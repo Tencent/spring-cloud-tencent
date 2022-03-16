@@ -88,6 +88,7 @@ Taking examples like random weight policy, you can add weight at Polaris control
 | spring.cloud.polaris.discovery.instance-enabled | true                       | false           | can current Microservice be visited                  |
 | spring.cloud.polaris.discovery.token            | false                      | false           | Authentication Token                                 |
 | spring.cloud.polaris.discovery.version          | null                       | false           | Microservice Version                                 |
+| spring.cloud.polaris.discovery.ip-address       | null                       | false           | Ip address to be registered                          |
 | spring.cloud.polaris.protocol                   | null                       | false           | Microservice agreement type                          |
 | spring.cloud.polaris.weight                     | 100                        | false           | Microservice weight                                  |
 | spring.cloud.loadbalancer.polaris.enabled       | true                       | false           | whether to open CLB                                  |
