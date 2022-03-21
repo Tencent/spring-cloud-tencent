@@ -41,7 +41,6 @@
         <module>spring-cloud-tencent-dependencies</module>
         <module>spring-cloud-tencent-starters</module>
         <module>spring-cloud-tencent-examples</module>
-        <module>spring-cloud-tencent-docs</module>
         <module>spring-cloud-tencent-coverage</module>
     </modules>
 
