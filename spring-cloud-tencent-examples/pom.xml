@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://maven.apache.org/POM/4.0.0"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>spring-cloud-tencent</artifactId>
@@ -20,7 +20,6 @@
         <module>polaris-ratelimit-example</module>
         <module>polaris-circuitbreaker-example</module>
         <module>polaris-gateway-example</module>
-        <module>polaris-quickstart-example</module>
     </modules>
 
     <properties>
