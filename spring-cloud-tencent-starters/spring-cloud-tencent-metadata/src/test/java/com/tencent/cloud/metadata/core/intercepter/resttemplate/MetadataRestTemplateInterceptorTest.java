@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.metadata.core.intercepter.resttemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.constant.MetadataConstant;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
@@ -65,14 +67,15 @@ public class MetadataRestTemplateInterceptorTest {
     private int localServerPort;
 
     @Test
-    public void test1() {
+    public void test1() throws JsonProcessingException {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
         String metadata = restTemplate.exchange("http://localhost:" + localServerPort + "/test",
                 HttpMethod.GET, httpEntity, String.class).getBody();
-        Assertions.assertThat(metadata).isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
-                + "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}");
+        ObjectMapper mapper = new ObjectMapper();
+        Assertions.assertThat(mapper.readTree(metadata)).isEqualTo(mapper.readTree("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
+                + "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}"));
         Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
         Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
         Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a")).isEqualTo("11");

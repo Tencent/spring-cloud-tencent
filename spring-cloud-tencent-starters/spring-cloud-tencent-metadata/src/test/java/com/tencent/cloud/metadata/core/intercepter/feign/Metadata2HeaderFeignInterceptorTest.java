@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.metadata.core.intercepter.feign;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.constant.MetadataConstant;
 import com.tencent.cloud.metadata.context.MetadataContextHolder;
@@ -61,10 +63,11 @@ public class Metadata2HeaderFeignInterceptorTest {
     private TestApplication.TestFeign testFeign;
 
     @Test
-    public void test1() {
+    public void test1() throws JsonProcessingException {
         String metadata = testFeign.test();
-        Assertions.assertThat(metadata).isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
-                + "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}");
+        ObjectMapper mapper = new ObjectMapper();
+        Assertions.assertThat(mapper.readTree(metadata)).isEqualTo(mapper.readTree("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
+                + "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}"));
         Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
         Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
         Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a")).isEqualTo("11");
