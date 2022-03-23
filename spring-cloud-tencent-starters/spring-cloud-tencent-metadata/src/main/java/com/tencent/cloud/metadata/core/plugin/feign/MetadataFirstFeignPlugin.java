@@ -27,8 +27,6 @@ import com.tencent.cloud.metadata.context.MetadataContextHolder;
 import feign.Feign;
 import feign.MethodMetadata;
 import feign.RequestTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Plugin used for adding the metadata in http headers from context when web client is Feign.
@@ -36,8 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author Haotian Zhang
  */
 public class MetadataFirstFeignPlugin implements PluggableFeignPlugin {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MetadataFirstFeignPlugin.class);
 
     @Override
     public int getOrder() {

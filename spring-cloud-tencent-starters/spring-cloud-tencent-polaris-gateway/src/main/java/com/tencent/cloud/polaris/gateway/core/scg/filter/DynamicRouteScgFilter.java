@@ -18,14 +18,11 @@
 package com.tencent.cloud.polaris.gateway.core.scg.filter;
 
 import com.tencent.cloud.metadata.constant.MetadataConstant;
-import com.tencent.cloud.metadata.context.MetadataContextHolder;
 import com.tencent.cloud.polaris.gateway.core.route.DynamicRouteService;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.config.GatewayProperties;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
@@ -44,8 +41,6 @@ import reactor.core.publisher.Mono;
  * @author kan peng
  */
 public class DynamicRouteScgFilter implements WebFilter, Ordered {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DynamicRouteScgFilter.class);
 
     @Autowired
     private DynamicRouteService dynamicRouteService;

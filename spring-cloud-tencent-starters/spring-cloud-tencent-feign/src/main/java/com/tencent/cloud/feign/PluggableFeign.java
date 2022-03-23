@@ -23,14 +23,6 @@ import feign.Feign;
 import feign.InvocationHandlerFactory;
 import feign.Target;
 import feign.hystrix.FallbackFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.cloud.openfeign.FeignContext;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.StringUtils;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,6 +30,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.beans.BeansException;
+import org.springframework.cloud.openfeign.FeignContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.StringUtils;
 
 /**
  * Pluggable Feign builder.
@@ -45,8 +42,6 @@ import java.util.stream.Collectors;
  * @author Haotian Zhang
  */
 public class PluggableFeign {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PluggableFeign.class);
 
     private PluggableFeign() {
     }
