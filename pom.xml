@@ -84,14 +84,6 @@
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-    </dependencies>
-
     <dependencyManagement>
         <dependencies>
             <!-- Spring Boot Dependencies -->
@@ -119,6 +111,12 @@
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

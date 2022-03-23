@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -41,8 +39,6 @@ import org.springframework.util.StringUtils;
  * @author Haotian Zhang
  */
 public class MetadataRestTemplateInterceptor implements ClientHttpRequestInterceptor, Ordered {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MetadataRestTemplateInterceptor.class);
 
     @Override
     public int getOrder() {
