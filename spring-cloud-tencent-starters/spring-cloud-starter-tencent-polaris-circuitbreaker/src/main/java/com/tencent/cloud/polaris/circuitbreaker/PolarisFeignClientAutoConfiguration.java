@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import com.tencent.cloud.constant.ContextConstant;
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProcessor;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
@@ -70,6 +71,11 @@ public class PolarisFeignClientAutoConfiguration {
         public void modify(ConfigurationImpl configuration) {
             //开启熔断配置
             configuration.getConsumer().getCircuitBreaker().setEnable(true);
+        }
+
+        @Override
+        public int getOrder() {
+            return ContextConstant.ModifierOrder.CIRCUIT_BREAKER_ORDER;
         }
     }
 }

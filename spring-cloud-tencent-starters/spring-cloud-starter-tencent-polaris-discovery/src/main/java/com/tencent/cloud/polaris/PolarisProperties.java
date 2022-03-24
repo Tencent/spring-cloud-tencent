@@ -96,6 +96,12 @@ public class PolarisProperties {
     @Value("${spring.cloud.polaris.discovery.heartbeat.enabled:#{false}}")
     private Boolean heartbeatEnabled = true;
 
+    /**
+     * Custom health check url to override default
+     */
+    @Value("${spring.cloud.polaris.discovery.health-check-url:}")
+    private String healthCheckUrl;
+
     @Autowired
     private Environment environment;
 
@@ -210,6 +216,14 @@ public class PolarisProperties {
         this.port = port;
     }
 
+    public String getHealthCheckUrl() {
+        return healthCheckUrl;
+    }
+
+    public void setHealthCheckUrl(String healthCheckUrl) {
+        this.healthCheckUrl = healthCheckUrl;
+    }
+    
     @Override
     @SuppressWarnings("checkstyle:all")
     public String toString() {
@@ -225,6 +239,7 @@ public class PolarisProperties {
                 ", policy='" + policy + '\'' +
                 ", registerEnabled=" + registerEnabled +
                 ", heartbeatEnabled=" + heartbeatEnabled +
+                ", healthCheckUrl=" + healthCheckUrl +
                 ", environment=" + environment +
                 '}';
     }

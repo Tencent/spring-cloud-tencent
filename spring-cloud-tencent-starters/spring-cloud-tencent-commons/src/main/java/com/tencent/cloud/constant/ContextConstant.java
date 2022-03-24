@@ -15,30 +15,33 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context;
-
-import com.tencent.polaris.factory.config.ConfigurationImpl;
+package com.tencent.cloud.constant;
 
 /**
- * Modifier interface for polaris configuration.
+ * Constant for Context.
  *
- * @author Haotian Zhang
+ * @author skyehtzhang
  */
-public interface PolarisConfigModifier {
+public interface ContextConstant {
 
     /**
-     * 修改配置对象
-     * Modify configuration.
-     *
-     * @param configuration 配置对象
-     * @param configuration
+     * Order of configuration modifier.
      */
-    void modify(ConfigurationImpl configuration);
+    interface ModifierOrder {
 
-    /**
-     * Get modifier order for sorting.
-     *
-     * @return order
-     */
-    int getOrder();
+        /**
+         * First modifier order.
+         */
+        Integer FIRST = Integer.MIN_VALUE;
+
+        /**
+         * Last modifier order.
+         */
+        Integer LAST = Integer.MAX_VALUE;
+
+        /**
+         * Order of circuit breaker configuration modifier.
+         */
+        Integer CIRCUIT_BREAKER_ORDER = 1;
+    }
 }

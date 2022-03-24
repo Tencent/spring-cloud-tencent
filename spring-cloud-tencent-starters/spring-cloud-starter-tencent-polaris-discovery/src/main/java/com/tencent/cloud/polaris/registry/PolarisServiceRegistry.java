@@ -21,6 +21,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
 import com.tencent.cloud.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.PolarisProperties;
+import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
@@ -33,6 +34,8 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -177,6 +180,21 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
     public void heartbeat(InstanceHeartbeatRequest heartbeatRequest) {
         heartbeatExecutor.scheduleWithFixedDelay(() -> {
             try {
+                String healthCheckEndpoint = polarisProperties.getHealthCheckUrl();
+                //先判断是否配置了health-check-url，如果配置了，需要先进行服务实例健康检查，如果健康检查通过，则进行心跳上报，如果不通过，则不上报心跳
+                if (Strings.isNotEmpty(healthCheckEndpoint)) {
+                    if (!healthCheckEndpoint.startsWith("/")) {
+                        healthCheckEndpoint = "/" + healthCheckEndpoint;
+                    }
+
+                    String healthCheckUrl = String.format("http://%s:%s%s", heartbeatRequest.getHost(), heartbeatRequest.getPort(), healthCheckEndpoint);
+
+                    if (!OkHttpUtil.get(healthCheckUrl, null)){
+                        log.error("backend service health check failed. health check endpoint = {}", healthCheckEndpoint);
+                        return;
+                    }
+                }
+
                 polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
             } catch (PolarisException e) {
                 log.error("polaris heartbeat[{}]", e.getCode(), e);

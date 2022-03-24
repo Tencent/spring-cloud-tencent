@@ -32,15 +32,22 @@
             <artifactId>polaris-plugin-api</artifactId>
         </dependency>
 
+        <!-- 支持多注册中心 -->
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>connector-composite</artifactId>
+        </dependency>
+
+        <!-- 北极星注册中心 -->
         <dependency>
             <groupId>com.tencent.polaris</groupId>
             <artifactId>connector-polaris-grpc</artifactId>
         </dependency>
 
-        <!--依赖resCache插件-->
+        <!-- Consul 注册中心 -->
         <dependency>
             <groupId>com.tencent.polaris</groupId>
-            <artifactId>resource-cache-memory</artifactId>
+            <artifactId>connector-consul</artifactId>
         </dependency>
 
         <!--依赖flowCache插件-->

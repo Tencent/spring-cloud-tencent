@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-build</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.4</version>
         <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -74,7 +74,7 @@
         <revision>1.0.0.2020-SNAPSHOT</revision>
 
         <!-- Spring Cloud -->
-        <spring.cloud.version>2020.0.1</spring.cloud.version>
+        <spring.cloud.version>2020.0.5</spring.cloud.version>
 
         <!-- Maven Plugin Versions -->
         <jacoco.version>0.8.3</jacoco.version>

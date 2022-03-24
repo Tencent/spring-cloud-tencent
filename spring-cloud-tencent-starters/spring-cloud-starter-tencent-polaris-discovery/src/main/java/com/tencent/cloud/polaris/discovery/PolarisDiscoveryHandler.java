@@ -25,7 +25,10 @@ import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
 import com.tencent.polaris.api.rpc.GetInstancesRequest;
+import com.tencent.polaris.api.rpc.GetServicesRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
+import com.tencent.polaris.api.rpc.ServicesResponse;
+
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,4 +96,15 @@ public class PolarisDiscoveryHandler {
         return providerAPI;
     }
 
+    /**
+     * Return all service for given namespace
+     *
+     * @return service list
+     */
+    public ServicesResponse getServices() {
+        String namespace = polarisProperties.getNamespace();
+        GetServicesRequest request = new GetServicesRequest();
+        request.setNamespace(namespace);
+        return polarisConsumer.getServices(request);
+    }
 }
