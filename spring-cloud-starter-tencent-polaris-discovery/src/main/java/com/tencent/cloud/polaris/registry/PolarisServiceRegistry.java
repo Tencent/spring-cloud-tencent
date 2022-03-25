@@ -208,7 +208,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			catch (Exception e) {
 				log.error("polaris heartbeat runtime error", e);
 			}
-		}, 0, ttl, TimeUnit.SECONDS);
+		}, ttl, ttl, TimeUnit.SECONDS);
 	}
 
 }
