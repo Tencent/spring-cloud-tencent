@@ -20,6 +20,8 @@ package com.tencent.cloud.metadata.core.intercepter.feign;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.constant.MetadataConstant;
@@ -63,24 +65,17 @@ public class Metadata2HeaderFeignInterceptorTest {
 	private TestApplication.TestFeign testFeign;
 
 	@Test
-	public void test1() {
+	public void test1() throws JsonProcessingException {
 		String metadata = testFeign.test();
-		Assertions.assertThat(metadata).isEqualTo(
-				"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
-						+ "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a"))
-				.isEqualTo("11");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b"))
-				.isEqualTo("22");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c"))
-				.isEqualTo("33");
+		ObjectMapper mapper = new ObjectMapper();
+		Assertions.assertThat(mapper.readTree(metadata))
+				.isEqualTo(mapper.readTree("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
+						+ "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}"));
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a")).isEqualTo("11");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b")).isEqualTo("22");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c")).isEqualTo("33");
 	}
 
 	@SpringBootApplication
@@ -89,22 +84,18 @@ public class Metadata2HeaderFeignInterceptorTest {
 	protected static class TestApplication {
 
 		@RequestMapping("/test")
-		public String test(
-				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
+		public String test(@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
 				throws UnsupportedEncodingException {
-			String systemMetadataStr = JacksonUtils
-					.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
+			String systemMetadataStr = JacksonUtils.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
 			return URLDecoder.decode(customMetadataStr, "UTF-8") + systemMetadataStr;
 		}
 
 		@FeignClient(name = "test-feign", url = "http://localhost:8081")
 		public interface TestFeign {
 
-			@RequestMapping(value = "/test",
-					headers = { MetadataConstant.HeaderName.CUSTOM_METADATA
-							+ "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}" })
+			@RequestMapping(value = "/test", headers = {MetadataConstant.HeaderName.CUSTOM_METADATA + "={\"a\":\"11"
+					+ "\",\"b\":\"22\",\"c\":\"33\"}"})
 			String test();
-
 		}
 
 		@Configuration
@@ -115,9 +106,7 @@ public class Metadata2HeaderFeignInterceptorTest {
 				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
 						"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
 			}
-
 		}
 
 	}
-
 }

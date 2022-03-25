@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import com.tencent.cloud.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
@@ -32,6 +33,7 @@ import com.tencent.polaris.api.rpc.InstanceHeartbeatRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.util.NamedThreadFactory;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +49,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(PolarisServiceRegistry.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
 	private static final int ttl = 5;
 
@@ -60,15 +61,14 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	private final ScheduledExecutorService heartbeatExecutor;
 
-	public PolarisServiceRegistry(PolarisProperties polarisProperties,
-			PolarisDiscoveryHandler polarisDiscoveryHandler,
+	public PolarisServiceRegistry(PolarisProperties polarisProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
 			MetadataLocalProperties metadataLocalProperties) {
 		this.polarisProperties = polarisProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.metadataLocalProperties = metadataLocalProperties;
 		if (polarisProperties.isHeartbeatEnabled()) {
-			ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(
-					0, new NamedThreadFactory("spring-cloud-heartbeat"));
+			ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(0,
+					new NamedThreadFactory("spring-cloud-heartbeat"));
 			heartbeatExecutor.setMaximumPoolSize(1);
 			this.heartbeatExecutor = heartbeatExecutor;
 		}
@@ -101,20 +101,19 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			providerClient.register(instanceRegisterRequest);
 			log.info("polaris registry, {} {} {}:{} {} register finished",
-					polarisProperties.getNamespace(), registration.getServiceId(),
-					registration.getHost(), registration.getPort(),
-					metadataLocalProperties.getContent());
+					polarisProperties.getNamespace(),
+					registration.getServiceId(), registration.getHost(),
+					registration.getPort(), metadataLocalProperties.getContent());
 
 			if (null != heartbeatExecutor) {
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
 				BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
-				// 注册成功后开始启动心跳线程
+				//注册成功后开始启动心跳线程
 				heartbeat(heartbeatRequest);
 			}
 		}
 		catch (Exception e) {
-			log.error("polaris registry, {} register failed...{},",
-					registration.getServiceId(), registration, e);
+			log.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
 			rethrowRuntimeException(e);
 		}
 	}
@@ -141,8 +140,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			providerClient.deRegister(deRegisterRequest);
 		}
 		catch (Exception e) {
-			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration,
-					e);
+			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
 		}
 		finally {
 			if (null != heartbeatExecutor) {
@@ -165,8 +163,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	@Override
 	public Object getStatus(Registration registration) {
 		String serviceName = registration.getServiceId();
-		InstancesResponse instancesResponse = polarisDiscoveryHandler
-				.getInstances(serviceName);
+		InstancesResponse instancesResponse = polarisDiscoveryHandler.getInstances(serviceName);
 		Instance[] instances = instancesResponse.getInstances();
 		if (null == instances || instances.length == 0) {
 			return null;
@@ -182,30 +179,34 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	/**
 	 * Start the heartbeat thread.
+	 *
 	 * @param heartbeatRequest heartbeat request
 	 */
 	public void heartbeat(InstanceHeartbeatRequest heartbeatRequest) {
-		heartbeatExecutor.scheduleWithFixedDelay(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					// String healthCheckUrl = String.format("http://%s:%s%s",
-					// heartbeatRequest.getHost(), heartbeatRequest.getPort(),
-					// polarisProperties.getHealthCheckUrl());
-					// //先判断是否配置了health-check-url，如果配置了，需要先进行服务实例健康检查，如果健康检查通过，则进行心跳上报，如果不通过，则不上报心跳
-					// if (Strings.isNotEmpty(healthCheckUrl) &&
-					// !OkHttpUtil.get(healthCheckUrl, null)) {
-					// log.error("polaris health check failed");
-					// return;
-					// }
-					polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
+		heartbeatExecutor.scheduleWithFixedDelay(() -> {
+			try {
+				String healthCheckEndpoint = polarisProperties.getHealthCheckUrl();
+				//先判断是否配置了health-check-url，如果配置了，需要先进行服务实例健康检查，如果健康检查通过，则进行心跳上报，如果不通过，则不上报心跳
+				if (Strings.isNotEmpty(healthCheckEndpoint)) {
+					if (!healthCheckEndpoint.startsWith("/")) {
+						healthCheckEndpoint = "/" + healthCheckEndpoint;
+					}
+
+					String healthCheckUrl = String.format("http://%s:%s%s", heartbeatRequest.getHost(), heartbeatRequest.getPort(), healthCheckEndpoint);
+
+					if (!OkHttpUtil.get(healthCheckUrl, null)) {
+						log.error("backend service health check failed. health check endpoint = {}", healthCheckEndpoint);
+						return;
+					}
 				}
-				catch (PolarisException e) {
-					log.error("polaris heartbeat[{}]", e.getCode(), e);
-				}
-				catch (Exception e) {
-					log.error("polaris heartbeat runtime error", e);
-				}
+
+				polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
+			}
+			catch (PolarisException e) {
+				log.error("polaris heartbeat[{}]", e.getCode(), e);
+			}
+			catch (Exception e) {
+				log.error("polaris heartbeat runtime error", e);
 			}
 		}, 0, ttl, TimeUnit.SECONDS);
 	}
