@@ -24,16 +24,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * @author Haotian Zhang
  */
-@FeignClient(value = "DiscoveryCalleeService", fallback = DiscoveryCalleeServiceCallback.class)
+@FeignClient(value = "DiscoveryCalleeService",
+		fallback = DiscoveryCalleeServiceCallback.class)
 public interface DiscoveryCalleeService {
 
-    /**
-     * 求和计算
-     *
-     * @param value1 值1
-     * @param value2 值2
-     * @return 总值
-     */
-    @GetMapping("/discovery/service/callee/sum")
-    int sum(@RequestParam("value1") final int value1, @RequestParam("value2") final int value2);
+	/**
+	 * 求和计算
+	 * @param value1 值1
+	 * @param value2 值2
+	 * @return 总值
+	 */
+	@GetMapping("/discovery/service/callee/sum")
+	int sum(@RequestParam("value1") int value1, @RequestParam("value2") int value2);
+
 }

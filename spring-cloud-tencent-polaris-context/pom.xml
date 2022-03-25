@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>spring-cloud-tencent</artifactId>
+		<groupId>com.tencent.cloud</groupId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>spring-cloud-tencent-polaris-context</artifactId>
+	<name>Spring Cloud Tencent Polaris SDK Context</name>
+
+	<dependencies>
+		<!-- Spring Cloud Tencent dependencies start -->
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-commons</artifactId>
+        </dependency>
+        <!-- Spring Cloud Tencent dependencies end -->
+
+        <!-- Polaris dependencies start -->
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>polaris-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>polaris-plugin-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>connector-polaris-grpc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>connector-polaris-grpc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>connector-consul</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>connector-composite</artifactId>
+        </dependency>
+
+        <!--依赖resCache插件-->
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>registry-memory</artifactId>
+        </dependency>
+
+        <!--依赖flowCache插件-->
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>flow-cache-expired</artifactId>
+        </dependency>
+
+        <!--依赖router插件-->
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>router-isolated</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>router-healthy</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>router-rule</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>router-nearby</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>router-metadata</artifactId>
+        </dependency>
+
+        <!--依赖负载均衡插件-->
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>loadbalancer-random</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>loadbalancer-ringhash</artifactId>
+        </dependency>
+        <!-- Polaris dependencies end -->
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-commons</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

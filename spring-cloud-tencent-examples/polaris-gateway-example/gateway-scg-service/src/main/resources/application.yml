@@ -5,14 +5,14 @@ spring:
   application:
     name: GatewayScgService
   cloud:
-    polaris:
-      address: grpc://127.0.0.1:8091
     tencent:
       metadata:
         content:
           a: 1
         transitive:
           - a
+    polaris:
+      address: grpc://127.0.0.1:8091
     gateway:
       discovery:
         locator:
@@ -28,4 +28,4 @@ spring:
 
 logging:
   level:
-    org.springframework.cloud.gateway: trace
+    org.springframework.cloud.gateway: info

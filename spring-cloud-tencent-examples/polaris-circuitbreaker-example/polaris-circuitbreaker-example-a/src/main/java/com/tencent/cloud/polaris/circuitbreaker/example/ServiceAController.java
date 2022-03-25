@@ -33,41 +33,39 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/example/service/a")
 public class ServiceAController {
 
-    private final ProviderB polarisServiceB;
+	private final ProviderB polarisServiceB;
 
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
-    public ServiceAController(ProviderB polarisServiceB, RestTemplate restTemplate) {
-        this.polarisServiceB = polarisServiceB;
-        this.restTemplate = restTemplate;
-    }
+	public ServiceAController(ProviderB polarisServiceB, RestTemplate restTemplate) {
+		this.polarisServiceB = polarisServiceB;
+		this.restTemplate = restTemplate;
+	}
 
-    /**
-     * 获取当前服务的信息
-     *
-     * @return 返回服务信息
-     * @throws Exception
-     */
-    @GetMapping("/info")
-    public String info() throws Exception {
-        return "hello world ! I'am a service";
-    }
+	/**
+	 * 获取当前服务的信息
+	 * @return 返回服务信息
+	 */
+	@GetMapping("/info")
+	public String info() {
+		return "hello world ! I'am a service";
+	}
 
-    /**
-     * 获取B服务的信息
-     *
-     * @return 返回B服务的信息
-     * @throws Exception
-     */
-    @GetMapping("/getBServiceInfo")
-    public String getBServiceInfo() throws Exception {
-        return polarisServiceB.info();
-    }
+	/**
+	 * 获取B服务的信息
+	 * @return 返回B服务的信息
+	 */
+	@GetMapping("/getBServiceInfo")
+	public String getBServiceInfo() {
+		return polarisServiceB.info();
+	}
 
-    @RequestMapping(value = "/testRest", method = RequestMethod.GET)
-    public String testRest() {
-        ResponseEntity<String> entity = restTemplate.getForEntity("http://polaris-circuitbreaker-example-b/example/service/b/info", String.class);
-        return entity.getBody();
-    }
+	@RequestMapping(value = "/testRest", method = RequestMethod.GET)
+	public String testRest() {
+		ResponseEntity<String> entity = restTemplate.getForEntity(
+				"http://polaris-circuitbreaker-example-b/example/service/b/info",
+				String.class);
+		return entity.getBody();
+	}
 
 }

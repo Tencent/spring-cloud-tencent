@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    polaris:
+      address: grpc://127.0.0.1:8091
+
+feign:
+  polaris:
+    enable: true
+  compression:
+    request:
+      enabled: false #是否对请求进行GZIP压缩
+      mime-types: text/xml,application/xml,application/json #指定压缩的请求数据类型
+      min-request-size: 2048 #超过该大小的请求会被压缩
+    response:
+      enabled: false #是否对响应进行GZIP压缩

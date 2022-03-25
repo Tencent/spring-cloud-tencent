@@ -27,9 +27,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProviderBFallback implements ProviderB {
 
-    @Override
-    public String info() {
-        return "trigger the refuse for service b";
-    }
+	@Override
+	public String info() {
+		return "trigger the refuse for service b";
+	}
 
 }

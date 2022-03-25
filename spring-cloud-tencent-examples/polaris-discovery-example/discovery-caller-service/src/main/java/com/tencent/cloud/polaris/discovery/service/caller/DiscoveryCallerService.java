@@ -33,14 +33,14 @@ import org.springframework.web.client.RestTemplate;
 @EnableFeignClients
 public class DiscoveryCallerService {
 
-    @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(DiscoveryCallerService.class, args);
+	}
 
-    public static void main(String[] args) {
-        SpringApplication.run(DiscoveryCallerService.class, args);
-    }
+	@Bean
+	@LoadBalanced
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
 
 }

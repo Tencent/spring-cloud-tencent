@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: test
+  autoconfigure:
+    exclude:
+      - org.springframework.cloud.gateway.config.GatewayAutoConfiguration
+      - org.springframework.cloud.netflix.zuul.ZuulServerAutoConfiguration
+  cloud:
+    tencent:
+      metadata:
+        content:
+          a: 1
+          b: 2
+        transitive:
+          - b

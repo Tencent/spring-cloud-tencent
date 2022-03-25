@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.polaris.circuitbreaker.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.tencent.cloud.polaris.circuitbreaker.PolarisFeignProperties"
+    }
+  ],
+  "hints": []
+}

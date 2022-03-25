@@ -34,13 +34,13 @@ import org.springframework.web.client.RestTemplate;
 @EnableFeignClients
 public class ServiceB {
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(ServiceB.class);
+	}
 
-    public static void main(String[] args) {
-        SpringApplication.run(ServiceB.class);
-    }
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
 
 }
