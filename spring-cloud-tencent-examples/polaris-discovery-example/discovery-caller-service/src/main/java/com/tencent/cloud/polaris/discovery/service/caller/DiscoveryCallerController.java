@@ -31,42 +31,41 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/discovery/service/caller")
 public class DiscoveryCallerController {
 
-    @Autowired
-    private RestTemplate restTemplate;
+	@Autowired
+	private RestTemplate restTemplate;
 
-    @Autowired
-    private DiscoveryCalleeService discoveryCalleeService;
+	@Autowired
+	private DiscoveryCalleeService discoveryCalleeService;
 
-    /**
-     * 获取相加完的结果
-     *
-     * @param value1 值1
-     * @param value2 值2
-     * @return 总值
-     */
-    @GetMapping("/feign")
-    public int feign(@RequestParam int value1, @RequestParam int value2) {
-        return discoveryCalleeService.sum(value1, value2);
-    }
+	/**
+	 * 获取相加完的结果
+	 * @param value1 值1
+	 * @param value2 值2
+	 * @return 总值
+	 */
+	@GetMapping("/feign")
+	public int feign(@RequestParam int value1, @RequestParam int value2) {
+		return discoveryCalleeService.sum(value1, value2);
+	}
 
-    /**
-     * 获取被调服务信息
-     *
-     * @return 信息
-     */
-    @GetMapping("/rest")
-    public String rest() {
-        return restTemplate.getForObject("http://DiscoveryCalleeService/discovery/service/callee/info", String.class);
-    }
+	/**
+	 * 获取被调服务信息
+	 * @return 信息
+	 */
+	@GetMapping("/rest")
+	public String rest() {
+		return restTemplate.getForObject(
+				"http://DiscoveryCalleeService/discovery/service/callee/info",
+				String.class);
+	}
 
+	/**
+	 * health check
+	 * @return 信息
+	 */
+	@GetMapping("/healthCheck")
+	public String healthCheck() {
+		return "pk ok";
+	}
 
-    /**
-     * health check
-     *
-     * @return 信息
-     */
-    @GetMapping("/healthCheck")
-    public String healthCheck() {
-        return "pk ok";
-    }
 }

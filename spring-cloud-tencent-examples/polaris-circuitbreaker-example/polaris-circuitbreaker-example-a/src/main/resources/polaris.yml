@@ -264,11 +264,8 @@ consumer:
         metricStatTimeWindow: 100ms
       #描述:基于周期错误率的熔断策略配置
       errorRate:
-        #描述:触发错误率熔断的阈值
-        #类型:double
-        #范围:(0:1]
-        #默认值:0.5
-        errorRateThreshold: 0.01
+        #描述:触发错误率熔断的阈值百分比
+        errorRateThreshold: 50
         #描述:错误率熔断的最小统计单元数量
         #类型:int
         #范围:[1:...]

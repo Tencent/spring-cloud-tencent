@@ -18,7 +18,6 @@
 package com.tencent.cloud.ratelimit.example.service.callee;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -28,16 +27,16 @@ import org.springframework.web.client.RestTemplate;
  * @author Haotian Zhang
  */
 @SpringBootApplication
-@EnableAutoConfiguration
 public class RateLimitCalleeService {
 
-    @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(RateLimitCalleeService.class, args);
+	}
 
-    public static void main(String[] args) {
-        SpringApplication.run(RateLimitCalleeService.class, args);
-    }
+	@Bean
+	@LoadBalanced
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
+
 }

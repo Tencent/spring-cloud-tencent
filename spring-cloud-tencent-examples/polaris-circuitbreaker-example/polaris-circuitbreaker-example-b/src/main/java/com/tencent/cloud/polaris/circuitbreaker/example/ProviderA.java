@@ -25,15 +25,15 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Haotian Zhang
  */
-@FeignClient(name = "polaris-circuitbreaker-example-a", fallback = ProviderAFallback.class)
+@FeignClient(name = "polaris-circuitbreaker-example-a",
+		fallback = ProviderAFallback.class)
 public interface ProviderA {
 
-    /**
-     * 获取B的服务的信息
-     *
-     * @return
-     */
-    @GetMapping("/example/service/a/info")
-    String info();
+	/**
+	 * Get info of service A.
+	 * @return info of service A
+	 */
+	@GetMapping("/example/service/a/info")
+	String info();
 
 }
