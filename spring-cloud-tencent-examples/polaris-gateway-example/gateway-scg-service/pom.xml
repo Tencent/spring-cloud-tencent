@@ -20,8 +20,13 @@
 		</dependency>
 
 		<dependency>
-			<artifactId>spring-cloud-starter-tencent-polaris-ratelimit</artifactId>
 			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-ratelimit</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
 		</dependency>
 
 		<dependency>

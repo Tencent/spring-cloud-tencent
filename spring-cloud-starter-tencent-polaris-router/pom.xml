@@ -22,11 +22,6 @@
 
         <dependency>
             <groupId>com.tencent.cloud</groupId>
-            <artifactId>spring-cloud-tencent-metadata</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-polaris-context</artifactId>
         </dependency>
         <!-- Spring Cloud Tencent dependencies end -->

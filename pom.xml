@@ -40,7 +40,7 @@
     <modules>
 		<module>spring-cloud-tencent-polaris-context</module>
 		<module>spring-cloud-tencent-commons</module>
-		<module>spring-cloud-tencent-metadata</module>
+		<module>spring-cloud-starter-tencent-metadata-transfer</module>
 		<module>spring-cloud-starter-tencent-polaris-discovery</module>
 		<module>spring-cloud-starter-tencent-polaris-ratelimit</module>
 		<module>spring-cloud-starter-tencent-polaris-circuitbreaker</module>

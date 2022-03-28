@@ -21,9 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.metadata.constant.MetadataConstant;
-import com.tencent.cloud.metadata.context.MetadataContext;
-import com.tencent.cloud.metadata.context.MetadataContextHolder;
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
@@ -70,11 +70,17 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		MetadataContext metadataContext = exchange
 				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 
-		String localNamespace = MetadataContextHolder.get()
+		if (metadataContext == null) {
+			metadataContext = MetadataContextHolder.get();
+		}
+
+		String localNamespace = metadataContext
 				.getSystemMetadata(MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE);
-		String localService = MetadataContextHolder.get()
+		String localService = metadataContext
 				.getSystemMetadata(MetadataConstant.SystemMetadataKey.LOCAL_SERVICE);
-		String method = MetadataContextHolder.get()
+
+		// TODO Get path
+		String method = metadataContext
 				.getSystemMetadata(MetadataConstant.SystemMetadataKey.LOCAL_PATH);
 		Map<String, String> labels = null;
 		if (StringUtils.isNotBlank(method)) {

@@ -15,8 +15,13 @@
 
 	<dependencies>
 		<dependency>
-			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
 		</dependency>
 
 		<dependency>

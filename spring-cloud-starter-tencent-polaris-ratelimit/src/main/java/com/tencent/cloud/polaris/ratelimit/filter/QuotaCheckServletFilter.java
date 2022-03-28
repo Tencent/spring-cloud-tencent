@@ -26,8 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tencent.cloud.metadata.constant.MetadataConstant.SystemMetadataKey;
-import com.tencent.cloud.metadata.context.MetadataContextHolder;
+import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
@@ -67,6 +67,8 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				.getSystemMetadata(SystemMetadataKey.LOCAL_NAMESPACE);
 		String localService = MetadataContextHolder.get()
 				.getSystemMetadata(SystemMetadataKey.LOCAL_SERVICE);
+
+		// TODO Get path
 		String method = MetadataContextHolder.get()
 				.getSystemMetadata(SystemMetadataKey.LOCAL_PATH);
 		Map<String, String> labels = null;
