@@ -72,7 +72,7 @@ Example List:
 
 - [Polaris Gateway Example](spring-cloud-tencent-examples/polaris-gateway-example/README.md)
 
-For more features, please refer to [使用polaris-java](https://github.com/polarismesh/website/blob/main/docs/zh/doc/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/%E4%BD%BF%E7%94%A8polaris-java.md).
+For more features, please refer to [polaris-java](https://github.com/polarismesh/polaris-java).
 
 ### Version Standard
 
