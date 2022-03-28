@@ -123,7 +123,7 @@
 
             <dependency>
                 <groupId>com.tencent.cloud</groupId>
-                <artifactId>spring-cloud-tencent-metadata</artifactId>
+                <artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
                 <version>${revision}</version>
             </dependency>
 

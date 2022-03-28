@@ -19,8 +19,8 @@ package com.tencent.cloud.polaris.discovery;
 
 import java.util.Map;
 
-import com.tencent.cloud.metadata.constant.MetadataConstant.SystemMetadataKey;
-import com.tencent.cloud.metadata.context.MetadataContextHolder;
+import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;

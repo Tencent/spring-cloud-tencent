@@ -21,7 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.tencent.cloud.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.MetadataLocalProperties;
 import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.util.OkHttpUtil;

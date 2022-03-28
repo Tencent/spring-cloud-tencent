@@ -20,9 +20,9 @@ package com.tencent.cloud.polaris.circuitbreaker.feign;
 import java.io.IOException;
 import java.net.URI;
 
-import com.tencent.cloud.metadata.constant.MetadataConstant.SystemMetadataKey;
-import com.tencent.cloud.metadata.context.MetadataContext;
-import com.tencent.cloud.metadata.context.MetadataContextHolder;
+import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;

@@ -20,7 +20,7 @@ package com.tencent.cloud.polaris.registry;
 import java.net.URI;
 import java.util.Map;
 
-import com.tencent.cloud.metadata.context.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;

@@ -20,7 +20,7 @@ package com.tencent.cloud.polaris.gateway.example.callee;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import com.tencent.cloud.metadata.constant.MetadataConstant;
+import com.tencent.cloud.common.constant.MetadataConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
