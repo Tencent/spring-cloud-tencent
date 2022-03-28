@@ -57,12 +57,14 @@ Example 列表：
 - [PolarisMesh](https://github.com/polarismesh)接入相关的样例：
 
   - [服务发现](spring-cloud-tencent-examples/polaris-discovery-example/README-zh.md)
-  
+
   - [故障熔断](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README-zh.md)
-  
+
   - [限流](spring-cloud-tencent-examples/polaris-ratelimit-example/README-zh.md)
-  
+
   - [网关](spring-cloud-tencent-examples/polaris-gateway-example/README-zh.md)
+
+更多详细功能，请参考[polaris-java](https://github.com/polarismesh/polaris-java/blob/main/README-zh.md)。
 
 ## 版本号规范
 
