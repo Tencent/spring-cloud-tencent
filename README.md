@@ -78,12 +78,12 @@ For more features, please refer to [polaris-java](https://github.com/polarismesh
 
 We use a version policy related to Spring Cloud's major version number.
 
-Project version includes ```${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.${CORRESPONDING_MAJOR_VERSION_OF_SPRING_CLOUD}.${CORRESPONDING_MINOR_VERSION_OF_SPRING_CLOUD}-${RELEASE_TYPE}```.
+Project version includes ```${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}-${CORRESPONDING_MAJOR_VERSION_OF_SPRING_CLOUD}.${CORRESPONDING_MINOR_VERSION_OF_SPRING_CLOUD}-${RELEASE_TYPE}```.
 ```${MAJOR_VERSION}```, ```${MINOR_VERSION}```, ```${PATCH_VERSION}``` are in numbers starting from 0.
 ```${CORRESPONDING_MAJOR_VERSION_OF_SPRING_CLOUD}``` is the same as the major version number of Spring Cloud, like Hoxton, Greenwich. ```${CORRESPONDING_MINOR_VERSION_OF_SPRING_CLOUD}``` is the same as the major version number of Spring Cloud, like RS9.
 ```${RELEASE_TYPE}``` is like RELEASE or RC currently. Actually, the RELEASE version does not add a release type in the version, and the RS version will add a suffix and start from RC0.
 
-For example: 1.0.1.Hoxton.SR9-RC0
+For example: 1.2.0-Hoxton.SR9-RC0
 
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
