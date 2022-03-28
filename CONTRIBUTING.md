@@ -23,4 +23,5 @@ Please confirm before completing a PR:
 3. Please add License and Copyright declarations in the newly created file.
 4. Ensure a consistent code style.
 5. Do adequate testing.
-6. Then, you can submit your code to the dev branch.
+6. Add this pull request info to [CHANGELOG](./CHANGELOG.md).
+7. Then, you can submit your code to the dev branch.
