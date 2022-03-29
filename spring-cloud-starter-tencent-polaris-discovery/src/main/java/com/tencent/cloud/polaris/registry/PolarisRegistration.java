@@ -30,6 +30,8 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
 
 /**
+ * Registration object of Polaris.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisRegistration implements Registration, ServiceInstance {

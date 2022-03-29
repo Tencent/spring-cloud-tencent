@@ -30,6 +30,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
+ * Test for {@link PolarisFeignClient}.
+ *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
 @RunWith(SpringRunner.class)

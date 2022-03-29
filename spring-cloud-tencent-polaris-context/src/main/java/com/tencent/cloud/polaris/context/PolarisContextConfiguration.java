@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tencent.cloud.common.constant.ContextConstant.ModifierOrder;
-import com.tencent.cloud.polaris.context.extend.consul.ConsulContextProperties;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -38,8 +37,7 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Haotian Zhang
  */
-@EnableConfigurationProperties({ PolarisContextProperties.class,
-		ConsulContextProperties.class })
+@EnableConfigurationProperties(PolarisContextProperties.class)
 public class PolarisContextConfiguration {
 
 	private static final String ADDRESS_SEPARATOR = ",";

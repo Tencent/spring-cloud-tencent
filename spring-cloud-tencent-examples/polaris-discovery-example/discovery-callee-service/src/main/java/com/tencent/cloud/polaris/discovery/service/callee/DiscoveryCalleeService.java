@@ -19,13 +19,13 @@ package com.tencent.cloud.polaris.discovery.service.callee;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * Discovery callee application.
+ *
  * @author Haotian Zhang
  */
 @SpringBootApplication
-@RestController
 public class DiscoveryCalleeService {
 
 	public static void main(String[] args) {

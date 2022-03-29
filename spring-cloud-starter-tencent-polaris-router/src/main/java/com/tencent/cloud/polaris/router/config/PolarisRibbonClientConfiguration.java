@@ -33,6 +33,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * Configuration of ribbon client of Polaris.
+ *
  * @author Haotian Zhang
  */
 @Configuration

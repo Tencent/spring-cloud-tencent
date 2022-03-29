@@ -42,7 +42,7 @@ public class MetadataFirstFeignInterceptor implements RequestInterceptor, Ordere
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
-		// TODO 对端命名空间暂时与本地命名空间相同
+		// TODO The peer namespace is temporarily the same as the local namespace
 		metadataContext.putSystemMetadata(
 				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
 				MetadataContextHolder.get().getSystemMetadata(

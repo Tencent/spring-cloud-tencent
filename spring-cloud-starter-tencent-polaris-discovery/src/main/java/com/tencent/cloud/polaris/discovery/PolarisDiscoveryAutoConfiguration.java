@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.discovery;
 
 import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClientConfiguration;
+import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
@@ -39,7 +40,8 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisDiscoveryEnabled
 @Import({ PolarisDiscoveryClientConfiguration.class,
-		PolarisReactiveDiscoveryClientConfiguration.class })
+		PolarisReactiveDiscoveryClientConfiguration.class,
+		ConsulContextProperties.class })
 public class PolarisDiscoveryAutoConfiguration {
 
 	@Bean

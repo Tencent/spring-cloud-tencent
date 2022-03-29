@@ -27,6 +27,8 @@ import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.util.StringUtils;
 
 /**
+ * Auto service registration of Polaris.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisAutoServiceRegistration

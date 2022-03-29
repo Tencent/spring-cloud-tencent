@@ -10,7 +10,7 @@
     {
       "name": "spring.cloud.polaris.address",
       "type": "java.lang.String",
-      "description": "polaris server 地址",
+      "description": "polaris server address list that can be separated by \",\"",
       "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
     }
   ],

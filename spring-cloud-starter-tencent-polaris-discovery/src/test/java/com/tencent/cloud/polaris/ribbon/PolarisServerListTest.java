@@ -108,7 +108,7 @@ public class PolarisServerListTest {
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
-	public void test2() throws Exception {
+	public void test2() {
 		this.contextRunner.run(context -> {
 			// mock
 			IClientConfig iClientConfig = mock(IClientConfig.class);

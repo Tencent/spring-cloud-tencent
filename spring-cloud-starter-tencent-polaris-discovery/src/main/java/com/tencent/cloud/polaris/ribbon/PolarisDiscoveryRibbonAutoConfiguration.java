@@ -26,6 +26,8 @@ import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * Autoconfiguration of ribbon of Polaris.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Configuration(proxyBeanMethods = false)

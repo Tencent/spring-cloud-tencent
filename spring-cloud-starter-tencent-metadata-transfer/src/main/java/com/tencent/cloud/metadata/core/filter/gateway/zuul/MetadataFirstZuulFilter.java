@@ -53,7 +53,7 @@ public class MetadataFirstZuulFilter extends ZuulFilter {
 		// get request context
 		RequestContext requestContext = RequestContext.getCurrentContext();
 
-		// TODO 对端命名空间暂时与本地命名空间相同
+		// TODO The peer namespace is temporarily the same as the local namespace
 		MetadataContextHolder.get().putSystemMetadata(
 				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
 				MetadataContextHolder.get().getSystemMetadata(

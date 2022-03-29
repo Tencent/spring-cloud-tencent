@@ -18,22 +18,27 @@
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-commons</artifactId>
-        </dependency>
+		</dependency>
 
-        <dependency>
-            <groupId>com.tencent.cloud</groupId>
-            <artifactId>spring-cloud-tencent-polaris-context</artifactId>
-        </dependency>
-        <!-- Spring Cloud Tencent dependencies end -->
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-polaris-context</artifactId>
+		</dependency>
 
-        <!-- Polaris dependencies start -->
-        <dependency>
-            <groupId>com.tencent.polaris</groupId>
-            <artifactId>polaris-router-factory</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
+		</dependency>
+		<!-- Spring Cloud Tencent dependencies end -->
 
-        <dependency>
-            <groupId>com.tencent.polaris</groupId>
+		<!-- Polaris dependencies start -->
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-router-factory</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-test-common</artifactId>
             <scope>test</scope>
         </dependency>

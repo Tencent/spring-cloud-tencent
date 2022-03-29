@@ -24,6 +24,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * Rate limit application.
+ *
  * @author Haotian Zhang
  */
 @SpringBootApplication

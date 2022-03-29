@@ -70,7 +70,7 @@ public class PolarisFeignClientAutoConfiguration {
 
 		@Override
 		public void modify(ConfigurationImpl configuration) {
-			// 开启熔断配置
+			// Enable circuit breaker.
 			configuration.getConsumer().getCircuitBreaker().setEnable(true);
 		}
 

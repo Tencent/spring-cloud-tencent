@@ -17,27 +17,23 @@
 
 package com.tencent.cloud.polaris.discovery.service.callee;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * Discovery callee controller.
+ *
  * @author Haotian Zhang
  */
 @RestController
 @RequestMapping("/discovery/service/callee")
 public class DiscoveryCalleeController {
 
-	private static Logger logger = LoggerFactory
-			.getLogger(DiscoveryCalleeController.class);
-
 	/**
-	 * 获取当前服务的信息
-	 * @return 返回服务信息
+	 * Get information of callee.
+	 * @return information of callee
 	 */
 	@GetMapping("/info")
 	public String info() {
@@ -45,10 +41,10 @@ public class DiscoveryCalleeController {
 	}
 
 	/**
-	 * 获取相加完的结果
-	 * @param value1 值1
-	 * @param value2 值2
-	 * @return 总值
+	 * Get sum of two value.
+	 * @param value1 value 1
+	 * @param value2 value 2
+	 * @return sum
 	 */
 	@GetMapping("/sum")
 	public int sum(@RequestParam int value1, @RequestParam int value2) {

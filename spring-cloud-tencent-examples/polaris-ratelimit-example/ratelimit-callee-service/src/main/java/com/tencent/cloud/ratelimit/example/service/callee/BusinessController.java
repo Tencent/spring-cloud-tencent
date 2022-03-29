@@ -30,6 +30,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * Rate limit controller.
+ *
  * @author Haotian Zhang
  */
 @RestController
@@ -45,8 +47,8 @@ public class BusinessController {
 	private String appName;
 
 	/**
-	 * 获取当前服务的信息
-	 * @return 返回服务信息
+	 * Get information.
+	 * @return information
 	 */
 	@GetMapping("/info")
 	public String info() {
@@ -54,7 +56,7 @@ public class BusinessController {
 	}
 
 	@GetMapping("/invoke")
-	public String invokeInfo() throws Exception {
+	public String invokeInfo() {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < 30; i++) {
 			try {

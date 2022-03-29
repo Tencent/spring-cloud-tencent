@@ -19,28 +19,26 @@ package com.tencent.cloud.polaris.circuitbreaker.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * circuitbraker example.
+ * Circuit breaker example caller application.
  *
  * @author Haotian Zhang
  */
 @SpringBootApplication
-@EnableDiscoveryClient
 @EnableFeignClients
 public class ServiceA {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ServiceA.class);
+	}
 
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(ServiceA.class);
 	}
 
 }

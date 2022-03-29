@@ -20,7 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker.example;
 import org.springframework.stereotype.Component;
 
 /**
- * provider b fallback
+ * Circuit breaker example callee fallback.
  *
  * @author Haotian Zhang
  */

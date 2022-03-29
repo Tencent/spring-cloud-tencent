@@ -90,7 +90,8 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			}
 		}
 		catch (Throwable t) {
-			// 限流API调用出现异常，不应该影响业务流程的调用
+			// An exception occurs in the rate limiting API call,
+			// which should not affect the call of the business process.
 			LOG.error("fail to invoke getQuota, service is " + localService, t);
 			filterChain.doFilter(request, response);
 		}

@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * Gateway callee controller.
+ *
  * @author Haotian Zhang
  */
 @RestController
@@ -38,8 +40,8 @@ public class GatewayCalleeController {
 	private static Logger logger = LoggerFactory.getLogger(GatewayCalleeController.class);
 
 	/**
-	 * Get info string
-	 * @return 返回服务信息
+	 * Get information of callee.
+	 * @return information of callee
 	 */
 	@RequestMapping("/info")
 	public String info() {
@@ -47,7 +49,7 @@ public class GatewayCalleeController {
 	}
 
 	/**
-	 * Get metadata in HTTP header
+	 * Get metadata in HTTP header.
 	 */
 	@RequestMapping("/echo")
 	public String echoHeader(

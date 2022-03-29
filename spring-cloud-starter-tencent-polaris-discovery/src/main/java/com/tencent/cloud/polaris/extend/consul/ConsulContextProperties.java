@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context.extend.consul;
+package com.tencent.cloud.polaris.extend.consul;
 
 import java.util.ArrayList;
 import java.util.Collections;

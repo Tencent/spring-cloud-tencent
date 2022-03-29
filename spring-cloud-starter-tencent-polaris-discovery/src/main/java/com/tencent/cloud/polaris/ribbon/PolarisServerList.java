@@ -30,6 +30,8 @@ import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 
 /**
+ * Server list of Polaris.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisServerList extends AbstractServerList<Server> {

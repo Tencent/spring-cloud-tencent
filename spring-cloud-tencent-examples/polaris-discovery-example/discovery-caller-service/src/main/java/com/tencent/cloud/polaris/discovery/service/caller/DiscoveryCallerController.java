@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * Discovery caller controller.
+ *
  * @author Haotian Zhang
  */
 @RestController
@@ -38,10 +40,10 @@ public class DiscoveryCallerController {
 	private DiscoveryCalleeService discoveryCalleeService;
 
 	/**
-	 * 获取相加完的结果
-	 * @param value1 值1
-	 * @param value2 值2
-	 * @return 总值
+	 * Get sum of two value.
+	 * @param value1 value 1
+	 * @param value2 value 2
+	 * @return sum
 	 */
 	@GetMapping("/feign")
 	public int feign(@RequestParam int value1, @RequestParam int value2) {
@@ -49,8 +51,8 @@ public class DiscoveryCallerController {
 	}
 
 	/**
-	 * 获取被调服务信息
-	 * @return 信息
+	 * Get information of callee.
+	 * @return information of callee
 	 */
 	@GetMapping("/rest")
 	public String rest() {
@@ -60,8 +62,8 @@ public class DiscoveryCallerController {
 	}
 
 	/**
-	 * health check
-	 * @return 信息
+	 * health check.
+	 * @return health check info
 	 */
 	@GetMapping("/healthCheck")
 	public String healthCheck() {
