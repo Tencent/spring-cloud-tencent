@@ -20,7 +20,7 @@ package com.tencent.cloud.common.constant;
 /**
  * Constant for Context.
  *
- * @author skyehtzhang
+ * @author Haotian Zhang
  */
 public final class ContextConstant {
 

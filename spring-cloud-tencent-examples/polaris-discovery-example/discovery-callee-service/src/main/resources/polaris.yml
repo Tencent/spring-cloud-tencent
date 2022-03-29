@@ -1,6 +1,10 @@
-global:
-  system:
-    discoverCluster:
-      sameAsBuiltin: true
-    healthCheckCluster:
-      sameAsBuiltin: true
+#global:
+#  system:
+#    discoverCluster:
+#      sameAsBuiltin: false
+#      namespace: Polaris
+#      service: polaris.discover
+#    healthCheckCluster:
+#      sameAsBuiltin: false
+#      namespace: Polaris
+#      service: polaris.healthcheck

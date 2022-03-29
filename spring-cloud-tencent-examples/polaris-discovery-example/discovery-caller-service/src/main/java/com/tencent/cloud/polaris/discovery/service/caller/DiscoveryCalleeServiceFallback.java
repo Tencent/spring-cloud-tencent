@@ -20,10 +20,12 @@ package com.tencent.cloud.polaris.discovery.service.caller;
 import org.springframework.stereotype.Component;
 
 /**
+ * Discovery callee feign client fallback.
+ *
  * @author Haotian Zhang
  */
 @Component
-public class DiscoveryCalleeServiceCallback implements DiscoveryCalleeService {
+public class DiscoveryCalleeServiceFallback implements DiscoveryCalleeService {
 
 	@Override
 	public int sum(int value1, int value2) {

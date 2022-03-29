@@ -22,17 +22,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
+ * Discovery callee feign client.
+ *
  * @author Haotian Zhang
  */
 @FeignClient(value = "DiscoveryCalleeService",
-		fallback = DiscoveryCalleeServiceCallback.class)
+		fallback = DiscoveryCalleeServiceFallback.class)
 public interface DiscoveryCalleeService {
 
 	/**
-	 * 求和计算
-	 * @param value1 值1
-	 * @param value2 值2
-	 * @return 总值
+	 * Get sum of two value.
+	 * @param value1 value 1
+	 * @param value2 value 2
+	 * @return sum
 	 */
 	@GetMapping("/discovery/service/callee/sum")
 	int sum(@RequestParam("value1") int value1, @RequestParam("value2") int value2);

@@ -35,6 +35,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * Autoconfiguration of service registry of Polaris.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Configuration(proxyBeanMethods = false)

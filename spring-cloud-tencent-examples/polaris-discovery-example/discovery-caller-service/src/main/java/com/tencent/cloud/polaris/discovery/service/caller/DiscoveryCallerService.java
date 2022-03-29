@@ -26,6 +26,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * Discovery caller application.
+ *
  * @author Haotian Zhang
  */
 @SpringBootApplication

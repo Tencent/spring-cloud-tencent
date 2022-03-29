@@ -45,6 +45,8 @@ import org.springframework.util.StringUtils;
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
 /**
+ * Service registry of Polaris.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
@@ -86,7 +88,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			log.warn("No service to register for polaris client...");
 			return;
 		}
-		// 注册实例
+		// Register instance.
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
 		instanceRegisterRequest.setNamespace(polarisProperties.getNamespace());
 		instanceRegisterRequest.setService(registration.getServiceId());
@@ -110,7 +112,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			if (null != heartbeatExecutor) {
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
 				BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
-				// 注册成功后开始启动心跳线程
+				// Start the heartbeat thread after the registration is successful.
 				heartbeat(heartbeatRequest);
 			}
 		}
@@ -190,7 +192,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		heartbeatExecutor.scheduleWithFixedDelay(() -> {
 			try {
 				String healthCheckEndpoint = polarisProperties.getHealthCheckUrl();
-				// 先判断是否配置了health-check-url，如果配置了，需要先进行服务实例健康检查，如果健康检查通过，则进行心跳上报，如果不通过，则不上报心跳
+				// First determine whether health-check-url is configured.
+				// If configured, the service instance health check needs to be executed
+				// first.
+				// If the health check passes, the heartbeat will be reported.
+				// If it does not pass, the heartbeat will not be reported.
 				if (Strings.isNotEmpty(healthCheckEndpoint)) {
 					if (!healthCheckEndpoint.startsWith("/")) {
 						healthCheckEndpoint = "/" + healthCheckEndpoint;

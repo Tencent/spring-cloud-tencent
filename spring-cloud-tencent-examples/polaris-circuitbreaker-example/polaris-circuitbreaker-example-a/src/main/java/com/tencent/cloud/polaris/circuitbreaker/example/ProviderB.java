@@ -21,7 +21,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * service b provider.
+ * Circuit breaker example callee provider.
  *
  * @author Haotian Zhang
  */

@@ -68,9 +68,9 @@ public class Metadata2HeaderFeignInterceptorTest {
 	public void test1() throws JsonProcessingException {
 		String metadata = testFeign.test();
 		ObjectMapper mapper = new ObjectMapper();
-		Assertions.assertThat(mapper.readTree(metadata)).isEqualTo(mapper.readTree(
+		Assertions.assertThat(metadata).isEqualTo(
 				"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
-						+ "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}"));
+						+ "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
 				.isEqualTo("1");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))

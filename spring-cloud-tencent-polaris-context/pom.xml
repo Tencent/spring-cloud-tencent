@@ -52,19 +52,16 @@
             <artifactId>connector-composite</artifactId>
         </dependency>
 
-        <!--依赖resCache插件-->
         <dependency>
             <groupId>com.tencent.polaris</groupId>
             <artifactId>registry-memory</artifactId>
         </dependency>
 
-        <!--依赖flowCache插件-->
         <dependency>
             <groupId>com.tencent.polaris</groupId>
             <artifactId>flow-cache-expired</artifactId>
         </dependency>
 
-        <!--依赖router插件-->
         <dependency>
             <groupId>com.tencent.polaris</groupId>
             <artifactId>router-isolated</artifactId>
@@ -90,7 +87,6 @@
             <artifactId>router-metadata</artifactId>
         </dependency>
 
-        <!--依赖负载均衡插件-->
         <dependency>
             <groupId>com.tencent.polaris</groupId>
             <artifactId>loadbalancer-random</artifactId>

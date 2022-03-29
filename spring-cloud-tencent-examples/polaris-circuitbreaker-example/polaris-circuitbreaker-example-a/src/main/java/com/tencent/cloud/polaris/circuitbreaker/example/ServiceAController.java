@@ -17,15 +17,15 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.example;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Service A Controller
+ * Circuit breaker example caller controller.
  *
  * @author Haotian Zhang
  */
@@ -33,34 +33,26 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/example/service/a")
 public class ServiceAController {
 
-	private final ProviderB polarisServiceB;
+	@Autowired
+	private ProviderB polarisServiceB;
 
-	private final RestTemplate restTemplate;
-
-	public ServiceAController(ProviderB polarisServiceB, RestTemplate restTemplate) {
-		this.polarisServiceB = polarisServiceB;
-		this.restTemplate = restTemplate;
-	}
+	@Autowired
+	private RestTemplate restTemplate;
 
 	/**
-	 * 获取当前服务的信息
-	 * @return 返回服务信息
-	 */
-	@GetMapping("/info")
-	public String info() {
-		return "hello world ! I'am a service";
-	}
-
-	/**
-	 * 获取B服务的信息
-	 * @return 返回B服务的信息
+	 * Get info of Service B by Feign.
+	 * @return info of Service B
 	 */
 	@GetMapping("/getBServiceInfo")
 	public String getBServiceInfo() {
 		return polarisServiceB.info();
 	}
 
-	@RequestMapping(value = "/testRest", method = RequestMethod.GET)
+	/**
+	 * Get info of Service B by RestTemplate.
+	 * @return info of Service B
+	 */
+	@GetMapping("/testRest")
 	public String testRest() {
 		ResponseEntity<String> entity = restTemplate.getForEntity(
 				"http://polaris-circuitbreaker-example-b/example/service/b/info",

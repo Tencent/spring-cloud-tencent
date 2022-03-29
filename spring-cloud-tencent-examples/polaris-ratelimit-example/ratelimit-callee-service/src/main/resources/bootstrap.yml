@@ -1,5 +1,4 @@
 server:
-  session-timeout: 1800
   port: 48081
 spring:
   application:

@@ -58,7 +58,7 @@ public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 		MetadataContext metadataContext = exchange
 				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 
-		// TODO 对端命名空间暂时与本地命名空间相同
+		// TODO The peer namespace is temporarily the same as the local namespace
 		metadataContext.putSystemMetadata(
 				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
 				MetadataContextHolder.get().getSystemMetadata(

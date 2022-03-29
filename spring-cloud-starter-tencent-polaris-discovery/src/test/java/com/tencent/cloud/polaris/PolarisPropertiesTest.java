@@ -40,13 +40,13 @@ public class PolarisPropertiesTest {
 				new InetUtils(new InetUtilsProperties()));
 		try {
 			temp.setNamespace(NAMESPACE_TEST);
-			temp.getNamespace();
+			assertThat(temp.getNamespace()).isEqualTo(NAMESPACE_TEST);
 
 			temp.setService(SERVICE_PROVIDER);
-			temp.getService();
+			assertThat(temp.getService()).isEqualTo(SERVICE_PROVIDER);
 
 			temp.setToken("xxxxxx");
-			temp.getToken();
+			assertThat(temp.getToken()).isEqualTo("xxxxxx");
 
 			temp.init();
 			assertThat(temp).isNotNull();

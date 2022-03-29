@@ -14,21 +14,21 @@
     <name>Polaris Discovery Callee Service</name>
 
     <dependencies>
-        <dependency>
-            <artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
-            <groupId>com.tencent.cloud</groupId>
-        </dependency>
+		<dependency>
+			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
+			<groupId>com.tencent.cloud</groupId>
+		</dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.cloud</groupId>-->
-        <!--            <artifactId>spring-cloud-starter-consul-discovery</artifactId>-->
-        <!--        </dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.springframework.cloud</groupId>-->
+		<!--			<artifactId>spring-cloud-starter-consul-discovery</artifactId>-->
+		<!--		</dependency>-->
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.cloud</groupId>-->
-        <!--            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>-->
-        <!--        </dependency>-->
-    </dependencies>
+		<!--        <dependency>-->
+		<!--            <groupId>org.springframework.cloud</groupId>-->
+		<!--            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>-->
+		<!--        </dependency>-->
+	</dependencies>
     <build>
         <plugins>
             <plugin>

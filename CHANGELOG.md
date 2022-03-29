@@ -6,7 +6,6 @@
 - [feat:Support multi-discovery server.](https://github.com/Tencent/spring-cloud-tencent/pull/42)
 - [fix:fix [Deserialization of Untrusted Data in logback]](https://github.com/Tencent/spring-cloud-tencent/pull/44/files)
 - [feat:support customize registered ip address.](https://github.com/Tencent/spring-cloud-tencent/pull/47)
-- [https://github.com/Tencent/spring-cloud-tencent/pull/51](https://github.com/Tencent/spring-cloud-tencent/pull/51)
 - [fix:fix import default log implement error](https://github.com/Tencent/spring-cloud-tencent/pull/53)
 - [send heartbeat if healthcheck url not configured](https://github.com/Tencent/spring-cloud-tencent/pull/54)
 - [feat:optimize project structure and checkstyle](https://github.com/Tencent/spring-cloud-tencent/pull/56)

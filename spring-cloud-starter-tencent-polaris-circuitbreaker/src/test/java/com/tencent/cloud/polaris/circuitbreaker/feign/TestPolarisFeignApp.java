@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
+ * Test application.
+ *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
 @SpringBootApplication

@@ -17,15 +17,13 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.example;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 /**
- * Service B Controller
+ * Service B Controller.
  *
  * @author Haotian Zhang
  */
@@ -33,40 +31,21 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/example/service/b")
 public class ServiceBController {
 
-	private final ProviderA polarisServiceA;
-
-	private final RestTemplate restTemplate;
-
-	public ServiceBController(ProviderA polarisServiceA, RestTemplate restTemplate) {
-		this.polarisServiceA = polarisServiceA;
-		this.restTemplate = restTemplate;
-	}
+	@Value("${is-throw-runtime-exception:#{true}}")
+	private boolean isThrowRuntimeException;
 
 	/**
-	 * 获取当前服务的信息
-	 * @return 返回服务信息
+	 * Get service information.
+	 * @return service information
 	 */
 	@GetMapping("/info")
 	public String info() {
-		// return "hello world ! I'am a service";
-		throw new RuntimeException("failed for call my service");
-	}
-
-	/**
-	 * 获取B服务的信息
-	 * @return 返回B服务的信息
-	 */
-	@GetMapping("/getAServiceInfo")
-	public String getAServiceInfo() {
-		return polarisServiceA.info();
-	}
-
-	@RequestMapping(value = "/testRest", method = RequestMethod.GET)
-	public String testRest() {
-		ResponseEntity<String> entity = restTemplate.getForEntity(
-				"http://polaris-circuitbreaker-example-a/example/service/b/info",
-				String.class);
-		return entity.getBody();
+		if (isThrowRuntimeException) {
+			throw new RuntimeException("failed for call my service");
+		}
+		else {
+			return "hello world ! I'm a service B";
+		}
 	}
 
 }
