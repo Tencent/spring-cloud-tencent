@@ -96,7 +96,6 @@
                 <version>${revision}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>com.tencent.cloud</groupId>
                 <artifactId>spring-cloud-starter-tencent-polaris-ratelimit</artifactId>
@@ -114,6 +113,12 @@
                 <artifactId>spring-cloud-starter-tencent-polaris-router</artifactId>
                 <version>${revision}</version>
             </dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-polaris-config</artifactId>
+				<version>${revision}</version>
+			</dependency>
 
             <dependency>
                 <groupId>com.tencent.cloud</groupId>

@@ -29,8 +29,8 @@ import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cloud.commons.util.InetUtilsProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
@@ -43,9 +43,15 @@ import org.springframework.util.CollectionUtils;
 public class PolarisContextProperties {
 
 	/**
-	 * polaris server adress.
+	 * polaris server address.
 	 */
 	private String address;
+
+	/**
+	 * polaris namespace.
+	 */
+	@Value("${spring.cloud.polaris.namespace:#{'default'}}")
+	private String namespace;
 
 	@Autowired
 	private InetUtilsProperties inetUtilsProperties;
@@ -55,14 +61,6 @@ public class PolarisContextProperties {
 
 	@Autowired
 	private List<PolarisConfigModifier> modifierList;
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
 
 	protected Configuration configuration() {
 		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
@@ -89,6 +87,22 @@ public class PolarisContextProperties {
 			return defaultIpAddress;
 		}
 		return environment.getProperty("spring.cloud.client.ip-address");
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
 	}
 
 }

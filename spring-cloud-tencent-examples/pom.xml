@@ -20,7 +20,8 @@
         <module>polaris-ratelimit-example</module>
         <module>polaris-circuitbreaker-example</module>
         <module>polaris-gateway-example</module>
-    </modules>
+		<module>polaris-config-example</module>
+	</modules>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>

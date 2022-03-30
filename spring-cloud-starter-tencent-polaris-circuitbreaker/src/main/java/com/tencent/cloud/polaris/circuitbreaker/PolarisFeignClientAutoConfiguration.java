@@ -17,14 +17,11 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
-import com.tencent.cloud.common.constant.ContextConstant.ModifierOrder;
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProcessor;
-import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
-import com.tencent.polaris.factory.config.ConfigurationImpl;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -59,26 +56,6 @@ public class PolarisFeignClientAutoConfiguration {
 	public PolarisFeignBeanPostProcessor polarisFeignBeanPostProcessor(
 			ConsumerAPI consumerAPI) {
 		return new PolarisFeignBeanPostProcessor(consumerAPI);
-	}
-
-	@Bean
-	public CircuitBreakerConfigModifier circuitBreakerConfigModifier() {
-		return new CircuitBreakerConfigModifier();
-	}
-
-	public static class CircuitBreakerConfigModifier implements PolarisConfigModifier {
-
-		@Override
-		public void modify(ConfigurationImpl configuration) {
-			// Enable circuit breaker.
-			configuration.getConsumer().getCircuitBreaker().setEnable(true);
-		}
-
-		@Override
-		public int getOrder() {
-			return ModifierOrder.CIRCUIT_BREAKER_ORDER;
-		}
-
 	}
 
 }

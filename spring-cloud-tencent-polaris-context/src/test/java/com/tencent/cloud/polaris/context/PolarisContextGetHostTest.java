@@ -24,12 +24,14 @@ import org.junit.platform.commons.util.StringUtils;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PolarisContextApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
+		properties = { "spring.config.location = classpath:bootstrap.yml" })
+@ImportAutoConfiguration({ PolarisContextConfiguration.class })
 public class PolarisContextGetHostTest {
 
 	@Autowired
@@ -39,7 +41,7 @@ public class PolarisContextGetHostTest {
 	public void testGetConfigHost() {
 		String bindIP = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 		Assert.assertFalse(StringUtils.isBlank(bindIP));
-		Assert.assertNotEquals(bindIP, "127.0.0.1");
+		Assert.assertEquals(bindIP, "192.168.1.1");
 	}
 
 }

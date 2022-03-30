@@ -12,6 +12,12 @@
       "type": "java.lang.String",
       "description": "polaris server address list that can be separated by \",\"",
       "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.namespace",
+      "type": "java.lang.String",
+      "description": "polaris namespace",
+      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
     }
   ],
   "hints": []
