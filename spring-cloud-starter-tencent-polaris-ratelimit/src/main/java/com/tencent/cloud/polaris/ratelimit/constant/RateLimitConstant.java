@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.ratelimit.constant;
@@ -34,7 +35,7 @@ public final class RateLimitConstant {
 	/**
 	 * Info of rate limit.
 	 */
-	public static String QUOTA_LIMITED_INFO = "request blocked by polaris, reason is ";
+	public static String QUOTA_LIMITED_INFO = "The request is deny by rate limit because the throttling threshold is reached";
 
 	private RateLimitConstant() {
 	}
