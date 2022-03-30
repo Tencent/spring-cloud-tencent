@@ -48,6 +48,7 @@
 		<module>spring-cloud-tencent-dependencies</module>
 		<module>spring-cloud-tencent-examples</module>
 		<module>spring-cloud-tencent-coverage</module>
+        <module>spring-cloud-starter-tencent-polaris-config</module>
 	</modules>
 
 	<developers>

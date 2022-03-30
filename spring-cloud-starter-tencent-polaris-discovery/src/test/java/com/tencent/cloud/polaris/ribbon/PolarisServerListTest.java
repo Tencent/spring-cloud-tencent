@@ -58,7 +58,8 @@ public class PolarisServerListTest {
 			.withConfiguration(AutoConfigurations.of(PolarisContextConfiguration.class,
 					PolarisServerListTest.PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
-					PolarisDiscoveryAutoConfiguration.class))
+					PolarisDiscoveryAutoConfiguration.class,
+					PolarisContextConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")

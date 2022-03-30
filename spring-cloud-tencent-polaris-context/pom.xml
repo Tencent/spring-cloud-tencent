@@ -39,11 +39,6 @@
 
         <dependency>
             <groupId>com.tencent.polaris</groupId>
-            <artifactId>connector-polaris-grpc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.tencent.polaris</groupId>
             <artifactId>connector-consul</artifactId>
         </dependency>
 

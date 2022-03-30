@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    polaris:
+      address: grpc://127.0.0.1:8091
+      namespace: dev
+    inetutils:
+      defaultIpAddress: 192.168.1.1

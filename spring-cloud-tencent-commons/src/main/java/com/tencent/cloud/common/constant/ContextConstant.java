@@ -44,6 +44,11 @@ public final class ContextConstant {
 		 */
 		public static Integer CIRCUIT_BREAKER_ORDER = 1;
 
+		/**
+		 * Order of configuration modifier.
+		 */
+		public static Integer CONFIG_ORDER = 1;
+
 	}
 
 }

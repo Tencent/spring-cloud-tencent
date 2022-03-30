@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.ribbon;
 
 import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.client.config.IClientConfig;
+import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import org.junit.Test;
@@ -46,7 +47,8 @@ public class PolarisRibbonServerListConfigurationTest {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisRibbonClientTest.class,
-					PolarisDiscoveryClientConfiguration.class))
+					PolarisDiscoveryClientConfiguration.class,
+					PolarisContextConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")

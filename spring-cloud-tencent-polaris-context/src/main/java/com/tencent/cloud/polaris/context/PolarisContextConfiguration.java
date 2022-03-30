@@ -17,11 +17,10 @@
 
 package com.tencent.cloud.polaris.context;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.tencent.cloud.common.constant.ContextConstant.ModifierOrder;
+import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -37,10 +36,9 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Haotian Zhang
  */
-@EnableConfigurationProperties(PolarisContextProperties.class)
+@EnableConfigurationProperties({ PolarisContextProperties.class,
+		InetUtilsProperties.class })
 public class PolarisContextConfiguration {
-
-	private static final String ADDRESS_SEPARATOR = ",";
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean
@@ -62,25 +60,19 @@ public class PolarisContextConfiguration {
 
 		@Override
 		public void modify(ConfigurationImpl configuration) {
-			if (!StringUtils.isBlank(properties.getAddress())) {
-				configuration.getGlobal().getServerConnector()
-						.setAddresses(getAddressList(properties.getAddress()));
+			if (StringUtils.isBlank(properties.getAddress())) {
+				return;
 			}
+
+			List<String> addresses = AddressUtils
+					.parseAddressList(properties.getAddress());
+
+			configuration.getGlobal().getServerConnector().setAddresses(addresses);
 		}
 
 		@Override
 		public int getOrder() {
 			return ModifierOrder.FIRST;
-		}
-
-		private List<String> getAddressList(String addressInfo) {
-			List<String> addressList = new ArrayList<>();
-			String[] addresses = addressInfo.split(ADDRESS_SEPARATOR);
-			for (String address : addresses) {
-				URI uri = URI.create(address.trim());
-				addressList.add(uri.getAuthority());
-			}
-			return addressList;
 		}
 
 	}

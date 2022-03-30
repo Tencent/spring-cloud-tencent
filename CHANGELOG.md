@@ -10,3 +10,5 @@
 - [send heartbeat if healthcheck url not configured](https://github.com/Tencent/spring-cloud-tencent/pull/54)
 - [feat:optimize project structure and checkstyle](https://github.com/Tencent/spring-cloud-tencent/pull/56)
 - [feat:divide storage and transfer of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/63)
+- [feat:support polaris config center.](https://github.com/Tencent/spring-cloud-tencent/pull/69)
+

@@ -1,0 +1,32 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.polaris.config.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "The switch of polaris configuration module.",
+      "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.config.addresses",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "The polaris configuration server addresses.",
+      "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.config.auto-refresh",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "Whether to automatically update to the spring context when the configuration file is updated.",
+      "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.config.groups",
+      "type": "com.tencent.cloud.polaris.config.config.ConfigFileGroup",
+      "defaultValue": "",
+      "description": "List of imported config files.",
+      "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    }
+  ]
+}
