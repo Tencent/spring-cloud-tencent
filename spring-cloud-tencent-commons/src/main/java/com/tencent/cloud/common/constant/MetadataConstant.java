@@ -32,21 +32,6 @@ public final class MetadataConstant {
 	public static class SystemMetadataKey {
 
 		/**
-		 * Local namespace.
-		 */
-		public static String LOCAL_NAMESPACE = "LOCAL_NAMESPACE";
-
-		/**
-		 * Local service.
-		 */
-		public static String LOCAL_SERVICE = "LOCAL_SERVICE";
-
-		/**
-		 * Local path.
-		 */
-		public static String LOCAL_PATH = "LOCAL_PATH";
-
-		/**
 		 * Peer namespace.
 		 */
 		public static String PEER_NAMESPACE = "PEER_NAMESPACE";
@@ -71,13 +56,7 @@ public final class MetadataConstant {
 		/**
 		 * Order of filter.
 		 */
-		public static final int FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 13;
-
-		/**
-		 * Order of MetadataFirstFeignPlugin.
-		 */
-		public static int METADATA_FIRST_FEIGN_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE
-				+ 1;
+		public static final int WEB_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 13;
 
 		/**
 		 * Order of MetadataFirstFeignInterceptor.
@@ -86,14 +65,9 @@ public final class MetadataConstant {
 				+ 1;
 
 		/**
-		 * Order of Metadata2HeaderFeignInterceptor.
+		 * Order of Metadata2HeaderInterceptor.
 		 */
-		public static int METADATA_2_HEADER_FEIGN_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
-
-		/**
-		 * Order of interceptor.
-		 */
-		public static int INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
+		public static int METADATA_2_HEADER_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
 
 	}
 

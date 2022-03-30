@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.core.interceptor.feign;
+package com.tencent.cloud.metadata.core.interceptor;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -48,7 +48,7 @@ public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Orde
 
 	@Override
 	public int getOrder() {
-		return MetadataConstant.OrderConstant.METADATA_2_HEADER_FEIGN_INTERCEPTOR_ORDER;
+		return MetadataConstant.OrderConstant.METADATA_2_HEADER_INTERCEPTOR_ORDER;
 	}
 
 	@Override

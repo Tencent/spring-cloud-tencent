@@ -15,12 +15,11 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.core.filter.web;
+package com.tencent.cloud.common.metadata.filter.web;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
@@ -38,17 +37,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import static com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE;
-import static com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey.LOCAL_PATH;
-import static com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey.LOCAL_SERVICE;
-
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
  * SERVLET.
  *
  * @author Haotian Zhang
  */
-@Order(MetadataConstant.OrderConstant.FILTER_ORDER)
+@Order(MetadataConstant.OrderConstant.WEB_FILTER_ORDER)
 public class MetadataServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory
@@ -75,14 +70,8 @@ public class MetadataServletFilter extends OncePerRequestFilter {
 		Map<String, String> upstreamCustomMetadataMap = JacksonUtils
 				.deserialize2Map(customMetadataStr);
 
-		// create system metadata.
-		Map<String, String> systemMetadataMap = new HashMap<>();
-		systemMetadataMap.put(LOCAL_NAMESPACE, MetadataContextHolder.LOCAL_NAMESPACE);
-		systemMetadataMap.put(LOCAL_SERVICE, MetadataContextHolder.LOCAL_SERVICE);
-		systemMetadataMap.put(LOCAL_PATH, httpServletRequest.getRequestURI());
-
 		try {
-			MetadataContextHolder.init(upstreamCustomMetadataMap, systemMetadataMap);
+			MetadataContextHolder.init(upstreamCustomMetadataMap, null);
 
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
 		}

@@ -15,11 +15,10 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.core.filter.web;
+package com.tencent.cloud.common.metadata.filter.web;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -37,10 +36,6 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
-import static com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE;
-import static com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey.LOCAL_PATH;
-import static com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey.LOCAL_SERVICE;
-
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
  * REACTIVE.
@@ -54,7 +49,7 @@ public class MetadataReactiveFilter implements WebFilter, Ordered {
 
 	@Override
 	public int getOrder() {
-		return MetadataConstant.OrderConstant.FILTER_ORDER;
+		return MetadataConstant.OrderConstant.WEB_FILTER_ORDER;
 	}
 
 	@Override
@@ -79,13 +74,7 @@ public class MetadataReactiveFilter implements WebFilter, Ordered {
 		Map<String, String> upstreamCustomMetadataMap = JacksonUtils
 				.deserialize2Map(customMetadataStr);
 
-		// create system metadata.
-		Map<String, String> systemMetadataMap = new HashMap<>();
-		systemMetadataMap.put(LOCAL_NAMESPACE, MetadataContextHolder.LOCAL_NAMESPACE);
-		systemMetadataMap.put(LOCAL_SERVICE, MetadataContextHolder.LOCAL_SERVICE);
-		systemMetadataMap.put(LOCAL_PATH, serverHttpRequest.getURI().getPath());
-
-		MetadataContextHolder.init(upstreamCustomMetadataMap, systemMetadataMap);
+		MetadataContextHolder.init(upstreamCustomMetadataMap, null);
 
 		// Save to ServerWebExchange.
 		serverWebExchange.getAttributes().put(

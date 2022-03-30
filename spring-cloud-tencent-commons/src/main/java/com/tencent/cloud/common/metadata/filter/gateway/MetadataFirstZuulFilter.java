@@ -14,11 +14,12 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.tencent.cloud.metadata.core.filter.gateway.zuul;
+package com.tencent.cloud.common.metadata.filter.gateway;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
@@ -56,8 +57,7 @@ public class MetadataFirstZuulFilter extends ZuulFilter {
 		// TODO The peer namespace is temporarily the same as the local namespace
 		MetadataContextHolder.get().putSystemMetadata(
 				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
-				MetadataContextHolder.get().getSystemMetadata(
-						MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE));
+				MetadataContext.LOCAL_NAMESPACE);
 		MetadataContextHolder.get().putSystemMetadata(
 				MetadataConstant.SystemMetadataKey.PEER_SERVICE,
 				(String) requestContext.get(SERVICE_ID_KEY));

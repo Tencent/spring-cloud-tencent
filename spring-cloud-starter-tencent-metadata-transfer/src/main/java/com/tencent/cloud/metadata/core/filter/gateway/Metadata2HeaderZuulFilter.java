@@ -15,71 +15,70 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.core.interceptor.resttemplate;
+package com.tencent.cloud.metadata.core.filter.gateway;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 
-import org.springframework.core.Ordered;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
 /**
- * Interceptor used for adding the metadata in http headers from context when web client
- * is RestTemplate.
+ * Zuul filter used for writing metadata in HTTP request header.
  *
  * @author Haotian Zhang
  */
-public class MetadataRestTemplateInterceptor
-		implements ClientHttpRequestInterceptor, Ordered {
+public class Metadata2HeaderZuulFilter extends ZuulFilter {
 
 	@Override
-	public int getOrder() {
-		return MetadataConstant.OrderConstant.INTERCEPTOR_ORDER;
+	public String filterType() {
+		return ROUTE_TYPE;
 	}
 
 	@Override
-	public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] bytes,
-			ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
+	public int filterOrder() {
+		return RIBBON_ROUTING_FILTER_ORDER - 1;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		return true;
+	}
+
+	@Override
+	public Object run() {
+		// get request context
+		RequestContext requestContext = RequestContext.getCurrentContext();
+
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		// add new metadata and cover old
-		String metadataStr = httpRequest.getHeaders()
-				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
-		if (!StringUtils.isEmpty(metadataStr)) {
-			Map<String, String> headerMetadataMap = JacksonUtils
-					.deserialize2Map(metadataStr);
-			for (String key : headerMetadataMap.keySet()) {
-				metadataContext.putTransitiveCustomMetadata(key,
-						headerMetadataMap.get(key));
-			}
-		}
 		Map<String, String> customMetadata = metadataContext
 				.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
-			metadataStr = JacksonUtils.serialize2Json(customMetadata);
+			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
-				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
+				requestContext.addZuulRequestHeader(
+						MetadataConstant.HeaderName.CUSTOM_METADATA,
 						URLEncoder.encode(metadataStr, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
-				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						metadataStr);
+				requestContext.addZuulRequestHeader(
+						MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
 			}
 		}
-		return clientHttpRequestExecution.execute(httpRequest, bytes);
+		return null;
 	}
 
 }

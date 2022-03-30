@@ -17,18 +17,15 @@
 
 package com.tencent.cloud.metadata.config;
 
-import com.tencent.cloud.metadata.core.filter.web.MetadataReactiveFilter;
-import com.tencent.cloud.metadata.core.filter.web.MetadataServletFilter;
-import com.tencent.cloud.metadata.core.interceptor.feign.Metadata2HeaderFeignInterceptor;
-import com.tencent.cloud.metadata.core.interceptor.feign.MetadataFirstFeignInterceptor;
-import com.tencent.cloud.metadata.core.interceptor.resttemplate.MetadataRestTemplateInterceptor;
+import com.tencent.cloud.metadata.core.filter.gateway.Metadata2HeaderZuulFilter;
+import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderFeignInterceptor;
+import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderRestTemplateInterceptor;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 
 /**
  * Test for {@link MetadataTransferAutoConfiguration}
@@ -39,10 +36,6 @@ public class MetadataTransferAutoConfigurationTest {
 
 	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
 
-	private final WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
-
-	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
-
 	/**
 	 * No any web application.
 	 */
@@ -52,90 +45,23 @@ public class MetadataTransferAutoConfigurationTest {
 				.withConfiguration(
 						AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
 				.run(context -> {
-					Assertions.assertThat(context).doesNotHaveBean(
-							MetadataTransferAutoConfiguration.MetadataReactiveFilterConfig.class);
-					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataReactiveFilter.class);
-					Assertions.assertThat(context).doesNotHaveBean(
-							MetadataTransferAutoConfiguration.MetadataServletFilterConfig.class);
-					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataServletFilter.class);
 					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataFeignPluginConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstFeignInterceptor.class);
+							MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
 					Assertions.assertThat(context)
 							.hasSingleBean(Metadata2HeaderFeignInterceptor.class);
 					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataRestTemplateConfig.class);
+							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataRestTemplateInterceptor.class);
+							.hasSingleBean(Metadata2HeaderRestTemplateInterceptor.class);
 					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataRestTemplateConfig.MetadataRestTemplatePostProcessor.class);
-				});
-	}
-
-	/**
-	 * web application.
-	 */
-	@Test
-	public void test2() {
-		this.webApplicationContextRunner
-				.withConfiguration(
-						AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
-				.run(context -> {
-					Assertions.assertThat(context).doesNotHaveBean(
-							MetadataTransferAutoConfiguration.MetadataReactiveFilterConfig.class);
-					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataReactiveFilter.class);
+							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.Metadata2HeaderRestTemplatePostProcessor.class);
 					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataServletFilterConfig.class);
+							MetadataTransferAutoConfiguration.MetadataTransferZuulFilterConfig.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataServletFilter.class);
+							.hasSingleBean(Metadata2HeaderZuulFilter.class);
 					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataFeignPluginConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstFeignInterceptor.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(Metadata2HeaderFeignInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataRestTemplateConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataRestTemplateInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataRestTemplateConfig.MetadataRestTemplatePostProcessor.class);
-				});
-	}
-
-	/**
-	 * reactive web application.
-	 */
-	@Test
-	public void test3() {
-		this.reactiveWebApplicationContextRunner
-				.withConfiguration(
-						AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
-				.run(context -> {
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataReactiveFilterConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataReactiveFilter.class);
-					Assertions.assertThat(context).doesNotHaveBean(
-							MetadataTransferAutoConfiguration.MetadataServletFilterConfig.class);
-					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataServletFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataFeignPluginConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstFeignInterceptor.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(Metadata2HeaderFeignInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataRestTemplateConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataRestTemplateInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataRestTemplateConfig.MetadataRestTemplatePostProcessor.class);
+							MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(GlobalFilter.class);
 				});
 	}
 

@@ -11,6 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>polaris-circuitbreaker-example</artifactId>
+	<name>Polaris Circuit Breaker Example</name>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -20,18 +21,8 @@
 
 	<dependencies>
 		<dependency>
-			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 			<groupId>com.tencent.cloud</groupId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-openfeign</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 		</dependency>
 	</dependencies>
 

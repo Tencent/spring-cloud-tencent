@@ -15,8 +15,15 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.common.metadata;
+package com.tencent.cloud.common.metadata.filter.web;
 
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,35 +31,46 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
 /**
- * Test for {@link MetadataLocalProperties}
+ * Test for {@link MetadataServletFilter}
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = MetadataLocalPropertiesTest.TestApplication.class,
+@SpringBootTest(webEnvironment = RANDOM_PORT,
+		classes = MetadataServletFilterTest.TestApplication.class,
 		properties = { "spring.config.location = classpath:application-test.yml" })
-public class MetadataLocalPropertiesTest {
+public class MetadataServletFilterTest {
 
 	@Autowired
 	private MetadataLocalProperties metadataLocalProperties;
 
+	@Autowired
+	private MetadataServletFilter metadataServletFilter;
+
 	@Test
-	public void test1() {
+	public void test1() throws ServletException, IOException {
+		// Create mock FilterChain
+		FilterChain filterChain = (servletRequest, servletResponse) -> {
+
+		};
+
+		// Mock request
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addHeader(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"c\": \"3\"}");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		metadataServletFilter.doFilter(request, response, filterChain);
 		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
 				.isEqualTo("1");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
 				.isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
-	}
-
-	@Test
-	public void test2() {
-		Assertions.assertThat(metadataLocalProperties.getTransitive().contains("b"))
-				.isTrue();
 	}
 
 	@SpringBootApplication

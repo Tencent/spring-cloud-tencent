@@ -23,11 +23,6 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-polaris-context</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
-		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
 
 		<!-- Polaris dependencies start -->
