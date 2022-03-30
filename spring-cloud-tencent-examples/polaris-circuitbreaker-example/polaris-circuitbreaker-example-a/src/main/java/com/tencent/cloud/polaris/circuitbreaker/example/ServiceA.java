@@ -13,12 +13,14 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.circuitbreaker.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
@@ -37,6 +39,7 @@ public class ServiceA {
 	}
 
 	@Bean
+	@LoadBalanced
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}

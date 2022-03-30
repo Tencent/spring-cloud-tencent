@@ -11,4 +11,8 @@
 - [feat:optimize project structure and checkstyle](https://github.com/Tencent/spring-cloud-tencent/pull/56)
 - [feat:divide storage and transfer of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/63)
 - [feat:support polaris config center.](https://github.com/Tencent/spring-cloud-tencent/pull/69)
+- [feat:optimize metadata module.](https://github.com/Tencent/spring-cloud-tencent/pull/70)
+- [feat: optimize pom dependency and demo](https://github.com/Tencent/spring-cloud-tencent/pull/71)
+- [feat:upgrade polaris version to 1.3.0.](https://github.com/Tencent/spring-cloud-tencent/pull/72)
+
 
