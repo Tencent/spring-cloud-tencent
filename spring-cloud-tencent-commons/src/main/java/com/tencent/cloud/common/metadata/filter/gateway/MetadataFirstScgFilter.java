@@ -13,71 +13,67 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.metadata.core.filter.gateway.scg;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
+package com.tencent.cloud.common.metadata.filter.gateway;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.util.JacksonUtils;
 import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.gateway.route.Route;
 import org.springframework.core.Ordered;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
-import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
+import static org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter.ROUTE_TO_URL_FILTER_ORDER;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 /**
- * Scg filter used for writing metadata in HTTP request header.
+ * Scg output first filter used for setting peer info in context.
  *
  * @author Haotian Zhang
  */
-public class Metadata2HeaderScgFilter implements GlobalFilter, Ordered {
+public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 
-	private static final int METADATA_SCG_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER
-			+ 1;
+	/**
+	 * Order of MetadataFirstScgFilter.
+	 */
+	public static final int METADATA_FIRST_FILTER_ORDER = ROUTE_TO_URL_FILTER_ORDER + 1;
 
 	@Override
 	public int getOrder() {
-		return METADATA_SCG_FILTER_ORDER;
+		return METADATA_FIRST_FILTER_ORDER;
 	}
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		// get request builder
-		ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
+		// get request context
+		Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
 
 		// get metadata of current thread
 		MetadataContext metadataContext = exchange
 				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
-
-		// add new metadata and cover old
 		if (metadataContext == null) {
 			metadataContext = MetadataContextHolder.get();
 		}
-		Map<String, String> customMetadata = metadataContext
-				.getAllTransitiveCustomMetadata();
-		if (!CollectionUtils.isEmpty(customMetadata)) {
-			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
-			try {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, "UTF-8"));
-			}
-			catch (UnsupportedEncodingException e) {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
-			}
-		}
 
-		return chain.filter(exchange.mutate().request(builder.build()).build());
+		// TODO The peer namespace is temporarily the same as the local namespace
+		metadataContext.putSystemMetadata(
+				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
+				MetadataContext.LOCAL_NAMESPACE);
+		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
+				route.getId());
+		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH,
+				exchange.getRequest().getURI().getPath());
+
+		exchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT,
+				metadataContext);
+
+		return chain.filter(exchange);
 	}
 
 }

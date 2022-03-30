@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.registry;
 
-import com.tencent.cloud.common.metadata.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.PolarisProperties;
 import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;

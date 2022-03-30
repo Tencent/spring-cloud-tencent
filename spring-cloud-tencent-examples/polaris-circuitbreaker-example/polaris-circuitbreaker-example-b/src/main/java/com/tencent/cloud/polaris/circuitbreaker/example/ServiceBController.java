@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/example/service/b")
 public class ServiceBController {
 
-	@Value("${is-throw-runtime-exception:#{true}}")
+	@Value("${is-throw-runtime-exception:#{false}}")
 	private boolean isThrowRuntimeException;
 
 	/**

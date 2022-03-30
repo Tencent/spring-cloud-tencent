@@ -24,6 +24,7 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +38,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/gateway/example/callee")
 public class GatewayCalleeController {
 
-	private static Logger logger = LoggerFactory.getLogger(GatewayCalleeController.class);
+	private static Logger LOG = LoggerFactory.getLogger(GatewayCalleeController.class);
+
+	@Value("${server.port:0}")
+	private int port;
 
 	/**
 	 * Get information of callee.
@@ -45,7 +49,8 @@ public class GatewayCalleeController {
 	 */
 	@RequestMapping("/info")
 	public String info() {
-		return "Gateway Example Callee";
+		LOG.info("Gateway Example Callee [{}] is called.", port);
+		return String.format("Gateway Example Callee [%s] is called.", port);
 	}
 
 	/**
@@ -55,7 +60,7 @@ public class GatewayCalleeController {
 	public String echoHeader(
 			@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String metadataStr)
 			throws UnsupportedEncodingException {
-		logger.info(URLDecoder.decode(metadataStr, "UTF-8"));
+		LOG.info(URLDecoder.decode(metadataStr, "UTF-8"));
 		return URLDecoder.decode(metadataStr, "UTF-8");
 	}
 

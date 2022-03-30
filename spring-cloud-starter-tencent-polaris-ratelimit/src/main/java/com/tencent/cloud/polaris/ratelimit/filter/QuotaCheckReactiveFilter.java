@@ -21,9 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
@@ -66,22 +64,9 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		// get metadata of current thread
-		MetadataContext metadataContext = exchange
-				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
-
-		if (metadataContext == null) {
-			metadataContext = MetadataContextHolder.get();
-		}
-
-		String localNamespace = metadataContext
-				.getSystemMetadata(MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE);
-		String localService = metadataContext
-				.getSystemMetadata(MetadataConstant.SystemMetadataKey.LOCAL_SERVICE);
-
-		// TODO Get path
-		String method = metadataContext
-				.getSystemMetadata(MetadataConstant.SystemMetadataKey.LOCAL_PATH);
+		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
+		String localService = MetadataContext.LOCAL_SERVICE;
+		String method = exchange.getRequest().getURI().getPath();
 		Map<String, String> labels = null;
 		if (StringUtils.isNotBlank(method)) {
 			labels = new HashMap<>();

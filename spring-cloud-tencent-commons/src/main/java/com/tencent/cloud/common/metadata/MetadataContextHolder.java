@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 
 import org.springframework.util.CollectionUtils;
@@ -33,22 +33,7 @@ import org.springframework.util.CollectionUtils;
  */
 public final class MetadataContextHolder {
 
-	/**
-	 * Namespace of local instance.
-	 */
-	public static final String LOCAL_NAMESPACE = ApplicationContextAwareUtils
-			.getProperties("spring.cloud" + ".polaris.discovery.namespace", "default");
-
 	private static final ThreadLocal<MetadataContext> METADATA_CONTEXT = new InheritableThreadLocal<>();
-
-	private static final String LOCAL_SPRING_APPLICATION_NAME = ApplicationContextAwareUtils
-			.getProperties("spring.application.name", null);
-
-	/**
-	 * Service name of local instance.
-	 */
-	public static final String LOCAL_SERVICE = ApplicationContextAwareUtils.getProperties(
-			"spring.cloud.polaris" + ".discovery.service", LOCAL_SPRING_APPLICATION_NAME);
 
 	private static MetadataLocalProperties metadataLocalProperties;
 
@@ -73,12 +58,6 @@ public final class MetadataContextHolder {
 					metadataLocalProperties.getContent(),
 					metadataLocalProperties.getTransitive());
 			metadataContext.putAllTransitiveCustomMetadata(transitiveMetadataMap);
-
-			// init system metadata
-			metadataContext.putSystemMetadata(
-					MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE, LOCAL_NAMESPACE);
-			metadataContext.putSystemMetadata(
-					MetadataConstant.SystemMetadataKey.LOCAL_SERVICE, LOCAL_SERVICE);
 
 			METADATA_CONTEXT.set(metadataContext);
 		}

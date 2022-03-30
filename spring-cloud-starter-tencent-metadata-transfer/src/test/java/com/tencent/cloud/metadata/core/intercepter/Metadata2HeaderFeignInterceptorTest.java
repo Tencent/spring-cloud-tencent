@@ -15,18 +15,16 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.core.intercepter.feign;
+package com.tencent.cloud.metadata.core.intercepter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.core.interceptor.feign.Metadata2HeaderFeignInterceptor;
+import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderFeignInterceptor;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.assertj.core.api.Assertions;
@@ -65,12 +63,10 @@ public class Metadata2HeaderFeignInterceptorTest {
 	private TestApplication.TestFeign testFeign;
 
 	@Test
-	public void test1() throws JsonProcessingException {
+	public void test1() {
 		String metadata = testFeign.test();
-		ObjectMapper mapper = new ObjectMapper();
-		Assertions.assertThat(metadata).isEqualTo(
-				"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
-						+ "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}");
+		Assertions.assertThat(metadata)
+				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{}");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
 				.isEqualTo("1");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))

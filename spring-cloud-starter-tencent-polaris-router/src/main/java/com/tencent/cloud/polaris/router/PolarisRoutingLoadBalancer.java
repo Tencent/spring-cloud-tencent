@@ -29,6 +29,7 @@ import com.netflix.loadbalancer.PollingServerListUpdater;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
@@ -72,8 +73,7 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 		else {
 			String serviceName;
 			// notice the difference between different service registries
-			if (StringUtils.isNotBlank(
-					allServers.get(0).getMetaInfo().getServiceIdForDiscovery())) {
+			if (StringUtils.isNotBlank(allServers.get(0).getMetaInfo().getServiceIdForDiscovery())) {
 				serviceName = allServers.get(0).getMetaInfo().getServiceIdForDiscovery();
 			}
 			else {
@@ -83,12 +83,11 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 				throw new IllegalStateException(
 						"PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 			}
-			ServiceKey serviceKey = new ServiceKey(MetadataContextHolder.LOCAL_NAMESPACE,
-					serviceName);
+			ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
 			List<Instance> instances = new ArrayList<>(8);
 			for (Server server : allServers) {
 				DefaultInstance instance = new DefaultInstance();
-				instance.setNamespace(MetadataContextHolder.LOCAL_NAMESPACE);
+				instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 				instance.setService(serviceName);
 				instance.setHealthy(server.isAlive());
 				instance.setProtocol(server.getScheme());
@@ -103,14 +102,10 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 		}
 		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
 		processRoutersRequest.setDstInstances(serviceInstances);
-		String srcNamespace = MetadataContextHolder.get()
-				.getSystemMetadata(SystemMetadataKey.LOCAL_NAMESPACE);
-		String srcService = MetadataContextHolder.get()
-				.getSystemMetadata(SystemMetadataKey.LOCAL_SERVICE);
-		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get()
-				.getAllTransitiveCustomMetadata();
-		String method = MetadataContextHolder.get()
-				.getSystemMetadata(SystemMetadataKey.PEER_PATH);
+		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
+		String srcService = MetadataContext.LOCAL_SERVICE;
+		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
+		String method = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.PEER_PATH);
 		processRoutersRequest.setMethod(method);
 		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
 			ServiceInfo serviceInfo = new ServiceInfo();

@@ -15,16 +15,16 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.core.intercepter.resttemplate;
+package com.tencent.cloud.metadata.core.intercepter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.core.interceptor.resttemplate.MetadataRestTemplateInterceptor;
+import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderRestTemplateInterceptor;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,15 +46,15 @@ import org.springframework.web.client.RestTemplate;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link MetadataRestTemplateInterceptor}
+ * Test for {@link Metadata2HeaderRestTemplateInterceptor}
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
-		classes = MetadataRestTemplateInterceptorTest.TestApplication.class,
+		classes = Metadata2HeaderRestTemplateInterceptorTest.TestApplication.class,
 		properties = { "spring.config.location = classpath:application-test.yml" })
-public class MetadataRestTemplateInterceptorTest {
+public class Metadata2HeaderRestTemplateInterceptorTest {
 
 	@Autowired
 	private MetadataLocalProperties metadataLocalProperties;
@@ -75,9 +75,8 @@ public class MetadataRestTemplateInterceptorTest {
 				.exchange("http://localhost:" + localServerPort + "/test", HttpMethod.GET,
 						httpEntity, String.class)
 				.getBody();
-		Assertions.assertThat(metadata).isEqualTo(
-				"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{\"LOCAL_SERVICE\":\"test"
-						+ "\",\"LOCAL_PATH\":\"/test\",\"LOCAL_NAMESPACE\":\"default\"}");
+		Assertions.assertThat(metadata)
+				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{}");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
 				.isEqualTo("1");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))

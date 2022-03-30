@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.core.interceptor.feign;
+package com.tencent.cloud.common.metadata.interceptor.feign;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -43,10 +43,8 @@ public class MetadataFirstFeignInterceptor implements RequestInterceptor, Ordere
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		// TODO The peer namespace is temporarily the same as the local namespace
-		metadataContext.putSystemMetadata(
-				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
-				MetadataContextHolder.get().getSystemMetadata(
-						MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE));
+		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
+				MetadataContext.LOCAL_NAMESPACE);
 		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
 				requestTemplate.feignTarget().name());
 		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH,

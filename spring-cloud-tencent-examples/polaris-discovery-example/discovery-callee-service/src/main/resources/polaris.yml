@@ -1,3 +1,9 @@
+global:
+  system:
+    discoverCluster:
+      sameAsBuiltin: true
+    healthCheckCluster:
+      sameAsBuiltin: true
 #global:
 #  system:
 #    discoverCluster:

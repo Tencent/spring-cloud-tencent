@@ -28,8 +28,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey.LOCAL_NAMESPACE;
-
 /**
  * Test for {@link MetadataContextHolder}
  *
@@ -61,21 +59,19 @@ public class MetadataContextHolderTest {
 		customMetadata.put("b", "22");
 		customMetadata.put("c", "3");
 		Map<String, String> systemMetadata = new HashMap<>();
-		systemMetadata.put(LOCAL_NAMESPACE, "namespace");
 		MetadataContextHolder.init(customMetadata, systemMetadata);
 		metadataContext = MetadataContextHolder.get();
 		customMetadata = metadataContext.getAllTransitiveCustomMetadata();
-		systemMetadata = metadataContext.getAllSystemMetadata();
 		Assertions.assertThat(customMetadata.get("a")).isEqualTo("1");
 		Assertions.assertThat(customMetadata.get("b")).isEqualTo("22");
 		Assertions.assertThat(customMetadata.get("c")).isEqualTo("3");
-		Assertions.assertThat(systemMetadata.get(LOCAL_NAMESPACE)).isEqualTo("namespace");
+		Assertions.assertThat(MetadataContext.LOCAL_NAMESPACE).isEqualTo("default");
 	}
 
 	@Test
 	public void test2() {
-		Assertions.assertThat(MetadataContextHolder.LOCAL_NAMESPACE).isEqualTo("default");
-		Assertions.assertThat(MetadataContextHolder.LOCAL_SERVICE).isEqualTo("test");
+		Assertions.assertThat(MetadataContext.LOCAL_NAMESPACE).isEqualTo("default");
+		Assertions.assertThat(MetadataContext.LOCAL_SERVICE).isEqualTo("test");
 	}
 
 	@SpringBootApplication

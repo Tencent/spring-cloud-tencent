@@ -84,16 +84,13 @@ public class PolarisFeignClient implements Client {
 		String method = metadataContext.getSystemMetadata(SystemMetadataKey.PEER_PATH);
 		resultRequest.setMethod(method);
 		resultRequest.setRetStatus(RetStatus.RetSuccess);
-		String sourceNamespace = metadataContext
-				.getSystemMetadata(SystemMetadataKey.LOCAL_NAMESPACE);
-		String sourceService = metadataContext
-				.getSystemMetadata(SystemMetadataKey.LOCAL_SERVICE);
+		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
+		String sourceService = MetadataContext.LOCAL_SERVICE;
 		if (StringUtils.isNotBlank(sourceNamespace)
 				&& StringUtils.isNotBlank(sourceService)) {
 			resultRequest
 					.setCallerService(new ServiceKey(sourceNamespace, sourceService));
 		}
-
 		URI uri = URI.create(request.url());
 		resultRequest.setHost(uri.getHost());
 		resultRequest.setPort(uri.getPort());

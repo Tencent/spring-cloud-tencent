@@ -21,14 +21,28 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 
 /**
- * Transitive Metadata Context.
+ * Metadata Context.
  *
  * @author Haotian Zhang
  */
 public class MetadataContext {
+
+	/**
+	 * Namespace of local instance.
+	 */
+	public static final String LOCAL_NAMESPACE = ApplicationContextAwareUtils
+			.getProperties("spring.cloud.polaris.discovery.namespace", "default");
+
+	/**
+	 * Service name of local instance.
+	 */
+	public static final String LOCAL_SERVICE = ApplicationContextAwareUtils.getProperties(
+			"spring.cloud.polaris.discovery.service",
+			ApplicationContextAwareUtils.getProperties("spring.application.name", null));
 
 	/**
 	 * Transitive custom metadata content.

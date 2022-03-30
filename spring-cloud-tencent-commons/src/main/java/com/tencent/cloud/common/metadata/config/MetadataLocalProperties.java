@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.common.metadata;
+package com.tencent.cloud.common.metadata.config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
