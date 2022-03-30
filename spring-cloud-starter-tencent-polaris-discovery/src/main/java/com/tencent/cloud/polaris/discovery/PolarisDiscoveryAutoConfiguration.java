@@ -13,11 +13,12 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.discovery;
 
-import com.tencent.cloud.polaris.PolarisProperties;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClientConfiguration;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -27,7 +28,6 @@ import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -46,8 +46,8 @@ public class PolarisDiscoveryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisProperties polarisDiscoveryProperties(InetUtils inetUtils) {
-		return new PolarisProperties(inetUtils);
+	public PolarisDiscoveryProperties polarisDiscoveryProperties() {
+		return new PolarisDiscoveryProperties();
 	}
 
 	@Bean(name = "polarisProvider")

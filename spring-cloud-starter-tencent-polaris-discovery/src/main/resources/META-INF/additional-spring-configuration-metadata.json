@@ -43,12 +43,6 @@
       "description": "polaris discovery service's username to authenticate."
     },
     {
-      "name": "spring.cloud.polaris.discovery.ip-address",
-      "type": "java.lang.String",
-      "defaultValue": "",
-      "description": "ip address to be registered to polaris discovery server."
-    },
-    {
       "name": "spring.cloud.polaris.protocol",
       "type": "java.lang.String",
       "defaultValue": "${spring.cloud.polaris.protocol}",

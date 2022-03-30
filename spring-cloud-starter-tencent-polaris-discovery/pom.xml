@@ -15,11 +15,6 @@
 
 	<dependencies>
 		<!-- Spring Cloud Tencent dependencies start -->
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-commons</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-polaris-context</artifactId>

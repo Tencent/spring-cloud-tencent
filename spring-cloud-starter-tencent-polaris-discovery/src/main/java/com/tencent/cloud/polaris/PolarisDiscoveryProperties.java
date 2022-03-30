@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris;
@@ -24,7 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.core.env.Environment;
 
 /**
@@ -33,7 +33,7 @@ import org.springframework.core.env.Environment;
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @ConfigurationProperties("spring.cloud.polaris.discovery")
-public class PolarisProperties {
+public class PolarisDiscoveryProperties {
 
 	/**
 	 * The polaris authentication token.
@@ -76,11 +76,6 @@ public class PolarisProperties {
 	private int port;
 
 	/**
-	 * Ip address to be registered.
-	 */
-	private String ipAddress;
-
-	/**
 	 * If instance registered.
 	 */
 	@Value("${spring.cloud.polaris.discovery.register.enabled:#{true}}")
@@ -100,12 +95,6 @@ public class PolarisProperties {
 
 	@Autowired
 	private Environment environment;
-
-	public PolarisProperties(InetUtils inetUtils) {
-		if (inetUtils != null) {
-			this.ipAddress = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
-		}
-	}
 
 	/**
 	 * Init properties.
@@ -201,14 +190,6 @@ public class PolarisProperties {
 		this.port = port;
 	}
 
-	public String getIpAddress() {
-		return ipAddress;
-	}
-
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
-
 	public String getHealthCheckUrl() {
 		return healthCheckUrl;
 	}
@@ -222,10 +203,9 @@ public class PolarisProperties {
 		return "PolarisProperties{" + "token='" + token + '\'' + ", namespace='"
 				+ namespace + '\'' + ", service='" + service + '\'' + ", weight=" + weight
 				+ ", version='" + version + '\'' + ", protocol='" + protocol + '\''
-				+ ", port=" + port + ", ipAddress='" + ipAddress + '\''
-				+ ", registerEnabled=" + registerEnabled + ", heartbeatEnabled="
-				+ heartbeatEnabled + ", healthCheckUrl=" + healthCheckUrl
-				+ ", environment=" + environment + '}';
+				+ ", port=" + port + '\'' + ", registerEnabled=" + registerEnabled
+				+ ", heartbeatEnabled=" + heartbeatEnabled + ", healthCheckUrl="
+				+ healthCheckUrl + ", environment=" + environment + '}';
 	}
 
 }

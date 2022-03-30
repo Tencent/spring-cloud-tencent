@@ -1,10 +1,10 @@
 server:
+  session-timeout: 1800
   port: 48081
 spring:
   application:
-    name: polaris-circuitbreaker-example-b
+    name: GatewayCalleeService
   cloud:
     polaris:
       address: grpc://159.75.195.18:8091 # The demo address officially provided by Polaris can be accessed directly http://159.75.195.18
       namespace: default
-is-throw-runtime-exception: false

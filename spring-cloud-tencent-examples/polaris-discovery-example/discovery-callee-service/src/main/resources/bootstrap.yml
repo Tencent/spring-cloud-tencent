@@ -5,11 +5,8 @@ spring:
     name: DiscoveryCalleeService
   cloud:
     polaris:
-      address: grpc://127.0.0.1:8091
-      discovery:
-        ip-address: 127.0.0.1
-    inetutils:
-      default-ip-address: 198.1.1.1
+      address: grpc://159.75.195.18:8091 # The demo address officially provided by Polaris can be accessed directly http://159.75.195.18
+      namespace: default
 #    consul:
 #      port: 8500
 #      host: 127.0.0.1

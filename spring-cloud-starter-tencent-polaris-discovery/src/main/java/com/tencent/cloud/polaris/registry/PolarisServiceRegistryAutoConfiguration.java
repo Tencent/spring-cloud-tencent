@@ -13,12 +13,13 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.registry;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.polaris.PolarisProperties;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
@@ -51,18 +52,18 @@ public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	public PolarisServiceRegistry polarisServiceRegistry(
-			PolarisProperties polarisProperties,
+			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisDiscoveryHandler polarisDiscoveryHandler,
 			MetadataLocalProperties metadataLocalProperties) {
-		return new PolarisServiceRegistry(polarisProperties, polarisDiscoveryHandler,
-				metadataLocalProperties);
+		return new PolarisServiceRegistry(polarisDiscoveryProperties,
+				polarisDiscoveryHandler, metadataLocalProperties);
 	}
 
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public PolarisRegistration polarisRegistration(PolarisProperties polarisProperties,
-			SDKContext context) {
-		return new PolarisRegistration(polarisProperties, context);
+	public PolarisRegistration polarisRegistration(
+			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
+		return new PolarisRegistration(polarisDiscoveryProperties, context);
 	}
 
 	@Bean

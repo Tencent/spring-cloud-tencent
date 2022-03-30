@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.context;
@@ -36,8 +37,7 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Haotian Zhang
  */
-@EnableConfigurationProperties({ PolarisContextProperties.class,
-		InetUtilsProperties.class })
+@EnableConfigurationProperties({ PolarisContextProperties.class })
 public class PolarisContextConfiguration {
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
@@ -49,7 +49,7 @@ public class PolarisContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisConfigModifier polarisConfigModifier() {
+	public ModifyAddress polarisConfigModifier() {
 		return new ModifyAddress();
 	}
 

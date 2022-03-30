@@ -43,7 +43,8 @@ public class MetadataFirstFeignInterceptor implements RequestInterceptor, Ordere
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		// TODO The peer namespace is temporarily the same as the local namespace
-		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
+		metadataContext.putSystemMetadata(
+				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
 				MetadataContext.LOCAL_NAMESPACE);
 		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
 				requestTemplate.feignTarget().name());

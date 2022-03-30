@@ -17,11 +17,6 @@
 		<!-- Spring Cloud Tencent dependencies start -->
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-commons</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-polaris-context</artifactId>
 		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
@@ -33,16 +28,16 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>com.tencent.polaris</groupId>
             <artifactId>polaris-test-common</artifactId>
             <scope>test</scope>
         </dependency>
         <!-- Polaris dependencies end -->
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

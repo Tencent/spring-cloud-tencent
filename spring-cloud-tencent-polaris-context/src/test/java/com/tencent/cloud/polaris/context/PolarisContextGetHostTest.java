@@ -37,11 +37,15 @@ public class PolarisContextGetHostTest {
 	@Autowired
 	private SDKContext polarisContext;
 
+	@Autowired
+	private PolarisContextProperties polarisContextProperties;
+
 	@Test
 	public void testGetConfigHost() {
 		String bindIP = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 		Assert.assertFalse(StringUtils.isBlank(bindIP));
 		Assert.assertEquals(bindIP, "192.168.1.1");
+		Assert.assertEquals(polarisContextProperties.getNamespace(), "dev");
 	}
 
 }

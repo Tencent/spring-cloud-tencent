@@ -13,11 +13,12 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.discovery;
 
-import com.tencent.cloud.polaris.PolarisProperties;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
@@ -71,7 +72,7 @@ public class PolarisDiscoveryAutoConfigurationTest {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(ProviderAPI.class);
 			assertThat(context).hasSingleBean(ConsumerAPI.class);
-			assertThat(context).hasSingleBean(PolarisProperties.class);
+			assertThat(context).hasSingleBean(PolarisDiscoveryProperties.class);
 			assertThat(context).hasSingleBean(PolarisServiceDiscovery.class);
 		});
 	}
