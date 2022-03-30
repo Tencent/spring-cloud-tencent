@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.context;
@@ -29,7 +30,6 @@ import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
@@ -48,13 +48,14 @@ public class PolarisContextProperties {
 	private String address;
 
 	/**
+	 * current server local ip address.
+	 */
+	private String localIpAddress;
+
+	/**
 	 * polaris namespace.
 	 */
-	@Value("${spring.cloud.polaris.namespace:#{'default'}}")
-	private String namespace;
-
-	@Autowired
-	private InetUtilsProperties inetUtilsProperties;
+	private String namespace = "default";
 
 	@Autowired
 	private Environment environment;
@@ -81,10 +82,8 @@ public class PolarisContextProperties {
 	}
 
 	private String getHost() {
-		String defaultIpAddress = inetUtilsProperties.getDefaultIpAddress();
-		if (!StringUtils.isBlank(defaultIpAddress)
-				&& !defaultIpAddress.equals("127.0.0.1")) {
-			return defaultIpAddress;
+		if (StringUtils.isNotBlank(localIpAddress)) {
+			return localIpAddress;
 		}
 		return environment.getProperty("spring.cloud.client.ip-address");
 	}
@@ -95,6 +94,14 @@ public class PolarisContextProperties {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	String getLocalIpAddress() {
+		return localIpAddress;
+	}
+
+	void setLocalIpAddress(String localIpAddress) {
+		this.localIpAddress = localIpAddress;
 	}
 
 	public String getNamespace() {

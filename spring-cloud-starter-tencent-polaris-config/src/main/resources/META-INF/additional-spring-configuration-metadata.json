@@ -8,10 +8,10 @@
       "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
     },
     {
-      "name": "spring.cloud.polaris.config.addresses",
+      "name": "spring.cloud.polaris.config.address",
       "type": "java.lang.String",
       "defaultValue": "",
-      "description": "The polaris configuration server addresses.",
+      "description": "The polaris configuration server address.",
       "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
     },
     {

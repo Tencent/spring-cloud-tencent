@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.registry;
@@ -21,7 +22,7 @@ import java.net.URI;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.polaris.PolarisProperties;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
@@ -36,40 +37,39 @@ import org.springframework.cloud.client.serviceregistry.Registration;
  */
 public class PolarisRegistration implements Registration, ServiceInstance {
 
-	private final PolarisProperties polarisProperties;
+	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
 	private final SDKContext polarisContext;
 
-	public PolarisRegistration(PolarisProperties polarisProperties, SDKContext context) {
-		this.polarisProperties = polarisProperties;
+	public PolarisRegistration(PolarisDiscoveryProperties polarisDiscoveryProperties,
+			SDKContext context) {
+		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisContext = context;
 	}
 
 	@Override
 	public String getServiceId() {
-		return polarisProperties.getService();
+		return polarisDiscoveryProperties.getService();
 	}
 
 	@Override
 	public String getHost() {
-		if (StringUtils.isNotBlank(polarisProperties.getIpAddress())) {
-			return polarisProperties.getIpAddress();
-		}
 		return polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 	}
 
 	@Override
 	public int getPort() {
-		return polarisProperties.getPort();
+		return polarisDiscoveryProperties.getPort();
 	}
 
 	public void setPort(int port) {
-		this.polarisProperties.setPort(port);
+		this.polarisDiscoveryProperties.setPort(port);
 	}
 
 	@Override
 	public boolean isSecure() {
-		return StringUtils.equalsIgnoreCase(polarisProperties.getProtocol(), "https");
+		return StringUtils.equalsIgnoreCase(polarisDiscoveryProperties.getProtocol(),
+				"https");
 	}
 
 	@Override
@@ -82,14 +82,14 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 		return MetadataContextHolder.get().getAllSystemMetadata();
 	}
 
-	public PolarisProperties getPolarisProperties() {
-		return polarisProperties;
+	public PolarisDiscoveryProperties getPolarisProperties() {
+		return polarisDiscoveryProperties;
 	}
 
 	@Override
 	public String toString() {
-		return "PolarisRegistration{" + "polarisProperties=" + polarisProperties
-				+ ", polarisContext=" + polarisContext + '}';
+		return "PolarisRegistration{" + "polarisDiscoveryProperties="
+				+ polarisDiscoveryProperties + ", polarisContext=" + polarisContext + '}';
 	}
 
 }

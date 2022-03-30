@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.registry;
@@ -22,7 +23,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.polaris.PolarisProperties;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.polaris.api.core.ProviderAPI;
@@ -56,7 +57,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	private static final int ttl = 5;
 
-	private final PolarisProperties polarisProperties;
+	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
 	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
@@ -64,13 +65,13 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	private final ScheduledExecutorService heartbeatExecutor;
 
-	public PolarisServiceRegistry(PolarisProperties polarisProperties,
+	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisDiscoveryHandler polarisDiscoveryHandler,
 			MetadataLocalProperties metadataLocalProperties) {
-		this.polarisProperties = polarisProperties;
+		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.metadataLocalProperties = metadataLocalProperties;
-		if (polarisProperties.isHeartbeatEnabled()) {
+		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
 			ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(
 					0, new NamedThreadFactory("spring-cloud-heartbeat"));
 			heartbeatExecutor.setMaximumPoolSize(1);
@@ -90,24 +91,24 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		}
 		// Register instance.
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
-		instanceRegisterRequest.setNamespace(polarisProperties.getNamespace());
+		instanceRegisterRequest.setNamespace(polarisDiscoveryProperties.getNamespace());
 		instanceRegisterRequest.setService(registration.getServiceId());
 		instanceRegisterRequest.setHost(registration.getHost());
 		instanceRegisterRequest.setPort(registration.getPort());
-		instanceRegisterRequest.setToken(polarisProperties.getToken());
+		instanceRegisterRequest.setToken(polarisDiscoveryProperties.getToken());
 		if (null != heartbeatExecutor) {
 			instanceRegisterRequest.setTtl(ttl);
 		}
 		instanceRegisterRequest.setMetadata(metadataLocalProperties.getContent());
-		instanceRegisterRequest.setProtocol(polarisProperties.getProtocol());
-		instanceRegisterRequest.setVersion(polarisProperties.getVersion());
+		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
+		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			providerClient.register(instanceRegisterRequest);
 			log.info("polaris registry, {} {} {}:{} {} register finished",
-					polarisProperties.getNamespace(), registration.getServiceId(),
-					registration.getHost(), registration.getPort(),
-					metadataLocalProperties.getContent());
+					polarisDiscoveryProperties.getNamespace(),
+					registration.getServiceId(), registration.getHost(),
+					registration.getPort(), metadataLocalProperties.getContent());
 
 			if (null != heartbeatExecutor) {
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
@@ -134,8 +135,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		}
 
 		InstanceDeregisterRequest deRegisterRequest = new InstanceDeregisterRequest();
-		deRegisterRequest.setToken(polarisProperties.getToken());
-		deRegisterRequest.setNamespace(polarisProperties.getNamespace());
+		deRegisterRequest.setToken(polarisDiscoveryProperties.getToken());
+		deRegisterRequest.setNamespace(polarisDiscoveryProperties.getNamespace());
 		deRegisterRequest.setService(registration.getServiceId());
 		deRegisterRequest.setHost(registration.getHost());
 		deRegisterRequest.setPort(registration.getPort());
@@ -177,7 +178,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		}
 		for (Instance instance : instances) {
 			if (instance.getHost().equalsIgnoreCase(registration.getHost())
-					&& instance.getPort() == polarisProperties.getPort()) {
+					&& instance.getPort() == polarisDiscoveryProperties.getPort()) {
 				return instance.isHealthy() ? "UP" : "DOWN";
 			}
 		}
@@ -191,7 +192,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	public void heartbeat(InstanceHeartbeatRequest heartbeatRequest) {
 		heartbeatExecutor.scheduleWithFixedDelay(() -> {
 			try {
-				String healthCheckEndpoint = polarisProperties.getHealthCheckUrl();
+				String healthCheckEndpoint = polarisDiscoveryProperties
+						.getHealthCheckUrl();
 				// First determine whether health-check-url is configured.
 				// If configured, the service instance health check needs to be executed
 				// first.

@@ -17,7 +17,14 @@
       "name": "spring.cloud.polaris.namespace",
       "type": "java.lang.String",
       "description": "polaris namespace",
+      "default": "default",
       "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.local-ip-address",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "current server local ip address."
     }
   ],
   "hints": []

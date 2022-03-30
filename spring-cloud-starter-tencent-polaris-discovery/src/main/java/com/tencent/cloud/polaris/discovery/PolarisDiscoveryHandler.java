@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.discovery;
@@ -22,7 +23,7 @@ import java.util.Map;
 import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.polaris.PolarisProperties;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.pojo.ServiceInfo;
@@ -45,7 +46,7 @@ import org.springframework.stereotype.Component;
 public class PolarisDiscoveryHandler {
 
 	@Autowired
-	private PolarisProperties polarisProperties;
+	private PolarisDiscoveryProperties polarisDiscoveryProperties;
 
 	@Autowired
 	private ProviderAPI providerAPI;
@@ -59,7 +60,7 @@ public class PolarisDiscoveryHandler {
 	 * @return list of instances
 	 */
 	public InstancesResponse getFilteredInstances(String service) {
-		String namespace = polarisProperties.getNamespace();
+		String namespace = polarisDiscoveryProperties.getNamespace();
 		GetInstancesRequest getInstancesRequest = new GetInstancesRequest();
 		getInstancesRequest.setNamespace(namespace);
 		getInstancesRequest.setService(service);
@@ -87,7 +88,7 @@ public class PolarisDiscoveryHandler {
 	 * @return list of instances
 	 */
 	public InstancesResponse getInstances(String service) {
-		String namespace = polarisProperties.getNamespace();
+		String namespace = polarisDiscoveryProperties.getNamespace();
 		GetAllInstancesRequest request = new GetAllInstancesRequest();
 		request.setNamespace(namespace);
 		request.setService(service);
@@ -103,7 +104,7 @@ public class PolarisDiscoveryHandler {
 	 * @return service list
 	 */
 	public ServicesResponse GetServices() {
-		String namespace = polarisProperties.getNamespace();
+		String namespace = polarisDiscoveryProperties.getNamespace();
 		GetServicesRequest request = new GetServicesRequest();
 		request.setNamespace(namespace);
 		return polarisConsumer.getServices(request);
