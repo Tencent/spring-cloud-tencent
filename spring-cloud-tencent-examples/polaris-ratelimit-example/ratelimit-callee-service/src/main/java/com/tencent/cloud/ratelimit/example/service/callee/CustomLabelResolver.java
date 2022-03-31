@@ -16,38 +16,32 @@
  *
  */
 
-package com.tencent.cloud.polaris.ratelimit.constant;
+package com.tencent.cloud.ratelimit.example.service.callee;
 
-import org.springframework.core.Ordered;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
+
+import org.springframework.stereotype.Component;
 
 /**
- * Constant for rate-limiter.
+ * resolver custom label from request.
  *
- * @author Haotian Zhang
+ *@author lepdou 2022-03-31
  */
-public final class RateLimitConstant {
+@Component
+public class CustomLabelResolver implements PolarisRateLimiterLabelServletResolver {
 
-	/**
-	 * Order of filter.
-	 */
-	public static final int FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+	@Override
+	public Map<String, String> resolve(HttpServletRequest request) {
+		//rate limit by some request params. such as query params, headers ..
 
-	/**
-	 * Info of rate limit.
-	 */
-	public static String QUOTA_LIMITED_INFO = "The request is deny by rate limit because the throttling threshold is reached";
+		Map<String, String> labels = new HashMap<>();
+		labels.put("user", "zhangsan");
 
-	/**
-	 * The build in label method.
-	 */
-	public static String LABEL_METHOD = "method";
-
-	/**
-	 * The build in label path.
-	 */
-	public static String LABEL_PATH = "path";
-
-	private RateLimitConstant() {
+		return labels;
 	}
-
 }

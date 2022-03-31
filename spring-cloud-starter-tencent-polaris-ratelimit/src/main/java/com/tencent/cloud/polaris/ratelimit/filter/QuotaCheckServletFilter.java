@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
@@ -38,8 +39,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LABEL_METHOD;
+import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LABEL_PATH;
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 
 /**
@@ -54,9 +58,11 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			.getLogger(QuotaCheckServletFilter.class);
 
 	private final LimitAPI limitAPI;
+	private final PolarisRateLimiterLabelServletResolver labelResolver;
 
-	public QuotaCheckServletFilter(LimitAPI limitAPI) {
+	public QuotaCheckServletFilter(LimitAPI limitAPI, PolarisRateLimiterLabelServletResolver labelResolver) {
 		this.limitAPI = limitAPI;
+		this.labelResolver = labelResolver;
 	}
 
 	@Override
@@ -65,11 +71,29 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
-		String method = request.getRequestURI();
-		Map<String, String> labels = null;
-		if (StringUtils.isNotBlank(method)) {
-			labels = new HashMap<>();
-			labels.put("method", method);
+
+		Map<String, String> labels = new HashMap<>();
+
+		// add build in labels
+		String path = request.getRequestURI();
+		String method = request.getMethod();
+
+		if (StringUtils.isNotBlank(path)) {
+			labels.put(LABEL_PATH, path);
+		}
+		labels.put(LABEL_METHOD, method);
+
+
+		// add custom labels
+		if (labelResolver != null) {
+			try {
+				Map<String, String> customLabels = labelResolver.resolve(request);
+				if (!CollectionUtils.isEmpty(customLabels)) {
+					labels.putAll(customLabels);
+				}
+			} catch (Throwable e) {
+				LOG.error("resolve custom label failed. resolver = {}", labelResolver.getClass().getName(), e);
+			}
 		}
 
 		try {

@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.ratelimit.filter;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
@@ -37,9 +39,13 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
+
+import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LABEL_METHOD;
+import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LABEL_PATH;
 
 /**
  * Reactive filter to check quota.
@@ -53,8 +59,12 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 	private final LimitAPI limitAPI;
 
-	public QuotaCheckReactiveFilter(LimitAPI limitAPI) {
+	private final PolarisRateLimiterLabelReactiveResolver labelResolver;
+
+	public QuotaCheckReactiveFilter(LimitAPI limitAPI,
+			PolarisRateLimiterLabelReactiveResolver labelResolver) {
 		this.limitAPI = limitAPI;
+		this.labelResolver = labelResolver;
 	}
 
 	@Override
@@ -66,23 +76,39 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
-		String method = exchange.getRequest().getURI().getPath();
-		Map<String, String> labels = null;
-		if (StringUtils.isNotBlank(method)) {
-			labels = new HashMap<>();
-			labels.put("method", method);
+
+		Map<String, String> labels = new HashMap<>();
+
+		// add build in labels
+		String path = exchange.getRequest().getURI().getPath();
+		String method = exchange.getRequest().getMethodValue();
+		if (StringUtils.isNotBlank(path)) {
+			labels.put(LABEL_PATH, path);
+		}
+		labels.put(LABEL_METHOD, method);
+
+		// add custom labels
+		if (labelResolver != null) {
+			try {
+				Map<String, String> customLabels = labelResolver.resolve(exchange);
+				if (!CollectionUtils.isEmpty(customLabels)) {
+					labels.putAll(customLabels);
+				}
+			} catch (Throwable e) {
+				LOG.error("resolve custom label failed. resolver = {}", labelResolver.getClass().getName(), e);
+			}
 		}
 
 		try {
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
 					localNamespace, localService, 1, labels, null);
+
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
 				response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
 				response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer().write(
-						(RateLimitConstant.QUOTA_LIMITED_INFO + quotaResponse.getInfo())
-								.getBytes(StandardCharsets.UTF_8));
+						RateLimitConstant.QUOTA_LIMITED_INFO.getBytes(StandardCharsets.UTF_8));
 				return response.writeWith(Mono.just(dataBuffer));
 			}
 		}
