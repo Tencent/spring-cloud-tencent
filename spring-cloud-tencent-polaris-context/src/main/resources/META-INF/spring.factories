@@ -1,1 +1,1 @@
-org.springframework.cloud.bootstrap.BootstrapConfiguration=com.tencent.cloud.polaris.context.PolarisContextConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.tencent.cloud.polaris.context.PolarisContextConfiguration

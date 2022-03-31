@@ -7,7 +7,7 @@ spring:
     polaris:
       namespace: default
       config:
-        address: grpc://159.75.195.18:8093 # The demo address officially provided by Polaris can be accessed directly http://159.75.195.18
+        address: grpc://127.0.0.1:8093
         auto-refresh: true # auto refresh when config file changed
         groups:
           - name: ${spring.application.name} # group name

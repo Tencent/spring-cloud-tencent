@@ -18,16 +18,9 @@
 
 package com.tencent.cloud.polaris.context;
 
-import java.util.List;
-
-import com.tencent.cloud.common.constant.ContextConstant.ModifierOrder;
-import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.factory.config.ConfigurationImpl;
-import org.apache.commons.lang.StringUtils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -52,29 +45,4 @@ public class PolarisContextConfiguration {
 	public ModifyAddress polarisConfigModifier() {
 		return new ModifyAddress();
 	}
-
-	private static class ModifyAddress implements PolarisConfigModifier {
-
-		@Autowired
-		private PolarisContextProperties properties;
-
-		@Override
-		public void modify(ConfigurationImpl configuration) {
-			if (StringUtils.isBlank(properties.getAddress())) {
-				return;
-			}
-
-			List<String> addresses = AddressUtils
-					.parseAddressList(properties.getAddress());
-
-			configuration.getGlobal().getServerConnector().setAddresses(addresses);
-		}
-
-		@Override
-		public int getOrder() {
-			return ModifierOrder.FIRST;
-		}
-
-	}
-
 }
