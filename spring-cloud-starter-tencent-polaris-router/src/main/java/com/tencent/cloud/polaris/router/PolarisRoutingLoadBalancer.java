@@ -17,10 +17,6 @@
 
 package com.tencent.cloud.polaris.router;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
 import com.netflix.loadbalancer.IPing;
@@ -41,8 +37,10 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -114,8 +112,7 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 			serviceInfo.setMetadata(transitiveCustomMetadata);
 			processRoutersRequest.setSourceService(serviceInfo);
 		}
-		ProcessRoutersResponse processRoutersResponse = routerAPI
-				.processRouters(processRoutersRequest);
+		ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
 		ServiceInstances filteredServiceInstances = processRoutersResponse
 				.getServiceInstances();
 		List<Server> filteredInstances = new ArrayList<>();

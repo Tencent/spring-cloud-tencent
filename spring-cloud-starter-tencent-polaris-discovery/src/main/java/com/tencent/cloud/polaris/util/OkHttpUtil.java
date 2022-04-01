@@ -17,13 +17,11 @@
 
 package com.tencent.cloud.polaris.util;
 
-import java.util.Map;
-import java.util.Objects;
-
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import java.util.Map;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,12 +36,6 @@ public final class OkHttpUtil {
 	 * Logger.
 	 */
 	public final static Logger logger = LoggerFactory.getLogger(OkHttpUtil.class);
-
-	/**
-	 * JSON format.
-	 */
-	public static final MediaType MEDIA_TYPE_JSON = MediaType
-			.parse("application/json; charset=utf-8");
 
 	/**
 	 * client.
