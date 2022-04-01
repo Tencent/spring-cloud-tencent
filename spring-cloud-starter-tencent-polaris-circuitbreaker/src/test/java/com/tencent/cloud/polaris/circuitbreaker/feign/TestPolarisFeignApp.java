@@ -37,8 +37,7 @@ public class TestPolarisFeignApp {
 		SpringApplication.run(TestPolarisFeignApp.class);
 	}
 
-	@FeignClient(name = "feign-service-polaris",
-			fallback = TestPolarisServiceFallback.class)
+	@FeignClient(name = "feign-service-polaris", fallback = TestPolarisServiceFallback.class)
 	public interface TestPolarisService {
 
 		/**

@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.util;
 import java.util.Map;
 import java.util.Objects;
 
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -38,12 +37,6 @@ public final class OkHttpUtil {
 	 * Logger.
 	 */
 	public final static Logger logger = LoggerFactory.getLogger(OkHttpUtil.class);
-
-	/**
-	 * JSON format.
-	 */
-	public static final MediaType MEDIA_TYPE_JSON = MediaType
-			.parse("application/json; charset=utf-8");
 
 	/**
 	 * client.
@@ -69,8 +62,7 @@ public final class OkHttpUtil {
 
 			if (response.isSuccessful() && Objects.nonNull(response.body())) {
 				String result = response.body().string();
-				logger.debug("exec get request, url: {} success，response data: {}", url,
-						result);
+				logger.debug("exec get request, url: {} success，response data: {}", url, result);
 				return true;
 			}
 		}
@@ -85,8 +77,7 @@ public final class OkHttpUtil {
 	 * @param builder builder
 	 * @param headers headers
 	 */
-	private static void buildHeader(Request.Builder builder,
-			Map<String, String> headers) {
+	private static void buildHeader(Request.Builder builder, Map<String, String> headers) {
 		if (Objects.nonNull(headers) && headers.size() > 0) {
 			headers.forEach((k, v) -> {
 				if (Objects.nonNull(k) && Objects.nonNull(v)) {

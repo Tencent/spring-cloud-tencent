@@ -17,10 +17,8 @@
 
 package com.tencent.cloud.common.metadata.config;
 
-import com.netflix.zuul.ZuulFilter;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
-import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstZuulFilter;
 import com.tencent.cloud.common.metadata.filter.web.MetadataReactiveFilter;
 import com.tencent.cloud.common.metadata.filter.web.MetadataServletFilter;
 import com.tencent.cloud.common.metadata.interceptor.feign.MetadataFirstFeignInterceptor;
@@ -67,10 +65,8 @@ public class MetadataAutoConfiguration {
 				MetadataServletFilter metadataServletFilter) {
 			FilterRegistrationBean<MetadataServletFilter> filterRegistrationBean = new FilterRegistrationBean<>(
 					metadataServletFilter);
-			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE,
-					REQUEST);
-			filterRegistrationBean
-					.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
+			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
+			filterRegistrationBean.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
 			return filterRegistrationBean;
 		}
 
@@ -105,20 +101,6 @@ public class MetadataAutoConfiguration {
 		@Bean
 		public MetadataFirstFeignInterceptor metadataFirstFeignInterceptor() {
 			return new MetadataFirstFeignInterceptor();
-		}
-
-	}
-
-	/**
-	 * Create when gateway application is Zuul.
-	 */
-	@Configuration
-	@ConditionalOnClass(name = "com.netflix.zuul.http.ZuulServlet")
-	static class MetadataZuulFilterConfig {
-
-		@Bean
-		public ZuulFilter metadataFirstZuulFilter() {
-			return new MetadataFirstZuulFilter();
 		}
 
 	}

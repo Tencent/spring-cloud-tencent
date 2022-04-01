@@ -45,8 +45,7 @@ public class PolarisFeignClientTest {
 
 	@Test
 	public void testPolarisFeignBeanPostProcessor() {
-		final PolarisFeignBeanPostProcessor postProcessor = springCtx
-				.getBean(PolarisFeignBeanPostProcessor.class);
+		final PolarisFeignBeanPostProcessor postProcessor = springCtx.getBean(PolarisFeignBeanPostProcessor.class);
 		Assertions.assertNotNull(postProcessor, "PolarisFeignBeanPostProcessor");
 	}
 
@@ -54,9 +53,6 @@ public class PolarisFeignClientTest {
 	public void testFeignClient() {
 		final Client client = springCtx.getBean(Client.class);
 		if (client instanceof PolarisFeignClient) {
-			return;
-		}
-		if (client instanceof PolarisLoadBalancerFeignClient) {
 			return;
 		}
 		if (client instanceof PolarisFeignBlockingLoadBalancerClient) {

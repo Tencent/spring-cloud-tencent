@@ -49,13 +49,12 @@ public final class MetadataContextHolder {
 		if (null == METADATA_CONTEXT.get()) {
 			MetadataContext metadataContext = new MetadataContext();
 			if (metadataLocalProperties == null) {
-				metadataLocalProperties = (MetadataLocalProperties) ApplicationContextAwareUtils
-						.getApplicationContext().getBean("metadataLocalProperties");
+				metadataLocalProperties = (MetadataLocalProperties) ApplicationContextAwareUtils.getApplicationContext()
+						.getBean("metadataLocalProperties");
 			}
 
 			// init custom metadata and load local metadata
-			Map<String, String> transitiveMetadataMap = getTransitiveMetadataMap(
-					metadataLocalProperties.getContent(),
+			Map<String, String> transitiveMetadataMap = getTransitiveMetadataMap(metadataLocalProperties.getContent(),
 					metadataLocalProperties.getTransitive());
 			metadataContext.putAllTransitiveCustomMetadata(transitiveMetadataMap);
 
@@ -70,8 +69,8 @@ public final class MetadataContextHolder {
 	 * @param transitiveMetadataKeyList transitive metadata name list
 	 * @return result
 	 */
-	private static Map<String, String> getTransitiveMetadataMap(
-			Map<String, String> source, List<String> transitiveMetadataKeyList) {
+	private static Map<String, String> getTransitiveMetadataMap(Map<String, String> source,
+			List<String> transitiveMetadataKeyList) {
 		Map<String, String> result = new HashMap<>();
 		for (String key : transitiveMetadataKeyList) {
 			if (source.containsKey(key)) {
@@ -94,8 +93,7 @@ public final class MetadataContextHolder {
 	 * @param customMetadataMap custom metadata collection
 	 * @param systemMetadataMap system metadata collection
 	 */
-	public static void init(Map<String, String> customMetadataMap,
-			Map<String, String> systemMetadataMap) {
+	public static void init(Map<String, String> customMetadataMap, Map<String, String> systemMetadataMap) {
 		// Init ThreadLocal.
 		MetadataContextHolder.remove();
 		MetadataContext metadataContext = MetadataContextHolder.get();

@@ -34,24 +34,23 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ModifyAddress implements PolarisConfigModifier {
 
-		@Autowired
-		private PolarisContextProperties properties;
+	@Autowired
+	private PolarisContextProperties properties;
 
-		@Override
-		public void modify(ConfigurationImpl configuration) {
-			if (StringUtils.isBlank(properties.getAddress())) {
-				return;
-			}
-
-			List<String> addresses = AddressUtils
-					.parseAddressList(properties.getAddress());
-
-			configuration.getGlobal().getServerConnector().setAddresses(addresses);
+	@Override
+	public void modify(ConfigurationImpl configuration) {
+		if (StringUtils.isBlank(properties.getAddress())) {
+			return;
 		}
 
-		@Override
-		public int getOrder() {
-			return ContextConstant.ModifierOrder.FIRST;
-		}
+		List<String> addresses = AddressUtils.parseAddressList(properties.getAddress());
 
+		configuration.getGlobal().getServerConnector().setAddresses(addresses);
 	}
+
+	@Override
+	public int getOrder() {
+		return ContextConstant.ModifierOrder.FIRST;
+	}
+
+}

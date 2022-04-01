@@ -18,7 +18,6 @@
 package com.tencent.cloud.common.metadata.config;
 
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
-import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstZuulFilter;
 import com.tencent.cloud.common.metadata.filter.web.MetadataReactiveFilter;
 import com.tencent.cloud.common.metadata.filter.web.MetadataServletFilter;
 import com.tencent.cloud.common.metadata.interceptor.feign.MetadataFirstFeignInterceptor;
@@ -48,31 +47,21 @@ public class MetadataAutoConfigurationTest {
 	 */
 	@Test
 	public void test1() {
-		this.applicationContextRunner
-				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
+		this.applicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
+					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).doesNotHaveBean(
-							MetadataAutoConfiguration.MetadataServletFilterConfig.class);
+							.doesNotHaveBean(MetadataAutoConfiguration.MetadataServletFilterConfig.class);
+					Assertions.assertThat(context).doesNotHaveBean(MetadataServletFilter.class);
 					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataServletFilter.class);
-					Assertions.assertThat(context).doesNotHaveBean(
-							MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
+							.doesNotHaveBean(MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
+					Assertions.assertThat(context).doesNotHaveBean(MetadataReactiveFilter.class);
 					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataReactiveFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstFeignInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataZuulFilterConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstZuulFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstScgFilter.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataScgFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
 
@@ -81,31 +70,21 @@ public class MetadataAutoConfigurationTest {
 	 */
 	@Test
 	public void test2() {
-		this.webApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
+		this.webApplicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
+					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataServletFilterConfig.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataServletFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataServletFilter.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataServletFilter.class);
-					Assertions.assertThat(context).doesNotHaveBean(
-							MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
+							.doesNotHaveBean(MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
+					Assertions.assertThat(context).doesNotHaveBean(MetadataReactiveFilter.class);
 					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataReactiveFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstFeignInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataZuulFilterConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstZuulFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstScgFilter.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataScgFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
 
@@ -115,30 +94,20 @@ public class MetadataAutoConfigurationTest {
 	@Test
 	public void test3() {
 		this.reactiveWebApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
-				.run(context -> {
+				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class)).run(context -> {
+					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).doesNotHaveBean(
-							MetadataAutoConfiguration.MetadataServletFilterConfig.class);
+							.doesNotHaveBean(MetadataAutoConfiguration.MetadataServletFilterConfig.class);
+					Assertions.assertThat(context).doesNotHaveBean(MetadataServletFilter.class);
 					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataServletFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataReactiveFilter.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataReactiveFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstFeignInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataZuulFilterConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstZuulFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataFirstScgFilter.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataScgFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
 

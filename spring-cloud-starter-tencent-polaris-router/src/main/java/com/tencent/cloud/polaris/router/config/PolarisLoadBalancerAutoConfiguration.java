@@ -26,28 +26,27 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
-import org.springframework.cloud.netflix.ribbon.RibbonClients;
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
+import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto-configuration Ribbon for Polaris.
+ * Autoconfiguration of loadbalancer of Polaris.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
-@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled",
-		matchIfMissing = true)
-@AutoConfigureAfter(RibbonAutoConfiguration.class)
-@RibbonClients(defaultConfiguration = PolarisRibbonClientConfiguration.class)
-public class PolarisRibbonAutoConfiguration {
+@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
+@AutoConfigureAfter(LoadBalancerAutoConfiguration.class)
+@LoadBalancerClients(defaultConfiguration = PolarisLoadBalancerClientConfiguration.class)
+public class PolarisLoadBalancerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisRibbonProperties polarisRibbonProperties() {
-		return new PolarisRibbonProperties();
+	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
+		return new PolarisLoadBalancerProperties();
 	}
 
 	@Bean(name = "polarisRoute")

@@ -34,14 +34,13 @@ import com.tencent.polaris.api.rpc.InstanceHeartbeatRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.util.NamedThreadFactory;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
-import org.springframework.util.StringUtils;
 
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
@@ -52,8 +51,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(PolarisServiceRegistry.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
 	private static final int ttl = 5;
 
@@ -66,14 +64,13 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	private final ScheduledExecutorService heartbeatExecutor;
 
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
-			PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties) {
+			PolarisDiscoveryHandler polarisDiscoveryHandler, MetadataLocalProperties metadataLocalProperties) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.metadataLocalProperties = metadataLocalProperties;
 		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
-			ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(
-					0, new NamedThreadFactory("spring-cloud-heartbeat"));
+			ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(0,
+					new NamedThreadFactory("spring-cloud-heartbeat"));
 			heartbeatExecutor.setMaximumPoolSize(1);
 			this.heartbeatExecutor = heartbeatExecutor;
 		}
@@ -85,7 +82,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	@Override
 	public void register(Registration registration) {
 
-		if (StringUtils.isEmpty(registration.getServiceId())) {
+		if (StringUtils.isBlank(registration.getServiceId())) {
 			log.warn("No service to register for polaris client...");
 			return;
 		}
@@ -105,10 +102,9 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			providerClient.register(instanceRegisterRequest);
-			log.info("polaris registry, {} {} {}:{} {} register finished",
-					polarisDiscoveryProperties.getNamespace(),
-					registration.getServiceId(), registration.getHost(),
-					registration.getPort(), metadataLocalProperties.getContent());
+			log.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
+					registration.getServiceId(), registration.getHost(), registration.getPort(),
+					metadataLocalProperties.getContent());
 
 			if (null != heartbeatExecutor) {
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
@@ -118,8 +114,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			}
 		}
 		catch (Exception e) {
-			log.error("polaris registry, {} register failed...{},",
-					registration.getServiceId(), registration, e);
+			log.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
 			rethrowRuntimeException(e);
 		}
 	}
@@ -146,8 +141,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			providerClient.deRegister(deRegisterRequest);
 		}
 		catch (Exception e) {
-			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration,
-					e);
+			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
 		}
 		finally {
 			if (null != heartbeatExecutor) {
@@ -170,8 +164,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	@Override
 	public Object getStatus(Registration registration) {
 		String serviceName = registration.getServiceId();
-		InstancesResponse instancesResponse = polarisDiscoveryHandler
-				.getInstances(serviceName);
+		InstancesResponse instancesResponse = polarisDiscoveryHandler.getInstances(serviceName);
 		Instance[] instances = instancesResponse.getInstances();
 		if (null == instances || instances.length == 0) {
 			return null;
@@ -192,25 +185,22 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	public void heartbeat(InstanceHeartbeatRequest heartbeatRequest) {
 		heartbeatExecutor.scheduleWithFixedDelay(() -> {
 			try {
-				String healthCheckEndpoint = polarisDiscoveryProperties
-						.getHealthCheckUrl();
+				String healthCheckEndpoint = polarisDiscoveryProperties.getHealthCheckUrl();
 				// First determine whether health-check-url is configured.
 				// If configured, the service instance health check needs to be executed
 				// first.
 				// If the health check passes, the heartbeat will be reported.
 				// If it does not pass, the heartbeat will not be reported.
-				if (Strings.isNotEmpty(healthCheckEndpoint)) {
+				if (StringUtils.isNotBlank(healthCheckEndpoint)) {
 					if (!healthCheckEndpoint.startsWith("/")) {
 						healthCheckEndpoint = "/" + healthCheckEndpoint;
 					}
 
-					String healthCheckUrl = String.format("http://%s:%s%s",
-							heartbeatRequest.getHost(), heartbeatRequest.getPort(),
-							healthCheckEndpoint);
+					String healthCheckUrl = String.format("http://%s:%s%s", heartbeatRequest.getHost(),
+							heartbeatRequest.getPort(), healthCheckEndpoint);
 
 					if (!OkHttpUtil.get(healthCheckUrl, null)) {
-						log.error(
-								"backend service health check failed. health check endpoint = {}",
+						log.error("backend service health check failed. health check endpoint = {}",
 								healthCheckEndpoint);
 						return;
 					}

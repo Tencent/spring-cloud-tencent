@@ -31,17 +31,14 @@ import org.springframework.util.StringUtils;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-public class PolarisAutoServiceRegistration
-		extends AbstractAutoServiceRegistration<Registration> {
+public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistration<Registration> {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(PolarisAutoServiceRegistration.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisAutoServiceRegistration.class);
 
 	private final PolarisRegistration registration;
 
 	public PolarisAutoServiceRegistration(ServiceRegistry<Registration> serviceRegistry,
-			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			PolarisRegistration registration) {
+			AutoServiceRegistrationProperties autoServiceRegistrationProperties, PolarisRegistration registration) {
 		super(serviceRegistry, autoServiceRegistrationProperties);
 		this.registration = registration;
 	}

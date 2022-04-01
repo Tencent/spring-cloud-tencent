@@ -48,8 +48,7 @@ import org.springframework.web.server.WebFilterChain;
  */
 public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(QuotaCheckReactiveFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckReactiveFilter.class);
 
 	private final LimitAPI limitAPI;
 
@@ -74,14 +73,14 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		}
 
 		try {
-			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
-					localNamespace, localService, 1, labels, null);
+			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI, localNamespace, localService, 1, labels,
+					null);
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
 				response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
 				response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer().write(
-						(RateLimitConstant.QUOTA_LIMITED_INFO + quotaResponse.getInfo())
+				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer()
+						.write((RateLimitConstant.QUOTA_LIMITED_INFO + quotaResponse.getInfo())
 								.getBytes(StandardCharsets.UTF_8));
 				return response.writeWith(Mono.just(dataBuffer));
 			}

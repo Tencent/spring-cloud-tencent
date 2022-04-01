@@ -45,11 +45,9 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisContextConfiguration.class,
-					PolarisReactiveDiscoveryClientConfiguration.class,
-					PolarisDiscoveryClientConfiguration.class,
+					PolarisReactiveDiscoveryClientConfiguration.class, PolarisDiscoveryClientConfiguration.class,
 					PolarisContextConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-			.withPropertyValues("server.port=" + PORT)
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
 	@BeforeClass
@@ -66,8 +64,7 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 
 	@Test
 	public void testDefaultInitialization() {
-		this.contextRunner.run(context -> assertThat(context)
-				.hasSingleBean(PolarisReactiveDiscoveryClient.class));
+		this.contextRunner.run(context -> assertThat(context).hasSingleBean(PolarisReactiveDiscoveryClient.class));
 	}
 
 	@Configuration

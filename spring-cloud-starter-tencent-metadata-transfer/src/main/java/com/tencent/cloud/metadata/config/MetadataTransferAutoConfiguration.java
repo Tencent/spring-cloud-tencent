@@ -20,9 +20,7 @@ package com.tencent.cloud.metadata.config;
 import java.util.List;
 import java.util.Map;
 
-import com.netflix.zuul.ZuulFilter;
 import com.tencent.cloud.metadata.core.filter.gateway.Metadata2HeaderScgFilter;
-import com.tencent.cloud.metadata.core.filter.gateway.Metadata2HeaderZuulFilter;
 import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderFeignInterceptor;
 import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderRestTemplateInterceptor;
 
@@ -45,20 +43,6 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 public class MetadataTransferAutoConfiguration {
-
-	/**
-	 * Create when gateway application is Zuul.
-	 */
-	@Configuration
-	@ConditionalOnClass(name = "com.netflix.zuul.http.ZuulServlet")
-	static class MetadataTransferZuulFilterConfig {
-
-		@Bean
-		public ZuulFilter metadata2HeaderZuulFilter() {
-			return new Metadata2HeaderZuulFilter();
-		}
-
-	}
 
 	/**
 	 * Create when gateway application is SCG.
@@ -106,35 +90,29 @@ public class MetadataTransferAutoConfiguration {
 		BeanPostProcessor metadata2HeaderRestTemplatePostProcessor(
 				Metadata2HeaderRestTemplateInterceptor metadata2HeaderRestTemplateInterceptor) {
 			// Coping with multiple bean injection scenarios
-			Map<String, RestTemplate> beans = this.context
-					.getBeansOfType(RestTemplate.class);
+			Map<String, RestTemplate> beans = this.context.getBeansOfType(RestTemplate.class);
 			// If the restTemplate has been created when the
 			// MetadataRestTemplatePostProcessor Bean
 			// is initialized, then manually set the interceptor.
 			if (!CollectionUtils.isEmpty(beans)) {
 				for (RestTemplate restTemplate : beans.values()) {
-					List<ClientHttpRequestInterceptor> interceptors = restTemplate
-							.getInterceptors();
+					List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
 					// Avoid setting interceptor repeatedly.
-					if (null != interceptors && !interceptors
-							.contains(metadata2HeaderRestTemplateInterceptor)) {
+					if (null != interceptors && !interceptors.contains(metadata2HeaderRestTemplateInterceptor)) {
 						interceptors.add(metadata2HeaderRestTemplateInterceptor);
 						restTemplate.setInterceptors(interceptors);
 					}
 				}
 			}
-			return new Metadata2HeaderRestTemplatePostProcessor(
-					metadata2HeaderRestTemplateInterceptor);
+			return new Metadata2HeaderRestTemplatePostProcessor(metadata2HeaderRestTemplateInterceptor);
 		}
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.context = applicationContext;
 		}
 
-		public static class Metadata2HeaderRestTemplatePostProcessor
-				implements BeanPostProcessor {
+		public static class Metadata2HeaderRestTemplatePostProcessor implements BeanPostProcessor {
 
 			private Metadata2HeaderRestTemplateInterceptor metadata2HeaderRestTemplateInterceptor;
 
@@ -152,11 +130,9 @@ public class MetadataTransferAutoConfiguration {
 			public Object postProcessAfterInitialization(Object bean, String beanName) {
 				if (bean instanceof RestTemplate) {
 					RestTemplate restTemplate = (RestTemplate) bean;
-					List<ClientHttpRequestInterceptor> interceptors = restTemplate
-							.getInterceptors();
+					List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
 					// Avoid setting interceptor repeatedly.
-					if (null != interceptors && !interceptors
-							.contains(metadata2HeaderRestTemplateInterceptor)) {
+					if (null != interceptors && !interceptors.contains(metadata2HeaderRestTemplateInterceptor)) {
 						interceptors.add(this.metadata2HeaderRestTemplateInterceptor);
 						restTemplate.setInterceptors(interceptors);
 					}

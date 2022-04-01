@@ -37,8 +37,7 @@ import org.springframework.context.annotation.Import;
  * @author lepdou 2022-03-10
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled", matchIfMissing = true)
 @Import(PolarisContextConfiguration.class)
 public class PolarisConfigBootstrapAutoConfiguration {
 
@@ -58,13 +57,10 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	}
 
 	@Bean
-	public PolarisConfigFileLocator polarisConfigFileLocator(
-			PolarisConfigProperties polarisConfigProperties,
-			PolarisContextProperties polarisContextProperties,
-			ConfigFileService configFileService,
+	public PolarisConfigFileLocator polarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
+			PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
 			PolarisPropertySourceManager polarisPropertySourceManager) {
-		return new PolarisConfigFileLocator(polarisConfigProperties,
-				polarisContextProperties, configFileService,
+		return new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties, configFileService,
 				polarisPropertySourceManager);
 	}
 

@@ -60,14 +60,14 @@ public class BusinessController {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < 30; i++) {
 			try {
-				ResponseEntity<String> entity = restTemplate.getForEntity(
-						"http://" + appName + "/business/info", String.class);
+				ResponseEntity<String> entity = restTemplate.getForEntity("http://" + appName + "/business/info",
+						String.class);
 				builder.append(entity.getBody()).append("<br/>");
 			}
 			catch (RestClientException e) {
 				if (e instanceof TooManyRequests) {
-					builder.append(((TooManyRequests) e).getResponseBodyAsString())
-							.append(index.incrementAndGet()).append("<br/>");
+					builder.append(((TooManyRequests) e).getResponseBodyAsString()).append(index.incrementAndGet())
+							.append("<br/>");
 				}
 				else {
 					throw e;

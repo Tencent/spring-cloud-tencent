@@ -18,18 +18,23 @@
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-commons</artifactId>
-        </dependency>
-        <!-- Spring Cloud Tencent dependencies end -->
+		</dependency>
+		<!-- Spring Cloud Tencent dependencies end -->
 
-        <!-- Polaris dependencies start -->
-        <dependency>
-            <groupId>com.tencent.polaris</groupId>
-            <artifactId>polaris-client</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.tencent.polaris</groupId>
-            <artifactId>polaris-plugin-api</artifactId>
+		<!-- Polaris dependencies start -->
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-plugin-api</artifactId>
         </dependency>
 
         <dependency>

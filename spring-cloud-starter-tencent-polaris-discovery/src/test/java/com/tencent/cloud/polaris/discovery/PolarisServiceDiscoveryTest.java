@@ -52,14 +52,11 @@ public class PolarisServiceDiscoveryTest {
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisContextConfiguration.class,
 					PolarisServiceDiscoveryTest.PolarisPropertiesConfiguration.class,
-					PolarisDiscoveryClientConfiguration.class,
-					PolarisDiscoveryAutoConfiguration.class,
+					PolarisDiscoveryClientConfiguration.class, PolarisDiscoveryAutoConfiguration.class,
 					PolarisContextConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-			.withPropertyValues("server.port=" + PORT)
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
-			.withPropertyValues(
-					"spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
+			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
 	@BeforeClass
@@ -72,8 +69,7 @@ public class PolarisServiceDiscoveryTest {
 		instanceParameter.setIsolated(false);
 		instanceParameter.setWeight(100);
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER);
-		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3,
-				instanceParameter);
+		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3, instanceParameter);
 	}
 
 	@AfterClass
@@ -86,10 +82,8 @@ public class PolarisServiceDiscoveryTest {
 	@Test
 	public void testGetInstances() {
 		this.contextRunner.run(context -> {
-			PolarisServiceDiscovery polarisServiceDiscovery = context
-					.getBean(PolarisServiceDiscovery.class);
-			List<ServiceInstance> serviceInstances = polarisServiceDiscovery
-					.getInstances(SERVICE_PROVIDER);
+			PolarisServiceDiscovery polarisServiceDiscovery = context.getBean(PolarisServiceDiscovery.class);
+			List<ServiceInstance> serviceInstances = polarisServiceDiscovery.getInstances(SERVICE_PROVIDER);
 			assertThat(serviceInstances.isEmpty()).isFalse();
 			assertThat(serviceInstances).hasSize(3);
 			assertThat(serviceInstances.get(0).getPort()).isEqualTo(PORT);
@@ -101,8 +95,7 @@ public class PolarisServiceDiscoveryTest {
 	@Test
 	public void testGetServices() throws PolarisException {
 		this.contextRunner.run(context -> {
-			PolarisServiceDiscovery polarisServiceDiscovery = context
-					.getBean(PolarisServiceDiscovery.class);
+			PolarisServiceDiscovery polarisServiceDiscovery = context.getBean(PolarisServiceDiscovery.class);
 			List<String> services = polarisServiceDiscovery.getServices();
 			assertThat(services.size()).isEqualTo(1);
 		});

@@ -41,8 +41,7 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	private final SDKContext polarisContext;
 
-	public PolarisRegistration(PolarisDiscoveryProperties polarisDiscoveryProperties,
-			SDKContext context) {
+	public PolarisRegistration(PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisContext = context;
 	}
@@ -68,8 +67,7 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	@Override
 	public boolean isSecure() {
-		return StringUtils.equalsIgnoreCase(polarisDiscoveryProperties.getProtocol(),
-				"https");
+		return StringUtils.equalsIgnoreCase(polarisDiscoveryProperties.getProtocol(), "https");
 	}
 
 	@Override
@@ -88,8 +86,8 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	@Override
 	public String toString() {
-		return "PolarisRegistration{" + "polarisDiscoveryProperties="
-				+ polarisDiscoveryProperties + ", polarisContext=" + polarisContext + '}';
+		return "PolarisRegistration{" + "polarisDiscoveryProperties=" + polarisDiscoveryProperties + ", polarisContext="
+				+ polarisContext + '}';
 	}
 
 }

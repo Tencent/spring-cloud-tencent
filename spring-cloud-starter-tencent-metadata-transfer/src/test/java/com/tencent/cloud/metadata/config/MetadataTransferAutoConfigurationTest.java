@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.metadata.config;
 
-import com.tencent.cloud.metadata.core.filter.gateway.Metadata2HeaderZuulFilter;
 import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderFeignInterceptor;
 import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderRestTemplateInterceptor;
 import org.assertj.core.api.Assertions;
@@ -41,26 +40,18 @@ public class MetadataTransferAutoConfigurationTest {
 	 */
 	@Test
 	public void test1() {
-		this.applicationContextRunner
-				.withConfiguration(
-						AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
+		this.applicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(
 							MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
+					Assertions.assertThat(context).hasSingleBean(Metadata2HeaderFeignInterceptor.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(Metadata2HeaderFeignInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(Metadata2HeaderRestTemplateInterceptor.class);
+							.hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
+					Assertions.assertThat(context).hasSingleBean(Metadata2HeaderRestTemplateInterceptor.class);
 					Assertions.assertThat(context).hasSingleBean(
 							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.Metadata2HeaderRestTemplatePostProcessor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferZuulFilterConfig.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(Metadata2HeaderZuulFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
+							.hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(GlobalFilter.class);
 				});
 	}

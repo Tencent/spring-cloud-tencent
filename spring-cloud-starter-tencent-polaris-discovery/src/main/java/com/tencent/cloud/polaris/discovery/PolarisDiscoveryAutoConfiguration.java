@@ -39,8 +39,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisDiscoveryEnabled
-@Import({ PolarisDiscoveryClientConfiguration.class,
-		PolarisReactiveDiscoveryClientConfiguration.class,
+@Import({ PolarisDiscoveryClientConfiguration.class, PolarisReactiveDiscoveryClientConfiguration.class,
 		ConsulContextProperties.class })
 public class PolarisDiscoveryAutoConfiguration {
 
@@ -52,15 +51,13 @@ public class PolarisDiscoveryAutoConfiguration {
 
 	@Bean(name = "polarisProvider")
 	@ConditionalOnMissingBean
-	public ProviderAPI polarisProvider(SDKContext polarisContext)
-			throws PolarisException {
+	public ProviderAPI polarisProvider(SDKContext polarisContext) throws PolarisException {
 		return DiscoveryAPIFactory.createProviderAPIByContext(polarisContext);
 	}
 
 	@Bean(name = "polarisConsumer")
 	@ConditionalOnMissingBean
-	public ConsumerAPI polarisConsumer(SDKContext polarisContext)
-			throws PolarisException {
+	public ConsumerAPI polarisConsumer(SDKContext polarisContext) throws PolarisException {
 		return DiscoveryAPIFactory.createConsumerAPIByContext(polarisContext);
 	}
 
@@ -72,8 +69,7 @@ public class PolarisDiscoveryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisServiceDiscovery polarisServiceDiscovery(
-			PolarisDiscoveryHandler polarisDiscoveryHandler) {
+	public PolarisServiceDiscovery polarisServiceDiscovery(PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		return new PolarisServiceDiscovery(polarisDiscoveryHandler);
 	}
 

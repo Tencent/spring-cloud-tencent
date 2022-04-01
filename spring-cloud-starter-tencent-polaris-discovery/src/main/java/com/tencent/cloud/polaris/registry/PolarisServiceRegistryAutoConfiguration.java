@@ -43,37 +43,29 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
 @ConditionalOnPolarisDiscoveryEnabled
-@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled",
-		matchIfMissing = true)
-@AutoConfigureAfter({ AutoServiceRegistrationConfiguration.class,
-		AutoServiceRegistrationAutoConfiguration.class,
+@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
+@AutoConfigureAfter({ AutoServiceRegistrationConfiguration.class, AutoServiceRegistrationAutoConfiguration.class,
 		PolarisDiscoveryAutoConfiguration.class })
 public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
-	public PolarisServiceRegistry polarisServiceRegistry(
-			PolarisDiscoveryProperties polarisDiscoveryProperties,
-			PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties) {
-		return new PolarisServiceRegistry(polarisDiscoveryProperties,
-				polarisDiscoveryHandler, metadataLocalProperties);
+	public PolarisServiceRegistry polarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
+			PolarisDiscoveryHandler polarisDiscoveryHandler, MetadataLocalProperties metadataLocalProperties) {
+		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, metadataLocalProperties);
 	}
 
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public PolarisRegistration polarisRegistration(
-			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
+	public PolarisRegistration polarisRegistration(PolarisDiscoveryProperties polarisDiscoveryProperties,
+			SDKContext context) {
 		return new PolarisRegistration(polarisDiscoveryProperties, context);
 	}
 
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
-			PolarisServiceRegistry registry,
-			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			PolarisRegistration registration) {
-		return new PolarisAutoServiceRegistration(registry,
-				autoServiceRegistrationProperties, registration);
+	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(PolarisServiceRegistry registry,
+			AutoServiceRegistrationProperties autoServiceRegistrationProperties, PolarisRegistration registration) {
+		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
 	}
 
 }

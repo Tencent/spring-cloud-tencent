@@ -64,13 +64,11 @@ public class PolarisDiscoveryHandler {
 		GetInstancesRequest getInstancesRequest = new GetInstancesRequest();
 		getInstancesRequest.setNamespace(namespace);
 		getInstancesRequest.setService(service);
-		String method = MetadataContextHolder.get()
-				.getSystemMetadata(SystemMetadataKey.PEER_PATH);
+		String method = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.PEER_PATH);
 		getInstancesRequest.setMethod(method);
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get()
-				.getAllTransitiveCustomMetadata();
+		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
 		if (StringUtils.isNotBlank(localNamespace) || StringUtils.isNotBlank(localService)
 				|| null != allTransitiveCustomMetadata) {
 			ServiceInfo sourceService = new ServiceInfo();

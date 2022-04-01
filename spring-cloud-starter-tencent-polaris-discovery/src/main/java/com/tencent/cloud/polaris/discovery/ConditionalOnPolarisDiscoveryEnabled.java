@@ -31,8 +31,7 @@ import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @ConditionalOnDiscoveryEnabled
-@ConditionalOnProperty(value = "spring.cloud.polaris.discovery.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.polaris.discovery.enabled", matchIfMissing = true)
 public @interface ConditionalOnPolarisDiscoveryEnabled {
 
 }

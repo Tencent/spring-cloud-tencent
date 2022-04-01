@@ -28,22 +28,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- *  polaris config module auto configuration at init application context phase.
+ * polaris config module auto configuration at init application context phase.
  *
  * @author lepdou 2022-03-28
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled", matchIfMissing = true)
 public class PolarisConfigAutoConfiguration {
 
 	@Bean
 	public PolarisPropertySourceAutoRefresher polarisPropertySourceAutoRefresher(
-			PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager,
+			PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager,
 			ContextRefresher contextRefresher) {
-		return new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, contextRefresher);
+		return new PolarisPropertySourceAutoRefresher(polarisConfigProperties, polarisPropertySourceManager,
+				contextRefresher);
 	}
 
 }

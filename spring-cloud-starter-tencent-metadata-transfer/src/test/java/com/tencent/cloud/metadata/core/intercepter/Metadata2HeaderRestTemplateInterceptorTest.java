@@ -68,28 +68,17 @@ public class Metadata2HeaderRestTemplateInterceptorTest {
 	@Test
 	public void test1() {
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-				"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
+		httpHeaders.set(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
 		HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
 		String metadata = restTemplate
-				.exchange("http://localhost:" + localServerPort + "/test", HttpMethod.GET,
-						httpEntity, String.class)
+				.exchange("http://localhost:" + localServerPort + "/test", HttpMethod.GET, httpEntity, String.class)
 				.getBody();
-		Assertions.assertThat(metadata)
-				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{}");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a"))
-				.isEqualTo("11");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b"))
-				.isEqualTo("22");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c"))
-				.isEqualTo("33");
+		Assertions.assertThat(metadata).isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{}");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a")).isEqualTo("11");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b")).isEqualTo("22");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c")).isEqualTo("33");
 	}
 
 	@SpringBootApplication
@@ -102,11 +91,9 @@ public class Metadata2HeaderRestTemplateInterceptorTest {
 		}
 
 		@RequestMapping("/test")
-		public String test(
-				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
+		public String test(@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
 				throws UnsupportedEncodingException {
-			String systemMetadataStr = JacksonUtils
-					.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
+			String systemMetadataStr = JacksonUtils.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
 			return URLDecoder.decode(customMetadataStr, "UTF-8") + systemMetadataStr;
 		}
 

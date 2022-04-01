@@ -57,8 +57,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = { CalleeControllerTests.Config.class, TestController.class },
-		properties = { "spring.application.name=java_provider_test",
-				"spring.cloud.polaris.discovery.namespace=Test",
+		properties = { "spring.application.name=java_provider_test", "spring.cloud.polaris.discovery.namespace=Test",
 				"spring.cloud.polaris.address=grpc://127.0.0.1:10081" })
 public class CalleeControllerTests {
 
@@ -83,8 +82,7 @@ public class CalleeControllerTests {
 		instanceParameter.setIsolated(false);
 		instanceParameter.setWeight(100);
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER);
-		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3,
-				instanceParameter);
+		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3, instanceParameter);
 	}
 
 	@AfterClass
@@ -111,10 +109,8 @@ public class CalleeControllerTests {
 			try {
 				if (i > 9) {
 					QuotaResponse quotaResponse = mock(QuotaResponse.class);
-					when(quotaResponse.getCode())
-							.thenReturn(QuotaResultCode.QuotaResultLimited);
-					when(quotaResponse.getInfo())
-							.thenReturn("Testing rate limit after 10 times success.");
+					when(quotaResponse.getCode()).thenReturn(QuotaResultCode.QuotaResultLimited);
+					when(quotaResponse.getInfo()).thenReturn("Testing rate limit after 10 times success.");
 					when(limitAPI.getQuota(any())).thenReturn(quotaResponse);
 				}
 				String result = restTemplate.getForObject(url, String.class);

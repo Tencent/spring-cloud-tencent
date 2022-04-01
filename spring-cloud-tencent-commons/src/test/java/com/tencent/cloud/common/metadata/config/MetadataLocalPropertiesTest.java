@@ -42,17 +42,14 @@ public class MetadataLocalPropertiesTest {
 
 	@Test
 	public void test1() {
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
 
 	@Test
 	public void test2() {
-		Assertions.assertThat(metadataLocalProperties.getTransitive().contains("b"))
-				.isTrue();
+		Assertions.assertThat(metadataLocalProperties.getTransitive().contains("b")).isTrue();
 	}
 
 	@SpringBootApplication

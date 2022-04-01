@@ -35,8 +35,7 @@ public class PolarisContextConfiguration {
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean
-	public SDKContext polarisContext(PolarisContextProperties properties)
-			throws PolarisException {
+	public SDKContext polarisContext(PolarisContextProperties properties) throws PolarisException {
 		return SDKContext.initContextByConfig(properties.configuration());
 	}
 
@@ -45,4 +44,5 @@ public class PolarisContextConfiguration {
 	public ModifyAddress polarisConfigModifier() {
 		return new ModifyAddress();
 	}
+
 }

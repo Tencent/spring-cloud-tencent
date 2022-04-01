@@ -47,10 +47,8 @@ public class PolarisServiceRegistryAutoConfigurationTest {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisContextConfiguration.class,
-					PolarisServiceRegistryAutoConfiguration.class,
-					PolarisDiscoveryClientConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-			.withPropertyValues("server.port=" + PORT)
+					PolarisServiceRegistryAutoConfiguration.class, PolarisDiscoveryClientConfiguration.class))
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
 	@BeforeClass
@@ -69,8 +67,7 @@ public class PolarisServiceRegistryAutoConfigurationTest {
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(PolarisDiscoveryAutoConfiguration.class);
-			assertThat(context)
-					.hasSingleBean(AutoServiceRegistrationAutoConfiguration.class);
+			assertThat(context).hasSingleBean(AutoServiceRegistrationAutoConfiguration.class);
 		});
 	}
 

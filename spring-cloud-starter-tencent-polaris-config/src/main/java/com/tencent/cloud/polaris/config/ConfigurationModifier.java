@@ -48,8 +48,7 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 		}
 
 		// override polaris config server address
-		List<String> addresses = AddressUtils
-				.parseAddressList(polarisConfigProperties.getAddress());
+		List<String> addresses = AddressUtils.parseAddressList(polarisConfigProperties.getAddress());
 
 		configuration.getConfigFile().getServerConnector().setAddresses(addresses);
 	}

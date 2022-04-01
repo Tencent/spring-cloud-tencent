@@ -50,8 +50,7 @@ import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 @Order(RateLimitConstant.FILTER_ORDER)
 public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(QuotaCheckServletFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
 
 	private final LimitAPI limitAPI;
 
@@ -60,8 +59,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
@@ -73,8 +71,8 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 		}
 
 		try {
-			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
-					localNamespace, localService, 1, labels, null);
+			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI, localNamespace, localService, 1, labels,
+					null);
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				response.setStatus(TOO_MANY_REQUESTS.value());
 				response.getWriter().write(RateLimitConstant.QUOTA_LIMITED_INFO);

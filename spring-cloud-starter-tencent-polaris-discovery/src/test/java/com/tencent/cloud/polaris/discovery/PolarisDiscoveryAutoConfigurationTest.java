@@ -47,12 +47,10 @@ public class PolarisDiscoveryAutoConfigurationTest {
 	private static NamingServer namingServer;
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisContextConfiguration.class,
-					PolarisDiscoveryAutoConfiguration.class,
-					PolarisDiscoveryClientConfiguration.class,
-					PolarisContextConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-			.withPropertyValues("server.port=" + PORT)
+			.withConfiguration(
+					AutoConfigurations.of(PolarisContextConfiguration.class, PolarisDiscoveryAutoConfiguration.class,
+							PolarisDiscoveryClientConfiguration.class, PolarisContextConfiguration.class))
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
 	@BeforeClass

@@ -50,15 +50,12 @@ public class PolarisServiceRegistryTest {
 	private static NamingServer namingServer;
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisContextConfiguration.class,
-					PolarisPropertiesConfiguration.class,
-					PolarisDiscoveryClientConfiguration.class,
-					PolarisDiscoveryAutoConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-			.withPropertyValues("server.port=" + PORT)
+			.withConfiguration(
+					AutoConfigurations.of(PolarisContextConfiguration.class, PolarisPropertiesConfiguration.class,
+							PolarisDiscoveryClientConfiguration.class, PolarisDiscoveryAutoConfiguration.class))
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
-			.withPropertyValues(
-					"spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
+			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
 	@BeforeClass
@@ -66,8 +63,7 @@ public class PolarisServiceRegistryTest {
 		namingServer = NamingServer.startNamingServer(10081);
 
 		// add service
-		namingServer.getNamingService()
-				.addService(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER));
+		namingServer.getNamingService().addService(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER));
 	}
 
 	@AfterClass
@@ -80,8 +76,7 @@ public class PolarisServiceRegistryTest {
 	@Test
 	public void testRegister() {
 		this.contextRunner.run(context -> {
-			PolarisServiceRegistry registry = context
-					.getBean(PolarisServiceRegistry.class);
+			PolarisServiceRegistry registry = context.getBean(PolarisServiceRegistry.class);
 			PolarisRegistration registration = Mockito.mock(PolarisRegistration.class);
 			when(registration.getHost()).thenReturn("127.0.0.1");
 			when(registration.getPort()).thenReturn(PORT);

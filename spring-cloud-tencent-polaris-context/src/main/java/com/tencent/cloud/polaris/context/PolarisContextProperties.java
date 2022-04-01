@@ -70,8 +70,7 @@ public class PolarisContextProperties {
 		String defaultHost = getHost();
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);
 		Collection<PolarisConfigModifier> modifiers = modifierList;
-		modifiers = modifiers.stream()
-				.sorted(Comparator.comparingInt(PolarisConfigModifier::getOrder))
+		modifiers = modifiers.stream().sorted(Comparator.comparingInt(PolarisConfigModifier::getOrder))
 				.collect(Collectors.toList());
 		if (!CollectionUtils.isEmpty(modifiers)) {
 			for (PolarisConfigModifier modifier : modifiers) {

@@ -49,8 +49,7 @@ public class PolarisServiceDiscovery {
 	 */
 	public List<ServiceInstance> getInstances(String serviceId) throws PolarisException {
 		List<ServiceInstance> instances = new ArrayList<>();
-		InstancesResponse filteredInstances = polarisDiscoveryHandler
-				.getFilteredInstances(serviceId);
+		InstancesResponse filteredInstances = polarisDiscoveryHandler.getFilteredInstances(serviceId);
 		ServiceInstances serviceInstances = filteredInstances.toServiceInstances();
 		for (Instance instance : serviceInstances.getInstances()) {
 			instances.add(new PolarisServiceInstance(instance));
@@ -64,8 +63,8 @@ public class PolarisServiceDiscovery {
 	 * @throws PolarisException polarisException
 	 */
 	public List<String> getServices() throws PolarisException {
-		return polarisDiscoveryHandler.GetServices().getServices().stream()
-				.map(ServiceInfo::getService).collect(Collectors.toList());
+		return polarisDiscoveryHandler.GetServices().getServices().stream().map(ServiceInfo::getService)
+				.collect(Collectors.toList());
 	}
 
 }

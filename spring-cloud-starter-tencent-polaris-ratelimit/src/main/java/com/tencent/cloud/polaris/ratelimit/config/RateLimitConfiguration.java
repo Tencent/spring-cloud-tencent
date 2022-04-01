@@ -41,8 +41,7 @@ import static javax.servlet.DispatcherType.REQUEST;
  * @author Haotian Zhang
  */
 @Configuration
-@ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled", matchIfMissing = true)
 public class RateLimitConfiguration {
 
 	@Bean

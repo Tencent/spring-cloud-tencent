@@ -57,8 +57,7 @@ public class PolarisReactiveDiscoveryClientTest {
 	@Test
 	public void testGetInstances() throws PolarisException {
 
-		when(serviceDiscovery.getInstances(SERVICE_PROVIDER))
-				.thenReturn(singletonList(serviceInstance));
+		when(serviceDiscovery.getInstances(SERVICE_PROVIDER)).thenReturn(singletonList(serviceInstance));
 
 		Flux<ServiceInstance> instances = this.client.getInstances(SERVICE_PROVIDER);
 
@@ -68,14 +67,11 @@ public class PolarisReactiveDiscoveryClientTest {
 	@Test
 	public void testGetServices() throws PolarisException {
 
-		when(serviceDiscovery.getServices())
-				.thenReturn(Arrays.asList(SERVICE_PROVIDER + 1, SERVICE_PROVIDER + 2));
+		when(serviceDiscovery.getServices()).thenReturn(Arrays.asList(SERVICE_PROVIDER + 1, SERVICE_PROVIDER + 2));
 
 		Flux<String> services = this.client.getServices();
 
-		StepVerifier.create(services)
-				.expectNext(SERVICE_PROVIDER + 1, SERVICE_PROVIDER + 2).expectComplete()
-				.verify();
+		StepVerifier.create(services).expectNext(SERVICE_PROVIDER + 1, SERVICE_PROVIDER + 2).expectComplete().verify();
 	}
 
 }

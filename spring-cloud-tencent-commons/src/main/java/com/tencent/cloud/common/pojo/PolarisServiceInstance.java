@@ -50,6 +50,10 @@ public class PolarisServiceInstance implements ServiceInstance {
 		}
 	}
 
+	public Instance getPolarisInstance() {
+		return instance;
+	}
+
 	@Override
 	public String getInstanceId() {
 		return ServiceInstance.super.getInstanceId();

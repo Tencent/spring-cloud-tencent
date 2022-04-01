@@ -50,10 +50,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT,
-		classes = Metadata2HeaderFeignInterceptorTest.TestApplication.class,
-		properties = { "server.port=8081",
-				"spring.config.location = classpath:application-test.yml" })
+@SpringBootTest(webEnvironment = DEFINED_PORT, classes = Metadata2HeaderFeignInterceptorTest.TestApplication.class,
+		properties = { "server.port=8081", "spring.config.location = classpath:application-test.yml" })
 public class Metadata2HeaderFeignInterceptorTest {
 
 	@Autowired
@@ -65,21 +63,12 @@ public class Metadata2HeaderFeignInterceptorTest {
 	@Test
 	public void test1() {
 		String metadata = testFeign.test();
-		Assertions.assertThat(metadata)
-				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{}");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a"))
-				.isEqualTo("11");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b"))
-				.isEqualTo("22");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c"))
-				.isEqualTo("33");
+		Assertions.assertThat(metadata).isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{}");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a")).isEqualTo("11");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b")).isEqualTo("22");
+		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c")).isEqualTo("33");
 	}
 
 	@SpringBootApplication
@@ -88,20 +77,17 @@ public class Metadata2HeaderFeignInterceptorTest {
 	protected static class TestApplication {
 
 		@RequestMapping("/test")
-		public String test(
-				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
+		public String test(@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
 				throws UnsupportedEncodingException {
-			String systemMetadataStr = JacksonUtils
-					.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
+			String systemMetadataStr = JacksonUtils.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
 			return URLDecoder.decode(customMetadataStr, "UTF-8") + systemMetadataStr;
 		}
 
 		@FeignClient(name = "test-feign", url = "http://localhost:8081")
 		public interface TestFeign {
 
-			@RequestMapping(value = "/test",
-					headers = { MetadataConstant.HeaderName.CUSTOM_METADATA
-							+ "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}" })
+			@RequestMapping(value = "/test", headers = {
+					MetadataConstant.HeaderName.CUSTOM_METADATA + "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}" })
 			String test();
 
 		}

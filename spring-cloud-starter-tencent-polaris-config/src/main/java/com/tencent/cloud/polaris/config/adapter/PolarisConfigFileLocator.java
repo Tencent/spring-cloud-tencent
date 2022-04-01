@@ -49,8 +49,7 @@ import org.springframework.util.StringUtils;
 @Order(0)
 public class PolarisConfigFileLocator implements PropertySourceLocator {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(PolarisConfigFileLocator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigFileLocator.class);
 
 	private static final String POLARIS_CONFIG_PROPERTY_SOURCE_NAME = "polaris-config";
 
@@ -63,8 +62,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
 	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
-			PolarisContextProperties polarisContextProperties,
-			ConfigFileService configFileService,
+			PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
 			PolarisPropertySourceManager polarisPropertySourceManager) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisContextProperties = polarisContextProperties;
@@ -95,8 +93,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			String group = configFileGroup.getName();
 
 			if (StringUtils.isEmpty(group)) {
-				throw new IllegalArgumentException(
-						"polaris config group name cannot be empty.");
+				throw new IllegalArgumentException("polaris config group name cannot be empty.");
 			}
 
 			List<String> files = configFileGroup.getFiles();
@@ -105,8 +102,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			}
 
 			for (String fileName : files) {
-				PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(
-						namespace, group, fileName);
+				PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(namespace, group, fileName);
 
 				compositePropertySource.addPropertySource(polarisPropertySource);
 
@@ -119,27 +115,21 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		}
 	}
 
-	private PolarisPropertySource loadPolarisPropertySource(String namespace,
-			String group, String fileName) {
+	private PolarisPropertySource loadPolarisPropertySource(String namespace, String group, String fileName) {
 		ConfigKVFile configKVFile;
 		// unknown extension is resolved as properties file
-		if (ConfigFileFormat.isPropertyFile(fileName)
-				|| ConfigFileFormat.isUnknownFile(fileName)) {
-			configKVFile = configFileService.getConfigPropertiesFile(namespace, group,
-					fileName);
+		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
+			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
 		}
 		else if (ConfigFileFormat.isYamlFile(fileName)) {
-			configKVFile = configFileService.getConfigYamlFile(namespace, group,
-					fileName);
+			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
 		}
 		else {
-			LOGGER.warn(
-					"[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}",
-					namespace, group, fileName);
+			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace,
+					group, fileName);
 
-			throw new IllegalStateException(
-					"Only configuration files in the format of properties / yaml / yaml"
-							+ " can be injected into the spring context");
+			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml"
+					+ " can be injected into the spring context");
 		}
 
 		Map<String, Object> map = new ConcurrentHashMap<>();

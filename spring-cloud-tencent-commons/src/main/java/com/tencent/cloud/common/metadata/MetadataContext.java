@@ -93,8 +93,7 @@ public class MetadataContext {
 
 	@Override
 	public String toString() {
-		return "MetadataContext{" + "transitiveCustomMetadata="
-				+ JacksonUtils.serialize2Json(transitiveCustomMetadata)
+		return "MetadataContext{" + "transitiveCustomMetadata=" + JacksonUtils.serialize2Json(transitiveCustomMetadata)
 				+ ", systemMetadata=" + JacksonUtils.serialize2Json(systemMetadata) + '}';
 	}
 

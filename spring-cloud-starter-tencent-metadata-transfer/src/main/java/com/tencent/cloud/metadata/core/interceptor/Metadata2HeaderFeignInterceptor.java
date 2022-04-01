@@ -43,8 +43,7 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  */
 public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Ordered {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(Metadata2HeaderFeignInterceptor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Metadata2HeaderFeignInterceptor.class);
 
 	@Override
 	public int getOrder() {
@@ -57,27 +56,22 @@ public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Orde
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		// add new metadata and cover old
-		if (!CollectionUtils.isEmpty(requestTemplate.headers()) && !CollectionUtils
-				.isEmpty(requestTemplate.headers().get(CUSTOM_METADATA))) {
-			for (String headerMetadataStr : requestTemplate.headers()
-					.get(CUSTOM_METADATA)) {
-				Map<String, String> headerMetadataMap = JacksonUtils
-						.deserialize2Map(headerMetadataStr);
+		if (!CollectionUtils.isEmpty(requestTemplate.headers())
+				&& !CollectionUtils.isEmpty(requestTemplate.headers().get(CUSTOM_METADATA))) {
+			for (String headerMetadataStr : requestTemplate.headers().get(CUSTOM_METADATA)) {
+				Map<String, String> headerMetadataMap = JacksonUtils.deserialize2Map(headerMetadataStr);
 				for (String key : headerMetadataMap.keySet()) {
-					metadataContext.putTransitiveCustomMetadata(key,
-							headerMetadataMap.get(key));
+					metadataContext.putTransitiveCustomMetadata(key, headerMetadataMap.get(key));
 				}
 			}
 		}
 
-		Map<String, String> customMetadata = metadataContext
-				.getAllTransitiveCustomMetadata();
+		Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			requestTemplate.removeHeader(CUSTOM_METADATA);
 			try {
-				requestTemplate.header(CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, "UTF-8"));
+				requestTemplate.header(CUSTOM_METADATA, URLEncoder.encode(metadataStr, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
 				LOG.error("Set header failed.", e);

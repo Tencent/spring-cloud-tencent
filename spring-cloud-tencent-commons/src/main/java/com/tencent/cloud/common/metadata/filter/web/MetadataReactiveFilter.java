@@ -44,8 +44,7 @@ import org.springframework.web.server.WebFilterChain;
  */
 public class MetadataReactiveFilter implements WebFilter, Ordered {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(MetadataReactiveFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MetadataReactiveFilter.class);
 
 	@Override
 	public int getOrder() {
@@ -53,13 +52,11 @@ public class MetadataReactiveFilter implements WebFilter, Ordered {
 	}
 
 	@Override
-	public Mono<Void> filter(ServerWebExchange serverWebExchange,
-			WebFilterChain webFilterChain) {
+	public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
 		// Get metadata string from http header.
 		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
 		HttpHeaders httpHeaders = serverHttpRequest.getHeaders();
-		String customMetadataStr = httpHeaders
-				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
+		String customMetadataStr = httpHeaders.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
 				customMetadataStr = URLDecoder.decode(customMetadataStr, "UTF-8");
@@ -71,18 +68,15 @@ public class MetadataReactiveFilter implements WebFilter, Ordered {
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
 		// create custom metadata.
-		Map<String, String> upstreamCustomMetadataMap = JacksonUtils
-				.deserialize2Map(customMetadataStr);
+		Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserialize2Map(customMetadataStr);
 
 		MetadataContextHolder.init(upstreamCustomMetadataMap, null);
 
 		// Save to ServerWebExchange.
-		serverWebExchange.getAttributes().put(
-				MetadataConstant.HeaderName.METADATA_CONTEXT,
+		serverWebExchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT,
 				MetadataContextHolder.get());
 		return webFilterChain.filter(serverWebExchange)
-				.doOnError(throwable -> LOG.error("handle metadata[{}] error.",
-						MetadataContextHolder.get(), throwable))
+				.doOnError(throwable -> LOG.error("handle metadata[{}] error.", MetadataContextHolder.get(), throwable))
 				.doFinally((type) -> MetadataContextHolder.remove());
 	}
 

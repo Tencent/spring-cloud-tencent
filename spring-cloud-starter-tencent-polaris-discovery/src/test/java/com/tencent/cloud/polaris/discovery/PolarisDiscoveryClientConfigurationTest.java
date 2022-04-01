@@ -44,10 +44,8 @@ public class PolarisDiscoveryClientConfigurationTest {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisContextConfiguration.class,
-					PolarisDiscoveryClientConfiguration.class,
-					PolarisContextConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-			.withPropertyValues("server.port=" + PORT)
+					PolarisDiscoveryClientConfiguration.class, PolarisContextConfiguration.class))
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
 	@BeforeClass
@@ -64,16 +62,13 @@ public class PolarisDiscoveryClientConfigurationTest {
 
 	@Test
 	public void testDefaultInitialization() {
-		this.contextRunner.run(context -> assertThat(context)
-				.hasSingleBean(PolarisDiscoveryClient.class));
+		this.contextRunner.run(context -> assertThat(context).hasSingleBean(PolarisDiscoveryClient.class));
 	}
 
 	@Test
 	public void testDiscoveryBlockingDisabled() {
-		this.contextRunner
-				.withPropertyValues("spring.cloud.discovery.blocking.enabled=false")
-				.run(context -> assertThat(context)
-						.doesNotHaveBean(PolarisDiscoveryClient.class));
+		this.contextRunner.withPropertyValues("spring.cloud.discovery.blocking.enabled=false")
+				.run(context -> assertThat(context).doesNotHaveBean(PolarisDiscoveryClient.class));
 	}
 
 	@Configuration

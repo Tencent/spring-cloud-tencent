@@ -31,8 +31,7 @@ public final class ReflectionUtils {
 	}
 
 	public static Object getFieldValue(Object instance, String fieldName) {
-		Field field = org.springframework.util.ReflectionUtils
-				.findField(instance.getClass(), fieldName);
+		Field field = org.springframework.util.ReflectionUtils.findField(instance.getClass(), fieldName);
 
 		field.setAccessible(true);
 		try {

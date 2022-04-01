@@ -61,8 +61,7 @@ public final class MetadataConstant {
 		/**
 		 * Order of MetadataFirstFeignInterceptor.
 		 */
-		public static int METADATA_FIRST_FEIGN_INTERCEPTOR_ORDER = Ordered.HIGHEST_PRECEDENCE
-				+ 1;
+		public static int METADATA_FIRST_FEIGN_INTERCEPTOR_ORDER = Ordered.HIGHEST_PRECEDENCE + 1;
 
 		/**
 		 * Order of Metadata2HeaderInterceptor.

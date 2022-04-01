@@ -25,8 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Haotian Zhang
  */
-@FeignClient(name = "polaris-circuitbreaker-example-b",
-		fallback = ProviderBFallback.class)
+@FeignClient(name = "polaris-circuitbreaker-example-b", fallback = ProviderBFallback.class)
 public interface ProviderB {
 
 	/**

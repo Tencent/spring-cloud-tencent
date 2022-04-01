@@ -21,12 +21,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Properties of Ribbon.
+ * Properties of loadbalancer.
  *
  * @author Haotian Zhang
  */
 @ConfigurationProperties("spring.cloud.polaris.ribbon")
-public class PolarisRibbonProperties {
+public class PolarisLoadBalancerProperties {
 
 	/**
 	 * If load-balance enabled.
@@ -58,8 +58,8 @@ public class PolarisRibbonProperties {
 
 	@Override
 	public String toString() {
-		return "PolarisRibbonProperties{" + "loadbalancerEnabled=" + loadbalancerEnabled
-				+ ", strategy='" + strategy + '\'' + '}';
+		return "PolarisRibbonProperties{" + "loadbalancerEnabled=" + loadbalancerEnabled + ", strategy='" + strategy
+				+ '\'' + '}';
 	}
 
 }

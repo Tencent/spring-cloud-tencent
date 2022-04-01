@@ -8,7 +8,7 @@ spring:
       address: grpc://127.0.0.1:8091
       namespace: default
 feign:
-  hystrix:
+  circuitbreaker:
     enabled: true
   compression:
     request:
@@ -17,16 +17,6 @@ feign:
       min-request-size: 2048
     response:
       enabled: false
-ribbon:
-  polaris:
-    enabled: true
-  MaxAutoRetries: 1
-  MaxAutoRetriesNextServer: 2
-  OkToRetryOnAllOperations: false
-  ConnectionTimeout: 1000
-  ReadTimeout: 1000
-  eager-load:
-    enabled: on
 
 serivceB:
   url: http://localhost:48081

@@ -46,16 +46,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Order(MetadataConstant.OrderConstant.WEB_FILTER_ORDER)
 public class MetadataServletFilter extends OncePerRequestFilter {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(MetadataServletFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MetadataServletFilter.class);
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, FilterChain filterChain)
-			throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+			FilterChain filterChain) throws ServletException, IOException {
 		// Get custom metadata string from http header.
-		String customMetadataStr = httpServletRequest
-				.getHeader(MetadataConstant.HeaderName.CUSTOM_METADATA);
+		String customMetadataStr = httpServletRequest.getHeader(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
 				customMetadataStr = URLDecoder.decode(customMetadataStr, "UTF-8");
@@ -67,8 +64,7 @@ public class MetadataServletFilter extends OncePerRequestFilter {
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
 		// create custom metadata.
-		Map<String, String> upstreamCustomMetadataMap = JacksonUtils
-				.deserialize2Map(customMetadataStr);
+		Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserialize2Map(customMetadataStr);
 
 		try {
 			MetadataContextHolder.init(upstreamCustomMetadataMap, null);

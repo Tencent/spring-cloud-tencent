@@ -102,16 +102,13 @@ public class PolarisDiscoveryProperties {
 	@PostConstruct
 	public void init() {
 		if (StringUtils.isEmpty(this.getNamespace())) {
-			this.setNamespace(environment
-					.resolvePlaceholders("${spring.cloud.polaris.discovery.namespace:}"));
+			this.setNamespace(environment.resolvePlaceholders("${spring.cloud.polaris.discovery.namespace:}"));
 		}
 		if (StringUtils.isEmpty(this.getService())) {
-			this.setService(environment
-					.resolvePlaceholders("${spring.cloud.polaris.discovery.service:}"));
+			this.setService(environment.resolvePlaceholders("${spring.cloud.polaris.discovery.service:}"));
 		}
 		if (StringUtils.isEmpty(this.getToken())) {
-			this.setToken(environment
-					.resolvePlaceholders("${spring.cloud.polaris.discovery.token:}"));
+			this.setToken(environment.resolvePlaceholders("${spring.cloud.polaris.discovery.token:}"));
 		}
 	}
 
@@ -200,12 +197,10 @@ public class PolarisDiscoveryProperties {
 
 	@Override
 	public String toString() {
-		return "PolarisProperties{" + "token='" + token + '\'' + ", namespace='"
-				+ namespace + '\'' + ", service='" + service + '\'' + ", weight=" + weight
-				+ ", version='" + version + '\'' + ", protocol='" + protocol + '\''
-				+ ", port=" + port + '\'' + ", registerEnabled=" + registerEnabled
-				+ ", heartbeatEnabled=" + heartbeatEnabled + ", healthCheckUrl="
-				+ healthCheckUrl + ", environment=" + environment + '}';
+		return "PolarisProperties{" + "token='" + token + '\'' + ", namespace='" + namespace + '\'' + ", service='"
+				+ service + '\'' + ", weight=" + weight + ", version='" + version + '\'' + ", protocol='" + protocol
+				+ '\'' + ", port=" + port + '\'' + ", registerEnabled=" + registerEnabled + ", heartbeatEnabled="
+				+ heartbeatEnabled + ", healthCheckUrl=" + healthCheckUrl + ", environment=" + environment + '}';
 	}
 
 }

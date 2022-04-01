@@ -33,8 +33,7 @@ public class PolarisPropertySourceManager {
 	private final Map<String, PolarisPropertySource> polarisPropertySources = new ConcurrentHashMap<>();
 
 	public void addPropertySource(PolarisPropertySource polarisPropertySource) {
-		polarisPropertySources.putIfAbsent(polarisPropertySource.getPropertySourceName(),
-				polarisPropertySource);
+		polarisPropertySources.putIfAbsent(polarisPropertySource.getPropertySourceName(), polarisPropertySource);
 	}
 
 	public List<PolarisPropertySource> getAllPropertySources() {

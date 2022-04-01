@@ -34,7 +34,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
-import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
+import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 
 /**
  * Scg filter used for writing metadata in HTTP request header.
@@ -43,8 +43,7 @@ import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.
  */
 public class Metadata2HeaderScgFilter implements GlobalFilter, Ordered {
 
-	private static final int METADATA_SCG_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER
-			+ 1;
+	private static final int METADATA_SCG_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
 
 	@Override
 	public int getOrder() {
@@ -57,20 +56,17 @@ public class Metadata2HeaderScgFilter implements GlobalFilter, Ordered {
 		ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
 
 		// get metadata of current thread
-		MetadataContext metadataContext = exchange
-				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
+		MetadataContext metadataContext = exchange.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 
 		// add new metadata and cover old
 		if (metadataContext == null) {
 			metadataContext = MetadataContextHolder.get();
 		}
-		Map<String, String> customMetadata = metadataContext
-				.getAllTransitiveCustomMetadata();
+		Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, "UTF-8"));
+				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, URLEncoder.encode(metadataStr, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
 				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
