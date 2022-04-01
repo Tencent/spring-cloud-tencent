@@ -95,6 +95,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setService(registration.getServiceId());
 		instanceRegisterRequest.setHost(registration.getHost());
 		instanceRegisterRequest.setPort(registration.getPort());
+		instanceRegisterRequest.setPort(polarisDiscoveryProperties.getWeight());
 		instanceRegisterRequest.setToken(polarisDiscoveryProperties.getToken());
 		if (null != heartbeatExecutor) {
 			instanceRegisterRequest.setTtl(ttl);
