@@ -37,7 +37,8 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestPolarisFeignApp.class)
-@ContextConfiguration(classes = { PolarisFeignClientAutoConfiguration.class, PolarisContextConfiguration.class })
+@ContextConfiguration(classes = { PolarisFeignClientAutoConfiguration.class,
+		PolarisContextConfiguration.class })
 public class PolarisFeignClientTest {
 
 	@Autowired

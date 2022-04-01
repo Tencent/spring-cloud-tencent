@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- *  polaris config module auto configuration at init application context phase.
+ * polaris config module auto configuration at init application context phase.
  *
  * @author lepdou 2022-03-28
  */

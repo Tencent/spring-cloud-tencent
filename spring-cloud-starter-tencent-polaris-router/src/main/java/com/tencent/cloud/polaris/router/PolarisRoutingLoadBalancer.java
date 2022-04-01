@@ -17,6 +17,10 @@
 
 package com.tencent.cloud.polaris.router;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
 import com.netflix.loadbalancer.IPing;
@@ -37,10 +41,8 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.lang.StringUtils;
+
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -71,7 +73,8 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 		else {
 			String serviceName;
 			// notice the difference between different service registries
-			if (StringUtils.isNotBlank(allServers.get(0).getMetaInfo().getServiceIdForDiscovery())) {
+			if (StringUtils.isNotBlank(
+					allServers.get(0).getMetaInfo().getServiceIdForDiscovery())) {
 				serviceName = allServers.get(0).getMetaInfo().getServiceIdForDiscovery();
 			}
 			else {
@@ -81,7 +84,8 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 				throw new IllegalStateException(
 						"PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 			}
-			ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
+			ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE,
+					serviceName);
 			List<Instance> instances = new ArrayList<>(8);
 			for (Server server : allServers) {
 				DefaultInstance instance = new DefaultInstance();
@@ -102,8 +106,10 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 		processRoutersRequest.setDstInstances(serviceInstances);
 		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String srcService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
-		String method = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.PEER_PATH);
+		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get()
+				.getAllTransitiveCustomMetadata();
+		String method = MetadataContextHolder.get()
+				.getSystemMetadata(SystemMetadataKey.PEER_PATH);
 		processRoutersRequest.setMethod(method);
 		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
 			ServiceInfo serviceInfo = new ServiceInfo();
@@ -112,7 +118,8 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 			serviceInfo.setMetadata(transitiveCustomMetadata);
 			processRoutersRequest.setSourceService(serviceInfo);
 		}
-		ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
+		ProcessRoutersResponse processRoutersResponse = routerAPI
+				.processRouters(processRoutersRequest);
 		ServiceInstances filteredServiceInstances = processRoutersResponse
 				.getServiceInstances();
 		List<Server> filteredInstances = new ArrayList<>();

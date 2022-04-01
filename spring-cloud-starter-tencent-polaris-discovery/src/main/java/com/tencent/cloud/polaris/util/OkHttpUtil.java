@@ -17,11 +17,12 @@
 
 package com.tencent.cloud.polaris.util;
 
+import java.util.Map;
+import java.util.Objects;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import java.util.Map;
-import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
