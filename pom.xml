@@ -61,6 +61,14 @@
 		</developer>
 
 		<developer>
+			<id>lepdou</id>
+			<name>lepdou</name>
+			<email>lepdou@126.com</email>
+			<organization>Tencent</organization>
+			<url>https://github.com/lepdou</url>
+		</developer>
+
+		<developer>
 			<name>Andrew Shan</name>
 			<email>samshan08@126.com</email>
 			<organization>Tencent</organization>
@@ -77,7 +85,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.2.0-Hoxton.SR9-SNAPSHOT</revision>
+		<revision>1.2.0-Hoxton.SR9</revision>
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>Hoxton.SR9</spring.cloud.version>
