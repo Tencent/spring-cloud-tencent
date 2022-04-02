@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://maven.apache.org/POM/4.0.0"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-build</artifactId>
-        <version>2.3.4.RELEASE</version>
-        <relativePath/>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-build</artifactId>
+		<version>2.1.11.RELEASE</version>
+		<relativePath/>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.tencent.cloud</groupId>
-    <artifactId>spring-cloud-tencent</artifactId>
-    <packaging>pom</packaging>
-    <version>${revision}</version>
-    <name>Spring Cloud Tencent</name>
-    <description>Spring Cloud Tencent</description>
-    <url>https://github.com/Tencent/spring-cloud-tencent/tree/main</url>
+	<groupId>com.tencent.cloud</groupId>
+	<artifactId>spring-cloud-tencent</artifactId>
+	<packaging>pom</packaging>
+	<version>${revision}</version>
+	<name>Spring Cloud Tencent</name>
+	<description>Spring Cloud Tencent</description>
+	<url>https://github.com/Tencent/spring-cloud-tencent/tree/main</url>
 
-    <organization>
-        <name>Tencent</name>
-        <url>https://opensource.tencent.com/</url>
-    </organization>
+	<organization>
+		<name>Tencent</name>
+		<url>https://opensource.tencent.com/</url>
+	</organization>
 
-    <licenses>
-        <license>
-            <name>The BSD 3-Clause License (BSD3)</name>
-            <url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/main/LICENSE</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>The BSD 3-Clause License (BSD3)</name>
+			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/main/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-    <scm>
-        <url>https://github.com/Tencent/spring-cloud-tencent</url>
-        <connection>scm:git:git@github.com:Tencent/spring-cloud-tencent.git</connection>
-        <developerConnection>scm:git:git@github.com:Tencent/spring-cloud-tencent.git</developerConnection>
-    </scm>
+	<scm>
+		<url>https://github.com/Tencent/spring-cloud-tencent</url>
+		<connection>scm:git:git@github.com:Tencent/spring-cloud-tencent.git</connection>
+		<developerConnection>scm:git:git@github.com:Tencent/spring-cloud-tencent.git</developerConnection>
+	</scm>
 
-    <modules>
+	<modules>
 		<module>spring-cloud-tencent-polaris-context</module>
 		<module>spring-cloud-tencent-commons</module>
 		<module>spring-cloud-starter-tencent-metadata-transfer</module>
@@ -48,7 +48,7 @@
 		<module>spring-cloud-tencent-dependencies</module>
 		<module>spring-cloud-tencent-examples</module>
 		<module>spring-cloud-tencent-coverage</module>
-        <module>spring-cloud-starter-tencent-polaris-config</module>
+		<module>spring-cloud-starter-tencent-polaris-config</module>
 	</modules>
 
 	<developers>
@@ -77,13 +77,14 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.2.0-Hoxton.SR9-SNAPSHOT</revision>
+		<revision>1.2.0-Greenwich-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>Hoxton.SR9</spring.cloud.version>
+		<spring.cloud.version>Greenwich.SR6</spring.cloud.version>
 
 		<!-- Dependencies -->
 		<logback.version>1.2.7</logback.version>
+		<guava.version>23.0</guava.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.3</jacoco.version>
@@ -121,6 +122,12 @@
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -266,31 +273,31 @@
 						</executions>
 					</plugin>
 				</plugins>
-            </build>
+			</build>
 
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>nexus-snapshots</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>nexus-releases</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-    </profiles>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>nexus-snapshots</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
+				<repository>
+					<id>nexus-releases</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
 
-    <repositories>
-        <repository>
-            <id>nexus-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>

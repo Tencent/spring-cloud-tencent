@@ -30,9 +30,8 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author lepdou 2022-03-29
  */
-@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled",
-		havingValue = "true", matchIfMissing = true)
-@Configuration(proxyBeanMethods = false)
+@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
+@Configuration
 public class PolarisCircuitBreakerBootstrapConfiguration {
 
 	@Bean

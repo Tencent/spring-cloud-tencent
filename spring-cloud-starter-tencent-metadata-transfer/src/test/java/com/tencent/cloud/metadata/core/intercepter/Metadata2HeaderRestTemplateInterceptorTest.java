@@ -51,9 +51,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT,
-		classes = Metadata2HeaderRestTemplateInterceptorTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = Metadata2HeaderRestTemplateInterceptorTest.TestApplication.class, properties = {
+		"spring.config.location = classpath:application-test.yml" })
 public class Metadata2HeaderRestTemplateInterceptorTest {
 
 	@Autowired

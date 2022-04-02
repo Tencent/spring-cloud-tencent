@@ -66,7 +66,7 @@ public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
 				MetadataContext.LOCAL_NAMESPACE);
 		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
-				route.getId());
+				route.getUri().getAuthority());
 		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH,
 				exchange.getRequest().getURI().getPath());
 

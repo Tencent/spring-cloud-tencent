@@ -70,10 +70,11 @@ public class Metadata2HeaderScgFilter implements GlobalFilter, Ordered {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
 				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, "UTF-8"));
+						new String[] { URLEncoder.encode(metadataStr, "UTF-8") });
 			}
 			catch (UnsupportedEncodingException e) {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
+				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
+						new String[] { metadataStr });
 			}
 		}
 

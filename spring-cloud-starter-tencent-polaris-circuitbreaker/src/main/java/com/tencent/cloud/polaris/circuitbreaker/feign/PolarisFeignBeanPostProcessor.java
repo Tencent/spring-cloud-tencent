@@ -24,9 +24,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
-import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
 import org.springframework.cloud.openfeign.ribbon.CachingSpringLoadBalancerFactory;
 import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
 
@@ -60,12 +58,6 @@ public class PolarisFeignBeanPostProcessor
 						createPolarisFeignClient(client.getDelegate()), factory(),
 						clientFactory());
 			}
-			if (bean instanceof FeignBlockingLoadBalancerClient) {
-				FeignBlockingLoadBalancerClient client = (FeignBlockingLoadBalancerClient) bean;
-				return new PolarisFeignBlockingLoadBalancerClient(
-						createPolarisFeignClient(client.getDelegate()),
-						factory.getBean(BlockingLoadBalancerClient.class));
-			}
 			return createPolarisFeignClient((Client) bean);
 		}
 		return bean;
@@ -73,7 +65,6 @@ public class PolarisFeignBeanPostProcessor
 
 	private boolean isNeedWrap(Object bean) {
 		return bean instanceof Client && !(bean instanceof PolarisFeignClient)
-				&& !(bean instanceof PolarisFeignBlockingLoadBalancerClient)
 				&& !(bean instanceof PolarisLoadBalancerFeignClient);
 	}
 

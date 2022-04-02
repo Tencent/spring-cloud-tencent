@@ -19,6 +19,7 @@ package com.tencent.cloud.metadata.core.interceptor;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -74,7 +75,8 @@ public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Orde
 				.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
-			requestTemplate.removeHeader(CUSTOM_METADATA);
+			// empty value, clear the existing values
+			requestTemplate.header(CUSTOM_METADATA, Collections.emptyList());
 			try {
 				requestTemplate.header(CUSTOM_METADATA,
 						URLEncoder.encode(metadataStr, "UTF-8"));

@@ -70,8 +70,7 @@ public class PolarisDiscoveryClientConfigurationTest {
 
 	@Test
 	public void testDiscoveryBlockingDisabled() {
-		this.contextRunner
-				.withPropertyValues("spring.cloud.discovery.blocking.enabled=false")
+		this.contextRunner.withPropertyValues("spring.cloud.discovery.enabled=false")
 				.run(context -> assertThat(context)
 						.doesNotHaveBean(PolarisDiscoveryClient.class));
 	}

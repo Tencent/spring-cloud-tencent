@@ -18,9 +18,9 @@
 package com.tencent.cloud.polaris.context;
 
 import com.tencent.polaris.client.api.SDKContext;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.platform.commons.util.StringUtils;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = PolarisContextApplication.class,
-		properties = { "spring.config.location = classpath:bootstrap.yml" })
+@SpringBootTest(classes = PolarisContextApplication.class, properties = {
+		"spring.config.location = classpath:bootstrap.yml" })
 @ImportAutoConfiguration({ PolarisContextConfiguration.class })
 public class PolarisContextGetHostTest {
 

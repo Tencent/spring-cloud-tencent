@@ -19,6 +19,7 @@ package com.tencent.cloud.common.metadata.config;
 
 import com.netflix.zuul.ZuulFilter;
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.aop.MetadataFeignAspect;
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstZuulFilter;
 import com.tencent.cloud.common.metadata.filter.web.MetadataReactiveFilter;
@@ -105,6 +106,11 @@ public class MetadataAutoConfiguration {
 		@Bean
 		public MetadataFirstFeignInterceptor metadataFirstFeignInterceptor() {
 			return new MetadataFirstFeignInterceptor();
+		}
+
+		@Bean
+		public MetadataFeignAspect metadataFeignAspect() {
+			return new MetadataFeignAspect();
 		}
 
 	}

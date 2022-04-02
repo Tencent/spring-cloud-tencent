@@ -46,8 +46,9 @@ public class MetadataFirstFeignInterceptor implements RequestInterceptor, Ordere
 		metadataContext.putSystemMetadata(
 				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
 				MetadataContext.LOCAL_NAMESPACE);
-		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
-				requestTemplate.feignTarget().name());
+		// Cannot get service name of peer-service in Feign interceptor of Greenwich.
+		// metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
+		// requestTemplate.feignTarget().name());
 		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH,
 				requestTemplate.path());
 	}

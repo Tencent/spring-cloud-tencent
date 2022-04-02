@@ -50,10 +50,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT,
-		classes = Metadata2HeaderFeignInterceptorTest.TestApplication.class,
-		properties = { "server.port=8081",
-				"spring.config.location = classpath:application-test.yml" })
+@SpringBootTest(webEnvironment = DEFINED_PORT, classes = Metadata2HeaderFeignInterceptorTest.TestApplication.class, properties = {
+		"server.port=8081", "spring.config.location = classpath:application-test.yml" })
 public class Metadata2HeaderFeignInterceptorTest {
 
 	@Autowired
@@ -99,9 +97,9 @@ public class Metadata2HeaderFeignInterceptorTest {
 		@FeignClient(name = "test-feign", url = "http://localhost:8081")
 		public interface TestFeign {
 
-			@RequestMapping(value = "/test",
-					headers = { MetadataConstant.HeaderName.CUSTOM_METADATA
-							+ "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}" })
+			@RequestMapping(value = "/test", headers = {
+					MetadataConstant.HeaderName.CUSTOM_METADATA + "={\"a\":\"11"
+							+ "\",\"b\":\"22\",\"c\":\"33\"}" })
 			String test();
 
 		}

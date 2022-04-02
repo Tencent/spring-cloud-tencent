@@ -32,9 +32,8 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author lepdou 2022-03-28
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled",
-		matchIfMissing = true)
+@Configuration
+@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled", matchIfMissing = true)
 public class PolarisConfigAutoConfiguration {
 
 	@Bean

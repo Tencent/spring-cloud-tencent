@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.common.util;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public final class JacksonUtils {
 			}
 			return new HashMap<>();
 		}
-		catch (JsonProcessingException e) {
+		catch (IOException e) {
 			LOG.error(
 					"Json to map failed. check if the format of the json string[{}] is correct.",
 					jsonStr, e);
