@@ -55,25 +55,27 @@ public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 		Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
 
 		// get metadata of current thread
-		MetadataContext metadataContext = exchange
-				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
+		MetadataContext metadataContext = exchange.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 		if (metadataContext == null) {
 			metadataContext = MetadataContextHolder.get();
 		}
 
 		// TODO The peer namespace is temporarily the same as the local namespace
-		metadataContext.putSystemMetadata(
-				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
+		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
 				MetadataContext.LOCAL_NAMESPACE);
-		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
-				route.getUri().getAuthority());
+		if (route != null) {
+			metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
+					route.getUri().getAuthority());
+		}
+		else {
+			metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
+					exchange.getRequest().getURI().getAuthority());
+		}
 		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH,
 				exchange.getRequest().getURI().getPath());
 
-		exchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT,
-				metadataContext);
+		exchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT, metadataContext);
 
 		return chain.filter(exchange);
 	}
-
 }
