@@ -2,6 +2,7 @@
 
 ## 1. bootstrap.yml 配置
 
+修改 resources/bootstrap.yml ```spring.cloud.polaris.config.address``` 北极星服务端地址。
 > 注意是在 bootstrap.yml 里配置，而不是在 application.yml 里配置。因为配置中心相关的配置是在 bootstrap 阶段依赖的配置。
 
 ```` yaml
@@ -12,7 +13,7 @@ spring:
     polaris:
       namespace: dev
       config:
-        addresses: grpc://9.134.122.18:8093 # the address of polaris config server
+        address: grpc://9.134.122.18:8093 # the address of polaris config server
         auto-refresh: true # auto refresh when config file changed
         groups:
           - name: ${spring.application.name} # group name

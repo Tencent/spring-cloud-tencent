@@ -16,37 +16,21 @@
  *
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.example;
+package com.tencent.cloud.polaris.ciruitbreaker.example;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Service B Controller.
+ * Circuit breaker example callee application.
  *
  * @author Haotian Zhang
  */
-@RestController
-@RequestMapping("/example/service/b")
-public class ServiceBController {
+@SpringBootApplication
+public class ServiceB2 {
 
-	@Value("${is-throw-runtime-exception:#{false}}")
-	private boolean isThrowRuntimeException;
-
-	/**
-	 * Get service information.
-	 * @return service information
-	 */
-	@GetMapping("/info")
-	public String info() {
-		if (isThrowRuntimeException) {
-			throw new RuntimeException("failed for call my service");
-		}
-		else {
-			return "hello world ! I'm a service B1";
-		}
+	public static void main(String[] args) {
+		SpringApplication.run(ServiceB2.class);
 	}
 
 }
