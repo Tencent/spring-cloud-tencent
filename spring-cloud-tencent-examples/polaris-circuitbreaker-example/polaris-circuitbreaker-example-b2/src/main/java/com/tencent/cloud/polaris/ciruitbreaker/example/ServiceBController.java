@@ -16,7 +16,7 @@
  *
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.example;
+package com.tencent.cloud.polaris.ciruitbreaker.example;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +45,7 @@ public class ServiceBController {
 			throw new RuntimeException("failed for call my service");
 		}
 		else {
-			return "hello world ! I'm a service B1";
+			return "hello world ! I'm a service B2";
 		}
 	}
 

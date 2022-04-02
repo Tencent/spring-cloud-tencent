@@ -1,0 +1,10 @@
+server:
+  port: 48082
+spring:
+  application:
+    name: polaris-circuitbreaker-example-b
+  cloud:
+    polaris:
+      address: grpc://9.134.122.18:8091
+      namespace: default
+is-throw-runtime-exception: true
