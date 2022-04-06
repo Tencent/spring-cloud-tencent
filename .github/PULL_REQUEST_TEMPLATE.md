@@ -19,6 +19,7 @@ Other... Please describe:
 
 ### Checklist
 - [ ] Code compiles correctly
+- [ ] Pull Request has submit to 2020.0 and Greenwich
 - [ ] Create at least one junit test if possible
 - [ ] All tests passing
 - [ ] Extend documentation if necessary
