@@ -13,18 +13,24 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.router.rule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
 import com.netflix.loadbalancer.Server;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
+import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
+import com.tencent.polaris.api.pojo.ServiceInstances;
+import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
@@ -51,23 +57,42 @@ public class PolarisWeightedRandomRule extends AbstractLoadBalancerRule {
 
 	@Override
 	public Server choose(Object key) {
-		List<Server> allServers = getLoadBalancer().getReachableServers();
-		if (CollectionUtils.isEmpty(allServers)) {
+		//1. filter by router
+		List<Server> serversAfterRouter = getLoadBalancer().getReachableServers();
+		if (CollectionUtils.isEmpty(serversAfterRouter)) {
 			return null;
 		}
-		Server server = allServers.get(0);
-		if (!(server instanceof PolarisServer)) {
-			throw new IllegalStateException(
-					"PolarisDiscoveryRule only support PolarisServer instances");
-		}
-		PolarisServer polarisServer = (PolarisServer) server;
+
+		ServiceInstances serviceInstances = transferServersToServiceInstances(serversAfterRouter);
+
+		//2. filter by load balance
 		ProcessLoadBalanceRequest request = new ProcessLoadBalanceRequest();
-		request.setDstInstances(polarisServer.getServiceInstances());
+		request.setDstInstances(serviceInstances);
 		request.setLbPolicy(POLICY);
-		ProcessLoadBalanceResponse processLoadBalanceResponse = polarisRouter
-				.processLoadBalance(request);
+		ProcessLoadBalanceResponse processLoadBalanceResponse = polarisRouter.processLoadBalance(request);
 		Instance targetInstance = processLoadBalanceResponse.getTargetInstance();
-		return new PolarisServer(polarisServer.getServiceInstances(), targetInstance);
+
+		return new PolarisServer(serviceInstances, targetInstance);
+	}
+
+	ServiceInstances transferServersToServiceInstances(List<Server> servers) {
+		List<Instance> instances = new ArrayList<>(servers.size());
+		String serviceName = null;
+
+		for (Server server : servers) {
+			if (server instanceof PolarisServer) {
+				Instance instance = ((PolarisServer) server).getInstance();
+				instances.add(instance);
+
+				if (serviceName == null) {
+					serviceName = instance.getService();
+				}
+			}
+		}
+
+		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
+
+		return new DefaultServiceInstances(serviceKey, instances);
 	}
 
 }

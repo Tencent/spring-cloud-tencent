@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.ribbon;
@@ -55,9 +56,8 @@ public class PolarisServerList extends AbstractServerList<Server> {
 	}
 
 	private List<Server> getServers() {
-		InstancesResponse filteredInstances = polarisDiscoveryHandler
-				.getFilteredInstances(serviceId);
-		ServiceInstances serviceInstances = filteredInstances.toServiceInstances();
+		InstancesResponse allInstances = polarisDiscoveryHandler.getInstances(serviceId);
+		ServiceInstances serviceInstances = allInstances.toServiceInstances();
 		List<Server> polarisServers = new ArrayList<>();
 		for (Instance instance : serviceInstances.getInstances()) {
 			polarisServers.add(new PolarisServer(serviceInstances, instance));
