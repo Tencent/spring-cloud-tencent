@@ -17,6 +17,7 @@
 	<modules>
 		<module>polaris-circuitbreaker-example-a</module>
 		<module>polaris-circuitbreaker-example-b</module>
+		<module>polaris-circuitbreaker-example-b2</module>
 	</modules>
 
 	<dependencies>

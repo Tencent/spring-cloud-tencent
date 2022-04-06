@@ -4,21 +4,20 @@
 
 本样例将介绍如何在Spring Cloud项目中使用```spring-cloud-starter-tencent-polaris-discovery```以使用其各项功能。
 
-该样例分为两个微服务，即discovery-caller-service和discovery-callee-service。其中，discovery-caller-service对discovery-callee-service发生调用。
+该样例分为两个微服务，即 ```discovery-caller-service``` 和 ```discovery-callee-service ```。
+其中 ```discovery-caller-service``` 调用 ```discovery-callee-service```
 
 ## 使用说明
 
 ### 修改配置
 
-配置如下所示。其中，${ip}和${port}为Polaris后端服务的IP地址与端口号。
+修改 resource/bootstrap.yml 中北极星的服务端地址
 
 ```yaml
 spring:
-  application:
-    name: ${application.name}
   cloud:
     polaris:
-      address: ${ip}:${port}
+      address: grpc://${ip}:8091
 ```
 
 ### 启动样例
@@ -31,29 +30,16 @@ spring:
 
 - IDEA启动
 
-分别启动```spring-cloud-tencent-examples/polaris-discovery-example/discovery-caller-service```下的```DiscoveryCallerService```和```spring-cloud-tencent-examples/polaris-discovery-example/discovery-callee-service```下的```DiscoveryCalleeService```。
+分别启动
 
-- Maven打包启动
-
-在```spring-cloud-tencent-examples/polaris-discovery-example```下执行
-
-```sh
-mvn clean package
-```
-
-然后在```discovery-caller-service```和```discovery-callee-service```下找到生成的jar包，运行
-
-```
-java -jar ${app.jar}
-```
-
-启动应用，其中${app.jar}替换为对应的jar包名。
+1. ```spring-cloud-tencent-examples/polaris-discovery-example/discovery-caller-service```下的```DiscoveryCallerService```
+2. ```spring-cloud-tencent-examples/polaris-discovery-example/discovery-callee-service```下的```DiscoveryCalleeService```
 
 ### 验证
 
-#### Feign调用
+#### 调用 discovery-caller-service 暴露的接口
 
-执行以下命令发起Feign调用，其逻辑为```DiscoveryCalleeService```返回value1+value2的和
+执行以下命令发起Feign调用，其逻辑为```DiscoveryCalleeService```返回 value1+value2 的和
 
 ```shell
 curl -L -X GET 'http://localhost:48080/discovery/service/caller/feign?value1=1&value2=2'
