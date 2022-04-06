@@ -66,11 +66,13 @@ public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
 				MetadataContext.LOCAL_NAMESPACE);
 		if (route != null) {
-			metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
+			metadataContext.putSystemMetadata(
+					MetadataConstant.SystemMetadataKey.PEER_SERVICE,
 					route.getUri().getAuthority());
 		}
 		else {
-			metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
+			metadataContext.putSystemMetadata(
+					MetadataConstant.SystemMetadataKey.PEER_SERVICE,
 					exchange.getRequest().getURI().getAuthority());
 		}
 		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH,
@@ -81,4 +83,5 @@ public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 
 		return chain.filter(exchange);
 	}
+
 }
