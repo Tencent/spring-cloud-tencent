@@ -21,6 +21,7 @@
         <module>polaris-circuitbreaker-example</module>
         <module>polaris-gateway-example</module>
 		<module>polaris-config-example</module>
+		<module>polaris-router-example</module>
 	</modules>
 
     <properties>

@@ -71,7 +71,6 @@ public class PolarisLoadBalancerClientConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
-		@ConditionalOnMissingBean
 		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(RouterAPI routerAPI,
 				ConfigurableApplicationContext context) {
@@ -88,7 +87,6 @@ public class PolarisLoadBalancerClientConfiguration {
 
 		@Bean
 		@ConditionalOnBean(DiscoveryClient.class)
-		@ConditionalOnMissingBean
 		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(RouterAPI routerAPI,
 				ConfigurableApplicationContext context) {
