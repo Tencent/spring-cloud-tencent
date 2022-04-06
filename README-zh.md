@@ -48,23 +48,14 @@ Spring Cloud Tencent 使用 Maven 来构建，最快的使用方式是将本项�
     </dependencyManagement>
 ````
 
-### 示例
-
-Spring Cloud Tencent 项目包含了一个子模块spring-cloud-tencent-examples。此模块中提供了体验接入用的 example ，您可以阅读对应的 example 工程下的 readme 文档，根据里面的步骤来体验。
-
-Example 列表：
-
-- [PolarisMesh](https://github.com/polarismesh)接入相关的样例：
-
-  - [服务发现](spring-cloud-tencent-examples/polaris-discovery-example/README-zh.md)
-
-  - [故障熔断](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README-zh.md)
-
-  - [限流](spring-cloud-tencent-examples/polaris-ratelimit-example/README-zh.md)
-
-  - [网关](spring-cloud-tencent-examples/polaris-gateway-example/README-zh.md)
-
-更多详细功能，请参考[polaris-java](https://github.com/polarismesh/polaris-java/blob/main/README-zh.md)。
+### 使用文档
+- [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+- [服务注册与发现](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+- [配置中心](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+- [服务限流](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+- [服务熔断](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+- [服务路由](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+- [元数据传递](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)
 
 ## 版本号规范
 

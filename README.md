@@ -58,21 +58,14 @@ For example, Spring Cloud Tencent's 1.0.1.Hoxton.SR9 corresponds to the Spring C
     </dependencyManagement>
 ````
 
-### Example
-
-Spring Cloud Tencent project contains a sub-module spring-cloud-tencent-examples. This module provides examples for users to experience, you can read the README.md in each example, and follow the instructions there.
-
-Example List:
-
-- [Polaris Discovery Example](spring-cloud-tencent-examples/polaris-discovery-example/README.md)
-
-- [Polaris CircuitBreaker Example](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README.md)
-
-- [Polaris RateLimit Example](spring-cloud-tencent-examples/polaris-ratelimit-example/README.md)
-
-- [Polaris Gateway Example](spring-cloud-tencent-examples/polaris-gateway-example/README.md)
-
-For more features, please refer to [polaris-java](https://github.com/polarismesh/polaris-java).
+ ### Starter Usage Doc
+- [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Version-Management)
+- [Spring Cloud Tencent Discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-Usage-Documentation)
+- [Spring Cloud Tencent Config](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-Usage-Documentation)
+- [Spring Cloud Tencent Rate Limit](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-Usage-Document)
+- [Spring Cloud Tencent CircuitBreaker](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-Usage-Document)
+- [Spring Cloud Tencent Router](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-Usage-Document)
+- [Spring Cloud Tencent Metadata Transfer](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-Usage-Document)
 
 ### Version Standard
 
