@@ -41,13 +41,14 @@ public class MetadataFeignAspect {
 
 	/**
 	 * Get service name before execution of Feign client.
-	 *
 	 * @param joinPoint join point
 	 */
 	@Before("execute()")
 	public void doBefore(JoinPoint joinPoint) {
 		Request request = (Request) joinPoint.getArgs()[0];
-		MetadataContextHolder.get().putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_SERVICE,
+		MetadataContextHolder.get().putSystemMetadata(
+				MetadataConstant.SystemMetadataKey.PEER_SERVICE,
 				URI.create(request.url()).getAuthority());
 	}
+
 }
