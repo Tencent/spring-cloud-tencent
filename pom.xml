@@ -82,10 +82,6 @@
 		<!-- Spring Cloud -->
 		<spring.cloud.version>Greenwich.SR6</spring.cloud.version>
 
-		<!-- Dependencies -->
-		<logback.version>1.2.7</logback.version>
-		<guava.version>23.0</guava.version>
-
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.3</jacoco.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -100,15 +96,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Spring Cloud Dependencies -->
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring.cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
 			<!-- Spring Cloud Tencent Dependencies -->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
@@ -118,16 +105,13 @@
 				<scope>import</scope>
 			</dependency>
 
+			<!-- Spring Cloud Dependencies -->
 			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring.cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

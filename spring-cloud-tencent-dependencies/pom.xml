@@ -64,6 +64,11 @@
 	<properties>
 		<revision>1.2.0-Greenwich-SNAPSHOT</revision>
 		<polaris.version>1.3.1</polaris.version>
+
+		<!-- Dependencies -->
+		<logback.version>1.2.7</logback.version>
+		<guava.version>23.0</guava.version>
+		<consul.version>1.4.5</consul.version>
 		<powermock.version>2.0.0</powermock.version>
 
 		<!-- Maven Plugin Versions -->
@@ -81,6 +86,30 @@
 				<version>${polaris.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.ecwid.consul</groupId>
+				<artifactId>consul-api</artifactId>
+				<version>${consul.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>servlet-api</artifactId>
+						<groupId>javax.servlet</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
 			</dependency>
 
 			<dependency>
