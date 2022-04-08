@@ -53,7 +53,6 @@ public class PolarisLoadBalancerClientConfiguration {
 	 */
 	private static final int REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER = 193827465;
 
-
 	@Bean
 	@ConditionalOnMissingBean
 	public ReactorLoadBalancer<ServiceInstance> polarisLoadBalancer(Environment environment,

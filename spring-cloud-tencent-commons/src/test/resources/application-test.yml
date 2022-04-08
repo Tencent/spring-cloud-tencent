@@ -5,6 +5,8 @@ spring:
     exclude:
       - org.springframework.cloud.gateway.config.GatewayAutoConfiguration
   cloud:
+    gateway:
+      enabled: false
     tencent:
       metadata:
         content:

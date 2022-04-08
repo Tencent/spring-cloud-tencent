@@ -19,6 +19,7 @@ package com.tencent.cloud.metadata.core.intercepter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -31,12 +32,17 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -81,6 +87,12 @@ public class Metadata2HeaderFeignInterceptorTest {
 				throws UnsupportedEncodingException {
 			String systemMetadataStr = JacksonUtils.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
 			return URLDecoder.decode(customMetadataStr, "UTF-8") + systemMetadataStr;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+			return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
 		}
 
 		@FeignClient(name = "test-feign", url = "http://localhost:8081")
