@@ -78,4 +78,5 @@ public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 
 		return chain.filter(exchange);
 	}
+
 }

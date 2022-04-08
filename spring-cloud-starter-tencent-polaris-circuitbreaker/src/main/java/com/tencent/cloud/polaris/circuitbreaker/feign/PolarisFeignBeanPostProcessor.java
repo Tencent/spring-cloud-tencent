@@ -52,7 +52,8 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
 
 	private Object wrapper(Object bean) {
 		if (isNeedWrap(bean)) {
-			if (bean instanceof RetryableFeignBlockingLoadBalancerClient || bean instanceof FeignBlockingLoadBalancerClient) {
+			if (bean instanceof RetryableFeignBlockingLoadBalancerClient
+					|| bean instanceof FeignBlockingLoadBalancerClient) {
 				Client delegate;
 				if (bean instanceof RetryableFeignBlockingLoadBalancerClient) {
 					delegate = ((RetryableFeignBlockingLoadBalancerClient) bean).getDelegate();

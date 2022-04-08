@@ -56,7 +56,7 @@ public class Metadata2HeaderRestTemplateInterceptor implements ClientHttpRequest
 
 		// add new metadata and cover old
 		String metadataStr = httpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
-		if (!StringUtils.isNotBlank(metadataStr)) {
+		if (StringUtils.isNotBlank(metadataStr)) {
 			Map<String, String> headerMetadataMap = JacksonUtils.deserialize2Map(metadataStr);
 			for (String key : headerMetadataMap.keySet()) {
 				metadataContext.putTransitiveCustomMetadata(key, headerMetadataMap.get(key));
