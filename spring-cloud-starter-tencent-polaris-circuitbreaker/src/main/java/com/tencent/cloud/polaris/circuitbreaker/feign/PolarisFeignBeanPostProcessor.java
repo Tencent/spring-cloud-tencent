@@ -27,6 +27,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
+import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
 import org.springframework.cloud.openfeign.loadbalancer.RetryableFeignBlockingLoadBalancerClient;
 
 /**
@@ -51,12 +52,20 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
 
 	private Object wrapper(Object bean) {
 		if (isNeedWrap(bean)) {
-			if (bean instanceof RetryableFeignBlockingLoadBalancerClient) {
-				RetryableFeignBlockingLoadBalancerClient client = (RetryableFeignBlockingLoadBalancerClient) bean;
-				return new PolarisFeignBlockingLoadBalancerClient(createPolarisFeignClient(client.getDelegate()),
-						factory.getBean(BlockingLoadBalancerClient.class),
-						factory.getBean(LoadBalancerProperties.class),
-						factory.getBean(LoadBalancerClientFactory.class));
+			if (bean instanceof RetryableFeignBlockingLoadBalancerClient || bean instanceof FeignBlockingLoadBalancerClient) {
+				Client delegate;
+				if (bean instanceof RetryableFeignBlockingLoadBalancerClient) {
+					delegate = ((RetryableFeignBlockingLoadBalancerClient) bean).getDelegate();
+				}
+				else {
+					delegate = ((FeignBlockingLoadBalancerClient) bean).getDelegate();
+				}
+				if (delegate != null) {
+					return new PolarisFeignBlockingLoadBalancerClient(createPolarisFeignClient(delegate),
+							factory.getBean(BlockingLoadBalancerClient.class),
+							factory.getBean(LoadBalancerProperties.class),
+							factory.getBean(LoadBalancerClientFactory.class));
+				}
 			}
 			return createPolarisFeignClient((Client) bean);
 		}
