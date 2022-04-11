@@ -50,7 +50,7 @@
     },
     {
       "name": "spring.cloud.polaris.weight",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "defaultValue": 100,
       "description": "the weight of polaris instance , use to load-balance."
     }
