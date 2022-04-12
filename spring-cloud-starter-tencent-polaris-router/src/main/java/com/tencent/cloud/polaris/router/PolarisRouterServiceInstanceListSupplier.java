@@ -78,7 +78,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 					"PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 		}
 		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
-		List<Instance> instances = new ArrayList<>(8);
+		List<Instance> instances = new ArrayList<>(allServers.size());
 		for (ServiceInstance server : allServers) {
 			DefaultInstance instance = new DefaultInstance();
 			instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
@@ -88,6 +88,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 			instance.setHost(server.getHost());
 			instance.setPort(server.getPort());
 			instance.setWeight(100);
+			instance.setMetadata(server.getMetadata());
 			instances.add(instance);
 		}
 		serviceInstances = new DefaultServiceInstances(serviceKey, instances);
