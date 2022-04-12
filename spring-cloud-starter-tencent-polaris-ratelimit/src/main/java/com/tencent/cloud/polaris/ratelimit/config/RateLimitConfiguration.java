@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.ratelimit.config;
@@ -20,6 +21,8 @@ package com.tencent.cloud.polaris.ratelimit.config;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.factory.LimitAPIFactory;
@@ -30,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
@@ -60,8 +64,9 @@ public class RateLimitConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI) {
-			return new QuotaCheckServletFilter(limitAPI);
+		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI,
+				@Nullable PolarisRateLimiterLabelServletResolver labelResolver) {
+			return new QuotaCheckServletFilter(limitAPI, labelResolver);
 		}
 
 		@Bean
@@ -85,8 +90,9 @@ public class RateLimitConfiguration {
 	static class MetadataReactiveFilterConfig {
 
 		@Bean
-		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(LimitAPI limitAPI) {
-			return new QuotaCheckReactiveFilter(limitAPI);
+		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(LimitAPI limitAPI,
+				@Nullable PolarisRateLimiterLabelReactiveResolver labelResolver) {
+			return new QuotaCheckReactiveFilter(limitAPI, labelResolver);
 		}
 
 	}
