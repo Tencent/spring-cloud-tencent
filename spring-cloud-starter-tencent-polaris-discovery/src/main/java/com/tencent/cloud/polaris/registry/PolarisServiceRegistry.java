@@ -18,8 +18,8 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
@@ -71,13 +71,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.metadataLocalProperties = metadataLocalProperties;
+		
 		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
-			ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(
-					0, new NamedThreadFactory("spring-cloud-heartbeat"));
-			heartbeatExecutor.setMaximumPoolSize(1);
-			this.heartbeatExecutor = heartbeatExecutor;
-		}
-		else {
+			this.heartbeatExecutor = Executors
+					.newSingleThreadScheduledExecutor(new NamedThreadFactory("spring-cloud-heartbeat"));
+		} else {
 			this.heartbeatExecutor = null;
 		}
 	}
@@ -95,6 +93,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setService(registration.getServiceId());
 		instanceRegisterRequest.setHost(registration.getHost());
 		instanceRegisterRequest.setPort(registration.getPort());
+		instanceRegisterRequest.setWeight(polarisDiscoveryProperties.getWeight());
 		instanceRegisterRequest.setToken(polarisDiscoveryProperties.getToken());
 		if (null != heartbeatExecutor) {
 			instanceRegisterRequest.setTtl(ttl);
