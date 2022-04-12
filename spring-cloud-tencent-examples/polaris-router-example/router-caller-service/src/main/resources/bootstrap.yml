@@ -1,0 +1,9 @@
+server:
+  port: 48083
+spring:
+  application:
+    name: RouterCallerService
+  cloud:
+    polaris:
+      address: grpc://127.0.0.1:8091
+      namespace: default
