@@ -13,13 +13,12 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.common.metadata.config;
 
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
-import com.tencent.cloud.common.metadata.filter.web.MetadataReactiveFilter;
-import com.tencent.cloud.common.metadata.filter.web.MetadataServletFilter;
 import com.tencent.cloud.common.metadata.interceptor.feign.MetadataFirstFeignInterceptor;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -49,13 +48,10 @@ public class MetadataAutoConfigurationTest {
 	public void test1() {
 		this.applicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
-					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataAutoConfiguration.MetadataServletFilterConfig.class);
-					Assertions.assertThat(context).doesNotHaveBean(MetadataServletFilter.class);
-					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
-					Assertions.assertThat(context).doesNotHaveBean(MetadataReactiveFilter.class);
+							.hasSingleBean(MetadataLocalProperties.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context)
 							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
@@ -72,13 +68,10 @@ public class MetadataAutoConfigurationTest {
 	public void test2() {
 		this.webApplicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
-					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataServletFilterConfig.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataServletFilter.class);
-					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
-					Assertions.assertThat(context).doesNotHaveBean(MetadataReactiveFilter.class);
+							.hasSingleBean(MetadataLocalProperties.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context)
 							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
@@ -97,14 +90,9 @@ public class MetadataAutoConfigurationTest {
 				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class)).run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.doesNotHaveBean(MetadataAutoConfiguration.MetadataServletFilterConfig.class);
-					Assertions.assertThat(context).doesNotHaveBean(MetadataServletFilter.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataReactiveFilterConfig.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataReactiveFilter.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
+							.hasSingleBean(MetadataLocalProperties.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context)
 							.hasSingleBean(MetadataAutoConfiguration.MetadataScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
