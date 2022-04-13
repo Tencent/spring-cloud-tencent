@@ -62,6 +62,11 @@ public class PolarisContextProperties {
 	 */
 	private String namespace = "default";
 
+	/**
+	 * polaris service name.
+	 */
+	private String service;
+
 	@Autowired
 	private Environment environment;
 
@@ -125,4 +130,11 @@ public class PolarisContextProperties {
 		this.namespace = namespace;
 	}
 
+	String getService() {
+		return service;
+	}
+
+	void setService(String service) {
+		this.service = service;
+	}
 }
