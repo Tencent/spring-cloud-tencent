@@ -56,8 +56,8 @@ public class PolarisFeignClient implements Client {
 		final ServiceCallResult resultRequest = createServiceCallResult(request);
 		try {
 			Response response = delegate.execute(request, options);
-			// HTTP code greater than 400 is an exception
-			if (response.status() >= 400) {
+			// HTTP code greater than 500 is an exception
+			if (response.status() >= 500) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 			return response;
