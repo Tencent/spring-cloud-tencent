@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.metadata.core.intercepter;
@@ -24,7 +25,7 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderRestTemplateInterceptor;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,14 +47,15 @@ import org.springframework.web.client.RestTemplate;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link Metadata2HeaderRestTemplateInterceptor}
+ * Test for {@link EncodeTransferMedataRestTemplateInterceptor}
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = Metadata2HeaderRestTemplateInterceptorTest.TestApplication.class, properties = {
-		"spring.config.location = classpath:application-test.yml" })
-public class Metadata2HeaderRestTemplateInterceptorTest {
+@SpringBootTest(webEnvironment = RANDOM_PORT,
+		classes = EncodeTransferMedataRestTemplateInterceptorTest.TestApplication.class,
+		properties = { "spring.config.location = classpath:application-test.yml" })
+public class EncodeTransferMedataRestTemplateInterceptorTest {
 
 	@Autowired
 	private MetadataLocalProperties metadataLocalProperties;

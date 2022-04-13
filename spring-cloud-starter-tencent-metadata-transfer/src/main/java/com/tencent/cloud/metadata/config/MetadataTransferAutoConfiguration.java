@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.metadata.config;
@@ -21,14 +22,19 @@ import java.util.List;
 import java.util.Map;
 
 import com.netflix.zuul.ZuulFilter;
-import com.tencent.cloud.metadata.core.filter.gateway.Metadata2HeaderScgFilter;
-import com.tencent.cloud.metadata.core.filter.gateway.Metadata2HeaderZuulFilter;
-import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderFeignInterceptor;
-import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderRestTemplateInterceptor;
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
+import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataScgFilter;
+import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulFilter;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -37,6 +43,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
+
+import static javax.servlet.DispatcherType.ASYNC;
+import static javax.servlet.DispatcherType.ERROR;
+import static javax.servlet.DispatcherType.FORWARD;
+import static javax.servlet.DispatcherType.INCLUDE;
+import static javax.servlet.DispatcherType.REQUEST;
 
 /**
  * Metadata transfer auto configuration.
@@ -47,6 +59,46 @@ import org.springframework.web.client.RestTemplate;
 public class MetadataTransferAutoConfiguration {
 
 	/**
+	 * Create when web application type is SERVLET.
+	 */
+	@Configuration
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	static class MetadataServletFilterConfig {
+
+		@Bean
+		public FilterRegistrationBean<DecodeTransferMetadataServletFilter> metadataServletFilterRegistrationBean(
+				DecodeTransferMetadataServletFilter decodeTransferMetadataServletFilter) {
+			FilterRegistrationBean<DecodeTransferMetadataServletFilter> filterRegistrationBean = new FilterRegistrationBean<>(
+					decodeTransferMetadataServletFilter);
+			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE,
+					REQUEST);
+			filterRegistrationBean
+					.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
+			return filterRegistrationBean;
+		}
+
+		@Bean
+		public DecodeTransferMetadataServletFilter metadataServletFilter() {
+			return new DecodeTransferMetadataServletFilter();
+		}
+
+	}
+
+	/**
+	 * Create when web application type is REACTIVE.
+	 */
+	@Configuration
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	static class MetadataReactiveFilterConfig {
+
+		@Bean
+		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter() {
+			return new DecodeTransferMetadataReactiveFilter();
+		}
+
+	}
+
+	/**
 	 * Create when gateway application is Zuul.
 	 */
 	@Configuration
@@ -54,8 +106,8 @@ public class MetadataTransferAutoConfiguration {
 	static class MetadataTransferZuulFilterConfig {
 
 		@Bean
-		public ZuulFilter metadata2HeaderZuulFilter() {
-			return new Metadata2HeaderZuulFilter();
+		public ZuulFilter encodeTransferMetadataZuulFilter() {
+			return new EncodeTransferMetadataZuulFilter();
 		}
 
 	}
@@ -68,8 +120,8 @@ public class MetadataTransferAutoConfiguration {
 	static class MetadataTransferScgFilterConfig {
 
 		@Bean
-		public GlobalFilter metadata2HeaderScgFilter() {
-			return new Metadata2HeaderScgFilter();
+		public GlobalFilter encodeTransferMedataScgFilter() {
+			return new EncodeTransferMedataScgFilter();
 		}
 
 	}
@@ -82,8 +134,8 @@ public class MetadataTransferAutoConfiguration {
 	static class MetadataTransferFeignInterceptorConfig {
 
 		@Bean
-		public Metadata2HeaderFeignInterceptor metadata2HeaderFeignInterceptor() {
-			return new Metadata2HeaderFeignInterceptor();
+		public EncodeTransferMedataFeignInterceptor encodeTransferMedataFeignInterceptor() {
+			return new EncodeTransferMedataFeignInterceptor();
 		}
 
 	}
@@ -98,13 +150,13 @@ public class MetadataTransferAutoConfiguration {
 		private ApplicationContext context;
 
 		@Bean
-		public Metadata2HeaderRestTemplateInterceptor metadata2HeaderRestTemplateInterceptor() {
-			return new Metadata2HeaderRestTemplateInterceptor();
+		public EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor() {
+			return new EncodeTransferMedataRestTemplateInterceptor();
 		}
 
 		@Bean
-		BeanPostProcessor metadata2HeaderRestTemplatePostProcessor(
-				Metadata2HeaderRestTemplateInterceptor metadata2HeaderRestTemplateInterceptor) {
+		BeanPostProcessor encodeTransferMetadataRestTemplatePostProcessor(
+				EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor) {
 			// Coping with multiple bean injection scenarios
 			Map<String, RestTemplate> beans = this.context
 					.getBeansOfType(RestTemplate.class);
@@ -117,14 +169,14 @@ public class MetadataTransferAutoConfiguration {
 							.getInterceptors();
 					// Avoid setting interceptor repeatedly.
 					if (null != interceptors && !interceptors
-							.contains(metadata2HeaderRestTemplateInterceptor)) {
-						interceptors.add(metadata2HeaderRestTemplateInterceptor);
+							.contains(encodeTransferMedataRestTemplateInterceptor)) {
+						interceptors.add(encodeTransferMedataRestTemplateInterceptor);
 						restTemplate.setInterceptors(interceptors);
 					}
 				}
 			}
-			return new Metadata2HeaderRestTemplatePostProcessor(
-					metadata2HeaderRestTemplateInterceptor);
+			return new EncodeTransferMetadataRestTemplatePostProcessor(
+					encodeTransferMedataRestTemplateInterceptor);
 		}
 
 		@Override
@@ -133,14 +185,14 @@ public class MetadataTransferAutoConfiguration {
 			this.context = applicationContext;
 		}
 
-		public static class Metadata2HeaderRestTemplatePostProcessor
+		public static class EncodeTransferMetadataRestTemplatePostProcessor
 				implements BeanPostProcessor {
 
-			private Metadata2HeaderRestTemplateInterceptor metadata2HeaderRestTemplateInterceptor;
+			private EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor;
 
-			Metadata2HeaderRestTemplatePostProcessor(
-					Metadata2HeaderRestTemplateInterceptor metadata2HeaderRestTemplateInterceptor) {
-				this.metadata2HeaderRestTemplateInterceptor = metadata2HeaderRestTemplateInterceptor;
+			EncodeTransferMetadataRestTemplatePostProcessor(
+					EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor) {
+				this.encodeTransferMedataRestTemplateInterceptor = encodeTransferMedataRestTemplateInterceptor;
 			}
 
 			@Override
@@ -156,8 +208,8 @@ public class MetadataTransferAutoConfiguration {
 							.getInterceptors();
 					// Avoid setting interceptor repeatedly.
 					if (null != interceptors && !interceptors
-							.contains(metadata2HeaderRestTemplateInterceptor)) {
-						interceptors.add(this.metadata2HeaderRestTemplateInterceptor);
+							.contains(encodeTransferMedataRestTemplateInterceptor)) {
+						interceptors.add(this.encodeTransferMedataRestTemplateInterceptor);
 						restTemplate.setInterceptors(interceptors);
 					}
 				}

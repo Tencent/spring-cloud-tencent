@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.metadata.core.intercepter;
@@ -24,7 +25,7 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.core.interceptor.Metadata2HeaderFeignInterceptor;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.assertj.core.api.Assertions;
@@ -45,14 +46,16 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
- * Test for {@link Metadata2HeaderFeignInterceptor}
+ * Test for {@link EncodeTransferMedataFeignInterceptor}
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT, classes = Metadata2HeaderFeignInterceptorTest.TestApplication.class, properties = {
-		"server.port=8081", "spring.config.location = classpath:application-test.yml" })
-public class Metadata2HeaderFeignInterceptorTest {
+@SpringBootTest(webEnvironment = DEFINED_PORT,
+		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
+		properties = { "server.port=8081",
+				"spring.config.location = classpath:application-test.yml" })
+public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired
 	private MetadataLocalProperties metadataLocalProperties;
