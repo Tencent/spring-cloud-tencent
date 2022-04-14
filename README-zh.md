@@ -1,72 +1,77 @@
 # Spring Cloud Tencent
 
+[![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.tencent.cloud/spring-cloud-tencent?label=Maven%20Central)](https://search.maven.org/search?q=g:com.tencent.cloud%20AND%20a:spring-cloud-tencent)
+
 [English](./README.md) | 简体中文 
 
 ---
 
 ## 介绍
 
-Spring Cloud Tencent包含了分布式应用微服务开发过程中所需的组件，基于 Spring Cloud 框架的开发者可以使用这些组件快速进行分布式应用的开发。
+Spring Cloud Tencent 是腾讯开发和维护的一站式微服务解决方案。
 
-## 主要功能
+Spring Cloud Tencent 实现了Spring Cloud 标准微服务 SPI，开发者可以基于 Spring Cloud Tencent 快速开发 Spring Cloud 云原生分布式应用。
 
-* **服务注册与发现**：基于 Spring Cloud Common的标准进行微服务的注册与发现。
-* **服务路由与负载均衡**：基于 Ribbon 的接口标准，提供场景更丰富的动态路由以及负载均衡的能力。
-* **故障节点熔断**：提供故障节点的熔断剔除以及主/被动探测恢复的能力，保证分布式服务的可靠性。
-* **服务限流**：支持微服务被调接入层和网关主动调用的限流功能，保证后台微服务稳定性，可通过控制台动态配置规则，及查看流量监控数据。
-* **元数据传递**: 支持网关及微服务应用之间的自定义元数据传递。
+Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治理平台 [Polaris](https://github.com/polarismesh/polaris)，实现各种分布式微服务场景。
 
-## 如何构建
+- [Polaris Github home page](https://github.com/polarismesh/polaris)
+- [Polaris official website](https://polarismesh.cn/)
 
-* [2020.0.x](https://github.com/Tencent/spring-cloud-tencent/tree/2020.0.x)分支对应的是 Spring Cloud 2020.0版本，编译环境最低支持JDK 1.8。
-* [main](https://github.com/Tencent/spring-cloud-tencent/tree/main) 分支对应的是 Spring Cloud Hoxton版本，编译环境最低支持JDK 1.8。
-* [greenwich](https://github.com/Tencent/spring-cloud-tencent/tree/greenwich) 分支对应的是 Spring Cloud Greenwich版本，编译环境最低支持JDK 1.8。
+Spring Cloud 腾讯提供的能力包括但不限于：
 
-Spring Cloud Tencent 使用 Maven 来构建，最快的使用方式是将本项目 clone 到本地，然后执行以下命令：
-```bash
-	./mvnw install
-```
-执行完毕后，项目将被安装到本地 Maven 仓库。
+- 服务注册和发现
+- 动态配置管理
+- 服务治理
+   - 服务电流限制
+   - 服务断路器
+   - 服务路由
+   - ...
+- 标签透传
 
-## 如何使用
+## 使用指南
 
-### 如何引入依赖
+Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要引入依赖即可。
 
-在 dependencyManagement 中添加如下配置，然后在 dependencies 中添加自己所需使用的依赖即可使用。
+例如：
+
+````  
+<!-- add spring-cloud-tencent bom  -->
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.tencent.cloud</groupId>
+            <artifactId>spring-cloud-tencent-dependencies</artifactId>
+            <!--version number-->
+            <version>${version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>    
+                 
+<!-- add spring-cloud-starter-tencent-polaris-discovery dependency  -->
+<dependencies>
+    <dependency>
+        <groupId>com.tencent.cloud</groupId>
+        <artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
+    </dependency>
+</dependencies>
 
 ````
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.tencent.cloud</groupId>
-                <artifactId>spring-cloud-tencent-dependencies</artifactId>
-                <version>1.1.4.Hoxton.SR9</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-````
 
-### 使用文档
-- [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
-- [服务注册与发现](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-- [配置中心](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-- [服务限流](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-- [服务熔断](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-- [服务路由](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-- [元数据传递](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)
+- 快速开始
+    - [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Version-Management)
+    - [Spring Cloud Tencent 服务注册与发现](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-Usage-Documentation)
+    - [Spring Cloud Tencent 配置中心](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-Usage-Documentation)
+    - [Spring Cloud Tencent 限流](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-Usage-Document)
+    - [Spring Cloud Tencent 熔断](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-Usage-Document)
+    - [Spring Cloud Tencent 服务路由](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-Usage-Document)
+    - [Spring Cloud Tencent 标签传递](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-Usage-Document)
 
-## 版本号规范
-
-采取与Spring Cloud大版本号相关的版本策略。
-
-项目的版本号格式为 ```大版本号.小版本号.补丁版本号-对应Spring Cloud的大版本号.对应Spring Cloud的小版本号-发布类型``` 的形式。
-大版本号、小版本号、补丁版本号的类型为数字，从 0 开始取值。
-对应Spring Cloud的大版本号为Spring Cloud提供的英文版本号，例如Hoxton、Greenwich等。对应Spring Cloud的小版本号为Spring Cloud给出的小版本号，例如 RS9 等。
-发布类型目前包括正式发布和发布候选版（RC）。在实际的版本号中，正式发布版不额外添加发布类型，发布候选版将添加后缀，并从 RC0 开始。
-
-示例：1.2.0-Hoxton.SR9-RC0
+- 开发文档
+  - [项目概览](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
+  - [参与共建](https://github.com/Tencent/spring-cloud-tencent/wiki/Contributing)
 
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
