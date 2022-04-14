@@ -39,7 +39,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 
 例如：
 
-````  
+```` xml  
 <!-- add spring-cloud-tencent bom  -->
 <dependencyManagement>
     <dependencies>
