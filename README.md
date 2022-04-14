@@ -21,7 +21,7 @@ The capabilities provided by Spring Cloud Tencent include but are not limited to
 - Service registration and discovery
 - Dynamic configuration management
 - Service Governance
-  - Service current limit
+  - Service rate limit
   - Service circuit breaker
   - Service routing
   - ...
