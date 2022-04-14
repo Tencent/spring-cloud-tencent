@@ -37,7 +37,7 @@ All the components of Spring Cloud Tencent have been uploaded to the Maven centr
 
 For example:
 
-````  
+```` xml  
 <!-- add spring-cloud-tencent bom  -->
 <dependencyManagement>
     <dependencies>
