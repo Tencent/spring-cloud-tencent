@@ -16,24 +16,20 @@
  *
  */
 
-package com.tencent.cloud.polaris.ratelimit.spi;
+package com.tencent.cloud.polaris.context;
 
-import java.util.Map;
+import com.tencent.polaris.client.api.SDKContext;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Import;
 
 /**
- * Resolve custom label from request. The label used for rate limit params.
+ * Bootstrap autoconfiguration for Polaris {@link SDKContext}.
  *
- * @author lepdou 2022-03-31
+ * @author Haotian Zhang
  */
-public interface PolarisRateLimiterLabelServletResolver {
-
-	/**
-	 * Resolve custom label from request.
-	 * @param request the http request
-	 * @return resolved labels
-	 */
-	Map<String, String> resolve(HttpServletRequest request);
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
+@Import(PolarisContextAutoConfiguration.class)
+public class PolarisContextBootstrapAutoConfiguration {
 
 }

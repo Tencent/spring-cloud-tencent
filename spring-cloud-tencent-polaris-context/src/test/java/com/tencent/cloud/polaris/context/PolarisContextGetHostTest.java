@@ -31,7 +31,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PolarisContextApplication.class,
 		properties = { "spring.config.location = classpath:bootstrap.yml" })
-@ImportAutoConfiguration({ PolarisContextConfiguration.class })
+@ImportAutoConfiguration({ PolarisContextAutoConfiguration.class })
 public class PolarisContextGetHostTest {
 
 	@Autowired

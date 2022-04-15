@@ -24,8 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
-
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Metadata Context.
@@ -44,6 +43,22 @@ public class MetadataContext {
 	 */
 	public static String LOCAL_SERVICE;
 
+	static {
+		String namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace");
+		if (StringUtils.isBlank(namespace)) {
+			namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.namespace",
+					"default");
+		}
+		LOCAL_NAMESPACE = namespace;
+
+		String serviceName = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service");
+		if (StringUtils.isBlank(serviceName)) {
+			serviceName = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.service",
+					ApplicationContextAwareUtils.getProperties("spring.application.name", null));
+		}
+		LOCAL_SERVICE = serviceName;
+	}
+
 	/**
 	 * Transitive custom metadata content.
 	 */
@@ -53,22 +68,6 @@ public class MetadataContext {
 	 * System metadata content.
 	 */
 	private final Map<String, String> systemMetadata;
-
-	static {
-		String namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace");
-		if (StringUtils.isEmpty(namespace)) {
-			namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.namespace", "default");
-		}
-		LOCAL_NAMESPACE = namespace;
-
-		String serviceName = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service");
-		if (StringUtils.isEmpty(serviceName)) {
-			serviceName = ApplicationContextAwareUtils.getProperties(
-					"spring.cloud.polaris.discovery.service",
-					ApplicationContextAwareUtils.getProperties("spring.application.name", null));
-		}
-		LOCAL_SERVICE = serviceName;
-	}
 
 	public MetadataContext() {
 		this.transitiveCustomMetadata = new ConcurrentHashMap<>();

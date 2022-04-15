@@ -47,6 +47,7 @@ import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.FORWARD;
 import static javax.servlet.DispatcherType.INCLUDE;
 import static javax.servlet.DispatcherType.REQUEST;
+
 /**
  * Metadata transfer auto configuration.
  *
@@ -67,10 +68,8 @@ public class MetadataTransferAutoConfiguration {
 				DecodeTransferMetadataServletFilter decodeTransferMetadataServletFilter) {
 			FilterRegistrationBean<DecodeTransferMetadataServletFilter> filterRegistrationBean = new FilterRegistrationBean<>(
 					decodeTransferMetadataServletFilter);
-			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE,
-					REQUEST);
-			filterRegistrationBean
-					.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
+			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
+			filterRegistrationBean.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
 			return filterRegistrationBean;
 		}
 
@@ -149,15 +148,13 @@ public class MetadataTransferAutoConfiguration {
 				for (RestTemplate restTemplate : beans.values()) {
 					List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
 					// Avoid setting interceptor repeatedly.
-					if (null != interceptors && !interceptors
-							.contains(encodeTransferMedataRestTemplateInterceptor)) {
+					if (null != interceptors && !interceptors.contains(encodeTransferMedataRestTemplateInterceptor)) {
 						interceptors.add(encodeTransferMedataRestTemplateInterceptor);
 						restTemplate.setInterceptors(interceptors);
 					}
 				}
 			}
-			return new EncodeTransferMetadataRestTemplatePostProcessor(
-					encodeTransferMedataRestTemplateInterceptor);
+			return new EncodeTransferMetadataRestTemplatePostProcessor(encodeTransferMedataRestTemplateInterceptor);
 		}
 
 		@Override
@@ -165,8 +162,7 @@ public class MetadataTransferAutoConfiguration {
 			this.context = applicationContext;
 		}
 
-		public static class EncodeTransferMetadataRestTemplatePostProcessor
-				implements BeanPostProcessor {
+		public static class EncodeTransferMetadataRestTemplatePostProcessor implements BeanPostProcessor {
 
 			private EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor;
 
@@ -186,8 +182,7 @@ public class MetadataTransferAutoConfiguration {
 					RestTemplate restTemplate = (RestTemplate) bean;
 					List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
 					// Avoid setting interceptor repeatedly.
-					if (null != interceptors && !interceptors
-							.contains(encodeTransferMedataRestTemplateInterceptor)) {
+					if (null != interceptors && !interceptors.contains(encodeTransferMedataRestTemplateInterceptor)) {
 						interceptors.add(this.encodeTransferMedataRestTemplateInterceptor);
 						restTemplate.setInterceptors(interceptors);
 					}

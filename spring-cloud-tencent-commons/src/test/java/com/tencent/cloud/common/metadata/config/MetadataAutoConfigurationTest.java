@@ -48,10 +48,9 @@ public class MetadataAutoConfigurationTest {
 	public void test1() {
 		this.applicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
+					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context)
 							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
@@ -68,10 +67,9 @@ public class MetadataAutoConfigurationTest {
 	public void test2() {
 		this.webApplicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
+					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context)
 							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
@@ -89,10 +87,9 @@ public class MetadataAutoConfigurationTest {
 		this.reactiveWebApplicationContextRunner
 				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class)).run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
+					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
+							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
 					Assertions.assertThat(context)
 							.hasSingleBean(MetadataAutoConfiguration.MetadataScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);

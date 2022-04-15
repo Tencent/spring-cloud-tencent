@@ -45,16 +45,14 @@ public class MetadataTransferAutoConfigurationTest {
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(
 							MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
+					Assertions.assertThat(context).hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(EncodeTransferMedataRestTemplateInterceptor.class);
+							.hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
+					Assertions.assertThat(context).hasSingleBean(EncodeTransferMedataRestTemplateInterceptor.class);
 					Assertions.assertThat(context).hasSingleBean(
 							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.EncodeTransferMetadataRestTemplatePostProcessor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
+					Assertions.assertThat(context)
+							.hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(GlobalFilter.class);
 				});
 	}

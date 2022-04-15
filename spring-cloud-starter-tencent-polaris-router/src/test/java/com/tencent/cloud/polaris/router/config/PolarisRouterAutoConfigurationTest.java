@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.router.config;
 
-import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
+import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.Test;
@@ -37,14 +37,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolarisRouterAutoConfigurationTest {
 
 	private final ApplicationContextRunner blockingContextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisLoadBalancerTest.class, PolarisContextConfiguration.class,
-					PolarisLoadBalancerAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(PolarisLoadBalancerTest.class,
+					PolarisContextAutoConfiguration.class, PolarisLoadBalancerAutoConfiguration.class,
 					PolarisLoadBalancerClientConfiguration.PolarisBlockingSupportConfiguration.class))
 			.withPropertyValues("spring.cloud.loadbalancer.configurations=polaris");
 
 	private final ApplicationContextRunner noPolarisContextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisLoadBalancerTest.class, PolarisContextConfiguration.class,
-					PolarisLoadBalancerAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(PolarisLoadBalancerTest.class,
+					PolarisContextAutoConfiguration.class, PolarisLoadBalancerAutoConfiguration.class,
 					PolarisLoadBalancerClientConfiguration.PolarisBlockingSupportConfiguration.class));
 
 	/**

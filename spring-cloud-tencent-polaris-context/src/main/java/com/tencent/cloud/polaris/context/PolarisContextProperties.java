@@ -53,6 +53,11 @@ public class PolarisContextProperties {
 	private String localIpAddress;
 
 	/**
+	 * If polaris enabled.
+	 */
+	private Boolean enabled;
+
+	/**
 	 * polaris namespace.
 	 */
 	private String namespace = "default";
@@ -108,6 +113,14 @@ public class PolarisContextProperties {
 		this.localIpAddress = localIpAddress;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public String getNamespace() {
 		return namespace;
 	}
@@ -123,4 +136,5 @@ public class PolarisContextProperties {
 	void setService(String service) {
 		this.service = service;
 	}
+
 }
