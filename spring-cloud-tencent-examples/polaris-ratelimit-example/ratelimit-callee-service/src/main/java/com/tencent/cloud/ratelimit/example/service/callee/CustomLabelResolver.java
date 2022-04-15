@@ -30,18 +30,19 @@ import org.springframework.stereotype.Component;
 /**
  * resolver custom label from request.
  *
- *@author lepdou 2022-03-31
+ * @author lepdou 2022-03-31
  */
 @Component
 public class CustomLabelResolver implements PolarisRateLimiterLabelServletResolver {
 
 	@Override
 	public Map<String, String> resolve(HttpServletRequest request) {
-		//rate limit by some request params. such as query params, headers ..
+		// rate limit by some request params. such as query params, headers ..
 
 		Map<String, String> labels = new HashMap<>();
 		labels.put("user", "zhangsan");
 
 		return labels;
 	}
+
 }

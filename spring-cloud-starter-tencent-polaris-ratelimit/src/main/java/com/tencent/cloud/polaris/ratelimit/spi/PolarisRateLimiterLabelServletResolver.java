@@ -31,7 +31,6 @@ public interface PolarisRateLimiterLabelServletResolver {
 
 	/**
 	 * Resolve custom label from request.
-	 *
 	 * @param request the http request
 	 * @return resolved labels
 	 */

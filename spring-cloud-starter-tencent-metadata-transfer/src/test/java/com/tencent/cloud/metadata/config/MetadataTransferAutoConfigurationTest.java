@@ -52,8 +52,8 @@ public class MetadataTransferAutoConfigurationTest {
 							.hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
 					Assertions.assertThat(context).hasSingleBean(
 							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(EncodeTransferMedataRestTemplateInterceptor.class);
+					Assertions.assertThat(context).hasSingleBean(
+							EncodeTransferMedataRestTemplateInterceptor.class);
 					Assertions.assertThat(context).hasSingleBean(
 							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.EncodeTransferMetadataRestTemplatePostProcessor.class);
 					Assertions.assertThat(context).hasSingleBean(
