@@ -20,7 +20,8 @@ package com.tencent.cloud.polaris.config;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFileLocator;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.context.PolarisContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
@@ -37,9 +38,10 @@ import org.springframework.context.annotation.Import;
  * @author lepdou 2022-03-10
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled",
 		matchIfMissing = true)
-@Import(PolarisContextConfiguration.class)
+@Import(PolarisContextAutoConfiguration.class)
 public class PolarisConfigBootstrapAutoConfiguration {
 
 	@Bean

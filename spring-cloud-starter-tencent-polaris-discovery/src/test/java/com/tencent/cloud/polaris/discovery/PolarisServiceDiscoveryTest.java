@@ -19,7 +19,7 @@ package com.tencent.cloud.polaris.discovery;
 
 import java.util.List;
 
-import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
+import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
@@ -50,11 +50,12 @@ public class PolarisServiceDiscoveryTest {
 	private static NamingServer namingServer;
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisContextConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(
+					PolarisContextAutoConfiguration.class,
 					PolarisServiceDiscoveryTest.PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class,
-					PolarisContextConfiguration.class))
+					PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")

@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
@@ -41,6 +42,7 @@ import static javax.servlet.DispatcherType.REQUEST;
  * @author Haotian Zhang
  */
 @Configuration
+@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled",
 		matchIfMissing = true)
 public class RateLimitConfiguration {

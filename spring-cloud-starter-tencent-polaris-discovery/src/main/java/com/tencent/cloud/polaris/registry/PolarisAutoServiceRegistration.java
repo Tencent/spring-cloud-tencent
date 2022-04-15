@@ -61,7 +61,7 @@ public class PolarisAutoServiceRegistration
 
 	@Override
 	protected void register() {
-		if (!this.registration.getPolarisProperties().isRegisterEnabled()) {
+		if (!this.registration.isRegisterEnabled()) {
 			log.debug("Registration disabled.");
 			return;
 		}
@@ -73,7 +73,7 @@ public class PolarisAutoServiceRegistration
 
 	@Override
 	protected void registerManagement() {
-		if (!this.registration.getPolarisProperties().isRegisterEnabled()) {
+		if (!this.registration.isRegisterEnabled()) {
 			return;
 		}
 		super.registerManagement();
@@ -87,7 +87,7 @@ public class PolarisAutoServiceRegistration
 
 	@Override
 	protected boolean isEnabled() {
-		return this.registration.getPolarisProperties().isRegisterEnabled();
+		return this.registration.isRegisterEnabled();
 	}
 
 	@Override

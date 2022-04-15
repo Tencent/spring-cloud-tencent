@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.router.config;
 
-import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
+import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ public class PolarisRibbonAutoConfigurationTest {
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisRibbonTest.class,
 					PolarisRibbonAutoConfiguration.class,
-					PolarisContextConfiguration.class))
+					PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");

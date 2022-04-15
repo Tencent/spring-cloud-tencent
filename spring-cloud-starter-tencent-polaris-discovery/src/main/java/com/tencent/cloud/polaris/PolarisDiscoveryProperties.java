@@ -20,11 +20,18 @@ package com.tencent.cloud.polaris;
 
 import javax.annotation.PostConstruct;
 
+import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
+import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
 /**
@@ -76,9 +83,14 @@ public class PolarisDiscoveryProperties {
 	private int port;
 
 	/**
+	 * Enable polaris discovery or not.
+	 */
+	private Boolean enabled = true;
+
+	/**
 	 * If instance registered.
 	 */
-	@Value("${spring.cloud.polaris.discovery.register.enabled:#{true}}")
+	@Value("${spring.cloud.polaris.discovery.register:#{true}}")
 	private Boolean registerEnabled;
 
 	/**
@@ -150,6 +162,14 @@ public class PolarisDiscoveryProperties {
 		this.service = service;
 	}
 
+	public Boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public boolean isRegisterEnabled() {
 		return registerEnabled;
 	}
@@ -206,6 +226,41 @@ public class PolarisDiscoveryProperties {
 				+ ", port=" + port + '\'' + ", registerEnabled=" + registerEnabled
 				+ ", heartbeatEnabled=" + heartbeatEnabled + ", healthCheckUrl="
 				+ healthCheckUrl + ", environment=" + environment + '}';
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisDiscoveryConfigModifier polarisDiscoveryConfigModifier() {
+		return new PolarisDiscoveryConfigModifier();
+	}
+
+	private static class PolarisDiscoveryConfigModifier implements PolarisConfigModifier {
+
+		private final String ID = "polaris";
+
+		@Autowired(required = false)
+		private PolarisDiscoveryProperties polarisDiscoveryProperties;
+
+		@Override
+		public void modify(ConfigurationImpl configuration) {
+			if (polarisDiscoveryProperties != null) {
+				DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
+				discoveryConfig.setServerConnectorId(ID);
+				discoveryConfig.setEnable(polarisDiscoveryProperties.enabled);
+				configuration.getConsumer().getDiscoveries().add(discoveryConfig);
+
+				RegisterConfigImpl registerConfig = new RegisterConfigImpl();
+				registerConfig.setServerConnectorId(ID);
+				registerConfig.setEnable(polarisDiscoveryProperties.registerEnabled);
+				configuration.getProvider().getRegisters().add(registerConfig);
+			}
+		}
+
+		@Override
+		public int getOrder() {
+			return ContextConstant.ModifierOrder.LAST;
+		}
+
 	}
 
 }

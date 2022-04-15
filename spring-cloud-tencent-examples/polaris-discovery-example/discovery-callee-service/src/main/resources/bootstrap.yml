@@ -7,14 +7,18 @@ spring:
     polaris:
       address: grpc://127.0.0.1:8091
       namespace: default
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
 #    consul:
 #      port: 8500
 #      host: 127.0.0.1
 #      enabled: true
 #      discovery:
-#        register: true
+#        enabled: false
+#        register: false
 #        instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
-#        enabled: true
 #        service-name: ${spring.application.name}
 #        ip-address: localhost
 #        prefer-ip-address: true

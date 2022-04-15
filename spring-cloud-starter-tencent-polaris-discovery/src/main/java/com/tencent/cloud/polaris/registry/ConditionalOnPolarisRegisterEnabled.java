@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.discovery;
+package com.tencent.cloud.polaris.registry;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
-import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.context.annotation.Conditional;
 
 /**
@@ -32,9 +31,8 @@ import org.springframework.context.annotation.Conditional;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
-@ConditionalOnDiscoveryEnabled
 @ConditionalOnPolarisEnabled
-@Conditional(DiscoveryEnabledCondition.class)
-public @interface ConditionalOnPolarisDiscoveryEnabled {
+@Conditional(RegisterEnabledCondition.class)
+public @interface ConditionalOnPolarisRegisterEnabled {
 
 }
