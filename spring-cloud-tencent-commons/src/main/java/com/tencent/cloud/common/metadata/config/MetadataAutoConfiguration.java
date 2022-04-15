@@ -13,28 +13,18 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.common.metadata.config;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
-import com.tencent.cloud.common.metadata.filter.web.MetadataReactiveFilter;
-import com.tencent.cloud.common.metadata.filter.web.MetadataServletFilter;
 import com.tencent.cloud.common.metadata.interceptor.feign.MetadataFirstFeignInterceptor;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import static javax.servlet.DispatcherType.ASYNC;
-import static javax.servlet.DispatcherType.ERROR;
-import static javax.servlet.DispatcherType.FORWARD;
-import static javax.servlet.DispatcherType.INCLUDE;
-import static javax.servlet.DispatcherType.REQUEST;
 
 /**
  * Metadata auto configuration.
@@ -51,44 +41,6 @@ public class MetadataAutoConfiguration {
 	@Bean
 	public MetadataLocalProperties metadataLocalProperties() {
 		return new MetadataLocalProperties();
-	}
-
-	/**
-	 * Create when web application type is SERVLET.
-	 */
-	@Configuration
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	static class MetadataServletFilterConfig {
-
-		@Bean
-		public FilterRegistrationBean<MetadataServletFilter> metadataServletFilterRegistrationBean(
-				MetadataServletFilter metadataServletFilter) {
-			FilterRegistrationBean<MetadataServletFilter> filterRegistrationBean = new FilterRegistrationBean<>(
-					metadataServletFilter);
-			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
-			filterRegistrationBean.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
-			return filterRegistrationBean;
-		}
-
-		@Bean
-		public MetadataServletFilter metadataServletFilter() {
-			return new MetadataServletFilter();
-		}
-
-	}
-
-	/**
-	 * Create when web application type is REACTIVE.
-	 */
-	@Configuration
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	static class MetadataReactiveFilterConfig {
-
-		@Bean
-		public MetadataReactiveFilter metadataReactiveFilter() {
-			return new MetadataReactiveFilter();
-		}
-
 	}
 
 	/**

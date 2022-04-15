@@ -49,7 +49,7 @@ public class PolarisDiscoveryProperties {
 	/**
 	 * Service name to registry.
 	 */
-	@Value("${spring.cloud.polaris.discovery.service:${spring.application.name:}}")
+	@Value("${spring.cloud.polaris.discovery.service:${spring.cloud.polaris.service:${spring.application.name:}}}")
 	private String service;
 
 	/**

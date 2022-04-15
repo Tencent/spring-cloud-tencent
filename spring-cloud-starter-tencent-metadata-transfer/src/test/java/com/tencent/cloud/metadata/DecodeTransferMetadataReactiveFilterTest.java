@@ -13,12 +13,14 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.common.metadata.filter.web;
+package com.tencent.cloud.metadata;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,23 +38,23 @@ import org.springframework.web.server.WebFilterChain;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 /**
- * Test for {@link MetadataReactiveFilter}
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = MOCK, classes = MetadataServletFilterTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
-public class MetadataReactiveFilterTest {
+@SpringBootTest(webEnvironment = MOCK,
+		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
+		properties = {"spring.config.location = classpath:application-test.yml"})
+public class DecodeTransferMetadataReactiveFilterTest {
 
 	@Autowired
 	private MetadataLocalProperties metadataLocalProperties;
 
-	private MetadataReactiveFilter metadataReactiveFilter;
+	private DecodeTransferMetadataReactiveFilter metadataReactiveFilter;
 
 	@Before
 	public void setUp() {
-		this.metadataReactiveFilter = new MetadataReactiveFilter();
+		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter();
 	}
 
 	@Test
