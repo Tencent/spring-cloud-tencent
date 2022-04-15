@@ -13,28 +13,23 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.polaris.discovery;
+package com.tencent.cloud.polaris.context;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.tencent.polaris.client.api.SDKContext;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-
-import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Import;
 
 /**
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * Bootstrap autoconfiguration for Polaris {@link SDKContext}.
+ *
+ * @author Haotian Zhang
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
-@ConditionalOnDiscoveryEnabled
-@ConditionalOnPolarisEnabled
-@Conditional(DiscoveryEnabledCondition.class)
-public @interface ConditionalOnPolarisDiscoveryEnabled {
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
+@Import(PolarisContextAutoConfiguration.class)
+public class PolarisContextBootstrapAutoConfiguration {
 
 }

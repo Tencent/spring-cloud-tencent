@@ -7,6 +7,9 @@ spring:
     polaris:
       address: grpc://127.0.0.1:8091
       namespace: default
+      enabled: true
+      circuitbreaker:
+        enabled: true
 feign:
   hystrix:
     enabled: true

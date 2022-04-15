@@ -57,19 +57,21 @@ public class PolarisWeightedRandomRule extends AbstractLoadBalancerRule {
 
 	@Override
 	public Server choose(Object key) {
-		//1. filter by router
+		// 1. filter by router
 		List<Server> serversAfterRouter = getLoadBalancer().getReachableServers();
 		if (CollectionUtils.isEmpty(serversAfterRouter)) {
 			return null;
 		}
 
-		ServiceInstances serviceInstances = transferServersToServiceInstances(serversAfterRouter);
+		ServiceInstances serviceInstances = transferServersToServiceInstances(
+				serversAfterRouter);
 
-		//2. filter by load balance
+		// 2. filter by load balance
 		ProcessLoadBalanceRequest request = new ProcessLoadBalanceRequest();
 		request.setDstInstances(serviceInstances);
 		request.setLbPolicy(POLICY);
-		ProcessLoadBalanceResponse processLoadBalanceResponse = polarisRouter.processLoadBalance(request);
+		ProcessLoadBalanceResponse processLoadBalanceResponse = polarisRouter
+				.processLoadBalance(request);
 		Instance targetInstance = processLoadBalanceResponse.getTargetInstance();
 
 		return new PolarisServer(serviceInstances, targetInstance);
@@ -90,7 +92,8 @@ public class PolarisWeightedRandomRule extends AbstractLoadBalancerRule {
 			}
 		}
 
-		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
+		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE,
+				serviceName);
 
 		return new DefaultServiceInstances(serviceKey, instances);
 	}

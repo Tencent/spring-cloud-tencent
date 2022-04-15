@@ -15,32 +15,20 @@
  * specific language governing permissions and limitations under the License.
  *
  */
+package com.tencent.cloud.polaris;
 
-package com.tencent.cloud.polaris.discovery;
-
-import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClientConfiguration;
-
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * Discovery Auto Configuration for Polaris.
+ * Common configuration of discovery.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisDiscoveryEnabled
-@Import({ PolarisDiscoveryClientConfiguration.class,
-		PolarisReactiveDiscoveryClientConfiguration.class })
-public class PolarisDiscoveryAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	public PolarisServiceDiscovery polarisServiceDiscovery(
-			PolarisDiscoveryHandler polarisDiscoveryHandler) {
-		return new PolarisServiceDiscovery(polarisDiscoveryHandler);
-	}
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
+@Import(DiscoveryPropertiesAutoConfiguration.class)
+public class DiscoveryPropertiesBootstrapAutoConfiguration {
 
 }

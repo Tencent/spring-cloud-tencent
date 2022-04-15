@@ -5,6 +5,7 @@ spring:
     name: polaris-circuitbreaker-example-b
   cloud:
     polaris:
-      address: grpc://9.134.122.18:8091
+      address: grpc://127.0.0.1:8091
       namespace: default
+      enabled: true
 is-throw-runtime-exception: true
