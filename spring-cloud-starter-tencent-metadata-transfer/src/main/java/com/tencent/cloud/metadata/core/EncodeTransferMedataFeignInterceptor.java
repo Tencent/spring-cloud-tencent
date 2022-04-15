@@ -13,9 +13,10 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.metadata.core.filter.gateway;
+package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -25,59 +26,65 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import reactor.core.publisher.Mono;
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.server.ServerWebExchange;
 
-import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
 /**
- * Scg filter used for writing metadata in HTTP request header.
+ * Interceptor used for adding the metadata in http headers from context when web client
+ * is Feign.
  *
  * @author Haotian Zhang
  */
-public class Metadata2HeaderScgFilter implements GlobalFilter, Ordered {
+public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor, Ordered {
 
-	private static final int METADATA_SCG_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER
-			+ 1;
+	private static final Logger LOG = LoggerFactory
+			.getLogger(EncodeTransferMedataFeignInterceptor.class);
 
 	@Override
 	public int getOrder() {
-		return METADATA_SCG_FILTER_ORDER;
+		return MetadataConstant.OrderConstant.METADATA_2_HEADER_INTERCEPTOR_ORDER;
 	}
 
 	@Override
-	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		// get request builder
-		ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
-
+	public void apply(RequestTemplate requestTemplate) {
 		// get metadata of current thread
-		MetadataContext metadataContext = exchange
-				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
+		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		// add new metadata and cover old
-		if (metadataContext == null) {
-			metadataContext = MetadataContextHolder.get();
+		if (!CollectionUtils.isEmpty(requestTemplate.headers()) && !CollectionUtils
+				.isEmpty(requestTemplate.headers().get(CUSTOM_METADATA))) {
+			for (String headerMetadataStr : requestTemplate.headers()
+					.get(CUSTOM_METADATA)) {
+				Map<String, String> headerMetadataMap = JacksonUtils
+						.deserialize2Map(headerMetadataStr);
+				for (String key : headerMetadataMap.keySet()) {
+					metadataContext.putTransitiveCustomMetadata(key,
+							headerMetadataMap.get(key));
+				}
+			}
 		}
+
 		Map<String, String> customMetadata = metadataContext
 				.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
+			requestTemplate.removeHeader(CUSTOM_METADATA);
 			try {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
+				requestTemplate.header(CUSTOM_METADATA,
 						URLEncoder.encode(metadataStr, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
+				LOG.error("Set header failed.", e);
+				requestTemplate.header(CUSTOM_METADATA, metadataStr);
 			}
 		}
-
-		return chain.filter(exchange.mutate().request(builder.build()).build());
 	}
 
 }

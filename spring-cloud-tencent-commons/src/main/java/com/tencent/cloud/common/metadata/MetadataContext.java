@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.common.metadata;
@@ -24,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 
+import org.springframework.util.StringUtils;
+
 /**
  * Metadata Context.
  *
@@ -34,15 +37,12 @@ public class MetadataContext {
 	/**
 	 * Namespace of local instance.
 	 */
-	public static final String LOCAL_NAMESPACE = ApplicationContextAwareUtils
-			.getProperties("spring.cloud.polaris.discovery.namespace", "default");
+	public static String LOCAL_NAMESPACE;
 
 	/**
 	 * Service name of local instance.
 	 */
-	public static final String LOCAL_SERVICE = ApplicationContextAwareUtils.getProperties(
-			"spring.cloud.polaris.discovery.service",
-			ApplicationContextAwareUtils.getProperties("spring.application.name", null));
+	public static String LOCAL_SERVICE;
 
 	/**
 	 * Transitive custom metadata content.
@@ -53,6 +53,22 @@ public class MetadataContext {
 	 * System metadata content.
 	 */
 	private final Map<String, String> systemMetadata;
+
+	static {
+		String namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace");
+		if (StringUtils.isEmpty(namespace)) {
+			namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.namespace", "default");
+		}
+		LOCAL_NAMESPACE = namespace;
+
+		String serviceName = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service");
+		if (StringUtils.isEmpty(serviceName)) {
+			serviceName = ApplicationContextAwareUtils.getProperties(
+					"spring.cloud.polaris.discovery.service",
+					ApplicationContextAwareUtils.getProperties("spring.application.name", null));
+		}
+		LOCAL_SERVICE = serviceName;
+	}
 
 	public MetadataContext() {
 		this.transitiveCustomMetadata = new ConcurrentHashMap<>();

@@ -13,10 +13,12 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.metadata.core.interceptor;
+package com.tencent.cloud.metadata.core;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -25,26 +27,23 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.CollectionUtils;
-
-import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import org.springframework.util.StringUtils;
 
 /**
  * Interceptor used for adding the metadata in http headers from context when web client
- * is Feign.
+ * is RestTemplate.
  *
  * @author Haotian Zhang
  */
-public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Ordered {
-
-	private static final Logger LOG = LoggerFactory
-			.getLogger(Metadata2HeaderFeignInterceptor.class);
+public class EncodeTransferMedataRestTemplateInterceptor
+		implements ClientHttpRequestInterceptor, Ordered {
 
 	@Override
 	public int getOrder() {
@@ -52,38 +51,36 @@ public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Orde
 	}
 
 	@Override
-	public void apply(RequestTemplate requestTemplate) {
+	public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] bytes,
+			ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		// add new metadata and cover old
-		if (!CollectionUtils.isEmpty(requestTemplate.headers()) && !CollectionUtils
-				.isEmpty(requestTemplate.headers().get(CUSTOM_METADATA))) {
-			for (String headerMetadataStr : requestTemplate.headers()
-					.get(CUSTOM_METADATA)) {
-				Map<String, String> headerMetadataMap = JacksonUtils
-						.deserialize2Map(headerMetadataStr);
-				for (String key : headerMetadataMap.keySet()) {
-					metadataContext.putTransitiveCustomMetadata(key,
-							headerMetadataMap.get(key));
-				}
+		String metadataStr = httpRequest.getHeaders()
+				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
+		if (!StringUtils.isEmpty(metadataStr)) {
+			Map<String, String> headerMetadataMap = JacksonUtils
+					.deserialize2Map(metadataStr);
+			for (String key : headerMetadataMap.keySet()) {
+				metadataContext.putTransitiveCustomMetadata(key,
+						headerMetadataMap.get(key));
 			}
 		}
-
 		Map<String, String> customMetadata = metadataContext
 				.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
-			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
-			requestTemplate.removeHeader(CUSTOM_METADATA);
+			metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
-				requestTemplate.header(CUSTOM_METADATA,
+				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
 						URLEncoder.encode(metadataStr, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
-				LOG.error("Set header failed.", e);
-				requestTemplate.header(CUSTOM_METADATA, metadataStr);
+				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
+						metadataStr);
 			}
 		}
+		return clientHttpRequestExecution.execute(httpRequest, bytes);
 	}
 
 }

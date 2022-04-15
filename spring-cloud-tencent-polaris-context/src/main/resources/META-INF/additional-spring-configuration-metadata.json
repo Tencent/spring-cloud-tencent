@@ -21,6 +21,13 @@
       "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
     },
     {
+      "name": "spring.cloud.polaris.service",
+      "type": "java.lang.String",
+      "description": "polaris service name",
+      "default": "${spring.application.name}",
+      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+    },
+    {
       "name": "spring.cloud.polaris.enabled",
       "type": "java.lang.Boolean",
       "description": "polaris enabled",
