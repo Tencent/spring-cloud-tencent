@@ -57,6 +57,7 @@
 			<artifactId>flow-cache-expired</artifactId>
 		</dependency>
 
+		<!-- Discovery depended on base routers -->
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>router-isolated</artifactId>
@@ -67,25 +68,10 @@
 			<artifactId>router-healthy</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>router-rule</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>router-nearby</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>router-metadata</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>loadbalancer-random</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>loadbalancer-random</artifactId>
+        </dependency>
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
