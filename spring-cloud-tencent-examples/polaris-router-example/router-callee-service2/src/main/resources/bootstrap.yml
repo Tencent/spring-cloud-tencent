@@ -7,8 +7,7 @@ spring:
     tencent:
       metadata:
         content:
-          version: v2
-          xx: zz
+          label1: value2
     polaris:
       address: grpc://127.0.0.1:8091
       namespace: default
