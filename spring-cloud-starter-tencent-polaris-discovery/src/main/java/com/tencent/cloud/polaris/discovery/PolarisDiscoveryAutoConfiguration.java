@@ -18,14 +18,6 @@
 
 package com.tencent.cloud.polaris.discovery;
 
-import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.api.core.ProviderAPI;
-import com.tencent.polaris.api.exception.PolarisException;
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,34 +30,8 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @ConditionalOnPolarisDiscoveryEnabled
-@Import({ PolarisDiscoveryClientConfiguration.class, ConsulContextProperties.class })
+@Import({ PolarisDiscoveryClientConfiguration.class })
 public class PolarisDiscoveryAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	public PolarisDiscoveryProperties polarisDiscoveryProperties() {
-		return new PolarisDiscoveryProperties();
-	}
-
-	@Bean(name = "polarisProvider")
-	@ConditionalOnMissingBean
-	public ProviderAPI polarisProvider(SDKContext polarisContext)
-			throws PolarisException {
-		return DiscoveryAPIFactory.createProviderAPIByContext(polarisContext);
-	}
-
-	@Bean(name = "polarisConsumer")
-	@ConditionalOnMissingBean
-	public ConsumerAPI polarisConsumer(SDKContext polarisContext)
-			throws PolarisException {
-		return DiscoveryAPIFactory.createConsumerAPIByContext(polarisContext);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public PolarisDiscoveryHandler polarisDiscoveryHandler() {
-		return new PolarisDiscoveryHandler();
-	}
 
 	@Bean
 	@ConditionalOnMissingBean

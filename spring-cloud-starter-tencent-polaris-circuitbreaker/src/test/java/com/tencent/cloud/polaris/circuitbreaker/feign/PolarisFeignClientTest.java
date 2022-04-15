@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.circuitbreaker.feign;
 
 import com.tencent.cloud.polaris.circuitbreaker.PolarisFeignClientAutoConfiguration;
-import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
+import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import feign.Client;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestPolarisFeignApp.class)
 @ContextConfiguration(classes = { PolarisFeignClientAutoConfiguration.class,
-		PolarisContextConfiguration.class })
+		PolarisContextAutoConfiguration.class })
 public class PolarisFeignClientTest {
 
 	@Autowired

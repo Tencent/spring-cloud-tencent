@@ -19,6 +19,12 @@
       "description": "enable polaris discovery or not."
     },
     {
+      "name": "spring.cloud.polaris.discovery.register",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "enable polaris registration or not."
+    },
+    {
       "name": "spring.cloud.polaris.discovery.health-check-url",
       "type": "java.lang.String",
       "defaultValue": "",
