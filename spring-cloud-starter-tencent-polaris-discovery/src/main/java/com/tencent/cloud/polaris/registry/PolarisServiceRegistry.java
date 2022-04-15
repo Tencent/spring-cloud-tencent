@@ -73,9 +73,10 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		this.metadataLocalProperties = metadataLocalProperties;
 
 		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
-			this.heartbeatExecutor = Executors
-					.newSingleThreadScheduledExecutor(new NamedThreadFactory("spring-cloud-heartbeat"));
-		} else {
+			this.heartbeatExecutor = Executors.newSingleThreadScheduledExecutor(
+					new NamedThreadFactory("spring-cloud-heartbeat"));
+		}
+		else {
 			this.heartbeatExecutor = null;
 		}
 	}

@@ -91,8 +91,10 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 				if (!CollectionUtils.isEmpty(customLabels)) {
 					labels.putAll(customLabels);
 				}
-			} catch (Throwable e) {
-				LOG.error("resolve custom label failed. resolver = {}", labelResolver.getClass().getName(), e);
+			}
+			catch (Throwable e) {
+				LOG.error("resolve custom label failed. resolver = {}",
+						labelResolver.getClass().getName(), e);
 			}
 		}
 
@@ -104,8 +106,9 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 				ServerHttpResponse response = exchange.getResponse();
 				response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
 				response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer().write(
-						RateLimitConstant.QUOTA_LIMITED_INFO.getBytes(StandardCharsets.UTF_8));
+				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer()
+						.write(RateLimitConstant.QUOTA_LIMITED_INFO
+								.getBytes(StandardCharsets.UTF_8));
 				return response.writeWith(Mono.just(dataBuffer));
 			}
 		}

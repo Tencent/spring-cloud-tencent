@@ -57,9 +57,11 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			.getLogger(QuotaCheckServletFilter.class);
 
 	private final LimitAPI limitAPI;
+
 	private final PolarisRateLimiterLabelServletResolver labelResolver;
 
-	public QuotaCheckServletFilter(LimitAPI limitAPI, PolarisRateLimiterLabelServletResolver labelResolver) {
+	public QuotaCheckServletFilter(LimitAPI limitAPI,
+			PolarisRateLimiterLabelServletResolver labelResolver) {
 		this.limitAPI = limitAPI;
 		this.labelResolver = labelResolver;
 	}
@@ -87,8 +89,10 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				if (!CollectionUtils.isEmpty(customLabels)) {
 					labels.putAll(customLabels);
 				}
-			} catch (Throwable e) {
-				LOG.error("resolve custom label failed. resolver = {}", labelResolver.getClass().getName(), e);
+			}
+			catch (Throwable e) {
+				LOG.error("resolve custom label failed. resolver = {}",
+						labelResolver.getClass().getName(), e);
 			}
 		}
 
