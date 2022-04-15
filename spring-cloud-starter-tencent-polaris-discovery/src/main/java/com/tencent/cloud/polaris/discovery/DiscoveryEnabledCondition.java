@@ -17,24 +17,27 @@
 
 package com.tencent.cloud.polaris.discovery;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-
-import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * Condition for checking if discovery enabled.
+ *
+ * @author Haotian Zhang
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
-@ConditionalOnDiscoveryEnabled
-@ConditionalOnPolarisEnabled
-@Conditional(DiscoveryEnabledCondition.class)
-public @interface ConditionalOnPolarisDiscoveryEnabled {
+public class DiscoveryEnabledCondition implements Condition {
+
+	@Override
+	public boolean matches(ConditionContext conditionContext,
+			AnnotatedTypeMetadata annotatedTypeMetadata) {
+
+		boolean isDiscoveryEnabled = Boolean
+				.parseBoolean(conditionContext.getEnvironment()
+						.getProperty("spring.cloud.polaris.discovery.enabled", "true"));
+		isDiscoveryEnabled |= Boolean.parseBoolean(conditionContext.getEnvironment()
+				.getProperty("spring.cloud.consul.discovery.enabled", "false"));
+		return isDiscoveryEnabled;
+	}
 
 }

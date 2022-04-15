@@ -26,12 +26,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 /**
- * Configuration for Polaris {@link SDKContext}.
+ * Autoconfiguration for Polaris {@link SDKContext}.
  *
  * @author Haotian Zhang
  */
+@ConditionalOnPolarisEnabled
 @EnableConfigurationProperties({ PolarisContextProperties.class })
-public class PolarisContextConfiguration {
+public class PolarisContextAutoConfiguration {
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean

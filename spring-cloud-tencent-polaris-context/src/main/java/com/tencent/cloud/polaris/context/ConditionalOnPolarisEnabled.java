@@ -15,26 +15,23 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.discovery;
+package com.tencent.cloud.polaris.context;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-
-import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * Condition that if Polaris enabled.
+ *
+ * @author Haotian Zhang
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
-@ConditionalOnDiscoveryEnabled
-@ConditionalOnPolarisEnabled
-@Conditional(DiscoveryEnabledCondition.class)
-public @interface ConditionalOnPolarisDiscoveryEnabled {
+@ConditionalOnProperty(value = "spring.cloud.polaris.enabled", matchIfMissing = true)
+public @interface ConditionalOnPolarisEnabled {
 
 }

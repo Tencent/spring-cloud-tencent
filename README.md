@@ -7,76 +7,73 @@ English | [简体中文](./README-zh.md)
 
 ## Introduction
 
-Spring Cloud Tencent contains components distributed micro-service applications need during developing phase, developers that built their key architectures based on Spring Cloud can use these components
+Spring Cloud Tencent is a one-stop microservice solution developed and maintained by Tencent.
 
-Based on Spring Cloud Tencent, you only need a small configuration to launch Spring Cloud and micro-service's joint solutions.
+Spring Cloud Tencent implements the Spring Cloud standard microservice SPI, so developers can quickly develop Spring Cloud cloud-native distributed applications based on Spring Cloud Tencent.
 
-## Key Features
+The core of Spring Cloud Tencent relies on Tencent's open-source one-stop service discovery and governance platform [Polaris](https://github.com/polarismesh/polaris) to realize various distributed microservice scenarios.
 
-* **Service Registration and Discovery**: Based on Spring Cloud's discovery and registration standard.
-* **Service Routing and LoadBalancer**: Based on ribbon's API port, provide dynamic routing and load balancing use cases.
-* **CircuitBreaker Node**: Support circuitbreaker auto-reset ability, ensure the reliability of distributed server
-* **Rate Limiter**: Support rate limit of microservice and gateway, ensure the stability of backend, one can configure policies and traffic data from the control panel
-* **Metadata Delivery**: Support metadata delivery between gateways and microservices.
+- [Polaris Github home page](https://github.com/polarismesh/polaris)
+- [Polaris official website](https://polarismesh.cn/)
 
-## Components
+The capabilities provided by Spring Cloud Tencent include but are not limited to:
 
-**[Polaris](https://github.com/PolarisMesh/polaris)**：Polaris Spring Cloud operation centre, provide solutions to registration, dynamic routing, load balancing and circuitbreaker.
+- Service registration and discovery
+- Dynamic configuration management
+- Service Governance
+  - Service rate limit
+  - Service circuit breaker
+  - Service routing
+  - ...
+- Label transparent transmission
 
-## How to build
+## Screenshots
 
-* master's branch matches Spring Cloud Hoxton, support lowest at JDK 1.8.
+<img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">
 
-Spring Cloud Tencent uses Maven to construct, the fastest way is to clone project to local files, then execute the following orders:
+## Use Guide
 
-```bash
-./mvnw install
-```
+All the components of Spring Cloud Tencent have been uploaded to the Maven central repository, just need to introduce dependencies.
 
-When all the steps are finished, the project will be installed in local Maven repository.
+For example:
 
-## How to Use
-
-### How to Introduce Dependency
-
-Add the following configurations in dependencyManagement, then add the dependencies you need.
-At the same time, you need to pay attention to the Spring Cloud version corresponding to Spring Cloud Tencent, and then the corresponding Spring Boot version.
-For example, Spring Cloud Tencent's 1.0.1.Hoxton.SR9 corresponds to the Spring Cloud Hoxton version and requires Spring Boot 2.3.x.
+```` xml  
+<!-- add spring-cloud-tencent bom  -->
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.tencent.cloud</groupId>
+            <artifactId>spring-cloud-tencent-dependencies</artifactId>
+            <!--version number-->
+            <version>${version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>    
+                 
+<!-- add spring-cloud-starter-tencent-polaris-discovery dependency  -->
+<dependencies>
+    <dependency>
+        <groupId>com.tencent.cloud</groupId>
+        <artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
+    </dependency>
+</dependencies>
 
 ````
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.tencent.cloud</groupId>
-                <artifactId>spring-cloud-tencent-dependencies</artifactId>
-                <!--version number-->
-                <version>${version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-````
 
- ### Starter Usage Doc
-- [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Version-Management)
-- [Spring Cloud Tencent Discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-Usage-Documentation)
-- [Spring Cloud Tencent Config](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-Usage-Documentation)
-- [Spring Cloud Tencent Rate Limit](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-Usage-Document)
-- [Spring Cloud Tencent CircuitBreaker](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-Usage-Document)
-- [Spring Cloud Tencent Router](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-Usage-Document)
-- [Spring Cloud Tencent Metadata Transfer](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-Usage-Document)
+ - ### Quick Start
+    - [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Version-Management)
+    - [Spring Cloud Tencent Discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-Usage-Documentation)
+    - [Spring Cloud Tencent Config](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-Usage-Documentation)
+    - [Spring Cloud Tencent Rate Limit](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-Usage-Document)
+    - [Spring Cloud Tencent CircuitBreaker](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-Usage-Document)
+    - [Spring Cloud Tencent Router](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-Usage-Document)
+    - [Spring Cloud Tencent Metadata Transfer](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-Usage-Document)
 
-### Version Standard
-
-We use a version policy related to Spring Cloud's major version number.
-
-Project version includes ```${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}-${CORRESPONDING_MAJOR_VERSION_OF_SPRING_CLOUD}.${CORRESPONDING_MINOR_VERSION_OF_SPRING_CLOUD}-${RELEASE_TYPE}```.
-```${MAJOR_VERSION}```, ```${MINOR_VERSION}```, ```${PATCH_VERSION}``` are in numbers starting from 0.
-```${CORRESPONDING_MAJOR_VERSION_OF_SPRING_CLOUD}``` is the same as the major version number of Spring Cloud, like Hoxton, Greenwich. ```${CORRESPONDING_MINOR_VERSION_OF_SPRING_CLOUD}``` is the same as the major version number of Spring Cloud, like RS9.
-```${RELEASE_TYPE}``` is like RELEASE or RC currently. Actually, the RELEASE version does not add a release type in the version, and the RS version will add a suffix and start from RC0.
-
-For example: 1.2.0-Hoxton.SR9-RC0
-
+- ### Development Documentation
+  - [Project Structure Overview](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
+  - [Participate in co-construction](https://github.com/Tencent/spring-cloud-tencent/wiki/Contributing)
+  
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
