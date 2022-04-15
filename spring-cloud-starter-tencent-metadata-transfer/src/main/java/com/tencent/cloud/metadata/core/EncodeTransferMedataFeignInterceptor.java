@@ -13,9 +13,10 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.metadata.core.interceptor;
+package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -42,10 +43,10 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  *
  * @author Haotian Zhang
  */
-public class Metadata2HeaderFeignInterceptor implements RequestInterceptor, Ordered {
+public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor, Ordered {
 
 	private static final Logger LOG = LoggerFactory
-			.getLogger(Metadata2HeaderFeignInterceptor.class);
+			.getLogger(EncodeTransferMedataFeignInterceptor.class);
 
 	@Override
 	public int getOrder() {

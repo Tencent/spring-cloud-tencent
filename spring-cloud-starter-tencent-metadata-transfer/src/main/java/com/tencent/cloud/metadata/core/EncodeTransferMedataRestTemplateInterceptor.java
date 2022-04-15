@@ -13,9 +13,10 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.metadata.core.interceptor;
+package com.tencent.cloud.metadata.core;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -41,7 +42,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Haotian Zhang
  */
-public class Metadata2HeaderRestTemplateInterceptor
+public class EncodeTransferMedataRestTemplateInterceptor
 		implements ClientHttpRequestInterceptor, Ordered {
 
 	@Override

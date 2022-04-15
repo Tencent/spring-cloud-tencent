@@ -7,3 +7,4 @@
 - [Bugfix: fix causing cpu 100% when set ScheduledThreadPoolExecutor corePoolSize=0](https://github.com/Tencent/spring-cloud-tencent/pull/99)
 - [Bugfix: fix circuitbreaker http code greater than 400 as fail response bug](https://github.com/Tencent/spring-cloud-tencent/pull/117)
 - [Feat: optimize router dependency](https://github.com/Tencent/spring-cloud-tencent/pull/114)
+- [Refactor: refactor transfer metadata](https://github.com/Tencent/spring-cloud-tencent/pull/112)

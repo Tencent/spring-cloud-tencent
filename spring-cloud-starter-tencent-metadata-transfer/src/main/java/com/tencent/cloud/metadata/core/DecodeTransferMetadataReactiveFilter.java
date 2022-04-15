@@ -13,49 +13,54 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.common.metadata.filter.web;
+package com.tencent.cloud.metadata.core;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
- * SERVLET.
+ * REACTIVE.
  *
  * @author Haotian Zhang
  */
-@Order(MetadataConstant.OrderConstant.WEB_FILTER_ORDER)
-public class MetadataServletFilter extends OncePerRequestFilter {
+public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered {
 
 	private static final Logger LOG = LoggerFactory
-			.getLogger(MetadataServletFilter.class);
+			.getLogger(DecodeTransferMetadataReactiveFilter.class);
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, FilterChain filterChain)
-			throws ServletException, IOException {
-		// Get custom metadata string from http header.
-		String customMetadataStr = httpServletRequest
-				.getHeader(MetadataConstant.HeaderName.CUSTOM_METADATA);
+	public int getOrder() {
+		return MetadataConstant.OrderConstant.WEB_FILTER_ORDER;
+	}
+
+	@Override
+	public Mono<Void> filter(ServerWebExchange serverWebExchange,
+			WebFilterChain webFilterChain) {
+		// Get metadata string from http header.
+		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
+		HttpHeaders httpHeaders = serverHttpRequest.getHeaders();
+		String customMetadataStr = httpHeaders
+				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
 				customMetadataStr = URLDecoder.decode(customMetadataStr, "UTF-8");
@@ -70,17 +75,16 @@ public class MetadataServletFilter extends OncePerRequestFilter {
 		Map<String, String> upstreamCustomMetadataMap = JacksonUtils
 				.deserialize2Map(customMetadataStr);
 
-		try {
-			MetadataContextHolder.init(upstreamCustomMetadataMap, null);
+		MetadataContextHolder.init(upstreamCustomMetadataMap, null);
 
-			filterChain.doFilter(httpServletRequest, httpServletResponse);
-		}
-		catch (IOException | ServletException | RuntimeException e) {
-			throw e;
-		}
-		finally {
-			MetadataContextHolder.remove();
-		}
+		// Save to ServerWebExchange.
+		serverWebExchange.getAttributes().put(
+				MetadataConstant.HeaderName.METADATA_CONTEXT,
+				MetadataContextHolder.get());
+		return webFilterChain.filter(serverWebExchange)
+				.doOnError(throwable -> LOG.error("handle metadata[{}] error.",
+						MetadataContextHolder.get(), throwable))
+				.doFinally((type) -> MetadataContextHolder.remove());
 	}
 
 }
