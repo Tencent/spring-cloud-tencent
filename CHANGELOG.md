@@ -9,3 +9,4 @@
 - [Feat: optimize router dependency](https://github.com/Tencent/spring-cloud-tencent/pull/110)
 - [Refactor: refactor transfer metadata](https://github.com/Tencent/spring-cloud-tencent/pull/111)
 - [feat:add switch of polaris, discovery and register.](https://github.com/Tencent/spring-cloud-tencent/pull/122)
+  And [#122](https://github.com/Tencent/spring-cloud-tencent/pull/124)
