@@ -70,7 +70,7 @@
 	</developers>
 
 	<properties>
-		<revision>1.3.0-Hoxton.SR9</revision>
+		<revision>1.4.0-Hoxton.SR9-SNAPSHOT</revision>
 		<polaris.version>1.4.0</polaris.version>
 		<powermock.version>2.0.0</powermock.version>
 
