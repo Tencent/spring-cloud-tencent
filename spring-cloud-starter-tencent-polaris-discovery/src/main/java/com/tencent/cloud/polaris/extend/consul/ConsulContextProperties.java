@@ -55,11 +55,11 @@ public class ConsulContextProperties {
 
 	private boolean enabled = false;
 
-	@Value("${spring.cloud.consul.discovery.register:#{'false'}}")
+	@Value("${spring.cloud.consul.discovery.register:#{'true'}}")
 	private boolean register;
 
-	@Value("${spring.cloud.consul.discovery.enabled:#{'false'}}")
-	private boolean discoveryEnabled = false;
+	@Value("${spring.cloud.consul.discovery.enabled:#{'true'}}")
+	private boolean discoveryEnabled;
 
 	@Value("${spring.cloud.consul.discovery.instance-id:}")
 	private String instanceId;

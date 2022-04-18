@@ -33,8 +33,13 @@ public class RegisterEnabledCondition implements Condition {
 			AnnotatedTypeMetadata annotatedTypeMetadata) {
 		boolean isRegisterEnabled = Boolean.parseBoolean(conditionContext.getEnvironment()
 				.getProperty("spring.cloud.polaris.discovery.register", "true"));
-		isRegisterEnabled |= Boolean.parseBoolean(conditionContext.getEnvironment()
-				.getProperty("spring.cloud.consul.discovery.register", "false"));
+
+		boolean isConsulRegisterEnabled = Boolean.parseBoolean(conditionContext.getEnvironment()
+				.getProperty("spring.cloud.consul.enabled", "false")) &&
+				Boolean.parseBoolean(conditionContext.getEnvironment()
+						.getProperty("spring.cloud.consul.discovery.register", "true"));
+
+		isRegisterEnabled |= isConsulRegisterEnabled;
 		return isRegisterEnabled;
 	}
 
