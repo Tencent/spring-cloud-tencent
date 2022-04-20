@@ -77,3 +77,10 @@ For example:
   
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
+
+
+## Stargazers over time
+
+If you are interested in Spring Cloud Tencent, please follow our project, thank you very much.
+
+[![Stargazers over time](https://starchart.cc/Tencent/spring-cloud-tencent.svg)](https://starchart.cc/Tencent/spring-cloud-tencent)
