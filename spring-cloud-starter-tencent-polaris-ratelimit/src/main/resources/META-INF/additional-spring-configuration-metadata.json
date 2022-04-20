@@ -5,6 +5,24 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Enable polaris rate limit or not."
+    },
+    {
+      "name": "spring.cloud.polaris.ratelimit.rejectRequestTips",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "Custom tips when reject request."
+    },
+    {
+      "name": "spring.cloud.polaris.ratelimit.rejectRequestTipsFilePath",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "Custom tips file path when reject request."
+    },
+    {
+      "name": "spring.cloud.polaris.ratelimit.rejectHttpCode",
+      "type": "java.lang.Integer",
+      "defaultValue": "429",
+      "description": "Custom http code when reject request."
     }
   ]
 }
