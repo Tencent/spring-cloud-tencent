@@ -52,6 +52,11 @@ import static javax.servlet.DispatcherType.REQUEST;
 public class RateLimitConfiguration {
 
 	@Bean
+	public PolarisRateLimitProperties polarisRateLimitProperties() {
+		return new PolarisRateLimitProperties();
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public LimitAPI limitAPI(SDKContext polarisContext) {
 		return LimitAPIFactory.createLimitAPIByContext(polarisContext);
@@ -67,8 +72,10 @@ public class RateLimitConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI,
-				@Nullable PolarisRateLimiterLabelServletResolver labelResolver) {
-			return new QuotaCheckServletFilter(limitAPI, labelResolver);
+				@Nullable PolarisRateLimiterLabelServletResolver labelResolver,
+				PolarisRateLimitProperties polarisRateLimitProperties) {
+			return new QuotaCheckServletFilter(limitAPI, labelResolver,
+					polarisRateLimitProperties);
 		}
 
 		@Bean
@@ -93,8 +100,10 @@ public class RateLimitConfiguration {
 
 		@Bean
 		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(LimitAPI limitAPI,
-				@Nullable PolarisRateLimiterLabelReactiveResolver labelResolver) {
-			return new QuotaCheckReactiveFilter(limitAPI, labelResolver);
+				@Nullable PolarisRateLimiterLabelReactiveResolver labelResolver,
+				PolarisRateLimitProperties polarisRateLimitProperties) {
+			return new QuotaCheckReactiveFilter(limitAPI, labelResolver,
+					polarisRateLimitProperties);
 		}
 
 	}
