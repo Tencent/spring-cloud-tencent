@@ -40,6 +40,11 @@ public class PolarisConfigProperties {
 	private String address;
 
 	/**
+	 * Polaris config grpc port.
+	 */
+	private int port = 8093;
+
+	/**
 	 * Whether to automatically update to the spring context when the configuration file.
 	 * is updated
 	 */
@@ -64,6 +69,14 @@ public class PolarisConfigProperties {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public boolean isAutoRefresh() {
