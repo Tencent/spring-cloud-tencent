@@ -15,21 +15,15 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.registry;
+package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
-import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
-import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
-import com.tencent.polaris.test.mock.discovery.NamingServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 
 import static com.tencent.polaris.test.common.Consts.PORT;
@@ -37,44 +31,29 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisServiceRegistryAutoConfiguration}
+ * Test for {@link PolarisLoadBalancerAutoConfiguration}
  *
  * @author Haotian Zhang
  */
-public class PolarisServiceRegistryAutoConfigurationTest {
+public class PolarisLoadBalancerAutoConfigurationTest {
 
-	private static NamingServer namingServer;
-
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
-					PolarisServiceRegistryAutoConfiguration.class, PolarisDiscoveryClientConfiguration.class))
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(PolarisRibbonTest.class,
+					PolarisLoadBalancerAutoConfiguration.class, PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		namingServer = NamingServer.startNamingServer(10081);
-	}
-
-	@AfterClass
-	public static void afterClass() throws Exception {
-		if (null != namingServer) {
-			namingServer.terminate();
-		}
-	}
 
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
-			assertThat(context).hasSingleBean(PolarisDiscoveryAutoConfiguration.class);
-			assertThat(context).hasSingleBean(AutoServiceRegistrationAutoConfiguration.class);
+			assertThat(context).hasSingleBean(RouterAPI.class);
+			assertThat(context).hasSingleBean(PolarisLoadBalancerProperties.class);
 		});
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableDiscoveryClient
-	static class PolarisServiceRegistryAutoConfiguration {
+	static class PolarisRibbonTest {
 
 	}
 

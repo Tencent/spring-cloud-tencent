@@ -15,25 +15,20 @@
  * specific language governing permissions and limitations under the License.
  *
  */
+package com.tencent.cloud.polaris;
 
-package com.tencent.cloud.polaris.ratelimit.spi;
-
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
- * Resolve custom label from request. The label used for rate limit params.
+ * Common configuration of discovery.
  *
- * @author lepdou 2022-03-31
+ * @author Haotian Zhang
  */
-public interface PolarisRateLimiterLabelServletResolver {
-
-	/**
-	 * Resolve custom label from request.
-	 * @param request the http request
-	 * @return resolved labels
-	 */
-	Map<String, String> resolve(HttpServletRequest request);
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
+@Import(DiscoveryPropertiesAutoConfiguration.class)
+public class DiscoveryPropertiesBootstrapAutoConfiguration {
 
 }

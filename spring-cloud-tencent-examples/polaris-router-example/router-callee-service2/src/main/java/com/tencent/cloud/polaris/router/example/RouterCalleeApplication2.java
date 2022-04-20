@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Router callee application.
+ *
  * @author lepdou 2022-04-06
  */
 @SpringBootApplication
@@ -31,4 +32,5 @@ public class RouterCalleeApplication2 {
 	public static void main(String[] args) {
 		SpringApplication.run(RouterCalleeApplication2.class, args);
 	}
+
 }

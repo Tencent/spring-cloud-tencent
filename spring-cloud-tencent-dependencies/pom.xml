@@ -47,6 +47,14 @@
 		</developer>
 
 		<developer>
+			<id>lepdou</id>
+			<name>lepdou</name>
+			<email>lepdou@126.com</email>
+			<organization>Tencent</organization>
+			<url>https://github.com/lepdou</url>
+		</developer>
+
+		<developer>
 			<name>Andrew Shan</name>
 			<email>samshan08@126.com</email>
 			<organization>Tencent</organization>
@@ -63,7 +71,7 @@
 
 	<properties>
 		<revision>1.3.0-2020.0.5-SNAPSHOT</revision>
-		<polaris.version>1.3.1</polaris.version>
+		<polaris.version>1.4.0-SNAPSHOT</polaris.version>
 		<powermock.version>2.0.0</powermock.version>
 
 		<!-- Maven Plugin Versions -->

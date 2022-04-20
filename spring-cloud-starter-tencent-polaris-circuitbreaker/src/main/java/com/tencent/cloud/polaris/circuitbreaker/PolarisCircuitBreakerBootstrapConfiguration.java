@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.circuitbreaker;
 
 import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 
@@ -30,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author lepdou 2022-03-29
  */
+@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true",
 		matchIfMissing = true)
 @Configuration(proxyBeanMethods = false)

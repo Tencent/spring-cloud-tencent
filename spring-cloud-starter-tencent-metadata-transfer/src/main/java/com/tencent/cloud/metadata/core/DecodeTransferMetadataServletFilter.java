@@ -47,8 +47,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Order(MetadataConstant.OrderConstant.WEB_FILTER_ORDER)
 public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(DecodeTransferMetadataServletFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataServletFilter.class);
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,

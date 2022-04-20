@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.circuitbreaker;
 
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProcessor;
-import com.tencent.cloud.polaris.context.PolarisContextConfiguration;
+import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
@@ -42,7 +42,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true",
 		matchIfMissing = true)
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(PolarisContextConfiguration.class)
+@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 public class PolarisFeignClientAutoConfiguration {
 

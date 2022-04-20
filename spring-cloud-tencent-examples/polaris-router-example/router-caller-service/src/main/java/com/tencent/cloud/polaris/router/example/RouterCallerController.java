@@ -54,9 +54,7 @@ public class RouterCallerController {
 	 */
 	@GetMapping("/rest")
 	public String rest() {
-		return restTemplate.getForObject(
-				"http://DiscoveryCalleeService/discovery/service/callee/info",
-				String.class);
+		return restTemplate.getForObject("http://DiscoveryCalleeService/discovery/service/callee/info", String.class);
 	}
 
 	/**

@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
@@ -37,11 +38,15 @@ import org.springframework.cloud.client.serviceregistry.Registration;
  */
 public class PolarisRegistration implements Registration, ServiceInstance {
 
+	private final DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration;
+
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
 	private final SDKContext polarisContext;
 
-	public PolarisRegistration(PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
+	public PolarisRegistration(DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
+			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
+		this.discoveryPropertiesAutoConfiguration = discoveryPropertiesAutoConfiguration;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisContext = context;
 	}
@@ -82,6 +87,10 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	public PolarisDiscoveryProperties getPolarisProperties() {
 		return polarisDiscoveryProperties;
+	}
+
+	public boolean isRegisterEnabled() {
+		return discoveryPropertiesAutoConfiguration.isRegisterEnabled();
 	}
 
 	@Override

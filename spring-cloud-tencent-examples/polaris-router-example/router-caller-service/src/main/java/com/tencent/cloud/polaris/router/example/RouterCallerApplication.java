@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Router caller application.
  *
- *@author lepdou 2022-04-06
+ * @author lepdou 2022-04-06
  */
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -45,4 +45,5 @@ public class RouterCallerApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
+
 }

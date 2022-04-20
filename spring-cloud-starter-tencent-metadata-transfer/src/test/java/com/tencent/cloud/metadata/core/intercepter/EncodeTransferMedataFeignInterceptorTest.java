@@ -57,10 +57,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT,
-		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
-		properties = { "server.port=8081",
-				"spring.config.location = classpath:application-test.yml" })
+@SpringBootTest(webEnvironment = DEFINED_PORT, classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
+		properties = { "server.port=8081", "spring.config.location = classpath:application-test.yml" })
 public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired

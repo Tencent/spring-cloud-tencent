@@ -59,8 +59,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 	private final PolarisRateLimiterLabelReactiveResolver labelResolver;
 
-	public QuotaCheckReactiveFilter(LimitAPI limitAPI,
-			PolarisRateLimiterLabelReactiveResolver labelResolver) {
+	public QuotaCheckReactiveFilter(LimitAPI limitAPI, PolarisRateLimiterLabelReactiveResolver labelResolver) {
 		this.limitAPI = limitAPI;
 		this.labelResolver = labelResolver;
 	}
@@ -90,21 +89,22 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 				if (!CollectionUtils.isEmpty(customLabels)) {
 					labels.putAll(customLabels);
 				}
-			} catch (Throwable e) {
+			}
+			catch (Throwable e) {
 				LOG.error("resolve custom label failed. resolver = {}", labelResolver.getClass().getName(), e);
 			}
 		}
 
 		try {
-			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
-					localNamespace, localService, 1, labels, null);
+			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI, localNamespace, localService, 1, labels,
+					null);
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
 				response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
 				response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer().write(
-						RateLimitConstant.QUOTA_LIMITED_INFO.getBytes(StandardCharsets.UTF_8));
+				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer()
+						.write(RateLimitConstant.QUOTA_LIMITED_INFO.getBytes(StandardCharsets.UTF_8));
 				return response.writeWith(Mono.just(dataBuffer));
 			}
 		}

@@ -22,8 +22,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
+import org.springframework.context.annotation.Conditional;
 
 /**
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
@@ -31,7 +33,8 @@ import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @ConditionalOnDiscoveryEnabled
-@ConditionalOnProperty(value = "spring.cloud.polaris.discovery.enabled", matchIfMissing = true)
+@ConditionalOnPolarisEnabled
+@Conditional(DiscoveryEnabledCondition.class)
 public @interface ConditionalOnPolarisDiscoveryEnabled {
 
 }
