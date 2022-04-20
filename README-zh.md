@@ -79,3 +79,10 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
+
+## Stargazers over time
+
+如果您对 Spring Cloud Tencent 有兴趣，请关注我们的项目~
+
+[![Stargazers over time](https://starchart.cc/Tencent/spring-cloud-tencent.svg)](https://starchart.cc/Tencent/spring-cloud-tencent)
+
