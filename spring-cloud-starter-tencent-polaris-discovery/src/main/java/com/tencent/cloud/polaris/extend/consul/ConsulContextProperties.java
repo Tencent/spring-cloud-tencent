@@ -25,13 +25,14 @@ import com.tencent.cloud.common.constant.ContextConstant.ModifierOrder;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
+import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
 import com.tencent.polaris.plugins.connector.common.constant.ConsulConstant.MetadataMapKey;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -42,8 +43,6 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Haotian Zhang
  */
-@ConditionalOnExpression("'true'.equals('${spring.cloud.consul.enabled:true}')"
-		+ " && 'true'.equals('${spring.cloud.consul.discovery.enabled:true}')")
 @ConfigurationProperties("spring.cloud.consul")
 public class ConsulContextProperties {
 
@@ -54,7 +53,7 @@ public class ConsulContextProperties {
 
 	private int port;
 
-	private boolean enabled;
+	private boolean enabled = false;
 
 	@Value("${spring.cloud.consul.discovery.register:#{'true'}}")
 	private boolean register;
@@ -82,8 +81,20 @@ public class ConsulContextProperties {
 		this.port = port;
 	}
 
+	public boolean isEnabled() {
+		return enabled;
+	}
+
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public boolean isRegister() {
+		return register;
+	}
+
+	public boolean isDiscoveryEnabled() {
+		return discoveryEnabled;
 	}
 
 	@Bean
@@ -94,21 +105,26 @@ public class ConsulContextProperties {
 
 	private static class ConsulConfigModifier implements PolarisConfigModifier {
 
+		private final String ID = "consul";
+
 		@Autowired(required = false)
 		private ConsulContextProperties consulContextProperties;
 
 		@Override
 		public void modify(ConfigurationImpl configuration) {
-			if (consulContextProperties != null && consulContextProperties.enabled
-					&& consulContextProperties.discoveryEnabled
-					&& consulContextProperties.register) {
+			if (consulContextProperties != null && consulContextProperties.enabled) {
 				if (CollectionUtils
 						.isEmpty(configuration.getGlobal().getServerConnectors())) {
 					configuration.getGlobal().setServerConnectors(new ArrayList<>());
 				}
-				configuration.getGlobal().getServerConnectors()
-						.add(configuration.getGlobal().getServerConnector());
+				if (CollectionUtils
+						.isEmpty(configuration.getGlobal().getServerConnectors())
+						&& null != configuration.getGlobal().getServerConnector()) {
+					configuration.getGlobal().getServerConnectors()
+							.add(configuration.getGlobal().getServerConnector());
+				}
 				ServerConnectorConfigImpl serverConnectorConfig = new ServerConnectorConfigImpl();
+				serverConnectorConfig.setId(ID);
 				serverConnectorConfig.setAddresses(
 						Collections.singletonList(consulContextProperties.host + ":"
 								+ consulContextProperties.port));
@@ -131,6 +147,16 @@ public class ConsulContextProperties {
 				}
 				configuration.getGlobal().getServerConnectors()
 						.add(serverConnectorConfig);
+
+				DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
+				discoveryConfig.setServerConnectorId(ID);
+				discoveryConfig.setEnable(consulContextProperties.discoveryEnabled);
+				configuration.getConsumer().getDiscoveries().add(discoveryConfig);
+
+				RegisterConfigImpl registerConfig = new RegisterConfigImpl();
+				registerConfig.setServerConnectorId(ID);
+				registerConfig.setEnable(consulContextProperties.register);
+				configuration.getProvider().getRegisters().add(registerConfig);
 			}
 		}
 

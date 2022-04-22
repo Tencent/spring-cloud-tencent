@@ -86,6 +86,7 @@
 		<jacoco.version>0.8.3</jacoco.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
+		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
 
 		<!--  Checkstyle      -->
 		<maven-checkstyle-plugin.failsOnError>true</maven-checkstyle-plugin.failsOnError>
@@ -249,6 +250,7 @@
 						<version>${maven-gpg-plugin.version}</version>
 						<executions>
 							<execution>
+								<id>sign-artifacts</id>
 								<phase>verify</phase>
 								<goals>
 									<goal>sign</goal>

@@ -8,7 +8,10 @@ spring:
     polaris:
       address: grpc://127.0.0.1:8091
       namespace: default
+      enabled: true
       discovery:
+        enabled: true
+        register: true
         heartbeat:
           enabled: true
         health-check-url: /discovery/service/caller/healthCheck
@@ -17,11 +20,11 @@ spring:
 #      host: 127.0.0.1
 #      enabled: true
 #      discovery:
+#        enabled: true
 #        register: true
 #        health-check-path: /actuator/health
 #        health-check-interval: 10s
 #        instance-id: ${spring.application.name}:${server.port}
-#        enabled: true
 #        service-name: ${spring.application.name}
 #        ip-address: localhost
 #        prefer-ip-address: true

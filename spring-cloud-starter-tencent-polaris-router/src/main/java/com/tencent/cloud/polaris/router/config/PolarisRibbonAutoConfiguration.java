@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.router.config;
 
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.RouterAPIFactory;
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
+@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
 @AutoConfigureAfter(RibbonAutoConfiguration.class)
 @RibbonClients(defaultConfiguration = PolarisRibbonClientConfiguration.class)

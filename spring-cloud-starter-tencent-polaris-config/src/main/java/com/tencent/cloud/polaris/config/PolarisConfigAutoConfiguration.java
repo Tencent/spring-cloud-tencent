@@ -21,6 +21,7 @@ package com.tencent.cloud.polaris.config;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceAutoRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.context.refresh.ContextRefresher;
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
  * @author lepdou 2022-03-28
  */
 @Configuration
+@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled", matchIfMissing = true)
 public class PolarisConfigAutoConfiguration {
 

@@ -13,27 +13,25 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.ratelimit.spi;
+package com.tencent.cloud.polaris.context;
 
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
- * Resolve custom label from request. The label used for rate limit params.
+ * Condition that if Polaris enabled.
  *
- * @author lepdou 2022-03-31
+ * @author Haotian Zhang
  */
-public interface PolarisRateLimiterLabelServletResolver {
-
-	/**
-	 * Resolve custom label from request.
-	 * @param request the http request
-	 * @return resolved labels
-	 */
-	Map<String, String> resolve(HttpServletRequest request);
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@ConditionalOnProperty(value = "spring.cloud.polaris.enabled", matchIfMissing = true)
+public @interface ConditionalOnPolarisEnabled {
 
 }
