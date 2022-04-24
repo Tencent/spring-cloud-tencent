@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router;
+package com.tencent.cloud.polaris.loadbalancer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +32,15 @@ import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServer;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
+import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
+import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
@@ -50,28 +53,51 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Haotian Zhang
  */
-public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Server> {
+public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 
 	private final RouterAPI routerAPI;
 
-	public PolarisRoutingLoadBalancer(IClientConfig config, IRule rule, IPing ping,
-			ServerList<Server> serverList, RouterAPI routerAPI) {
+	private ConsumerAPI consumerAPI;
+
+	private boolean isPolarisDiscovery = true;
+
+	private boolean isFirstCall = true;
+
+	public PolarisLoadBalancer(IClientConfig config, IRule rule, IPing ping,
+			ServerList<Server> serverList, RouterAPI routerAPI, ConsumerAPI consumerAPI) {
 		super(config, rule, ping, serverList, null, new PollingServerListUpdater());
 		this.routerAPI = routerAPI;
+		this.consumerAPI = consumerAPI;
 	}
 
 	@Override
 	public List<Server> getReachableServers() {
-		List<Server> allServers = super.getAllServers();
-		if (CollectionUtils.isEmpty(allServers)) {
-			return allServers;
+		List<Server> allServers = null;
+		if (isFirstCall) {
+			allServers = super.getAllServers();
+			if (CollectionUtils.isEmpty(allServers)) {
+				return allServers;
+			}
+			if (allServers.get(0) instanceof PolarisServer) {
+				isPolarisDiscovery = true;
+			}
+			else {
+				isPolarisDiscovery = false;
+			}
+			isFirstCall = false;
 		}
-		ServiceInstances serviceInstances = null;
-		if (allServers.get(0) instanceof PolarisServer) {
-			serviceInstances = ((PolarisServer) allServers.get(0)).getServiceInstances();
+
+		ServiceInstances serviceInstances;
+		String serviceName = null;
+		if (isPolarisDiscovery) {
+			// serviceName = ((PolarisServer)allServers.get(0)).getServiceInstances().getService();
+			serviceInstances = getAllInstances(MetadataContext.LOCAL_NAMESPACE,
+					MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.PEER_SERVICE)).toServiceInstances();
 		}
 		else {
-			String serviceName;
+			if (CollectionUtils.isEmpty(allServers)) {
+				allServers = super.getAllServers();
+			}
 			// notice the difference between different service registries
 			if (StringUtils.isNotBlank(
 					allServers.get(0).getMetaInfo().getServiceIdForDiscovery())) {
@@ -82,7 +108,7 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 			}
 			if (StringUtils.isBlank(serviceName)) {
 				throw new IllegalStateException(
-						"PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
+						"PolarisLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 			}
 			ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE,
 					serviceName);
@@ -132,6 +158,19 @@ public class PolarisRoutingLoadBalancer extends DynamicServerListLoadBalancer<Se
 	@Override
 	public List<Server> getAllServers() {
 		return getReachableServers();
+	}
+
+	/**
+	 * Get a list of instances.
+	 * @param namespace namespace
+	 * @param serviceName service name
+	 * @return list of instances
+	 */
+	public InstancesResponse getAllInstances(String namespace, String serviceName) {
+		GetAllInstancesRequest request = new GetAllInstancesRequest();
+		request.setNamespace(namespace);
+		request.setService(serviceName);
+		return consumerAPI.getAllInstance(request);
 	}
 
 }

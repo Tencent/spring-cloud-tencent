@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.loadbalancer.config;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
@@ -23,9 +23,10 @@ import com.netflix.loadbalancer.IPing;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
-import com.tencent.cloud.polaris.router.PolarisRoutingLoadBalancer;
-import com.tencent.cloud.polaris.router.rule.PolarisLoadBalanceRule;
-import com.tencent.cloud.polaris.router.rule.PolarisWeightedRandomRule;
+import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
+import com.tencent.cloud.polaris.loadbalancer.rule.PolarisLoadBalanceRule;
+import com.tencent.cloud.polaris.loadbalancer.rule.PolarisWeightedRandomRule;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,9 +43,10 @@ public class PolarisRibbonClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public IRule polarisRibbonRule(PolarisRibbonProperties polarisRibbonProperties) {
+	public IRule polarisRibbonRule(
+			PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
 		switch (PolarisLoadBalanceRule
-				.fromStrategy(polarisRibbonProperties.getStrategy())) {
+				.fromStrategy(polarisLoadBalancerProperties.getStrategy())) {
 		case WEIGHTED_RANDOM_RULE:
 		default:
 			return new PolarisWeightedRandomRule();
@@ -53,11 +55,11 @@ public class PolarisRibbonClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ILoadBalancer polarisRoutingLoadBalancer(IClientConfig iClientConfig,
-			IRule iRule, IPing iPing, ServerList<Server> serverList,
-			RouterAPI polarisRouter) {
-		return new PolarisRoutingLoadBalancer(iClientConfig, iRule, iPing, serverList,
-				polarisRouter);
+	public ILoadBalancer polarisLoadBalancer(IClientConfig iClientConfig, IRule iRule,
+			IPing iPing, ServerList<Server> serverList, RouterAPI polarisRouter,
+			ConsumerAPI consumerAPI) {
+		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
+				polarisRouter, consumerAPI);
 	}
 
 }

@@ -57,7 +57,7 @@ public class PolarisServerList extends AbstractServerList<Server> {
 
 	private List<Server> getServers() {
 		InstancesResponse allInstances = polarisDiscoveryHandler
-				.getFilteredInstances(serviceId);
+				.getHealthyInstances(serviceId);
 		ServiceInstances serviceInstances = allInstances.toServiceInstances();
 		List<Server> polarisServers = new ArrayList<>();
 		for (Instance instance : serviceInstances.getInstances()) {

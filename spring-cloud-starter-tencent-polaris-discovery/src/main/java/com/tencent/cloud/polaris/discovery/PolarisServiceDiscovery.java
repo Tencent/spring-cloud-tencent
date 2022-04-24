@@ -50,7 +50,7 @@ public class PolarisServiceDiscovery {
 	public List<ServiceInstance> getInstances(String serviceId) throws PolarisException {
 		List<ServiceInstance> instances = new ArrayList<>();
 		InstancesResponse filteredInstances = polarisDiscoveryHandler
-				.getFilteredInstances(serviceId);
+				.getHealthyInstances(serviceId);
 		ServiceInstances serviceInstances = filteredInstances.toServiceInstances();
 		for (Instance instance : serviceInstances.getInstances()) {
 			instances.add(new PolarisServiceInstance(instance));

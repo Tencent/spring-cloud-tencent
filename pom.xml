@@ -49,6 +49,7 @@
 		<module>spring-cloud-tencent-examples</module>
 		<module>spring-cloud-tencent-coverage</module>
 		<module>spring-cloud-starter-tencent-polaris-config</module>
+		<module>spring-cloud-tencent-polaris-loadbalancer</module>
 	</modules>
 
 	<developers>

@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.loadbalancer.config;
 
 import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.router.api.core.RouterAPI;
@@ -31,15 +31,15 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisRibbonAutoConfiguration}
+ * Test for {@link PolarisLoadBalancerAutoConfiguration}
  *
  * @author Haotian Zhang
  */
-public class PolarisRibbonAutoConfigurationTest {
+public class PolarisLoadBalancerAutoConfigurationTest {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisRibbonTest.class,
-					PolarisRibbonAutoConfiguration.class,
+					PolarisLoadBalancerAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
@@ -49,7 +49,7 @@ public class PolarisRibbonAutoConfigurationTest {
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(RouterAPI.class);
-			assertThat(context).hasSingleBean(PolarisRibbonProperties.class);
+			assertThat(context).hasSingleBean(PolarisLoadBalancerProperties.class);
 		});
 	}
 

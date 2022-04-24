@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.loadbalancer.config;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.polaris.api.exception.PolarisException;
@@ -44,12 +44,12 @@ import org.springframework.context.annotation.Configuration;
 		matchIfMissing = true)
 @AutoConfigureAfter(RibbonAutoConfiguration.class)
 @RibbonClients(defaultConfiguration = PolarisRibbonClientConfiguration.class)
-public class PolarisRibbonAutoConfiguration {
+public class PolarisLoadBalancerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisRibbonProperties polarisRibbonProperties() {
-		return new PolarisRibbonProperties();
+	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
+		return new PolarisLoadBalancerProperties();
 	}
 
 	@Bean(name = "polarisRoute")
