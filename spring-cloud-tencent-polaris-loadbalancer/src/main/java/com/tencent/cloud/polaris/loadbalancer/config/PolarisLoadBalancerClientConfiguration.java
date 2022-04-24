@@ -15,10 +15,10 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.loadbalancer.config;
 
-import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
-import com.tencent.cloud.polaris.router.PolarisRoutingLoadbalancer;
+import com.tencent.cloud.polaris.loadbalancer.PolarisLoadbalancer;
+import com.tencent.cloud.polaris.loadbalancer.PolarisServiceInstanceListSupplier;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -59,7 +59,7 @@ public class PolarisLoadBalancerClientConfiguration {
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisLoadBalancerProperties loadBalancerProperties,
 			RouterAPI routerAPI) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
-		return new PolarisRoutingLoadbalancer(name,
+		return new PolarisLoadbalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class),
 				loadBalancerProperties, routerAPI);
 	}
@@ -74,7 +74,7 @@ public class PolarisLoadBalancerClientConfiguration {
 		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(RouterAPI routerAPI,
 				ConfigurableApplicationContext context) {
-			return new PolarisRouterServiceInstanceListSupplier(
+			return new PolarisServiceInstanceListSupplier(
 					ServiceInstanceListSupplier.builder().withDiscoveryClient().build(context), routerAPI);
 		}
 
@@ -90,7 +90,7 @@ public class PolarisLoadBalancerClientConfiguration {
 		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(RouterAPI routerAPI,
 				ConfigurableApplicationContext context) {
-			return new PolarisRouterServiceInstanceListSupplier(
+			return new PolarisServiceInstanceListSupplier(
 					ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().build(context), routerAPI);
 		}
 

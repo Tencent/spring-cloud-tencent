@@ -15,48 +15,9 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.common.constant;
-
 /**
- * Constant for Context.
+ * Package info of router.
  *
  * @author Haotian Zhang
  */
-public final class ContextConstant {
-
-	/**
-	 * Name of Polaris.
-	 */
-	public static final String POLARIS = "POLARIS";
-
-	private ContextConstant() {
-	}
-
-	/**
-	 * Order of configuration modifier.
-	 */
-	public static final class ModifierOrder {
-
-		/**
-		 * First modifier order.
-		 */
-		public static Integer FIRST = Integer.MIN_VALUE;
-
-		/**
-		 * Last modifier order.
-		 */
-		public static Integer LAST = Integer.MAX_VALUE;
-
-		/**
-		 * Order of circuit breaker configuration modifier.
-		 */
-		public static Integer CIRCUIT_BREAKER_ORDER = 1;
-
-		/**
-		 * Order of configuration modifier.
-		 */
-		public static Integer CONFIG_ORDER = 1;
-
-	}
-
-}
+package com.tencent.cloud.polaris.router;
