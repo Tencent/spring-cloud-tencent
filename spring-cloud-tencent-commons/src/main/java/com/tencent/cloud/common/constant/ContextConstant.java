@@ -25,6 +25,14 @@ package com.tencent.cloud.common.constant;
 public final class ContextConstant {
 
 	/**
+	 * Name of Polaris.
+	 */
+	public static final String POLARIS = "POLARIS";
+
+	private ContextConstant() {
+	}
+
+	/**
 	 * Order of configuration modifier.
 	 */
 	public static final class ModifierOrder {

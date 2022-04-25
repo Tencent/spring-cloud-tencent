@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.loadbalancer.config;
 
+import com.tencent.cloud.common.constant.ContextConstant;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -37,6 +39,11 @@ public class PolarisLoadBalancerProperties {
 	 */
 	private String strategy = "weightedRandom";
 
+	/**
+	 * Type of discovery server.
+	 */
+	private String discoveryType = ContextConstant.POLARIS;
+
 	public String getStrategy() {
 		return strategy;
 	}
@@ -51,6 +58,14 @@ public class PolarisLoadBalancerProperties {
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public String getDiscoveryType() {
+		return discoveryType;
+	}
+
+	public void setDiscoveryType(String discoveryType) {
+		this.discoveryType = discoveryType;
 	}
 
 	@Override

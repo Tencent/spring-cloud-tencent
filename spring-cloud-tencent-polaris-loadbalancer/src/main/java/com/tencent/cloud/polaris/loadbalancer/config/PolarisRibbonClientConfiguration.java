@@ -57,9 +57,9 @@ public class PolarisRibbonClientConfiguration {
 	@ConditionalOnMissingBean
 	public ILoadBalancer polarisLoadBalancer(IClientConfig iClientConfig, IRule iRule,
 			IPing iPing, ServerList<Server> serverList, RouterAPI polarisRouter,
-			ConsumerAPI consumerAPI) {
+			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
 		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
-				polarisRouter, consumerAPI);
+				polarisRouter, consumerAPI, polarisLoadBalancerProperties);
 	}
 
 }
