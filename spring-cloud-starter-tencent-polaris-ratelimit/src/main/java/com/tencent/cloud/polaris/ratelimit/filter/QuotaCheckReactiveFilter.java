@@ -22,10 +22,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
+import com.tencent.cloud.polaris.ratelimit.utils.RateLimitUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResultCode;
@@ -36,7 +40,6 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.CollectionUtils;
@@ -60,10 +63,21 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 	private final PolarisRateLimiterLabelReactiveResolver labelResolver;
 
+	private final PolarisRateLimitProperties polarisRateLimitProperties;
+
+	private String rejectTips;
+
 	public QuotaCheckReactiveFilter(LimitAPI limitAPI,
-			PolarisRateLimiterLabelReactiveResolver labelResolver) {
+			PolarisRateLimiterLabelReactiveResolver labelResolver,
+			PolarisRateLimitProperties polarisRateLimitProperties) {
 		this.limitAPI = limitAPI;
 		this.labelResolver = labelResolver;
+		this.polarisRateLimitProperties = polarisRateLimitProperties;
+	}
+
+	@PostConstruct
+	public void init() {
+		rejectTips = RateLimitUtils.getRejectTips(polarisRateLimitProperties);
 	}
 
 	@Override
@@ -104,11 +118,10 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
-				response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+				response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
 				response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer()
-						.write(RateLimitConstant.QUOTA_LIMITED_INFO
-								.getBytes(StandardCharsets.UTF_8));
+						.write(rejectTips.getBytes(StandardCharsets.UTF_8));
 				return response.writeWith(Mono.just(dataBuffer));
 			}
 		}

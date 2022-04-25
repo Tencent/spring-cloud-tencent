@@ -2,6 +2,9 @@
 
 [![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.tencent.cloud/spring-cloud-tencent?label=Maven%20Central)](https://search.maven.org/search?q=g:com.tencent.cloud%20AND%20a:spring-cloud-tencent)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/Tencent/spring-cloud-tencent.svg)](https://github.com/Tencent/spring-cloud-tencent/issues)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/spring-cloud-tencent/wiki/Contributing)
 
 English | [简体中文](./README-zh.md)
 
@@ -77,3 +80,10 @@ For example:
   
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
+
+
+## Stargazers over time
+
+If you are interested in Spring Cloud Tencent, please follow our project, thank you very much.
+
+[![Stargazers over time](https://starchart.cc/Tencent/spring-cloud-tencent.svg)](https://starchart.cc/Tencent/spring-cloud-tencent)
