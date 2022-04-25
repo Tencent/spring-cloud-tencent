@@ -74,11 +74,14 @@ public class PolarisContextProperties {
 	private List<PolarisConfigModifier> modifierList;
 
 	protected Configuration configuration() {
+		// 1. Read user-defined polaris.yml configuration
 		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
 				.defaultConfig(ConfigProvider.DEFAULT_CONFIG);
-		configuration.setDefault();
+
+		// 2. Override user-defined polaris.yml configuration with SCT configuration
 		String defaultHost = getHost();
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);
+
 		Collection<PolarisConfigModifier> modifiers = modifierList;
 		modifiers = modifiers.stream()
 				.sorted(Comparator.comparingInt(PolarisConfigModifier::getOrder))
@@ -88,6 +91,7 @@ public class PolarisContextProperties {
 				modifier.modify(configuration);
 			}
 		}
+
 		return configuration;
 	}
 

@@ -74,6 +74,11 @@ public class DiscoveryPropertiesAutoConfiguration {
 		return new PolarisDiscoveryHandler();
 	}
 
+	@Bean
+	public DiscoveryConfigModifier discoveryConfigModifier() {
+		return new DiscoveryConfigModifier();
+	}
+
 	@PostConstruct
 	public void init() {
 		if (null != polarisDiscoveryProperties) {
