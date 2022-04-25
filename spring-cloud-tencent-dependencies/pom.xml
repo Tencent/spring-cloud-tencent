@@ -71,14 +71,13 @@
 
 	<properties>
 		<revision>1.4.0-Hoxton.SR9-SNAPSHOT</revision>
-		<polaris.version>1.4.0</polaris.version>
+		<polaris.version>1.5.0-SNAPSHOT</polaris.version>
 		<powermock.version>2.0.0</powermock.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
 		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -100,6 +99,12 @@
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-polaris-context</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
 				<version>${revision}</version>
 			</dependency>
 

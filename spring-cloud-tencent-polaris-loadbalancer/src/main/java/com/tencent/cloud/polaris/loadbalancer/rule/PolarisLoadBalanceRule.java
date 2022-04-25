@@ -15,53 +15,38 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.common.constant;
+package com.tencent.cloud.polaris.loadbalancer.rule;
+
+import java.util.Arrays;
 
 /**
- * Constant for Context.
+ * Load balance rule.
  *
  * @author Haotian Zhang
  */
-public final class ContextConstant {
+public enum PolarisLoadBalanceRule {
 
 	/**
-	 * Name of Polaris.
+	 * Weighted random load balance rule.
 	 */
-	public static final String POLARIS = "POLARIS";
+	WEIGHTED_RANDOM_RULE("weighted_random");
 
-	private ContextConstant() {
+	/**
+	 * Load balance strategy.
+	 */
+	final String policy;
+
+	PolarisLoadBalanceRule(String strategy) {
+		this.policy = strategy;
 	}
 
-	/**
-	 * Order of configuration modifier.
-	 */
-	public static final class ModifierOrder {
+	public static PolarisLoadBalanceRule fromStrategy(String strategy) {
+		return Arrays.stream(values()).filter(t -> t.getPolicy().equals(strategy))
+				.findAny().orElse(WEIGHTED_RANDOM_RULE);
+	}
 
-		/**
-		 * First modifier order.
-		 */
-		public static Integer FIRST = Integer.MIN_VALUE;
-
-		/**
-		 * Last modifier order.
-		 */
-		public static Integer LAST = Integer.MAX_VALUE;
-
-		/**
-		 * Order of circuit breaker configuration modifier.
-		 */
-		public static Integer CIRCUIT_BREAKER_ORDER = 1;
-
-		/**
-		 * Order of discovery configuration modifier.
-		 */
-		public static Integer DISCOVERY_ORDER = 0;
-
-		/**
-		 * Order of configuration modifier.
-		 */
-		public static Integer CONFIG_ORDER = 1;
-
+	public String getPolicy() {
+		return policy;
 	}
 
 }

@@ -15,38 +15,9 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router.rule;
-
-import java.util.Arrays;
-
 /**
- * Load balance rule.
+ * Package info of router.
  *
  * @author Haotian Zhang
  */
-public enum PolarisLoadBalanceRule {
-
-	/**
-	 * Weighted random load balance rule.
-	 */
-	WEIGHTED_RANDOM_RULE("weighted_random");
-
-	/**
-	 * Load balance strategy.
-	 */
-	final String policy;
-
-	PolarisLoadBalanceRule(String strategy) {
-		this.policy = strategy;
-	}
-
-	public static PolarisLoadBalanceRule fromStrategy(String strategy) {
-		return Arrays.stream(values()).filter(t -> t.getPolicy().equals(strategy))
-				.findAny().orElse(WEIGHTED_RANDOM_RULE);
-	}
-
-	public String getPolicy() {
-		return policy;
-	}
-
-}
+package com.tencent.cloud.polaris.router;
