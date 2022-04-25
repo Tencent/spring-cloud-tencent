@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.ratelimit.utils;
 import com.tencent.cloud.common.util.ResourceFileUtils;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
-import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,7 @@ import org.springframework.util.StringUtils;
 public final class RateLimitUtils {
 
 	private static final Logger LOG = LoggerFactory
-			.getLogger(QuotaCheckServletFilter.class);
+			.getLogger(RateLimitUtils.class);
 
 	private RateLimitUtils() {
 
