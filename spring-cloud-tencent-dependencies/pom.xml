@@ -104,6 +104,12 @@
 
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
 				<version>${revision}</version>
 			</dependency>

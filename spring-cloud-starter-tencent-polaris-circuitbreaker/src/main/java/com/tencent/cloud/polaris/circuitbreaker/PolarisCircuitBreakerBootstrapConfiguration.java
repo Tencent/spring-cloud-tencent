@@ -51,7 +51,7 @@ public class PolarisCircuitBreakerBootstrapConfiguration {
 			// Turn on circuitbreaker configuration
 			configuration.getConsumer().getCircuitBreaker().setEnable(true);
 
-			// Set excludeCircuitBreakInstances to false 
+			// Set excludeCircuitBreakInstances to false
 			RecoverRouterConfig recoverRouterConfig = configuration.getConsumer().getServiceRouter()
 					.getPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, RecoverRouterConfig.class);
 
