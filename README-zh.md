@@ -21,7 +21,7 @@ Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治�
 - [Polaris Github home page](https://github.com/polarismesh/polaris)
 - [Polaris official website](https://polarismesh.cn/)
 
-Spring Cloud 腾讯提供的能力包括但不限于：
+Spring Cloud Tencent提供的能力包括但不限于：
 
 - 服务注册和发现
 - 动态配置管理
