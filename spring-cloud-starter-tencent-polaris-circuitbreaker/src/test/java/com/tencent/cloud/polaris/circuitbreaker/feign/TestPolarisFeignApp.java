@@ -43,6 +43,8 @@ public class TestPolarisFeignApp {
 
 		/**
 		 * Get info of service B.
+		 *
+		 * @return info
 		 */
 		@GetMapping("/example/service/b/info")
 		String info();
