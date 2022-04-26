@@ -55,6 +55,10 @@ public class GatewayCalleeController {
 
 	/**
 	 * Get metadata in HTTP header.
+	 *
+	 * @param metadataStr metadata string
+	 * @return metadata in HTTP header
+	 * @throws UnsupportedEncodingException encoding exception
 	 */
 	@RequestMapping("/echo")
 	public String echoHeader(

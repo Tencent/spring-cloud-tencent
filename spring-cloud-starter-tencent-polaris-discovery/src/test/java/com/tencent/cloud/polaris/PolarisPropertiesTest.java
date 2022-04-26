@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Test for {@link PolarisDiscoveryProperties}
+ * Test for {@link PolarisDiscoveryProperties}.
  *
  * @author Haotian Zhang
  */

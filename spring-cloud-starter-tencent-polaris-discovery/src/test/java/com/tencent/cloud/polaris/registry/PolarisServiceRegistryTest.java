@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisServiceRegistry}
+ * Test for {@link PolarisServiceRegistry}.
  *
  * @author Haotian Zhang
  */

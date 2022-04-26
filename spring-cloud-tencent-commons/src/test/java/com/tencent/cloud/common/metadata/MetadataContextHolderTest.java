@@ -29,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Test for {@link MetadataContextHolder}
+ * Test for {@link MetadataContextHolder}.
  *
  * @author Haotian Zhang
  */

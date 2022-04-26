@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataFeignInterceptor}
+ * Test for {@link EncodeTransferMedataFeignInterceptor}.
  *
  * @author Haotian Zhang
  */

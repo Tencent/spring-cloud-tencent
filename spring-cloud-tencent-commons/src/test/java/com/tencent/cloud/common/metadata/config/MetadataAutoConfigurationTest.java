@@ -30,7 +30,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 /**
- * Test for {@link MetadataAutoConfiguration}
+ * Test for {@link MetadataAutoConfiguration}.
  *
  * @author Haotian Zhang
  */

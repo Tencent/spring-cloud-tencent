@@ -47,7 +47,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataRestTemplateInterceptor}
+ * Test for {@link EncodeTransferMedataRestTemplateInterceptor}.
  *
  * @author Haotian Zhang
  */

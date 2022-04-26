@@ -39,7 +39,7 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisRibbonServerListConfiguration}
+ * Test for {@link PolarisRibbonServerListConfiguration}.
  *
  * @author Haotian Zhang
  */
