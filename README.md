@@ -10,7 +10,7 @@ English | [简体中文](./README-zh.md)
 
 ## Introduction
 
-Spring Cloud Tencent is a one-stop microservice solution developed and maintained by Tencent.
+Spring Cloud Tencent is a open source one-stop microservice solution from Tencent.
 
 Spring Cloud Tencent implements the Spring Cloud standard microservice SPI, so developers can quickly develop Spring Cloud cloud-native distributed applications based on Spring Cloud Tencent.
 
