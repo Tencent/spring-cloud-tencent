@@ -10,3 +10,4 @@
 - [Feat: optimize router dependency](https://github.com/Tencent/spring-cloud-tencent/pull/115)
 - [feat:add switch of polaris, discovery and register.](https://github.com/Tencent/spring-cloud-tencent/pull/129)
 - [Feature: Remove spring-javaformat-maven-plugin](https://github.com/Tencent/spring-cloud-tencent/pull/151)
+- [feat:optimize config server address.](https://github.com/Tencent/spring-cloud-tencent/pull/149)
