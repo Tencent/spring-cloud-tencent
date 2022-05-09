@@ -10,3 +10,4 @@ spring:
       enabled: true
       ratelimit:
         enabled: true
+        rejectRequestTipsFilePath: reject-tips.html
