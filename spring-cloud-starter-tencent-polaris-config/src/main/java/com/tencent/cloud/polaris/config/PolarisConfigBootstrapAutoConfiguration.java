@@ -70,8 +70,9 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	}
 
 	@Bean
-	public ConfigurationModifier configurationModifier() {
-		return new ConfigurationModifier();
+	public ConfigurationModifier configurationModifier(PolarisConfigProperties polarisConfigProperties,
+			PolarisContextProperties polarisContextProperties) {
+		return new ConfigurationModifier(polarisConfigProperties, polarisContextProperties);
 	}
 
 }
