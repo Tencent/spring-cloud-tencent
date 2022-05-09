@@ -10,3 +10,4 @@
 - [Refactor: refactor transfer metadata](https://github.com/Tencent/spring-cloud-tencent/pull/112)
 - [feat:add switch of polaris, discovery and register.](https://github.com/Tencent/spring-cloud-tencent/pull/133)
 - [Feature: Remove spring-javaformat-maven-plugin](https://github.com/Tencent/spring-cloud-tencent/pull/152)
+- [feat:optimize config server address](https://github.com/Tencent/spring-cloud-tencent/pull/150)
