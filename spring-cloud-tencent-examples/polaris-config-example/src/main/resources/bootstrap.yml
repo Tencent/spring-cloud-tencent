@@ -5,9 +5,9 @@ spring:
     name: polaris-config-example
   cloud:
     polaris:
+      address: grpc://127.0.0.1:8091
       namespace: default
       config:
-        address: grpc://127.0.0.1:8093
         auto-refresh: true # auto refresh when config file changed
         groups:
           - name: ${spring.application.name} # group name
