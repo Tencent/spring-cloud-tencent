@@ -15,10 +15,10 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.loadbalancer.config;
 
 import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
-import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
+import com.tencent.cloud.polaris.loadbalancer.PolarisServiceInstanceListSupplier;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ public class PolarisRouterAutoConfigurationTest {
 					.doesNotHaveBean(PolarisLoadBalancerClientConfiguration.PolarisReactiveSupportConfiguration.class);
 			assertThat(context)
 					.hasSingleBean(PolarisLoadBalancerClientConfiguration.PolarisBlockingSupportConfiguration.class);
-			assertThat(context).doesNotHaveBean(PolarisRouterServiceInstanceListSupplier.class);
+			assertThat(context).doesNotHaveBean(PolarisServiceInstanceListSupplier.class);
 		});
 	}
 
@@ -75,7 +75,7 @@ public class PolarisRouterAutoConfigurationTest {
 					.doesNotHaveBean(PolarisLoadBalancerClientConfiguration.PolarisReactiveSupportConfiguration.class);
 			assertThat(context)
 					.hasSingleBean(PolarisLoadBalancerClientConfiguration.PolarisBlockingSupportConfiguration.class);
-			assertThat(context).doesNotHaveBean(PolarisRouterServiceInstanceListSupplier.class);
+			assertThat(context).doesNotHaveBean(PolarisServiceInstanceListSupplier.class);
 		});
 	}
 

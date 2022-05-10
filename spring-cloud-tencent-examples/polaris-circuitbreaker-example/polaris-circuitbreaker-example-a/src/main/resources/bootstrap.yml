@@ -10,6 +10,8 @@ spring:
       enabled: true
       circuitbreaker:
         enabled: true
+    loadbalancer:
+      configurations: polaris
 feign:
   circuitbreaker:
     enabled: true

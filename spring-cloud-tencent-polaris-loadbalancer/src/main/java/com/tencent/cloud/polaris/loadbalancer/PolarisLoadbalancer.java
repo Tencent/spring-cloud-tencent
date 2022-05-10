@@ -15,14 +15,14 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router;
+package com.tencent.cloud.polaris.loadbalancer;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
-import com.tencent.cloud.polaris.router.config.PolarisLoadBalancerProperties;
+import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
@@ -51,9 +51,9 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
-public class PolarisRoutingLoadbalancer extends RoundRobinLoadBalancer implements ReactorServiceInstanceLoadBalancer {
+public class PolarisLoadbalancer extends RoundRobinLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisRoutingLoadbalancer.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisLoadbalancer.class);
 
 	private final String serviceId;
 
@@ -63,8 +63,7 @@ public class PolarisRoutingLoadbalancer extends RoundRobinLoadBalancer implement
 
 	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
-	public PolarisRoutingLoadbalancer(String serviceId,
-			ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
+	public PolarisLoadbalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
 			PolarisLoadBalancerProperties loadBalancerProperties, RouterAPI routerAPI) {
 		super(supplierObjectProvider, serviceId);
 		this.serviceId = serviceId;
@@ -83,7 +82,7 @@ public class PolarisRoutingLoadbalancer extends RoundRobinLoadBalancer implement
 
 	@Override
 	public Mono<Response<ServiceInstance>> choose(Request request) {
-		if (!loadBalancerProperties.getLoadbalancerEnabled()) {
+		if (!loadBalancerProperties.getEnabled()) {
 			return super.choose(request);
 		}
 		ServiceInstanceListSupplier supplier = supplierObjectProvider

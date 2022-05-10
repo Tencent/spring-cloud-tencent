@@ -28,6 +28,7 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
+import com.tencent.polaris.api.rpc.GetHealthyInstancesRequest;
 import com.tencent.polaris.api.rpc.GetInstancesRequest;
 import com.tencent.polaris.api.rpc.GetServicesRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
@@ -59,6 +60,7 @@ public class PolarisDiscoveryHandler {
 	 * @param service service name
 	 * @return list of instances
 	 */
+	@Deprecated
 	public InstancesResponse getFilteredInstances(String service) {
 		String namespace = polarisDiscoveryProperties.getNamespace();
 		GetInstancesRequest getInstancesRequest = new GetInstancesRequest();
@@ -78,6 +80,19 @@ public class PolarisDiscoveryHandler {
 			getInstancesRequest.setServiceInfo(sourceService);
 		}
 		return polarisConsumer.getInstances(getInstancesRequest);
+	}
+
+	/**
+	 * Get a list of healthy instances.
+	 * @param service service name
+	 * @return list of healthy instances
+	 */
+	public InstancesResponse getHealthyInstances(String service) {
+		String namespace = polarisDiscoveryProperties.getNamespace();
+		GetHealthyInstancesRequest getHealthyInstancesRequest = new GetHealthyInstancesRequest();
+		getHealthyInstancesRequest.setNamespace(namespace);
+		getHealthyInstancesRequest.setService(service);
+		return polarisConsumer.getHealthyInstancesInstance(getHealthyInstancesRequest);
 	}
 
 	/**

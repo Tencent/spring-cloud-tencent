@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router;
+package com.tencent.cloud.polaris.loadbalancer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +48,11 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Haotian Zhang
  */
-public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceInstanceListSupplier {
+public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanceListSupplier {
 
 	private final RouterAPI routerAPI;
 
-	public PolarisRouterServiceInstanceListSupplier(ServiceInstanceListSupplier delegate, RouterAPI routerAPI) {
+	public PolarisServiceInstanceListSupplier(ServiceInstanceListSupplier delegate, RouterAPI routerAPI) {
 		super(delegate);
 		this.routerAPI = routerAPI;
 	}
