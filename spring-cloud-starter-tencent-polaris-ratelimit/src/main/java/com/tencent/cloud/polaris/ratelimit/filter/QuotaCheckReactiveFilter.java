@@ -40,6 +40,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.CollectionUtils;
@@ -118,7 +119,15 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
-				response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
+				HttpStatus httpStatus;
+				try {
+					httpStatus = HttpStatus.valueOf(polarisRateLimitProperties.getRejectHttpCode());
+				}
+				catch (IllegalArgumentException e) {
+					LOG.error("Illegal custom reject http code, will fallback to default http code 429 [TOO_MANY_REQUESTS]");
+					httpStatus = HttpStatus.TOO_MANY_REQUESTS;
+				}
+				response.setStatusCode(httpStatus);
 				response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer()
 						.write(rejectTips.getBytes(StandardCharsets.UTF_8));
