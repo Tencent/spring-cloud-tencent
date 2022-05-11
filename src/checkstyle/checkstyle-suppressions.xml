@@ -5,4 +5,5 @@
 <suppressions>
 	<suppress files=".*" checks="RegexpHeader"/>
 	<suppress files=".*" checks="HideUtilityClassConstructor"/>
+	<suppress files=".*" checks="IllegalImport"/>
 </suppressions>
