@@ -105,6 +105,11 @@ public class PolarisDiscoveryProperties {
 	@Value("${spring.cloud.polaris.discovery.health-check-url:}")
 	private String healthCheckUrl;
 
+	/**
+	 * Millis interval of refresh of service info list. Default: 60000.
+	 */
+	private Long serviceListRefreshInterval = 60000L;
+
 	@Autowired
 	private Environment environment;
 
@@ -213,6 +218,14 @@ public class PolarisDiscoveryProperties {
 
 	public void setHealthCheckUrl(String healthCheckUrl) {
 		this.healthCheckUrl = healthCheckUrl;
+	}
+
+	public Long getServiceListRefreshInterval() {
+		return serviceListRefreshInterval;
+	}
+
+	public void setServiceListRefreshInterval(Long serviceListRefreshInterval) {
+		this.serviceListRefreshInterval = serviceListRefreshInterval;
 	}
 
 	@Override

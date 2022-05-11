@@ -33,6 +33,7 @@ import com.tencent.polaris.api.rpc.GetInstancesRequest;
 import com.tencent.polaris.api.rpc.GetServicesRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.api.rpc.ServicesResponse;
+import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,9 @@ public class PolarisDiscoveryHandler {
 
 	@Autowired
 	private ProviderAPI providerAPI;
+
+	@Autowired
+	private SDKContext sdkContext;
 
 	@Autowired
 	private ConsumerAPI polarisConsumer;
@@ -110,6 +114,10 @@ public class PolarisDiscoveryHandler {
 
 	public ProviderAPI getProviderAPI() {
 		return providerAPI;
+	}
+
+	public SDKContext getSdkContext() {
+		return sdkContext;
 	}
 
 	/**

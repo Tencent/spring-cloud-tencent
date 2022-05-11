@@ -62,6 +62,14 @@
 		</developer>
 
 		<developer>
+			<id>lepdou</id>
+			<name>lepdou</name>
+			<email>lepdou@126.com</email>
+			<organization>Tencent</organization>
+			<url>https://github.com/lepdou</url>
+		</developer>
+
+		<developer>
 			<name>Andrew Shan</name>
 			<email>samshan08@126.com</email>
 			<organization>Tencent</organization>
