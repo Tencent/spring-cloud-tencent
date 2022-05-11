@@ -9,3 +9,6 @@
 - [Bugfix: fix circuitbreaker http code greater than 400 as fail response bug](https://github.com/Tencent/spring-cloud-tencent/pull/118)
 - [Feat: optimize router dependency](https://github.com/Tencent/spring-cloud-tencent/pull/115)
 - [feat:add switch of polaris, discovery and register.](https://github.com/Tencent/spring-cloud-tencent/pull/129)
+- [Feature: Support custom rate limit reject response info](https://github.com/Tencent/spring-cloud-tencent/pull/153)
+- [Feature: Remove spring-javaformat-maven-plugin](https://github.com/Tencent/spring-cloud-tencent/pull/151)
+- [feat:optimize config server address.](https://github.com/Tencent/spring-cloud-tencent/pull/149)
