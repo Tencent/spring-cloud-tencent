@@ -63,8 +63,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	private final ScheduledExecutorService heartbeatExecutor;
 
+	private final PolarisServiceChangeListener polarisServiceChangeListener;
+
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
-			PolarisDiscoveryHandler polarisDiscoveryHandler, MetadataLocalProperties metadataLocalProperties) {
+			PolarisDiscoveryHandler polarisDiscoveryHandler,
+			MetadataLocalProperties metadataLocalProperties, PolarisServiceChangeListener polarisServiceChangeListener) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.metadataLocalProperties = metadataLocalProperties;
@@ -76,6 +79,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		else {
 			this.heartbeatExecutor = null;
 		}
+
+		this.polarisServiceChangeListener = polarisServiceChangeListener;
 	}
 
 	@Override
@@ -112,6 +117,10 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				// Start the heartbeat thread after the registration is successful.
 				heartbeat(heartbeatRequest);
 			}
+
+			// Register service change listener
+			polarisDiscoveryHandler.getSdkContext().getExtensions().getLocalRegistry()
+					.registerResourceListener(polarisServiceChangeListener);
 		}
 		catch (Exception e) {
 			log.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
