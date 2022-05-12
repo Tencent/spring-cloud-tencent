@@ -24,8 +24,6 @@ import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
-import com.tencent.cloud.polaris.loadbalancer.rule.PolarisLoadBalanceRule;
-import com.tencent.cloud.polaris.loadbalancer.rule.PolarisWeightedRandomRule;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
@@ -41,17 +39,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PolarisRibbonClientConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public IRule polarisRibbonRule(
-			PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
-		switch (PolarisLoadBalanceRule
-				.fromStrategy(polarisLoadBalancerProperties.getStrategy())) {
-		case WEIGHTED_RANDOM_RULE:
-		default:
-			return new PolarisWeightedRandomRule();
-		}
-	}
+//	@Bean
+//	@ConditionalOnMissingBean
+//	public IRule polarisRibbonRule(
+//			PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
+//		switch (PolarisLoadBalanceRule
+//				.fromStrategy(polarisLoadBalancerProperties.getStrategy())) {
+//		case WEIGHTED_RANDOM_RULE:
+//		default:
+//			return new PolarisWeightedRandomRule();
+//		}
+//	}
 
 	@Bean
 	@ConditionalOnMissingBean
