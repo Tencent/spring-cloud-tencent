@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.circuitbreaker;
@@ -20,7 +21,9 @@ package com.tencent.cloud.polaris.circuitbreaker;
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +51,16 @@ public class PolarisCircuitBreakerBootstrapConfiguration {
 		public void modify(ConfigurationImpl configuration) {
 			// Turn on circuitbreaker configuration
 			configuration.getConsumer().getCircuitBreaker().setEnable(true);
+
+			// Set excludeCircuitBreakInstances to false
+			RecoverRouterConfig recoverRouterConfig = configuration.getConsumer().getServiceRouter()
+					.getPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, RecoverRouterConfig.class);
+
+			recoverRouterConfig.setExcludeCircuitBreakInstances(true);
+
+			// Update modified config to source properties
+			configuration.getConsumer().getServiceRouter()
+					.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
 		}
 
 		@Override

@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.common.constant;
@@ -51,6 +52,11 @@ public final class ContextConstant {
 		 * Order of circuit breaker configuration modifier.
 		 */
 		public static Integer CIRCUIT_BREAKER_ORDER = 1;
+
+		/**
+		 * Order of discovery configuration modifier.
+		 */
+		public static Integer DISCOVERY_ORDER = 0;
 
 		/**
 		 * Order of configuration modifier.
