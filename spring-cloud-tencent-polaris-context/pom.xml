@@ -68,10 +68,10 @@
 			<artifactId>router-healthy</artifactId>
 		</dependency>
 
-        <dependency>
-            <groupId>com.tencent.polaris</groupId>
-            <artifactId>loadbalancer-random</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>loadbalancer-random</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>

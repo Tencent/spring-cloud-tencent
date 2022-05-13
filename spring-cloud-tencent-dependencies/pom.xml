@@ -70,8 +70,8 @@
 	</developers>
 
 	<properties>
-		<revision>1.3.0-Greenwich.SR6</revision>
-		<polaris.version>1.4.0</polaris.version>
+		<revision>1.4.2-Greenwich.SR6-SNAPSHOT</revision>
+		<polaris.version>1.5.2</polaris.version>
 
 		<!-- Dependencies -->
 		<logback.version>1.2.7</logback.version>
@@ -128,6 +128,12 @@
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-polaris-context</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
 				<version>${revision}</version>
 			</dependency>
 
