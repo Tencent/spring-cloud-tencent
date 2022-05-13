@@ -18,16 +18,19 @@
 
 package com.tencent.cloud.polaris.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.cloud.polaris.context.PolarisContextProperties;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
+import org.apache.commons.lang.StringUtils;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
+import org.springframework.util.CollectionUtils;
+
 
 /**
  * Read configuration from spring cloud's configuration file and override polaris.yaml.
@@ -36,22 +39,38 @@ import org.springframework.util.StringUtils;
  */
 public class ConfigurationModifier implements PolarisConfigModifier {
 
-	@Autowired
-	private PolarisConfigProperties polarisConfigProperties;
+	private final PolarisConfigProperties polarisConfigProperties;
+
+	private final PolarisContextProperties polarisContextProperties;
+
+	public ConfigurationModifier(PolarisConfigProperties polarisConfigProperties,
+			PolarisContextProperties polarisContextProperties) {
+		this.polarisConfigProperties = polarisConfigProperties;
+		this.polarisContextProperties = polarisContextProperties;
+	}
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
+		// set connector type
 		configuration.getConfigFile().getServerConnector().setConnectorType("polaris");
 
-		if (StringUtils.isEmpty(polarisConfigProperties.getAddress())) {
-			return;
+		// set config server address
+		List<String> configAddresses;
+		String configAddressesStr = polarisConfigProperties.getAddress();
+
+		if (StringUtils.isNotEmpty(configAddressesStr)) {
+			configAddresses = AddressUtils.parseAddressList(polarisConfigProperties.getAddress());
+		}
+		else {
+			configAddresses = resolveConfigAddressFromPolarisAddress(polarisContextProperties.getAddress());
 		}
 
-		// override polaris config server address
-		List<String> addresses = AddressUtils
-				.parseAddressList(polarisConfigProperties.getAddress());
+		if (CollectionUtils.isEmpty(configAddresses)) {
+			throw new RuntimeException("Config server address is blank. Please check your config in bootstrap.yml"
+					+ " with spring.cloud.polaris.address or spring.cloud.polaris.config.address");
+		}
 
-		configuration.getConfigFile().getServerConnector().setAddresses(addresses);
+		configuration.getConfigFile().getServerConnector().setAddresses(configAddresses);
 	}
 
 	@Override
@@ -59,4 +78,24 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 		return ContextConstant.ModifierOrder.CONFIG_ORDER;
 	}
 
+	/**
+	 * In most cases, the address of the configuration center is the same as that of Polaris, but the port is different.
+	 * Therefore, the address of the configuration center can be deduced directly from the Polaris address.
+	 *
+	 */
+	private List<String> resolveConfigAddressFromPolarisAddress(String polarisAddress) {
+		if (StringUtils.isEmpty(polarisAddress)) {
+			return null;
+		}
+
+		List<String> polarisAddresses = AddressUtils.parseAddressList(polarisAddress);
+		List<String> configAddresses = new ArrayList<>(polarisAddresses.size());
+
+		for (String address : polarisAddresses) {
+			String ip = StringUtils.substringBeforeLast(address, ":");
+			configAddresses.add(ip + ":" + polarisConfigProperties.getPort());
+		}
+
+		return configAddresses;
+	}
 }

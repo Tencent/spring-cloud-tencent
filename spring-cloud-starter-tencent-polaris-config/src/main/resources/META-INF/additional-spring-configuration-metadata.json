@@ -15,6 +15,13 @@
       "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
     },
     {
+      "name": "spring.cloud.polaris.config.port",
+      "type": "java.lang.Integer",
+      "defaultValue": "8093",
+      "description": "The polaris configuration server port.",
+      "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    },
+    {
       "name": "spring.cloud.polaris.config.auto-refresh",
       "type": "java.lang.Boolean",
       "defaultValue": "true",

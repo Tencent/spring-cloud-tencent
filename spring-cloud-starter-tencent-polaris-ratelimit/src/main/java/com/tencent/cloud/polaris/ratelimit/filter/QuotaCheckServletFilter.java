@@ -22,15 +22,18 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
+import com.tencent.cloud.polaris.ratelimit.utils.RateLimitUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResultCode;
@@ -43,7 +46,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LABEL_METHOD;
-import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 
 /**
  * Servlet filter to check quota.
@@ -60,10 +62,21 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 	private final PolarisRateLimiterLabelServletResolver labelResolver;
 
+	private final PolarisRateLimitProperties polarisRateLimitProperties;
+
+	private String rejectTips;
+
 	public QuotaCheckServletFilter(LimitAPI limitAPI,
-			PolarisRateLimiterLabelServletResolver labelResolver) {
+			PolarisRateLimiterLabelServletResolver labelResolver,
+			PolarisRateLimitProperties polarisRateLimitProperties) {
 		this.limitAPI = limitAPI;
 		this.labelResolver = labelResolver;
+		this.polarisRateLimitProperties = polarisRateLimitProperties;
+	}
+
+	@PostConstruct
+	public void init() {
+		rejectTips = RateLimitUtils.getRejectTips(polarisRateLimitProperties);
 	}
 
 	@Override
@@ -100,8 +113,8 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
 					localNamespace, localService, 1, labels, null);
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
-				response.setStatus(TOO_MANY_REQUESTS.value());
-				response.getWriter().write(RateLimitConstant.QUOTA_LIMITED_INFO);
+				response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
+				response.getWriter().write(rejectTips);
 			}
 			else {
 				filterChain.doFilter(request, response);
