@@ -20,9 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker.feign;
 import java.io.IOException;
 import java.net.URI;
 
-import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -32,6 +30,8 @@ import feign.Request;
 import feign.Request.Options;
 import feign.Response;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static feign.Util.checkNotNull;
 
@@ -41,6 +41,9 @@ import static feign.Util.checkNotNull;
  * @author Haotian Zhang
  */
 public class PolarisFeignClient implements Client {
+
+
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisFeignClient.class);
 
 	private final Client delegate;
 
@@ -64,6 +67,7 @@ public class PolarisFeignClient implements Client {
 		}
 		catch (IOException origin) {
 			resultRequest.setRetStatus(RetStatus.RetFail);
+
 			throw origin;
 		}
 		finally {
@@ -74,24 +78,17 @@ public class PolarisFeignClient implements Client {
 	private ServiceCallResult createServiceCallResult(final Request request) {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 
-		MetadataContext metadataContext = MetadataContextHolder.get();
-		String namespace = metadataContext
-				.getSystemMetadata(SystemMetadataKey.PEER_NAMESPACE);
-		resultRequest.setNamespace(namespace);
-		String serviceName = metadataContext
-				.getSystemMetadata(SystemMetadataKey.PEER_SERVICE);
+		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+		String serviceName = request.requestTemplate().feignTarget().name();
 		resultRequest.setService(serviceName);
-		String method = metadataContext.getSystemMetadata(SystemMetadataKey.PEER_PATH);
-		resultRequest.setMethod(method);
+		URI uri = URI.create(request.url());
+		resultRequest.setMethod(uri.getPath());
 		resultRequest.setRetStatus(RetStatus.RetSuccess);
 		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String sourceService = MetadataContext.LOCAL_SERVICE;
-		if (StringUtils.isNotBlank(sourceNamespace)
-				&& StringUtils.isNotBlank(sourceService)) {
-			resultRequest
-					.setCallerService(new ServiceKey(sourceNamespace, sourceService));
+		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
+			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
 		}
-		URI uri = URI.create(request.url());
 		resultRequest.setHost(uri.getHost());
 		resultRequest.setPort(uri.getPort());
 

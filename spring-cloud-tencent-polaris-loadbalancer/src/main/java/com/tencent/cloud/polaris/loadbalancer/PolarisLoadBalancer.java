@@ -30,7 +30,6 @@ import com.netflix.loadbalancer.PollingServerListUpdater;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.common.constant.ContextConstant;
-import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServer;
@@ -89,9 +88,6 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 		String srcService = MetadataContext.LOCAL_SERVICE;
 		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get()
 				.getAllTransitiveCustomMetadata();
-		String method = MetadataContextHolder.get()
-				.getSystemMetadata(SystemMetadataKey.PEER_PATH);
-		processRoutersRequest.setMethod(method);
 		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
 			ServiceInfo serviceInfo = new ServiceInfo();
 			serviceInfo.setNamespace(srcNamespace);
@@ -111,14 +107,11 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 	}
 
 	private ServiceInstances getPolarisDiscoveryServiceInstances() {
-		String serviceName = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.PEER_SERVICE);
-		if (StringUtils.isBlank(serviceName)) {
-			List<Server> allServers = super.getAllServers();
-			if (CollectionUtils.isEmpty(allServers)) {
-				return null;
-			}
-			serviceName = ((PolarisServer) super.getAllServers().get(0)).getServiceInstances().getService();
+		List<Server> allServers = super.getAllServers();
+		if (CollectionUtils.isEmpty(allServers)) {
+			return null;
 		}
+		String serviceName = ((PolarisServer) super.getAllServers().get(0)).getServiceInstances().getService();
 		return getAllInstances(MetadataContext.LOCAL_NAMESPACE, serviceName).toServiceInstances();
 	}
 
