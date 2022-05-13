@@ -15,30 +15,34 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.loadbalancer.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.tencent.cloud.common.constant.ContextConstant;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Properties of Ribbon.
+ * Properties of Polaris loadbalancer.
  *
  * @author Haotian Zhang
  */
-@ConfigurationProperties("spring.cloud.polaris.ribbon")
-public class PolarisRibbonProperties {
+@ConfigurationProperties("spring.cloud.polaris.loadbalancer")
+public class PolarisLoadBalancerProperties {
 
 	/**
 	 * If load-balance enabled.
 	 */
-	@Value("${spring.cloud.polaris.discovery.loadbalancer.enabled:#{true}}")
-	private Boolean loadbalancerEnabled;
+	private Boolean enabled = true;
 
 	/**
 	 * Load balance strategy.
 	 */
-	@Value("${spring.cloud.polaris.loadbalancer.strategy:#{'weightedRandom'}}")
-	private String strategy;
+	private String strategy = "weightedRandom";
+
+	/**
+	 * Type of discovery server.
+	 */
+	private String discoveryType = ContextConstant.POLARIS;
 
 	public String getStrategy() {
 		return strategy;
@@ -48,17 +52,25 @@ public class PolarisRibbonProperties {
 		this.strategy = strategy;
 	}
 
-	public Boolean getLoadbalancerEnabled() {
-		return loadbalancerEnabled;
+	public Boolean getEnabled() {
+		return enabled;
 	}
 
-	public void setLoadbalancerEnabled(Boolean loadbalancerEnabled) {
-		this.loadbalancerEnabled = loadbalancerEnabled;
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public String getDiscoveryType() {
+		return discoveryType;
+	}
+
+	public void setDiscoveryType(String discoveryType) {
+		this.discoveryType = discoveryType;
 	}
 
 	@Override
 	public String toString() {
-		return "PolarisRibbonProperties{" + "loadbalancerEnabled=" + loadbalancerEnabled
+		return "PolarisLoadBalancerProperties{" + "loadbalancerEnabled=" + enabled
 				+ ", strategy='" + strategy + '\'' + '}';
 	}
 

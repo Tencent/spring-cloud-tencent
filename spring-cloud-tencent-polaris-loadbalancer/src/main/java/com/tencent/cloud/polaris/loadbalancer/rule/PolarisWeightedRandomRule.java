@@ -16,7 +16,7 @@
  *
  */
 
-package com.tencent.cloud.polaris.router.rule;
+package com.tencent.cloud.polaris.loadbalancer.rule;
 
 import java.util.ArrayList;
 import java.util.List;
