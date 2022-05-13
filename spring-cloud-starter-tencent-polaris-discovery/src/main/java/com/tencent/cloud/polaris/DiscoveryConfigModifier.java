@@ -24,12 +24,17 @@ import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  *  Spring Cloud Tencent config Override polaris config.
  *
  *@author lepdou 2022-04-24
  */
 public class DiscoveryConfigModifier implements PolarisConfigModifier {
+
+	@Autowired
+	private PolarisDiscoveryProperties polarisDiscoveryProperties;
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
@@ -41,6 +46,10 @@ public class DiscoveryConfigModifier implements PolarisConfigModifier {
 		// Update modified config to source properties
 		configuration.getConsumer().getServiceRouter()
 				.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
+
+		// Set ServiceRefreshInterval
+		configuration.getConsumer().getLocalCache()
+				.setServiceListRefreshInterval(polarisDiscoveryProperties.getServiceListRefreshInterval());
 	}
 
 	@Override
