@@ -206,7 +206,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				// first.
 				// If the health check passes, the heartbeat will be reported.
 				// If it does not pass, the heartbeat will not be reported.
-				if (!StringUtils.isNotBlank(healthCheckEndpoint)) {
+				if (StringUtils.isNotBlank(healthCheckEndpoint)) {
 					if (!healthCheckEndpoint.startsWith("/")) {
 						healthCheckEndpoint = "/" + healthCheckEndpoint;
 					}

@@ -92,10 +92,8 @@ public final class MetadataContextHolder {
 	/**
 	 * Save metadata map to thread local.
 	 * @param customMetadataMap custom metadata collection
-	 * @param systemMetadataMap system metadata collection
 	 */
-	public static void init(Map<String, String> customMetadataMap,
-			Map<String, String> systemMetadataMap) {
+	public static void init(Map<String, String> customMetadataMap) {
 		// Init ThreadLocal.
 		MetadataContextHolder.remove();
 		MetadataContext metadataContext = MetadataContextHolder.get();
@@ -103,9 +101,6 @@ public final class MetadataContextHolder {
 		// Save to ThreadLocal.
 		if (!CollectionUtils.isEmpty(customMetadataMap)) {
 			metadataContext.putAllTransitiveCustomMetadata(customMetadataMap);
-		}
-		if (!CollectionUtils.isEmpty(systemMetadataMap)) {
-			metadataContext.putAllSystemMetadata(systemMetadataMap);
 		}
 		MetadataContextHolder.set(metadataContext);
 	}
