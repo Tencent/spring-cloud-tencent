@@ -51,9 +51,9 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
-public class PolarisLoadbalancer extends RoundRobinLoadBalancer implements ReactorServiceInstanceLoadBalancer {
+public class PolarisLoadBalancer extends RoundRobinLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisLoadbalancer.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisLoadBalancer.class);
 
 	private final String serviceId;
 
@@ -63,7 +63,7 @@ public class PolarisLoadbalancer extends RoundRobinLoadBalancer implements React
 
 	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
-	public PolarisLoadbalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
+	public PolarisLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
 			PolarisLoadBalancerProperties loadBalancerProperties, RouterAPI routerAPI) {
 		super(supplierObjectProvider, serviceId);
 		this.serviceId = serviceId;

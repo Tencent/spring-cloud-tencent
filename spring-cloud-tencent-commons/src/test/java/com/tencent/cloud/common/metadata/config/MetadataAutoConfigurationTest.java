@@ -19,7 +19,6 @@
 package com.tencent.cloud.common.metadata.config;
 
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
-import com.tencent.cloud.common.metadata.interceptor.feign.MetadataFirstFeignInterceptor;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -29,7 +28,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 /**
- * Test for {@link MetadataAutoConfiguration}
+ * Test for {@link MetadataAutoConfiguration}.
  *
  * @author Haotian Zhang
  */
@@ -46,16 +45,12 @@ public class MetadataAutoConfigurationTest {
 	 */
 	@Test
 	public void test1() {
-		this.applicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
+		this.applicationContextRunner
+				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataScgFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
@@ -65,16 +60,12 @@ public class MetadataAutoConfigurationTest {
 	 */
 	@Test
 	public void test2() {
-		this.webApplicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
+		this.webApplicationContextRunner
+				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataFirstFeignInterceptor.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataScgFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
@@ -85,13 +76,11 @@ public class MetadataAutoConfigurationTest {
 	@Test
 	public void test3() {
 		this.reactiveWebApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class)).run(context -> {
+				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
+				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataFeignInterceptorConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(MetadataAutoConfiguration.MetadataScgFilterConfig.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}

@@ -86,7 +86,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.4.2-2020.0.5</revision>
+		<revision>1.4.3-2020.0.5-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2020.0.5</spring.cloud.version>

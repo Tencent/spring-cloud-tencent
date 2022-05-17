@@ -71,7 +71,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		// create custom metadata.
 		Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserialize2Map(customMetadataStr);
 
-		MetadataContextHolder.init(upstreamCustomMetadataMap, null);
+		MetadataContextHolder.init(upstreamCustomMetadataMap);
 
 		// Save to ServerWebExchange.
 		serverWebExchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT,

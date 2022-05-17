@@ -24,7 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
-import org.apache.commons.lang.StringUtils;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Metadata Context.
@@ -44,17 +45,20 @@ public class MetadataContext {
 	public static String LOCAL_SERVICE;
 
 	static {
-		String namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace");
-		if (StringUtils.isBlank(namespace)) {
-			namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.namespace",
-					"default");
+		String namespace = ApplicationContextAwareUtils
+				.getProperties("spring.cloud.polaris.namespace");
+		if (!StringUtils.hasText(namespace)) {
+			namespace = ApplicationContextAwareUtils
+					.getProperties("spring.cloud.polaris.discovery.namespace", "default");
 		}
 		LOCAL_NAMESPACE = namespace;
 
-		String serviceName = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service");
-		if (StringUtils.isBlank(serviceName)) {
-			serviceName = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.service",
-					ApplicationContextAwareUtils.getProperties("spring.application.name", null));
+		String serviceName = ApplicationContextAwareUtils
+				.getProperties("spring.cloud.polaris.service");
+		if (!StringUtils.hasText(serviceName)) {
+			serviceName = ApplicationContextAwareUtils.getProperties(
+					"spring.cloud.polaris.discovery.service", ApplicationContextAwareUtils
+							.getProperties("spring.application.name", null));
 		}
 		LOCAL_SERVICE = serviceName;
 	}
@@ -64,14 +68,8 @@ public class MetadataContext {
 	 */
 	private final Map<String, String> transitiveCustomMetadata;
 
-	/**
-	 * System metadata content.
-	 */
-	private final Map<String, String> systemMetadata;
-
 	public MetadataContext() {
 		this.transitiveCustomMetadata = new ConcurrentHashMap<>();
-		this.systemMetadata = new ConcurrentHashMap<>();
 	}
 
 	public Map<String, String> getAllTransitiveCustomMetadata() {
@@ -90,26 +88,10 @@ public class MetadataContext {
 		this.transitiveCustomMetadata.putAll(customMetadata);
 	}
 
-	public Map<String, String> getAllSystemMetadata() {
-		return Collections.unmodifiableMap(this.systemMetadata);
-	}
-
-	public String getSystemMetadata(String key) {
-		return this.systemMetadata.get(key);
-	}
-
-	public void putSystemMetadata(String key, String value) {
-		this.systemMetadata.put(key, value);
-	}
-
-	public void putAllSystemMetadata(Map<String, String> systemMetadata) {
-		this.systemMetadata.putAll(systemMetadata);
-	}
-
 	@Override
 	public String toString() {
-		return "MetadataContext{" + "transitiveCustomMetadata=" + JacksonUtils.serialize2Json(transitiveCustomMetadata)
-				+ ", systemMetadata=" + JacksonUtils.serialize2Json(systemMetadata) + '}';
+		return "MetadataContext{" + "transitiveCustomMetadata="
+				+ JacksonUtils.serialize2Json(transitiveCustomMetadata) + '}';
 	}
 
 }

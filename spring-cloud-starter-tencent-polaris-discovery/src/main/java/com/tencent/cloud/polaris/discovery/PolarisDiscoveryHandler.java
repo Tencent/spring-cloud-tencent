@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.discovery;
 
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -70,11 +69,10 @@ public class PolarisDiscoveryHandler {
 		GetInstancesRequest getInstancesRequest = new GetInstancesRequest();
 		getInstancesRequest.setNamespace(namespace);
 		getInstancesRequest.setService(service);
-		String method = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.PEER_PATH);
-		getInstancesRequest.setMethod(method);
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
+		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get()
+				.getAllTransitiveCustomMetadata();
 		if (StringUtils.isNotBlank(localNamespace) || StringUtils.isNotBlank(localService)
 				|| null != allTransitiveCustomMetadata) {
 			ServiceInfo sourceService = new ServiceInfo();
