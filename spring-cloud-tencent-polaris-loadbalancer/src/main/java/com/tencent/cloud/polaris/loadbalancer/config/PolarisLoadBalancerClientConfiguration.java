@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.loadbalancer.config;
 
-import com.tencent.cloud.polaris.loadbalancer.PolarisLoadbalancer;
+import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.loadbalancer.PolarisServiceInstanceListSupplier;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
@@ -59,7 +59,7 @@ public class PolarisLoadBalancerClientConfiguration {
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisLoadBalancerProperties loadBalancerProperties,
 			RouterAPI routerAPI) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
-		return new PolarisLoadbalancer(name,
+		return new PolarisLoadBalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class),
 				loadBalancerProperties, routerAPI);
 	}

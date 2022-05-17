@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -52,13 +51,15 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataFeignInterceptor}
+ * Test for {@link EncodeTransferMedataFeignInterceptor}.
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT, classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
-		properties = { "server.port=8081", "spring.config.location = classpath:application-test.yml" })
+@SpringBootTest(webEnvironment = DEFINED_PORT,
+		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
+		properties = { "server.port=8081",
+				"spring.config.location = classpath:application-test.yml" })
 public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired
@@ -70,12 +71,21 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	@Test
 	public void test1() {
 		String metadata = testFeign.test();
-		Assertions.assertThat(metadata).isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{}");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
-		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a")).isEqualTo("11");
-		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b")).isEqualTo("22");
-		Assertions.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c")).isEqualTo("33");
+		Assertions.assertThat(metadata)
+				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
+				.isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
+				.isEqualTo("2");
+		Assertions
+				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a"))
+				.isEqualTo("11");
+		Assertions
+				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b"))
+				.isEqualTo("22");
+		Assertions
+				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c"))
+				.isEqualTo("33");
 	}
 
 	@SpringBootApplication
@@ -84,10 +94,10 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	protected static class TestApplication {
 
 		@RequestMapping("/test")
-		public String test(@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
+		public String test(
+				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
 				throws UnsupportedEncodingException {
-			String systemMetadataStr = JacksonUtils.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
-			return URLDecoder.decode(customMetadataStr, "UTF-8") + systemMetadataStr;
+			return URLDecoder.decode(customMetadataStr, "UTF-8");
 		}
 
 		@Bean
@@ -99,8 +109,9 @@ public class EncodeTransferMedataFeignInterceptorTest {
 		@FeignClient(name = "test-feign", url = "http://localhost:8081")
 		public interface TestFeign {
 
-			@RequestMapping(value = "/test", headers = {
-					MetadataConstant.HeaderName.CUSTOM_METADATA + "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}" })
+			@RequestMapping(value = "/test",
+					headers = { MetadataConstant.HeaderName.CUSTOM_METADATA
+							+ "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}" })
 			String test();
 
 		}

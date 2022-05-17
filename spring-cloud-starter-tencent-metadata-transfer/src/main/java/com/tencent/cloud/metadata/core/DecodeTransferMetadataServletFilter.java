@@ -68,7 +68,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserialize2Map(customMetadataStr);
 
 		try {
-			MetadataContextHolder.init(upstreamCustomMetadataMap, null);
+			MetadataContextHolder.init(upstreamCustomMetadataMap);
 
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
 		}

@@ -19,7 +19,6 @@
 package com.tencent.cloud.common.metadata.config;
 
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
-import com.tencent.cloud.common.metadata.interceptor.feign.MetadataFirstFeignInterceptor;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -41,20 +40,6 @@ public class MetadataAutoConfiguration {
 	@Bean
 	public MetadataLocalProperties metadataLocalProperties() {
 		return new MetadataLocalProperties();
-	}
-
-	/**
-	 * Create when Feign exists.
-	 */
-	@Configuration
-	@ConditionalOnClass(name = "feign.Feign")
-	static class MetadataFeignInterceptorConfig {
-
-		@Bean
-		public MetadataFirstFeignInterceptor metadataFirstFeignInterceptor() {
-			return new MetadataFirstFeignInterceptor();
-		}
-
 	}
 
 	/**

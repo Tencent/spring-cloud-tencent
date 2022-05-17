@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
@@ -97,8 +96,6 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String srcService = MetadataContext.LOCAL_SERVICE;
 		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
-		String method = MetadataContextHolder.get().getSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH);
-		processRoutersRequest.setMethod(method);
 		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
 			ServiceInfo serviceInfo = new ServiceInfo();
 			serviceInfo.setNamespace(srcNamespace);
