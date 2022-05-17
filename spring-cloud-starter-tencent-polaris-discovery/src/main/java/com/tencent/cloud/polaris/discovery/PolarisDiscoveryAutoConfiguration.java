@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.discovery;
 
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClientConfiguration;
+import com.tencent.cloud.polaris.discovery.refresh.PolarisRefreshConfiguration;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -32,12 +33,14 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisDiscoveryEnabled
-@Import({ PolarisDiscoveryClientConfiguration.class, PolarisReactiveDiscoveryClientConfiguration.class })
+@Import({PolarisDiscoveryClientConfiguration.class,
+		PolarisReactiveDiscoveryClientConfiguration.class, PolarisRefreshConfiguration.class})
 public class PolarisDiscoveryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisServiceDiscovery polarisServiceDiscovery(PolarisDiscoveryHandler polarisDiscoveryHandler) {
+	public PolarisServiceDiscovery polarisServiceDiscovery(
+			PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		return new PolarisServiceDiscovery(polarisDiscoveryHandler);
 	}
 
