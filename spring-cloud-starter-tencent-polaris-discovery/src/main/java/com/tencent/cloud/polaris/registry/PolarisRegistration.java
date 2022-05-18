@@ -19,9 +19,9 @@
 package com.tencent.cloud.polaris.registry;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
 
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.polaris.client.api.SDKContext;
@@ -84,7 +84,7 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	@Override
 	public Map<String, String> getMetadata() {
-		return MetadataContextHolder.get().getAllSystemMetadata();
+		return Collections.emptyMap();
 	}
 
 	public PolarisDiscoveryProperties getPolarisProperties() {

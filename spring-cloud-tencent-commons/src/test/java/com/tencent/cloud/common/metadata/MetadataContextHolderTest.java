@@ -57,8 +57,7 @@ public class MetadataContextHolderTest {
 		customMetadata.put("a", "1");
 		customMetadata.put("b", "22");
 		customMetadata.put("c", "3");
-		Map<String, String> systemMetadata = new HashMap<>();
-		MetadataContextHolder.init(customMetadata, systemMetadata);
+		MetadataContextHolder.init(customMetadata);
 		metadataContext = MetadataContextHolder.get();
 		customMetadata = metadataContext.getAllTransitiveCustomMetadata();
 		Assertions.assertThat(customMetadata.get("a")).isEqualTo("1");

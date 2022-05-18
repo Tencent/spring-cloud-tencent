@@ -72,7 +72,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 				.deserialize2Map(customMetadataStr);
 
 		try {
-			MetadataContextHolder.init(upstreamCustomMetadataMap, null);
+			MetadataContextHolder.init(upstreamCustomMetadataMap);
 
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
 		}

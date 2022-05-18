@@ -8,3 +8,4 @@
 - [feat: override recover router config](https://github.com/Tencent/spring-cloud-tencent/pull/167)
 - [fix:fix routes of gateway doesn't refresh bug.](https://github.com/Tencent/spring-cloud-tencent/pull/168)
 - [fix:Turn off automatic injection of Polars rule.](https://github.com/Tencent/spring-cloud-tencent/pull/171)
+- [fix:fix wrong context data storage.](https://github.com/Tencent/spring-cloud-tencent/pull/180)

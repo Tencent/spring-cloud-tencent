@@ -20,9 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker.feign;
 import java.io.IOException;
 import java.net.URI;
 
-import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -33,6 +31,7 @@ import feign.Request.Options;
 import feign.Response;
 import org.apache.commons.lang.StringUtils;
 
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.PEER_SERVICE;
 import static feign.Util.checkNotNull;
 
 /**
@@ -57,45 +56,46 @@ public class PolarisFeignClient implements Client {
 		try {
 			Response response = delegate.execute(request, options);
 			// HTTP code greater than 500 is an exception
-			if (response.status() >= 500) {
+			if (resultRequest != null && response.status() >= 500) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 			return response;
 		}
 		catch (IOException origin) {
-			resultRequest.setRetStatus(RetStatus.RetFail);
+			if (resultRequest != null) {
+				resultRequest.setRetStatus(RetStatus.RetFail);
+			}
 			throw origin;
 		}
 		finally {
-			consumerAPI.updateServiceCallResult(resultRequest);
+			if (resultRequest != null) {
+				consumerAPI.updateServiceCallResult(resultRequest);
+			}
 		}
 	}
 
 	private ServiceCallResult createServiceCallResult(final Request request) {
 		ServiceCallResult resultRequest = new ServiceCallResult();
+		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+		Object[] headers = request.headers().get(PEER_SERVICE).toArray();
+		int headersLength = headers.length;
+		if (headersLength != 0) {
+			String serviceName = (String) headers[headersLength - 1];
+			resultRequest.setService(serviceName);
+			URI uri = URI.create(request.url());
+			resultRequest.setMethod(uri.getPath());
+			resultRequest.setRetStatus(RetStatus.RetSuccess);
+			String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
+			String sourceService = MetadataContext.LOCAL_SERVICE;
+			if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
+				resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
+			}
+			resultRequest.setHost(uri.getHost());
+			resultRequest.setPort(uri.getPort());
 
-		MetadataContext metadataContext = MetadataContextHolder.get();
-		String namespace = metadataContext
-				.getSystemMetadata(SystemMetadataKey.PEER_NAMESPACE);
-		resultRequest.setNamespace(namespace);
-		String serviceName = metadataContext
-				.getSystemMetadata(SystemMetadataKey.PEER_SERVICE);
-		resultRequest.setService(serviceName);
-		String method = metadataContext.getSystemMetadata(SystemMetadataKey.PEER_PATH);
-		resultRequest.setMethod(method);
-		resultRequest.setRetStatus(RetStatus.RetSuccess);
-		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
-		String sourceService = MetadataContext.LOCAL_SERVICE;
-		if (StringUtils.isNotBlank(sourceNamespace)
-				&& StringUtils.isNotBlank(sourceService)) {
-			resultRequest
-					.setCallerService(new ServiceKey(sourceNamespace, sourceService));
+			return resultRequest;
 		}
-		URI uri = URI.create(request.url());
-		resultRequest.setHost(uri.getHost());
-		resultRequest.setPort(uri.getPort());
-
-		return resultRequest;
+		return null;
 	}
 
 }
