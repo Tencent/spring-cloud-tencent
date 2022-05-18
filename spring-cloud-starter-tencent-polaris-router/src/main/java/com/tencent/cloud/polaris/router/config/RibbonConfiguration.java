@@ -16,34 +16,28 @@
  *
  */
 
-package com.tencent.cloud.polaris.loadbalancer.config;
+package com.tencent.cloud.polaris.router.config;
 
 import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.IPing;
 import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerList;
-import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
-import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
+import com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule;
+import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration of ribbon client of Polaris.
- *
- * @author Haotian Zhang
+ * Auto configuration for ribbon components.
+ * @author lepdou 2022-05-17
  */
 @Configuration
-public class PolarisRibbonClientConfiguration {
+public class RibbonConfiguration {
 
 	@Bean
-	public ILoadBalancer polarisLoadBalancer(IClientConfig iClientConfig, IRule iRule,
-			IPing iPing, ServerList<Server> serverList,
-			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
-		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
-				consumerAPI, polarisLoadBalancerProperties);
+	public IRule polarisLoadBalancerCompositeRule(RouterAPI routerAPI,
+			PolarisLoadBalancerProperties polarisLoadBalancerProperties,
+			IClientConfig iClientConfig) {
+		return new PolarisLoadBalancerCompositeRule(routerAPI, polarisLoadBalancerProperties, iClientConfig);
 	}
-
 }

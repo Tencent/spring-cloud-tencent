@@ -13,40 +13,20 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.polaris.loadbalancer.rule;
-
-import java.util.Arrays;
+package com.tencent.cloud.polaris.router;
 
 /**
- * Load balance rule.
+ * Router constants.
  *
- * @author Haotian Zhang
+ *@author lepdou 2022-05-17
  */
-public enum PolarisLoadBalanceRule {
+public class RouterConstants {
 
 	/**
-	 * Weighted random load balance rule.
+	 * the header of router label.
 	 */
-	WEIGHTED_RANDOM_RULE("weighted_random");
-
-	/**
-	 * Load balance strategy.
-	 */
-	final String policy;
-
-	PolarisLoadBalanceRule(String strategy) {
-		this.policy = strategy;
-	}
-
-	public static PolarisLoadBalanceRule fromStrategy(String strategy) {
-		return Arrays.stream(values()).filter(t -> t.getPolicy().equals(strategy))
-				.findAny().orElse(WEIGHTED_RANDOM_RULE);
-	}
-
-	public String getPolicy() {
-		return policy;
-	}
-
+	public static final String ROUTER_LABEL_HEADER = "router-label";
 }

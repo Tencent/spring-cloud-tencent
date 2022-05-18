@@ -16,22 +16,33 @@
  *
  */
 
-package com.tencent.cloud.polaris.router.example;
+package com.tencent.cloud.polaris.router.spi;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.util.Map;
+
+import feign.RequestTemplate;
+
+import org.springframework.http.HttpRequest;
 
 /**
- * Router callee feign client.
+ * The spi for resolving labels from request.
  *
- * @author lepdou 2022-04-06
+ * @author lepdou 2022-05-11
  */
-@FeignClient("RouterCalleeService")
-public interface RouterCalleeService {
+public interface RouterLabelResolver {
 
-	@PostMapping("/router/service/callee/info")
-	String info(@RequestParam("name") String name, @RequestBody User user);
+	/**
+	 * resolve labels from feign request.
+	 * @param requestTemplate the feign request.
+	 * @return resolved labels
+	 */
+	Map<String, String> resolve(RequestTemplate requestTemplate);
 
+	/**
+	 * resolve labels from rest template request.
+	 * @param request the rest template request.
+	 * @param body the rest template request body.
+	 * @return resolved labels
+	 */
+	Map<String, String> resolve(HttpRequest request, byte[] body);
 }

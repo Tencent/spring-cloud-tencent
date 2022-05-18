@@ -27,6 +27,12 @@
 			<artifactId>router-rule</artifactId>
 		</dependency>
 		<!-- Polaris dependencies end -->
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 </project>
