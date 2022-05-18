@@ -18,13 +18,12 @@
 
 package com.tencent.cloud.polaris.registry;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.cloud.polaris.registry.filter.DefaultRegisterFilterHandler;
+import com.tencent.cloud.polaris.registry.filter.RegisterFilterHandler;
+import com.tencent.cloud.polaris.registry.filter.RegisterFilterHandlerContext;
 import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
@@ -37,10 +36,15 @@ import com.tencent.polaris.client.util.NamedThreadFactory;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
@@ -64,18 +68,30 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	private final ScheduledExecutorService heartbeatExecutor;
 
+	private final LinkedList<Object> registerFilterHandler;
+
+	public void addRegisterFilterHandler(RegisterFilterHandler registerFilterHandler) {
+		this.registerFilterHandler.add(registerFilterHandler);
+	}
+
+	public void addRegisterFilterHandler(Class<RegisterFilterHandler> filterHandlerClass) {
+		this.registerFilterHandler.add(filterHandlerClass);
+	}
+
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
-			PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties) {
+								  PolarisDiscoveryHandler polarisDiscoveryHandler,
+								  MetadataLocalProperties metadataLocalProperties) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.metadataLocalProperties = metadataLocalProperties;
 
+		this.registerFilterHandler = new LinkedList<>();
+		this.addRegisterFilterHandler(new DefaultRegisterFilterHandler());
+
 		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
 			this.heartbeatExecutor = Executors.newSingleThreadScheduledExecutor(
 					new NamedThreadFactory("spring-cloud-heartbeat"));
-		}
-		else {
+		} else {
 			this.heartbeatExecutor = null;
 		}
 	}
@@ -101,7 +117,16 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setMetadata(metadataLocalProperties.getContent());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
+
+		//registerFilterHandlerInstances
+		List<RegisterFilterHandler> registerFilterHandlerInstances = registerFilterHandlerInstances();
 		try {
+			registerFilterHandlerInstances.forEach(registerFilterHandler -> {
+				if (!registerFilterHandler.beforeInvoke(new RegisterFilterHandlerContext(instanceRegisterRequest))) {
+					log.error("the registerFilterHandler return false on before invoke");
+				}
+			});
+
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			providerClient.register(instanceRegisterRequest);
 			log.info("polaris registry, {} {} {}:{} {} register finished",
@@ -115,11 +140,16 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				// Start the heartbeat thread after the registration is successful.
 				heartbeat(heartbeatRequest);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("polaris registry, {} register failed...{},",
 					registration.getServiceId(), registration, e);
 			rethrowRuntimeException(e);
+		} finally {
+			registerFilterHandlerInstances.forEach(registerFilterHandler -> {
+				if (!registerFilterHandler.afterInvoke(new RegisterFilterHandlerContext(instanceRegisterRequest))) {
+					log.error("the registerFilterHandler return false on after invoke");
+				}
+			});
 		}
 	}
 
@@ -143,12 +173,10 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			providerClient.deRegister(deRegisterRequest);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration,
 					e);
-		}
-		finally {
+		} finally {
 			if (null != heartbeatExecutor) {
 				heartbeatExecutor.shutdown();
 			}
@@ -186,6 +214,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	/**
 	 * Start the heartbeat thread.
+	 *
 	 * @param heartbeatRequest heartbeat request
 	 */
 	public void heartbeat(InstanceHeartbeatRequest heartbeatRequest) {
@@ -216,14 +245,32 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				}
 
 				polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
-			}
-			catch (PolarisException e) {
+			} catch (PolarisException e) {
 				log.error("polaris heartbeat[{}]", e.getCode(), e);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.error("polaris heartbeat runtime error", e);
 			}
 		}, ttl, ttl, TimeUnit.SECONDS);
+	}
+
+	private List<RegisterFilterHandler> registerFilterHandlerInstances() {
+		List<RegisterFilterHandler> registerFilterHandlerInstances = new LinkedList<>();
+		for (Object instance : this.registerFilterHandler) {
+			log.info("register filterHandler name[{}]", instance.getClass().getName());
+			if (instance instanceof RegisterFilterHandler) {
+				registerFilterHandlerInstances.add((RegisterFilterHandler) instance);
+			} else if (instance instanceof Class<?>) {
+				try {
+					Class<?> cl = (Class<?>) instance;
+					RegisterFilterHandler filter = (RegisterFilterHandler) cl.newInstance();
+					registerFilterHandlerInstances.add(filter);
+				} catch (Exception e) {
+					log.error("register filterHandler name[{}] error{}", instance.getClass().getName(), e);
+					rethrowRuntimeException(e);
+				}
+			}
+		}
+		return registerFilterHandlerInstances;
 	}
 
 }

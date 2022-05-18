@@ -18,15 +18,19 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import com.google.common.collect.Lists;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.cloud.polaris.registry.filter.RegisterFilterHandler;
 import com.tencent.polaris.client.api.SDKContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration;
@@ -34,6 +38,9 @@ import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationC
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Autoconfiguration of service registry of Polaris.
@@ -45,21 +52,34 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnPolarisRegisterEnabled
 @ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled",
 		matchIfMissing = true)
-@AutoConfigureAfter({ AutoServiceRegistrationConfiguration.class,
+@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class,
 		AutoServiceRegistrationAutoConfiguration.class,
-		PolarisDiscoveryAutoConfiguration.class })
+		PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
-	public PolarisServiceRegistry polarisServiceRegistry(
-			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties) {
-		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, metadataLocalProperties);
+	@ConditionalOnMissingBean
+	protected List<RegisterFilterHandler> registerFilterHandler() {
+		return Lists.newLinkedList();
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	protected PolarisServiceRegistry polarisServiceRegistry(
+			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
+			MetadataLocalProperties metadataLocalProperties, @Autowired(required = false) LinkedList<RegisterFilterHandler> registerFilterHandler) {
+		PolarisServiceRegistry polarisServiceRegistry = new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, metadataLocalProperties);
+		if (registerFilterHandler == null) {
+			registerFilterHandler = new LinkedList<>();
+		}
+		registerFilterHandler.forEach(polarisServiceRegistry::addRegisterFilterHandler);
+		return polarisServiceRegistry;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public PolarisRegistration polarisRegistration(
+	protected PolarisRegistration polarisRegistration(
 			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
 			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
 		return new PolarisRegistration(discoveryPropertiesAutoConfiguration,
@@ -67,8 +87,9 @@ public class PolarisServiceRegistryAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
+	protected PolarisAutoServiceRegistration polarisAutoServiceRegistration(
 			PolarisServiceRegistry registry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
 			PolarisRegistration registration) {
