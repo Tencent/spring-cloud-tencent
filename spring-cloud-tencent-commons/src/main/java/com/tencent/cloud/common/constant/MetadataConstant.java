@@ -27,28 +27,6 @@ import org.springframework.core.Ordered;
 public final class MetadataConstant {
 
 	/**
-	 * System metadata key.
-	 */
-	public static class SystemMetadataKey {
-
-		/**
-		 * Peer namespace.
-		 */
-		public static String PEER_NAMESPACE = "PEER_NAMESPACE";
-
-		/**
-		 * Peer service.
-		 */
-		public static String PEER_SERVICE = "PEER_SERVICE";
-
-		/**
-		 * Peer path.
-		 */
-		public static String PEER_PATH = "PEER_PATH";
-
-	}
-
-	/**
 	 * Order of filter, interceptor, ...
 	 */
 	public static class OrderConstant {
@@ -82,9 +60,9 @@ public final class MetadataConstant {
 		public static final String CUSTOM_METADATA = "SCT-CUSTOM-METADATA";
 
 		/**
-		 * System Metadata.
+		 * Peer service name.
 		 */
-		public static final String SYSTEM_METADATA = "SCT-SYSTEM-METADATA";
+		public static final String PEER_SERVICE = "SCT-PEER-SERVICE";
 
 		/**
 		 * Metadata context.

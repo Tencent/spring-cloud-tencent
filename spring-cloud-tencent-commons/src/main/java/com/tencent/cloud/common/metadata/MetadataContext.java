@@ -44,16 +44,6 @@ public class MetadataContext {
 	 */
 	public static String LOCAL_SERVICE;
 
-	/**
-	 * Transitive custom metadata content.
-	 */
-	private final Map<String, String> transitiveCustomMetadata;
-
-	/**
-	 * System metadata content.
-	 */
-	private final Map<String, String> systemMetadata;
-
 	static {
 		String namespace = ApplicationContextAwareUtils
 				.getProperties("spring.cloud.polaris.namespace");
@@ -73,9 +63,13 @@ public class MetadataContext {
 		LOCAL_SERVICE = serviceName;
 	}
 
+	/**
+	 * Transitive custom metadata content.
+	 */
+	private final Map<String, String> transitiveCustomMetadata;
+
 	public MetadataContext() {
 		this.transitiveCustomMetadata = new ConcurrentHashMap<>();
-		this.systemMetadata = new ConcurrentHashMap<>();
 	}
 
 	public Map<String, String> getAllTransitiveCustomMetadata() {
@@ -94,27 +88,10 @@ public class MetadataContext {
 		this.transitiveCustomMetadata.putAll(customMetadata);
 	}
 
-	public Map<String, String> getAllSystemMetadata() {
-		return Collections.unmodifiableMap(this.systemMetadata);
-	}
-
-	public String getSystemMetadata(String key) {
-		return this.systemMetadata.get(key);
-	}
-
-	public void putSystemMetadata(String key, String value) {
-		this.systemMetadata.put(key, value);
-	}
-
-	public void putAllSystemMetadata(Map<String, String> systemMetadata) {
-		this.systemMetadata.putAll(systemMetadata);
-	}
-
 	@Override
 	public String toString() {
 		return "MetadataContext{" + "transitiveCustomMetadata="
-				+ JacksonUtils.serialize2Json(transitiveCustomMetadata)
-				+ ", systemMetadata=" + JacksonUtils.serialize2Json(systemMetadata) + '}';
+				+ JacksonUtils.serialize2Json(transitiveCustomMetadata) + '}';
 	}
 
 }

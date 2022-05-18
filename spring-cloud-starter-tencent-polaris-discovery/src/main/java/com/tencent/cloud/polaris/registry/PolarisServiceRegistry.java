@@ -34,14 +34,13 @@ import com.tencent.polaris.api.rpc.InstanceHeartbeatRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.util.NamedThreadFactory;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
-import org.springframework.util.StringUtils;
 
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
@@ -207,7 +206,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				// first.
 				// If the health check passes, the heartbeat will be reported.
 				// If it does not pass, the heartbeat will not be reported.
-				if (Strings.isNotEmpty(healthCheckEndpoint)) {
+				if (StringUtils.isNotBlank(healthCheckEndpoint)) {
 					if (!healthCheckEndpoint.startsWith("/")) {
 						healthCheckEndpoint = "/" + healthCheckEndpoint;
 					}

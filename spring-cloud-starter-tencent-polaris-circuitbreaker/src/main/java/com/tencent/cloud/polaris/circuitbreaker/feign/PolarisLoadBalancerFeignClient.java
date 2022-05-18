@@ -17,11 +17,22 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.feign;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import feign.Client;
+import feign.Request;
+import feign.Response;
 
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.cloud.openfeign.ribbon.CachingSpringLoadBalancerFactory;
 import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
+
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.PEER_SERVICE;
 
 /**
  * Wrap for {@link LoadBalancerFeignClient}.
@@ -36,4 +47,11 @@ public class PolarisLoadBalancerFeignClient extends LoadBalancerFeignClient {
 		super(delegate, lbClientFactory, clientFactory);
 	}
 
+	@Override
+	public Response execute(Request request, Request.Options options) throws IOException {
+		Map<String, Collection<String>> headers = new HashMap<>(request.headers());
+		headers.put(PEER_SERVICE, Collections.singletonList(URI.create(request.url()).getAuthority()));
+		request = Request.create(request.httpMethod(), request.url(), headers, request.requestBody());
+		return super.execute(request, options);
+	}
 }
