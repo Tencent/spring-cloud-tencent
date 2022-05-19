@@ -80,6 +80,13 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
   - [项目概览](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
   - [参与共建](https://github.com/Tencent/spring-cloud-tencent/wiki/Contributing)
 
+## 交流群
+
+扫描下面的二维码加入 Spring Cloud Tencent 交流群。
+
+<img src="https://user-images.githubusercontent.com/24446200/169198148-d4cc3494-3485-4515-9897-c8cb5504f706.png" width="30%" height="30%" />
+
+
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
 
