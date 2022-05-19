@@ -15,31 +15,35 @@
  * specific language governing permissions and limitations under the License.
  *
  */
+package com.tencent.cloud.polaris.discovery.refresh;
 
-package com.tencent.cloud.polaris.discovery;
-
-import com.tencent.cloud.polaris.discovery.refresh.PolarisRefreshConfiguration;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
- * Discovery Auto Configuration for Polaris.
+ * Configuration for listening the change of service status.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang
  */
 @Configuration
-@ConditionalOnPolarisDiscoveryEnabled
-@Import({PolarisDiscoveryClientConfiguration.class, PolarisRefreshConfiguration.class})
-public class PolarisDiscoveryAutoConfiguration {
+@ConditionalOnPolarisEnabled
+public class PolarisRefreshConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisServiceDiscovery polarisServiceDiscovery(
-			PolarisDiscoveryHandler polarisDiscoveryHandler) {
-		return new PolarisServiceDiscovery(polarisDiscoveryHandler);
+	public PolarisServiceStatusChangeListener polarisServiceChangeListener() {
+		return new PolarisServiceStatusChangeListener();
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisRefreshApplicationReadyEventListener polarisServiceStatusApplicationReadyEventListener(
+			PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisServiceStatusChangeListener polarisServiceStatusChangeListener) {
+		return new PolarisRefreshApplicationReadyEventListener(polarisDiscoveryHandler, polarisServiceStatusChangeListener);
+	}
 }

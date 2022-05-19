@@ -27,7 +27,6 @@ import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration;
@@ -53,9 +52,8 @@ public class PolarisServiceRegistryAutoConfiguration {
 	@Bean
 	public PolarisServiceRegistry polarisServiceRegistry(
 			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties, PolarisServiceChangeListener polarisServiceChangeListener) {
-		return new PolarisServiceRegistry(polarisDiscoveryProperties,
-				polarisDiscoveryHandler, metadataLocalProperties, polarisServiceChangeListener);
+			MetadataLocalProperties metadataLocalProperties) {
+		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, metadataLocalProperties);
 	}
 
 	@Bean
@@ -75,11 +73,5 @@ public class PolarisServiceRegistryAutoConfiguration {
 			PolarisRegistration registration) {
 		return new PolarisAutoServiceRegistration(registry,
 				autoServiceRegistrationProperties, registration);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public PolarisServiceChangeListener polarisServiceChangeListener() {
-		return new PolarisServiceChangeListener();
 	}
 }
