@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
@@ -52,8 +53,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT,
 		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
-		properties = { "server.port=8081",
-				"spring.config.location = classpath:application-test.yml" })
+		properties = {"server.port=8081",
+				"spring.config.location = classpath:application-test.yml"})
 public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired
@@ -72,13 +73,13 @@ public class EncodeTransferMedataFeignInterceptorTest {
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
 				.isEqualTo("2");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "a"))
 				.isEqualTo("11");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b"))
 				.isEqualTo("22");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "c"))
 				.isEqualTo("33");
 	}
 
@@ -98,8 +99,8 @@ public class EncodeTransferMedataFeignInterceptorTest {
 		public interface TestFeign {
 
 			@RequestMapping(value = "/test",
-					headers = { MetadataConstant.HeaderName.CUSTOM_METADATA
-							+ "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}" })
+					headers = {MetadataConstant.HeaderName.CUSTOM_METADATA
+							+ "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}"})
 			String test();
 
 		}

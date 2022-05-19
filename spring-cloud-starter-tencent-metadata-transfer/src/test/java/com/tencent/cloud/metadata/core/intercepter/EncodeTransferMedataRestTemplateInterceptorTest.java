@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
@@ -82,13 +83,13 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
 				.isEqualTo("2");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "a"))
 				.isEqualTo("11");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b"))
 				.isEqualTo("22");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "c"))
 				.isEqualTo("33");
 	}
 

@@ -13,11 +13,41 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-/**
- * Package info of router.
- *
- * @author Haotian Zhang
- */
 package com.tencent.cloud.polaris.router;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.util.CollectionUtils;
+
+/**
+ * the context for router.
+ *
+ *@author lepdou 2022-05-17
+ */
+public class PolarisRouterContext {
+
+	private Map<String, String> labels;
+
+	public Map<String, String> getLabels() {
+		if (CollectionUtils.isEmpty(labels)) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(labels);
+	}
+
+	public void setLabels(Map<String, String> labels) {
+		this.labels = labels;
+	}
+
+	public void putLabel(String key, String value) {
+		if (labels == null) {
+			labels = new HashMap<>();
+		}
+		labels.put(key, value);
+	}
+}

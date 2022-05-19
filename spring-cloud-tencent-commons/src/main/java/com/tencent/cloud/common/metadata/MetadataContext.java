@@ -35,6 +35,10 @@ import org.springframework.util.StringUtils;
 public class MetadataContext {
 
 	/**
+	 * transitive context.
+	 */
+	public static final String FRAGMENT_TRANSITIVE = "transitive";
+	/**
 	 * Namespace of local instance.
 	 */
 	public static String LOCAL_NAMESPACE;
@@ -43,6 +47,9 @@ public class MetadataContext {
 	 * Service name of local instance.
 	 */
 	public static String LOCAL_SERVICE;
+
+
+	private final Map<String, Map<String, String>> fragmentContexts;
 
 	static {
 		String namespace = ApplicationContextAwareUtils
@@ -63,35 +70,44 @@ public class MetadataContext {
 		LOCAL_SERVICE = serviceName;
 	}
 
-	/**
-	 * Transitive custom metadata content.
-	 */
-	private final Map<String, String> transitiveCustomMetadata;
-
 	public MetadataContext() {
-		this.transitiveCustomMetadata = new ConcurrentHashMap<>();
+		this.fragmentContexts = new ConcurrentHashMap<>();
 	}
 
-	public Map<String, String> getAllTransitiveCustomMetadata() {
-		return Collections.unmodifiableMap(this.transitiveCustomMetadata);
+
+	public Map<String, String> getFragmentContext(String fragment) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(fragmentContext);
 	}
 
-	public String getTransitiveCustomMetadata(String key) {
-		return this.transitiveCustomMetadata.get(key);
+	public String getContext(String fragment, String key) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			return null;
+		}
+		return fragmentContext.get(key);
 	}
 
-	public void putTransitiveCustomMetadata(String key, String value) {
-		this.transitiveCustomMetadata.put(key, value);
+	public void putContext(String fragment, String key, String value) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			fragmentContext = new ConcurrentHashMap<>();
+			fragmentContexts.put(fragment, fragmentContext);
+		}
+		fragmentContext.put(key, value);
 	}
 
-	public void putAllTransitiveCustomMetadata(Map<String, String> customMetadata) {
-		this.transitiveCustomMetadata.putAll(customMetadata);
+	public void putFragmentContext(String fragment, Map<String, String> context) {
+		fragmentContexts.put(fragment, context);
 	}
 
 	@Override
 	public String toString() {
-		return "MetadataContext{" + "transitiveCustomMetadata="
-				+ JacksonUtils.serialize2Json(transitiveCustomMetadata) + '}';
+		return "MetadataContext{" +
+				"fragmentContexts=" + JacksonUtils.serialize2Json(fragmentContexts) +
+				'}';
 	}
-
 }

@@ -16,34 +16,29 @@
  *
  */
 
-package com.tencent.cloud.polaris.loadbalancer.config;
+package com.tencent.cloud.polaris.router.config;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.IPing;
-import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerList;
-import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
-import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.cloud.polaris.router.feign.PolarisFeignLoadBalancer;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration of ribbon client of Polaris.
+ * configuration for feign component.
  *
- * @author Haotian Zhang
+ *@author lepdou 2022-05-16
  */
 @Configuration
-public class PolarisRibbonClientConfiguration {
+public class FeignConfiguration {
 
 	@Bean
-	public ILoadBalancer polarisLoadBalancer(IClientConfig iClientConfig, IRule iRule,
-			IPing iPing, ServerList<Server> serverList,
-			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
-		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
-				consumerAPI, polarisLoadBalancerProperties);
+	@ConditionalOnMissingBean
+	public PolarisFeignLoadBalancer polarisFeignLoadBalancer(ILoadBalancer lb, IClientConfig clientConfig,
+			ServerIntrospector serverIntrospector) {
+		return new PolarisFeignLoadBalancer(lb, clientConfig, serverIntrospector);
 	}
-
 }
