@@ -65,14 +65,13 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 				Map<String, String> headerMetadataMap = JacksonUtils
 						.deserialize2Map(headerMetadataStr);
 				for (String key : headerMetadataMap.keySet()) {
-					metadataContext.putTransitiveCustomMetadata(key,
-							headerMetadataMap.get(key));
+					metadataContext.putContext(MetadataContext.FRAGMENT_TRANSITIVE, key, headerMetadataMap.get(key));
 				}
 			}
 		}
 
-		Map<String, String> customMetadata = metadataContext
-				.getAllTransitiveCustomMetadata();
+		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			requestTemplate.removeHeader(CUSTOM_METADATA);

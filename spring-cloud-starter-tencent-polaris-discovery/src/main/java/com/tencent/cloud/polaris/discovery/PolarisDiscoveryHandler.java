@@ -71,8 +71,8 @@ public class PolarisDiscoveryHandler {
 		getInstancesRequest.setService(service);
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get()
-				.getAllTransitiveCustomMetadata();
+		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get().
+				getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		if (StringUtils.isNotBlank(localNamespace) || StringUtils.isNotBlank(localService)
 				|| null != allTransitiveCustomMetadata) {
 			ServiceInfo sourceService = new ServiceInfo();

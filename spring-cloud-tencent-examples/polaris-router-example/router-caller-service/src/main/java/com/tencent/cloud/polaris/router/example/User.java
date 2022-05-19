@@ -18,20 +18,28 @@
 
 package com.tencent.cloud.polaris.router.example;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 /**
- * Router callee feign client.
- *
- * @author lepdou 2022-04-06
+ * demo object.
+ * @author lepdou 2022-05-12
  */
-@FeignClient("RouterCalleeService")
-public interface RouterCalleeService {
+public class User {
 
-	@PostMapping("/router/service/callee/info")
-	String info(@RequestParam("name") String name, @RequestBody User user);
+	private String name;
+	private int age;
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
 }
