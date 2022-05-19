@@ -19,8 +19,10 @@
 package com.tencent.cloud.polaris.ratelimit.filter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
@@ -29,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
@@ -42,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.annotation.Order;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LABEL_METHOD;
@@ -50,13 +53,12 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
 /**
  * Servlet filter to check quota.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, lepdou
  */
 @Order(RateLimitConstant.FILTER_ORDER)
 public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(QuotaCheckServletFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
 
 	private final LimitAPI limitAPI;
 
@@ -64,14 +66,18 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 	private final PolarisRateLimitProperties polarisRateLimitProperties;
 
+	private final RateLimitRuleLabelResolver rateLimitRuleLabelResolver;
+
 	private String rejectTips;
 
 	public QuotaCheckServletFilter(LimitAPI limitAPI,
 			PolarisRateLimiterLabelServletResolver labelResolver,
-			PolarisRateLimitProperties polarisRateLimitProperties) {
+			PolarisRateLimitProperties polarisRateLimitProperties,
+			RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
 		this.limitAPI = limitAPI;
 		this.labelResolver = labelResolver;
 		this.polarisRateLimitProperties = polarisRateLimitProperties;
+		this.rateLimitRuleLabelResolver = rateLimitRuleLabelResolver;
 	}
 
 	@PostConstruct
@@ -80,45 +86,24 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
 
-		Map<String, String> labels = new HashMap<>();
-
-		// add build in labels
-		String path = request.getRequestURI();
-
-		if (StringUtils.isNotBlank(path)) {
-			labels.put(LABEL_METHOD, path);
-		}
-
-		// add custom labels
-		if (labelResolver != null) {
-			try {
-				Map<String, String> customLabels = labelResolver.resolve(request);
-				if (!CollectionUtils.isEmpty(customLabels)) {
-					labels.putAll(customLabels);
-				}
-			}
-			catch (Throwable e) {
-				LOG.error("resolve custom label failed. resolver = {}",
-						labelResolver.getClass().getName(), e);
-			}
-		}
+		Map<String, String> labels = getRequestLabels(request, localNamespace, localService);
 
 		try {
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
 					localNamespace, localService, 1, labels, null);
+
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
 				response.getWriter().write(rejectTips);
+				return;
 			}
-			else {
-				filterChain.doFilter(request, response);
-			}
+
+			filterChain.doFilter(request, response);
 		}
 		catch (Throwable t) {
 			// An exception occurs in the rate limiting API call,
@@ -128,4 +113,41 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 		}
 	}
 
+	private Map<String, String> getRequestLabels(HttpServletRequest request, String localNamespace, String localService) {
+		Map<String, String> labels = new HashMap<>();
+
+		// add build in labels
+		String path = request.getRequestURI();
+		if (StringUtils.isNotBlank(path)) {
+			labels.put(LABEL_METHOD, path);
+		}
+
+		// add rule expression labels
+		Map<String, String> expressionLabels = getRuleExpressionLabels(request, localNamespace, localService);
+		labels.putAll(expressionLabels);
+
+		// add custom resolved labels
+		Map<String, String> customLabels = getCustomResolvedLabels(request);
+		labels.putAll(customLabels);
+
+		return labels;
+	}
+
+	private Map<String, String> getCustomResolvedLabels(HttpServletRequest request) {
+		if (labelResolver != null) {
+			try {
+				return labelResolver.resolve(request);
+			}
+			catch (Throwable e) {
+				LOG.error("resolve custom label failed. resolver = {}",
+						labelResolver.getClass().getName(), e);
+			}
+		}
+		return Collections.emptyMap();
+	}
+
+	private Map<String, String> getRuleExpressionLabels(HttpServletRequest request, String namespace, String service) {
+		Set<String> expressionLabels = rateLimitRuleLabelResolver.getExpressionLabelKeys(namespace, service);
+		return ExpressionLabelUtils.resolve(request, expressionLabels);
+	}
 }

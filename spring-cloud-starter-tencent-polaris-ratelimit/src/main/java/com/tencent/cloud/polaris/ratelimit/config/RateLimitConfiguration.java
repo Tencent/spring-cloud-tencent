@@ -19,6 +19,8 @@
 package com.tencent.cloud.polaris.ratelimit.config;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
@@ -62,6 +64,11 @@ public class RateLimitConfiguration {
 		return LimitAPIFactory.createLimitAPIByContext(polarisContext);
 	}
 
+	@Bean
+	public RateLimitRuleLabelResolver rateLimitRuleLabelService(ServiceRuleManager serviceRuleManager) {
+		return new RateLimitRuleLabelResolver(serviceRuleManager);
+	}
+
 	/**
 	 * Create when web application type is SERVLET.
 	 */
@@ -73,9 +80,10 @@ public class RateLimitConfiguration {
 		@ConditionalOnMissingBean
 		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI,
 				@Nullable PolarisRateLimiterLabelServletResolver labelResolver,
-				PolarisRateLimitProperties polarisRateLimitProperties) {
+				PolarisRateLimitProperties polarisRateLimitProperties,
+				RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
 			return new QuotaCheckServletFilter(limitAPI, labelResolver,
-					polarisRateLimitProperties);
+					polarisRateLimitProperties, rateLimitRuleLabelResolver);
 		}
 
 		@Bean
@@ -101,9 +109,10 @@ public class RateLimitConfiguration {
 		@Bean
 		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(LimitAPI limitAPI,
 				@Nullable PolarisRateLimiterLabelReactiveResolver labelResolver,
-				PolarisRateLimitProperties polarisRateLimitProperties) {
+				PolarisRateLimitProperties polarisRateLimitProperties,
+				RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
 			return new QuotaCheckReactiveFilter(limitAPI, labelResolver,
-					polarisRateLimitProperties);
+					polarisRateLimitProperties, rateLimitRuleLabelResolver);
 		}
 
 	}

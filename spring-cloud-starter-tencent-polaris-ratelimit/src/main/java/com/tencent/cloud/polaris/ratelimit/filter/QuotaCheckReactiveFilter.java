@@ -21,10 +21,14 @@ package com.tencent.cloud.polaris.ratelimit.filter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import com.google.common.collect.Maps;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
@@ -42,7 +46,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -52,7 +55,7 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
 /**
  * Reactive filter to check quota.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, lepdou
  */
 public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
@@ -65,14 +68,18 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 	private final PolarisRateLimitProperties polarisRateLimitProperties;
 
+	private final RateLimitRuleLabelResolver rateLimitRuleLabelResolver;
+
 	private String rejectTips;
 
 	public QuotaCheckReactiveFilter(LimitAPI limitAPI,
 			PolarisRateLimiterLabelReactiveResolver labelResolver,
-			PolarisRateLimitProperties polarisRateLimitProperties) {
+			PolarisRateLimitProperties polarisRateLimitProperties,
+			RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
 		this.limitAPI = limitAPI;
 		this.labelResolver = labelResolver;
 		this.polarisRateLimitProperties = polarisRateLimitProperties;
+		this.rateLimitRuleLabelResolver = rateLimitRuleLabelResolver;
 	}
 
 	@PostConstruct
@@ -90,27 +97,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
 
-		Map<String, String> labels = new HashMap<>();
-
-		// add build in labels
-		String path = exchange.getRequest().getURI().getPath();
-		if (StringUtils.isNotBlank(path)) {
-			labels.put(LABEL_METHOD, path);
-		}
-
-		// add custom labels
-		if (labelResolver != null) {
-			try {
-				Map<String, String> customLabels = labelResolver.resolve(exchange);
-				if (!CollectionUtils.isEmpty(customLabels)) {
-					labels.putAll(customLabels);
-				}
-			}
-			catch (Throwable e) {
-				LOG.error("resolve custom label failed. resolver = {}",
-						labelResolver.getClass().getName(), e);
-			}
-		}
+		Map<String, String> labels = getRequestLabels(exchange, localNamespace, localService);
 
 		try {
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
@@ -132,6 +119,44 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		}
 
 		return chain.filter(exchange);
+	}
+
+	private Map<String, String> getRequestLabels(ServerWebExchange exchange, String localNamespace, String localService) {
+		Map<String, String> labels = new HashMap<>();
+
+		// add build in labels
+		String path = exchange.getRequest().getURI().getPath();
+		if (StringUtils.isNotBlank(path)) {
+			labels.put(LABEL_METHOD, path);
+		}
+
+		// add rule expression labels
+		Map<String, String> expressionLabels = getRuleExpressionLabels(exchange, localNamespace, localService);
+		labels.putAll(expressionLabels);
+
+		// add custom labels
+		Map<String, String> customResolvedLabels = getCustomResolvedLabels(exchange);
+		labels.putAll(customResolvedLabels);
+
+		return labels;
+	}
+
+	private Map<String, String> getCustomResolvedLabels(ServerWebExchange exchange) {
+		if (labelResolver != null) {
+			try {
+				return labelResolver.resolve(exchange);
+			}
+			catch (Throwable e) {
+				LOG.error("resolve custom label failed. resolver = {}",
+						labelResolver.getClass().getName(), e);
+			}
+		}
+		return Maps.newHashMap();
+	}
+
+	private Map<String, String> getRuleExpressionLabels(ServerWebExchange exchange, String namespace, String service) {
+		Set<String> expressionLabels = rateLimitRuleLabelResolver.getExpressionLabelKeys(namespace, service);
+		return ExpressionLabelUtils.resolve(exchange, expressionLabels);
 	}
 
 }

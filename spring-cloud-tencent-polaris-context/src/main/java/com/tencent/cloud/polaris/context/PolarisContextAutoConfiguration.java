@@ -47,4 +47,8 @@ public class PolarisContextAutoConfiguration {
 		return new ModifyAddress();
 	}
 
+	@Bean
+	public ServiceRuleManager serviceRuleManager(SDKContext sdkContext) {
+		return new ServiceRuleManager(sdkContext);
+	}
 }
