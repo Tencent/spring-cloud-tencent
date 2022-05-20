@@ -18,14 +18,18 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
+import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -45,11 +49,14 @@ public class RouterLabelInterceptor implements RequestInterceptor, Ordered {
 
 	private final RouterLabelResolver resolver;
 	private final MetadataLocalProperties metadataLocalProperties;
+	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
 	public RouterLabelInterceptor(RouterLabelResolver resolver,
-			MetadataLocalProperties metadataLocalProperties) {
+			MetadataLocalProperties metadataLocalProperties,
+			RouterRuleLabelResolver routerRuleLabelResolver) {
 		this.resolver = resolver;
 		this.metadataLocalProperties = metadataLocalProperties;
+		this.routerRuleLabelResolver = routerRuleLabelResolver;
 	}
 
 	@Override
@@ -79,10 +86,38 @@ public class RouterLabelInterceptor implements RequestInterceptor, Ordered {
 			}
 		}
 
+		// labels from rule expression
+		String peerServiceName = requestTemplate.feignTarget().name();
+		Map<String, String> ruleExpressionLabels = getRuleExpressionLabels(requestTemplate, peerServiceName);
+		labels.putAll(ruleExpressionLabels);
+
+
 		//local service labels
 		labels.putAll(metadataLocalProperties.getContent());
 
+		// Because when the label is placed in RequestTemplate.header,
+		// RequestTemplate will parse the header according to the regular, which conflicts with the expression.
+		// Avoid conflicts by escaping.
+		Map<String, String> escapeLabels = new HashMap<>(labels.size());
+		for (Map.Entry<String, String> entry : labels.entrySet()) {
+			String escapedKey = ExpressionLabelUtils.escape(entry.getKey());
+			String escapedValue = ExpressionLabelUtils.escape(entry.getValue());
+			escapeLabels.put(escapedKey, escapedValue);
+		}
+
 		// pass label by header
-		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, JacksonUtils.serialize2Json(labels));
+		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, JacksonUtils.serialize2Json(escapeLabels));
 	}
+
+	private Map<String, String> getRuleExpressionLabels(RequestTemplate requestTemplate, String peerService) {
+		Set<String> labelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
+				MetadataContext.LOCAL_SERVICE, peerService);
+
+		if (CollectionUtils.isEmpty(labelKeys)) {
+			return Collections.emptyMap();
+		}
+
+		return FeignExpressionLabelUtils.resolve(requestTemplate, labelKeys);
+	}
+
 }

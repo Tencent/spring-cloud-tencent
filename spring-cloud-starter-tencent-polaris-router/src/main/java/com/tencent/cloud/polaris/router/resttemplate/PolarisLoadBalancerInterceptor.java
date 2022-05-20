@@ -20,13 +20,17 @@ package com.tencent.cloud.polaris.router.resttemplate;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
+import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,18 +58,21 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 	private final LoadBalancerRequestFactory requestFactory;
 	private final RouterLabelResolver resolver;
 	private final MetadataLocalProperties metadataLocalProperties;
+	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
 	private final boolean isRibbonLoadBalanceClient;
 
 	public PolarisLoadBalancerInterceptor(LoadBalancerClient loadBalancer,
 			LoadBalancerRequestFactory requestFactory,
 			RouterLabelResolver resolver,
-			MetadataLocalProperties metadataLocalProperties) {
+			MetadataLocalProperties metadataLocalProperties,
+			RouterRuleLabelResolver routerRuleLabelResolver) {
 		super(loadBalancer, requestFactory);
 		this.loadBalancer = loadBalancer;
 		this.requestFactory = requestFactory;
 		this.resolver = resolver;
 		this.metadataLocalProperties = metadataLocalProperties;
+		this.routerRuleLabelResolver = routerRuleLabelResolver;
 
 		this.isRibbonLoadBalanceClient = loadBalancer instanceof RibbonLoadBalancerClient;
 	}
@@ -73,22 +80,22 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
 		final URI originalUri = request.getURI();
-		String serviceName = originalUri.getHost();
-		Assert.state(serviceName != null,
+		String peerServiceName = originalUri.getHost();
+		Assert.state(peerServiceName != null,
 				"Request URI does not contain a valid hostname: " + originalUri);
 
 		if (isRibbonLoadBalanceClient) {
-			PolarisRouterContext routerContext = genRouterContext(request, body);
+			PolarisRouterContext routerContext = genRouterContext(request, body, peerServiceName);
 
-			return ((RibbonLoadBalancerClient) loadBalancer).execute(serviceName,
+			return ((RibbonLoadBalancerClient) loadBalancer).execute(peerServiceName,
 					this.requestFactory.createRequest(request, body, execution), routerContext);
 		}
 
-		return this.loadBalancer.execute(serviceName,
+		return this.loadBalancer.execute(peerServiceName,
 				this.requestFactory.createRequest(request, body, execution));
 	}
 
-	private PolarisRouterContext genRouterContext(HttpRequest request, byte[] body) {
+	private PolarisRouterContext genRouterContext(HttpRequest request, byte[] body, String peerServiceName) {
 		Map<String, String> labels = new HashMap<>();
 
 		// labels from downstream
@@ -109,6 +116,11 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 			}
 		}
 
+		Map<String, String> ruleExpressionLabels = getExpressionLabels(request, peerServiceName);
+		if (!CollectionUtils.isEmpty(ruleExpressionLabels)) {
+			labels.putAll(ruleExpressionLabels);
+		}
+
 		//local service labels
 		labels.putAll(metadataLocalProperties.getContent());
 
@@ -116,5 +128,16 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		routerContext.setLabels(labels);
 
 		return routerContext;
+	}
+
+	private Map<String, String> getExpressionLabels(HttpRequest request, String peerServiceName) {
+		Set<String> labelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
+				MetadataContext.LOCAL_SERVICE, peerServiceName);
+
+		if (CollectionUtils.isEmpty(labelKeys)) {
+			return Collections.emptyMap();
+		}
+
+		return ExpressionLabelUtils.resolve(request, labelKeys);
 	}
 }

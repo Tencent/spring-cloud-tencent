@@ -75,7 +75,7 @@ public class ServiceRuleManager {
 		return null;
 	}
 
-	public List<RoutingProto.Routing> getServiceRouterRule(String namespace, String sourceService, String dstService) {
+	public List<RoutingProto.Route> getServiceRouterRule(String namespace, String sourceService, String dstService) {
 		Set<ServiceEventKey> routerKeys = new HashSet<>();
 
 		ServiceEventKey dstSvcEventKey = new ServiceEventKey(new ServiceKey(namespace, dstService),
@@ -92,20 +92,23 @@ public class ServiceRuleManager {
 		ResourcesResponse resourcesResponse = BaseFlow
 				.syncGetResources(sdkContext.getExtensions(), true, svcKeysProvider, controlParam);
 
-		List<RoutingProto.Routing> rules = new ArrayList<>();
+		List<RoutingProto.Route> rules = new ArrayList<>();
+
+		//get source service outbound rules.
 		ServiceRule sourceServiceRule = resourcesResponse.getServiceRule(srcSvcEventKey);
 		if (sourceServiceRule != null) {
 			Object rule = sourceServiceRule.getRule();
 			if (rule instanceof RoutingProto.Routing) {
-				rules.add((RoutingProto.Routing) rule);
+				rules.addAll(((RoutingProto.Routing) rule).getOutboundsList());
 			}
 		}
 
+		//get peer service inbound rules.
 		ServiceRule dstServiceRule = resourcesResponse.getServiceRule(dstSvcEventKey);
 		if (dstServiceRule != null) {
 			Object rule = dstServiceRule.getRule();
 			if (rule instanceof RoutingProto.Routing) {
-				rules.add((RoutingProto.Routing) rule);
+				rules.addAll(((RoutingProto.Routing) rule).getInboundsList());
 			}
 		}
 

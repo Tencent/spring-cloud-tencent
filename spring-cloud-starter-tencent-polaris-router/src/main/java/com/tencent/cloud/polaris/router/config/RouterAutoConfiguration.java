@@ -19,6 +19,8 @@
 package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.feign.PolarisCachingSpringLoadBalanceFactory;
 import com.tencent.cloud.polaris.router.feign.RouterLabelInterceptor;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerBeanPostProcessor;
@@ -44,8 +46,9 @@ public class RouterAutoConfiguration {
 
 	@Bean
 	public RouterLabelInterceptor routerLabelInterceptor(@Nullable RouterLabelResolver resolver,
-			MetadataLocalProperties metadataLocalProperties) {
-		return new RouterLabelInterceptor(resolver, metadataLocalProperties);
+			MetadataLocalProperties metadataLocalProperties,
+			RouterRuleLabelResolver routerRuleLabelResolver) {
+		return new RouterLabelInterceptor(resolver, metadataLocalProperties, routerRuleLabelResolver);
 	}
 
 	@Bean
@@ -57,5 +60,10 @@ public class RouterAutoConfiguration {
 	@Order(HIGHEST_PRECEDENCE)
 	public PolarisLoadBalancerBeanPostProcessor polarisLoadBalancerBeanPostProcessor() {
 		return new PolarisLoadBalancerBeanPostProcessor();
+	}
+
+	@Bean
+	public RouterRuleLabelResolver routerRuleLabelResolver(ServiceRuleManager serviceRuleManager) {
+		return new RouterRuleLabelResolver(serviceRuleManager);
 	}
 }
