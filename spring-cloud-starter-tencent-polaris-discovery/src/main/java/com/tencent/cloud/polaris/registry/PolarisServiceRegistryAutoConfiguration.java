@@ -18,6 +18,9 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
@@ -39,9 +42,6 @@ import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationP
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * Autoconfiguration of service registry of Polaris.
  *
@@ -57,9 +57,10 @@ import java.util.List;
 		PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
+
 	@Bean
 	@ConditionalOnMissingBean
-	protected List<RegisterFilterHandler> registerFilterHandler() {
+	protected List<RegisterFilterHandler> registerFilterHandlers() {
 		return Lists.newLinkedList();
 	}
 
@@ -67,14 +68,15 @@ public class PolarisServiceRegistryAutoConfiguration {
 	@ConditionalOnMissingBean
 	protected PolarisServiceRegistry polarisServiceRegistry(
 			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties, @Autowired(required = false) LinkedList<RegisterFilterHandler> registerFilterHandler) {
+			MetadataLocalProperties metadataLocalProperties, @Autowired(required = false) LinkedList<RegisterFilterHandler> registerFilterHandlers) {
 		PolarisServiceRegistry polarisServiceRegistry = new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, metadataLocalProperties);
-		if (registerFilterHandler == null) {
-			registerFilterHandler = new LinkedList<>();
+		if (registerFilterHandlers == null) {
+			registerFilterHandlers = new LinkedList<>();
 		}
-		registerFilterHandler.forEach(polarisServiceRegistry::addRegisterFilterHandler);
+		registerFilterHandlers.forEach(polarisServiceRegistry::addRegisterFilterHandler);
 		return polarisServiceRegistry;
 	}
+
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -82,8 +84,9 @@ public class PolarisServiceRegistryAutoConfiguration {
 	protected PolarisRegistration polarisRegistration(
 			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
 			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
-		return new PolarisRegistration(discoveryPropertiesAutoConfiguration,
+		PolarisRegistration polarisRegistration = new PolarisRegistration(discoveryPropertiesAutoConfiguration,
 				polarisDiscoveryProperties, context);
+		return polarisRegistration;
 	}
 
 	@Bean
