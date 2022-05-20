@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.router.resttemplate;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
 
 import org.springframework.beans.BeansException;
@@ -51,9 +52,10 @@ public class PolarisLoadBalancerBeanPostProcessor implements BeanPostProcessor, 
 			LoadBalancerClient loadBalancerClient = this.factory.getBean(LoadBalancerClient.class);
 			RouterLabelResolver routerLabelResolver = this.factory.getBean(RouterLabelResolver.class);
 			MetadataLocalProperties metadataLocalProperties = this.factory.getBean(MetadataLocalProperties.class);
+			RouterRuleLabelResolver routerRuleLabelResolver = this.factory.getBean(RouterRuleLabelResolver.class);
 
 			return new PolarisLoadBalancerInterceptor(loadBalancerClient, requestFactory,
-					routerLabelResolver, metadataLocalProperties);
+					routerLabelResolver, metadataLocalProperties, routerRuleLabelResolver);
 		}
 		return bean;
 	}

@@ -19,11 +19,13 @@
 package com.tencent.cloud.polaris.router.feign;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
+import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterConstants;
@@ -59,7 +61,13 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 		labelHeaderValues.forEach(labelHeaderValue -> {
 			Map<String, String> labels = JacksonUtils.deserialize2Map(labelHeaderValue);
 			if (!CollectionUtils.isEmpty(labels)) {
-				routerContext.setLabels(labels);
+				Map<String, String> unescapeLabels = new HashMap<>(labels.size());
+				for (Map.Entry<String, String> entry : labels.entrySet()) {
+					String escapedKey = ExpressionLabelUtils.unescape(entry.getKey());
+					String escapedValue = ExpressionLabelUtils.unescape(entry.getValue());
+					unescapeLabels.put(escapedKey, escapedValue);
+				}
+				routerContext.setLabels(unescapeLabels);
 			}
 		});
 
