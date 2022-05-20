@@ -116,16 +116,19 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 			}
 		}
 
+		// labels from rule expression
 		Map<String, String> ruleExpressionLabels = getExpressionLabels(request, peerServiceName);
 		if (!CollectionUtils.isEmpty(ruleExpressionLabels)) {
 			labels.putAll(ruleExpressionLabels);
 		}
 
-		//local service labels
+		// local service labels
 		labels.putAll(metadataLocalProperties.getContent());
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.setLabels(labels);
+
+		routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, labels);
+		routerContext.setLabels(PolarisRouterContext.TRANSITIVE_LABELS, transitiveLabels);
 
 		return routerContext;
 	}
