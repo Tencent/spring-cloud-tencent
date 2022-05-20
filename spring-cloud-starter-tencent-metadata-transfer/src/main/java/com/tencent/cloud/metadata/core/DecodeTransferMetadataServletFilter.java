@@ -21,6 +21,7 @@ package com.tencent.cloud.metadata.core;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
@@ -54,6 +55,24 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, FilterChain filterChain)
 			throws ServletException, IOException {
+		Map<String, String> internalTransitiveMetadata = getInternalTransitiveMetadata(httpServletRequest);
+		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(httpServletRequest);
+
+		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
+		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
+		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
+
+		try {
+			MetadataContextHolder.init(mergedTransitiveMetadata);
+
+			filterChain.doFilter(httpServletRequest, httpServletResponse);
+		}
+		catch (IOException | ServletException | RuntimeException e) {
+			throw e;
+		}
+	}
+
+	private Map<String, String> getInternalTransitiveMetadata(HttpServletRequest httpServletRequest) {
 		// Get custom metadata string from http header.
 		String customMetadataStr = httpServletRequest
 				.getHeader(MetadataConstant.HeaderName.CUSTOM_METADATA);
@@ -68,20 +87,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
 		// create custom metadata.
-		Map<String, String> upstreamCustomMetadataMap = JacksonUtils
-				.deserialize2Map(customMetadataStr);
-
-		try {
-			MetadataContextHolder.init(upstreamCustomMetadataMap);
-
-			filterChain.doFilter(httpServletRequest, httpServletResponse);
-		}
-		catch (IOException | ServletException | RuntimeException e) {
-			throw e;
-		}
-		finally {
-			MetadataContextHolder.remove();
-		}
+		return JacksonUtils.deserialize2Map(customMetadataStr);
 	}
 
 }

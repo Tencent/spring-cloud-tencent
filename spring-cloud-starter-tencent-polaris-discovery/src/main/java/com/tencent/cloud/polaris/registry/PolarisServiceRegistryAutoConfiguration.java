@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.registry;
 
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
@@ -45,16 +45,16 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnPolarisRegisterEnabled
 @ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled",
 		matchIfMissing = true)
-@AutoConfigureAfter({ AutoServiceRegistrationConfiguration.class,
+@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class,
 		AutoServiceRegistrationAutoConfiguration.class,
-		PolarisDiscoveryAutoConfiguration.class })
+		PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	public PolarisServiceRegistry polarisServiceRegistry(
 			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties) {
-		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, metadataLocalProperties);
+			StaticMetadataManager staticMetadataManager) {
+		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, staticMetadataManager);
 	}
 
 	@Bean
