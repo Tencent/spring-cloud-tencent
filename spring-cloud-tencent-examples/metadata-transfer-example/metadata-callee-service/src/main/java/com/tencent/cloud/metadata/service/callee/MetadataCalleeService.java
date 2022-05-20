@@ -15,9 +15,21 @@
  * specific language governing permissions and limitations under the License.
  */
 
+package com.tencent.cloud.metadata.service.callee;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 /**
- * Package info of router.
+ * Metadata callee application.
  *
- * @author Haotian Zhang
+ * @author Palmer Xu
  */
-package com.tencent.cloud.polaris.router;
+@SpringBootApplication
+public class MetadataCalleeService {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MetadataCalleeService.class, args);
+	}
+
+}

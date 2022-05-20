@@ -78,6 +78,12 @@ For example:
   - [Project Structure Overview](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
   - [Participate in co-construction](https://github.com/Tencent/spring-cloud-tencent/wiki/Contributing)
   
+## Chat Group
+
+Please scan the QR code to join the chat group.
+
+<img src="https://user-images.githubusercontent.com/24446200/169198148-d4cc3494-3485-4515-9897-c8cb5504f706.png" width="30%" height="30%" />
+
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
 

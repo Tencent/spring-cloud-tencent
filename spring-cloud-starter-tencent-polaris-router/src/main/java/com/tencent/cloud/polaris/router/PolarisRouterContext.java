@@ -13,40 +13,41 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.polaris.loadbalancer.rule;
+package com.tencent.cloud.polaris.router;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.util.CollectionUtils;
 
 /**
- * Load balance rule.
+ * the context for router.
  *
- * @author Haotian Zhang
+ *@author lepdou 2022-05-17
  */
-public enum PolarisLoadBalanceRule {
+public class PolarisRouterContext {
 
-	/**
-	 * Weighted random load balance rule.
-	 */
-	WEIGHTED_RANDOM_RULE("weighted_random");
+	private Map<String, String> labels;
 
-	/**
-	 * Load balance strategy.
-	 */
-	final String policy;
-
-	PolarisLoadBalanceRule(String strategy) {
-		this.policy = strategy;
+	public Map<String, String> getLabels() {
+		if (CollectionUtils.isEmpty(labels)) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(labels);
 	}
 
-	public static PolarisLoadBalanceRule fromStrategy(String strategy) {
-		return Arrays.stream(values()).filter(t -> t.getPolicy().equals(strategy))
-				.findAny().orElse(WEIGHTED_RANDOM_RULE);
+	public void setLabels(Map<String, String> labels) {
+		this.labels = labels;
 	}
 
-	public String getPolicy() {
-		return policy;
+	public void putLabel(String key, String value) {
+		if (labels == null) {
+			labels = new HashMap<>();
+		}
+		labels.put(key, value);
 	}
-
 }

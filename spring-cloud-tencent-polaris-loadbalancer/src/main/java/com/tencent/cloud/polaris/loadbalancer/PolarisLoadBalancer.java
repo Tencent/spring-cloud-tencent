@@ -13,14 +13,15 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.loadbalancer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
@@ -31,21 +32,16 @@ import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
-import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
-import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
+import com.tencent.polaris.api.rpc.GetHealthyInstancesRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
-import com.tencent.polaris.router.api.core.RouterAPI;
-import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
-import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -56,16 +52,13 @@ import org.apache.commons.lang.StringUtils;
  */
 public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 
-	private final RouterAPI routerAPI;
+	private final ConsumerAPI consumerAPI;
 
-	private ConsumerAPI consumerAPI;
-
-	private PolarisLoadBalancerProperties polarisLoadBalancerProperties;
+	private final PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 
 	public PolarisLoadBalancer(IClientConfig config, IRule rule, IPing ping, ServerList<Server> serverList,
-			RouterAPI routerAPI, ConsumerAPI consumerAPI, PolarisLoadBalancerProperties properties) {
+			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties properties) {
 		super(config, rule, ping, serverList, null, new PollingServerListUpdater());
-		this.routerAPI = routerAPI;
 		this.consumerAPI = consumerAPI;
 		this.polarisLoadBalancerProperties = properties;
 	}
@@ -79,31 +72,17 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 		else {
 			serviceInstances = getExtendDiscoveryServiceInstances();
 		}
+
 		if (serviceInstances == null || CollectionUtils.isEmpty(serviceInstances.getInstances())) {
 			return Collections.emptyList();
 		}
-		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
-		processRoutersRequest.setDstInstances(serviceInstances);
-		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
-		String srcService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get()
-				.getAllTransitiveCustomMetadata();
-		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
-			ServiceInfo serviceInfo = new ServiceInfo();
-			serviceInfo.setNamespace(srcNamespace);
-			serviceInfo.setService(srcService);
-			serviceInfo.setMetadata(transitiveCustomMetadata);
-			processRoutersRequest.setSourceService(serviceInfo);
+
+		List<Server> servers = new LinkedList<>();
+		for (Instance instance : serviceInstances.getInstances()) {
+			servers.add(new PolarisServer(serviceInstances, instance));
 		}
-		ProcessRoutersResponse processRoutersResponse = routerAPI
-				.processRouters(processRoutersRequest);
-		ServiceInstances filteredServiceInstances = processRoutersResponse
-				.getServiceInstances();
-		List<Server> filteredInstances = new ArrayList<>();
-		for (Instance instance : filteredServiceInstances.getInstances()) {
-			filteredInstances.add(new PolarisServer(serviceInstances, instance));
-		}
-		return filteredInstances;
+
+		return servers;
 	}
 
 	private ServiceInstances getPolarisDiscoveryServiceInstances() {
@@ -151,10 +130,10 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 	 * @return list of instances
 	 */
 	public InstancesResponse getAllInstances(String namespace, String serviceName) {
-		GetAllInstancesRequest request = new GetAllInstancesRequest();
+		GetHealthyInstancesRequest request = new GetHealthyInstancesRequest();
 		request.setNamespace(namespace);
 		request.setService(serviceName);
-		return consumerAPI.getAllInstance(request);
+		return consumerAPI.getHealthyInstancesInstance(request);
 	}
 
 }
