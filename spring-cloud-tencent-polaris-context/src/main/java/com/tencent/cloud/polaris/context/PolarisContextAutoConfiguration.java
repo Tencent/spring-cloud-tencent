@@ -18,12 +18,15 @@
 
 package com.tencent.cloud.polaris.context;
 
+import java.util.List;
+
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 /**
  * Autoconfiguration for Polaris {@link SDKContext}.
@@ -36,8 +39,10 @@ public class PolarisContextAutoConfiguration {
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean
-	public SDKContext polarisContext(PolarisContextProperties properties) throws PolarisException {
-		return SDKContext.initContextByConfig(properties.configuration());
+	public SDKContext polarisContext(PolarisContextProperties properties,
+			Environment environment,
+			List<PolarisConfigModifier> modifierList) throws PolarisException {
+		return SDKContext.initContextByConfig(properties.configuration(environment, modifierList));
 	}
 
 	@Bean

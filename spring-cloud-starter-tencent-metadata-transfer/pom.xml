@@ -50,20 +50,6 @@
 			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- powermock-module-junit4 -->
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- powermock-api-mockito -->
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito2</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 </project>

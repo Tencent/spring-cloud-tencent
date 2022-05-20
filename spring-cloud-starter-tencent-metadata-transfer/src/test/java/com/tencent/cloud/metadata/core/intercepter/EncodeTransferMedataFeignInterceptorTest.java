@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core.intercepter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -121,8 +122,17 @@ public class EncodeTransferMedataFeignInterceptorTest {
 
 			@Override
 			public void apply(RequestTemplate template) {
-				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
+				try {
+					// Since feign-core 11.1, RequestTemplate Adapted to RFC6570, See: https://tools.ietf.org/html/rfc6570#section-2.2
+					// Feign ISSUES : https://github.com/OpenFeign/feign/pull/1203
+					// Feign ISSUES : https://github.com/OpenFeign/feign/issues/1305
+					// Fixed : If you used RequestTemplate#header(name,value) method , the value needs to be encoded using URLEncoder .
+					template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
+							URLEncoder.encode("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}", "UTF-8"));
+				}
+				catch (UnsupportedEncodingException e) {
+					throw new RuntimeException(e);
+				}
 			}
 
 		}

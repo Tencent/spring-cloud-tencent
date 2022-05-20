@@ -95,7 +95,8 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 		processRoutersRequest.setDstInstances(serviceInstances);
 		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String srcService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
+		MetadataContext context = MetadataContextHolder.get();
+		Map<String, String> transitiveCustomMetadata = context.getAllTransitiveCustomMetadata();
 		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
 			ServiceInfo serviceInfo = new ServiceInfo();
 			serviceInfo.setNamespace(srcNamespace);

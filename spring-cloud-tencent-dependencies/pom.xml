@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-dependencies-parent</artifactId>
-		<version>3.0.5</version>
+		<version>3.1.2</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -70,9 +70,9 @@
 	</developers>
 
 	<properties>
-		<revision>1.4.3-2020.0.5</revision>
+		<revision>1.4.3-2021.0.2-SNAPSHOT</revision>
 		<polaris.version>1.5.2</polaris.version>
-		<powermock.version>2.0.0</powermock.version>
+		<guava.version>31.1-jre</guava.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -145,18 +145,10 @@
 				<version>${revision}</version>
 			</dependency>
 
-			<!-- powermock-module-junit4 -->
 			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>${powermock.version}</version>
-			</dependency>
-
-			<!-- powermock-api-mockito -->
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito2</artifactId>
-				<version>${powermock.version}</version>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
