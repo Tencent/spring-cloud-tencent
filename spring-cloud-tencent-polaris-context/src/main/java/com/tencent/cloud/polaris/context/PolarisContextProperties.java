@@ -29,7 +29,6 @@ import com.tencent.polaris.factory.ConfigAPIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.lang.StringUtils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
@@ -67,19 +66,17 @@ public class PolarisContextProperties {
 	 */
 	private String service;
 
-	@Autowired
-	private Environment environment;
-
-	@Autowired
-	private List<PolarisConfigModifier> modifierList;
-
-	protected Configuration configuration() {
+	protected Configuration configuration(Environment environment, List<PolarisConfigModifier> modifierList) {
 		// 1. Read user-defined polaris.yml configuration
 		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
 				.defaultConfig(ConfigProvider.DEFAULT_CONFIG);
 
 		// 2. Override user-defined polaris.yml configuration with SCT configuration
-		String defaultHost = getHost();
+		String defaultHost = this.localIpAddress;
+		if (StringUtils.isBlank(localIpAddress)) {
+			defaultHost = environment.getProperty("spring.cloud.client.ip-address");
+		}
+
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);
 
 		Collection<PolarisConfigModifier> modifiers = modifierList;
@@ -92,13 +89,6 @@ public class PolarisContextProperties {
 		}
 
 		return configuration;
-	}
-
-	private String getHost() {
-		if (StringUtils.isNotBlank(localIpAddress)) {
-			return localIpAddress;
-		}
-		return environment.getProperty("spring.cloud.client.ip-address");
 	}
 
 	public String getAddress() {

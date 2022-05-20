@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Test for {@link MetadataLocalProperties}
+ * Test for {@link MetadataLocalProperties} .
  *
  * @author Haotian Zhang
  */

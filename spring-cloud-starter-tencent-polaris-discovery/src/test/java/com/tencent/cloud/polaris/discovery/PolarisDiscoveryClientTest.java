@@ -24,8 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import org.springframework.cloud.client.ServiceInstance;
 
@@ -41,8 +40,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Haotian Zhang
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore("javax.management.*")
+@RunWith(MockitoJUnitRunner.class)
 public class PolarisDiscoveryClientTest {
 
 	@Mock

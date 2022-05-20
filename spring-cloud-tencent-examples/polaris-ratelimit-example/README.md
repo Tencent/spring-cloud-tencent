@@ -50,11 +50,15 @@ Examples provided by Polaris all support to run at IDE, or compile and run with 
 4. Configuration rate limit and verification
    Polaris provide three wats to conduct rate limit configuration (control panel, HTTP port and local files)
 
-this example is HTTP configuration. One can figure with the following steps:
+   - HTTP configuration. One can figure with the following steps:
 
- ````
-  curl -X POST -H "Content-Type:application/json" 127.0.0.1:8090/naming/v1/ratelimits  -d @rule.json
- ````
+     ````
+      curl -X POST -H "Content-Type:application/json" 127.0.0.1:8090/naming/v1/ratelimits  -d @rule.json
+     ````
+
+   - Configuration is done through the console, example as follows.
+
+      ![](polaris-ratelimit-ui.png)
 
 5. Verify rate limit result
    continue visit http://127.0.0.1:48081/business/invoke, one can see, after 10 invokes, rate limit will start:

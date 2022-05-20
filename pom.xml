@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>3.0.5</version>
+		<version>3.1.2</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -86,13 +86,13 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.4.3-2020.0.5</revision>
+		<revision>1.4.3-2021.0.2-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2020.0.5</spring.cloud.version>
+		<spring.cloud.version>2021.0.2</spring.cloud.version>
 
 		<!-- Dependencies -->
-		<logback.version>1.2.7</logback.version>
+		<logback.version>1.2.11</logback.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.3</jacoco.version>

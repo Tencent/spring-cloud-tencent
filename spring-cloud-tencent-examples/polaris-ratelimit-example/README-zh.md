@@ -43,10 +43,13 @@
 4. 配置限流规则并验证
     北极星提供了三个方式进行限流规则的配置（控制台、HTTP接口以及本地文件）。
     
-    本示例使用的方式为通过HTTP接口进行配置。通过以下命令来配置：
+   - 使用的方式为通过HTTP接口进行配置。通过以下命令来配置：
     ````
    curl -X POST -H "Content-Type:application/json" 127.0.0.1:8090/naming/v1/ratelimits  -d @rule.json
     ````
+   - 通过控制台进行配置，示例如下：
+   ![](polaris-ratelimit-ui.png)
+
    
 5. 验证限流效果
     继续访问http://127.0.0.1:48081/business/invoke，可以看到，10次调用后，就开始被限流：
