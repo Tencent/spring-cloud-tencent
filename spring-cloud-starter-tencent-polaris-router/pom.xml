@@ -26,6 +26,10 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>router-rule</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>router-metadata</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>

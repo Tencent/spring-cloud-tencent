@@ -22,8 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import feign.RequestInterceptor;
@@ -67,20 +65,11 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	public void test1() {
 		String metadata = testFeign.test();
 		Assertions.assertThat(metadata)
-				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
+				.isEqualTo("{\"b\":\"2\"}");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
 				.isEqualTo("1");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
 				.isEqualTo("2");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "a"))
-				.isEqualTo("11");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b"))
-				.isEqualTo("22");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "c"))
-				.isEqualTo("33");
 	}
 
 	@SpringBootApplication
@@ -99,8 +88,9 @@ public class EncodeTransferMedataFeignInterceptorTest {
 		public interface TestFeign {
 
 			@RequestMapping(value = "/test",
-					headers = {MetadataConstant.HeaderName.CUSTOM_METADATA
-							+ "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}"})
+					headers = {"X-SCT-Metadata-Transitive-a=11",
+							"X-SCT-Metadata-Transitive-b=22",
+							"X-SCT-Metadata-Transitive-c=33"})
 			String test();
 
 		}
