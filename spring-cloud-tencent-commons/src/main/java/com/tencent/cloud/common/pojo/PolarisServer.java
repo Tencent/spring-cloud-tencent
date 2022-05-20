@@ -48,6 +48,7 @@ public class PolarisServer extends Server {
 		}
 		this.serviceInstances = serviceInstances;
 		this.instance = instance;
+		this.setAlive(true);
 		this.metaInfo = new MetaInfo() {
 			@Override
 			public String getAppName() {

@@ -25,12 +25,10 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.cloud.gateway.route.Route;
 import org.springframework.core.Ordered;
 import org.springframework.web.server.ServerWebExchange;
 
 import static org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter.ROUTE_TO_URL_FILTER_ORDER;
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 /**
  * Scg output first filter used for setting peer info in context.
@@ -51,32 +49,12 @@ public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		// get request context
-		Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
-
 		// get metadata of current thread
 		MetadataContext metadataContext = exchange
 				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 		if (metadataContext == null) {
 			metadataContext = MetadataContextHolder.get();
 		}
-
-		// TODO The peer namespace is temporarily the same as the local namespace
-		metadataContext.putSystemMetadata(
-				MetadataConstant.SystemMetadataKey.PEER_NAMESPACE,
-				MetadataContext.LOCAL_NAMESPACE);
-		if (route != null) {
-			metadataContext.putSystemMetadata(
-					MetadataConstant.SystemMetadataKey.PEER_SERVICE,
-					route.getUri().getAuthority());
-		}
-		else {
-			metadataContext.putSystemMetadata(
-					MetadataConstant.SystemMetadataKey.PEER_SERVICE,
-					exchange.getRequest().getURI().getAuthority());
-		}
-		metadataContext.putSystemMetadata(MetadataConstant.SystemMetadataKey.PEER_PATH,
-				exchange.getRequest().getURI().getPath());
 
 		exchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT,
 				metadataContext);

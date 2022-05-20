@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.common.metadata;
@@ -57,7 +58,7 @@ public final class MetadataContextHolder {
 			Map<String, String> transitiveMetadataMap = getTransitiveMetadataMap(
 					metadataLocalProperties.getContent(),
 					metadataLocalProperties.getTransitive());
-			metadataContext.putAllTransitiveCustomMetadata(transitiveMetadataMap);
+			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE, transitiveMetadataMap);
 
 			METADATA_CONTEXT.set(metadataContext);
 		}
@@ -92,20 +93,15 @@ public final class MetadataContextHolder {
 	/**
 	 * Save metadata map to thread local.
 	 * @param customMetadataMap custom metadata collection
-	 * @param systemMetadataMap system metadata collection
 	 */
-	public static void init(Map<String, String> customMetadataMap,
-			Map<String, String> systemMetadataMap) {
+	public static void init(Map<String, String> customMetadataMap) {
 		// Init ThreadLocal.
 		MetadataContextHolder.remove();
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		// Save to ThreadLocal.
 		if (!CollectionUtils.isEmpty(customMetadataMap)) {
-			metadataContext.putAllTransitiveCustomMetadata(customMetadataMap);
-		}
-		if (!CollectionUtils.isEmpty(systemMetadataMap)) {
-			metadataContext.putAllSystemMetadata(systemMetadataMap);
+			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE, customMetadataMap);
 		}
 		MetadataContextHolder.set(metadataContext);
 	}

@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.discovery;
 
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -33,6 +32,7 @@ import com.tencent.polaris.api.rpc.GetInstancesRequest;
 import com.tencent.polaris.api.rpc.GetServicesRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.api.rpc.ServicesResponse;
+import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +53,9 @@ public class PolarisDiscoveryHandler {
 	private ProviderAPI providerAPI;
 
 	@Autowired
+	private SDKContext sdkContext;
+
+	@Autowired
 	private ConsumerAPI polarisConsumer;
 
 	/**
@@ -66,13 +69,10 @@ public class PolarisDiscoveryHandler {
 		GetInstancesRequest getInstancesRequest = new GetInstancesRequest();
 		getInstancesRequest.setNamespace(namespace);
 		getInstancesRequest.setService(service);
-		String method = MetadataContextHolder.get()
-				.getSystemMetadata(SystemMetadataKey.PEER_PATH);
-		getInstancesRequest.setMethod(method);
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get()
-				.getAllTransitiveCustomMetadata();
+		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get().
+				getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		if (StringUtils.isNotBlank(localNamespace) || StringUtils.isNotBlank(localService)
 				|| null != allTransitiveCustomMetadata) {
 			ServiceInfo sourceService = new ServiceInfo();
@@ -112,6 +112,10 @@ public class PolarisDiscoveryHandler {
 
 	public ProviderAPI getProviderAPI() {
 		return providerAPI;
+	}
+
+	public SDKContext getSdkContext() {
+		return sdkContext;
 	}
 
 	/**

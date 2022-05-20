@@ -36,10 +36,6 @@
 				</exclusion>
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-metadata</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
 					<artifactId>router-canary</artifactId>
 				</exclusion>
 				<exclusion>

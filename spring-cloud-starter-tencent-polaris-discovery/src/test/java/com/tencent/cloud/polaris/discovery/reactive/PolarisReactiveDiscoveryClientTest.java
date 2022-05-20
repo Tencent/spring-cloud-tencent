@@ -37,7 +37,7 @@ import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisReactiveDiscoveryClient}
+ * Test for {@link PolarisReactiveDiscoveryClient}.
  *
  * @author Haotian Zhang
  */

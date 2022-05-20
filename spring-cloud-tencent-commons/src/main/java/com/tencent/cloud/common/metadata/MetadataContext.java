@@ -35,6 +35,10 @@ import org.springframework.util.StringUtils;
 public class MetadataContext {
 
 	/**
+	 * transitive context.
+	 */
+	public static final String FRAGMENT_TRANSITIVE = "transitive";
+	/**
 	 * Namespace of local instance.
 	 */
 	public static String LOCAL_NAMESPACE;
@@ -44,15 +48,8 @@ public class MetadataContext {
 	 */
 	public static String LOCAL_SERVICE;
 
-	/**
-	 * Transitive custom metadata content.
-	 */
-	private final Map<String, String> transitiveCustomMetadata;
 
-	/**
-	 * System metadata content.
-	 */
-	private final Map<String, String> systemMetadata;
+	private final Map<String, Map<String, String>> fragmentContexts;
 
 	static {
 		String namespace = ApplicationContextAwareUtils
@@ -74,47 +71,43 @@ public class MetadataContext {
 	}
 
 	public MetadataContext() {
-		this.transitiveCustomMetadata = new ConcurrentHashMap<>();
-		this.systemMetadata = new ConcurrentHashMap<>();
+		this.fragmentContexts = new ConcurrentHashMap<>();
 	}
 
-	public Map<String, String> getAllTransitiveCustomMetadata() {
-		return Collections.unmodifiableMap(this.transitiveCustomMetadata);
+
+	public Map<String, String> getFragmentContext(String fragment) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(fragmentContext);
 	}
 
-	public String getTransitiveCustomMetadata(String key) {
-		return this.transitiveCustomMetadata.get(key);
+	public String getContext(String fragment, String key) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			return null;
+		}
+		return fragmentContext.get(key);
 	}
 
-	public void putTransitiveCustomMetadata(String key, String value) {
-		this.transitiveCustomMetadata.put(key, value);
+	public void putContext(String fragment, String key, String value) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			fragmentContext = new ConcurrentHashMap<>();
+			fragmentContexts.put(fragment, fragmentContext);
+		}
+		fragmentContext.put(key, value);
 	}
 
-	public void putAllTransitiveCustomMetadata(Map<String, String> customMetadata) {
-		this.transitiveCustomMetadata.putAll(customMetadata);
-	}
-
-	public Map<String, String> getAllSystemMetadata() {
-		return Collections.unmodifiableMap(this.systemMetadata);
-	}
-
-	public String getSystemMetadata(String key) {
-		return this.systemMetadata.get(key);
-	}
-
-	public void putSystemMetadata(String key, String value) {
-		this.systemMetadata.put(key, value);
-	}
-
-	public void putAllSystemMetadata(Map<String, String> systemMetadata) {
-		this.systemMetadata.putAll(systemMetadata);
+	public void putFragmentContext(String fragment, Map<String, String> context) {
+		fragmentContexts.put(fragment, context);
 	}
 
 	@Override
 	public String toString() {
-		return "MetadataContext{" + "transitiveCustomMetadata="
-				+ JacksonUtils.serialize2Json(transitiveCustomMetadata)
-				+ ", systemMetadata=" + JacksonUtils.serialize2Json(systemMetadata) + '}';
+		return "MetadataContext{" +
+				"fragmentContexts=" + JacksonUtils.serialize2Json(fragmentContexts) +
+				'}';
 	}
-
 }

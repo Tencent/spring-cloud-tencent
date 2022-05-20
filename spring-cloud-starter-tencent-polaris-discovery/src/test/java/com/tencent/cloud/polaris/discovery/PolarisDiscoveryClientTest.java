@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisDiscoveryClient}
+ * Test for {@link PolarisDiscoveryClient}.
  *
  * @author Haotian Zhang
  */

@@ -13,14 +13,15 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.loadbalancer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
@@ -30,23 +31,17 @@ import com.netflix.loadbalancer.PollingServerListUpdater;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.common.constant.ContextConstant;
-import com.tencent.cloud.common.constant.MetadataConstant.SystemMetadataKey;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
-import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
-import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
+import com.tencent.polaris.api.rpc.GetHealthyInstancesRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
-import com.tencent.polaris.router.api.core.RouterAPI;
-import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
-import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -57,16 +52,13 @@ import org.apache.commons.lang.StringUtils;
  */
 public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 
-	private final RouterAPI routerAPI;
+	private final ConsumerAPI consumerAPI;
 
-	private ConsumerAPI consumerAPI;
-
-	private PolarisLoadBalancerProperties polarisLoadBalancerProperties;
+	private final PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 
 	public PolarisLoadBalancer(IClientConfig config, IRule rule, IPing ping, ServerList<Server> serverList,
-			RouterAPI routerAPI, ConsumerAPI consumerAPI, PolarisLoadBalancerProperties properties) {
+			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties properties) {
 		super(config, rule, ping, serverList, null, new PollingServerListUpdater());
-		this.routerAPI = routerAPI;
 		this.consumerAPI = consumerAPI;
 		this.polarisLoadBalancerProperties = properties;
 	}
@@ -80,46 +72,21 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 		else {
 			serviceInstances = getExtendDiscoveryServiceInstances();
 		}
+
 		if (serviceInstances == null || CollectionUtils.isEmpty(serviceInstances.getInstances())) {
 			return Collections.emptyList();
 		}
-		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
-		processRoutersRequest.setDstInstances(serviceInstances);
-		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
-		String srcService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> transitiveCustomMetadata = MetadataContextHolder.get()
-				.getAllTransitiveCustomMetadata();
-		String method = MetadataContextHolder.get()
-				.getSystemMetadata(SystemMetadataKey.PEER_PATH);
-		processRoutersRequest.setMethod(method);
-		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
-			ServiceInfo serviceInfo = new ServiceInfo();
-			serviceInfo.setNamespace(srcNamespace);
-			serviceInfo.setService(srcService);
-			serviceInfo.setMetadata(transitiveCustomMetadata);
-			processRoutersRequest.setSourceService(serviceInfo);
+
+		List<Server> servers = new LinkedList<>();
+		for (Instance instance : serviceInstances.getInstances()) {
+			servers.add(new PolarisServer(serviceInstances, instance));
 		}
-		ProcessRoutersResponse processRoutersResponse = routerAPI
-				.processRouters(processRoutersRequest);
-		ServiceInstances filteredServiceInstances = processRoutersResponse
-				.getServiceInstances();
-		List<Server> filteredInstances = new ArrayList<>();
-		for (Instance instance : filteredServiceInstances.getInstances()) {
-			filteredInstances.add(new PolarisServer(serviceInstances, instance));
-		}
-		return filteredInstances;
+
+		return servers;
 	}
 
 	private ServiceInstances getPolarisDiscoveryServiceInstances() {
-		String serviceName = MetadataContextHolder.get().getSystemMetadata(SystemMetadataKey.PEER_SERVICE);
-		if (StringUtils.isBlank(serviceName)) {
-			List<Server> allServers = super.getAllServers();
-			if (CollectionUtils.isEmpty(allServers)) {
-				return null;
-			}
-			serviceName = ((PolarisServer) super.getAllServers().get(0)).getServiceInstances().getService();
-		}
-		return getAllInstances(MetadataContext.LOCAL_NAMESPACE, serviceName).toServiceInstances();
+		return getAllInstances(MetadataContext.LOCAL_NAMESPACE, name).toServiceInstances();
 	}
 
 	private ServiceInstances getExtendDiscoveryServiceInstances() {
@@ -128,26 +95,16 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 			return null;
 		}
 		ServiceInstances serviceInstances;
-		String serviceName;
-		// notice the difference between different service registries
-		if (StringUtils.isNotBlank(
-				allServers.get(0).getMetaInfo().getServiceIdForDiscovery())) {
-			serviceName = allServers.get(0).getMetaInfo().getServiceIdForDiscovery();
-		}
-		else {
-			serviceName = allServers.get(0).getMetaInfo().getAppName();
-		}
-		if (StringUtils.isBlank(serviceName)) {
+		if (StringUtils.isBlank(name)) {
 			throw new IllegalStateException(
 					"PolarisLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 		}
-		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE,
-				serviceName);
+		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, name);
 		List<Instance> instances = new ArrayList<>(8);
 		for (Server server : allServers) {
 			DefaultInstance instance = new DefaultInstance();
 			instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-			instance.setService(serviceName);
+			instance.setService(name);
 			instance.setHealthy(server.isAlive());
 			instance.setProtocol(server.getScheme());
 			instance.setId(server.getId());
@@ -173,10 +130,10 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 	 * @return list of instances
 	 */
 	public InstancesResponse getAllInstances(String namespace, String serviceName) {
-		GetAllInstancesRequest request = new GetAllInstancesRequest();
+		GetHealthyInstancesRequest request = new GetHealthyInstancesRequest();
 		request.setNamespace(namespace);
 		request.setService(serviceName);
-		return consumerAPI.getAllInstance(request);
+		return consumerAPI.getHealthyInstancesInstance(request);
 	}
 
 }

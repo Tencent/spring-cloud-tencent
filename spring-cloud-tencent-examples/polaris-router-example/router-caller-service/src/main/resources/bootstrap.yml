@@ -4,6 +4,10 @@ spring:
   application:
     name: RouterCallerService
   cloud:
+    tencent:
+      metadata:
+        content:
+          k1: v1
     polaris:
       address: grpc://127.0.0.1:8091
       namespace: default

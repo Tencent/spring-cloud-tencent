@@ -37,7 +37,7 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisServiceRegistryAutoConfiguration}
+ * Test for {@link PolarisServiceRegistryAutoConfiguration}.
  *
  * @author Haotian Zhang
  */

@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.loadbalancer.config;
@@ -24,12 +25,8 @@ import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
-import com.tencent.cloud.polaris.loadbalancer.rule.PolarisLoadBalanceRule;
-import com.tencent.cloud.polaris.loadbalancer.rule.PolarisWeightedRandomRule;
 import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.router.api.core.RouterAPI;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,24 +39,11 @@ import org.springframework.context.annotation.Configuration;
 public class PolarisRibbonClientConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public IRule polarisRibbonRule(
-			PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
-		switch (PolarisLoadBalanceRule
-				.fromStrategy(polarisLoadBalancerProperties.getStrategy())) {
-		case WEIGHTED_RANDOM_RULE:
-		default:
-			return new PolarisWeightedRandomRule();
-		}
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public ILoadBalancer polarisLoadBalancer(IClientConfig iClientConfig, IRule iRule,
-			IPing iPing, ServerList<Server> serverList, RouterAPI polarisRouter,
+			IPing iPing, ServerList<Server> serverList,
 			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
 		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
-				polarisRouter, consumerAPI, polarisLoadBalancerProperties);
+				consumerAPI, polarisLoadBalancerProperties);
 	}
 
 }

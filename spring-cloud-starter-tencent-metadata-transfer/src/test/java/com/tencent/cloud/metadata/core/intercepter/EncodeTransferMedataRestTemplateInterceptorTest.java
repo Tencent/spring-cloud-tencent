@@ -22,9 +22,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -47,7 +47,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataRestTemplateInterceptor}
+ * Test for {@link EncodeTransferMedataRestTemplateInterceptor}.
  *
  * @author Haotian Zhang
  */
@@ -77,19 +77,19 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 						httpEntity, String.class)
 				.getBody();
 		Assertions.assertThat(metadata)
-				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}{}");
+				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
 				.isEqualTo("1");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
 				.isEqualTo("2");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "a"))
 				.isEqualTo("11");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b"))
 				.isEqualTo("22");
 		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c"))
+				.assertThat(MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "c"))
 				.isEqualTo("33");
 	}
 
@@ -106,9 +106,7 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 		public String test(
 				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
 				throws UnsupportedEncodingException {
-			String systemMetadataStr = JacksonUtils
-					.serialize2Json(MetadataContextHolder.get().getAllSystemMetadata());
-			return URLDecoder.decode(customMetadataStr, "UTF-8") + systemMetadataStr;
+			return URLDecoder.decode(customMetadataStr, "UTF-8");
 		}
 
 	}

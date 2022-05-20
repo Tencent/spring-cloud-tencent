@@ -52,11 +52,9 @@ public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	public PolarisServiceRegistry polarisServiceRegistry(
-			PolarisDiscoveryProperties polarisDiscoveryProperties,
-			PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
 			MetadataLocalProperties metadataLocalProperties) {
-		return new PolarisServiceRegistry(polarisDiscoveryProperties,
-				polarisDiscoveryHandler, metadataLocalProperties);
+		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, metadataLocalProperties);
 	}
 
 	@Bean
@@ -77,5 +75,4 @@ public class PolarisServiceRegistryAutoConfiguration {
 		return new PolarisAutoServiceRegistration(registry,
 				autoServiceRegistrationProperties, registration);
 	}
-
 }
