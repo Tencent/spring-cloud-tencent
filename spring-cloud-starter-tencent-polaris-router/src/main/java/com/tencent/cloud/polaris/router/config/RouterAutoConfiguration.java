@@ -18,11 +18,13 @@
 
 package com.tencent.cloud.polaris.router.config;
 
+import java.util.List;
+
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.feign.PolarisCachingSpringLoadBalanceFactory;
-import com.tencent.cloud.polaris.router.feign.RouterLabelInterceptor;
+import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerBeanPostProcessor;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
 
@@ -45,10 +47,10 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 public class RouterAutoConfiguration {
 
 	@Bean
-	public RouterLabelInterceptor routerLabelInterceptor(@Nullable RouterLabelResolver resolver,
+	public RouterLabelFeignInterceptor routerLabelInterceptor(@Nullable List<RouterLabelResolver> routerLabelResolvers,
 			MetadataLocalProperties metadataLocalProperties,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
-		return new RouterLabelInterceptor(resolver, metadataLocalProperties, routerRuleLabelResolver);
+		return new RouterLabelFeignInterceptor(routerLabelResolvers, metadataLocalProperties, routerRuleLabelResolver);
 	}
 
 	@Bean

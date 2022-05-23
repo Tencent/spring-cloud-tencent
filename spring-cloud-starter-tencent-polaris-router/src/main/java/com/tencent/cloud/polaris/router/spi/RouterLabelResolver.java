@@ -22,6 +22,7 @@ import java.util.Map;
 
 import feign.RequestTemplate;
 
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
 
 /**
@@ -29,7 +30,7 @@ import org.springframework.http.HttpRequest;
  *
  * @author lepdou 2022-05-11
  */
-public interface RouterLabelResolver {
+public interface RouterLabelResolver extends Ordered {
 
 	/**
 	 * resolve labels from feign request.
