@@ -19,7 +19,9 @@
 package com.tencent.cloud.polaris.router.feign;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,17 +46,23 @@ import org.springframework.util.CollectionUtils;
  *
  *@author lepdou 2022-05-12
  */
-public class RouterLabelInterceptor implements RequestInterceptor, Ordered {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelInterceptor.class);
+public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelFeignInterceptor.class);
 
-	private final RouterLabelResolver resolver;
+	private final List<RouterLabelResolver> routerLabelResolvers;
 	private final MetadataLocalProperties metadataLocalProperties;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
-	public RouterLabelInterceptor(RouterLabelResolver resolver,
+	public RouterLabelFeignInterceptor(List<RouterLabelResolver> routerLabelResolvers,
 			MetadataLocalProperties metadataLocalProperties,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
-		this.resolver = resolver;
+		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
+			routerLabelResolvers.sort(Comparator.comparingInt(Ordered::getOrder));
+			this.routerLabelResolvers = routerLabelResolvers;
+		}
+		else {
+			this.routerLabelResolvers = null;
+		}
 		this.metadataLocalProperties = metadataLocalProperties;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 	}
@@ -74,16 +82,18 @@ public class RouterLabelInterceptor implements RequestInterceptor, Ordered {
 		labels.putAll(transitiveLabels);
 
 		// labels from request
-		if (resolver != null) {
-			try {
-				Map<String, String> customResolvedLabels = resolver.resolve(requestTemplate);
-				if (!CollectionUtils.isEmpty(customResolvedLabels)) {
-					labels.putAll(customResolvedLabels);
+		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
+			routerLabelResolvers.forEach(resolver -> {
+				try {
+					Map<String, String> customResolvedLabels = resolver.resolve(requestTemplate);
+					if (!CollectionUtils.isEmpty(customResolvedLabels)) {
+						labels.putAll(customResolvedLabels);
+					}
 				}
-			}
-			catch (Throwable t) {
-				LOGGER.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
-			}
+				catch (Throwable t) {
+					LOGGER.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
+				}
+			});
 		}
 
 		// labels from rule expression

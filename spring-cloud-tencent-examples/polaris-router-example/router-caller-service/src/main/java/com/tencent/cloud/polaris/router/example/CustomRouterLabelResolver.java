@@ -57,4 +57,9 @@ public class CustomRouterLabelResolver implements RouterLabelResolver {
 		labels.put("user", user.getName());
 		return labels;
 	}
+
+	@Override
+	public int getOrder() {
+		return 0;
+	}
 }
