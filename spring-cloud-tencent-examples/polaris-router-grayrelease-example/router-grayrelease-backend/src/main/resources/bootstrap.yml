@@ -1,0 +1,17 @@
+server:
+  session-timeout: 1800
+  port: 59002
+spring:
+  application:
+    name: gray-release-back
+  cloud:
+    polaris:
+      address: ${polaris_address}
+      namespace: default
+      enabled: true
+      discovery:
+        service-list-refresh-interval: 1000
+logging:
+  level:
+    org.springframework.cloud.gateway: info
+    com.tencent.cloud.polaris: debug
