@@ -19,6 +19,10 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
+		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
 
 		<!-- Polaris dependencies start -->
@@ -43,7 +47,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
+
 	</dependencies>
 
 </project>
