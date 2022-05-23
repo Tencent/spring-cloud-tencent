@@ -18,23 +18,21 @@
 
 package com.tencent.cloud.polaris.router.grayrelease.middle;
 
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/router/gray")
 public class MiddleController {
 
 	@Autowired
-	private RestTemplate restTemplate;
+	private Environment environment;
 
 	@Autowired
-	private Environment environment;
+	private RouterService routerService;
 
 	/**
 	 * Get information of callee.
@@ -45,7 +43,7 @@ public class MiddleController {
 		String env = System.getenv("SCT_METADATA_CONTENT_env");
 		String appName = environment.getProperty("spring.application.name");
 		String curName = appName + "[" + env + "]";
-		String resp = restTemplate.getForObject("http://gray-release-back/router/gray/rest", String.class);
+		String resp = routerService.rest();
 		return curName + " -> " + resp;
 	}
 }

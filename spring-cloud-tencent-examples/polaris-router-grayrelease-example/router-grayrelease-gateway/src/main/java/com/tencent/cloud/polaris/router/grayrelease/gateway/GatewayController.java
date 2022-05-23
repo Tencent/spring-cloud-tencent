@@ -23,17 +23,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/router/gray")
 public class GatewayController {
 
 	@Autowired
-	private RestTemplate restTemplate;
+	private Environment environment;
 
 	@Autowired
-	private Environment environment;
+	private RouterService routerService;
 
 	/**
 	 * Get information of callee.
@@ -42,7 +41,7 @@ public class GatewayController {
 	@GetMapping("/entry")
 	public String rest() {
 		String appName = environment.getProperty("spring.application.name");
-		String resp = restTemplate.getForObject("http://gray-release-front/router/gray/rest", String.class);
+		String resp = routerService.rest();
 		return appName + " -> " + resp;
 	}
 }
