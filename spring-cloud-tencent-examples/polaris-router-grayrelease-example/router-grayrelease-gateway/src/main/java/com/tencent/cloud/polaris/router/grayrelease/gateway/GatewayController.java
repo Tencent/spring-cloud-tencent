@@ -45,5 +45,5 @@ public class GatewayController {
 		String resp = routerService.restByUser(userId);
 		return appName + " -> " + resp;
 	}
-  
+
 }
