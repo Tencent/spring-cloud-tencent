@@ -21,6 +21,7 @@ package com.tencent.cloud.polaris.router.grayrelease.gateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,10 +39,11 @@ public class GatewayController {
 	 * Get information of callee.
 	 * @return information of callee
 	 */
-	@GetMapping("/entry")
-	public String rest() {
+	@GetMapping("/route_rule")
+	public String routeRule(@RequestHeader("uid") int userId) {
 		String appName = environment.getProperty("spring.application.name");
-		String resp = routerService.rest();
+		String resp = routerService.restByUser(userId);
 		return appName + " -> " + resp;
 	}
+
 }

@@ -84,6 +84,7 @@ public class ServiceRuleManager {
 
 		ServiceEventKey srcSvcEventKey = new ServiceEventKey(new ServiceKey(namespace, sourceService),
 				ServiceEventKey.EventType.ROUTING);
+		routerKeys.add(srcSvcEventKey);
 
 		DefaultServiceEventKeysProvider svcKeysProvider = new DefaultServiceEventKeysProvider();
 		svcKeysProvider.setSvcEventKeys(routerKeys);
