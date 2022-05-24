@@ -18,12 +18,8 @@
 
 package com.tencent.cloud.polaris.router.grayrelease.gateway;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,14 +35,6 @@ public class GatewayController {
 	@Autowired
 	private RouterService routerService;
 
-	private final Map<Integer, String> uidMapping;
-
-	public GatewayController() {
-		String mapping = System.getenv("uid_env_mapping");
-		uidMapping = parseUidMapping(mapping);
-		System.out.println("parsed mapping is " + uidMapping);
-	}
-
 	/**
 	 * Get information of callee.
 	 * @return information of callee
@@ -56,19 +44,6 @@ public class GatewayController {
 		String appName = environment.getProperty("spring.application.name");
 		String resp = routerService.restByUser(userId);
 		return appName + " -> " + resp;
-	}
-
-	private Map<Integer, String> parseUidMapping(String mapText) {
-		Map<Integer, String> result = new HashMap<>();
-		if (!StringUtils.hasText(mapText)) {
-			return result;
-		}
-		String[] tokens = mapText.split("\\|");
-		for (String token : tokens) {
-			String[] pairs = token.split(":");
-			result.put(Integer.parseInt(pairs[0]), pairs[1]);
-		}
-		return result;
 	}
 
 }
