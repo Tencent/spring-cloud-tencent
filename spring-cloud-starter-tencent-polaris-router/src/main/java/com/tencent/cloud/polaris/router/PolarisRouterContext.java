@@ -31,23 +31,28 @@ import org.springframework.util.CollectionUtils;
  */
 public class PolarisRouterContext {
 
-	private Map<String, String> labels;
+	/**
+	 * the label for rule router.
+	 */
+	public static final String RULE_ROUTER_LABELS = "ruleRouter";
+	/**
+	 * transitive labels.
+	 */
+	public static final String TRANSITIVE_LABELS = "transitive";
 
-	public Map<String, String> getLabels() {
+	private Map<String, Map<String, String>> labels;
+
+	public Map<String, String> getLabels(String labelType) {
 		if (CollectionUtils.isEmpty(labels)) {
 			return Collections.emptyMap();
 		}
-		return Collections.unmodifiableMap(labels);
+		return Collections.unmodifiableMap(labels.get(labelType));
 	}
 
-	public void setLabels(Map<String, String> labels) {
-		this.labels = labels;
-	}
-
-	public void putLabel(String key, String value) {
-		if (labels == null) {
-			labels = new HashMap<>();
+	public void setLabels(String labelType, Map<String, String> subLabels) {
+		if (this.labels == null) {
+			this.labels = new HashMap<>();
 		}
-		labels.put(key, value);
+		labels.put(labelType, subLabels);
 	}
 }

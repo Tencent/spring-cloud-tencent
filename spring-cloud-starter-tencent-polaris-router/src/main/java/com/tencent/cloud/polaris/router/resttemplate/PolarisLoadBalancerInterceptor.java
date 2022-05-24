@@ -21,7 +21,9 @@ package com.tencent.cloud.polaris.router.resttemplate;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +41,7 @@ import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 import org.springframework.cloud.netflix.ribbon.RibbonLoadBalancerClient;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
@@ -56,7 +59,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 
 	private final LoadBalancerClient loadBalancer;
 	private final LoadBalancerRequestFactory requestFactory;
-	private final RouterLabelResolver resolver;
+	private final List<RouterLabelResolver> routerLabelResolvers;
 	private final MetadataLocalProperties metadataLocalProperties;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
@@ -64,15 +67,22 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 
 	public PolarisLoadBalancerInterceptor(LoadBalancerClient loadBalancer,
 			LoadBalancerRequestFactory requestFactory,
-			RouterLabelResolver resolver,
+			List<RouterLabelResolver> routerLabelResolvers,
 			MetadataLocalProperties metadataLocalProperties,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		super(loadBalancer, requestFactory);
 		this.loadBalancer = loadBalancer;
 		this.requestFactory = requestFactory;
-		this.resolver = resolver;
 		this.metadataLocalProperties = metadataLocalProperties;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
+
+		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
+			routerLabelResolvers.sort(Comparator.comparingInt(Ordered::getOrder));
+			this.routerLabelResolvers = routerLabelResolvers;
+		}
+		else {
+			this.routerLabelResolvers = null;
+		}
 
 		this.isRibbonLoadBalanceClient = loadBalancer instanceof RibbonLoadBalancerClient;
 	}
@@ -104,28 +114,33 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		labels.putAll(transitiveLabels);
 
 		// labels from request
-		if (resolver != null) {
-			try {
-				Map<String, String> customResolvedLabels = resolver.resolve(request, body);
-				if (!CollectionUtils.isEmpty(customResolvedLabels)) {
-					labels.putAll(customResolvedLabels);
+		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
+			routerLabelResolvers.forEach(resolver -> {
+				try {
+					Map<String, String> customResolvedLabels = resolver.resolve(request, body);
+					if (!CollectionUtils.isEmpty(customResolvedLabels)) {
+						labels.putAll(customResolvedLabels);
+					}
 				}
-			}
-			catch (Throwable t) {
-				LOGGER.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
-			}
+				catch (Throwable t) {
+					LOGGER.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
+				}
+			});
 		}
 
+		// labels from rule expression
 		Map<String, String> ruleExpressionLabels = getExpressionLabels(request, peerServiceName);
 		if (!CollectionUtils.isEmpty(ruleExpressionLabels)) {
 			labels.putAll(ruleExpressionLabels);
 		}
 
-		//local service labels
+		// local service labels
 		labels.putAll(metadataLocalProperties.getContent());
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.setLabels(labels);
+
+		routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, labels);
+		routerContext.setLabels(PolarisRouterContext.TRANSITIVE_LABELS, transitiveLabels);
 
 		return routerContext;
 	}

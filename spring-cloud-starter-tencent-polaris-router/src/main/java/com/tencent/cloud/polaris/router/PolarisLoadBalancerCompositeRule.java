@@ -42,6 +42,7 @@ import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperti
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
+import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
@@ -133,13 +134,8 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
 		processRoutersRequest.setDstInstances(serviceInstances);
 
-		Map<String, String> routerMetadata;
-		if (key instanceof PolarisRouterContext) {
-			routerMetadata = ((PolarisRouterContext) key).getLabels();
-		}
-		else {
-			routerMetadata = Collections.emptyMap();
-		}
+		Map<String, String> transitiveLabels = getRouterLabels(key, PolarisRouterContext.TRANSITIVE_LABELS);
+		processRoutersRequest.putRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA, transitiveLabels);
 
 		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String srcService = MetadataContext.LOCAL_SERVICE;
@@ -148,11 +144,19 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 			ServiceInfo serviceInfo = new ServiceInfo();
 			serviceInfo.setNamespace(srcNamespace);
 			serviceInfo.setService(srcService);
-			serviceInfo.setMetadata(routerMetadata);
+			Map<String, String> ruleRouterLabels = getRouterLabels(key, PolarisRouterContext.RULE_ROUTER_LABELS);
+			serviceInfo.setMetadata(ruleRouterLabels);
 			processRoutersRequest.setSourceService(serviceInfo);
 		}
 
 		return processRoutersRequest;
+	}
+
+	private Map<String, String> getRouterLabels(Object key, String type) {
+		if (key instanceof PolarisRouterContext) {
+			return ((PolarisRouterContext) key).getLabels(type);
+		}
+		return Collections.emptyMap();
 	}
 
 	public AbstractLoadBalancerRule getRule() {
