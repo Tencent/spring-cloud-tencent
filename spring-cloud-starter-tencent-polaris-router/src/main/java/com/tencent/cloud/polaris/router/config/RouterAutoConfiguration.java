@@ -32,6 +32,7 @@ import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.Nullable;
 
@@ -44,6 +45,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
  */
 @Configuration
 @RibbonClients(defaultConfiguration = {FeignConfiguration.class, RibbonConfiguration.class})
+@Import({PolarisNearByRouterProperties.class, PolarisMetadataRouterProperties.class, PolarisRuleBasedRouterProperties.class})
 public class RouterAutoConfiguration {
 
 	@Bean

@@ -39,6 +39,13 @@ public class StaticMetadataManager {
 	private static final String ENV_METADATA_PREFIX = "SCT_METADATA_CONTENT_";
 	private static final int ENV_METADATA_PREFIX_LENGTH = ENV_METADATA_PREFIX.length();
 	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
+	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
+	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
+	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
+
+	private static final String LOCATION_KEY_REGION = "region";
+	private static final String LOCATION_KEY_ZONE = "zone";
+	private static final String LOCATION_KEY_CAMPUS = "campus";
 
 	private Map<String, String> envMetadata;
 	private Map<String, String> envTransitiveMetadata;
@@ -46,11 +53,17 @@ public class StaticMetadataManager {
 	private Map<String, String> configTransitiveMetadata;
 	private Map<String, String> mergedStaticMetadata;
 	private Map<String, String> mergedStaticTransitiveMetadata;
+	private String zone;
+	private String region;
+	private String campus;
 
 	public StaticMetadataManager(MetadataLocalProperties metadataLocalProperties) {
 		parseConfigMetadata(metadataLocalProperties);
 		parseEnvMetadata();
 		merge();
+		parseLocationMetadata();
+
+		LOGGER.info("[SCT] Loaded static metadata info. {}", this);
 	}
 
 	private void parseEnvMetadata() {
@@ -119,6 +132,12 @@ public class StaticMetadataManager {
 		this.mergedStaticTransitiveMetadata = Collections.unmodifiableMap(mergedTransitiveMetadataResult);
 	}
 
+	private void parseLocationMetadata() {
+		zone = System.getenv(ENV_METADATA_ZONE);
+		region = System.getenv(ENV_METADATA_REGION);
+		campus = System.getenv(ENV_METADATA_CAMPUS);
+	}
+
 	public Map<String, String> getAllEnvMetadata() {
 		return envMetadata;
 	}
@@ -139,7 +158,48 @@ public class StaticMetadataManager {
 		return mergedStaticMetadata;
 	}
 
-	Map<String, String> getMergedStaticTransitiveMetadata() {
+	public Map<String, String> getMergedStaticTransitiveMetadata() {
 		return mergedStaticTransitiveMetadata;
+	}
+
+	public String getZone() {
+		return zone;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public String getCampus() {
+		return campus;
+	}
+
+	public Map<String, String> getLocationMetadata() {
+		Map<String, String> locationMetadata = new HashMap<>();
+		if (StringUtils.isNotBlank(region)) {
+			locationMetadata.put(LOCATION_KEY_REGION, region);
+		}
+		if (StringUtils.isNotBlank(zone)) {
+			locationMetadata.put(LOCATION_KEY_ZONE, zone);
+		}
+		if (StringUtils.isNotBlank(campus)) {
+			locationMetadata.put(LOCATION_KEY_CAMPUS, campus);
+		}
+		return locationMetadata;
+	}
+
+	@Override
+	public String toString() {
+		return "StaticMetadataManager{" +
+				"envMetadata=" + envMetadata +
+				", envTransitiveMetadata=" + envTransitiveMetadata +
+				", configMetadata=" + configMetadata +
+				", configTransitiveMetadata=" + configTransitiveMetadata +
+				", mergedStaticMetadata=" + mergedStaticMetadata +
+				", mergedStaticTransitiveMetadata=" + mergedStaticTransitiveMetadata +
+				", zone='" + zone + '\'' +
+				", region='" + region + '\'' +
+				", campus='" + campus + '\'' +
+				'}';
 	}
 }

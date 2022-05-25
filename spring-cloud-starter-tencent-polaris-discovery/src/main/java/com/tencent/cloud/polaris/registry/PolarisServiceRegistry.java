@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -95,10 +97,13 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setPort(registration.getPort());
 		instanceRegisterRequest.setWeight(polarisDiscoveryProperties.getWeight());
 		instanceRegisterRequest.setToken(polarisDiscoveryProperties.getToken());
+		instanceRegisterRequest.setRegion(staticMetadataManager.getRegion());
+		instanceRegisterRequest.setZone(staticMetadataManager.getZone());
+		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
 		if (null != heartbeatExecutor) {
 			instanceRegisterRequest.setTtl(ttl);
 		}
-		instanceRegisterRequest.setMetadata(staticMetadataManager.getMergedStaticMetadata());
+		instanceRegisterRequest.setMetadata(getInstanceMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		try {
@@ -121,6 +126,16 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 					registration.getServiceId(), registration, e);
 			rethrowRuntimeException(e);
 		}
+	}
+
+	private Map<String, String> getInstanceMetadata() {
+		Map<String, String> metadata = new HashMap<>();
+
+		metadata.putAll(staticMetadataManager.getMergedStaticMetadata());
+		// location info will be putted both in metadata and instance's field
+		metadata.putAll(staticMetadataManager.getLocationMetadata());
+
+		return metadata;
 	}
 
 	@Override
