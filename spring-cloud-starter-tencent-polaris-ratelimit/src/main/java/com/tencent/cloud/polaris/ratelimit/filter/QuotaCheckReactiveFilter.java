@@ -59,8 +59,7 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
  */
 public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(QuotaCheckReactiveFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckReactiveFilter.class);
 
 	private final LimitAPI limitAPI;
 
@@ -111,6 +110,10 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 						.write(rejectTips.getBytes(StandardCharsets.UTF_8));
 				return response.writeWith(Mono.just(dataBuffer));
 			}
+			// Unirate
+			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
+				Thread.sleep(quotaResponse.getWaitMs());
+			}
 		}
 		catch (Throwable t) {
 			// An exception occurs in the rate limiting API call,
@@ -147,8 +150,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 				return labelResolver.resolve(exchange);
 			}
 			catch (Throwable e) {
-				LOG.error("resolve custom label failed. resolver = {}",
-						labelResolver.getClass().getName(), e);
+				LOG.error("resolve custom label failed. resolver = {}", labelResolver.getClass().getName(), e);
 			}
 		}
 		return Maps.newHashMap();

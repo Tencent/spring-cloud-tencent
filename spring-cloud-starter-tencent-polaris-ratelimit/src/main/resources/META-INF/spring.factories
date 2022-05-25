@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.tencent.cloud.polaris.ratelimit.config.RateLimitConfiguration
+  com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitConfiguration
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+  com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitBootstrapConfiguration
