@@ -34,6 +34,10 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>router-metadata</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>router-nearby</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>

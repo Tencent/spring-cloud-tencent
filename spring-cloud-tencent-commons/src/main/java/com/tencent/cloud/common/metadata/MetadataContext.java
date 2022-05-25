@@ -58,6 +58,12 @@ public class MetadataContext {
 			namespace = ApplicationContextAwareUtils
 					.getProperties("spring.cloud.polaris.discovery.namespace", "default");
 		}
+
+		if (StringUtils.isEmpty(namespace)) {
+			throw new RuntimeException("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
+					+ "spring.cloud.polaris.discovery.namespace");
+		}
+
 		LOCAL_NAMESPACE = namespace;
 
 		String serviceName = ApplicationContextAwareUtils
@@ -66,6 +72,11 @@ public class MetadataContext {
 			serviceName = ApplicationContextAwareUtils.getProperties(
 					"spring.cloud.polaris.discovery.service", ApplicationContextAwareUtils
 							.getProperties("spring.application.name", null));
+		}
+
+		if (StringUtils.isEmpty(serviceName)) {
+			throw new RuntimeException("service name should not be blank. please configure spring.cloud.polaris.service or "
+					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 		}
 		LOCAL_SERVICE = serviceName;
 	}

@@ -37,7 +37,12 @@ public class RibbonConfiguration {
 	@Bean
 	public IRule polarisLoadBalancerCompositeRule(RouterAPI routerAPI,
 			PolarisLoadBalancerProperties polarisLoadBalancerProperties,
+			PolarisNearByRouterProperties polarisNearByRouterProperties,
+			PolarisMetadataRouterProperties polarisMetadataRouterProperties,
+			PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties,
 			IClientConfig iClientConfig) {
-		return new PolarisLoadBalancerCompositeRule(routerAPI, polarisLoadBalancerProperties, iClientConfig);
+		return new PolarisLoadBalancerCompositeRule(routerAPI, polarisLoadBalancerProperties,
+				polarisNearByRouterProperties, polarisMetadataRouterProperties,
+				polarisRuleBasedRouterProperties, iClientConfig);
 	}
 }

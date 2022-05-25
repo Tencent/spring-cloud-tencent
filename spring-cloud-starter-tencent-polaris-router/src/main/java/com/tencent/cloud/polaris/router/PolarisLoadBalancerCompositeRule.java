@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.router;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,14 +40,18 @@ import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRule;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
+import com.tencent.cloud.polaris.router.config.PolarisMetadataRouterProperties;
+import com.tencent.cloud.polaris.router.config.PolarisNearByRouterProperties;
+import com.tencent.cloud.polaris.router.config.PolarisRuleBasedRouterProperties;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
+import com.tencent.polaris.plugins.router.nearby.NearbyRouter;
+import com.tencent.polaris.plugins.router.rule.RuleBasedRouter;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
 
@@ -76,14 +81,24 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 	private final static String STRATEGY_AVAILABILITY_FILTERING = "availabilityFilteringRule";
 
 	private final PolarisLoadBalancerProperties loadBalancerProperties;
+	private final PolarisNearByRouterProperties polarisNearByRouterProperties;
+	private final PolarisMetadataRouterProperties polarisMetadataRouterProperties;
+	private final PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties;
 	private final RouterAPI routerAPI;
 
 	private final AbstractLoadBalancerRule delegateRule;
 
-	public PolarisLoadBalancerCompositeRule(RouterAPI routerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties,
+	public PolarisLoadBalancerCompositeRule(RouterAPI routerAPI,
+			PolarisLoadBalancerProperties polarisLoadBalancerProperties,
+			PolarisNearByRouterProperties polarisNearByRouterProperties,
+			PolarisMetadataRouterProperties polarisMetadataRouterProperties,
+			PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties,
 			IClientConfig iClientConfig) {
 		this.routerAPI = routerAPI;
+		this.polarisNearByRouterProperties = polarisNearByRouterProperties;
 		this.loadBalancerProperties = polarisLoadBalancerProperties;
+		this.polarisMetadataRouterProperties = polarisMetadataRouterProperties;
+		this.polarisRuleBasedRouterProperties = polarisRuleBasedRouterProperties;
 
 		delegateRule = getRule();
 		delegateRule.initWithNiwsConfig(iClientConfig);
@@ -134,20 +149,39 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
 		processRoutersRequest.setDstInstances(serviceInstances);
 
-		Map<String, String> transitiveLabels = getRouterLabels(key, PolarisRouterContext.TRANSITIVE_LABELS);
-		processRoutersRequest.putRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA, transitiveLabels);
-
-		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
-		String srcService = MetadataContext.LOCAL_SERVICE;
-
-		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
-			ServiceInfo serviceInfo = new ServiceInfo();
-			serviceInfo.setNamespace(srcNamespace);
-			serviceInfo.setService(srcService);
-			Map<String, String> ruleRouterLabels = getRouterLabels(key, PolarisRouterContext.RULE_ROUTER_LABELS);
-			serviceInfo.setMetadata(ruleRouterLabels);
-			processRoutersRequest.setSourceService(serviceInfo);
+		// metadata router
+		if (polarisMetadataRouterProperties.isEnabled()) {
+			Map<String, String> transitiveLabels = getRouterLabels(key, PolarisRouterContext.TRANSITIVE_LABELS);
+			processRoutersRequest.putRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA, transitiveLabels);
 		}
+
+		// nearby router
+		if (polarisNearByRouterProperties.isEnabled()) {
+			Map<String, String> nearbyRouterMetadata = new HashMap<>();
+			nearbyRouterMetadata.put(NearbyRouter.ROUTER_ENABLED, "true");
+			processRoutersRequest.putRouterMetadata(NearbyRouter.ROUTER_TYPE_NEAR_BY, nearbyRouterMetadata);
+		}
+
+		// rule based router
+		// set dynamic switch for rule based router
+		boolean ruleBasedRouterEnabled = polarisRuleBasedRouterProperties.isEnabled();
+		Map<String, String> ruleRouterMetadata = new HashMap<>();
+		ruleRouterMetadata.put(RuleBasedRouter.ROUTER_ENABLED, String.valueOf(ruleBasedRouterEnabled));
+		processRoutersRequest.putRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED, ruleRouterMetadata);
+
+		ServiceInfo serviceInfo = new ServiceInfo();
+		serviceInfo.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+		serviceInfo.setService(MetadataContext.LOCAL_SERVICE);
+
+		if (ruleBasedRouterEnabled) {
+			Map<String, String> ruleRouterLabels = getRouterLabels(key, PolarisRouterContext.RULE_ROUTER_LABELS);
+			// The label information that the rule based routing depends on
+			// is placed in the metadata of the source service for transmission.
+			// Later, can consider putting it in routerMetadata like other routers.
+			serviceInfo.setMetadata(ruleRouterLabels);
+		}
+
+		processRoutersRequest.setSourceService(serviceInfo);
 
 		return processRoutersRequest;
 	}
