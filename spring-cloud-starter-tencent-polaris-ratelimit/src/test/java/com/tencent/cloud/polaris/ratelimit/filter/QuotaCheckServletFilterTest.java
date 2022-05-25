@@ -71,7 +71,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PowerMockIgnore({"javax.management.*", "javax.script.*"})
 @PowerMockRunnerDelegate(SpringRunner.class)
 @PrepareForTest(ExpressionLabelUtils.class)
-@SpringBootTest(classes = QuotaCheckServletFilterTest.TestApplication.class)
+@SpringBootTest(classes = QuotaCheckServletFilterTest.TestApplication.class, properties = {
+		"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"
+})
 public class QuotaCheckServletFilterTest {
 
 	private PolarisRateLimiterLabelServletResolver labelResolver = exchange -> Collections.singletonMap("ServletResolver", "ServletResolver");
