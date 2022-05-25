@@ -7,4 +7,6 @@
 - [Add metadata transfer example.](https://github.com/Tencent/spring-cloud-tencent/pull/184)
 - [Feature: Support metadata router.](https://github.com/Tencent/spring-cloud-tencent/pull/191)
 - [Feature: Misc optimize metadata router.](https://github.com/Tencent/spring-cloud-tencent/pull/192)
+- [Feature: Load application.yml and application-${profile}.yml from polaris server.](https://github.com/Tencent/spring-cloud-tencent/pull/199)
 - [feat:add rate limit of unirate.](https://github.com/Tencent/spring-cloud-tencent/pull/197)
+
