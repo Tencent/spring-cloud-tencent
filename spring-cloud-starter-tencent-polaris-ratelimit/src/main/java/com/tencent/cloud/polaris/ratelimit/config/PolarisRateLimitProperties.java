@@ -44,6 +44,11 @@ public class PolarisRateLimitProperties {
 	 */
 	private int rejectHttpCode = HttpStatus.TOO_MANY_REQUESTS.value();
 
+	/**
+	 * Max queuing time when using unirate.
+	 */
+	private long maxQueuingTime = 1000L;
+
 	public String getRejectRequestTips() {
 		return rejectRequestTips;
 	}
@@ -68,4 +73,11 @@ public class PolarisRateLimitProperties {
 		this.rejectHttpCode = rejectHttpCode;
 	}
 
+	public long getMaxQueuingTime() {
+		return maxQueuingTime;
+	}
+
+	public void setMaxQueuingTime(long maxQueuingTime) {
+		this.maxQueuingTime = maxQueuingTime;
+	}
 }
