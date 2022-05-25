@@ -33,15 +33,13 @@ import org.springframework.util.StringUtils;
  */
 public final class RateLimitUtils {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(RateLimitUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RateLimitUtils.class);
 
 	private RateLimitUtils() {
 
 	}
 
-	public static String getRejectTips(
-			PolarisRateLimitProperties polarisRateLimitProperties) {
+	public static String getRejectTips(PolarisRateLimitProperties polarisRateLimitProperties) {
 		String tips = polarisRateLimitProperties.getRejectRequestTips();
 
 		if (!StringUtils.isEmpty(tips)) {

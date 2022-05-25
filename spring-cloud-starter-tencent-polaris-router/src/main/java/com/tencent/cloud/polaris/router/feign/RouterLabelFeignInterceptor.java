@@ -116,6 +116,10 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		}
 
 		// pass label by header
+		if (escapeLabels.size() == 0) {
+			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER);
+			return;
+		}
 		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, JacksonUtils.serialize2Json(escapeLabels));
 	}
 

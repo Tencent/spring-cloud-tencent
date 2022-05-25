@@ -102,6 +102,10 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				response.getWriter().write(rejectTips);
 				return;
 			}
+			// Unirate
+			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
+				Thread.sleep(quotaResponse.getWaitMs());
+			}
 
 			filterChain.doFilter(request, response);
 		}

@@ -18,6 +18,10 @@
 package com.tencent.cloud.ratelimit.example.service.callee;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +42,8 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/business")
 public class BusinessController {
 
+	private static final Logger LOG = LoggerFactory.getLogger(BusinessController.class);
+
 	private final AtomicInteger index = new AtomicInteger(0);
 
 	@Autowired
@@ -45,6 +51,8 @@ public class BusinessController {
 
 	@Value("${spring.application.name}")
 	private String appName;
+
+	private AtomicLong lastTimestamp = new AtomicLong(0);
 
 	/**
 	 * Get information.
@@ -77,4 +85,21 @@ public class BusinessController {
 		return builder.toString();
 	}
 
+	/**
+	 * Get information with unirate.
+	 * @return information
+	 */
+	@GetMapping("/unirate")
+	public String unirate() {
+		long currentTimestamp = System.currentTimeMillis();
+		long lastTime = lastTimestamp.get();
+		if (lastTime != 0) {
+			LOG.info("Current timestamp:" + currentTimestamp + ", diff from last timestamp:" + (currentTimestamp - lastTime));
+		}
+		else {
+			LOG.info("Current timestamp:" + currentTimestamp);
+		}
+		lastTimestamp.set(currentTimestamp);
+		return "hello world for ratelimit service with diff from last request:" + (currentTimestamp - lastTime) + "ms.";
+	}
 }

@@ -134,11 +134,11 @@ public class PolarisContextProperties {
 		this.namespace = namespace;
 	}
 
-	String getService() {
+	public String getService() {
 		return service;
 	}
 
-	void setService(String service) {
+	public void setService(String service) {
 		this.service = service;
 	}
 
