@@ -11,3 +11,4 @@ spring:
       ratelimit:
         enabled: true
         rejectRequestTipsFilePath: reject-tips.html
+        maxQueuingTime: 500
