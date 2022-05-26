@@ -17,20 +17,23 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.feign;
 
-import feign.Client;
-
-import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
-import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
 
 /**
- * Wrap for {@link FeignBlockingLoadBalancerClient}.
+ * Test for {@link PolarisFeignBlockingLoadBalancerClient}.
  *
  * @author Haotian Zhang
  */
-public class PolarisFeignBlockingLoadBalancerClient extends FeignBlockingLoadBalancerClient {
+public class PolarisFeignBlockingLoadBalancerClientTest {
 
-	public PolarisFeignBlockingLoadBalancerClient(Client delegate, BlockingLoadBalancerClient loadBalancerClient) {
-		super(delegate, loadBalancerClient);
+	@Test
+	public void testConstructor() {
+		try {
+			new PolarisFeignBlockingLoadBalancerClient(null, null);
+		}
+		catch (Exception e) {
+			Assertions.fail("Exception encountered.", e);
+		}
 	}
-
 }

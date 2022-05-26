@@ -64,11 +64,13 @@ public class PolarisFeignClient implements Client {
 			if (response.status() >= 500) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
+			LOG.debug("Will report result of {}. Request=[{}]. Response=[{}].",
+					resultRequest.getRetStatus().name(), request, response);
 			return response;
 		}
 		catch (IOException origin) {
 			resultRequest.setRetStatus(RetStatus.RetFail);
-
+			LOG.debug("Will report result of {}. Request=[{}].", resultRequest.getRetStatus().name(), request, origin);
 			throw origin;
 		}
 		finally {
