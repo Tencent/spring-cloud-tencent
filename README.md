@@ -22,6 +22,8 @@ The core of Spring Cloud Tencent relies on Tencent's open-source one-stop servic
 
 The capabilities provided by Spring Cloud Tencent include but are not limited to:
 
+<img width="1031" alt="image" src="https://user-images.githubusercontent.com/4991116/170412596-692f8dae-42f7-495f-a451-01396e381eb0.png">
+
 - Service registration and discovery
 - Dynamic configuration management
 - Service Governance
