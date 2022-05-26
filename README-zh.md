@@ -24,6 +24,8 @@ Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治�
 
 Spring Cloud Tencent提供的能力包括但不限于：
 
+<img width="1029" alt="image" src="https://user-images.githubusercontent.com/4991116/170412323-ecaf544c-1d7b-45db-9cf0-591544e50c64.png">
+
 - 服务注册和发现
 - 动态配置管理
 - 服务治理
