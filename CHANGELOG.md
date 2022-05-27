@@ -12,3 +12,4 @@
 - [feat:add rate limit of unirate.](https://github.com/Tencent/spring-cloud-tencent/pull/197)
 - [test:add junit test to polaris-circuitbreaker.](https://github.com/Tencent/spring-cloud-tencent/pull/202)
 - [test:add junit test to polaris-discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/205)
+- [Example:set example polaris address to demo environment.](https://github.com/Tencent/spring-cloud-tencent/pull/206)
