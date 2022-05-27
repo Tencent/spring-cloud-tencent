@@ -71,14 +71,14 @@ import org.springframework.util.CollectionUtils;
  */
 public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 
-	private final static String STRATEGY_RANDOM = "random";
-	private final static String STRATEGY_ROUND_ROBIN = "roundRobin";
-	private final static String STRATEGY_WEIGHT = "polarisWeighted";
-	private final static String STRATEGY_RETRY = "retry";
-	private final static String STRATEGY_RESPONSE_TIME_WEIGHTED = "responseTimeWeighted";
-	private final static String STRATEGY_BEST_AVAILABLE = "bestAvailable";
-	private final static String STRATEGY_ZONE_AVOIDANCE = "zoneAvoidance";
-	private final static String STRATEGY_AVAILABILITY_FILTERING = "availabilityFilteringRule";
+	final static String STRATEGY_RANDOM = "random";
+	final static String STRATEGY_ROUND_ROBIN = "roundRobin";
+	final static String STRATEGY_WEIGHT = "polarisWeighted";
+	final static String STRATEGY_RETRY = "retry";
+	final static String STRATEGY_RESPONSE_TIME_WEIGHTED = "responseTimeWeighted";
+	final static String STRATEGY_BEST_AVAILABLE = "bestAvailable";
+	final static String STRATEGY_ZONE_AVOIDANCE = "zoneAvoidance";
+	final static String STRATEGY_AVAILABILITY_FILTERING = "availabilityFilteringRule";
 
 	private final PolarisLoadBalancerProperties loadBalancerProperties;
 	private final PolarisNearByRouterProperties polarisNearByRouterProperties;
@@ -129,7 +129,7 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		return delegateRule.choose(key);
 	}
 
-	private List<Server> doRouter(List<Server> allServers, Object key) {
+	List<Server> doRouter(List<Server> allServers, Object key) {
 		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(allServers);
 
 		// filter instance by routers
@@ -145,7 +145,7 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		return filteredInstances;
 	}
 
-	private ProcessRoutersRequest buildProcessRoutersRequest(ServiceInstances serviceInstances, Object key) {
+	ProcessRoutersRequest buildProcessRoutersRequest(ServiceInstances serviceInstances, Object key) {
 		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
 		processRoutersRequest.setDstInstances(serviceInstances);
 
@@ -195,9 +195,6 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 
 	public AbstractLoadBalancerRule getRule() {
 		String loadBalanceStrategy = loadBalancerProperties.getStrategy();
-		if (org.springframework.util.StringUtils.isEmpty(loadBalanceStrategy)) {
-			return new RoundRobinRule();
-		}
 
 		switch (loadBalanceStrategy) {
 		case STRATEGY_RANDOM:
