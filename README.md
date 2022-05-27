@@ -34,6 +34,16 @@ The capabilities provided by Spring Cloud Tencent include but are not limited to
   - ...
 - Label transparent transmission
 
+## Demo Environment
+
+- Console Address : http://14.116.241.63:8080/
+  - Username: polaris
+  - Password: polaris 
+- Server Address: grpc://183.47.111.80:8091 
+
+The example addresses under `spring-cloud-tencent-example` all point to the experience service address (grpc://183.47.111.80:8091) by default. 
+If you only experience Spring Cloud Tencent, you can run any example directly with one click.  
+
 ## Screenshots
 
 <img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">

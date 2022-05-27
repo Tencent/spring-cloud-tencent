@@ -6,7 +6,7 @@ spring:
     name: gray-release-gateway
   cloud:
     polaris:
-      address: ${polaris_address}
+      address: grpc://183.47.111.80:8091
       namespace: default
       enabled: true
       discovery:

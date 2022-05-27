@@ -1,6 +1,0 @@
-global:
-  statReporter:
-    enable: true
-    plugin:
-      prometheus:
-        pushgatewayAddress: ${prometheus_address}
