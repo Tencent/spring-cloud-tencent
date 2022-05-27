@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
@@ -33,14 +34,14 @@ import com.tencent.polaris.api.plugin.ratelimiter.QuotaResult;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaRequest;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -49,7 +50,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
 
@@ -58,19 +58,16 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link QuotaCheckReactiveFilter}.
  *
  * @author Haotian Zhang
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*", "javax.script.*"})
-@PowerMockRunnerDelegate(SpringRunner.class)
-@PrepareForTest(ExpressionLabelUtils.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = QuotaCheckReactiveFilterTest.TestApplication.class, properties = {
 		"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"
 })
@@ -80,11 +77,23 @@ public class QuotaCheckReactiveFilterTest {
 
 	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
 
+	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
+	private static MockedStatic<ExpressionLabelUtils> expressionLabelUtilsMockedStatic;
+
 	@BeforeClass
 	public static void beforeClass() {
-		// mock ExpressionLabelUtils.resolve()
-		mockStatic(ExpressionLabelUtils.class);
+		expressionLabelUtilsMockedStatic = mockStatic(ExpressionLabelUtils.class);
 		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet())).thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
+
+		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
+		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+				.thenReturn("unit-test");
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		mockedApplicationContextAwareUtils.close();
+		expressionLabelUtilsMockedStatic.close();
 	}
 
 	@Before

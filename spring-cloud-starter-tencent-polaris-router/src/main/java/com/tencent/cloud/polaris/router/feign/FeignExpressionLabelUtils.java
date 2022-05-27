@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,7 +63,8 @@ public class FeignExpressionLabelUtils {
 				labels.put(labelKey, request.method());
 			}
 			else if (StringUtils.equalsIgnoreCase(ExpressionLabelUtils.LABEL_URI, labelKey)) {
-				labels.put(labelKey, request.request().url());
+				URI uri = URI.create(request.request().url());
+				labels.put(labelKey, uri.getPath());
 			}
 		}
 

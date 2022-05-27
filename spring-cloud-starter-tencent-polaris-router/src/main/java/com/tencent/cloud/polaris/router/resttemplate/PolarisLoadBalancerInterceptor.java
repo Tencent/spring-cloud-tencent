@@ -105,13 +105,15 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 				this.requestFactory.createRequest(request, body, execution));
 	}
 
-	private PolarisRouterContext genRouterContext(HttpRequest request, byte[] body, String peerServiceName) {
-		Map<String, String> labels = new HashMap<>();
+	PolarisRouterContext genRouterContext(HttpRequest request, byte[] body, String peerServiceName) {
+		// local service labels
+		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
 
-		// labels from downstream
-		Map<String, String> transitiveLabels = MetadataContextHolder.get()
-				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		labels.putAll(transitiveLabels);
+		// labels from rule expression
+		Map<String, String> ruleExpressionLabels = getExpressionLabels(request, peerServiceName);
+		if (!CollectionUtils.isEmpty(ruleExpressionLabels)) {
+			labels.putAll(ruleExpressionLabels);
+		}
 
 		// labels from request
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
@@ -128,14 +130,10 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 			});
 		}
 
-		// labels from rule expression
-		Map<String, String> ruleExpressionLabels = getExpressionLabels(request, peerServiceName);
-		if (!CollectionUtils.isEmpty(ruleExpressionLabels)) {
-			labels.putAll(ruleExpressionLabels);
-		}
-
-		// local service labels
-		labels.putAll(metadataLocalProperties.getContent());
+		// labels from downstream
+		Map<String, String> transitiveLabels = MetadataContextHolder.get()
+				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		labels.putAll(transitiveLabels);
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
 

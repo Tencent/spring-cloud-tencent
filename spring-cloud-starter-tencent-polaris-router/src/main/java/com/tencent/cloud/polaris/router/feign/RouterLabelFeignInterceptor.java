@@ -74,12 +74,13 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 
 	@Override
 	public void apply(RequestTemplate requestTemplate) {
-		Map<String, String> labels = new HashMap<>();
+		// local service labels
+		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
 
-		// labels from downstream
-		Map<String, String> transitiveLabels = MetadataContextHolder.get()
-				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		labels.putAll(transitiveLabels);
+		// labels from rule expression
+		String peerServiceName = requestTemplate.feignTarget().name();
+		Map<String, String> ruleExpressionLabels = getRuleExpressionLabels(requestTemplate, peerServiceName);
+		labels.putAll(ruleExpressionLabels);
 
 		// labels from request
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
@@ -96,14 +97,10 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 			});
 		}
 
-		// labels from rule expression
-		String peerServiceName = requestTemplate.feignTarget().name();
-		Map<String, String> ruleExpressionLabels = getRuleExpressionLabels(requestTemplate, peerServiceName);
-		labels.putAll(ruleExpressionLabels);
-
-
-		//local service labels
-		labels.putAll(metadataLocalProperties.getContent());
+		// labels from downstream
+		Map<String, String> transitiveLabels = MetadataContextHolder.get()
+				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		labels.putAll(transitiveLabels);
 
 		// Because when the label is placed in RequestTemplate.header,
 		// RequestTemplate will parse the header according to the regular, which conflicts with the expression.
