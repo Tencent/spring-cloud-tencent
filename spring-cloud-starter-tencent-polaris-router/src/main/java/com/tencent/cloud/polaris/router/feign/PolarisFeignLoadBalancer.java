@@ -51,11 +51,18 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 	protected void customizeLoadBalancerCommandBuilder(RibbonRequest request, IClientConfig config,
 			LoadBalancerCommand.Builder<RibbonResponse> builder) {
 		Map<String, Collection<String>> headers = request.getRequest().headers();
+
+		PolarisRouterContext routerContext = buildRouterContext(headers);
+
+		builder.withServerLocator(routerContext);
+	}
+
+	//set method to public for unit test
+	PolarisRouterContext buildRouterContext(Map<String, Collection<String>> headers) {
 		Collection<String> labelHeaderValues = headers.get(RouterConstants.ROUTER_LABEL_HEADER);
 
 		if (CollectionUtils.isEmpty(labelHeaderValues)) {
-			builder.withServerLocator(null);
-			return;
+			return null;
 		}
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
@@ -76,6 +83,6 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 			}
 		});
 
-		builder.withServerLocator(routerContext);
+		return routerContext;
 	}
 }

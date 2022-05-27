@@ -87,7 +87,7 @@ public class ExpressionLabelUtils {
 	/**
 	 * the escape prefix of label.
 	 */
-	public static final String LABEL_ESCAPE_PREFIX = "$$$$";
+	public static final String LABEL_ESCAPE_PREFIX = "##@$@##";
 
 	public static boolean isExpressionLabel(String labelKey) {
 		if (StringUtils.isEmpty(labelKey)) {
@@ -119,6 +119,9 @@ public class ExpressionLabelUtils {
 		Map<String, String> labels = new HashMap<>();
 
 		for (String labelKey : labelKeys) {
+			if (!isExpressionLabel(labelKey)) {
+				continue;
+			}
 			if (StringUtils.startsWithIgnoreCase(labelKey, LABEL_HEADER_PREFIX)) {
 				String headerKey = parseHeaderKey(labelKey);
 				if (StringUtils.isBlank(headerKey)) {
@@ -159,6 +162,9 @@ public class ExpressionLabelUtils {
 		Map<String, String> labels = new HashMap<>();
 
 		for (String labelKey : labelKeys) {
+			if (!isExpressionLabel(labelKey)) {
+				continue;
+			}
 			if (StringUtils.startsWithIgnoreCase(labelKey, LABEL_HEADER_PREFIX)) {
 				String headerKey = parseHeaderKey(labelKey);
 				if (StringUtils.isBlank(headerKey)) {
@@ -199,6 +205,9 @@ public class ExpressionLabelUtils {
 		Map<String, String> labels = new HashMap<>();
 
 		for (String labelKey : labelKeys) {
+			if (!isExpressionLabel(labelKey)) {
+				continue;
+			}
 			if (StringUtils.startsWithIgnoreCase(labelKey, LABEL_HEADER_PREFIX)) {
 				String headerKey = parseHeaderKey(labelKey);
 				if (StringUtils.isBlank(headerKey)) {

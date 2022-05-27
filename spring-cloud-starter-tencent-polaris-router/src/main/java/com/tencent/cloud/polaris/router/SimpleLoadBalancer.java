@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.router;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.netflix.loadbalancer.ILoadBalancer;
@@ -48,16 +49,25 @@ public class SimpleLoadBalancer implements ILoadBalancer {
 
 	@Override
 	public List<Server> getServerList(boolean availableOnly) {
-		return servers;
+		if (servers == null) {
+			return Collections.emptyList();
+		}
+		return Collections.unmodifiableList(servers);
 	}
 
 	@Override
 	public List<Server> getReachableServers() {
-		return servers;
+		if (servers == null) {
+			return Collections.emptyList();
+		}
+		return Collections.unmodifiableList(servers);
 	}
 
 	@Override
 	public List<Server> getAllServers() {
-		return servers;
+		if (servers == null) {
+			return Collections.emptyList();
+		}
+		return Collections.unmodifiableList(servers);
 	}
 }

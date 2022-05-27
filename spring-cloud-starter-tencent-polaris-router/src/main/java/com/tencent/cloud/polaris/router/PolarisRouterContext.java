@@ -46,7 +46,11 @@ public class PolarisRouterContext {
 		if (CollectionUtils.isEmpty(labels)) {
 			return Collections.emptyMap();
 		}
-		return Collections.unmodifiableMap(labels.get(labelType));
+		Map<String, String> subLabels = labels.get(labelType);
+		if (CollectionUtils.isEmpty(subLabels)) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(subLabels);
 	}
 
 	public void setLabels(String labelType, Map<String, String> subLabels) {
