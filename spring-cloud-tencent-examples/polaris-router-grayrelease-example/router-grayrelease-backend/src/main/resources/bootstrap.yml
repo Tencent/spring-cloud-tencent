@@ -9,8 +9,6 @@ spring:
       address: grpc://183.47.111.80:8091
       namespace: default
       enabled: true
-      discovery:
-        service-list-refresh-interval: 1000
 logging:
   level:
     org.springframework.cloud.gateway: info

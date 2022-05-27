@@ -54,6 +54,7 @@ import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  *
@@ -195,7 +196,9 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 
 	public AbstractLoadBalancerRule getRule() {
 		String loadBalanceStrategy = loadBalancerProperties.getStrategy();
-
+		if (StringUtils.isEmpty(loadBalanceStrategy)) {
+			return new ZoneAvoidanceRule();
+		}
 		switch (loadBalanceStrategy) {
 		case STRATEGY_RANDOM:
 			return new RandomRule();

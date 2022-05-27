@@ -95,7 +95,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 		try {
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
-					localNamespace, localService, 1, labels, null);
+					localNamespace, localService, 1, labels, request.getRequestURI());
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
