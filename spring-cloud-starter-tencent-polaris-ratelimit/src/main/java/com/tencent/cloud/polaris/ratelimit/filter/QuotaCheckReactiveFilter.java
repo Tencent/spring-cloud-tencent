@@ -99,8 +99,9 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		Map<String, String> labels = getRequestLabels(exchange, localNamespace, localService);
 
 		try {
+			String path = exchange.getRequest().getURI().getPath();
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
-					localNamespace, localService, 1, labels, null);
+					localNamespace, localService, 1, labels, path);
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
