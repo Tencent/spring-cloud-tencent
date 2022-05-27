@@ -29,13 +29,13 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import com.tencent.polaris.test.mock.discovery.NamingService;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Configuration;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -68,6 +68,8 @@ public class PolarisServerListTest {
 					"spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
+	private IClientConfig iClientConfig;
+
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		namingServer = NamingServer.startNamingServer(10081);
@@ -84,16 +86,17 @@ public class PolarisServerListTest {
 		}
 	}
 
-	/**
-	 * Test {@link PolarisServerList#getInitialListOfServers()} with empty server list.
-	 */
+	@Before
+	public void setUp() {
+		// mock IClientConfig
+		iClientConfig = mock(IClientConfig.class);
+		when(iClientConfig.getClientName()).thenReturn(SERVICE_PROVIDER);
+
+	}
+
 	@Test
-	@SuppressWarnings("unchecked")
-	public void test1() {
+	public void testGetInitialListOfServers() {
 		this.contextRunner.run(context -> {
-			// mock
-			IClientConfig iClientConfig = mock(IClientConfig.class);
-			when(iClientConfig.getClientName()).thenReturn(SERVICE_PROVIDER);
 			PolarisDiscoveryHandler polarisDiscoveryHandler = context
 					.getBean(PolarisDiscoveryHandler.class);
 			PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
@@ -104,17 +107,9 @@ public class PolarisServerListTest {
 		});
 	}
 
-	/**
-	 * Test {@link PolarisServerList#getUpdatedListOfServers()} with server list of size
-	 * 3.
-	 */
 	@Test
-	@SuppressWarnings("unchecked")
-	public void test2() {
+	public void testGetUpdatedListOfServers() {
 		this.contextRunner.run(context -> {
-			// mock
-			IClientConfig iClientConfig = mock(IClientConfig.class);
-			when(iClientConfig.getClientName()).thenReturn(SERVICE_PROVIDER);
 			PolarisDiscoveryHandler polarisDiscoveryHandler = context
 					.getBean(PolarisDiscoveryHandler.class);
 			PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
@@ -137,9 +132,20 @@ public class PolarisServerListTest {
 		});
 	}
 
+	@Test
+	public void testProperties() {
+		this.contextRunner.run(context -> {
+			PolarisDiscoveryHandler polarisDiscoveryHandler = context
+					.getBean(PolarisDiscoveryHandler.class);
+			PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
+			serverList.initWithNiwsConfig(iClientConfig);
+
+			assertThat(serverList.getServiceId()).isEqualTo(SERVICE_PROVIDER);
+		});
+	}
+
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableDiscoveryClient
 	static class PolarisPropertiesConfiguration {
 
 	}

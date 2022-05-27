@@ -72,4 +72,8 @@ public class PolarisDiscoveryClientTest {
 
 	}
 
+	@Test
+	public void testDescription() {
+		assertThat(client.description()).isEqualTo("Spring Cloud Tencent Polaris Discovery Client.");
+	}
 }
