@@ -72,7 +72,6 @@
 	<properties>
 		<revision>1.5.0-Hoxton.SR9-SNAPSHOT</revision>
 		<polaris.version>1.6.0-SNAPSHOT</polaris.version>
-		<powermock.version>2.0.0</powermock.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 
@@ -145,20 +144,6 @@
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 				<version>${revision}</version>
-			</dependency>
-
-			<!-- powermock-module-junit4 -->
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>${powermock.version}</version>
-			</dependency>
-
-			<!-- powermock-api-mockito -->
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito2</artifactId>
-				<version>${powermock.version}</version>
 			</dependency>
 
 			<dependency>
