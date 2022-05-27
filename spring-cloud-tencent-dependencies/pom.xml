@@ -73,6 +73,8 @@
 		<revision>1.5.0-Hoxton.SR9-SNAPSHOT</revision>
 		<polaris.version>1.6.0-SNAPSHOT</polaris.version>
 		<powermock.version>2.0.0</powermock.version>
+		<mocktio.version>4.5.1</mocktio.version>
+		<byte-buddy.version>1.12.10</byte-buddy.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -157,6 +159,27 @@
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-api-mockito2</artifactId>
 				<version>${powermock.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>${mocktio.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mocktio.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>${byte-buddy.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

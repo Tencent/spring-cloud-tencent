@@ -24,24 +24,20 @@ import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.QUOTA_LIMITED_INFO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link RateLimitUtils}.
  *
  * @author Haotian Zhang
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*", "javax.script.*"})
-@PrepareForTest(ResourceFileUtils.class)
+@RunWith(MockitoJUnitRunner.class)
 public class RateLimitUtilsTest {
 
 	@BeforeClass

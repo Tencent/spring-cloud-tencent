@@ -16,17 +16,31 @@
  *
  */
 
-package com.tencent.cloud.polaris.router;
+package com.tencent.cloud.common.util;
+
+import java.io.IOException;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
- * Router constants.
- *
- *@author lepdou 2022-05-17
+ * test for {@link ResourceFileUtils}
+ *@author lepdou 2022-05-27
  */
-public class RouterConstants {
+@RunWith(MockitoJUnitRunner.class)
+public class ResourceFileUtilsTest {
 
-	/**
-	 * the header of router label.
-	 */
-	public static final String ROUTER_LABEL_HEADER = "internal-router-label";
+	@Test
+	public void testReadExistedFile() throws IOException {
+		String content = ResourceFileUtils.readFile("test.txt");
+		Assert.assertEquals("just for test\n", content);
+	}
+
+	@Test
+	public void testReadNotExistedFile() throws IOException {
+		String content = ResourceFileUtils.readFile("not_existed_test.txt");
+		Assert.assertEquals("", content);
+	}
 }
