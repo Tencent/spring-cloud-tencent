@@ -41,7 +41,7 @@ Spring Cloud Tencent提供的能力包括但不限于：
   - 密码：polaris 
 - 控制面地址： `grpc://183.47.111.80:8091`
 - 
-  `spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（grpc://183.47.111.80:8091），如果您只是体验 Spring Cloud Tencent，可直接一键运行任何 example。
+  `spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（`grpc://183.47.111.80:8091`），如果您只是体验 Spring Cloud Tencent，可直接一键运行任何 example。
 ## 管控台
 
 <img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">
