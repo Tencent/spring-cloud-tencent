@@ -86,7 +86,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.4.4-Greenwich.SR6</revision>
+		<revision>1.5.0-Greenwich.SR6-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>Greenwich.SR6</spring.cloud.version>

@@ -70,8 +70,8 @@
 	</developers>
 
 	<properties>
-		<revision>1.4.4-Greenwich.SR6</revision>
-		<polaris.version>1.5.2</polaris.version>
+		<revision>1.5.0-Greenwich.SR6-SNAPSHOT</revision>
+		<polaris.version>1.6.0</polaris.version>
 
 		<!-- Dependencies -->
 		<logback.version>1.2.7</logback.version>
