@@ -70,8 +70,8 @@
 	</developers>
 
 	<properties>
-		<revision>1.4.3-2021.0.2</revision>
-		<polaris.version>1.5.2</polaris.version>
+		<revision>1.5.0-2021.0.2-SNAPSHOT</revision>
+		<polaris.version>1.6.0</polaris.version>
 		<guava.version>31.1-jre</guava.version>
 
 		<!-- Maven Plugin Versions -->
