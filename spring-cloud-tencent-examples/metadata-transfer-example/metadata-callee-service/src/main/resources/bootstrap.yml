@@ -1,0 +1,13 @@
+server:
+  port: 48084
+spring:
+  application:
+    name: MetadataCalleeService
+  cloud:
+    polaris:
+      address: grpc://127.0.0.1:8091
+      namespace: default
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
