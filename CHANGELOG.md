@@ -1,5 +1,4 @@
 # Change Log
 ---
 
-- [fix:fix wrong context data storage.](https://github.com/Tencent/spring-cloud-tencent/pull/176)
-- [fix:fix route not refreshing bug when first instance of one service up.](https://github.com/Tencent/spring-cloud-tencent/pull/177)
+- [Upgrade spring boot version with 2.6.x and spring cloud version with 3.1.x](https://github.com/Tencent/spring-cloud-tencent/pull/195)
