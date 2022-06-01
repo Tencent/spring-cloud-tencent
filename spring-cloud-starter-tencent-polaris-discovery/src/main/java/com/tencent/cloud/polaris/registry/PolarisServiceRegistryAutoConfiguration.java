@@ -61,9 +61,10 @@ public class PolarisServiceRegistryAutoConfiguration {
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
 	public PolarisRegistration polarisRegistration(
 			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
-			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context,
+			StaticMetadataManager staticMetadataManager) {
 		return new PolarisRegistration(discoveryPropertiesAutoConfiguration,
-				polarisDiscoveryProperties, context);
+				polarisDiscoveryProperties, context, staticMetadataManager);
 	}
 
 	@Bean
