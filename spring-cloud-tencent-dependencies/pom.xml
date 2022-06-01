@@ -70,7 +70,7 @@
 	</developers>
 
 	<properties>
-		<revision>1.5.1-Hoxton.SR9-SNAPSHOT</revision>
+		<revision>1.5.1-Hoxton.SR9</revision>
 		<polaris.version>1.6.0</polaris.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
