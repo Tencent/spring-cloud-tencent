@@ -5,8 +5,6 @@
 [![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/main/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=main)
 [![Contributors](https://img.shields.io/github/contributors/Tencent/spring-cloud-tencent)](https://github.com/Tencent/spring-cloud-tencent/graphs/contributors)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/Tencent/spring-cloud-tencent.svg)](https://github.com/Tencent/spring-cloud-tencent/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/spring-cloud-tencent/wiki/Contributing)
 
 [English](./README.md) | 简体中文 
 
@@ -43,7 +41,7 @@ Spring Cloud Tencent提供的能力包括但不限于：
   - 密码：polaris 
 - 控制面地址： `grpc://183.47.111.80:8091`
 - 
-  `spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（grpc://183.47.111.80:8091），如果您只是体验 Spring Cloud Tencent，可直接一键运行任何 example。
+  `spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（`grpc://183.47.111.80:8091`），如果您只是体验 Spring Cloud Tencent，可直接一键运行任何 example。
 ## 管控台
 
 <img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">

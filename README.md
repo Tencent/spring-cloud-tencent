@@ -5,8 +5,6 @@
 [![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/main/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=main)
 [![Contributors](https://img.shields.io/github/contributors/Tencent/spring-cloud-tencent)](https://github.com/Tencent/spring-cloud-tencent/graphs/contributors)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/Tencent/spring-cloud-tencent.svg)](https://github.com/Tencent/spring-cloud-tencent/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/spring-cloud-tencent/wiki/Contributing)
 
 English | [简体中文](./README-zh.md)
 
@@ -41,7 +39,7 @@ The capabilities provided by Spring Cloud Tencent include but are not limited to
   - Password: polaris 
 - Server Address: `grpc://183.47.111.80:8091`
 
-The example addresses under `spring-cloud-tencent-example` all point to the experience service address (grpc://183.47.111.80:8091) by default. 
+The example addresses under `spring-cloud-tencent-example` all point to the experience service address (`grpc://183.47.111.80:8091`) by default. 
 If you only experience Spring Cloud Tencent, you can run any example directly with one click.  
 
 ## Screenshots
