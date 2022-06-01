@@ -20,16 +20,16 @@ package com.tencent.cloud.polaris.extend.consul;
 import java.util.List;
 import java.util.Map;
 
-import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static com.tencent.polaris.plugins.connector.common.constant.ConsulConstant.MetadataMapKey.INSTANCE_ID_KEY;
 import static com.tencent.polaris.plugins.connector.common.constant.ConsulConstant.MetadataMapKey.IP_ADDRESS_KEY;
@@ -44,47 +44,47 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Haotian Zhang
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = ConsulContextPropertiesTest.TestApplication.class)
+@ActiveProfiles("test")
 public class ConsulContextPropertiesTest {
+
+	@Autowired
+	private ConsulContextProperties consulContextProperties;
+
+	@Autowired
+	private SDKContext sdkContext;
+
+	@Test
+	public void testDefaultInitialization() {
+		assertThat(consulContextProperties).isNotNull();
+		assertThat(consulContextProperties.isEnabled()).isTrue();
+		assertThat(consulContextProperties.getHost()).isEqualTo("127.0.0.1");
+		assertThat(consulContextProperties.getPort()).isEqualTo(8500);
+		assertThat(consulContextProperties.isRegister()).isTrue();
+		assertThat(consulContextProperties.isDiscoveryEnabled()).isTrue();
+	}
 
 	@Test
 	public void testModify() {
-		ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner().withConfiguration(
-						AutoConfigurations.of(PolarisContextAutoConfiguration.class,
-								ConsulContextPropertiesTest.TestConfiguration.class,
-								DiscoveryPropertiesAutoConfiguration.class))
-				.withPropertyValues("spring.cloud.consul.discovery.register=true")
-				.withPropertyValues("spring.cloud.consul.discovery.enabled=true")
-				.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-				.withPropertyValues("spring.cloud.consul.discovery.instance-id=ins-test")
-				.withPropertyValues("spring.cloud.consul.discovery.prefer-ip-address=true")
-				.withPropertyValues("spring.cloud.consul.discovery.ip-address=" + HOST);
-		applicationContextRunner.run(context -> {
-			assertThat(context).hasSingleBean(SDKContext.class);
-			SDKContext sdkContext = context.getBean(SDKContext.class);
-			com.tencent.polaris.api.config.Configuration configuration = sdkContext.getConfig();
-			List<ServerConnectorConfigImpl> serverConnectorConfigs = configuration.getGlobal().getServerConnectors();
-			Map<String, String> metadata = null;
-			for (ServerConnectorConfigImpl serverConnectorConfig : serverConnectorConfigs) {
-				if (serverConnectorConfig.getId().equals("consul")) {
-					metadata = serverConnectorConfig.getMetadata();
-				}
+		assertThat(sdkContext).isNotNull();
+		com.tencent.polaris.api.config.Configuration configuration = sdkContext.getConfig();
+		List<ServerConnectorConfigImpl> serverConnectorConfigs = configuration.getGlobal().getServerConnectors();
+		Map<String, String> metadata = null;
+		for (ServerConnectorConfigImpl serverConnectorConfig : serverConnectorConfigs) {
+			if (serverConnectorConfig.getId().equals("consul")) {
+				metadata = serverConnectorConfig.getMetadata();
 			}
-			assertThat(metadata).isNotNull();
-			assertThat(metadata.get(SERVICE_NAME_KEY)).isEqualTo(SERVICE_PROVIDER);
-			assertThat(metadata.get(INSTANCE_ID_KEY)).isEqualTo("ins-test");
-			assertThat(metadata.get(PREFER_IP_ADDRESS_KEY)).isEqualTo("true");
-			assertThat(metadata.get(IP_ADDRESS_KEY)).isEqualTo(HOST);
-		});
+		}
+		assertThat(metadata).isNotNull();
+		assertThat(metadata.get(SERVICE_NAME_KEY)).isEqualTo(SERVICE_PROVIDER);
+		assertThat(metadata.get(INSTANCE_ID_KEY)).isEqualTo("ins-test");
+		assertThat(metadata.get(PREFER_IP_ADDRESS_KEY)).isEqualTo("true");
+		assertThat(metadata.get(IP_ADDRESS_KEY)).isEqualTo(HOST);
 	}
 
-	@Configuration
-	static class TestConfiguration {
+	@SpringBootApplication
+	protected static class TestApplication {
 
-		@Bean
-		public ConsulContextProperties consulContextProperties() {
-			ConsulContextProperties consulContextProperties = new ConsulContextProperties();
-			consulContextProperties.setEnabled(true);
-			return consulContextProperties;
-		}
 	}
 }

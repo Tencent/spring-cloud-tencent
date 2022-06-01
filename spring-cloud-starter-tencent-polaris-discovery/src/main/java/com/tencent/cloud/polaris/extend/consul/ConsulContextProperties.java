@@ -73,6 +73,22 @@ public class ConsulContextProperties {
 	@Value("${spring.cloud.consul.discovery.prefer-ip-address:#{'false'}}")
 	private boolean preferIpAddress;
 
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
 	public boolean isEnabled() {
 		return enabled;
 	}
