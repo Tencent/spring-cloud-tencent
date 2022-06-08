@@ -2,7 +2,8 @@
 
 ## Example Introduction
 
-This example shows how to use ```spring-cloud-starter-tencent-metadata-transfer`` in Spring Cloud project for its features.
+This example shows how to use ```spring-cloud-starter-tencent-metadata-transfer``` in Spring Cloud project for its
+features.
 
 This example contains ```metadata-callee-service```、```metadata-caller-service```.
 
