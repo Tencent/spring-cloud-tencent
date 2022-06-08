@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.registry;
 
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
@@ -43,26 +43,28 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties
 @ConditionalOnPolarisRegisterEnabled
-@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
-@AutoConfigureAfter({ AutoServiceRegistrationConfiguration.class,
+@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled",
+		matchIfMissing = true)
+@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class,
 		AutoServiceRegistrationAutoConfiguration.class,
-		PolarisDiscoveryAutoConfiguration.class })
+		PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	public PolarisServiceRegistry polarisServiceRegistry(
 			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties) {
-		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, metadataLocalProperties);
+			StaticMetadataManager staticMetadataManager) {
+		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler, staticMetadataManager);
 	}
 
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
 	public PolarisRegistration polarisRegistration(
 			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
-			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context,
+			StaticMetadataManager staticMetadataManager) {
 		return new PolarisRegistration(discoveryPropertiesAutoConfiguration,
-				polarisDiscoveryProperties, context);
+				polarisDiscoveryProperties, context, staticMetadataManager);
 	}
 
 	@Bean

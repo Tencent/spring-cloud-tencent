@@ -18,14 +18,11 @@
 
 package com.tencent.cloud.polaris;
 
-import javax.annotation.PostConstruct;
-
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
 import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,11 +40,6 @@ import org.springframework.core.env.Environment;
 public class PolarisDiscoveryProperties {
 
 	/**
-	 * The polaris authentication token.
-	 */
-	private String token;
-
-	/**
 	 * Namespace, separation registry of different environments.
 	 */
 	@Value("${spring.cloud.polaris.discovery.namespace:${spring.cloud.polaris.namespace:#{'default'}}}")
@@ -58,6 +50,11 @@ public class PolarisDiscoveryProperties {
 	 */
 	@Value("${spring.cloud.polaris.discovery.service:${spring.cloud.polaris.service:${spring.application.name:}}}")
 	private String service;
+
+	/**
+	 * The polaris authentication token.
+	 */
+	private String token;
 
 	/**
 	 * Load balance weight.
@@ -79,7 +76,7 @@ public class PolarisDiscoveryProperties {
 	/**
 	 * Port of instance.
 	 */
-	@Value("${server.port:}")
+	@Value("${server.port:8080}")
 	private int port;
 
 	/**
@@ -113,29 +110,7 @@ public class PolarisDiscoveryProperties {
 	@Autowired
 	private Environment environment;
 
-	/**
-	 * Init properties.
-	 */
-	@PostConstruct
-	public void init() {
-		if (StringUtils.isEmpty(this.getNamespace())) {
-			this.setNamespace(environment
-					.resolvePlaceholders("${spring.cloud.polaris.discovery.namespace:}"));
-		}
-		if (StringUtils.isEmpty(this.getService())) {
-			this.setService(environment
-					.resolvePlaceholders("${spring.cloud.polaris.discovery.service:}"));
-		}
-		if (StringUtils.isEmpty(this.getToken())) {
-			this.setToken(environment
-					.resolvePlaceholders("${spring.cloud.polaris.discovery.token:}"));
-		}
-	}
-
 	public boolean isHeartbeatEnabled() {
-		if (null == heartbeatEnabled) {
-			return false;
-		}
 		return heartbeatEnabled;
 	}
 
@@ -233,12 +208,20 @@ public class PolarisDiscoveryProperties {
 
 	@Override
 	public String toString() {
-		return "PolarisProperties{" + "token='" + token + '\'' + ", namespace='"
-				+ namespace + '\'' + ", service='" + service + '\'' + ", weight=" + weight
-				+ ", version='" + version + '\'' + ", protocol='" + protocol + '\''
-				+ ", port=" + port + '\'' + ", registerEnabled=" + registerEnabled
-				+ ", heartbeatEnabled=" + heartbeatEnabled + ", healthCheckUrl="
-				+ healthCheckUrl + ", environment=" + environment + '}';
+		return "PolarisDiscoveryProperties{" +
+				"namespace='" + namespace + '\'' +
+				", service='" + service + '\'' +
+				", token='" + token + '\'' +
+				", weight=" + weight +
+				", version='" + version + '\'' +
+				", protocol='" + protocol + '\'' +
+				", port=" + port +
+				", enabled=" + enabled +
+				", registerEnabled=" + registerEnabled +
+				", heartbeatEnabled=" + heartbeatEnabled +
+				", healthCheckUrl='" + healthCheckUrl + '\'' +
+				", serviceListRefreshInterval=" + serviceListRefreshInterval +
+				'}';
 	}
 
 	@Bean

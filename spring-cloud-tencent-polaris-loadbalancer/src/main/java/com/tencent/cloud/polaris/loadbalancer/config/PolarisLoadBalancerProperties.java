@@ -37,7 +37,7 @@ public class PolarisLoadBalancerProperties {
 	/**
 	 * Load balance strategy.
 	 */
-	private String strategy = "weightedRandom";
+	private String strategy;
 
 	/**
 	 * Type of discovery server.

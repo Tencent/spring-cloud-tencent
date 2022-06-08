@@ -1,0 +1,15 @@
+server:
+  session-timeout: 1800
+  port: 59000
+spring:
+  application:
+    name: gray-release-front
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+logging:
+  level:
+    org.springframework.cloud.gateway: info
+    com.tencent.cloud.polaris: debug

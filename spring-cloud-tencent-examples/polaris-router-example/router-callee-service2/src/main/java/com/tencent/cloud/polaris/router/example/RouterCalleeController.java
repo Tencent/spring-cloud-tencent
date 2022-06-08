@@ -22,8 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -44,10 +46,10 @@ public class RouterCalleeController {
 	 * Get information of callee.
 	 * @return information of callee
 	 */
-	@GetMapping("/info")
-	public String info() {
+	@PostMapping("/info")
+	public String info(@RequestParam("name") String name, @RequestBody User user) {
 		LOG.info("Discovery Service Callee [{}] is called.", port);
-		return String.format("Discovery Service Callee [%s] is called.", port);
+		return String.format("Discovery Service Callee [%s] is called. user = %s", port, user);
 	}
 
 }

@@ -1,0 +1,24 @@
+server:
+  port: 48084
+spring:
+  application:
+    name: java_provider_test
+  cloud:
+    polaris:
+      address: grpc://127.0.0.1:8091
+      namespace: Test
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
+    consul:
+      port: 8500
+      host: 127.0.0.1
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
+        instance-id: ins-test
+        service-name: ${spring.application.name}
+        ip-address: 127.0.0.1
+        prefer-ip-address: true

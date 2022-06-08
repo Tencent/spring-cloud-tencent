@@ -33,8 +33,7 @@ import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
  *
  * @author Haotian Zhang
  */
-public class PolarisFeignBeanPostProcessor
-		implements BeanPostProcessor, BeanFactoryAware {
+public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
 	private final ConsumerAPI consumerAPI;
 
@@ -45,8 +44,7 @@ public class PolarisFeignBeanPostProcessor
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		return wrapper(bean);
 	}
 

@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.circuitbreaker.feign;
@@ -30,8 +31,9 @@ import feign.Request;
 import feign.Request.Options;
 import feign.Response;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.PEER_SERVICE;
 import static feign.Util.checkNotNull;
 
 /**
@@ -40,6 +42,9 @@ import static feign.Util.checkNotNull;
  * @author Haotian Zhang
  */
 public class PolarisFeignClient implements Client {
+
+
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisFeignClient.class);
 
 	private final Client delegate;
 
@@ -56,46 +61,41 @@ public class PolarisFeignClient implements Client {
 		try {
 			Response response = delegate.execute(request, options);
 			// HTTP code greater than 500 is an exception
-			if (resultRequest != null && response.status() >= 500) {
+			if (response.status() >= 500) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
+			LOG.debug("Will report result of {}. Request=[{}]. Response=[{}].",
+					resultRequest.getRetStatus().name(), request, response);
 			return response;
 		}
 		catch (IOException origin) {
-			if (resultRequest != null) {
-				resultRequest.setRetStatus(RetStatus.RetFail);
-			}
+			resultRequest.setRetStatus(RetStatus.RetFail);
+			LOG.debug("Will report result of {}. Request=[{}].", resultRequest.getRetStatus().name(), request, origin);
 			throw origin;
 		}
 		finally {
-			if (resultRequest != null) {
-				consumerAPI.updateServiceCallResult(resultRequest);
-			}
+			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}
 
 	private ServiceCallResult createServiceCallResult(final Request request) {
 		ServiceCallResult resultRequest = new ServiceCallResult();
-		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-		Object[] headers = request.headers().get(PEER_SERVICE).toArray();
-		int headersLength = headers.length;
-		if (headersLength != 0) {
-			String serviceName = (String) headers[headersLength - 1];
-			resultRequest.setService(serviceName);
-			URI uri = URI.create(request.url());
-			resultRequest.setMethod(uri.getPath());
-			resultRequest.setRetStatus(RetStatus.RetSuccess);
-			String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
-			String sourceService = MetadataContext.LOCAL_SERVICE;
-			if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
-				resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
-			}
-			resultRequest.setHost(uri.getHost());
-			resultRequest.setPort(uri.getPort());
 
-			return resultRequest;
+		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+		String serviceName = request.requestTemplate().feignTarget().name();
+		resultRequest.setService(serviceName);
+		URI uri = URI.create(request.url());
+		resultRequest.setMethod(uri.getPath());
+		resultRequest.setRetStatus(RetStatus.RetSuccess);
+		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
+		String sourceService = MetadataContext.LOCAL_SERVICE;
+		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
+			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
 		}
-		return null;
+		resultRequest.setHost(uri.getHost());
+		resultRequest.setPort(uri.getPort());
+
+		return resultRequest;
 	}
 
 }

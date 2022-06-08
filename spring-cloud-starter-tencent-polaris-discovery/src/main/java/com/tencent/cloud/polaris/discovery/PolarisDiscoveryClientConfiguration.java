@@ -31,8 +31,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Configuration
-@AutoConfigureBefore({ SimpleDiscoveryClientAutoConfiguration.class,
-		CommonsClientAutoConfiguration.class })
+@AutoConfigureBefore({SimpleDiscoveryClientAutoConfiguration.class,
+		CommonsClientAutoConfiguration.class})
 @AutoConfigureAfter(PolarisDiscoveryAutoConfiguration.class)
 public class PolarisDiscoveryClientConfiguration {
 

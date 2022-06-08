@@ -9,6 +9,6 @@ spring:
         content:
           label1: value2
     polaris:
-      address: grpc://127.0.0.1:8091
+      address: grpc://183.47.111.80:8091
       namespace: default
       enabled: true

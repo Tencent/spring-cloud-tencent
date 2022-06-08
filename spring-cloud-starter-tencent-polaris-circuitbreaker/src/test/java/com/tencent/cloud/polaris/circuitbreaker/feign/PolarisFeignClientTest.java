@@ -17,51 +17,121 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.feign;
 
-import com.tencent.cloud.polaris.circuitbreaker.PolarisFeignClientAutoConfiguration;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import java.io.IOException;
+
+import com.google.common.collect.Maps;
+import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.rpc.ServiceCallResult;
 import feign.Client;
+import feign.Request;
+import feign.RequestTemplate;
+import feign.Response;
+import feign.Target;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link PolarisFeignClient}.
  *
- * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestPolarisFeignApp.class)
-@ContextConfiguration(classes = { PolarisFeignClientAutoConfiguration.class,
-		PolarisContextAutoConfiguration.class })
+@SpringBootTest(classes = PolarisFeignClientTest.TestApplication.class,
+		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class PolarisFeignClientTest {
 
-	@Autowired
-	private ApplicationContext springCtx;
-
 	@Test
-	public void testPolarisFeignBeanPostProcessor() {
-		final PolarisFeignBeanPostProcessor postProcessor = springCtx
-				.getBean(PolarisFeignBeanPostProcessor.class);
-		assertThat(postProcessor).isNotNull();
+	public void testConstructor() {
+		try {
+			new PolarisFeignClient(null, null);
+			fail("NullPointerException should be thrown.");
+		}
+		catch (Throwable e) {
+			assertThat(e).isInstanceOf(NullPointerException.class);
+			assertThat(e.getMessage()).isEqualTo("target");
+		}
+
+		try {
+			new PolarisFeignClient(mock(Client.class), null);
+			fail("NullPointerException should be thrown.");
+		}
+		catch (Throwable e) {
+			assertThat(e).isInstanceOf(NullPointerException.class);
+			assertThat(e.getMessage()).isEqualTo("CircuitBreakAPI");
+		}
+
+		try {
+			assertThat(new PolarisFeignClient(mock(Client.class), mock(ConsumerAPI.class))).isInstanceOf(PolarisFeignClient.class);
+		}
+		catch (Throwable e) {
+			fail("Exception encountered.", e);
+		}
 	}
 
 	@Test
-	public void testFeignClient() {
-		final Client client = springCtx.getBean(Client.class);
-		if (client instanceof PolarisFeignClient) {
-			return;
+	public void testExecute() throws IOException {
+		// mock Client.class
+		Client delegate = mock(Client.class);
+		doAnswer(invocation -> {
+			Request request = invocation.getArgument(0);
+			if (request.httpMethod().equals(Request.HttpMethod.GET)) {
+				return Response.builder().request(request).status(200).build();
+			}
+			else if (request.httpMethod().equals(Request.HttpMethod.POST)) {
+				return Response.builder().request(request).status(500).build();
+			}
+			throw new IOException("Mock exception.");
+		}).when(delegate).execute(any(Request.class), nullable(Request.Options.class));
+
+		// mock ConsumerAPI.class
+		ConsumerAPI consumerAPI = mock(ConsumerAPI.class);
+		doNothing().when(consumerAPI).updateServiceCallResult(any(ServiceCallResult.class));
+
+		// mock target
+		Target<Object> target = Target.EmptyTarget.create(Object.class);
+
+		// mock RequestTemplate.class
+		RequestTemplate requestTemplate = new RequestTemplate();
+		requestTemplate.feignTarget(target);
+
+		PolarisFeignClient polarisFeignClient = new PolarisFeignClient(delegate, consumerAPI);
+
+		// 200
+		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
+				Maps.newHashMap(), null, requestTemplate), null);
+		assertThat(response.status()).isEqualTo(200);
+
+		// 200
+		response = polarisFeignClient.execute(Request.create(Request.HttpMethod.POST, "http://localhost:8080/test",
+				Maps.newHashMap(), null, requestTemplate), null);
+		assertThat(response.status()).isEqualTo(500);
+
+		// Exception
+		try {
+			polarisFeignClient.execute(Request.create(Request.HttpMethod.DELETE, "http://localhost:8080/test",
+					Maps.newHashMap(), null, requestTemplate), null);
+			fail("IOException should be thrown.");
 		}
-		if (client instanceof PolarisLoadBalancerFeignClient) {
-			return;
+		catch (Throwable t) {
+			assertThat(t).isInstanceOf(IOException.class);
+			assertThat(t.getMessage()).isEqualTo("Mock exception.");
 		}
-		throw new IllegalStateException("Polaris burying failed");
 	}
 
+	@SpringBootApplication
+	protected static class TestApplication {
+
+	}
 }

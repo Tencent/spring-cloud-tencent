@@ -41,8 +41,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = MOCK, classes = DecodeTransferMetadataServletFilterTest.TestApplication.class, properties = {
-		"spring.config.location = classpath:application-test.yml" })
+@SpringBootTest(webEnvironment = MOCK,
+		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
+		properties = { "spring.config.location = classpath:application-test.yml" })
 public class DecodeTransferMetadataReactiveFilterTest {
 
 	@Autowired

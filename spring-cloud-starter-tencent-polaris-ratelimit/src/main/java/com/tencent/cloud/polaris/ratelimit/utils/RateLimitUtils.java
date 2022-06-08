@@ -39,8 +39,7 @@ public final class RateLimitUtils {
 
 	}
 
-	public static String getRejectTips(
-			PolarisRateLimitProperties polarisRateLimitProperties) {
+	public static String getRejectTips(PolarisRateLimitProperties polarisRateLimitProperties) {
 		String tips = polarisRateLimitProperties.getRejectRequestTips();
 
 		if (!StringUtils.isEmpty(tips)) {

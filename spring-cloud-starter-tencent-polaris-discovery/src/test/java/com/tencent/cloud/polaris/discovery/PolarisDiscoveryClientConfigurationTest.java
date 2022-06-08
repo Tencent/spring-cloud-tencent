@@ -34,7 +34,7 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisDiscoveryClientConfiguration}
+ * Test for {@link PolarisDiscoveryClientConfiguration}.
  *
  * @author Haotian Zhang
  */
