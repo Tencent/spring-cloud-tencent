@@ -27,13 +27,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Test for {@link MetadataLocalProperties}
+ * Test for {@link MetadataLocalProperties}.
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = MetadataLocalPropertiesTest.TestApplication.class, properties = {
-		"spring.config.location = classpath:application-test.yml" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = MetadataLocalPropertiesTest.TestApplication.class,
+		properties = { "spring.config.location = classpath:application-test.yml" })
 public class MetadataLocalPropertiesTest {
 
 	@Autowired

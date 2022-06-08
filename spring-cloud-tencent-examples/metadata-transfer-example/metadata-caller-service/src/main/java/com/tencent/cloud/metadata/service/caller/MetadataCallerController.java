@@ -66,7 +66,7 @@ public class MetadataCallerController {
 
 		// Get Custom Metadata From Context
 		MetadataContext context = MetadataContextHolder.get();
-		Map<String, String> callerTransitiveMetadata = context.getAllTransitiveCustomMetadata();
+		Map<String, String> callerTransitiveMetadata = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		ret.put("caller-transitive-metadata", callerTransitiveMetadata);
 		ret.put("caller-metadata-contents", metadataLocalProperties.getContent());
 
@@ -90,7 +90,7 @@ public class MetadataCallerController {
 
 		// Get Custom Metadata From Context
 		MetadataContext context = MetadataContextHolder.get();
-		Map<String, String> callerTransitiveMetadata = context.getAllTransitiveCustomMetadata();
+		Map<String, String> callerTransitiveMetadata = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		ret.put("caller-transitive-metadata", callerTransitiveMetadata);
 		ret.put("caller-metadata-contents", metadataLocalProperties.getContent());
 

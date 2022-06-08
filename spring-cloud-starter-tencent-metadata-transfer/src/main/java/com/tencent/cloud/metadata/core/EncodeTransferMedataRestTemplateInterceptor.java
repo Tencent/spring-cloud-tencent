@@ -34,7 +34,6 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Interceptor used for adding the metadata in http headers from context when web client
@@ -55,31 +54,20 @@ public class EncodeTransferMedataRestTemplateInterceptor
 			ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
+		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 
-		// add new metadata and cover old
-		String metadataStr = httpRequest.getHeaders()
-				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
-		if (!StringUtils.isEmpty(metadataStr)) {
-			Map<String, String> headerMetadataMap = JacksonUtils
-					.deserialize2Map(metadataStr);
-			for (String key : headerMetadataMap.keySet()) {
-				metadataContext.putTransitiveCustomMetadata(key,
-						headerMetadataMap.get(key));
-			}
-		}
-		Map<String, String> customMetadata = metadataContext
-				.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
-			metadataStr = JacksonUtils.serialize2Json(customMetadata);
+			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
 			try {
 				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, "UTF-8"));
+						URLEncoder.encode(encodedTransitiveMetadata, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
 				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						metadataStr);
+						encodedTransitiveMetadata);
 			}
 		}
+
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
 	}
 

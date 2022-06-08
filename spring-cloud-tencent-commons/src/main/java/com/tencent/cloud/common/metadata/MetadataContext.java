@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.StringUtils;
 
@@ -34,6 +36,11 @@ import org.springframework.util.StringUtils;
  */
 public class MetadataContext {
 
+	/**
+	 * transitive context.
+	 */
+	public static final String FRAGMENT_TRANSITIVE = "transitive";
+	private static final Logger LOG = LoggerFactory.getLogger(MetadataContext.class);
 	/**
 	 * Namespace of local instance.
 	 */
@@ -51,6 +58,14 @@ public class MetadataContext {
 			namespace = ApplicationContextAwareUtils
 					.getProperties("spring.cloud.polaris.discovery.namespace", "default");
 		}
+
+		if (StringUtils.isEmpty(namespace)) {
+			LOG.error("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
+					+ "spring.cloud.polaris.discovery.namespace");
+			throw new RuntimeException("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
+					+ "spring.cloud.polaris.discovery.namespace");
+		}
+
 		LOCAL_NAMESPACE = namespace;
 
 		String serviceName = ApplicationContextAwareUtils
@@ -60,38 +75,56 @@ public class MetadataContext {
 					"spring.cloud.polaris.discovery.service", ApplicationContextAwareUtils
 							.getProperties("spring.application.name", null));
 		}
+
+		if (StringUtils.isEmpty(serviceName)) {
+			LOG.error("service name should not be blank. please configure spring.cloud.polaris.service or "
+					+ "spring.cloud.polaris.discovery.service or spring.application.name");
+			throw new RuntimeException("service name should not be blank. please configure spring.cloud.polaris.service or "
+					+ "spring.cloud.polaris.discovery.service or spring.application.name");
+		}
 		LOCAL_SERVICE = serviceName;
 	}
 
-	/**
-	 * Transitive custom metadata content.
-	 */
-	private final Map<String, String> transitiveCustomMetadata;
+	private final Map<String, Map<String, String>> fragmentContexts;
 
 	public MetadataContext() {
-		this.transitiveCustomMetadata = new ConcurrentHashMap<>();
+		this.fragmentContexts = new ConcurrentHashMap<>();
 	}
 
-	public Map<String, String> getAllTransitiveCustomMetadata() {
-		return Collections.unmodifiableMap(this.transitiveCustomMetadata);
+
+	public Map<String, String> getFragmentContext(String fragment) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(fragmentContext);
 	}
 
-	public String getTransitiveCustomMetadata(String key) {
-		return this.transitiveCustomMetadata.get(key);
+	public String getContext(String fragment, String key) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			return null;
+		}
+		return fragmentContext.get(key);
 	}
 
-	public void putTransitiveCustomMetadata(String key, String value) {
-		this.transitiveCustomMetadata.put(key, value);
+	public void putContext(String fragment, String key, String value) {
+		Map<String, String> fragmentContext = fragmentContexts.get(fragment);
+		if (fragmentContext == null) {
+			fragmentContext = new ConcurrentHashMap<>();
+			fragmentContexts.put(fragment, fragmentContext);
+		}
+		fragmentContext.put(key, value);
 	}
 
-	public void putAllTransitiveCustomMetadata(Map<String, String> customMetadata) {
-		this.transitiveCustomMetadata.putAll(customMetadata);
+	public void putFragmentContext(String fragment, Map<String, String> context) {
+		fragmentContexts.put(fragment, context);
 	}
 
 	@Override
 	public String toString() {
-		return "MetadataContext{" + "transitiveCustomMetadata="
-				+ JacksonUtils.serialize2Json(transitiveCustomMetadata) + '}';
+		return "MetadataContext{" +
+				"fragmentContexts=" + JacksonUtils.serialize2Json(fragmentContexts) +
+				'}';
 	}
-
 }

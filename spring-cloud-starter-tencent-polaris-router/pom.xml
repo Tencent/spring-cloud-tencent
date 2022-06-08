@@ -19,6 +19,10 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
+		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
 
 		<!-- Polaris dependencies start -->
@@ -26,7 +30,52 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>router-rule</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>router-metadata</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>router-nearby</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>

@@ -55,9 +55,9 @@ import static org.mockito.Mockito.when;
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		CalleeControllerTests.Config.class, TestController.class }, properties = {
-				"spring.application.name=java_provider_test",
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { CalleeControllerTests.Config.class, TestController.class },
+		properties = { "spring.application.name=java_provider_test",
 				"spring.cloud.polaris.discovery.namespace=Test",
 				"spring.cloud.polaris.address=grpc://127.0.0.1:10081" })
 public class CalleeControllerTests {

@@ -70,14 +70,16 @@
 	</developers>
 
 	<properties>
-		<revision>1.5.0-Greenwich.SR6-SNAPSHOT</revision>
-		<polaris.version>1.6.0</polaris.version>
+		<revision>1.5.2-Greenwich.SR6-SNAPSHOT</revision>
+		<polaris.version>1.6.1</polaris.version>
 
 		<!-- Dependencies -->
 		<logback.version>1.2.7</logback.version>
 		<guava.version>23.0</guava.version>
 		<consul.version>1.4.5</consul.version>
-		<powermock.version>2.0.0</powermock.version>
+		<openfeign.version>2.2.6.RELEASE</openfeign.version>
+		<mocktio.version>4.5.1</mocktio.version>
+		<byte-buddy.version>1.12.10</byte-buddy.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -91,6 +93,14 @@
 				<artifactId>polaris-dependencies</artifactId>
 				<groupId>com.tencent.polaris</groupId>
 				<version>${polaris.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-openfeign-dependencies</artifactId>
+				<version>${openfeign.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -174,18 +184,26 @@
 				<version>${revision}</version>
 			</dependency>
 
-			<!-- powermock-module-junit4 -->
+
 			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>${powermock.version}</version>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>${mocktio.version}</version>
+				<scope>test</scope>
 			</dependency>
 
-			<!-- powermock-api-mockito -->
 			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito2</artifactId>
-				<version>${powermock.version}</version>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mocktio.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>${byte-buddy.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

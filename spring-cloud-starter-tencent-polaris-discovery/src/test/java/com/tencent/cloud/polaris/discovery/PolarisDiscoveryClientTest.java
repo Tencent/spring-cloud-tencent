@@ -24,8 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import org.springframework.cloud.client.ServiceInstance;
 
@@ -37,12 +36,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisDiscoveryClient}
+ * Test for {@link PolarisDiscoveryClient}.
  *
  * @author Haotian Zhang
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore("javax.management.*")
+@RunWith(MockitoJUnitRunner.class)
 public class PolarisDiscoveryClientTest {
 
 	@Mock
@@ -74,4 +72,8 @@ public class PolarisDiscoveryClientTest {
 
 	}
 
+	@Test
+	public void testDescription() {
+		assertThat(client.description()).isEqualTo("Spring Cloud Tencent Polaris Discovery Client.");
+	}
 }

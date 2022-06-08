@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.common.metadata.config;
 
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -40,6 +41,11 @@ public class MetadataAutoConfiguration {
 	@Bean
 	public MetadataLocalProperties metadataLocalProperties() {
 		return new MetadataLocalProperties();
+	}
+
+	@Bean
+	public StaticMetadataManager metadataManager(MetadataLocalProperties metadataLocalProperties) {
+		return new StaticMetadataManager(metadataLocalProperties);
 	}
 
 	/**

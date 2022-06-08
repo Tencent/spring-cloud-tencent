@@ -65,17 +65,15 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 		if (metadataContext == null) {
 			metadataContext = MetadataContextHolder.get();
 		}
-		Map<String, String> customMetadata = metadataContext
-				.getAllTransitiveCustomMetadata();
+		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
 				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						new String[] { URLEncoder.encode(metadataStr, "UTF-8") });
+						URLEncoder.encode(metadataStr, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						new String[] { metadataStr });
+				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
 			}
 		}
 

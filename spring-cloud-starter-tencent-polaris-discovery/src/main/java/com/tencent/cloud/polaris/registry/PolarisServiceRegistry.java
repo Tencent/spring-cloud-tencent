@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.util.OkHttpUtil;
@@ -60,16 +60,16 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
-	private final MetadataLocalProperties metadataLocalProperties;
+	private final StaticMetadataManager staticMetadataManager;
 
 	private final ScheduledExecutorService heartbeatExecutor;
 
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisDiscoveryHandler polarisDiscoveryHandler,
-			MetadataLocalProperties metadataLocalProperties) {
+			StaticMetadataManager staticMetadataManager) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
-		this.metadataLocalProperties = metadataLocalProperties;
+		this.staticMetadataManager = staticMetadataManager;
 
 		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
 			this.heartbeatExecutor = Executors.newSingleThreadScheduledExecutor(
@@ -95,10 +95,13 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setPort(registration.getPort());
 		instanceRegisterRequest.setWeight(polarisDiscoveryProperties.getWeight());
 		instanceRegisterRequest.setToken(polarisDiscoveryProperties.getToken());
+		instanceRegisterRequest.setRegion(staticMetadataManager.getRegion());
+		instanceRegisterRequest.setZone(staticMetadataManager.getZone());
+		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
 		if (null != heartbeatExecutor) {
 			instanceRegisterRequest.setTtl(ttl);
 		}
-		instanceRegisterRequest.setMetadata(metadataLocalProperties.getContent());
+		instanceRegisterRequest.setMetadata(registration.getMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		try {
@@ -107,7 +110,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			log.info("polaris registry, {} {} {}:{} {} register finished",
 					polarisDiscoveryProperties.getNamespace(),
 					registration.getServiceId(), registration.getHost(),
-					registration.getPort(), metadataLocalProperties.getContent());
+					registration.getPort(), staticMetadataManager.getMergedStaticMetadata());
 
 			if (null != heartbeatExecutor) {
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();

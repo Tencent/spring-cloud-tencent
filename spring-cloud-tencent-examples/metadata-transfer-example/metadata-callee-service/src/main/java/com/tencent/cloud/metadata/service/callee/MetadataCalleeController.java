@@ -53,7 +53,7 @@ public class MetadataCalleeController {
 
 		// Get Custom Metadata From Context
 		MetadataContext context = MetadataContextHolder.get();
-		Map<String, String> customMetadataMap = context.getAllTransitiveCustomMetadata();
+		Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 
 		customMetadataMap.forEach((key, value) -> {
 			LOG.info("Custom Metadata (Key-Value): {} : {}", key, value);

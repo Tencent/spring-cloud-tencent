@@ -39,7 +39,8 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
  *
  * @author Haotian Zhang
  */
-@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled",
+		havingValue = "true", matchIfMissing = true)
 @Configuration
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)

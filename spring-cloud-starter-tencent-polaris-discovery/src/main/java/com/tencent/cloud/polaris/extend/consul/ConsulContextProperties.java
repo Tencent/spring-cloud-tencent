@@ -73,8 +73,16 @@ public class ConsulContextProperties {
 	@Value("${spring.cloud.consul.discovery.prefer-ip-address:#{'false'}}")
 	private boolean preferIpAddress;
 
+	public String getHost() {
+		return host;
+	}
+
 	public void setHost(String host) {
 		this.host = host;
+	}
+
+	public int getPort() {
+		return port;
 	}
 
 	public void setPort(int port) {
@@ -113,40 +121,32 @@ public class ConsulContextProperties {
 		@Override
 		public void modify(ConfigurationImpl configuration) {
 			if (consulContextProperties != null && consulContextProperties.enabled) {
-				if (CollectionUtils
-						.isEmpty(configuration.getGlobal().getServerConnectors())) {
+				if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
 					configuration.getGlobal().setServerConnectors(new ArrayList<>());
 				}
-				if (CollectionUtils
-						.isEmpty(configuration.getGlobal().getServerConnectors())
+				if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())
 						&& null != configuration.getGlobal().getServerConnector()) {
-					configuration.getGlobal().getServerConnectors()
-							.add(configuration.getGlobal().getServerConnector());
+					configuration.getGlobal().getServerConnectors().add(configuration.getGlobal().getServerConnector());
 				}
 				ServerConnectorConfigImpl serverConnectorConfig = new ServerConnectorConfigImpl();
 				serverConnectorConfig.setId(ID);
-				serverConnectorConfig.setAddresses(
-						Collections.singletonList(consulContextProperties.host + ":"
-								+ consulContextProperties.port));
+				serverConnectorConfig.setAddresses(Collections.singletonList(consulContextProperties.host + ":"
+						+ consulContextProperties.port));
 				serverConnectorConfig.setProtocol(DefaultPlugins.SERVER_CONNECTOR_CONSUL);
 				Map<String, String> metadata = serverConnectorConfig.getMetadata();
 				if (StringUtils.isNotBlank(consulContextProperties.serviceName)) {
-					metadata.put(MetadataMapKey.SERVICE_NAME_KEY,
-							consulContextProperties.serviceName);
+					metadata.put(MetadataMapKey.SERVICE_NAME_KEY, consulContextProperties.serviceName);
 				}
 				if (StringUtils.isNotBlank(consulContextProperties.instanceId)) {
-					metadata.put(MetadataMapKey.INSTANCE_ID_KEY,
-							consulContextProperties.instanceId);
+					metadata.put(MetadataMapKey.INSTANCE_ID_KEY, consulContextProperties.instanceId);
 				}
 				if (consulContextProperties.preferIpAddress
 						&& StringUtils.isNotBlank(consulContextProperties.ipAddress)) {
 					metadata.put(MetadataMapKey.PREFER_IP_ADDRESS_KEY,
 							String.valueOf(consulContextProperties.preferIpAddress));
-					metadata.put(MetadataMapKey.IP_ADDRESS_KEY,
-							consulContextProperties.ipAddress);
+					metadata.put(MetadataMapKey.IP_ADDRESS_KEY, consulContextProperties.ipAddress);
 				}
-				configuration.getGlobal().getServerConnectors()
-						.add(serverConnectorConfig);
+				configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
 
 				DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
 				discoveryConfig.setServerConnectorId(ID);

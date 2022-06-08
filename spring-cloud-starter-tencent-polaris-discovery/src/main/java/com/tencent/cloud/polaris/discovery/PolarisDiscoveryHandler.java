@@ -18,22 +18,15 @@
 
 package com.tencent.cloud.polaris.discovery;
 
-import java.util.Map;
-
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
-import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
 import com.tencent.polaris.api.rpc.GetHealthyInstancesRequest;
-import com.tencent.polaris.api.rpc.GetInstancesRequest;
 import com.tencent.polaris.api.rpc.GetServicesRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.api.rpc.ServicesResponse;
 import com.tencent.polaris.client.api.SDKContext;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,32 +50,6 @@ public class PolarisDiscoveryHandler {
 
 	@Autowired
 	private ConsumerAPI polarisConsumer;
-
-	/**
-	 * Get a list of instances after service routing.
-	 * @param service service name
-	 * @return list of instances
-	 */
-	@Deprecated
-	public InstancesResponse getFilteredInstances(String service) {
-		String namespace = polarisDiscoveryProperties.getNamespace();
-		GetInstancesRequest getInstancesRequest = new GetInstancesRequest();
-		getInstancesRequest.setNamespace(namespace);
-		getInstancesRequest.setService(service);
-		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
-		String localService = MetadataContext.LOCAL_SERVICE;
-		Map<String, String> allTransitiveCustomMetadata = MetadataContextHolder.get()
-				.getAllTransitiveCustomMetadata();
-		if (StringUtils.isNotBlank(localNamespace) || StringUtils.isNotBlank(localService)
-				|| null != allTransitiveCustomMetadata) {
-			ServiceInfo sourceService = new ServiceInfo();
-			sourceService.setNamespace(localNamespace);
-			sourceService.setService(localService);
-			sourceService.setMetadata(allTransitiveCustomMetadata);
-			getInstancesRequest.setServiceInfo(sourceService);
-		}
-		return polarisConsumer.getInstances(getInstancesRequest);
-	}
 
 	/**
 	 * Get a list of healthy instances.
