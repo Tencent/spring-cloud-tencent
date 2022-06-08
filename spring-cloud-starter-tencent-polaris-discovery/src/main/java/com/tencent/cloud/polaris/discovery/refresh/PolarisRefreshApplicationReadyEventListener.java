@@ -40,7 +40,7 @@ import static com.tencent.cloud.polaris.discovery.refresh.PolarisServiceStatusCh
  */
 public class PolarisRefreshApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent>, ApplicationEventPublisherAware {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PolarisRefreshConfiguration.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisRefreshApplicationReadyEventListener.class);
 	private static final int DELAY = 60;
 	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 	private final PolarisServiceStatusChangeListener polarisServiceStatusChangeListener;

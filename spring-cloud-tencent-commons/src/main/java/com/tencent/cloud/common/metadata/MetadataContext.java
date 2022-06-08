@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.StringUtils;
 
@@ -38,6 +40,7 @@ public class MetadataContext {
 	 * transitive context.
 	 */
 	public static final String FRAGMENT_TRANSITIVE = "transitive";
+	private static final Logger LOG = LoggerFactory.getLogger(MetadataContext.class);
 	/**
 	 * Namespace of local instance.
 	 */
@@ -48,9 +51,6 @@ public class MetadataContext {
 	 */
 	public static String LOCAL_SERVICE;
 
-
-	private final Map<String, Map<String, String>> fragmentContexts;
-
 	static {
 		String namespace = ApplicationContextAwareUtils
 				.getProperties("spring.cloud.polaris.namespace");
@@ -60,6 +60,8 @@ public class MetadataContext {
 		}
 
 		if (StringUtils.isEmpty(namespace)) {
+			LOG.error("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
+					+ "spring.cloud.polaris.discovery.namespace");
 			throw new RuntimeException("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
 					+ "spring.cloud.polaris.discovery.namespace");
 		}
@@ -75,11 +77,15 @@ public class MetadataContext {
 		}
 
 		if (StringUtils.isEmpty(serviceName)) {
+			LOG.error("service name should not be blank. please configure spring.cloud.polaris.service or "
+					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 			throw new RuntimeException("service name should not be blank. please configure spring.cloud.polaris.service or "
 					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 		}
 		LOCAL_SERVICE = serviceName;
 	}
+
+	private final Map<String, Map<String, String>> fragmentContexts;
 
 	public MetadataContext() {
 		this.fragmentContexts = new ConcurrentHashMap<>();

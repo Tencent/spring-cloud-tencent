@@ -21,30 +21,55 @@ package com.tencent.cloud.common.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 /**
- * test for {@link JacksonUtils}
- *@author lepdou 2022-05-27
+ * Test for {@link JacksonUtils}.
+ *
+ * @author lepdou, Haotian Zhang
  */
 @RunWith(MockitoJUnitRunner.class)
 public class JacksonUtilsTest {
 
 	@Test
-	public void test() {
+	public void testSerialize2Json() {
 		Map<String, String> sourceMap = new HashMap<>();
 		sourceMap.put("k1", "v1");
 		sourceMap.put("k2", "v2");
 		sourceMap.put("k3", "v3");
 
-		Map<String, String> map = JacksonUtils.deserialize2Map(JacksonUtils.serialize2Json(sourceMap));
+		String jsonStr = JacksonUtils.serialize2Json(sourceMap);
 
-		Assert.assertEquals(sourceMap.size(), map.size());
-		Assert.assertEquals(sourceMap.get("k1"), map.get("k1"));
-		Assert.assertEquals(sourceMap.get("k2"), map.get("k2"));
-		Assert.assertEquals(sourceMap.get("k3"), map.get("k3"));
+		assertThat(jsonStr).isEqualTo("{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}");
+	}
+
+	@Test
+	public void testDeserialize2Map() {
+		String jsonStr = "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}";
+		Map<String, String> map = JacksonUtils.deserialize2Map(jsonStr);
+		assertThat(map.size()).isEqualTo(3);
+		assertThat(map.get("k1")).isEqualTo("v1");
+		assertThat(map.get("k2")).isEqualTo("v2");
+		assertThat(map.get("k3")).isEqualTo("v3");
+
+		assertThat(JacksonUtils.deserialize2Map("")).isNotNull();
+		assertThat(JacksonUtils.deserialize2Map("")).isEmpty();
+
+		jsonStr = "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"";
+		try {
+			JacksonUtils.deserialize2Map(jsonStr);
+			fail("RuntimeException should be thrown.");
+		}
+		catch (RuntimeException exception) {
+			assertThat(exception.getMessage()).isEqualTo("Json to map failed.");
+		}
+		catch (Throwable throwable) {
+			fail("RuntimeException should be thrown.");
+		}
 	}
 }

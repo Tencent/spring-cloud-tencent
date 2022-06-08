@@ -1,5 +1,4 @@
 # Change Log
 ---
 
-- [fix:fix consul connect bug.](https://github.com/Tencent/spring-cloud-tencent/pull/217)
-- [fix:fix PolarisRegistration cannot get metadata bug.](https://github.com/Tencent/spring-cloud-tencent/pull/218)
+- [fix:use 1.6.1 version of polaris-java and fix some bug.](https://github.com/Tencent/spring-cloud-tencent/pull/221)
