@@ -55,28 +55,17 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 	public void apply(RequestTemplate requestTemplate) {
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
+		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 
-		// add new metadata and cover old
-		if (!CollectionUtils.isEmpty(requestTemplate.headers())
-				&& !CollectionUtils.isEmpty(requestTemplate.headers().get(CUSTOM_METADATA))) {
-			for (String headerMetadataStr : requestTemplate.headers().get(CUSTOM_METADATA)) {
-				Map<String, String> headerMetadataMap = JacksonUtils.deserialize2Map(headerMetadataStr);
-				for (String key : headerMetadataMap.keySet()) {
-					metadataContext.putTransitiveCustomMetadata(key, headerMetadataMap.get(key));
-				}
-			}
-		}
-
-		Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
-			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
+			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
 			requestTemplate.removeHeader(CUSTOM_METADATA);
 			try {
-				requestTemplate.header(CUSTOM_METADATA, URLEncoder.encode(metadataStr, "UTF-8"));
+				requestTemplate.header(CUSTOM_METADATA, URLEncoder.encode(encodedTransitiveMetadata, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
 				LOG.error("Set header failed.", e);
-				requestTemplate.header(CUSTOM_METADATA, metadataStr);
+				requestTemplate.header(CUSTOM_METADATA, encodedTransitiveMetadata);
 			}
 		}
 	}

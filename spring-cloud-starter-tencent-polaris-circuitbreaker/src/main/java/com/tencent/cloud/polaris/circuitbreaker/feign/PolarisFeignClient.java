@@ -30,6 +30,8 @@ import feign.Request;
 import feign.Request.Options;
 import feign.Response;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static feign.Util.checkNotNull;
 
@@ -39,6 +41,9 @@ import static feign.Util.checkNotNull;
  * @author Haotian Zhang
  */
 public class PolarisFeignClient implements Client {
+
+
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisFeignClient.class);
 
 	private final Client delegate;
 
@@ -58,10 +63,13 @@ public class PolarisFeignClient implements Client {
 			if (response.status() >= 500) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
+			LOG.debug("Will report result of {}. Request=[{}]. Response=[{}].",
+					resultRequest.getRetStatus().name(), request, response);
 			return response;
 		}
 		catch (IOException origin) {
 			resultRequest.setRetStatus(RetStatus.RetFail);
+			LOG.debug("Will report result of {}. Request=[{}].", resultRequest.getRetStatus().name(), request, origin);
 			throw origin;
 		}
 		finally {

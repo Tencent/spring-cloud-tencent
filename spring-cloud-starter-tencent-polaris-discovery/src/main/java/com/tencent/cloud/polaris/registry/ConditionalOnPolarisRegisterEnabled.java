@@ -27,7 +27,7 @@ import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * @author Haotian Zhang
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })

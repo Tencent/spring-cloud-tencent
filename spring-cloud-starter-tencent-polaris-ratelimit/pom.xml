@@ -36,10 +36,6 @@
 				</exclusion>
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-metadata</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
 					<artifactId>router-canary</artifactId>
 				</exclusion>
 				<exclusion>
@@ -89,14 +85,20 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito2</artifactId>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -83,7 +83,8 @@ public class PolarisContextProperties {
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);
 
 		Collection<PolarisConfigModifier> modifiers = modifierList;
-		modifiers = modifiers.stream().sorted(Comparator.comparingInt(PolarisConfigModifier::getOrder))
+		modifiers = modifiers.stream()
+				.sorted(Comparator.comparingInt(PolarisConfigModifier::getOrder))
 				.collect(Collectors.toList());
 		if (!CollectionUtils.isEmpty(modifiers)) {
 			for (PolarisConfigModifier modifier : modifiers) {
@@ -133,11 +134,11 @@ public class PolarisContextProperties {
 		this.namespace = namespace;
 	}
 
-	String getService() {
+	public String getService() {
 		return service;
 	}
 
-	void setService(String service) {
+	public void setService(String service) {
 		this.service = service;
 	}
 
