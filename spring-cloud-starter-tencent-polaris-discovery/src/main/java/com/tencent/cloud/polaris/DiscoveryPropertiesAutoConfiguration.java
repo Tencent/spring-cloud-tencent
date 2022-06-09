@@ -54,13 +54,13 @@ public class DiscoveryPropertiesAutoConfiguration {
 
 	private boolean discoveryEnabled = false;
 
-	@Bean(name = "polarisProvider")
+	@Bean
 	@ConditionalOnMissingBean
 	public ProviderAPI polarisProvider(SDKContext polarisContext) throws PolarisException {
 		return DiscoveryAPIFactory.createProviderAPIByContext(polarisContext);
 	}
 
-	@Bean(name = "polarisConsumer")
+	@Bean
 	@ConditionalOnMissingBean
 	public ConsumerAPI polarisConsumer(SDKContext polarisContext) throws PolarisException {
 		return DiscoveryAPIFactory.createConsumerAPIByContext(polarisContext);

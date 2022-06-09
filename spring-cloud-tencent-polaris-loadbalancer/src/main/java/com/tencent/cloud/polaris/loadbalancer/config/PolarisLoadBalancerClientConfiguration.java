@@ -72,10 +72,10 @@ public class PolarisLoadBalancerClientConfiguration {
 		@Bean
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
 		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
-		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(RouterAPI routerAPI,
+		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(
 				ConfigurableApplicationContext context) {
 			return new PolarisServiceInstanceListSupplier(
-					ServiceInstanceListSupplier.builder().withDiscoveryClient().build(context), routerAPI);
+					ServiceInstanceListSupplier.builder().withDiscoveryClient().build(context));
 		}
 
 	}
@@ -88,10 +88,10 @@ public class PolarisLoadBalancerClientConfiguration {
 		@Bean
 		@ConditionalOnBean(DiscoveryClient.class)
 		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
-		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(RouterAPI routerAPI,
+		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(
 				ConfigurableApplicationContext context) {
 			return new PolarisServiceInstanceListSupplier(
-					ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().build(context), routerAPI);
+					ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().build(context));
 		}
 
 	}

@@ -41,7 +41,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = MOCK, classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
+@SpringBootTest(webEnvironment = MOCK,
+		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
 		properties = { "spring.config.location = classpath:application-test.yml" })
 public class DecodeTransferMetadataReactiveFilterTest {
 
@@ -68,12 +69,15 @@ public class DecodeTransferMetadataReactiveFilterTest {
 
 		// Mock request
 		MockServerHttpRequest request = MockServerHttpRequest.get("test")
-				.header(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"c\": \"3\"}").build();
+				.header(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"c\": \"3\"}")
+				.build();
 		ServerWebExchange exchange = MockServerWebExchange.from(request);
 
 		metadataReactiveFilter.filter(exchange, webFilterChain);
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
+				.isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
+				.isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
 

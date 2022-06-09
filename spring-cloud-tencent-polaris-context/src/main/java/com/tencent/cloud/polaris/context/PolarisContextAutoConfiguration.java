@@ -18,9 +18,15 @@
 
 package com.tencent.cloud.polaris.context;
 
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.metadata.config.MetadataAutoConfiguration;
 import com.tencent.polaris.api.exception.PolarisException;
+import com.tencent.polaris.api.plugin.common.ValueContext;
+import com.tencent.polaris.api.plugin.route.LocationLevel;
 import com.tencent.polaris.client.api.SDKContext;
+import org.apache.commons.lang.StringUtils;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,13 +37,33 @@ import org.springframework.context.annotation.Bean;
  * @author Haotian Zhang
  */
 @ConditionalOnPolarisEnabled
-@EnableConfigurationProperties({ PolarisContextProperties.class })
+@EnableConfigurationProperties({PolarisContextProperties.class})
+@ImportAutoConfiguration(MetadataAutoConfiguration.class)
 public class PolarisContextAutoConfiguration {
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean
-	public SDKContext polarisContext(PolarisContextProperties properties) throws PolarisException {
-		return SDKContext.initContextByConfig(properties.configuration());
+	public SDKContext polarisContext(PolarisContextProperties properties, StaticMetadataManager staticMetadataManager)
+			throws PolarisException {
+		SDKContext sdkContext = SDKContext.initContextByConfig(properties.configuration());
+
+		// init current instance location info from environment
+		ValueContext valueContext = sdkContext.getValueContext();
+		String region = staticMetadataManager.getRegion();
+		String zone = staticMetadataManager.getZone();
+		String campus = staticMetadataManager.getCampus();
+
+		if (StringUtils.isNotBlank(region)) {
+			valueContext.setValue(LocationLevel.region.name(), region);
+		}
+		if (StringUtils.isNotBlank(zone)) {
+			valueContext.setValue(LocationLevel.zone.name(), zone);
+		}
+		if (StringUtils.isNotBlank(campus)) {
+			valueContext.setValue(LocationLevel.campus.name(), campus);
+		}
+
+		return sdkContext;
 	}
 
 	@Bean
@@ -46,4 +72,8 @@ public class PolarisContextAutoConfiguration {
 		return new ModifyAddress();
 	}
 
+	@Bean
+	public ServiceRuleManager serviceRuleManager(SDKContext sdkContext) {
+		return new ServiceRuleManager(sdkContext);
+	}
 }

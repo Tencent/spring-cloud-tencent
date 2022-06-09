@@ -1,23 +1,23 @@
 /*
  * Tencent is pleased to support the open source community by making Spring Cloud Tencent available.
  *
- *  Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
  *
- *  Licensed under the BSD 3-Clause License (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the BSD 3-Clause License (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  https://opensource.org/licenses/BSD-3-Clause
+ * https://opensource.org/licenses/BSD-3-Clause
  *
- *  Unless required by applicable law or agreed to in writing, software distributed
- *  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *  CONDITIONS OF ANY KIND, either express or implied. See the License for the
- *  specific language governing permissions and limitations under the License.
- *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,8 +26,10 @@ import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
 import com.tencent.cloud.polaris.context.PolarisContextProperties;
+import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
+import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,13 +63,16 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
+	private final Environment environment;
+
 	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
-			PolarisPropertySourceManager polarisPropertySourceManager) {
+			PolarisPropertySourceManager polarisPropertySourceManager, Environment environment) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisContextProperties = polarisContextProperties;
 		this.configFileService = configFileService;
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
+		this.environment = environment;
 	}
 
 	@Override
@@ -80,19 +85,77 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			return compositePropertySource;
 		}
 
-		initPolarisConfigFiles(compositePropertySource, configFileGroups);
+		initInternalConfigFiles(compositePropertySource);
+
+		initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
 
 		return compositePropertySource;
 	}
 
-	private void initPolarisConfigFiles(CompositePropertySource compositePropertySource,
+	private void initInternalConfigFiles(CompositePropertySource compositePropertySource) {
+		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles();
+
+		for (ConfigFileMetadata configFile : internalConfigFiles) {
+			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(
+					configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
+
+			compositePropertySource.addPropertySource(polarisPropertySource);
+
+			polarisPropertySourceManager.addPropertySource(polarisPropertySource);
+
+			LOGGER.info("[SCT Config] Load and inject polaris config file. file = {}", configFile);
+		}
+	}
+
+	private List<ConfigFileMetadata> getInternalConfigFiles() {
+		String namespace = polarisContextProperties.getNamespace();
+		String serviceName = polarisContextProperties.getService();
+		if (!StringUtils.hasText(serviceName)) {
+			serviceName = environment.getProperty("spring.application.name");
+		}
+
+		List<ConfigFileMetadata> internalConfigFiles = new LinkedList<>();
+
+		// priority: application-${profile} > application > boostrap-${profile} > boostrap
+		String[] activeProfiles = environment.getActiveProfiles();
+
+		for (String activeProfile : activeProfiles) {
+			if (!StringUtils.hasText(activeProfile)) {
+				continue;
+			}
+
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + activeProfile + ".properties"));
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + activeProfile + ".yml"));
+		}
+
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.properties"));
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yml"));
+
+		for (String activeProfile : activeProfiles) {
+			if (!StringUtils.hasText(activeProfile)) {
+				continue;
+			}
+
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + activeProfile + ".properties"));
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + activeProfile + ".yml"));
+		}
+
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.properties"));
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yml"));
+
+
+		return internalConfigFiles;
+	}
+
+
+	private void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource,
 			List<ConfigFileGroup> configFileGroups) {
 		String namespace = polarisContextProperties.getNamespace();
 
 		for (ConfigFileGroup configFileGroup : configFileGroups) {
 			String group = configFileGroup.getName();
 
-			if (StringUtils.isEmpty(group)) {
+			if (!StringUtils.hasText(group)) {
 				throw new IllegalArgumentException("polaris config group name cannot be empty.");
 			}
 

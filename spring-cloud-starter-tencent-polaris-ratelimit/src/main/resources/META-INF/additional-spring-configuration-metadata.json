@@ -23,6 +23,12 @@
       "type": "java.lang.Integer",
       "defaultValue": "429",
       "description": "Custom http code when reject request."
+    },
+    {
+      "name": "spring.cloud.polaris.ratelimit.maxQueuingTime",
+      "type": "java.lang.Long",
+      "defaultValue": "1000",
+      "description": "Max queuing time when using unirate."
     }
   ]
 }

@@ -1,89 +1,108 @@
 # Spring Cloud Tencent
 
+[![Wiki](https://badgen.net/badge/icon/wiki?icon=wiki&label)](https://github.com/Tencent/spring-cloud-tencent/wiki)
 [![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.tencent.cloud/spring-cloud-tencent?label=Maven%20Central)](https://search.maven.org/search?q=g:com.tencent.cloud%20AND%20a:spring-cloud-tencent)
+[![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/main/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=main)
+[![Contributors](https://img.shields.io/github/contributors/Tencent/spring-cloud-tencent)](https://github.com/Tencent/spring-cloud-tencent/graphs/contributors)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 English | [简体中文](./README-zh.md)
 
 ## Introduction
 
-Spring Cloud Tencent contains components distributed micro-service applications need during developing phase, developers that built their key architectures based on Spring Cloud can use these components
+Spring Cloud Tencent is a open source one-stop microservice solution from Tencent.
 
-Based on Spring Cloud Tencent, you only need a small configuration to launch Spring Cloud and micro-service's joint solutions.
+Spring Cloud Tencent implements the Spring Cloud standard microservice SPI, so developers can quickly develop Spring Cloud cloud-native distributed applications based on Spring Cloud Tencent.
 
-## Key Features
+The core of Spring Cloud Tencent relies on Tencent's open-source one-stop service discovery and governance platform [Polaris](https://github.com/polarismesh/polaris) to realize various distributed microservice scenarios.
 
-* **Service Registration and Discovery**: Based on Spring Cloud's discovery and registration standard.
-* **Service Routing and LoadBalancer**: Based on ribbon's API port, provide dynamic routing and load balancing use cases.
-* **CircuitBreaker Node**: Support circuitbreaker auto-reset ability, ensure the reliability of distributed server
-* **Rate Limiter**: Support rate limit of microservice and gateway, ensure the stability of backend, one can configure policies and traffic data from the control panel
-* **Metadata Delivery**: Support metadata delivery between gateways and microservices.
+- [Polaris Github home page](https://github.com/polarismesh/polaris)
+- [Polaris official website](https://polarismesh.cn/)
 
-## Components
+The capabilities provided by Spring Cloud Tencent include but are not limited to:
 
-**[Polaris](https://github.com/PolarisMesh/polaris)**：Polaris Spring Cloud operation centre, provide solutions to registration, dynamic routing, load balancing and circuitbreaker.
+<img width="1031" alt="image" src="https://user-images.githubusercontent.com/4991116/170412596-692f8dae-42f7-495f-a451-01396e381eb0.png">
 
-## How to build
+- Service registration and discovery
+- Dynamic configuration management
+- Service Governance
+  - Service rate limit
+  - Service circuit breaker
+  - Service routing
+  - ...
+- Label transparent transmission
 
-* master's branch matches Spring Cloud Hoxton, support lowest at JDK 1.8.
+## Demo Environment
 
-Spring Cloud Tencent uses Maven to construct, the fastest way is to clone project to local files, then execute the following orders:
+- Console Address : http://14.116.241.63:8080/
+  - Username: polaris
+  - Password: polaris 
+- Server Address: `grpc://183.47.111.80:8091`
 
-```bash
-./mvnw install
-```
+The example addresses under `spring-cloud-tencent-example` all point to the experience service address (`grpc://183.47.111.80:8091`) by default. 
+If you only experience Spring Cloud Tencent, you can run any example directly with one click.  
 
-When all the steps are finished, the project will be installed in local Maven repository.
+## Screenshots
 
-## How to Use
+<img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">
 
-### How to Introduce Dependency
+## Use Guide
 
-Add the following configurations in dependencyManagement, then add the dependencies you need.
-At the same time, you need to pay attention to the Spring Cloud version corresponding to Spring Cloud Tencent, and then the corresponding Spring Boot version.
-For example, Spring Cloud Tencent's 1.0.1.Hoxton.SR9 corresponds to the Spring Cloud Hoxton version and requires Spring Boot 2.3.x.
+All the components of Spring Cloud Tencent have been uploaded to the Maven central repository, just need to introduce dependencies.
+
+For example:
+
+```` xml  
+<!-- add spring-cloud-tencent bom  -->
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.tencent.cloud</groupId>
+            <artifactId>spring-cloud-tencent-dependencies</artifactId>
+            <!--version number-->
+            <version>${version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>    
+                 
+<!-- add spring-cloud-starter-tencent-polaris-discovery dependency  -->
+<dependencies>
+    <dependency>
+        <groupId>com.tencent.cloud</groupId>
+        <artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
+    </dependency>
+</dependencies>
 
 ````
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.tencent.cloud</groupId>
-                <artifactId>spring-cloud-tencent-dependencies</artifactId>
-                <!--version number-->
-                <version>${version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-````
 
-### Example
+ - ### Quick Start
+    - [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+    - [Spring Cloud Tencent Discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [Spring Cloud Tencent Config](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [Spring Cloud Tencent Rate Limit](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [Spring Cloud Tencent CircuitBreaker](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [Spring Cloud Tencent Router](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [Spring Cloud Tencent Metadata Transfer](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)
 
-Spring Cloud Tencent project contains a sub-module spring-cloud-tencent-examples. This module provides examples for users to experience, you can read the README.md in each example, and follow the instructions there.
+- ### Development Documentation
+  - [Project Structure Overview](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
+  - [Participate in co-construction](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%8F%82%E4%B8%8E%E5%85%B1%E5%BB%BA)
+  
+## Chat Group
 
-Example List:
+Please scan the QR code to join the chat group.
 
-- [Polaris Discovery Example](spring-cloud-tencent-examples/polaris-discovery-example/README.md)
-
-- [Polaris CircuitBreaker Example](spring-cloud-tencent-examples/polaris-circuitbreaker-example/README.md)
-
-- [Polaris RateLimit Example](spring-cloud-tencent-examples/polaris-ratelimit-example/README.md)
-
-- [Polaris Gateway Example](spring-cloud-tencent-examples/polaris-gateway-example/README.md)
-
-For more features, please refer to [polaris-java](https://github.com/polarismesh/polaris-java).
-
-### Version Standard
-
-We use a version policy related to Spring Cloud's major version number.
-
-Project version includes ```${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}-${CORRESPONDING_MAJOR_VERSION_OF_SPRING_CLOUD}.${CORRESPONDING_MINOR_VERSION_OF_SPRING_CLOUD}-${RELEASE_TYPE}```.
-```${MAJOR_VERSION}```, ```${MINOR_VERSION}```, ```${PATCH_VERSION}``` are in numbers starting from 0.
-```${CORRESPONDING_MAJOR_VERSION_OF_SPRING_CLOUD}``` is the same as the major version number of Spring Cloud, like Hoxton, Greenwich. ```${CORRESPONDING_MINOR_VERSION_OF_SPRING_CLOUD}``` is the same as the major version number of Spring Cloud, like RS9.
-```${RELEASE_TYPE}``` is like RELEASE or RC currently. Actually, the RELEASE version does not add a release type in the version, and the RS version will add a suffix and start from RC0.
-
-For example: 1.2.0-Hoxton.SR9-RC0
+<img src="https://user-images.githubusercontent.com/24446200/169198148-d4cc3494-3485-4515-9897-c8cb5504f706.png" width="30%" height="30%" />
 
 ## License
 The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in the file [LICENSE](LICENSE)
+
+
+## Stargazers over time
+
+If you are interested in Spring Cloud Tencent, please follow our project, thank you very much.
+
+[![Stargazers over time](https://starchart.cc/Tencent/spring-cloud-tencent.svg)](https://starchart.cc/Tencent/spring-cloud-tencent)

@@ -13,11 +13,15 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
@@ -27,6 +31,7 @@ import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.factory.LimitAPIFactory;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -42,22 +47,25 @@ import static javax.servlet.DispatcherType.INCLUDE;
 import static javax.servlet.DispatcherType.REQUEST;
 
 /**
+ * Configuration of rate limit.
+ *
  * @author Haotian Zhang
  */
 @Configuration
 @ConditionalOnPolarisEnabled
+@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 @ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled", matchIfMissing = true)
-public class RateLimitConfiguration {
-
-	@Bean
-	public PolarisRateLimitProperties polarisRateLimitProperties() {
-		return new PolarisRateLimitProperties();
-	}
+public class PolarisRateLimitConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public LimitAPI limitAPI(SDKContext polarisContext) {
 		return LimitAPIFactory.createLimitAPIByContext(polarisContext);
+	}
+
+	@Bean
+	public RateLimitRuleLabelResolver rateLimitRuleLabelService(ServiceRuleManager serviceRuleManager) {
+		return new RateLimitRuleLabelResolver(serviceRuleManager);
 	}
 
 	/**
@@ -71,9 +79,10 @@ public class RateLimitConfiguration {
 		@ConditionalOnMissingBean
 		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI,
 				@Nullable PolarisRateLimiterLabelServletResolver labelResolver,
-				PolarisRateLimitProperties polarisRateLimitProperties) {
+				PolarisRateLimitProperties polarisRateLimitProperties,
+				RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
 			return new QuotaCheckServletFilter(limitAPI, labelResolver,
-					polarisRateLimitProperties);
+					polarisRateLimitProperties, rateLimitRuleLabelResolver);
 		}
 
 		@Bean
@@ -99,9 +108,10 @@ public class RateLimitConfiguration {
 		@Bean
 		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(LimitAPI limitAPI,
 				@Nullable PolarisRateLimiterLabelReactiveResolver labelResolver,
-				PolarisRateLimitProperties polarisRateLimitProperties) {
+				PolarisRateLimitProperties polarisRateLimitProperties,
+				RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
 			return new QuotaCheckReactiveFilter(limitAPI, labelResolver,
-					polarisRateLimitProperties);
+					polarisRateLimitProperties, rateLimitRuleLabelResolver);
 		}
 
 	}

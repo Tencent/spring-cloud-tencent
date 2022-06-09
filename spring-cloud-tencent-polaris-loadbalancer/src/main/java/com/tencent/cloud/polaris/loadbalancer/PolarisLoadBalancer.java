@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
+import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
@@ -98,7 +99,7 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer implements React
 
 		ProcessLoadBalanceRequest request = new ProcessLoadBalanceRequest();
 		request.setDstInstances(convertToPolarisServiceInstances(serviceInstances));
-		request.setLbPolicy(loadBalancerProperties.getStrategy());
+		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_RANDOM);
 		request.setCriteria(new Criteria());
 
 		try {

@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -56,8 +57,31 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 	public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
 		// Get metadata string from http header.
 		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
+
+		Map<String, String> internalTransitiveMetadata = getIntervalTransitiveMetadata(serverHttpRequest);
+		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(serverWebExchange);
+
+		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
+		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
+		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
+
+		MetadataContextHolder.init(mergedTransitiveMetadata);
+
+		// Save to ServerWebExchange.
+		serverWebExchange.getAttributes().put(
+				MetadataConstant.HeaderName.METADATA_CONTEXT,
+				MetadataContextHolder.get());
+
+		return webFilterChain.filter(serverWebExchange)
+				.doOnError(throwable -> LOG.error("handle metadata[{}] error.",
+						MetadataContextHolder.get(), throwable))
+				.doFinally((type) -> MetadataContextHolder.remove());
+	}
+
+	private Map<String, String> getIntervalTransitiveMetadata(ServerHttpRequest serverHttpRequest) {
 		HttpHeaders httpHeaders = serverHttpRequest.getHeaders();
-		String customMetadataStr = httpHeaders.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
+		String customMetadataStr = httpHeaders
+				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
 				customMetadataStr = URLDecoder.decode(customMetadataStr, "UTF-8");
@@ -68,17 +92,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		}
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
-		// create custom metadata.
-		Map<String, String> upstreamCustomMetadataMap = JacksonUtils.deserialize2Map(customMetadataStr);
-
-		MetadataContextHolder.init(upstreamCustomMetadataMap);
-
-		// Save to ServerWebExchange.
-		serverWebExchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT,
-				MetadataContextHolder.get());
-		return webFilterChain.filter(serverWebExchange)
-				.doOnError(throwable -> LOG.error("handle metadata[{}] error.", MetadataContextHolder.get(), throwable))
-				.doFinally((type) -> MetadataContextHolder.remove());
+		return JacksonUtils.deserialize2Map(customMetadataStr);
 	}
 
 }

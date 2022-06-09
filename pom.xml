@@ -86,13 +86,10 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.5.0-2020.0.5-SNAPSHOT</revision>
+		<revision>1.5.2-2020.0.5-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2020.0.5</spring.cloud.version>
-
-		<!-- Dependencies -->
-		<logback.version>1.2.7</logback.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.3</jacoco.version>
@@ -109,15 +106,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Spring Cloud Dependencies -->
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring.cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
 			<!-- Spring Cloud Tencent Dependencies -->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
@@ -127,10 +115,13 @@
 				<scope>import</scope>
 			</dependency>
 
+			<!-- Spring Cloud Dependencies -->
 			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback.version}</version>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring.cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

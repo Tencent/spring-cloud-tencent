@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 
 /**
  * polaris config module auto configuration at bootstrap phase.
@@ -61,9 +62,9 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	@Bean
 	public PolarisConfigFileLocator polarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
-			PolarisPropertySourceManager polarisPropertySourceManager) {
+			PolarisPropertySourceManager polarisPropertySourceManager, Environment environment) {
 		return new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties, configFileService,
-				polarisPropertySourceManager);
+				polarisPropertySourceManager, environment);
 	}
 
 	@Bean
