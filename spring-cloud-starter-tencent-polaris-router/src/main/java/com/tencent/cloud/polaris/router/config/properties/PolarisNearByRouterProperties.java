@@ -16,7 +16,7 @@
  *
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.router.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

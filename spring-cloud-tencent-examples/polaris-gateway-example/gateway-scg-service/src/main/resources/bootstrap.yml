@@ -8,15 +8,13 @@ spring:
     tencent:
       metadata:
         content:
-          a: 1
+          env: blue
         transitive:
-          - a
+          - env
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default
       enabled: true
-      discovery:
-        service-list-refresh-interval: 1000
     gateway:
       discovery:
         locator:
@@ -52,13 +50,13 @@ spring:
                 maxBackoff: '''500ms'''
                 factor: 2
                 basedOnPreviousValue: false
-#      routes:
-#        - id: GatewayCalleeService
-#          uri: lb://GatewayCalleeService
-#          predicates:
-#            - Path=/GatewayCalleeService/**
-#          filters:
-#            - StripPrefix=1
+      routes:
+        - id: GatewayCalleeService
+          uri: lb://GatewayCalleeService
+          predicates:
+            - Path=/GatewayCalleeService/**
+          filters:
+            - StripPrefix=1
 
 logging:
   level:

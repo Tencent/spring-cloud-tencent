@@ -13,34 +13,23 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.gateway.example.callee;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * the configuration for metadata router.
- * @author lepdou 2022-05-23
+ * Gateway callee application.
+ *
+ * @author Haotian Zhang
  */
-@ConfigurationProperties(prefix = "spring.cloud.polaris.router.metadata-router")
-public class PolarisMetadataRouterProperties {
+@SpringBootApplication
+public class GatewayCalleeApplication2 {
 
-	private boolean enabled = true;
-
-	public boolean isEnabled() {
-		return enabled;
+	public static void main(String[] args) {
+		SpringApplication.run(GatewayCalleeApplication2.class, args);
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	@Override
-	public String toString() {
-		return "PolarisMetadataRouterProperties{" +
-				"enabled=" + enabled +
-				'}';
-	}
 }

@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.router.resttemplate;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
+import com.tencent.cloud.polaris.router.PolarisLoadBalancerBeanPostProcessor;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
 import org.junit.Assert;

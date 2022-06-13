@@ -18,47 +18,30 @@
 
 package com.tencent.cloud.polaris.router.config;
 
-import java.util.List;
-
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.cloud.polaris.router.PolarisLoadBalancerBeanPostProcessor;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.feign.PolarisCachingSpringLoadBalanceFactory;
-import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
-import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerBeanPostProcessor;
-import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
+import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
-import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-import org.springframework.lang.Nullable;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
- * router module auto configuration.
+ * configuration for router module singleton beans.
  *
  *@author lepdou 2022-05-11
  */
 @Configuration
-@RibbonClients(defaultConfiguration = {FeignConfiguration.class, RibbonConfiguration.class})
+@RibbonClients(defaultConfiguration = {RibbonConfiguration.class})
 @Import({PolarisNearByRouterProperties.class, PolarisMetadataRouterProperties.class, PolarisRuleBasedRouterProperties.class})
 public class RouterAutoConfiguration {
-
-	@Bean
-	public RouterLabelFeignInterceptor routerLabelInterceptor(@Nullable List<RouterLabelResolver> routerLabelResolvers,
-			MetadataLocalProperties metadataLocalProperties,
-			RouterRuleLabelResolver routerRuleLabelResolver) {
-		return new RouterLabelFeignInterceptor(routerLabelResolvers, metadataLocalProperties, routerRuleLabelResolver);
-	}
-
-	@Bean
-	public PolarisCachingSpringLoadBalanceFactory polarisCachingSpringLoadBalanceFactory(SpringClientFactory factory) {
-		return new PolarisCachingSpringLoadBalanceFactory(factory);
-	}
 
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
