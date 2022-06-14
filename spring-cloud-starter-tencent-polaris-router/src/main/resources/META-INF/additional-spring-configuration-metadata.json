@@ -1,0 +1,22 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.polaris.router.metadata-router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the switch for metadata router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.nearby-router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the switch for near by router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.rule-router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the switch for rule based router."
+    }
+  ]
+}

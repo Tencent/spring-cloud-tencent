@@ -53,8 +53,11 @@ public class PolarisLoadBalancerClientConfiguration {
 	 */
 	private static final int REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER = 193827465;
 
+	private final static String STRATEGY_WEIGHT = "polarisWeighted";
+
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = STRATEGY_WEIGHT)
 	public ReactorLoadBalancer<ServiceInstance> polarisLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisLoadBalancerProperties loadBalancerProperties,
 			RouterAPI routerAPI) {
@@ -70,6 +73,7 @@ public class PolarisLoadBalancerClientConfiguration {
 	static class PolarisReactiveSupportConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
 		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(
@@ -86,6 +90,7 @@ public class PolarisLoadBalancerClientConfiguration {
 	static class PolarisBlockingSupportConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		@ConditionalOnBean(DiscoveryClient.class)
 		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(
