@@ -19,9 +19,10 @@
 package com.tencent.cloud.polaris.registry;
 
 import java.net.URI;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.polaris.client.api.SDKContext;
@@ -30,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Registration object of Polaris.
@@ -44,11 +46,16 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	private final SDKContext polarisContext;
 
+	private final StaticMetadataManager staticMetadataManager;
+
+	private Map<String, String> metadata;
+
 	public PolarisRegistration(DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
-			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context, StaticMetadataManager staticMetadataManager) {
 		this.discoveryPropertiesAutoConfiguration = discoveryPropertiesAutoConfiguration;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisContext = context;
+		this.staticMetadataManager = staticMetadataManager;
 	}
 
 	@Override
@@ -82,7 +89,13 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	@Override
 	public Map<String, String> getMetadata() {
-		return Collections.emptyMap();
+		if (CollectionUtils.isEmpty(metadata)) {
+			metadata = new HashMap<>();
+			metadata.putAll(staticMetadataManager.getMergedStaticMetadata());
+			// location info will be putted both in metadata and instance's field
+			metadata.putAll(staticMetadataManager.getLocationMetadata());
+		}
+		return metadata;
 	}
 
 	public PolarisDiscoveryProperties getPolarisProperties() {
@@ -95,8 +108,12 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	@Override
 	public String toString() {
-		return "PolarisRegistration{" + "polarisDiscoveryProperties=" + polarisDiscoveryProperties + ", polarisContext="
-				+ polarisContext + '}';
+		return "PolarisRegistration{" +
+				"discoveryPropertiesAutoConfiguration=" + discoveryPropertiesAutoConfiguration +
+				", polarisDiscoveryProperties=" + polarisDiscoveryProperties +
+				", polarisContext=" + polarisContext +
+				", staticMetadataManager=" + staticMetadataManager +
+				", metadata=" + metadata +
+				'}';
 	}
-
 }

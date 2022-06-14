@@ -20,11 +20,8 @@ package com.tencent.cloud.metadata.core.intercepter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import feign.RequestInterceptor;
@@ -33,17 +30,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,8 +51,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT,
 		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
-		properties = { "server.port=8081",
-				"spring.config.location = classpath:application-test.yml" })
+		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
 public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired
@@ -72,21 +63,9 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	@Test
 	public void test1() {
 		String metadata = testFeign.test();
-		Assertions.assertThat(metadata)
-				.isEqualTo("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("a"))
-				.isEqualTo("11");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("b"))
-				.isEqualTo("22");
-		Assertions
-				.assertThat(MetadataContextHolder.get().getTransitiveCustomMetadata("c"))
-				.isEqualTo("33");
+		Assertions.assertThat(metadata).isEqualTo("{\"b\":\"2\"}");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
 	}
 
 	@SpringBootApplication
@@ -101,18 +80,13 @@ public class EncodeTransferMedataFeignInterceptorTest {
 			return URLDecoder.decode(customMetadataStr, "UTF-8");
 		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
-			return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
-		}
-
 		@FeignClient(name = "test-feign", url = "http://localhost:8081")
 		public interface TestFeign {
 
 			@RequestMapping(value = "/test",
-					headers = { MetadataConstant.HeaderName.CUSTOM_METADATA
-							+ "={\"a\":\"11" + "\",\"b\":\"22\",\"c\":\"33\"}" })
+					headers = {"X-SCT-Metadata-Transitive-a=11",
+							"X-SCT-Metadata-Transitive-b=22",
+							"X-SCT-Metadata-Transitive-c=33"})
 			String test();
 
 		}
@@ -122,17 +96,8 @@ public class EncodeTransferMedataFeignInterceptorTest {
 
 			@Override
 			public void apply(RequestTemplate template) {
-				try {
-					// Since feign-core 11.1, RequestTemplate Adapted to RFC6570, See: https://tools.ietf.org/html/rfc6570#section-2.2
-					// Feign ISSUES : https://github.com/OpenFeign/feign/pull/1203
-					// Feign ISSUES : https://github.com/OpenFeign/feign/issues/1305
-					// Fixed : If you used RequestTemplate#header(name,value) method , the value needs to be encoded using URLEncoder .
-					template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-							URLEncoder.encode("{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}", "UTF-8"));
-				}
-				catch (UnsupportedEncodingException e) {
-					throw new RuntimeException(e);
-				}
+				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
+						"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
 			}
 
 		}

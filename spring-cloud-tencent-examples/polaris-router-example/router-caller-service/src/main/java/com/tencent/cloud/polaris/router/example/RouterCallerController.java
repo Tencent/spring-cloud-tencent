@@ -21,6 +21,7 @@ package com.tencent.cloud.polaris.router.example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -44,8 +45,11 @@ public class RouterCallerController {
 	 * @return info
 	 */
 	@GetMapping("/feign")
-	public String feign() {
-		return routerCalleeService.info();
+	public String feign(@RequestParam String name) {
+		User user = new User();
+		user.setName(name);
+		user.setAge(18);
+		return routerCalleeService.info(name, user);
 	}
 
 	/**
@@ -53,8 +57,12 @@ public class RouterCallerController {
 	 * @return information of callee
 	 */
 	@GetMapping("/rest")
-	public String rest() {
-		return restTemplate.getForObject("http://RouterCalleeService/router/service/callee/info", String.class);
+	public String rest(@RequestParam String name) {
+		User user = new User();
+		user.setName(name);
+		user.setAge(18);
+		return restTemplate.postForObject(
+				"http://RouterCalleeService/router/service/callee/info?name={name}", user, String.class, name);
 	}
 
 	/**

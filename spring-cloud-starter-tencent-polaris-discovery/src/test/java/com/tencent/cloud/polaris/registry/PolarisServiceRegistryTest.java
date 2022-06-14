@@ -30,7 +30,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Configuration;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -38,10 +37,11 @@ import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisServiceRegistry}
+ * Test for {@link PolarisServiceRegistry}.
  *
  * @author Haotian Zhang
  */
@@ -105,9 +105,24 @@ public class PolarisServiceRegistryTest {
 		});
 	}
 
+	@Test
+	public void testDeRegister() {
+		this.contextRunner.run(context -> {
+			PolarisServiceRegistry registry = context
+					.getBean(PolarisServiceRegistry.class);
+			PolarisRegistration registration = Mockito.mock(PolarisRegistration.class);
+			doReturn(null).when(registration).getServiceId();
+			try {
+				registry.deregister(registration);
+			}
+			catch (Throwable throwable) {
+				fail();
+			}
+		});
+	}
+
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableDiscoveryClient
 	static class PolarisPropertiesConfiguration {
 
 	}

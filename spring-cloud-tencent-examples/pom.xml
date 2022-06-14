@@ -23,6 +23,7 @@
 		<module>polaris-config-example</module>
 		<module>polaris-router-example</module>
 		<module>metadata-transfer-example</module>
+		<module>polaris-router-grayrelease-example</module>
 	</modules>
 
     <properties>

@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 
 /**
- * Test for {@link MetadataTransferAutoConfiguration}
+ * Test for {@link MetadataTransferAutoConfiguration}.
  *
  * @author Haotian Zhang
  */

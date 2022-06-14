@@ -13,45 +13,32 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris;
+package com.tencent.cloud.polaris.circuitbreaker;
 
 import org.junit.Test;
 
-import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
-import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 /**
- * Test for {@link PolarisDiscoveryProperties}
+ * Test for {@link PolarisCircuitBreakerBootstrapConfiguration}.
  *
  * @author Haotian Zhang
  */
-public class PolarisPropertiesTest {
+public class PolarisCircuitBreakerBootstrapConfigurationTest {
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(PolarisCircuitBreakerBootstrapConfiguration.class))
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test
-	public void testInitAndGetSet() {
-		PolarisDiscoveryProperties temp = new PolarisDiscoveryProperties();
-		try {
-			temp.setNamespace(NAMESPACE_TEST);
-			assertThat(temp.getNamespace()).isEqualTo(NAMESPACE_TEST);
-
-			temp.setService(SERVICE_PROVIDER);
-			assertThat(temp.getService()).isEqualTo(SERVICE_PROVIDER);
-
-			temp.setToken("xxxxxx");
-			assertThat(temp.getToken()).isEqualTo("xxxxxx");
-
-			temp.init();
-			assertThat(temp).isNotNull();
-		}
-		catch (Exception e) {
-			fail();
-			e.printStackTrace();
-		}
+	public void testDefaultInitialization() {
+		this.contextRunner.run(context -> {
+			assertThat(context).hasSingleBean(PolarisCircuitBreakerBootstrapConfiguration.CircuitBreakerConfigModifier.class);
+		});
 	}
-
 }

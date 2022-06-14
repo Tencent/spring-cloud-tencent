@@ -13,11 +13,23 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
+package com.tencent.cloud.polaris.router.grayrelease.front;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+
 /**
- * Package info of router.
+ * Router callee feign client.
  *
- * @author Haotian Zhang
+ * @author lepdou 2022-04-06
  */
-package com.tencent.cloud.polaris.router;
+@FeignClient("gray-release-middle")
+public interface RouterService {
+
+	@GetMapping("/router/gray/rest")
+	String rest();
+
+}

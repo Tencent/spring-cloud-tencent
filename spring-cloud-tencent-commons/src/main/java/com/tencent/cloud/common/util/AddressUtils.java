@@ -20,7 +20,10 @@ package com.tencent.cloud.common.util;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import org.springframework.util.StringUtils;
 
 /**
  * the utils of parse address.
@@ -36,6 +39,9 @@ public final class AddressUtils {
 	}
 
 	public static List<String> parseAddressList(String addressInfo) {
+		if (!StringUtils.hasText(addressInfo)) {
+			return Collections.emptyList();
+		}
 		List<String> addressList = new ArrayList<>();
 		String[] addresses = addressInfo.split(ADDRESS_SEPARATOR);
 		for (String address : addresses) {

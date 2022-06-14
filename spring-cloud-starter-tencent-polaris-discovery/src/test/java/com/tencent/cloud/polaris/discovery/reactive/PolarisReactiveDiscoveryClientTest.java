@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.discovery.reactive;
 import java.util.Arrays;
 
 import com.tencent.cloud.polaris.discovery.PolarisServiceDiscovery;
+import com.tencent.polaris.api.exception.ErrorCode;
 import com.tencent.polaris.api.exception.PolarisException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,10 +34,13 @@ import org.springframework.cloud.client.ServiceInstance;
 
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisReactiveDiscoveryClient}
+ * Test for {@link PolarisReactiveDiscoveryClient}.
  *
  * @author Haotian Zhang
  */
@@ -46,30 +50,57 @@ public class PolarisReactiveDiscoveryClientTest {
 	@Mock
 	private PolarisServiceDiscovery serviceDiscovery;
 
-	@Mock
-	private ServiceInstance serviceInstance;
-
 	@InjectMocks
 	private PolarisReactiveDiscoveryClient client;
+
+	private int count = 0;
 
 	@Test
 	public void testGetInstances() throws PolarisException {
 
-		when(serviceDiscovery.getInstances(SERVICE_PROVIDER)).thenReturn(singletonList(serviceInstance));
+		when(serviceDiscovery.getInstances(anyString())).thenAnswer(invocation -> {
+			String serviceName = invocation.getArgument(0);
+			if (SERVICE_PROVIDER.equalsIgnoreCase(serviceName)) {
+				return singletonList(mock(ServiceInstance.class));
+			}
+			else {
+				throw new PolarisException(ErrorCode.UNKNOWN_SERVER_ERROR);
+			}
+		});
 
+		// Normal
 		Flux<ServiceInstance> instances = this.client.getInstances(SERVICE_PROVIDER);
-
 		StepVerifier.create(instances).expectNextCount(1).expectComplete().verify();
+
+		// PolarisException
+		instances = this.client.getInstances(SERVICE_PROVIDER + 1);
+		StepVerifier.create(instances).expectNextCount(0).expectComplete().verify();
 	}
 
 	@Test
 	public void testGetServices() throws PolarisException {
 
-		when(serviceDiscovery.getServices()).thenReturn(Arrays.asList(SERVICE_PROVIDER + 1, SERVICE_PROVIDER + 2));
+		when(serviceDiscovery.getServices()).thenAnswer(invocation -> {
+			if (count == 0) {
+				count++;
+				return Arrays.asList(SERVICE_PROVIDER + 1, SERVICE_PROVIDER + 2);
+			}
+			else {
+				throw new PolarisException(ErrorCode.UNKNOWN_SERVER_ERROR);
+			}
+		});
 
+		// Normal
 		Flux<String> services = this.client.getServices();
-
 		StepVerifier.create(services).expectNext(SERVICE_PROVIDER + 1, SERVICE_PROVIDER + 2).expectComplete().verify();
+
+		// PolarisException
+		services = this.client.getServices();
+		StepVerifier.create(services).expectNextCount(0).expectComplete().verify();
 	}
 
+	@Test
+	public void testDescription() {
+		assertThat(client.description()).isEqualTo("Spring Cloud Tencent Polaris Reactive Discovery Client.");
+	}
 }

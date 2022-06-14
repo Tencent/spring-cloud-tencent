@@ -15,47 +15,19 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.feign;
+package com.tencent.cloud.polaris.router.grayrelease.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
 
-/**
- * Test application.
- *
- * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
- */
 @SpringBootApplication
+@EnableDiscoveryClient
 @EnableFeignClients
-public class TestPolarisFeignApp {
+public class GrayReleaseGatewayApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TestPolarisFeignApp.class);
+		SpringApplication.run(GrayReleaseGatewayApplication.class, args);
 	}
-
-	@FeignClient(name = "feign-service-polaris", fallback = TestPolarisServiceFallback.class)
-	public interface TestPolarisService {
-
-		/**
-		 * Get info of service B.
-		 */
-		@GetMapping("/example/service/b/info")
-		String info();
-
-	}
-
-	@Component
-	public static class TestPolarisServiceFallback implements TestPolarisService {
-
-		@Override
-		public String info() {
-			return "trigger the refuse";
-		}
-
-	}
-
 }
