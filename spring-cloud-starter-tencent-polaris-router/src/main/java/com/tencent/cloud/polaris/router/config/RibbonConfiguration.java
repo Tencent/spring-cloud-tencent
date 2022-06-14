@@ -22,16 +22,17 @@ import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.IRule;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule;
+import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto configuration for ribbon components.
+ * Configuration for ribbon components. IRule is not singleton bean, Each service corresponds to an IRule.
  * @author lepdou 2022-05-17
  */
-@Configuration
 public class RibbonConfiguration {
 
 	@Bean

@@ -25,15 +25,12 @@ import com.tencent.cloud.polaris.router.feign.PolarisFeignLoadBalancer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
- * configuration for feign component.
- *
+ * configuration for feign load balance components. PolarisFeignLoadBalancer is not singleton bean, Each service corresponds to a PolarisFeignLoadBalancer.
  *@author lepdou 2022-05-16
  */
-@Configuration
-public class FeignConfiguration {
+public class FeignLoadBalancerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
