@@ -23,7 +23,6 @@ import java.util.List;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultInstance;
-import com.tencent.polaris.api.pojo.Instance;
 import org.apache.commons.lang.StringUtils;
 import reactor.core.publisher.Flux;
 
@@ -64,7 +63,7 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 			throw new IllegalStateException(
 					"PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 		}
-		List<Instance> instances = new ArrayList<>(allServers.size());
+		List<ServiceInstance> serviceInstances = new ArrayList<>(allServers.size());
 		for (ServiceInstance server : allServers) {
 			DefaultInstance instance = new DefaultInstance();
 			instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
@@ -75,14 +74,9 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 			instance.setPort(server.getPort());
 			instance.setWeight(100);
 			instance.setMetadata(server.getMetadata());
-			instances.add(instance);
+			serviceInstances.add(new PolarisServiceInstance(instance));
 		}
-
-		List<ServiceInstance> filteredInstances = new ArrayList<>();
-		for (Instance instance : instances) {
-			filteredInstances.add(new PolarisServiceInstance(instance));
-		}
-		return filteredInstances;
+		return serviceInstances;
 	}
 
 }

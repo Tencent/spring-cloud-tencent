@@ -43,7 +43,6 @@ import org.springframework.cloud.client.loadbalancer.EmptyResponse;
 import org.springframework.cloud.client.loadbalancer.Request;
 import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
-import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 
@@ -52,7 +51,7 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
-public class PolarisLoadBalancer extends RoundRobinLoadBalancer implements ReactorServiceInstanceLoadBalancer {
+public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 
 	private static final Logger log = LoggerFactory.getLogger(PolarisLoadBalancer.class);
 
@@ -88,7 +87,7 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer implements React
 		}
 		ServiceInstanceListSupplier supplier = supplierObjectProvider
 				.getIfAvailable(NoopServiceInstanceListSupplier::new);
-		return supplier.get().next().map(this::getInstanceResponse);
+		return supplier.get(request).next().map(this::getInstanceResponse);
 	}
 
 	private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> serviceInstances) {
