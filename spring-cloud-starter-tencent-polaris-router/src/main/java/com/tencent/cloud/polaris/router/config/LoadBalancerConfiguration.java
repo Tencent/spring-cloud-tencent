@@ -22,7 +22,6 @@ import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier
 import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.ConditionalOnBlockingDiscoveryEnabled;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled;
@@ -54,7 +53,6 @@ public class LoadBalancerConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
-		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(
 				ConfigurableApplicationContext context,
 				RouterAPI routerAPI,
@@ -78,7 +76,6 @@ public class LoadBalancerConfiguration {
 
 		@Bean
 		@ConditionalOnBean(DiscoveryClient.class)
-		@ConditionalOnProperty(value = "spring.cloud.loadbalancer.configurations", havingValue = "polaris")
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(
 				ConfigurableApplicationContext context,
 				RouterAPI routerAPI,

@@ -72,14 +72,6 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 		this.routerAPI = routerAPI;
 	}
 
-	private static ServiceInstances convertToPolarisServiceInstances(List<ServiceInstance> serviceInstances) {
-		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceInstances.get(0).getServiceId());
-		List<Instance> polarisInstances = serviceInstances.stream()
-				.map(serviceInstance -> ((PolarisServiceInstance) serviceInstance).getPolarisInstance())
-				.collect(Collectors.toList());
-		return new DefaultServiceInstances(serviceKey, polarisInstances);
-	}
-
 	@Override
 	public Mono<Response<ServiceInstance>> choose(Request request) {
 		if (!loadBalancerProperties.getEnabled()) {
@@ -109,6 +101,14 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 			log.warn("PolarisRoutingLoadbalancer error", e);
 			return new EmptyResponse();
 		}
+	}
+
+	private static ServiceInstances convertToPolarisServiceInstances(List<ServiceInstance> serviceInstances) {
+		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceInstances.get(0).getServiceId());
+		List<Instance> polarisInstances = serviceInstances.stream()
+				.map(serviceInstance -> ((PolarisServiceInstance) serviceInstance).getPolarisInstance())
+				.collect(Collectors.toList());
+		return new DefaultServiceInstances(serviceKey, polarisInstances);
 	}
 
 }
