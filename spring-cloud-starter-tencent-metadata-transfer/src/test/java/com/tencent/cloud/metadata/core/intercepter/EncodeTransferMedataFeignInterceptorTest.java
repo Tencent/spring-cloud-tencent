@@ -52,7 +52,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = DEFINED_PORT,
 		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
 		properties = {"server.port=8081",
-				"spring.config.location = classpath:application-test.yml"})
+				"spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = servlet",
+				"spring.cloud.gateway.enabled = false"})
 public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired

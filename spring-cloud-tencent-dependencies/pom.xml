@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-dependencies-parent</artifactId>
-		<version>2.3.1.RELEASE</version>
+		<version>2.3.5.RELEASE</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -70,11 +70,14 @@
 	</developers>
 
 	<properties>
-		<revision>1.6.0-Hoxton.SR9-SNAPSHOT</revision>
+		<revision>1.6.0-Hoxton.SR12-SNAPSHOT</revision>
 		<polaris.version>1.6.1</polaris.version>
-		<logback.version>1.2.7</logback.version>
+		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
+		<jackson.version>2.12.7</jackson.version>
+		<protobuf-java.version>3.16.1</protobuf-java.version>
+		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -149,8 +152,44 @@
 
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>${protobuf-java.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>${bcprov-jdk15on.version}</version>
 			</dependency>
 
 			<dependency>
