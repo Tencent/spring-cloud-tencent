@@ -19,12 +19,14 @@
 package com.tencent.cloud.polaris.registry;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.spi.InstanceMetadataProvider;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
@@ -40,6 +42,9 @@ import org.springframework.util.CollectionUtils;
  */
 public class PolarisRegistration implements Registration, ServiceInstance {
 
+	private final static String METADATA_KEY_IP = "internal-ip";
+	private final static String METADATA_KEY_ADDRESS = "internal-address";
+
 	private final DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration;
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
@@ -48,15 +53,24 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	private final StaticMetadataManager staticMetadataManager;
 
+	private final InstanceMetadataProvider instanceMetadataProvider;
+
 	private Map<String, String> metadata;
+
+	private final String host;
 
 	public PolarisRegistration(
 			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
-			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context, StaticMetadataManager staticMetadataManager) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context,
+			StaticMetadataManager staticMetadataManager,
+			InstanceMetadataProvider instanceMetadataProvider) {
 		this.discoveryPropertiesAutoConfiguration = discoveryPropertiesAutoConfiguration;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisContext = context;
 		this.staticMetadataManager = staticMetadataManager;
+		this.instanceMetadataProvider = instanceMetadataProvider;
+
+		host = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 	}
 
 	@Override
@@ -66,7 +80,7 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	@Override
 	public String getHost() {
-		return polarisContext.getConfig().getGlobal().getAPI().getBindIP();
+		return host;
 	}
 
 	@Override
@@ -92,10 +106,35 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 	@Override
 	public Map<String, String> getMetadata() {
 		if (CollectionUtils.isEmpty(metadata)) {
-			metadata = new HashMap<>();
-			metadata.putAll(staticMetadataManager.getMergedStaticMetadata());
+			Map<String, String> instanceMetadata = new HashMap<>();
+
+			// put internal metadata
+			instanceMetadata.put(METADATA_KEY_IP, host);
+			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + polarisDiscoveryProperties.getPort());
+
+			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
+
 			// location info will be putted both in metadata and instance's field
-			metadata.putAll(staticMetadataManager.getLocationMetadata());
+			instanceMetadata.putAll(staticMetadataManager.getLocationMetadata());
+
+			// custom metadata from spi
+			if (instanceMetadataProvider != null) {
+				if (StringUtils.isNotBlank(instanceMetadataProvider.getRegion())) {
+					instanceMetadata.put(StaticMetadataManager.LOCATION_KEY_ZONE, instanceMetadataProvider.getRegion());
+				}
+				if (StringUtils.isNotBlank(instanceMetadataProvider.getZone())) {
+					instanceMetadata.put(StaticMetadataManager.LOCATION_KEY_ZONE, instanceMetadataProvider.getZone());
+				}
+				if (StringUtils.isNotBlank(instanceMetadataProvider.getCampus())) {
+					instanceMetadata.put(StaticMetadataManager.LOCATION_KEY_ZONE, instanceMetadataProvider.getCampus());
+				}
+
+				if (!CollectionUtils.isEmpty(instanceMetadataProvider.getMetadata())) {
+					instanceMetadata.putAll(instanceMetadataProvider.getMetadata());
+				}
+			}
+
+			this.metadata = Collections.unmodifiableMap(instanceMetadata);
 		}
 		return metadata;
 	}

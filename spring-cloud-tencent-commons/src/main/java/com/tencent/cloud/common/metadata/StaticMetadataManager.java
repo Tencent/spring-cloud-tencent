@@ -43,9 +43,18 @@ public class StaticMetadataManager {
 	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
 	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
 
-	private static final String LOCATION_KEY_REGION = "region";
-	private static final String LOCATION_KEY_ZONE = "zone";
-	private static final String LOCATION_KEY_CAMPUS = "campus";
+	/**
+	 * the metadata key of region.
+	 */
+	public static final String LOCATION_KEY_REGION = "region";
+	/**
+	 * the metadata key of zone.
+	 */
+	public static final String LOCATION_KEY_ZONE = "zone";
+	/**
+	 * the metadata key of campus/datacenter.
+	 */
+	public static final String LOCATION_KEY_CAMPUS = "campus";
 
 	private Map<String, String> envMetadata;
 	private Map<String, String> envTransitiveMetadata;
