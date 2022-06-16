@@ -20,8 +20,8 @@ package com.tencent.cloud.polaris.router.resttemplate;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
-import com.tencent.cloud.polaris.router.PolarisLoadBalancerBeanPostProcessor;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
+import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,7 +39,7 @@ import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for ${@link PolarisLoadBalancerBeanPostProcessor}
+ * Test for ${@link LoadBalancerInterceptorBeanPostProcessor}
  * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -68,7 +68,7 @@ public class PolarisLoadBalancerBeanPostProcessorTest {
 					.thenReturn(null);
 			LoadBalancerInterceptor loadBalancerInterceptor = new LoadBalancerInterceptor(loadBalancerClient, loadBalancerRequestFactory);
 
-			PolarisLoadBalancerBeanPostProcessor processor = new PolarisLoadBalancerBeanPostProcessor();
+			LoadBalancerInterceptorBeanPostProcessor processor = new LoadBalancerInterceptorBeanPostProcessor();
 			processor.setBeanFactory(beanFactory);
 
 			Object bean = processor.postProcessBeforeInitialization(loadBalancerInterceptor, "");
@@ -79,7 +79,7 @@ public class PolarisLoadBalancerBeanPostProcessorTest {
 
 	@Test
 	public void testNotWrapperLoadBalancerInterceptor() {
-		PolarisLoadBalancerBeanPostProcessor processor = new PolarisLoadBalancerBeanPostProcessor();
+		LoadBalancerInterceptorBeanPostProcessor processor = new LoadBalancerInterceptorBeanPostProcessor();
 		processor.setBeanFactory(beanFactory);
 
 		OtherBean otherBean = new OtherBean();
