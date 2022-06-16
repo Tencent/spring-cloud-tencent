@@ -45,7 +45,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
+		properties = { "spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = servlet",
+				"spring.cloud.gateway.enabled = false" })
 public class DecodeTransferMetadataServletFilterTest {
 
 	@Autowired
