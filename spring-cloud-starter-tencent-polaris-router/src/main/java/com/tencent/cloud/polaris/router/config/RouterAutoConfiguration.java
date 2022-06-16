@@ -19,12 +19,16 @@
 package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.cloud.polaris.router.PolarisLoadBalancerBeanPostProcessor;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
+import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerClientFilterBeanPostProcessor;
+import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
+import org.springframework.cloud.gateway.filter.LoadBalancerClientFilter;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +49,16 @@ public class RouterAutoConfiguration {
 
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
-	public PolarisLoadBalancerBeanPostProcessor polarisLoadBalancerBeanPostProcessor() {
-		return new PolarisLoadBalancerBeanPostProcessor();
+	@ConditionalOnClass(LoadBalancerInterceptor.class)
+	public LoadBalancerInterceptorBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
+		return new LoadBalancerInterceptorBeanPostProcessor();
+	}
+
+	@Bean
+	@Order(HIGHEST_PRECEDENCE)
+	@ConditionalOnClass(LoadBalancerClientFilter.class)
+	public LoadBalancerClientFilterBeanPostProcessor loadBalancerClientFilterBeanPostProcessor() {
+		return new LoadBalancerClientFilterBeanPostProcessor();
 	}
 
 	@Bean
