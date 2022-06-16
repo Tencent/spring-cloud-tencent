@@ -16,13 +16,14 @@
  *
  */
 
-package com.tencent.cloud.polaris.router.resttemplate;
+package com.tencent.cloud.polaris.router.beanprocessor;
 
 import java.util.List;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
+import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerInterceptor;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
 
 import org.springframework.beans.BeansException;
@@ -36,10 +37,9 @@ import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 /**
  * Replace LoadBalancerInterceptor with PolarisLoadBalancerInterceptor.
  * PolarisLoadBalancerInterceptor can pass routing context information.
- *
  *@author lepdou 2022-05-18
  */
-public class PolarisLoadBalancerBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
+public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
 	private BeanFactory factory;
 
@@ -51,6 +51,8 @@ public class PolarisLoadBalancerBeanPostProcessor implements BeanPostProcessor, 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof LoadBalancerInterceptor) {
+			// Support rest template router.
+			// Replaces the default LoadBalancerInterceptor implementation and returns a custom PolarisLoadBalancerInterceptor
 			LoadBalancerRequestFactory requestFactory = this.factory.getBean(LoadBalancerRequestFactory.class);
 			LoadBalancerClient loadBalancerClient = this.factory.getBean(LoadBalancerClient.class);
 			List<RouterLabelResolver> routerLabelResolvers = BeanFactoryUtils.getBeans(factory, RouterLabelResolver.class);

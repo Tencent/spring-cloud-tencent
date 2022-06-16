@@ -51,16 +51,18 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	}
 
 	@Bean
-	public ConfigFileService configFileService(SDKContext sdkContext) {
-		return ConfigFileServiceFactory.createConfigFileService(sdkContext);
-	}
-
-	@Bean
 	public PolarisPropertySourceManager polarisPropertySourceManager() {
 		return new PolarisPropertySourceManager();
 	}
 
 	@Bean
+	@ConditionalOnConnectRemoteServerEnabled
+	public ConfigFileService configFileService(SDKContext sdkContext) {
+		return ConfigFileServiceFactory.createConfigFileService(sdkContext);
+	}
+
+	@Bean
+	@ConditionalOnConnectRemoteServerEnabled
 	public PolarisConfigFileLocator polarisConfigFileLocator(
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties,
@@ -73,6 +75,7 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnConnectRemoteServerEnabled
 	public ConfigurationModifier configurationModifier(PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties) {
 		return new ConfigurationModifier(polarisConfigProperties, polarisContextProperties);

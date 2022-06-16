@@ -78,6 +78,7 @@
 		<jackson.version>2.12.7</jackson.version>
 		<protobuf-java.version>3.16.1</protobuf-java.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
+		<guava.version>31.0.1-jre</guava.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -148,6 +149,27 @@
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 				<version>${revision}</version>
+			</dependency>
+
+			<!-- third part framework dependencies -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>jsr305</artifactId>
+						<groupId>com.google.code.findbugs</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>animal-sniffer-annotations</artifactId>
+						<groupId>org.codehaus.mojo</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>error_prone_annotations</artifactId>
+						<groupId>com.google.errorprone</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>

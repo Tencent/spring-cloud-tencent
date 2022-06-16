@@ -26,7 +26,7 @@
 
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
+			<artifactId>spring-cloud-starter-tencent-polaris-router</artifactId>
 		</dependency>
 
 		<dependency>
