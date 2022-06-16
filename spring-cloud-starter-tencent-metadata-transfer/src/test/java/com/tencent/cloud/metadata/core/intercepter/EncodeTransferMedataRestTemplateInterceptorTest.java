@@ -52,7 +52,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = EncodeTransferMedataRestTemplateInterceptorTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
+		properties = { "spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive" })
 public class EncodeTransferMedataRestTemplateInterceptorTest {
 
 	@Autowired
