@@ -78,7 +78,7 @@ public class PolarisRegistrationTest {
 		doReturn(Collections.singletonMap("key2", "value2")).when(staticMetadataManager).getLocationMetadata();
 
 		polarisRegistration = new PolarisRegistration(
-				discoveryPropertiesAutoConfiguration, polarisDiscoveryProperties, polarisContext, staticMetadataManager);
+				discoveryPropertiesAutoConfiguration, polarisDiscoveryProperties, polarisContext, staticMetadataManager, null);
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class PolarisRegistrationTest {
 		Map<String, String> metadata = polarisRegistration.getMetadata();
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
-		assertThat(metadata.size()).isEqualTo(2);
+		assertThat(metadata.size()).isEqualTo(4);
 		assertThat(metadata.get("key1")).isEqualTo("value1");
 		assertThat(metadata.get("key2")).isEqualTo("value2");
 	}
