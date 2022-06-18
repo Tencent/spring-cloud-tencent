@@ -18,17 +18,7 @@
 
 package com.tencent.cloud.common.util;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
@@ -37,13 +27,21 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * the utils for parse label expression.
  *
  *@author lepdou 2022-05-13
  */
 public class ExpressionLabelUtils {
-	
+
 	/**
 	 * the expression prefix of header label.
 	 */
@@ -88,7 +86,7 @@ public class ExpressionLabelUtils {
 	 * the escape prefix of label.
 	 */
 	public static final String LABEL_ESCAPE_PREFIX = "##@$@##";
-	
+
 	public static boolean isExpressionLabel(String labelKey) {
 		if (StringUtils.isEmpty(labelKey)) {
 			return false;
@@ -102,22 +100,22 @@ public class ExpressionLabelUtils {
 				StringUtils.startsWithIgnoreCase(labelKey, LABEL_COOKIE_PREFIX))
 				&& StringUtils.endsWith(labelKey, LABEL_SUFFIX);
 	}
-	
+
 	public static String escape(String str) {
 		return StringUtils.replace(str, LABEL_PREFIX, LABEL_ESCAPE_PREFIX);
 	}
-	
+
 	public static String unescape(String str) {
 		return StringUtils.replace(str, LABEL_ESCAPE_PREFIX, LABEL_PREFIX);
 	}
-	
+
 	public static Map<String, String> resolve(HttpServletRequest request, Set<String> labelKeys) {
 		if (CollectionUtils.isEmpty(labelKeys)) {
 			return Collections.emptyMap();
 		}
-		
+
 		Map<String, String> labels = new HashMap<>();
-		
+
 		for (String labelKey : labelKeys) {
 			if (!isExpressionLabel(labelKey)) {
 				continue;
@@ -150,17 +148,17 @@ public class ExpressionLabelUtils {
 				labels.put(labelKey, request.getRequestURI());
 			}
 		}
-		
+
 		return labels;
 	}
-	
+
 	public static Map<String, String> resolve(ServerWebExchange exchange, Set<String> labelKeys) {
 		if (CollectionUtils.isEmpty(labelKeys)) {
 			return Collections.emptyMap();
 		}
-		
+
 		Map<String, String> labels = new HashMap<>();
-		
+
 		for (String labelKey : labelKeys) {
 			if (!isExpressionLabel(labelKey)) {
 				continue;
@@ -193,17 +191,17 @@ public class ExpressionLabelUtils {
 				labels.put(labelKey, exchange.getRequest().getURI().getPath());
 			}
 		}
-		
+
 		return labels;
 	}
-	
+
 	public static Map<String, String> resolve(HttpRequest request, Set<String> labelKeys) {
 		if (CollectionUtils.isEmpty(labelKeys)) {
 			return Collections.emptyMap();
 		}
-		
+
 		Map<String, String> labels = new HashMap<>();
-		
+
 		for (String labelKey : labelKeys) {
 			if (!isExpressionLabel(labelKey)) {
 				continue;
@@ -229,22 +227,22 @@ public class ExpressionLabelUtils {
 				labels.put(labelKey, request.getURI().getPath());
 			}
 		}
-		
+
 		return labels;
 	}
-	
+
 	public static String parseHeaderKey(String expression) {
 		return expression.substring(LABEL_HEADER_PREFIX_LEN, expression.length() - 1);
 	}
-	
+
 	public static String parseQueryKey(String expression) {
 		return expression.substring(LABEL_QUERY_PREFIX_LEN, expression.length() - 1);
 	}
-	
+
 	public static String parseCookieKey(String expression) {
 		return expression.substring(LABEL_COOKIE_PREFIX_LEN, expression.length() - 1);
 	}
-	
+
 	public static String getQueryValue(String queryString, String queryKey) {
 		if (StringUtils.isBlank(queryString)) {
 			return StringUtils.EMPTY;
@@ -261,7 +259,7 @@ public class ExpressionLabelUtils {
 		}
 		return StringUtils.EMPTY;
 	}
-	
+
 	public static String getCookieValue(Cookie[] cookies, String key) {
 		if (cookies == null || cookies.length == 0) {
 			return StringUtils.EMPTY;
@@ -273,7 +271,7 @@ public class ExpressionLabelUtils {
 		}
 		return StringUtils.EMPTY;
 	}
-	
+
 	public static String getHeaderValue(ServerHttpRequest request, String key) {
 		String value = request.getHeaders().getFirst(key);
 		if (value == null) {
@@ -281,7 +279,7 @@ public class ExpressionLabelUtils {
 		}
 		return value;
 	}
-	
+
 	public static String getQueryValue(ServerHttpRequest request, String key) {
 		MultiValueMap<String, String> queries = request.getQueryParams();
 		if (CollectionUtils.isEmpty(queries)) {
@@ -293,7 +291,7 @@ public class ExpressionLabelUtils {
 		}
 		return value;
 	}
-	
+
 	public static String getCookieValue(ServerHttpRequest request, String key) {
 		HttpCookie cookie = request.getCookies().getFirst(key);
 		if (cookie == null) {
@@ -301,32 +299,32 @@ public class ExpressionLabelUtils {
 		}
 		return cookie.getValue();
 	}
-	
+
 	public static String getHeaderValue(HttpRequest request, String key) {
 		HttpHeaders headers = request.getHeaders();
 		return headers.getFirst(key);
 	}
-	
+
 	public static String getQueryValue(HttpRequest request, String key) {
 		String query = request.getURI().getQuery();
 		return getQueryValue(query, key);
 	}
-	
+
 	public static String getFirstValue(Map<String, Collection<String>> valueMaps, String key) {
 		if (CollectionUtils.isEmpty(valueMaps)) {
 			return StringUtils.EMPTY;
 		}
-		
+
 		Collection<String> values = valueMaps.get(key);
-		
+
 		if (CollectionUtils.isEmpty(values)) {
 			return StringUtils.EMPTY;
 		}
-		
+
 		for (String value : values) {
 			return value;
 		}
-		
+
 		return StringUtils.EMPTY;
 	}
 }
