@@ -29,6 +29,7 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
 
@@ -113,9 +114,10 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		String encodedLabelsContent;
 		try {
 			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
-		} 
+		}
 		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
