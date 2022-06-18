@@ -124,7 +124,7 @@ public class RouterLabelFeignInterceptorTest {
 				try {
 					String routerLabelContent = routerLabels.stream().findFirst().get();
 					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(routerLabelContent, StandardCharsets.UTF_8.name())));
-				} 
+				}
 				catch (UnsupportedEncodingException e) {
 					throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
 				}
