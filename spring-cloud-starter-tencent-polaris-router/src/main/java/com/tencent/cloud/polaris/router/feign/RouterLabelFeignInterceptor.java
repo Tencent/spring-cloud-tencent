@@ -45,7 +45,8 @@ import java.util.Set;
 /**
  * Resolver labels from request.
  *
- *@author lepdou 2022-05-12
+ * @author lepdou 2022-05-12
+ * @author cheese8 2022-06-18
  */
 public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelFeignInterceptor.class);

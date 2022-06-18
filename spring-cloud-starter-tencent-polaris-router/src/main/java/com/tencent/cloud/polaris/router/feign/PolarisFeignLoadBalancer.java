@@ -23,7 +23,6 @@ import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterConstants;
@@ -41,7 +40,8 @@ import java.util.Map;
 /**
  * In order to pass router context for {@link com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule}.
  *
- *@author lepdou 2022-05-16
+ * @author lepdou 2022-05-16
+ * @author cheese8 2022-06-18
  */
 public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 
