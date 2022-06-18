@@ -18,13 +18,6 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
@@ -43,6 +36,16 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -114,19 +117,23 @@ public class RouterLabelFeignInterceptorTest {
 				when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
 
 				routerLabelFeignInterceptor.apply(requestTemplate);
-
+				
 				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstants.ROUTER_LABEL_HEADER);
-
-				Assert.assertNotNull(routerLabels);
-				for (String value : routerLabels) {
-					Map<String, String> labels = unescape(JacksonUtils.deserialize2Map(value));
-
-					Assert.assertEquals("v1", labels.get("k1"));
-					Assert.assertEquals("v22", labels.get("k2"));
-					Assert.assertEquals("v3", labels.get("k3"));
-					Assert.assertEquals("v4", labels.get("k4"));
-					Assert.assertEquals(headerUidValue, labels.get("${http.header.uid}"));
-					Assert.assertEquals("", labels.get("${http.header.name}"));
+				Map<String, String> routerLabelsMap = new HashMap<>();
+				try{
+					String routerLabelContent = routerLabels.stream().findFirst().get();
+					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(routerLabelContent, StandardCharsets.UTF_8.name())));
+				} catch (UnsupportedEncodingException e) {
+					throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+				}
+				Assert.assertNotNull(routerLabelsMap);
+				for (String value : routerLabelsMap.values()) {
+					Assert.assertEquals("v1", routerLabelsMap.get("k1"));
+					Assert.assertEquals("v22", routerLabelsMap.get("k2"));
+					Assert.assertEquals("v3", routerLabelsMap.get("k3"));
+					Assert.assertEquals("v4", routerLabelsMap.get("k4"));
+					Assert.assertEquals(headerUidValue, routerLabelsMap.get("${http.header.uid}"));
+					Assert.assertEquals("", routerLabelsMap.get("${http.header.name}"));
 				}
 			}
 		}

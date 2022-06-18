@@ -18,10 +18,6 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
@@ -31,10 +27,16 @@ import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterConstants;
-
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;
 import org.springframework.util.CollectionUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * In order to pass router context for {@link com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule}.
@@ -69,19 +71,16 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 
 		routerContext.setLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get()
 				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE));
-
-		labelHeaderValues.forEach(labelHeaderValue -> {
-			Map<String, String> labels = JacksonUtils.deserialize2Map(labelHeaderValue);
-			if (!CollectionUtils.isEmpty(labels)) {
-				Map<String, String> unescapeLabels = new HashMap<>(labels.size());
-				for (Map.Entry<String, String> entry : labels.entrySet()) {
-					String escapedKey = ExpressionLabelUtils.unescape(entry.getKey());
-					String escapedValue = ExpressionLabelUtils.unescape(entry.getValue());
-					unescapeLabels.put(escapedKey, escapedValue);
-				}
-				routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, unescapeLabels);
-			}
-		});
+		
+		Map<String, String> labelHeaderValuesMap = new HashMap<>();
+		try{
+			String labelHeaderValuesContent = labelHeaderValues.stream().findFirst().get();
+			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, 
+					StandardCharsets.UTF_8.name())));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+		}
+		routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, labelHeaderValuesMap);
 
 		return routerContext;
 	}
