@@ -110,13 +110,13 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 			return;
 		}
 		
-		String encodedLabels;
+		String encodedLabelsContent;
 		try{
-			encodedLabels = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
 		} 
-		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, encodedLabels);
+		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
 	private Map<String, String> getRuleExpressionLabels(RequestTemplate requestTemplate, String peerService) {
