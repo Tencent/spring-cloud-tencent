@@ -109,9 +109,9 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER);
 			return;
 		}
-		
+
 		String encodedLabelsContent;
-		try{
+		try {
 			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());

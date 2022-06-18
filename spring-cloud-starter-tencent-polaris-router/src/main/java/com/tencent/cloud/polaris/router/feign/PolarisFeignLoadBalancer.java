@@ -71,12 +71,11 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 
 		routerContext.setLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get()
 				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE));
-		
+
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
-		try{
+		try {
 			String labelHeaderValuesContent = labelHeaderValues.stream().findFirst().get();
-			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, 
-					StandardCharsets.UTF_8.name())));
+			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, StandardCharsets.UTF_8.name())));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
 		}

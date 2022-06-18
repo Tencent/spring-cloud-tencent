@@ -118,10 +118,10 @@ public class RouterLabelFeignInterceptorTest {
 				when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
 
 				routerLabelFeignInterceptor.apply(requestTemplate);
-				
+
 				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstants.ROUTER_LABEL_HEADER);
 				Map<String, String> routerLabelsMap = new HashMap<>();
-				try{
+				try {
 					String routerLabelContent = routerLabels.stream().findFirst().get();
 					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(routerLabelContent, StandardCharsets.UTF_8.name())));
 				} catch (UnsupportedEncodingException e) {
