@@ -18,16 +18,12 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.UnsupportedEncodingException;
-
-import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
-import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;
-import org.springframework.util.CollectionUtils;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
@@ -37,6 +33,10 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterConstants;
+
+import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
+import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;
+import org.springframework.util.CollectionUtils;
 
 /**
  * In order to pass router context for {@link com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule}.
