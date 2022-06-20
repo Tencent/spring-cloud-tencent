@@ -38,9 +38,11 @@
 	</scm>
 
 	<modules>
-		<module>spring-cloud-tencent-polaris-context</module>
 		<module>spring-cloud-tencent-commons</module>
+		<module>spring-cloud-tencent-polaris-context</module>
+		<module>spring-cloud-tencent-polaris-loadbalancer</module>
 		<module>spring-cloud-starter-tencent-metadata-transfer</module>
+		<module>spring-cloud-starter-tencent-polaris-config</module>
 		<module>spring-cloud-starter-tencent-polaris-discovery</module>
 		<module>spring-cloud-starter-tencent-polaris-ratelimit</module>
 		<module>spring-cloud-starter-tencent-polaris-circuitbreaker</module>
@@ -48,8 +50,6 @@
 		<module>spring-cloud-tencent-dependencies</module>
 		<module>spring-cloud-tencent-examples</module>
 		<module>spring-cloud-tencent-coverage</module>
-		<module>spring-cloud-starter-tencent-polaris-config</module>
-		<module>spring-cloud-tencent-polaris-loadbalancer</module>
 	</modules>
 
 	<developers>
@@ -91,6 +91,9 @@
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2020.0.5</spring.cloud.version>
 
+		<!-- Spring Framework -->
+		<spring.framework.version>5.3.21</spring.framework.version>
+
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.3</jacoco.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -120,6 +123,15 @@
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
 				<version>${spring.cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Spring Framework Dependencies -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.framework.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
