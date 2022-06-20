@@ -30,7 +30,6 @@ import java.util.Map;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
 import com.tencent.cloud.polaris.router.config.PolarisMetadataRouterProperties;
