@@ -27,10 +27,10 @@ import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
-import org.apache.commons.collections.CollectionUtils;
 import reactor.core.publisher.Flux;
 
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.util.CollectionUtils;
 
 /**
  * load balancer utils.
@@ -54,7 +54,7 @@ public class LoadBalancerUtils {
 		}).collect(Collectors.toList());
 
 		String serviceName = null;
-		if (CollectionUtils.isNotEmpty(instances)) {
+		if (!CollectionUtils.isEmpty(instances)) {
 			serviceName = instances.get(0).getService();
 		}
 

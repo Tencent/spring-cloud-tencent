@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-dependencies-parent</artifactId>
-		<version>3.1.2</version>
+		<version>3.1.3</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -70,12 +70,16 @@
 	</developers>
 
 	<properties>
-		<revision>1.5.2-2021.0.2</revision>
+		<revision>1.6.0-2021.0.3-SNAPSHOT</revision>
+
+		<!-- Dependencies -->
 		<polaris.version>1.6.1</polaris.version>
-		<guava.version>31.1-jre</guava.version>
-		<logback.version>1.2.7</logback.version>
+		<guava.version>31.0.1-jre</guava.version>
+		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
+		<protobuf-java.version>3.16.1</protobuf-java.version>
+		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -152,12 +156,44 @@
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>jsr305</artifactId>
+						<groupId>com.google.code.findbugs</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>animal-sniffer-annotations</artifactId>
+						<groupId>org.codehaus.mojo</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>error_prone_annotations</artifactId>
+						<groupId>com.google.errorprone</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${logback.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>${protobuf-java.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>${bcprov-jdk15on.version}</version>
 			</dependency>
 
 			<dependency>
