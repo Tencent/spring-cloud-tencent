@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.polaris.router;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,7 +69,7 @@ import org.springframework.util.CollectionUtils;
  * And {@link PolarisRouterServiceInstanceListSupplier#get(Request)} provides the ability to pass in http headers,
  * so routing capabilities are implemented through IRule.
  *
- * @author Haotian Zhang, lepdou
+ * @author Haotian Zhang, lepdou, cheese8
  */
 public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceInstanceListSupplier {
 
@@ -123,19 +126,15 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		routerContext.setLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get()
 				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE));
 
-		labelHeaderValues.forEach(labelHeaderValue -> {
-			Map<String, String> labels = JacksonUtils.deserialize2Map(labelHeaderValue);
-			if (!CollectionUtils.isEmpty(labels)) {
-				Map<String, String> unescapeLabels = new HashMap<>(labels.size());
-				for (Map.Entry<String, String> entry : labels.entrySet()) {
-					String escapedKey = ExpressionLabelUtils.unescape(entry.getKey());
-					String escapedValue = ExpressionLabelUtils.unescape(entry.getValue());
-					unescapeLabels.put(escapedKey, escapedValue);
-				}
-				routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, unescapeLabels);
-			}
-		});
-
+		Map<String, String> labelHeaderValuesMap = new HashMap<>();
+		try {
+			String labelHeaderValuesContent = labelHeaderValues.stream().findFirst().get();
+			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, StandardCharsets.UTF_8.name())));
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+		}
+		routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, labelHeaderValuesMap);
 		return routerContext;
 	}
 
