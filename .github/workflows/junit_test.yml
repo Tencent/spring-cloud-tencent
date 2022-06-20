@@ -11,17 +11,21 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        java: [ 8, 11, 17 ]
+        os: [ 'windows-latest', 'macos-latest', 'ubuntu-latest' ]
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout codes
-      uses: actions/checkout@v2
-    - name: Set up JDK 8
-      uses: actions/setup-java@v2
+      uses: actions/checkout@v3
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v3
       with:
-        java-version: '8'
-        distribution: 'adopt'
+        distribution: 'temurin'
+        java-version: ${{ matrix.java }}
 #    - name: Build with Maven
 #      run: mvn -B package --file pom.xml
     - name: Test with Maven
