@@ -20,7 +20,9 @@ package com.tencent.cloud.polaris.config;
 
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceAutoRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
+import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProcessor;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,6 +46,16 @@ public class PolarisConfigAutoConfiguration {
 			ContextRefresher contextRefresher) {
 		return new PolarisPropertySourceAutoRefresher(polarisConfigProperties, polarisPropertySourceManager,
 				contextRefresher);
+	}
+
+	@Bean
+	public PolarisConfigAnnotationProcessor polarisConfigAnnotationProcessor() {
+		return new PolarisConfigAnnotationProcessor();
+	}
+
+	@Bean
+	public PolarisConfigChangeEventListener polarisConfigChangeEventListener() {
+		return new PolarisConfigChangeEventListener();
 	}
 
 }
