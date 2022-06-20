@@ -18,6 +18,9 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,7 +31,6 @@ import java.util.Set;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
@@ -44,7 +46,8 @@ import org.springframework.util.CollectionUtils;
 /**
  * Resolver labels from request.
  *
- *@author lepdou 2022-05-12
+ * @author lepdou 2022-05-12
+ * @author cheese8 2022-06-18
  */
 public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelFeignInterceptor.class);
@@ -102,22 +105,20 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		labels.putAll(transitiveLabels);
 
-		// Because when the label is placed in RequestTemplate.header,
-		// RequestTemplate will parse the header according to the regular, which conflicts with the expression.
-		// Avoid conflicts by escaping.
-		Map<String, String> escapeLabels = new HashMap<>(labels.size());
-		for (Map.Entry<String, String> entry : labels.entrySet()) {
-			String escapedKey = ExpressionLabelUtils.escape(entry.getKey());
-			String escapedValue = ExpressionLabelUtils.escape(entry.getValue());
-			escapeLabels.put(escapedKey, escapedValue);
-		}
-
 		// pass label by header
-		if (escapeLabels.size() == 0) {
+		if (labels.size() == 0) {
 			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER);
 			return;
 		}
-		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, JacksonUtils.serialize2Json(escapeLabels));
+
+		String encodedLabelsContent;
+		try {
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+		}
+		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
 	private Map<String, String> getRuleExpressionLabels(RequestTemplate requestTemplate, String peerService) {

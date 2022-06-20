@@ -40,7 +40,8 @@ import org.springframework.web.server.ServerWebExchange;
 /**
  * the utils for parse label expression.
  *
- *@author lepdou 2022-05-13
+ * @author lepdou 2022-05-13
+ * @author cheese8 2022-06-20
  */
 public class ExpressionLabelUtils {
 
@@ -77,17 +78,9 @@ public class ExpressionLabelUtils {
 	 */
 	public static final String LABEL_URI = "${http.uri}";
 	/**
-	 * the prefix of expression.
-	 */
-	public static final String LABEL_PREFIX = "${";
-	/**
 	 * the suffix of expression.
 	 */
 	public static final String LABEL_SUFFIX = "}";
-	/**
-	 * the escape prefix of label.
-	 */
-	public static final String LABEL_ESCAPE_PREFIX = "##@$@##";
 
 	public static boolean isExpressionLabel(String labelKey) {
 		if (StringUtils.isEmpty(labelKey)) {
@@ -101,14 +94,6 @@ public class ExpressionLabelUtils {
 				StringUtils.startsWithIgnoreCase(labelKey, LABEL_QUERY_PREFIX) ||
 				StringUtils.startsWithIgnoreCase(labelKey, LABEL_COOKIE_PREFIX))
 				&& StringUtils.endsWith(labelKey, LABEL_SUFFIX);
-	}
-
-	public static String escape(String str) {
-		return StringUtils.replace(str, LABEL_PREFIX, LABEL_ESCAPE_PREFIX);
-	}
-
-	public static String unescape(String str) {
-		return StringUtils.replace(str, LABEL_ESCAPE_PREFIX, LABEL_PREFIX);
 	}
 
 	public static Map<String, String> resolve(HttpServletRequest request, Set<String> labelKeys) {
