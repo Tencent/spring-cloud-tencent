@@ -70,7 +70,7 @@
 	</developers>
 
 	<properties>
-		<revision>1.5.2-2021.0.2</revision>
+		<revision>1.6.0-2021.0.2-SNAPSHOT</revision>
 		<polaris.version>1.6.1</polaris.version>
 		<guava.version>31.1-jre</guava.version>
 		<logback.version>1.2.7</logback.version>
