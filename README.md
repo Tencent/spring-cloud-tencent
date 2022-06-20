@@ -1,5 +1,4 @@
-<img width="1151" alt="image" src="https://user-images.githubusercontent.com/4991116/174603977-bd80127d-10ce-46fc-8ebb-0e9faf125cdb.png">
-
+# Spring Cloud Tencent
 
 [![Wiki](https://badgen.net/badge/icon/wiki?icon=wiki&label)](https://github.com/Tencent/spring-cloud-tencent/wiki)
 [![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
