@@ -5,3 +5,4 @@
 - [Feature: Add instance metadata spi for registration](https://github.com/Tencent/spring-cloud-tencent/pull/256)
 - [Feature: Add config module unit test](https://github.com/Tencent/spring-cloud-tencent/pull/255)
 - [Upgrade: fix third-party lib CVEs & upgrade core spring libs version](https://github.com/Tencent/spring-cloud-tencent/pull/258)
+- [feat:support reading configuration from application.yml or application.properties.](https://github.com/Tencent/spring-cloud-tencent/pull/261)
