@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisDiscoveryClient}
+ * Test for {@link PolarisDiscoveryClient}.
  *
  * @author Haotian Zhang
  */
@@ -71,4 +71,8 @@ public class PolarisDiscoveryClientTest {
 
 	}
 
+	@Test
+	public void testDescription() {
+		assertThat(client.description()).isEqualTo("Spring Cloud Tencent Polaris Discovery Client.");
+	}
 }

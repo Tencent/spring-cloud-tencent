@@ -19,20 +19,10 @@ package com.tencent.cloud.polaris.loadbalancer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultInstance;
-import com.tencent.polaris.api.pojo.DefaultServiceInstances;
-import com.tencent.polaris.api.pojo.Instance;
-import com.tencent.polaris.api.pojo.ServiceInfo;
-import com.tencent.polaris.api.pojo.ServiceInstances;
-import com.tencent.polaris.api.pojo.ServiceKey;
-import com.tencent.polaris.router.api.core.RouterAPI;
-import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
-import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
 import org.apache.commons.lang.StringUtils;
 import reactor.core.publisher.Flux;
 
@@ -49,11 +39,8 @@ import org.springframework.util.CollectionUtils;
  */
 public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanceListSupplier {
 
-	private final RouterAPI routerAPI;
-
-	public PolarisServiceInstanceListSupplier(ServiceInstanceListSupplier delegate, RouterAPI routerAPI) {
+	public PolarisServiceInstanceListSupplier(ServiceInstanceListSupplier delegate) {
 		super(delegate);
-		this.routerAPI = routerAPI;
 	}
 
 	@Override
@@ -70,14 +57,13 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 		if (CollectionUtils.isEmpty(allServers)) {
 			return allServers;
 		}
-		ServiceInstances serviceInstances = null;
+
 		String serviceName = allServers.get(0).getServiceId();
 		if (StringUtils.isBlank(serviceName)) {
 			throw new IllegalStateException(
 					"PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 		}
-		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
-		List<Instance> instances = new ArrayList<>(allServers.size());
+		List<ServiceInstance> serviceInstances = new ArrayList<>(allServers.size());
 		for (ServiceInstance server : allServers) {
 			DefaultInstance instance = new DefaultInstance();
 			instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
@@ -88,29 +74,9 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 			instance.setPort(server.getPort());
 			instance.setWeight(100);
 			instance.setMetadata(server.getMetadata());
-			instances.add(instance);
+			serviceInstances.add(new PolarisServiceInstance(instance));
 		}
-		serviceInstances = new DefaultServiceInstances(serviceKey, instances);
-		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
-		processRoutersRequest.setDstInstances(serviceInstances);
-		String srcNamespace = MetadataContext.LOCAL_NAMESPACE;
-		String srcService = MetadataContext.LOCAL_SERVICE;
-		MetadataContext context = MetadataContextHolder.get();
-		Map<String, String> transitiveCustomMetadata = context.getAllTransitiveCustomMetadata();
-		if (StringUtils.isNotBlank(srcNamespace) && StringUtils.isNotBlank(srcService)) {
-			ServiceInfo serviceInfo = new ServiceInfo();
-			serviceInfo.setNamespace(srcNamespace);
-			serviceInfo.setService(srcService);
-			serviceInfo.setMetadata(transitiveCustomMetadata);
-			processRoutersRequest.setSourceService(serviceInfo);
-		}
-		ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
-		ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
-		List<ServiceInstance> filteredInstances = new ArrayList<>();
-		for (Instance instance : filteredServiceInstances.getInstances()) {
-			filteredInstances.add(new PolarisServiceInstance(instance));
-		}
-		return filteredInstances;
+		return serviceInstances;
 	}
 
 }

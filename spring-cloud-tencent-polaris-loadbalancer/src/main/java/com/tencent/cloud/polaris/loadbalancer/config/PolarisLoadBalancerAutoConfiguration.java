@@ -24,9 +24,9 @@ import com.tencent.polaris.factory.api.RouterAPIFactory;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
+@ConditionalOnDiscoveryEnabled
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
 @AutoConfigureAfter(LoadBalancerAutoConfiguration.class)
@@ -46,15 +47,12 @@ import org.springframework.context.annotation.Configuration;
 public class PolarisLoadBalancerAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
 	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
 		return new PolarisLoadBalancerProperties();
 	}
 
-	@Bean(name = "polarisRoute")
-	@ConditionalOnMissingBean
+	@Bean
 	public RouterAPI polarisRouter(SDKContext polarisContext) throws PolarisException {
 		return RouterAPIFactory.createRouterAPIByContext(polarisContext);
 	}
-
 }

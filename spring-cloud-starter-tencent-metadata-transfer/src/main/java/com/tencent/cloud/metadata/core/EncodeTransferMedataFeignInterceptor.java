@@ -19,7 +19,6 @@
 package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Map;
 
@@ -56,39 +55,17 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 	public void apply(RequestTemplate requestTemplate) {
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
+		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 
-		// add new metadata and cover old
-		if (!CollectionUtils.isEmpty(requestTemplate.headers())
-				&& !CollectionUtils.isEmpty(requestTemplate.headers().get(CUSTOM_METADATA))) {
-			for (String headerMetadataStr : requestTemplate.headers().get(CUSTOM_METADATA)) {
-				try {
-					// Since feign-core 11.1, RequestTemplate Adapted to RFC6570, See: https://tools.ietf.org/html/rfc6570#section-2.2
-					// Feign ISSUES : https://github.com/OpenFeign/feign/pull/1203
-					// Feign ISSUES : https://github.com/OpenFeign/feign/issues/1305
-					// Fixed : If you used RequestTemplate#header(name,value) method , the value needs to be encoded using URLEncoder .
-					headerMetadataStr = URLDecoder.decode(headerMetadataStr, "UTF-8");
-					Map<String, String> headerMetadataMap = JacksonUtils.deserialize2Map(headerMetadataStr);
-					for (String key : headerMetadataMap.keySet()) {
-						metadataContext.putTransitiveCustomMetadata(key, headerMetadataMap.get(key));
-					}
-				}
-				catch (UnsupportedEncodingException e) {
-					LOG.error("Set header failed.", e);
-					throw new RuntimeException(e);
-				}
-			}
-		}
-
-		Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
-			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
+			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
 			requestTemplate.removeHeader(CUSTOM_METADATA);
 			try {
-				requestTemplate.header(CUSTOM_METADATA, URLEncoder.encode(metadataStr, "UTF-8"));
+				requestTemplate.header(CUSTOM_METADATA, URLEncoder.encode(encodedTransitiveMetadata, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
 				LOG.error("Set header failed.", e);
-				requestTemplate.header(CUSTOM_METADATA, metadataStr);
+				requestTemplate.header(CUSTOM_METADATA, encodedTransitiveMetadata);
 			}
 		}
 	}

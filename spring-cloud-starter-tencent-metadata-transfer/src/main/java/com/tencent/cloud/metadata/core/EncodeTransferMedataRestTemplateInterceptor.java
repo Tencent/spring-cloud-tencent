@@ -27,7 +27,6 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
@@ -54,24 +53,16 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 			ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
+		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 
-		// add new metadata and cover old
-		String metadataStr = httpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
-		if (StringUtils.isNotBlank(metadataStr)) {
-			Map<String, String> headerMetadataMap = JacksonUtils.deserialize2Map(metadataStr);
-			for (String key : headerMetadataMap.keySet()) {
-				metadataContext.putTransitiveCustomMetadata(key, headerMetadataMap.get(key));
-			}
-		}
-		Map<String, String> customMetadata = metadataContext.getAllTransitiveCustomMetadata();
 		if (!CollectionUtils.isEmpty(customMetadata)) {
-			metadataStr = JacksonUtils.serialize2Json(customMetadata);
+			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
 			try {
 				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, "UTF-8"));
+						URLEncoder.encode(encodedTransitiveMetadata, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
-				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
+				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA, encodedTransitiveMetadata);
 			}
 		}
 		return clientHttpRequestExecution.execute(httpRequest, bytes);

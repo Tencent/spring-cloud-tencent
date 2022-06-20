@@ -69,12 +69,19 @@ public final class JacksonUtils {
 	public static Map<String, String> deserialize2Map(String jsonStr) {
 		try {
 			if (StringUtils.hasText(jsonStr)) {
-				return OM.readValue(jsonStr, Map.class);
+				Map<String, Object> temp = OM.readValue(jsonStr, Map.class);
+				Map<String, String> result = new HashMap<>();
+				temp.forEach((key, value) -> {
+					result.put(String.valueOf(key), String.valueOf(value));
+				});
+				return result;
 			}
 			return new HashMap<>();
 		}
 		catch (JsonProcessingException e) {
-			LOG.error("Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
+			LOG.error(
+					"Json to map failed. check if the format of the json string[{}] is correct.",
+					jsonStr, e);
 			throw new RuntimeException("Json to map failed.", e);
 		}
 	}

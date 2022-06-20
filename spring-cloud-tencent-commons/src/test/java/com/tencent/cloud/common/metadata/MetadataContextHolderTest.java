@@ -29,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Test for {@link MetadataContextHolder}
+ * Test for {@link MetadataContextHolder}.
  *
  * @author Haotian Zhang
  */
@@ -45,10 +45,10 @@ public class MetadataContextHolderTest {
 		customMetadata.put("a", "1");
 		customMetadata.put("b", "2");
 		MetadataContext metadataContext = MetadataContextHolder.get();
-		metadataContext.putAllTransitiveCustomMetadata(customMetadata);
+		metadataContext.putFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE, customMetadata);
 		MetadataContextHolder.set(metadataContext);
 
-		customMetadata = MetadataContextHolder.get().getAllTransitiveCustomMetadata();
+		customMetadata = MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		Assertions.assertThat(customMetadata.get("a")).isEqualTo("1");
 		Assertions.assertThat(customMetadata.get("b")).isEqualTo("2");
 
@@ -60,7 +60,7 @@ public class MetadataContextHolderTest {
 		customMetadata.put("c", "3");
 		MetadataContextHolder.init(customMetadata);
 		metadataContext = MetadataContextHolder.get();
-		customMetadata = metadataContext.getAllTransitiveCustomMetadata();
+		customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		Assertions.assertThat(customMetadata.get("a")).isEqualTo("1");
 		Assertions.assertThat(customMetadata.get("b")).isEqualTo("22");
 		Assertions.assertThat(customMetadata.get("c")).isEqualTo("3");

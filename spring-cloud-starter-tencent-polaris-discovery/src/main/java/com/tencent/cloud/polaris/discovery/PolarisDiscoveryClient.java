@@ -32,7 +32,7 @@ public class PolarisDiscoveryClient implements DiscoveryClient {
 	/**
 	 * Polaris Discovery Client Description.
 	 */
-	public final String description = "Spring Cloud Polaris Discovery Client";
+	public final String description = "Spring Cloud Tencent Polaris Discovery Client.";
 
 	private final PolarisServiceDiscovery polarisServiceDiscovery;
 

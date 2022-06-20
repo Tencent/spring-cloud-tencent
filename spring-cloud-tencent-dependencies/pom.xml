@@ -70,9 +70,12 @@
 	</developers>
 
 	<properties>
-		<revision>1.5.0-2021.0.2-SNAPSHOT</revision>
-		<polaris.version>1.6.0</polaris.version>
+		<revision>1.5.2-2021.0.2-SNAPSHOT</revision>
+		<polaris.version>1.6.1</polaris.version>
 		<guava.version>31.1-jre</guava.version>
+		<logback.version>1.2.7</logback.version>
+		<mocktio.version>4.5.1</mocktio.version>
+		<byte-buddy.version>1.12.10</byte-buddy.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -149,6 +152,33 @@
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>${mocktio.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mocktio.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>${byte-buddy.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
