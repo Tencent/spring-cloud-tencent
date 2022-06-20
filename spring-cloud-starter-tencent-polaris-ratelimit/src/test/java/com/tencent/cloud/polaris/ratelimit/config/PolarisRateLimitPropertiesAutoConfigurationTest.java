@@ -25,22 +25,21 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisRateLimitBootstrapConfiguration}.
+ * Test for {@link PolarisRateLimitPropertiesAutoConfiguration}.
  *
  * @author Haotian Zhang
  */
-public class PolarisRateLimitBootstrapConfigurationTest {
+public class PolarisRateLimitPropertiesAutoConfigurationTest {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
-					AutoConfigurations.of(PolarisRateLimitBootstrapConfiguration.class))
-			.withPropertyValues("spring.cloud.polaris.ratelimit.enabled=true");
+					AutoConfigurations.of(PolarisRateLimitPropertiesAutoConfiguration.class));
 
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(PolarisRateLimitProperties.class);
-			assertThat(context).hasSingleBean(PolarisRateLimitBootstrapConfiguration.RateLimitConfigModifier.class);
+			assertThat(context).hasSingleBean(RateLimitConfigModifier.class);
 		});
 	}
 }
