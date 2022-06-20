@@ -18,11 +18,13 @@
 package com.tencent.cloud.polaris.ratelimit.config;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,29 +33,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Haotian Zhang
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = PolarisRateLimitPropertiesTest.TestApplication.class)
+@ActiveProfiles("test")
 public class PolarisRateLimitPropertiesTest {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisRateLimitPropertiesAutoConfiguration.class, PolarisRateLimitProperties.class))
-			.withPropertyValues("spring.cloud.polaris.ratelimit.rejectRequestTips=xxx")
-			.withPropertyValues("spring.cloud.polaris.ratelimit.rejectRequestTipsFilePath=/index.html")
-			.withPropertyValues("spring.cloud.polaris.ratelimit.rejectHttpCode=419")
-			.withPropertyValues("spring.cloud.polaris.ratelimit.maxQueuingTime=500");
+	@Autowired
+	private PolarisRateLimitProperties polarisRateLimitProperties;
 
 	@Test
 	public void testDefaultInitialization() {
-		this.contextRunner.run(context -> {
-			PolarisRateLimitProperties polarisRateLimitProperties = context.getBean(PolarisRateLimitProperties.class);
-			assertThat(polarisRateLimitProperties.getRejectRequestTips()).isEqualTo("xxx");
-			assertThat(polarisRateLimitProperties.getRejectRequestTipsFilePath()).isEqualTo("/index.html");
-			assertThat(polarisRateLimitProperties.getRejectHttpCode()).isEqualTo(419);
-			assertThat(polarisRateLimitProperties.getMaxQueuingTime()).isEqualTo(500L);
-		});
+		assertThat(polarisRateLimitProperties).isNotNull();
+		assertThat(polarisRateLimitProperties.getRejectRequestTips()).isEqualTo("xxx");
+		assertThat(polarisRateLimitProperties.getRejectRequestTipsFilePath()).isEqualTo("/index.html");
+		assertThat(polarisRateLimitProperties.getRejectHttpCode()).isEqualTo(419);
+		assertThat(polarisRateLimitProperties.getMaxQueuingTime()).isEqualTo(500L);
 	}
 
-	@Configuration
-	@EnableAutoConfiguration
-	static class PolarisRateLimitPropertiesAutoConfiguration {
+	@SpringBootApplication
+	protected static class TestApplication {
 
 	}
 }
