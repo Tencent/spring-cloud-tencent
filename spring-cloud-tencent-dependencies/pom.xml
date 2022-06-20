@@ -70,7 +70,7 @@
 	</developers>
 
 	<properties>
-		<revision>1.5.2-2020.0.5</revision>
+		<revision>1.6.0-2020.0.5</revision>
 		<polaris.version>1.6.1</polaris.version>
 		<logback.version>1.2.7</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
