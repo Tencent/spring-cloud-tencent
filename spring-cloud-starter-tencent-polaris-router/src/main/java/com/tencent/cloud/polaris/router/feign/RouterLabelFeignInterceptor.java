@@ -110,7 +110,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER);
 			return;
 		}
-		
+
 		String encodedLabelsContent;
 		try {
 			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
