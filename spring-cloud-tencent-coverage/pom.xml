@@ -24,6 +24,16 @@
             <artifactId>spring-cloud-tencent-commons</artifactId>
         </dependency>
 
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-polaris-context</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
+		</dependency>
+
         <dependency>
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
@@ -49,10 +59,10 @@
             <artifactId>spring-cloud-starter-tencent-polaris-router</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.tencent.cloud</groupId>
-            <artifactId>spring-cloud-tencent-polaris-context</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-config</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
