@@ -55,7 +55,7 @@ import static javax.servlet.DispatcherType.REQUEST;
 @ConditionalOnPolarisEnabled
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 @ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled", matchIfMissing = true)
-public class PolarisRateLimitConfiguration {
+public class PolarisRateLimitAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
