@@ -32,7 +32,6 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
@@ -139,13 +138,5 @@ public class RouterLabelFeignInterceptorTest {
 				}
 			}
 		}
-	}
-
-	private Map<String, String> unescape(Map<String, String> labels) {
-		Map<String, String> result = new HashMap<>();
-		for (Map.Entry<String, String> entry : labels.entrySet()) {
-			result.put(ExpressionLabelUtils.unescape(entry.getKey()), ExpressionLabelUtils.unescape(entry.getValue()));
-		}
-		return result;
 	}
 }
