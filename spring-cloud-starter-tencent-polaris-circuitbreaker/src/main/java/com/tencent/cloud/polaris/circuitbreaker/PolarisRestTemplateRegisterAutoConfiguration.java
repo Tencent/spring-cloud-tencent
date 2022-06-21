@@ -19,9 +19,12 @@ package com.tencent.cloud.polaris.circuitbreaker;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 /**
  * @author : wh
@@ -40,7 +43,13 @@ public class PolarisRestTemplateRegisterAutoConfiguration implements Application
 
 	@Override
 	public void afterSingletonsInstantiated() {
-		RestTemplate restTemplate = this.applicationContext.getBean(RestTemplate.class);
+		Map<String, Object> beans = this.applicationContext.getBeansWithAnnotation(LoadBalanced.class);
+		beans.forEach(this::initRestTemplate);
+		this.applicationContext.getBean(RestTemplate.class);
+	}
+
+	private void initRestTemplate(String beanName, Object bean) {
+		RestTemplate restTemplate = (RestTemplate) bean;
 		restTemplate.setErrorHandler(polarisRestTemplateResponseErrorHandler);
 	}
 
