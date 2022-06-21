@@ -9,3 +9,4 @@
 - [Upgrade: fix third-party lib CVEs & upgrade core spring libs version](https://github.com/Tencent/spring-cloud-tencent/pull/237)
 - [change escape way into encode](https://github.com/Tencent/spring-cloud-tencent/pull/251)
 - [feat:support reading configuration from application.yml or application.properties.](https://github.com/Tencent/spring-cloud-tencent/pull/259)
+- [fix:fix ClassNotFoundException while not importing openfeign when using circuit-breaker module.](https://github.com/Tencent/spring-cloud-tencent/pull/269)
