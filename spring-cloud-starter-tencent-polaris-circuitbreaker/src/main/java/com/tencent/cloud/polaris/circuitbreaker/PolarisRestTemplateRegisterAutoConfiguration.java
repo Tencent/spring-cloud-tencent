@@ -22,6 +22,7 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -44,8 +45,11 @@ public class PolarisRestTemplateRegisterAutoConfiguration implements Application
 	@Override
 	public void afterSingletonsInstantiated() {
 		Map<String, Object> beans = this.applicationContext.getBeansWithAnnotation(LoadBalanced.class);
-		beans.forEach(this::initRestTemplate);
-		this.applicationContext.getBean(RestTemplate.class);
+		if (!ObjectUtils.isEmpty(beans)) {
+			beans.forEach(this::initRestTemplate);
+			this.applicationContext.getBean(RestTemplate.class);
+		}
+		
 	}
 
 	private void initRestTemplate(String beanName, Object bean) {
