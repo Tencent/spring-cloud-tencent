@@ -22,7 +22,6 @@ import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -58,4 +57,5 @@ public class PolarisFeignClientAutoConfiguration {
 		return new PolarisFeignBeanPostProcessor(consumerAPI);
 	}
 
+	
 }

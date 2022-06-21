@@ -48,8 +48,8 @@ public class ServiceAController {
 		return polarisServiceB.info();
 	}
 
-	@GetMapping("/getBServiceInfo1")
-	public String rest() {
+	@GetMapping("/getBServiceInfoByRestTemplate")
+	public String getBServiceInfoByRestTemplate() {
 		return restTemplate.getForObject("http://polaris-circuitbreaker-example-b//example/service/b/info",String.class);
 	}
 
