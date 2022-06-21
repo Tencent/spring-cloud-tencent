@@ -49,12 +49,15 @@ public class PolarisRestTemplateRegisterAutoConfiguration implements Application
 			beans.forEach(this::initRestTemplate);
 			this.applicationContext.getBean(RestTemplate.class);
 		}
-		
+
 	}
 
 	private void initRestTemplate(String beanName, Object bean) {
-		RestTemplate restTemplate = (RestTemplate) bean;
-		restTemplate.setErrorHandler(polarisRestTemplateResponseErrorHandler);
+		if (bean instanceof RestTemplate) {
+			RestTemplate restTemplate = (RestTemplate) bean;
+			restTemplate.setErrorHandler(polarisRestTemplateResponseErrorHandler);
+		}
+		
 	}
 
 	@Override
