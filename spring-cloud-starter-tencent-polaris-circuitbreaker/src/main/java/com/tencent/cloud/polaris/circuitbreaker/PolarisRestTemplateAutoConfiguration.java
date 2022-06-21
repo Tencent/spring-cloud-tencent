@@ -30,7 +30,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * @author : wh
  * @date : 2022/6/21 21:34
- * @description:
+ * @description: Auto configuration PolarisRestTemplateAutoConfiguration
  */
 @ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled",
 		havingValue = "true", matchIfMissing = true)
@@ -46,7 +46,7 @@ public class PolarisRestTemplateAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(RestTemplate.class)
-	public PolarisRestTemplateBeanPostProcessor polarisRestTemplateBeanPostProcessor(PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
-		return new PolarisRestTemplateBeanPostProcessor(restTemplateResponseErrorHandler);
+	public PolarisRestTemplateRegisterAutoConfiguration polarisRestTemplateBeanPostProcessor(PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
+		return new PolarisRestTemplateRegisterAutoConfiguration(restTemplateResponseErrorHandler);
 	}
 }
