@@ -130,14 +130,12 @@ public class RouterLabelFeignInterceptorTest {
 				}
 
 				Assert.assertNotNull(routerLabels);
-				for (String value : routerLabelsMap.values()) {
-					Assert.assertEquals("v1", routerLabelsMap.get("k1"));
-					Assert.assertEquals("v22", routerLabelsMap.get("k2"));
-					Assert.assertEquals("v3", routerLabelsMap.get("k3"));
-					Assert.assertEquals("v4", routerLabelsMap.get("k4"));
-					Assert.assertEquals(headerUidValue, routerLabelsMap.get("${http.header.uid}"));
-					Assert.assertEquals("", routerLabelsMap.get("${http.header.name}"));
-				}
+				Assert.assertEquals("v1", routerLabelsMap.get("k1"));
+				Assert.assertEquals("v22", routerLabelsMap.get("k2"));
+				Assert.assertEquals("v3", routerLabelsMap.get("k3"));
+				Assert.assertEquals("v4", routerLabelsMap.get("k4"));
+				Assert.assertEquals(headerUidValue, routerLabelsMap.get("${http.header.uid}"));
+				Assert.assertEquals("", routerLabelsMap.get("${http.header.name}"));
 			}
 		}
 	}
