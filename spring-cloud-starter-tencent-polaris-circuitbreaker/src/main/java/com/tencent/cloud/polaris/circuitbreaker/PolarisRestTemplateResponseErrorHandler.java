@@ -39,7 +39,7 @@ import java.util.Objects;
 /**
  * @author : wh
  * @date : 2022/6/21 17:25
- * @description:
+ * @description: Extend ResponseErrorHandler to get request information
  */
 public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
