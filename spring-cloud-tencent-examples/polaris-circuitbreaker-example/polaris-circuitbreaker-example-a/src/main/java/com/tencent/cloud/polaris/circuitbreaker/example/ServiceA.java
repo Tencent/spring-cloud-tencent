@@ -18,9 +18,6 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.example;
 
-import com.tencent.cloud.polaris.circuitbreaker.PolarisResponseErrorHandler;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -43,7 +40,7 @@ public class ServiceA {
 
 	@Bean
 	@LoadBalanced
-	public RestTemplate restTemplate(ConsumerAPI consumerAPI, @Autowired(required = false) PolarisResponseErrorHandler polarisResponseErrorHandler) {
+	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
 

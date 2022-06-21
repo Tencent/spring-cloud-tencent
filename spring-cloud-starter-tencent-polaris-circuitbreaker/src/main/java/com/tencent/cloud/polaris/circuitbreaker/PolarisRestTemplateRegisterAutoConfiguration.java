@@ -23,29 +23,25 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
-
 /**
  * @author : wh
  * @date : 2022/6/21 21:20
- * @description:
+ * @description: auto configuration RestTemplate
  */
-public class PolarisRestTemplateBeanPostProcessor implements ApplicationContextAware, SmartInitializingSingleton {
+public class PolarisRestTemplateRegisterAutoConfiguration implements ApplicationContextAware, SmartInitializingSingleton {
 
 	private ApplicationContext applicationContext;
 
 	private final PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler;
 
-	public PolarisRestTemplateBeanPostProcessor(PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler) {
+	public PolarisRestTemplateRegisterAutoConfiguration(PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler) {
 		this.polarisRestTemplateResponseErrorHandler = polarisRestTemplateResponseErrorHandler;
 	}
 
 	@Override
 	public void afterSingletonsInstantiated() {
 		RestTemplate restTemplate = this.applicationContext.getBean(RestTemplate.class);
-		if (Objects.nonNull(restTemplate)) {
-			restTemplate.setErrorHandler(polarisRestTemplateResponseErrorHandler);
-		}
+		restTemplate.setErrorHandler(polarisRestTemplateResponseErrorHandler);
 	}
 
 	@Override
