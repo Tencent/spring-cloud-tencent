@@ -23,17 +23,18 @@ package com.tencent.cloud.polaris.circuitbreaker;
  * @description:
  */
 
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,9 +48,9 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = PolarisRestTemplateResponseErrorHandlerTest.TestApplication.class,
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class PolarisRestTemplateResponseErrorHandlerTest {
-	
+
 	@Test
-	public void handleError() throws Exception{
+	public void handleError() throws Exception {
 		ConsumerAPI consumerAPI = mock(ConsumerAPI.class);
 		PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler = new PolarisRestTemplateResponseErrorHandler(consumerAPI, null);
 		URI uri = mock(URI.class);

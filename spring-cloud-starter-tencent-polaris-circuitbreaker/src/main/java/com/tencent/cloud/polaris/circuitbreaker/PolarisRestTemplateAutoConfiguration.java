@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.circuitbreaker;
 
 import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

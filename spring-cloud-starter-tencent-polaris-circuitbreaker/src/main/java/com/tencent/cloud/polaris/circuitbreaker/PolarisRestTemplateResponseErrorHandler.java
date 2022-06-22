@@ -17,6 +17,12 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.Objects;
+
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ReflectionUtils;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -26,15 +32,10 @@ import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.util.Objects;
 
 /**
  * @author : wh
@@ -63,7 +64,7 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 	}
 
 	@Override
-	public void handleError(ClientHttpResponse response) throws IOException{
+	public void handleError(ClientHttpResponse response) throws IOException {
 		if (Objects.nonNull(polarisResponseErrorHandler)) {
 			if (polarisResponseErrorHandler.hasError(response)) {
 				polarisResponseErrorHandler.handleError(response);
@@ -75,10 +76,12 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		ServiceCallResult resultRequest = null;
 		try {
 			resultRequest = builderServiceCallResult(url, response);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			LOG.error("Will report response of {} url {}", response, url, e);
 			throw new RuntimeException(e);
-		} finally {
+		}
+		finally {
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}
