@@ -90,7 +90,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
-
+		response.setCharacterEncoding("UTF-8");
 		Map<String, String> labels = getRequestLabels(request, localNamespace, localService);
 
 		try {
