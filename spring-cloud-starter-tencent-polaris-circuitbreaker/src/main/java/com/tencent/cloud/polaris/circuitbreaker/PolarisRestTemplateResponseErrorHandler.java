@@ -74,7 +74,7 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 	public void handleError(URI url, HttpMethod method, ClientHttpResponse response) {
 		ServiceCallResult resultRequest = null;
 		try {
-			resultRequest = builderServiceCallResult(url, method, response);
+			resultRequest = builderServiceCallResult(url, response);
 		} catch (IOException e) {
 			LOG.error("Will report response of {} url {}", response, url, e);
 			throw new RuntimeException(e);
@@ -83,12 +83,12 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		}
 	}
 
-	private ServiceCallResult builderServiceCallResult(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
+	private ServiceCallResult builderServiceCallResult(URI uri, ClientHttpResponse response) throws IOException {
 		ServiceCallResult resultRequest = new ServiceCallResult();
-		String serviceName = url.getHost();
+		String serviceName = uri.getHost();
 		resultRequest.setService(serviceName);
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-		resultRequest.setMethod(url.getPath());
+		resultRequest.setMethod(uri.getPath());
 		resultRequest.setRetStatus(RetStatus.RetSuccess);
 		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String sourceService = MetadataContext.LOCAL_SERVICE;
@@ -96,9 +96,9 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
 		}
 		HttpURLConnection connection = (HttpURLConnection) ReflectionUtils.getFieldValue(response, FileName);
-		URL url1 = connection.getURL();
-		resultRequest.setHost(url1.getHost());
-		resultRequest.setPort(url1.getPort());
+		URL url = connection.getURL();
+		resultRequest.setHost(url.getHost());
+		resultRequest.setPort(url.getPort());
 		if (response.getStatusCode().is5xxServerError()) {
 			resultRequest.setRetStatus(RetStatus.RetFail);
 		}
