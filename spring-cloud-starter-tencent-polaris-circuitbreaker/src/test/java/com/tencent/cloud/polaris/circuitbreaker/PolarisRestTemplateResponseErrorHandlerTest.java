@@ -47,10 +47,6 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = PolarisRestTemplateResponseErrorHandlerTest.TestApplication.class,
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class PolarisRestTemplateResponseErrorHandlerTest {
-
-	
-
-
 	
 	@Test
 	public void handleError() throws Exception{
@@ -69,7 +65,6 @@ public class PolarisRestTemplateResponseErrorHandlerTest {
 		polarisRestTemplateResponseErrorHandler.handleError(uri, HttpMethod.GET, clientHttpResponse);
 		when(consumerAPI.unWatchService(null)).thenReturn(true);
 	}
-
 
 	@SpringBootApplication
 	protected static class TestApplication {
