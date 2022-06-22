@@ -50,7 +50,7 @@ public class ServiceAController {
 
 	@GetMapping("/getBServiceInfoByRestTemplate")
 	public String getBServiceInfoByRestTemplate() {
-		return restTemplate.getForObject("http://polaris-circuitbreaker-example-b//example/service/b/info",String.class);
+		return restTemplate.getForObject("http://polaris-circuitbreaker-example-b//example/service/b/info", String.class);
 	}
 
 	/**

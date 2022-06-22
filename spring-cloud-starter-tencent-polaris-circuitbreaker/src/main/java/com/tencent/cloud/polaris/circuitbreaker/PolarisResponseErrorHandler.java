@@ -25,5 +25,5 @@ import org.springframework.web.client.ResponseErrorHandler;
  * @description: errorHandler {@link ResponseErrorHandler}
  */
 public interface PolarisResponseErrorHandler extends ResponseErrorHandler {
-	 
+
 }
