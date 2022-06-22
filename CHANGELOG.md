@@ -10,3 +10,5 @@
 - [change escape way into encode](https://github.com/Tencent/spring-cloud-tencent/pull/251)
 - [feat:support reading configuration from application.yml or application.properties.](https://github.com/Tencent/spring-cloud-tencent/pull/259)
 - [fix:fix ClassNotFoundException while not importing openfeign when using circuit-breaker module.](https://github.com/Tencent/spring-cloud-tencent/pull/269)
+- [Update GitHub Actions workflow](https://github.com/Tencent/spring-cloud-tencent/pull/273)
+- [fix:fix TypeNotPresentException in @ConditionalOnClass of router.](https://github.com/Tencent/spring-cloud-tencent/pull/276)
