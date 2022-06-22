@@ -92,7 +92,7 @@
 		<spring.cloud.version>Greenwich.SR6</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
-		<jacoco.version>0.8.3</jacoco.version>
+		<jacoco.version>0.8.8</jacoco.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
 		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
