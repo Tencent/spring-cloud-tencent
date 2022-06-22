@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import java.util.Map;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -24,8 +26,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Map;
 
 /**
  * @author : wh
@@ -57,7 +57,7 @@ public class PolarisRestTemplateRegisterAutoConfiguration implements Application
 			RestTemplate restTemplate = (RestTemplate) bean;
 			restTemplate.setErrorHandler(polarisRestTemplateResponseErrorHandler);
 		}
-		
+
 	}
 
 	@Override
