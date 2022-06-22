@@ -35,7 +35,7 @@ public class ResourceFileUtilsTest {
 	@Test
 	public void testReadExistedFile() throws IOException {
 		String content = ResourceFileUtils.readFile("test.txt");
-		Assert.assertEquals("just for test\n", content);
+		Assert.assertEquals("just for test", content);
 	}
 
 	@Test
