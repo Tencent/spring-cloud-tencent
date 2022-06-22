@@ -66,7 +66,7 @@ public class ConfigChangeListenerTest {
 				Sets.newHashSet("timeout"));
 
 		applicationEventPublisher.publishEvent(event);
-
+		Thread.sleep(200);
 		//after change
 		Assert.assertEquals(2, testConfig.getChangeCnt());
 		Assert.assertEquals(2000, testConfig.getTimeout());

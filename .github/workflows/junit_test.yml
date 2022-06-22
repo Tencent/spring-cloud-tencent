@@ -5,24 +5,47 @@ name: Test with Junit
 
 on:
   push:
-    branches: [ 2020.0 ]
+    branches:
+      - main
+      - 2021.0
+      - 2020.0
+      - greenwich
   pull_request:
-    branches: [ 2020.0 ]
+    branches:
+      - main
+      - 2021.0
+      - 2020.0
+      - greenwich
 
 jobs:
   build:
+    strategy:
+      matrix:
+        java: [ 8, 11, 17 ]
+        os: [ 'windows-latest', 'macos-latest', 'ubuntu-latest' ]
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout codes
-      uses: actions/checkout@v2
-    - name: Set up JDK 8
-      uses: actions/setup-java@v2
+      uses: actions/checkout@v3
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v3
       with:
-        java-version: '8'
-        distribution: 'adopt'
+        distribution: 'temurin'
+        java-version: ${{ matrix.java }}
+    - name: Cache local Maven repository
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
 #    - name: Build with Maven
 #      run: mvn -B package --file pom.xml
     - name: Test with Maven
       run: mvn -B test --file pom.xml
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: '**/target/site/jacoco/jacoco.xml'
