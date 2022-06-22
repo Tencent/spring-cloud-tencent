@@ -27,8 +27,6 @@ import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterPro
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
-import org.springframework.cloud.gateway.filter.LoadBalancerClientFilter;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,14 +47,14 @@ public class RouterAutoConfiguration {
 
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
-	@ConditionalOnClass(LoadBalancerInterceptor.class)
+	@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
 	public LoadBalancerInterceptorBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
 		return new LoadBalancerInterceptorBeanPostProcessor();
 	}
 
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
-	@ConditionalOnClass(LoadBalancerClientFilter.class)
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.LoadBalancerClientFilter")
 	public LoadBalancerClientFilterBeanPostProcessor loadBalancerClientFilterBeanPostProcessor() {
 		return new LoadBalancerClientFilterBeanPostProcessor();
 	}
