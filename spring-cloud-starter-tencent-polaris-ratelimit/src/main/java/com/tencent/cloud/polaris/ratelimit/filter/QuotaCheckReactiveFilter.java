@@ -55,7 +55,7 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
 /**
  * Reactive filter to check quota.
  *
- * @author Haotian Zhang, lepdou
+ * @author Haotian Zhang, lepdou, cheese8
  */
 public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
@@ -106,7 +106,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
 				response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
-				response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+				response.getHeaders().setContentType(MediaType.valueOf("text/html;charset=UTF-8"));
 				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer()
 						.write(rejectTips.getBytes(StandardCharsets.UTF_8));
 				return response.writeWith(Mono.just(dataBuffer));
