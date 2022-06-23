@@ -106,7 +106,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
 				response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
-				response.getHeaders().setContentType(MediaType.valueOf("text/html;charset=UTF-8"));
+				response.getHeaders().setContentType(MediaType.TEXT_HTML);
 				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer()
 						.write(rejectTips.getBytes(StandardCharsets.UTF_8));
 				return response.writeWith(Mono.just(dataBuffer));
