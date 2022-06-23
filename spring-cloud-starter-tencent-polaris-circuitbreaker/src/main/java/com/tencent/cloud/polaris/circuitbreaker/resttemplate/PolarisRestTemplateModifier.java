@@ -33,13 +33,13 @@ import org.springframework.web.client.RestTemplate;
  * @description: auto configuration RestTemplate Find the RestTemplate bean annotated with {@link LoadBalanced} and replace {@link org.springframework.web.client.ResponseErrorHandler}
  * with {@link PolarisRestTemplateResponseErrorHandler}
  */
-public class PolarisRestTemplateRegisterAutoConfiguration implements ApplicationContextAware, SmartInitializingSingleton {
+public class PolarisRestTemplateModifier implements ApplicationContextAware, SmartInitializingSingleton {
 
 	private ApplicationContext applicationContext;
 
 	private final PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler;
 
-	public PolarisRestTemplateRegisterAutoConfiguration(PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler) {
+	public PolarisRestTemplateModifier(PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler) {
 		this.polarisRestTemplateResponseErrorHandler = polarisRestTemplateResponseErrorHandler;
 	}
 
