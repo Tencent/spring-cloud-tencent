@@ -14,3 +14,4 @@
 - [fix:fix TypeNotPresentException in @ConditionalOnClass of router.](https://github.com/Tencent/spring-cloud-tencent/pull/276)
 - [fix:solve the chaos code problem on rejectTips.](https://github.com/Tencent/spring-cloud-tencent/pull/279)
 - [fix:solve ratelimit-callee-service UnknownHostException.](https://github.com/Tencent/spring-cloud-tencent/pull/281)
+- [fix:refactor to use text/html resolve chaos problem on rejectTips](https://github.com/Tencent/spring-cloud-tencent/pull/285)
