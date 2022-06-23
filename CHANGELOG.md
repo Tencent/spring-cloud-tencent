@@ -1,5 +1,4 @@
 # Change Log
 ---
 
-- [Add metadata transfer example.](https://github.com/Tencent/spring-cloud-tencent/pull/209)
-- [feat:merge features from 1.5.2-Hoxton.SR9.](https://github.com/Tencent/spring-cloud-tencent/pull/223)
+- [fix: fix not load application.yml bug & fix guava version conflict bug.](https://github.com/Tencent/spring-cloud-tencent/pull/286)
