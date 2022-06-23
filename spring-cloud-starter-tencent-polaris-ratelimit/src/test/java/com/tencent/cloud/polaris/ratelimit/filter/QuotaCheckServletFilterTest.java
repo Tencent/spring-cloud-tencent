@@ -17,17 +17,6 @@
 
 package com.tencent.cloud.polaris.ratelimit.filter;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Map;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.ExpressionLabelUtils;
@@ -46,12 +35,21 @@ import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.server.ServerWebExchange;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -118,7 +116,7 @@ public class QuotaCheckServletFilterTest {
 		});
 
 		PolarisRateLimitProperties polarisRateLimitProperties = new PolarisRateLimitProperties();
-		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips");
+		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips提示消息");
 		polarisRateLimitProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
@@ -133,7 +131,7 @@ public class QuotaCheckServletFilterTest {
 		try {
 			Field rejectTips = QuotaCheckServletFilter.class.getDeclaredField("rejectTips");
 			rejectTips.setAccessible(true);
-			assertThat(rejectTips.get(quotaCheckServletFilter)).isEqualTo("RejectRequestTips");
+			assertThat(rejectTips.get(quotaCheckServletFilter)).isEqualTo("RejectRequestTips提示消息");
 		}
 		catch (NoSuchFieldException | IllegalAccessException e) {
 			fail("Exception encountered.", e);
@@ -201,7 +199,7 @@ public class QuotaCheckServletFilterTest {
 			MetadataContext.LOCAL_SERVICE = "TestApp3";
 			quotaCheckServletFilter.doFilterInternal(request, response, filterChain);
 			assertThat(response.getStatus()).isEqualTo(419);
-			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips");
+			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
 
 
 			// Exception
