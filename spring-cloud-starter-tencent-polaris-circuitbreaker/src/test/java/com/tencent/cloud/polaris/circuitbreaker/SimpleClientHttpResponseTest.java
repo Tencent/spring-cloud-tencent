@@ -17,15 +17,16 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 
 /**
  * @author : wh
