@@ -17,16 +17,12 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
-/**
- * @author : wh
- * @date : 2022/6/22 08:48
- * @description:
- */
 
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateResponseErrorHandler;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.Test;
 import org.junit.runner.RunWith;

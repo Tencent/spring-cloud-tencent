@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.config;
 
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
