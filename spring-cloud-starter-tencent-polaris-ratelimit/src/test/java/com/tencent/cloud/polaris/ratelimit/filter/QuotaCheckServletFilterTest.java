@@ -76,9 +76,9 @@ public class QuotaCheckServletFilterTest {
 	private PolarisRateLimiterLabelServletResolver labelResolver = exchange -> Collections.singletonMap("ServletResolver", "ServletResolver");
 
 	private QuotaCheckServletFilter quotaCheckServletFilter;
-	
+
 	private QuotaCheckServletFilter quotaCheckWithHtmlRejectTipsServletFilter;
-	
+
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<ExpressionLabelUtils> expressionLabelUtilsMockedStatic;
 	@BeforeClass
@@ -122,7 +122,7 @@ public class QuotaCheckServletFilterTest {
 		PolarisRateLimitProperties polarisRateLimitProperties = new PolarisRateLimitProperties();
 		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips提示消息");
 		polarisRateLimitProperties.setRejectHttpCode(419);
-		
+
 		PolarisRateLimitProperties polarisRateLimitWithHtmlRejectTipsProperties = new PolarisRateLimitProperties();
 		polarisRateLimitWithHtmlRejectTipsProperties.setRejectRequestTips("<h1>RejectRequestTips提示消息</h1>");
 		polarisRateLimitWithHtmlRejectTipsProperties.setRejectHttpCode(419);
@@ -218,7 +218,7 @@ public class QuotaCheckServletFilterTest {
 			quotaCheckServletFilter.doFilterInternal(request, response, filterChain);
 			assertThat(response.getStatus()).isEqualTo(419);
 			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
-			
+
 			quotaCheckWithHtmlRejectTipsServletFilter.doFilterInternal(request, response, filterChain);
 			assertThat(response.getStatus()).isEqualTo(419);
 			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
