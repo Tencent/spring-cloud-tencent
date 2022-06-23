@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link QuotaCheckServletFilter}.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = QuotaCheckServletFilterTest.TestApplication.class, properties = {
