@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 
 import java.util.Map;
 
@@ -30,7 +30,8 @@ import org.springframework.web.client.RestTemplate;
 /**
  * @author : wh
  * @date : 2022/6/21 21:20
- * @description: auto configuration RestTemplate
+ * @description: auto configuration RestTemplate Find the RestTemplate bean annotated with {@link LoadBalanced} and replace {@link org.springframework.web.client.ResponseErrorHandler}
+ * with {@link PolarisRestTemplateResponseErrorHandler}
  */
 public class PolarisRestTemplateRegisterAutoConfiguration implements ApplicationContextAware, SmartInitializingSingleton {
 

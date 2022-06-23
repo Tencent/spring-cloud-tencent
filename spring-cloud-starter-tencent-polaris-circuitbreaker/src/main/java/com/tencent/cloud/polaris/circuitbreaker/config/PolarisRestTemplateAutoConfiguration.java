@@ -15,8 +15,11 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.config;
 
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisResponseErrorHandler;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateRegisterAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateResponseErrorHandler;
 import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 
