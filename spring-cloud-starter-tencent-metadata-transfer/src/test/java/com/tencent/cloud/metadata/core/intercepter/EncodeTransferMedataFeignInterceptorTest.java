@@ -19,9 +19,10 @@
 package com.tencent.cloud.metadata.core.intercepter;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import feign.RequestInterceptor;
@@ -62,10 +63,9 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	private TestApplication.TestFeign testFeign;
 
 	@Test
-	public void test1() {
+	public void testTransitiveMetadataFromApplicationConfig() {
 		String metadata = testFeign.test();
-		Assertions.assertThat(metadata)
-				.isEqualTo("{\"b\":\"2\"}");
+		Assertions.assertThat(metadata).isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
 				.isEqualTo("1");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
@@ -81,16 +81,13 @@ public class EncodeTransferMedataFeignInterceptorTest {
 		public String test(
 				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
 				throws UnsupportedEncodingException {
-			return URLDecoder.decode(customMetadataStr, "UTF-8");
+			return MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b");
 		}
 
 		@FeignClient(name = "test-feign", url = "http://localhost:8081")
 		public interface TestFeign {
 
-			@RequestMapping(value = "/test",
-					headers = {"X-SCT-Metadata-Transitive-a=11",
-							"X-SCT-Metadata-Transitive-b=22",
-							"X-SCT-Metadata-Transitive-c=33"})
+			@RequestMapping("/test")
 			String test();
 
 		}

@@ -1,5 +1,4 @@
 # Change Log
 ---
 
-- [fix:use 1.6.1 version of polaris-java.](https://github.com/Tencent/spring-cloud-tencent/pull/221)
-- [fix:use 1.6.1 version of polaris-java and fix some bug.](https://github.com/Tencent/spring-cloud-tencent/pull/222)
+- [fix: fix not load application.yml bug & fix guava version conflict bug.](https://github.com/Tencent/spring-cloud-tencent/pull/284)
