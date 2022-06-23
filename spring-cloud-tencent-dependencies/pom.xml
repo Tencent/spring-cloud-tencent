@@ -70,12 +70,12 @@
 	</developers>
 
 	<properties>
-		<revision>1.5.2-Hoxton.SR9</revision>
+		<revision>1.5.3-Hoxton.SR9</revision>
 		<polaris.version>1.6.1</polaris.version>
 		<logback.version>1.2.7</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
-
+		<guava.version>31.0.1-jre</guava.version>
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
@@ -147,6 +147,27 @@
 				<version>${revision}</version>
 			</dependency>
 
+			<!-- third part framework dependencies -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>jsr305</artifactId>
+						<groupId>com.google.code.findbugs</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>animal-sniffer-annotations</artifactId>
+						<groupId>org.codehaus.mojo</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>error_prone_annotations</artifactId>
+						<groupId>com.google.errorprone</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
