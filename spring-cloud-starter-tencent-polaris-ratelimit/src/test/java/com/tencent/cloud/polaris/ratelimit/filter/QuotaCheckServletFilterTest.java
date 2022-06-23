@@ -118,7 +118,7 @@ public class QuotaCheckServletFilterTest {
 		});
 
 		PolarisRateLimitProperties polarisRateLimitProperties = new PolarisRateLimitProperties();
-		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips");
+		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips提示消息");
 		polarisRateLimitProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
@@ -133,7 +133,7 @@ public class QuotaCheckServletFilterTest {
 		try {
 			Field rejectTips = QuotaCheckServletFilter.class.getDeclaredField("rejectTips");
 			rejectTips.setAccessible(true);
-			assertThat(rejectTips.get(quotaCheckServletFilter)).isEqualTo("RejectRequestTips");
+			assertThat(rejectTips.get(quotaCheckServletFilter)).isEqualTo("RejectRequestTips提示消息");
 		}
 		catch (NoSuchFieldException | IllegalAccessException e) {
 			fail("Exception encountered.", e);
@@ -201,7 +201,7 @@ public class QuotaCheckServletFilterTest {
 			MetadataContext.LOCAL_SERVICE = "TestApp3";
 			quotaCheckServletFilter.doFilterInternal(request, response, filterChain);
 			assertThat(response.getStatus()).isEqualTo(419);
-			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips");
+			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
 
 
 			// Exception

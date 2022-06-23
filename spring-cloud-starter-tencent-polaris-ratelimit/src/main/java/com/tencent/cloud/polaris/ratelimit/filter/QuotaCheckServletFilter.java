@@ -99,6 +99,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
+				response.setContentType("text/plain;charset=UTF-8");
 				response.getWriter().write(rejectTips);
 				return;
 			}
