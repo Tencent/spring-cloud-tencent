@@ -48,7 +48,6 @@ public class PolarisRestTemplateRegisterAutoConfiguration implements Application
 		Map<String, Object> beans = this.applicationContext.getBeansWithAnnotation(LoadBalanced.class);
 		if (!ObjectUtils.isEmpty(beans)) {
 			beans.forEach(this::initRestTemplate);
-			this.applicationContext.getBean(RestTemplate.class);
 		}
 
 	}
