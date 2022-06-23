@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StreamUtils;
 
 /**
  * Read file content from classpath resource.
@@ -35,20 +36,15 @@ public final class ResourceFileUtils {
 	}
 
 	public static String readFile(String path) throws IOException {
-		StringBuilder sb = new StringBuilder();
 
 		ClassPathResource classPathResource = new ClassPathResource(path);
 
 		if (classPathResource.exists() && classPathResource.isReadable()) {
 			try (InputStream inputStream = classPathResource.getInputStream()) {
-				byte[] buffer = new byte[1024 * 10];
-				int len;
-				while ((len = inputStream.read(buffer)) != -1) {
-					sb.append(new String(buffer, 0, len, StandardCharsets.UTF_8));
-				}
+				return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
 			}
 		}
-		return sb.toString();
+		return "";
 	}
 
 }

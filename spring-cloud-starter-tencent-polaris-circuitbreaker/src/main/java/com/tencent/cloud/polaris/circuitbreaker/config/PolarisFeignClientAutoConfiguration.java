@@ -25,6 +25,7 @@ import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled",
 		havingValue = "true", matchIfMissing = true)
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(name = "org.springframework.cloud.openfeign.FeignAutoConfiguration")
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 public class PolarisFeignClientAutoConfiguration {
