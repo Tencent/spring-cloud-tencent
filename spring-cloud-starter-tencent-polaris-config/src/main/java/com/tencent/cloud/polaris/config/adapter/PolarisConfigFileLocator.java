@@ -80,13 +80,14 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		CompositePropertySource compositePropertySource = new CompositePropertySource(
 				POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
 
+		// load spring boot default config files
+		initInternalConfigFiles(compositePropertySource);
+
+		// load custom config files
 		List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
 		if (CollectionUtils.isEmpty(configFileGroups)) {
 			return compositePropertySource;
 		}
-
-		initInternalConfigFiles(compositePropertySource);
-
 		initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
 
 		return compositePropertySource;
@@ -181,7 +182,8 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	private PolarisPropertySource loadPolarisPropertySource(String namespace, String group, String fileName) {
 		ConfigKVFile configKVFile;
 		// unknown extension is resolved as properties file
-		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
+		if (ConfigFileFormat.isPropertyFile(fileName)
+				|| ConfigFileFormat.isUnknownFile(fileName)) {
 			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
 		}
 		else if (ConfigFileFormat.isYamlFile(fileName)) {

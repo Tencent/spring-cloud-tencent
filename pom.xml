@@ -38,9 +38,11 @@
 	</scm>
 
 	<modules>
-		<module>spring-cloud-tencent-polaris-context</module>
 		<module>spring-cloud-tencent-commons</module>
+		<module>spring-cloud-tencent-polaris-context</module>
+		<module>spring-cloud-tencent-polaris-loadbalancer</module>
 		<module>spring-cloud-starter-tencent-metadata-transfer</module>
+		<module>spring-cloud-starter-tencent-polaris-config</module>
 		<module>spring-cloud-starter-tencent-polaris-discovery</module>
 		<module>spring-cloud-starter-tencent-polaris-ratelimit</module>
 		<module>spring-cloud-starter-tencent-polaris-circuitbreaker</module>
@@ -48,8 +50,6 @@
 		<module>spring-cloud-tencent-dependencies</module>
 		<module>spring-cloud-tencent-examples</module>
 		<module>spring-cloud-tencent-coverage</module>
-		<module>spring-cloud-starter-tencent-polaris-config</module>
-		<module>spring-cloud-tencent-polaris-loadbalancer</module>
 	</modules>
 
 	<developers>
@@ -86,7 +86,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.5.2-2020.0.5</revision>
+		<revision>1.5.3-2020.0.5</revision>
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2020.0.5</spring.cloud.version>
