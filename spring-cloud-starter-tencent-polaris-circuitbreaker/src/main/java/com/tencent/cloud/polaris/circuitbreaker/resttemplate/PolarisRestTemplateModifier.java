@@ -49,7 +49,6 @@ public class PolarisRestTemplateModifier implements ApplicationContextAware, Sma
 		if (!ObjectUtils.isEmpty(beans)) {
 			beans.forEach(this::initRestTemplate);
 		}
-
 	}
 
 	private void initRestTemplate(String beanName, Object bean) {
@@ -57,12 +56,10 @@ public class PolarisRestTemplateModifier implements ApplicationContextAware, Sma
 			RestTemplate restTemplate = (RestTemplate) bean;
 			restTemplate.setErrorHandler(polarisRestTemplateResponseErrorHandler);
 		}
-
 	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
-
 	}
 }

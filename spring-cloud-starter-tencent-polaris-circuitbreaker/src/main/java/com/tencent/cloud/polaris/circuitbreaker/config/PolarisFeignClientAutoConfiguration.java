@@ -40,8 +40,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
  *
  * @author Haotian Zhang
  */
-@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = "org.springframework.cloud.openfeign.FeignAutoConfiguration")
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
@@ -55,8 +54,7 @@ public class PolarisFeignClientAutoConfiguration {
 
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
-	public PolarisFeignBeanPostProcessor polarisFeignBeanPostProcessor(
-			ConsumerAPI consumerAPI) {
+	public PolarisFeignBeanPostProcessor polarisFeignBeanPostProcessor(ConsumerAPI consumerAPI) {
 		return new PolarisFeignBeanPostProcessor(consumerAPI);
 	}
 

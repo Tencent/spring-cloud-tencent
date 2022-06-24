@@ -72,14 +72,14 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		}
 	}
 
-	public void handleError(URI url, HttpMethod method, ClientHttpResponse response) {
+	public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
 		ServiceCallResult resultRequest = null;
 		try {
 			resultRequest = builderServiceCallResult(url, response);
 		}
 		catch (IOException e) {
 			LOG.error("Will report response of {} url {}", response, url, e);
-			throw new RuntimeException(e);
+			throw e;
 		}
 		finally {
 			consumerAPI.updateServiceCallResult(resultRequest);
