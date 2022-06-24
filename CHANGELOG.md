@@ -7,3 +7,4 @@
 - [fix:solve ratelimit-callee-service UnknownHostException.](https://github.com/Tencent/spring-cloud-tencent/pull/292)
 - [Feature: Add config change listener feature support](https://github.com/Tencent/spring-cloud-tencent/pull/299)
 - [Feature: Add config module unit test](https://github.com/Tencent/spring-cloud-tencent/pull/301)
+- [Update GitHub Actions workflow](https://github.com/Tencent/spring-cloud-tencent/pull/303)
