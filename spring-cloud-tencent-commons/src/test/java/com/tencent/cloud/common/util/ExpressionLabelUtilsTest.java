@@ -38,7 +38,8 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 
 /**
  * test for {@link ExpressionLabelUtils}
- *@author lepdou 2022-05-27
+ * @author lepdou 2022-05-27
+ * @author cheese8 2022-06-20
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ExpressionLabelUtilsTest {
@@ -74,39 +75,6 @@ public class ExpressionLabelUtilsTest {
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel7));
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel8));
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel9));
-	}
-
-	@Test
-	public void testEscape() {
-		String validLabel1 = "${http.query.uid}";
-		String validLabel2 = "${http.header.uid}";
-		String validLabel3 = "${http.cookie.uid}";
-		String validLabel4 = "${http.method}";
-		String validLabel5 = "${http.uri}";
-		String invalidLabel1 = "${http.queryuid}";
-		String invalidLabel2 = "{http.query.uid}";
-		String invalidLabel3 = "${http.query.uid";
-		String invalidLabel4 = "$ {http.query.uid}";
-		String invalidLabel5 = "${ http.query.uid}";
-		String invalidLabel6 = "${query.uid}";
-		String invalidLabel7 = "http.query.uid";
-		String invalidLabel8 = "$${http.uri}";
-		String invalidLabel9 = "#{http.uri}";
-
-		Assert.assertEquals(validLabel1, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(validLabel1)));
-		Assert.assertEquals(validLabel2, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(validLabel2)));
-		Assert.assertEquals(validLabel3, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(validLabel3)));
-		Assert.assertEquals(validLabel4, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(validLabel4)));
-		Assert.assertEquals(validLabel5, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(validLabel5)));
-		Assert.assertEquals(invalidLabel1, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel1)));
-		Assert.assertEquals(invalidLabel2, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel2)));
-		Assert.assertEquals(invalidLabel3, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel3)));
-		Assert.assertEquals(invalidLabel4, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel4)));
-		Assert.assertEquals(invalidLabel5, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel5)));
-		Assert.assertEquals(invalidLabel6, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel6)));
-		Assert.assertEquals(invalidLabel7, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel7)));
-		Assert.assertEquals(invalidLabel8, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel8)));
-		Assert.assertEquals(invalidLabel9, ExpressionLabelUtils.unescape(ExpressionLabelUtils.escape(invalidLabel9)));
 	}
 
 	@Test

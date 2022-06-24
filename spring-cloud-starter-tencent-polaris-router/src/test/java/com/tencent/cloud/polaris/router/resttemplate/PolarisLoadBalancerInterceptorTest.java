@@ -18,8 +18,9 @@
 
 package com.tencent.cloud.polaris.router.resttemplate;
 
-
 import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +61,7 @@ import static org.mockito.Mockito.when;
 /**
  * test for {@link PolarisLoadBalancerInterceptor}
  * @author lepdou 2022-05-26
+ * @author cheese8 2022-06-20
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerInterceptorTest {
@@ -184,13 +186,13 @@ public class PolarisLoadBalancerInterceptorTest {
 		verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
 		verify(routerLabelResolver).resolve(request, null);
 
-		Map<String, String> headers = JacksonUtils.deserialize2Map(request.getHeaders()
-				.get(RouterConstants.ROUTER_LABEL_HEADER).get(0));
+		Map<String, String> headers = JacksonUtils.deserialize2Map(URLDecoder.decode(request.getHeaders()
+				.get(RouterConstants.ROUTER_LABEL_HEADER).get(0), StandardCharsets.UTF_8.name()));
 		Assert.assertEquals("v1", headers.get("k1"));
 		Assert.assertEquals("v22", headers.get("k2"));
 		Assert.assertEquals("v4", headers.get("k4"));
-		Assert.assertEquals("GET", headers.get("##@$@##http.method}"));
-		Assert.assertEquals("/user/get", headers.get("##@$@##http.uri}"));
+		Assert.assertEquals("GET", headers.get("${http.method}"));
+		Assert.assertEquals("/user/get", headers.get("${http.uri}"));
 	}
 
 	static class MockedLoadBalancerRequest<T> implements LoadBalancerRequest<T> {

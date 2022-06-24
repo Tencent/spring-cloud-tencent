@@ -19,7 +19,10 @@
 package com.tencent.cloud.polaris.router.resttemplate;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -52,7 +55,8 @@ import org.springframework.util.CollectionUtils;
  * PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor capabilities.
  * Parses the label from the request and puts it into the RouterContext for routing.
  *
- *@author lepdou 2022-05-18
+ * @author lepdou 2022-05-18
+ * @author cheese8 2022-06-20
  */
 public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisLoadBalancerInterceptor.class);
@@ -126,22 +130,19 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		labels.putAll(transitiveLabels);
 
-		// Because when the label is placed in RequestTemplate.header,
-		// RequestTemplate will parse the header according to the regular, which conflicts with the expression.
-		// Avoid conflicts by escaping.
-		Map<String, String> escapeLabels = new HashMap<>(labels.size());
-		for (Map.Entry<String, String> entry : labels.entrySet()) {
-			String escapedKey = ExpressionLabelUtils.escape(entry.getKey());
-			String escapedValue = ExpressionLabelUtils.escape(entry.getValue());
-			escapeLabels.put(escapedKey, escapedValue);
-		}
-
 		// pass label by header
-		if (escapeLabels.size() == 0) {
+		if (labels.size() == 0) {
 			request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, null);
 			return;
 		}
-		request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, JacksonUtils.serialize2Json(escapeLabels));
+		String encodedLabelsContent;
+		try {
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+		}
+		request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
 	private Map<String, String> getExpressionLabels(HttpRequest request, String peerServiceName) {

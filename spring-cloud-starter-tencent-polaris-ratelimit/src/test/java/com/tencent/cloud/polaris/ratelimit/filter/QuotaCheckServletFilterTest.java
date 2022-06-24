@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link QuotaCheckServletFilter}.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = QuotaCheckServletFilterTest.TestApplication.class, properties = {
@@ -77,6 +77,8 @@ public class QuotaCheckServletFilterTest {
 
 	private QuotaCheckServletFilter quotaCheckServletFilter;
 
+	private QuotaCheckServletFilter quotaCheckWithHtmlRejectTipsServletFilter;
+
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<ExpressionLabelUtils> expressionLabelUtilsMockedStatic;
 	@BeforeClass
@@ -87,7 +89,6 @@ public class QuotaCheckServletFilterTest {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
-
 	}
 
 	@AfterClass
@@ -118,13 +119,18 @@ public class QuotaCheckServletFilterTest {
 		});
 
 		PolarisRateLimitProperties polarisRateLimitProperties = new PolarisRateLimitProperties();
-		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips");
+		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips提示消息");
 		polarisRateLimitProperties.setRejectHttpCode(419);
+
+		PolarisRateLimitProperties polarisRateLimitWithHtmlRejectTipsProperties = new PolarisRateLimitProperties();
+		polarisRateLimitWithHtmlRejectTipsProperties.setRejectRequestTips("<h1>RejectRequestTips提示消息</h1>");
+		polarisRateLimitWithHtmlRejectTipsProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
 		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.EMPTY_SET);
 
 		this.quotaCheckServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckWithHtmlRejectTipsServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver);
 	}
 
 	@Test
@@ -133,7 +139,16 @@ public class QuotaCheckServletFilterTest {
 		try {
 			Field rejectTips = QuotaCheckServletFilter.class.getDeclaredField("rejectTips");
 			rejectTips.setAccessible(true);
-			assertThat(rejectTips.get(quotaCheckServletFilter)).isEqualTo("RejectRequestTips");
+			assertThat(rejectTips.get(quotaCheckServletFilter)).isEqualTo("RejectRequestTips提示消息");
+		}
+		catch (NoSuchFieldException | IllegalAccessException e) {
+			fail("Exception encountered.", e);
+		}
+		quotaCheckWithHtmlRejectTipsServletFilter.init();
+		try {
+			Field rejectTips = QuotaCheckServletFilter.class.getDeclaredField("rejectTips");
+			rejectTips.setAccessible(true);
+			assertThat(rejectTips.get(quotaCheckWithHtmlRejectTipsServletFilter)).isEqualTo("<h1>RejectRequestTips提示消息</h1>");
 		}
 		catch (NoSuchFieldException | IllegalAccessException e) {
 			fail("Exception encountered.", e);
@@ -201,8 +216,11 @@ public class QuotaCheckServletFilterTest {
 			MetadataContext.LOCAL_SERVICE = "TestApp3";
 			quotaCheckServletFilter.doFilterInternal(request, response, filterChain);
 			assertThat(response.getStatus()).isEqualTo(419);
-			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips");
+			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
 
+			quotaCheckWithHtmlRejectTipsServletFilter.doFilterInternal(request, response, filterChain);
+			assertThat(response.getStatus()).isEqualTo(419);
+			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
 
 			// Exception
 			MetadataContext.LOCAL_SERVICE = "TestApp4";
