@@ -13,4 +13,7 @@
 - [Update GitHub Actions workflow](https://github.com/Tencent/spring-cloud-tencent/pull/273)
 - [fix:fix TypeNotPresentException in @ConditionalOnClass of router.](https://github.com/Tencent/spring-cloud-tencent/pull/276)
 - [fix:solve the chaos code problem on rejectTips.](https://github.com/Tencent/spring-cloud-tencent/pull/279)
+- [fix:solve ratelimit-callee-service UnknownHostException.](https://github.com/Tencent/spring-cloud-tencent/pull/281)
+- [fix:refactor to use text/html resolve chaos problem on rejectTips](https://github.com/Tencent/spring-cloud-tencent/pull/285)
+- [UT: add metadata-transfer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/294)
 - [Feature:add restTemplate Report Polaris](https://github.com/Tencent/spring-cloud-tencent/pull/272)
