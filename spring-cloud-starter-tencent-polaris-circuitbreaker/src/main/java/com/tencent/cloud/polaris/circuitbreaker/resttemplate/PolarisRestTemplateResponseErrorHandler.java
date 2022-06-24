@@ -102,7 +102,7 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		URL url = connection.getURL();
 		resultRequest.setHost(url.getHost());
 		resultRequest.setPort(url.getPort());
-		if (response.getStatusCode().is5xxServerError()) {
+		if (response.getStatusCode().value() > 500) {
 			resultRequest.setRetStatus(RetStatus.RetFail);
 		}
 		return resultRequest;
