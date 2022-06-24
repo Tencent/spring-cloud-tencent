@@ -16,3 +16,4 @@
 - [fix:solve ratelimit-callee-service UnknownHostException.](https://github.com/Tencent/spring-cloud-tencent/pull/281)
 - [fix:refactor to use text/html resolve chaos problem on rejectTips](https://github.com/Tencent/spring-cloud-tencent/pull/285)
 - [UT: add metadata-transfer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/294)
+- [Feature:add restTemplate Report Polaris](https://github.com/Tencent/spring-cloud-tencent/pull/272)

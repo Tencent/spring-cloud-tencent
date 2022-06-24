@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerBootstrapConfiguration;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
