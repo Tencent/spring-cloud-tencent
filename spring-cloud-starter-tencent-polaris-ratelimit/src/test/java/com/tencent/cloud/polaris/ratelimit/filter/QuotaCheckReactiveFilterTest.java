@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
@@ -65,7 +66,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link QuotaCheckReactiveFilter}.
  *
- * @author Haotian Zhang, cheese8
+ * @author Haotian Zhang, cheese8, kaiy
  */
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = QuotaCheckReactiveFilterTest.TestApplication.class, properties = {
@@ -201,7 +202,13 @@ public class QuotaCheckReactiveFilterTest {
 		// Unirate waiting 1000ms
 		MetadataContext.LOCAL_SERVICE = "TestApp2";
 		long startTimestamp = System.currentTimeMillis();
-		quotaCheckReactiveFilter.filter(exchange, webFilterChain);
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> {}, t -> {}, countDownLatch::countDown);
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			fail("Exception encountered.", e);
+		}
 		assertThat(System.currentTimeMillis() - startTimestamp).isGreaterThanOrEqualTo(1000L);
 
 		// Rate limited
