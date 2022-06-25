@@ -18,3 +18,4 @@
 - [UT: add metadata-transfer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/294)
 - [Feature:add restTemplate Report Polaris](https://github.com/Tencent/spring-cloud-tencent/pull/272)
 - [fix: 将blocking call改为non-blocking call](https://github.com/Tencent/spring-cloud-tencent/pull/308)
+- [Use jdk constants instead of magic variables](https://github.com/Tencent/spring-cloud-tencent/pull/313)
