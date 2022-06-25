@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -70,7 +71,7 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
 				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, "UTF-8"));
+						URLEncoder.encode(metadataStr, StandardCharsets.UTF_8.name()));
 			}
 			catch (UnsupportedEncodingException e) {
 				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);

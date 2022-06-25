@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core.filter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.netflix.zuul.context.RequestContext;
@@ -70,7 +71,7 @@ public class EncodeTransferMetadataZuulFilterTest {
 		final RequestContext ctx = RequestContext.getCurrentContext();
 		Map<String, String> zuulRequestHeaders = ctx.getZuulRequestHeaders();
 		String metaData = zuulRequestHeaders.get(MetadataConstant.HeaderName.CUSTOM_METADATA.toLowerCase());
-		String decode = URLDecoder.decode(metaData, "UTF-8");
+		String decode = URLDecoder.decode(metaData, StandardCharsets.UTF_8.name());
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
 		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
 		Assert.assertEquals(transitiveMap.get("b"), "2");
