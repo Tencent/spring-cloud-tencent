@@ -12,3 +12,4 @@
 - [fix:solve ratelimit-callee-service UnknownHostException.](https://github.com/Tencent/spring-cloud-tencent/pull/291)
 - [Update GitHub Actions workflow](https://github.com/Tencent/spring-cloud-tencent/pull/295)
 - [Feature:add restTemplate Report Polaris](https://github.com/Tencent/spring-cloud-tencent/pull/300)
+- [Fix the current limiting effect is that other requests cannot be processed when queuing at a constant speed](https://github.com/Tencent/spring-cloud-tencent/pull/308)
