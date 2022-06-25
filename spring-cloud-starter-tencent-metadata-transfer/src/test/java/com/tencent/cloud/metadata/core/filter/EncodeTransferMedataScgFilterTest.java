@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core.filter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -64,7 +65,7 @@ public class EncodeTransferMedataScgFilterTest {
 		MockServerWebExchange exchange = MockServerWebExchange.from(builder);
 		filter.filter(exchange, chain);
 		String metadataStr = exchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
-		String decode = URLDecoder.decode(metadataStr, "UTF-8");
+		String decode = URLDecoder.decode(metadataStr, StandardCharsets.UTF_8.name());
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
 		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
 		Assert.assertEquals(transitiveMap.get("b"), "2");

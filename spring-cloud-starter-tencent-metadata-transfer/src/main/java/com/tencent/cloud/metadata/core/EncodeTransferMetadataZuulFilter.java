@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.netflix.zuul.ZuulFilter;
@@ -71,7 +72,7 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 			try {
 				requestContext.addZuulRequestHeader(
 						MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, "UTF-8"));
+						URLEncoder.encode(metadataStr, StandardCharsets.UTF_8.name()));
 			}
 			catch (UnsupportedEncodingException e) {
 				requestContext.addZuulRequestHeader(
