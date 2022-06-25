@@ -21,3 +21,4 @@
 - [fix: shutdown thread pool before the container closes](https://github.com/Tencent/spring-cloud-tencent/pull/355)
 - [rm code: Condition 'null != interceptors' is always 'true' ](https://github.com/Tencent/spring-cloud-tencent/pull/357)
 - [docs:update logo in README.](https://github.com/Tencent/spring-cloud-tencent/pull/360)
+- [Use jdk constants instead of magic variables](https://github.com/Tencent/spring-cloud-tencent/pull/361)

@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,7 +85,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
-				customMetadataStr = URLDecoder.decode(customMetadataStr, "UTF-8");
+				customMetadataStr = URLDecoder.decode(customMetadataStr, StandardCharsets.UTF_8.name());
 			}
 		}
 		catch (UnsupportedEncodingException e) {
