@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.ratelimit.filter;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +56,7 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
 /**
  * Reactive filter to check quota.
  *
- * @author Haotian Zhang, lepdou
+ * @author Haotian Zhang, lepdou, kaiy
  */
 public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
@@ -113,7 +114,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			}
 			// Unirate
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
-				Thread.sleep(quotaResponse.getWaitMs());
+				return Mono.delay(Duration.ofMillis(quotaResponse.getWaitMs())).flatMap(e -> chain.filter(exchange));
 			}
 		}
 		catch (Throwable t) {

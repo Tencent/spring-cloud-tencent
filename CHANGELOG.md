@@ -9,3 +9,4 @@
 - [Feature: Add config module unit test](https://github.com/Tencent/spring-cloud-tencent/pull/301)
 - [Feature:add restTemplate Report Polaris](https://github.com/Tencent/spring-cloud-tencent/pull/304)
 - [Update GitHub Actions workflow](https://github.com/Tencent/spring-cloud-tencent/pull/305)
+- [fix: 将blocking call改为non-blocking call](https://github.com/Tencent/spring-cloud-tencent/pull/309)
