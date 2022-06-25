@@ -38,9 +38,11 @@
 	</scm>
 
 	<modules>
-		<module>spring-cloud-tencent-polaris-context</module>
 		<module>spring-cloud-tencent-commons</module>
+		<module>spring-cloud-tencent-polaris-context</module>
+		<module>spring-cloud-tencent-polaris-loadbalancer</module>
 		<module>spring-cloud-starter-tencent-metadata-transfer</module>
+		<module>spring-cloud-starter-tencent-polaris-config</module>
 		<module>spring-cloud-starter-tencent-polaris-discovery</module>
 		<module>spring-cloud-starter-tencent-polaris-ratelimit</module>
 		<module>spring-cloud-starter-tencent-polaris-circuitbreaker</module>
@@ -48,8 +50,6 @@
 		<module>spring-cloud-tencent-dependencies</module>
 		<module>spring-cloud-tencent-examples</module>
 		<module>spring-cloud-tencent-coverage</module>
-		<module>spring-cloud-starter-tencent-polaris-config</module>
-		<module>spring-cloud-tencent-polaris-loadbalancer</module>
 	</modules>
 
 	<developers>
@@ -95,7 +95,7 @@
 		<spring.framework.version>5.3.21</spring.framework.version>
 
 		<!-- Maven Plugin Versions -->
-		<jacoco.version>0.8.3</jacoco.version>
+		<jacoco.version>0.8.8</jacoco.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
 		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>

@@ -13,34 +13,25 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.common.util;
+package com.tencent.cloud.polaris.config;
 
-import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
- * test for {@link ResourceFileUtils}
- *@author lepdou 2022-05-27
+ * Whether to connect to a remote server, suitable for local development mode.
+ *
+ * @author lepdou 2022-06-11
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ResourceFileUtilsTest {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@ConditionalOnProperty(value = "spring.cloud.polaris.config.connect-remote-server", matchIfMissing = true)
+public @interface ConditionalOnConnectRemoteServerEnabled {
 
-	@Test
-	public void testReadExistedFile() throws IOException {
-		String content = ResourceFileUtils.readFile("test.txt");
-		Assert.assertEquals("just for test", content);
-	}
-
-	@Test
-	public void testReadNotExistedFile() throws IOException {
-		String content = ResourceFileUtils.readFile("not_existed_test.txt");
-		Assert.assertEquals("", content);
-	}
 }

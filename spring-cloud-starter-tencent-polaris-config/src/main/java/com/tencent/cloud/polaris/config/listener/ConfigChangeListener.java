@@ -16,31 +16,20 @@
  *
  */
 
-package com.tencent.cloud.common.util;
-
-import java.io.IOException;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+package com.tencent.cloud.polaris.config.listener;
 
 /**
- * test for {@link ResourceFileUtils}
- *@author lepdou 2022-05-27
+ * Configuring the change listener interface.
+ *
+ * @author Palmer Xu 2022-05-31
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ResourceFileUtilsTest {
+public interface ConfigChangeListener {
 
-	@Test
-	public void testReadExistedFile() throws IOException {
-		String content = ResourceFileUtils.readFile("test.txt");
-		Assert.assertEquals("just for test", content);
-	}
+	/**
+	 * Invoked when there is any config change for the namespace.
+	 *
+	 * @param changeEvent the event for this change
+	 */
+	void onChange(ConfigChangeEvent changeEvent);
 
-	@Test
-	public void testReadNotExistedFile() throws IOException {
-		String content = ResourceFileUtils.readFile("not_existed_test.txt");
-		Assert.assertEquals("", content);
-	}
 }
