@@ -203,10 +203,11 @@ public class QuotaCheckReactiveFilterTest {
 		MetadataContext.LOCAL_SERVICE = "TestApp2";
 		long startTimestamp = System.currentTimeMillis();
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> {}, t -> {}, countDownLatch::countDown);
+		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> { }, t -> { }, countDownLatch::countDown);
 		try {
 			countDownLatch.await();
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			fail("Exception encountered.", e);
 		}
 		assertThat(System.currentTimeMillis() - startTimestamp).isGreaterThanOrEqualTo(1000L);
