@@ -121,7 +121,7 @@ public class QuotaCheckServletFilterTest {
 		PolarisRateLimitProperties polarisRateLimitProperties = new PolarisRateLimitProperties();
 		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips提示消息");
 		polarisRateLimitProperties.setRejectHttpCode(419);
-		
+
 		PolarisRateLimitProperties polarisRateLimitWithHtmlRejectTipsProperties = new PolarisRateLimitProperties();
 		polarisRateLimitWithHtmlRejectTipsProperties.setRejectRequestTips("<h1>RejectRequestTips提示消息</h1>");
 		polarisRateLimitWithHtmlRejectTipsProperties.setRejectHttpCode(419);
