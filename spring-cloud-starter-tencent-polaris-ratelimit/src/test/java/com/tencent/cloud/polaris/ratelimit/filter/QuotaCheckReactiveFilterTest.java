@@ -202,7 +202,6 @@ public class QuotaCheckReactiveFilterTest {
 		// Unirate waiting 1000ms
 		MetadataContext.LOCAL_SERVICE = "TestApp2";
 		long startTimestamp = System.currentTimeMillis();
-		quotaCheckReactiveFilter.filter(exchange, webFilterChain);
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> { }, t -> { }, countDownLatch::countDown);
 		try {
