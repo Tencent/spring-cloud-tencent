@@ -130,6 +130,7 @@ public class QuotaCheckServletFilterTest {
 		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.EMPTY_SET);
 
 		this.quotaCheckServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckWithHtmlRejectTipsServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver);
 	}
 
 	@Test
