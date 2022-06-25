@@ -13,34 +13,17 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.common.util;
+package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 
-import java.io.IOException;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.client.ResponseErrorHandler;
 
 /**
- * test for {@link ResourceFileUtils}
- *@author lepdou 2022-05-27
+ * @author : wh
+ * @date : 2022/6/21 19:12
+ * @description: errorHandler {@link ResponseErrorHandler}
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ResourceFileUtilsTest {
+public interface PolarisResponseErrorHandler extends ResponseErrorHandler {
 
-	@Test
-	public void testReadExistedFile() throws IOException {
-		String content = ResourceFileUtils.readFile("test.txt");
-		Assert.assertEquals("just for test", content);
-	}
-
-	@Test
-	public void testReadNotExistedFile() throws IOException {
-		String content = ResourceFileUtils.readFile("not_existed_test.txt");
-		Assert.assertEquals("", content);
-	}
 }
