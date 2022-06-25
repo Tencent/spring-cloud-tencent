@@ -119,7 +119,7 @@ public class QuotaCheckReactiveFilterTest {
 		});
 
 		PolarisRateLimitProperties polarisRateLimitProperties = new PolarisRateLimitProperties();
-		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips");
+		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips提示消息");
 		polarisRateLimitProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
@@ -139,7 +139,7 @@ public class QuotaCheckReactiveFilterTest {
 		try {
 			Field rejectTips = QuotaCheckReactiveFilter.class.getDeclaredField("rejectTips");
 			rejectTips.setAccessible(true);
-			assertThat(rejectTips.get(quotaCheckReactiveFilter)).isEqualTo("RejectRequestTips");
+			assertThat(rejectTips.get(quotaCheckReactiveFilter)).isEqualTo("RejectRequestTips提示消息");
 		}
 		catch (NoSuchFieldException | IllegalAccessException e) {
 			fail("Exception encountered.", e);
