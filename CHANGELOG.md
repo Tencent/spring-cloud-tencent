@@ -11,3 +11,4 @@
 - [Update GitHub Actions workflow](https://github.com/Tencent/spring-cloud-tencent/pull/305)
 - [fix: 将blocking call改为non-blocking call](https://github.com/Tencent/spring-cloud-tencent/pull/309)
 - [fix:solve the chaos code problem on rejectTips](https://github.com/Tencent/spring-cloud-tencent/pull/283)
+- [Fix config file format misspell](https://github.com/Tencent/spring-cloud-tencent/pull/321)
