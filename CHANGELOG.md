@@ -19,3 +19,4 @@
 - [Feature:add restTemplate Report Polaris](https://github.com/Tencent/spring-cloud-tencent/pull/272)
 - [Use jdk constants instead of magic variables](https://github.com/Tencent/spring-cloud-tencent/pull/313)
 - [Fix the current limiting effect is that other requests cannot be processed when queuing at a constant speed](https://github.com/Tencent/spring-cloud-tencent/pull/316)
+- [Fix config file format misspell](https://github.com/Tencent/spring-cloud-tencent/pull/319)
