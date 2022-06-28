@@ -32,8 +32,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
- * resolve custom transitive metadata from request.
- *@author lepdou 2022-05-20
+ * Resolve custom transitive metadata from request.
+ * @author lepdou 2022-05-20
  */
 public class CustomTransitiveMetadataResolver {
 
