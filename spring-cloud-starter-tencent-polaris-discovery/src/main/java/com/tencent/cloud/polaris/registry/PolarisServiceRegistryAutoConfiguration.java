@@ -21,6 +21,7 @@ package com.tencent.cloud.polaris.registry;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.spi.InstanceMetadataProvider;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.client.api.SDKContext;
@@ -34,6 +35,7 @@ import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationC
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 
 /**
  * Autoconfiguration of service registry of Polaris.
@@ -60,9 +62,9 @@ public class PolarisServiceRegistryAutoConfiguration {
 	public PolarisRegistration polarisRegistration(
 			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
 			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context,
-			StaticMetadataManager staticMetadataManager) {
+			StaticMetadataManager staticMetadataManager, @Nullable InstanceMetadataProvider instanceMetadataProvider) {
 		return new PolarisRegistration(discoveryPropertiesAutoConfiguration,
-				polarisDiscoveryProperties, context, staticMetadataManager);
+				polarisDiscoveryProperties, context, staticMetadataManager, instanceMetadataProvider);
 	}
 
 	@Bean
