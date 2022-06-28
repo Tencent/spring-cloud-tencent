@@ -21,6 +21,7 @@ package com.tencent.cloud.polaris.context.config;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Haotian Zhang
  */
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty("spring.cloud.polaris.enabled")
 @Import(PolarisContextAutoConfiguration.class)
 public class PolarisContextBootstrapAutoConfiguration {

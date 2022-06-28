@@ -13,13 +13,13 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -38,11 +38,10 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataScgFilter}.
- *
  * @author quan
  */
 @RunWith(SpringRunner.class)
@@ -71,7 +70,7 @@ public class EncodeTransferMedataScgFilterTest {
 		String metadata = exchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		Assertions.assertThat(metadata).isNotNull();
 
-		String decode = URLDecoder.decode(metadata, StandardCharsets.UTF_8.name());
+		String decode = URLDecoder.decode(metadata, UTF_8);
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
 		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
 		Assertions.assertThat(transitiveMap.get("b")).isEqualTo("2");

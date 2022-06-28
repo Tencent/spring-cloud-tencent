@@ -43,8 +43,7 @@ public class PolarisRateLimitAutoConfigurationTest {
 
 	private final WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
 
-	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner =
-			new ReactiveWebApplicationContextRunner();
+	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
 	public void testNoWebApplication() {

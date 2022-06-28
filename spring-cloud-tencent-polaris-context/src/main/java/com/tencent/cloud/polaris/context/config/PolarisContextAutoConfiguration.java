@@ -27,12 +27,14 @@ import com.tencent.polaris.client.api.SDKContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Autoconfiguration for Polaris {@link SDKContext}.
  *
  * @author Haotian Zhang
  */
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
 @EnableConfigurationProperties({PolarisContextProperties.class})
 public class PolarisContextAutoConfiguration {

@@ -69,4 +69,5 @@ public class PolarisCachingSpringLoadBalanceFactory extends CachingSpringLoadBal
 
 		return loadBalancer;
 	}
+
 }

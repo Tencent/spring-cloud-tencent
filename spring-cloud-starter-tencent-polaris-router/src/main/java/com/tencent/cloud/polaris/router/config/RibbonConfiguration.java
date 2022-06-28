@@ -47,4 +47,5 @@ public class RibbonConfiguration {
 				polarisNearByRouterProperties, polarisMetadataRouterProperties,
 				polarisRuleBasedRouterProperties, iClientConfig);
 	}
+
 }
