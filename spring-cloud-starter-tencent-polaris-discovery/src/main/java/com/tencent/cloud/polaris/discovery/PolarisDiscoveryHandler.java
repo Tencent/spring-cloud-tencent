@@ -61,7 +61,7 @@ public class PolarisDiscoveryHandler {
 		GetHealthyInstancesRequest getHealthyInstancesRequest = new GetHealthyInstancesRequest();
 		getHealthyInstancesRequest.setNamespace(namespace);
 		getHealthyInstancesRequest.setService(service);
-		return polarisConsumer.getHealthyInstancesInstance(getHealthyInstancesRequest);
+		return polarisConsumer.getHealthyInstances(getHealthyInstancesRequest);
 	}
 
 	/**
