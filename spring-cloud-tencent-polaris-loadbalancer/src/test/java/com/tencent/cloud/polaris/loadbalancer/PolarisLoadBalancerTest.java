@@ -54,8 +54,9 @@ import static org.mockito.Mockito.when;
 
 
 /**
- * @author lapple.lei
- * @since 2022/6/25 1:41 下午
+ * Test for {@link PolarisLoadBalancer}.
+ *
+ * @author lapple.lei 2022-06-28
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerTest {
