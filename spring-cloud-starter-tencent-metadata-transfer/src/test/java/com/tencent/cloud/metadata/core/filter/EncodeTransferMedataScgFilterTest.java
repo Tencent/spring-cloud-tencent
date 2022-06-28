@@ -26,7 +26,6 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgFilter;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -68,7 +67,7 @@ public class EncodeTransferMedataScgFilterTest {
 		String decode = URLDecoder.decode(metadataStr, "UTF-8");
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
 		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
-		Assert.assertEquals(transitiveMap.get("b"), "2");
+		Assertions.assertThat(transitiveMap.get("b")).isEqualTo("2");
 	}
 
 	@SpringBootApplication
