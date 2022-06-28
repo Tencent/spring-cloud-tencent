@@ -17,12 +17,6 @@
 
 package com.tencent.cloud.common.util;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,7 +89,8 @@ public final class JacksonUtils {
 	public static <T> T json2JavaBean(String content, Class<T> valueType) {
 		try {
 			return OM.readValue(content, valueType);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Object to Json failed. {}", content, e);
 			throw new RuntimeException("Object to Json failed.", e);
 		}
