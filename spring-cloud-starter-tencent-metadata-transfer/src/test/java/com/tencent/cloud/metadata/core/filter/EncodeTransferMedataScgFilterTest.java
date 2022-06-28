@@ -39,9 +39,7 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -77,8 +75,8 @@ public class EncodeTransferMedataScgFilterTest {
 
 		String decode = URLDecoder.decode(metadata, StandardCharsets.UTF_8.name());
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
-		assertThat(transitiveMap.size(), is(1));
-		assertEquals("2", transitiveMap.get("b"));
+		assertThat(transitiveMap.size()).isEqualTo(1);
+		assertThat(transitiveMap.get("b")).isEqualTo("2");
 	}
 
 	@SpringBootApplication
