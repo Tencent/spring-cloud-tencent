@@ -41,7 +41,8 @@ public class SpringInjector {
 				if (s_injector == null) {
 					try {
 						s_injector = Guice.createInjector(new SpringModule());
-					} catch (Throwable ex) {
+					}
+					catch (Throwable ex) {
 						PolarisConfigException exception = new PolarisConfigException("Unable to initialize Apollo Spring Injector!", ex);
 						throw exception;
 					}
@@ -55,7 +56,8 @@ public class SpringInjector {
 	public static <T> T getInstance(Class<T> clazz) {
 		try {
 			return getInjector().getInstance(clazz);
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			throw new PolarisConfigException(
 					String.format("Unable to load instance for %s!", clazz.getName()), ex);
 		}

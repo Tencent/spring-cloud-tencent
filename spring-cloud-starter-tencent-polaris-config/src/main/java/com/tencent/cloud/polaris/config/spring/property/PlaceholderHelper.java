@@ -44,11 +44,13 @@ public class PlaceholderHelper {
 	private static final String EXPRESSION_PREFIX = "#{";
 	private static final String EXPRESSION_SUFFIX = "}";
 
+
 	/**
 	 * Resolve placeholder property values, e.g.
-	 * <br />
-	 * <br />
-	 * "${somePropertyValue}" -> "the actual property value"
+	 * @param beanFactory beanFactory
+	 * @param beanName beanName
+	 * @param placeholder placeholder
+	 * @return "${somePropertyValue}" -> "the actual property value"
 	 */
 	public Object resolvePropertyValue(ConfigurableBeanFactory beanFactory, String beanName, String placeholder) {
 		// resolve string value
@@ -74,6 +76,8 @@ public class PlaceholderHelper {
 
 	/**
 	 * Extract keys from placeholder, e.g.
+	 * @param propertyString propertyString
+	 * @return
 	 * <ul>
 	 * <li>${some.key} => "some.key"</li>
 	 * <li>${some.key:${some.other.key:100}} => "some.key", "some.other.key"</li>
@@ -111,13 +115,15 @@ public class PlaceholderHelper {
 			// ${some.key:other.key}
 			if (placeholderCandidate.startsWith(PLACEHOLDER_PREFIX)) {
 				stack.push(placeholderCandidate);
-			} else {
+			}
+			else {
 				// some.key:${some.other.key:100}
 				int separatorIndex = placeholderCandidate.indexOf(VALUE_SEPARATOR);
 
 				if (separatorIndex == -1) {
 					stack.push(placeholderCandidate);
-				} else {
+				}
+				else {
 					stack.push(placeholderCandidate.substring(0, separatorIndex));
 					String defaultValuePart =
 							normalizeToPlaceholder(placeholderCandidate.substring(separatorIndex + VALUE_SEPARATOR.length()));
@@ -169,13 +175,16 @@ public class PlaceholderHelper {
 				if (withinNestedPlaceholder > 0) {
 					withinNestedPlaceholder--;
 					index = index + PLACEHOLDER_SUFFIX.length();
-				} else {
+				}
+				else {
 					return index;
 				}
-			} else if (StringUtils.substringMatch(buf, index, SIMPLE_PLACEHOLDER_PREFIX)) {
+			}
+			else if (StringUtils.substringMatch(buf, index, SIMPLE_PLACEHOLDER_PREFIX)) {
 				withinNestedPlaceholder++;
 				index = index + SIMPLE_PLACEHOLDER_PREFIX.length();
-			} else {
+			}
+			else {
 				index++;
 			}
 		}

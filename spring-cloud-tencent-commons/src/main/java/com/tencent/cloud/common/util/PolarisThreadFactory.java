@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  *@date : 2022/6/28 09:26
  *@description:
  */
-public class PolarisThreadFactory implements ThreadFactory {
+public final class PolarisThreadFactory implements ThreadFactory {
 	private static Logger log = LoggerFactory.getLogger(PolarisThreadFactory.class);
 
 	private final AtomicLong threadNumber = new AtomicLong(1);
@@ -53,10 +53,12 @@ public class PolarisThreadFactory implements ThreadFactory {
 				log.info("Alive polaris threads: {}", alives);
 				try {
 					TimeUnit.SECONDS.sleep(2);
-				} catch (InterruptedException ex) {
+				}
+				catch (InterruptedException ex) {
 					// ignore
 				}
-			} else {
+			}
+			else {
 				log.info("All polaris threads are shutdown.");
 				return true;
 			}
@@ -66,9 +68,6 @@ public class PolarisThreadFactory implements ThreadFactory {
 		return false;
 	}
 
-	private interface ClassifyStandard<T> {
-		boolean satisfy(T thread);
-	}
 
 	private static <T> void classify(Set<T> src, Set<T> des, ClassifyStandard<T> standard) {
 		Set<T> set = new HashSet<>();
@@ -87,7 +86,7 @@ public class PolarisThreadFactory implements ThreadFactory {
 	}
 
 	public Thread newThread(Runnable runnable) {
-		Thread thread = new Thread(threadGroup, runnable,//
+		Thread thread = new Thread(threadGroup, runnable,
 				threadGroup.getName() + "-" + namePrefix + "-" + threadNumber.getAndIncrement());
 		thread.setDaemon(daemon);
 		if (thread.getPriority() != Thread.NORM_PRIORITY) {
@@ -95,4 +94,9 @@ public class PolarisThreadFactory implements ThreadFactory {
 		}
 		return thread;
 	}
+
+	private interface ClassifyStandard<T> {
+		boolean satisfy(T thread);
+	}
+
 }

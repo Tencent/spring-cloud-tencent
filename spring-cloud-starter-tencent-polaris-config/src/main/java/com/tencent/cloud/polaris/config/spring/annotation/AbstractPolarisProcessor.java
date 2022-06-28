@@ -54,13 +54,20 @@ public abstract class AbstractPolarisProcessor implements BeanPostProcessor, Pri
 		return bean;
 	}
 
+
 	/**
-	 * subclass should implement this method to process field
+	 * subclass should implement this method to process field.
+	 * @param bean bean
+	 * @param beanName beanName
+	 * @param field field
 	 */
 	protected abstract void processField(Object bean, String beanName, Field field);
 
 	/**
-	 * subclass should implement this method to process method
+	 * subclass should implement this method to process method.
+	 * @param bean bean
+	 * @param beanName beanName
+	 * @param method method
 	 */
 	protected abstract void processMethod(Object bean, String beanName, Method method);
 

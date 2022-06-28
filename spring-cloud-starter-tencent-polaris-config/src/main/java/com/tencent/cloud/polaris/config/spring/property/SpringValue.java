@@ -51,7 +51,7 @@ public class SpringValue {
 		this.placeholder = placeholder;
 		this.targetType = field.getType();
 		this.isJson = isJson;
-		if(isJson){
+		if (isJson) {
 			this.genericType = field.getGenericType();
 		}
 	}
@@ -65,7 +65,7 @@ public class SpringValue {
 		Class<?>[] paramTps = method.getParameterTypes();
 		this.targetType = paramTps[0];
 		this.isJson = isJson;
-		if(isJson){
+		if (isJson) {
 			this.genericType = method.getGenericParameterTypes()[0];
 		}
 	}
@@ -73,7 +73,8 @@ public class SpringValue {
 	public void update(Object newVal) throws IllegalAccessException, InvocationTargetException {
 		if (isField()) {
 			injectField(newVal);
-		} else {
+		}
+		else {
 			injectMethod(newVal);
 		}
 	}
@@ -142,7 +143,8 @@ public class SpringValue {
 		}
 		if (isField()) {
 			return String
-					.format("key: %s, beanName: %s, field: %s.%s", key, beanName, bean.getClass().getName(), field.getName());
+					.format("key: %s, beanName: %s, field: %s.%s", key, beanName, bean.getClass()
+							.getName(), field.getName());
 		}
 		return String.format("key: %s, beanName: %s, method: %s.%s", key, beanName, bean.getClass().getName(),
 				methodParameter.getMethod().getName());

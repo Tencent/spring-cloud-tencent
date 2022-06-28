@@ -89,7 +89,6 @@ public class PolarisPropertySourceAutoRefresher
 		this.placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
 		this.typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
 
-
 	}
 
 	@Override
@@ -136,7 +135,7 @@ public class PolarisPropertySourceAutoRefresher
 
 							Map<String, Object> source = polarisPropertySource
 									.getSource();
-				
+
 							for (String changedKey : configKVFileChangeEvent.changedKeys()) {
 
 								// 1. check whether the changed key is relevant
@@ -164,14 +163,15 @@ public class PolarisPropertySourceAutoRefresher
 
 			LOGGER.info("Auto update polaris changed value successfully, new value: {}, {}", value,
 					springValue);
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			LOGGER.error("Auto update polaris changed value failed, {}", springValue.toString(), ex);
 		}
 	}
 
 
 	/**
-	 * Logic transplanted from DefaultListableBeanFactory
+	 * Logic transplanted from DefaultListableBeanFactory.
 	 *
 	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor,
 	 * java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
@@ -183,16 +183,19 @@ public class PolarisPropertySourceAutoRefresher
 
 		if (springValue.isJson()) {
 			value = parseJsonValue((String) value, springValue.getTargetType());
-		} else {
+		}
+		else {
 			if (springValue.isField()) {
 				// org.springframework.beans.TypeConverter#convertIfNecessary(java.lang.Object, java.lang.Class, java.lang.reflect.Field) is available from Spring 3.2.0+
 				if (typeConverterHasConvertIfNecessaryWithFieldParameter) {
 					value = this.typeConverter
 							.convertIfNecessary(value, springValue.getTargetType(), springValue.getField());
-				} else {
+				}
+				else {
 					value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType());
 				}
-			} else {
+			}
+			else {
 				value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
 						springValue.getMethodParameter());
 			}
@@ -204,7 +207,8 @@ public class PolarisPropertySourceAutoRefresher
 	private Object parseJsonValue(String json, Class<?> targetType) {
 		try {
 			return JacksonUtils.json2JavaBean(json, targetType);
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			LOGGER.error("Parsing json '{}' to type {} failed!", json, targetType, ex);
 			throw ex;
 		}
@@ -213,7 +217,8 @@ public class PolarisPropertySourceAutoRefresher
 	private boolean testTypeConverterHasConvertIfNecessaryWithFieldParameter() {
 		try {
 			TypeConverter.class.getMethod("convertIfNecessary", Object.class, Class.class, Field.class);
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			return false;
 		}
 		return true;

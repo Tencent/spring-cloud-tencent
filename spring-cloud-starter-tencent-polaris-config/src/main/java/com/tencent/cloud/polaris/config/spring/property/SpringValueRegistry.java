@@ -74,17 +74,19 @@ public class SpringValueRegistry {
 	}
 
 	private void initialize() {
-		Executors.newSingleThreadScheduledExecutor(PolarisThreadFactory.create("SpringValueRegistry", true)).scheduleAtFixedRate(
-				new Runnable() {
-					@Override
-					public void run() {
-						try {
-							scanAndClean();
-						} catch (Throwable ex) {
-							logger.error(ex.getMessage(), ex);
-						}
-					}
-				}, CLEAN_INTERVAL_IN_SECONDS, CLEAN_INTERVAL_IN_SECONDS, TimeUnit.SECONDS);
+		Executors.newSingleThreadScheduledExecutor(PolarisThreadFactory.create("SpringValueRegistry", true))
+				.scheduleAtFixedRate(
+						new Runnable() {
+							@Override
+							public void run() {
+								try {
+									scanAndClean();
+								}
+								catch (Throwable ex) {
+									logger.error(ex.getMessage(), ex);
+								}
+							}
+						}, CLEAN_INTERVAL_IN_SECONDS, CLEAN_INTERVAL_IN_SECONDS, TimeUnit.SECONDS);
 	}
 
 	private void scanAndClean() {

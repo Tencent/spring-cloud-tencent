@@ -66,7 +66,7 @@ public class PolarisConfigAutoConfiguration {
 	public SpringValueProcessor springValueProcessor() {
 		return new SpringValueProcessor();
 	}
-	
+
 	@Bean
 	public SpringValueDefinitionProcessor springValueDefinitionProcessor() {
 		return new SpringValueDefinitionProcessor();

@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Bean;
 public class SpringValueProcessor extends AbstractPolarisProcessor implements BeanFactoryPostProcessor, BeanFactoryAware {
 
 	private static final Logger logger = LoggerFactory.getLogger(SpringValueProcessor.class);
-	
+
 	private final PlaceholderHelper placeholderHelper;
 	private final SpringValueRegistry springValueRegistry;
 
@@ -111,10 +111,12 @@ public class SpringValueProcessor extends AbstractPolarisProcessor implements Be
 			if (member instanceof Field) {
 				Field field = (Field) member;
 				springValue = new SpringValue(key, value.value(), bean, beanName, field, false);
-			} else if (member instanceof Method) {
+			}
+			else if (member instanceof Method) {
 				Method method = (Method) member;
 				springValue = new SpringValue(key, value.value(), bean, beanName, method, false);
-			} else {
+			}
+			else {
 				logger.error("polaris @Value annotation currently only support to be used on methods and fields, "
 						+ "but is used on {}", member.getClass());
 				return;
@@ -143,7 +145,8 @@ public class SpringValueProcessor extends AbstractPolarisProcessor implements Be
 						bean, beanName, method, false);
 				springValueRegistry.register(beanFactory, definition.getKey(), springValue);
 				logger.debug("Monitoring {}", springValue);
-			} catch (Throwable ex) {
+			}
+			catch (Throwable ex) {
 				logger.error("Failed to enable auto update feature for {}.{}", bean.getClass(),
 						definition.getPropertyName());
 			}
