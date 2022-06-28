@@ -15,3 +15,4 @@
 - [Feature: Add instance metadata spi for registration](https://github.com/Tencent/spring-cloud-tencent/pull/324)
 - [Improve: Improve code style & Upgrade spring boot version with 2.6.9](https://github.com/Tencent/spring-cloud-tencent/pull/322)
 - [Feature: add spring cloud tencent logo](https://github.com/Tencent/spring-cloud-tencent/pull/332)
+- [UT: add metadata-transfer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/335)
