@@ -27,6 +27,7 @@ import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulFilter;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,8 +39,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -73,11 +72,12 @@ public class EncodeTransferMetadataZuulFilterTest {
 		final RequestContext ctx = RequestContext.getCurrentContext();
 		Map<String, String> zuulRequestHeaders = ctx.getZuulRequestHeaders();
 		String metadata = zuulRequestHeaders.get(MetadataConstant.HeaderName.CUSTOM_METADATA.toLowerCase());
-		assertNotNull(metadata);
+		Assertions.assertThat(metadata).isNotNull();
+
 		String decode = URLDecoder.decode(metadata, StandardCharsets.UTF_8.name());
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
-		assertThat(transitiveMap.size()).isEqualTo(1);
-		assertThat(transitiveMap.get("b")).isEqualTo("2");
+		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
+		Assertions.assertThat(transitiveMap.get("b")).isEqualTo("2");
 	}
 
 	@SpringBootApplication

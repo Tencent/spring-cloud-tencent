@@ -26,6 +26,7 @@ import java.util.Map;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgFilter;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -39,8 +40,6 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -71,12 +70,12 @@ public class EncodeTransferMedataScgFilterTest {
 
 		// Check metadata str
 		String metadata = exchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
-		assertNotNull(metadata);
+		Assertions.assertThat(metadata).isNotNull();
 
 		String decode = URLDecoder.decode(metadata, StandardCharsets.UTF_8.name());
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
-		assertThat(transitiveMap.size()).isEqualTo(1);
-		assertThat(transitiveMap.get("b")).isEqualTo("2");
+		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
+		Assertions.assertThat(transitiveMap.get("b")).isEqualTo("2");
 	}
 
 	@SpringBootApplication
