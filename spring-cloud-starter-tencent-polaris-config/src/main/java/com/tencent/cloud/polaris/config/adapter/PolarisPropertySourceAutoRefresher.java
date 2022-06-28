@@ -18,23 +18,32 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
+import com.tencent.cloud.polaris.config.spring.property.SpringValue;
+import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.cloud.polaris.config.util.SpringInjector;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
-import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.TypeConverter;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -53,7 +62,17 @@ public class PolarisPropertySourceAutoRefresher
 
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
+	private final boolean typeConverterHasConvertIfNecessaryWithFieldParameter;
+
+	private TypeConverter typeConverter;
+
 	private ApplicationContext applicationContext;
+
+	private final SpringValueRegistry springValueRegistry;
+
+	private ConfigurableBeanFactory beanFactory;
+
+	private final PlaceholderHelper placeholderHelper;
 
 	private final ContextRefresher contextRefresher;
 
@@ -66,12 +85,19 @@ public class PolarisPropertySourceAutoRefresher
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
 		this.contextRefresher = contextRefresher;
+		this.springValueRegistry = SpringInjector.getInstance(SpringValueRegistry.class);
+		this.placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
+		this.typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
+
+
 	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.applicationContext = applicationContext;
+		this.beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
+		this.typeConverter = this.beanFactory.getTypeConverter();
 	}
 
 	@Override
@@ -110,32 +136,87 @@ public class PolarisPropertySourceAutoRefresher
 
 							Map<String, Object> source = polarisPropertySource
 									.getSource();
+				
+							for (String changedKey : configKVFileChangeEvent.changedKeys()) {
 
-							for (String changedKey : configKVFileChangeEvent
-									.changedKeys()) {
-								ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent
-										.getChangeInfo(changedKey);
+								// 1. check whether the changed key is relevant
+								Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, changedKey);
+								if (targetValues == null || targetValues.isEmpty()) {
+									continue;
+								}
 
-								LOGGER.info("[SCT Config] changed property = {}",
-										configPropertyChangeInfo);
-
-								switch (configPropertyChangeInfo.getChangeType()) {
-								case MODIFIED:
-								case ADDED:
-									source.put(changedKey,
-											configPropertyChangeInfo.getNewValue());
-									break;
-								case DELETED:
-									source.remove(changedKey);
-									break;
+								// 2. update the value
+								for (SpringValue val : targetValues) {
+									updateSpringValue(val);
 								}
 							}
 
-							// rebuild beans with @RefreshScope annotation
-							contextRefresher.refresh();
 						}
 					});
 		}
+	}
+
+
+	private void updateSpringValue(SpringValue springValue) {
+		try {
+			Object value = resolvePropertyValue(springValue);
+			springValue.update(value);
+
+			LOGGER.info("Auto update polaris changed value successfully, new value: {}, {}", value,
+					springValue);
+		} catch (Throwable ex) {
+			LOGGER.error("Auto update polaris changed value failed, {}", springValue.toString(), ex);
+		}
+	}
+
+
+	/**
+	 * Logic transplanted from DefaultListableBeanFactory
+	 *
+	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor,
+	 * java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
+	 */
+	private Object resolvePropertyValue(SpringValue springValue) {
+		// value will never be null, as @Value and @ApolloJsonValue will not allow that
+		Object value = placeholderHelper
+				.resolvePropertyValue(beanFactory, springValue.getBeanName(), springValue.getPlaceholder());
+
+		if (springValue.isJson()) {
+			value = parseJsonValue((String) value, springValue.getTargetType());
+		} else {
+			if (springValue.isField()) {
+				// org.springframework.beans.TypeConverter#convertIfNecessary(java.lang.Object, java.lang.Class, java.lang.reflect.Field) is available from Spring 3.2.0+
+				if (typeConverterHasConvertIfNecessaryWithFieldParameter) {
+					value = this.typeConverter
+							.convertIfNecessary(value, springValue.getTargetType(), springValue.getField());
+				} else {
+					value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType());
+				}
+			} else {
+				value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
+						springValue.getMethodParameter());
+			}
+		}
+
+		return value;
+	}
+
+	private Object parseJsonValue(String json, Class<?> targetType) {
+		try {
+			return JacksonUtils.json2JavaBean(json, targetType);
+		} catch (Throwable ex) {
+			LOGGER.error("Parsing json '{}' to type {} failed!", json, targetType, ex);
+			throw ex;
+		}
+	}
+
+	private boolean testTypeConverterHasConvertIfNecessaryWithFieldParameter() {
+		try {
+			TypeConverter.class.getMethod("convertIfNecessary", Object.class, Class.class, Field.class);
+		} catch (Throwable ex) {
+			return false;
+		}
+		return true;
 	}
 
 }

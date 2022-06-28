@@ -13,6 +13,10 @@
 	<artifactId>spring-cloud-starter-tencent-polaris-config</artifactId>
 	<name>Spring Cloud Starter Tencent Polaris Config</name>
 
+	<properties>
+		<com.google.inject.version>5.1.0</com.google.inject.version>
+	</properties>
+
 	<dependencies>
 		<!-- Spring Cloud Tencent dependencies start -->
 		<dependency>
@@ -57,6 +61,12 @@
 			</exclusions>
 		</dependency>
 		<!-- Polaris dependencies end -->
+
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>${com.google.inject.version}</version>
+		</dependency>
 
 		<!-- Spring cloud dependencies start -->
 		<dependency>

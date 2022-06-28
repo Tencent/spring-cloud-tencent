@@ -23,6 +23,8 @@ import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProcessor;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
+import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
+import com.tencent.cloud.polaris.config.spring.property.SpringValueDefinitionProcessor;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -58,6 +60,16 @@ public class PolarisConfigAutoConfiguration {
 	@Bean
 	public PolarisConfigChangeEventListener polarisConfigChangeEventListener() {
 		return new PolarisConfigChangeEventListener();
+	}
+
+	@Bean
+	public SpringValueProcessor springValueProcessor() {
+		return new SpringValueProcessor();
+	}
+	
+	@Bean
+	public SpringValueDefinitionProcessor springValueDefinitionProcessor() {
+		return new SpringValueDefinitionProcessor();
 	}
 
 }
