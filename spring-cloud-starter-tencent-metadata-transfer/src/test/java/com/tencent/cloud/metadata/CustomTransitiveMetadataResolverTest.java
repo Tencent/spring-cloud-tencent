@@ -29,6 +29,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 
 /**
+ * Test for {@link CustomTransitiveMetadataResolver}.
  * @author quan
  */
 public class CustomTransitiveMetadataResolverTest {
