@@ -27,8 +27,6 @@ import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulFilter;
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,22 +38,28 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
+ * Test for {@link EncodeTransferMetadataZuulFilter}.
+ *
  * @author quan
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = EncodeTransferMetadataZuulFilterTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive" })
+		properties = {"spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive"})
 
 public class EncodeTransferMetadataZuulFilterTest {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	private MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
+	private final MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
 
 	@Before
 	public void init() {
@@ -70,11 +74,12 @@ public class EncodeTransferMetadataZuulFilterTest {
 		filter.run();
 		final RequestContext ctx = RequestContext.getCurrentContext();
 		Map<String, String> zuulRequestHeaders = ctx.getZuulRequestHeaders();
-		String metaData = zuulRequestHeaders.get(MetadataConstant.HeaderName.CUSTOM_METADATA.toLowerCase());
-		String decode = URLDecoder.decode(metaData, StandardCharsets.UTF_8.name());
+		String metadata = zuulRequestHeaders.get(MetadataConstant.HeaderName.CUSTOM_METADATA.toLowerCase());
+		assertNotNull(metadata);
+		String decode = URLDecoder.decode(metadata, StandardCharsets.UTF_8.name());
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
-		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
-		Assert.assertEquals(transitiveMap.get("b"), "2");
+		assertThat(transitiveMap.size(), is(1));
+		assertEquals("2", transitiveMap.get("b"));
 	}
 
 	@SpringBootApplication

@@ -15,14 +15,13 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 
 
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateResponseErrorHandler;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,9 +35,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * @author : wh
- * @date : 2022/6/22 09:00
- * @description: Test for {@link PolarisRestTemplateResponseErrorHandler}.
+ * Test For {@link PolarisRestTemplateResponseErrorHandler}.
+ *
+ * @author wh 2022/6/22
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PolarisRestTemplateResponseErrorHandlerTest.TestApplication.class,
