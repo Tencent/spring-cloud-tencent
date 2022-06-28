@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 
 /**
  * Properties for Polaris.
@@ -106,9 +105,6 @@ public class PolarisDiscoveryProperties {
 	 * Millis interval of refresh of service info list. Default: 60000.
 	 */
 	private Long serviceListRefreshInterval = 60000L;
-
-	@Autowired
-	private Environment environment;
 
 	public boolean isHeartbeatEnabled() {
 		return heartbeatEnabled;
@@ -232,7 +228,7 @@ public class PolarisDiscoveryProperties {
 
 	private static class PolarisDiscoveryConfigModifier implements PolarisConfigModifier {
 
-		private final String ID = "polaris";
+		private static final String ID = "polaris";
 
 		@Autowired(required = false)
 		private PolarisDiscoveryProperties polarisDiscoveryProperties;

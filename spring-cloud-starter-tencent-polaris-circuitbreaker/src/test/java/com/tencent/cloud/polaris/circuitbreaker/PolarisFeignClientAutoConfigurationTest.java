@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
-import com.tencent.cloud.polaris.circuitbreaker.config.PolarisFeignClientAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProcessor;
 import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -29,17 +29,17 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisFeignClientAutoConfiguration}.
+ * Test for {@link PolarisCircuitBreakerAutoConfiguration}.
  *
  * @author Haotian Zhang
  */
 public class PolarisFeignClientAutoConfigurationTest {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(
 							PolarisContextAutoConfiguration.class,
-							PolarisFeignClientAutoConfiguration.class))
+							PolarisCircuitBreakerAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test

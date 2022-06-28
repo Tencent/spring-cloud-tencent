@@ -33,6 +33,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
+import org.springframework.lang.NonNull;
 
 /**
  * Replace LoadBalancerInterceptor with PolarisLoadBalancerInterceptor.
@@ -44,12 +45,12 @@ public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcess
 	private BeanFactory factory;
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
 		this.factory = beanFactory;
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 		if (bean instanceof LoadBalancerInterceptor) {
 			// Support rest template router.
 			// Replaces the default LoadBalancerInterceptor implementation and returns a custom PolarisLoadBalancerInterceptor
@@ -64,4 +65,5 @@ public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcess
 		}
 		return bean;
 	}
+
 }

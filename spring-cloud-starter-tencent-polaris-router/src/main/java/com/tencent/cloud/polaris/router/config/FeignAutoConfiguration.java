@@ -38,7 +38,7 @@ import org.springframework.lang.Nullable;
  * Feign-related components need to be loaded only in the feign environment.
  *@author lepdou 2022-06-10
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = {"org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer"})
 @RibbonClients(defaultConfiguration = {FeignLoadBalancerConfiguration.class})
 public class FeignAutoConfiguration {

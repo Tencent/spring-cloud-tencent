@@ -43,4 +43,5 @@ public class PolarisMetadataRouterProperties {
 				"enabled=" + enabled +
 				'}';
 	}
+
 }

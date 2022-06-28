@@ -20,7 +20,6 @@ package com.tencent.cloud.metadata.core.filter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -41,6 +40,7 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -65,7 +65,7 @@ public class EncodeTransferMedataScgFilterTest {
 		MockServerWebExchange exchange = MockServerWebExchange.from(builder);
 		filter.filter(exchange, chain);
 		String metadataStr = exchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
-		String decode = URLDecoder.decode(metadataStr, StandardCharsets.UTF_8.name());
+		String decode = URLDecoder.decode(metadataStr, UTF_8);
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
 		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
 		Assert.assertEquals(transitiveMap.get("b"), "2");

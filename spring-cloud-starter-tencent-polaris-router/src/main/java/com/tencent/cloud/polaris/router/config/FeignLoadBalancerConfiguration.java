@@ -38,4 +38,5 @@ public class FeignLoadBalancerConfiguration {
 			ServerIntrospector serverIntrospector) {
 		return new PolarisFeignLoadBalancer(lb, clientConfig, serverIntrospector);
 	}
+
 }

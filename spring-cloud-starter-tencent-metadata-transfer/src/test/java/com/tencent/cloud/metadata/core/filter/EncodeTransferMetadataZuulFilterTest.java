@@ -20,7 +20,6 @@ package com.tencent.cloud.metadata.core.filter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.netflix.zuul.context.RequestContext;
@@ -40,6 +39,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -71,7 +71,7 @@ public class EncodeTransferMetadataZuulFilterTest {
 		final RequestContext ctx = RequestContext.getCurrentContext();
 		Map<String, String> zuulRequestHeaders = ctx.getZuulRequestHeaders();
 		String metaData = zuulRequestHeaders.get(MetadataConstant.HeaderName.CUSTOM_METADATA.toLowerCase());
-		String decode = URLDecoder.decode(metaData, StandardCharsets.UTF_8.name());
+		String decode = URLDecoder.decode(metaData, UTF_8);
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
 		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
 		Assert.assertEquals(transitiveMap.get("b"), "2");

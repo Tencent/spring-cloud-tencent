@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Haotian Zhang
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MetadataAutoConfiguration {
 
 	/**

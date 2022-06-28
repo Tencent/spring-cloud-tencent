@@ -40,8 +40,7 @@ import org.springframework.core.env.Environment;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
-@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled", matchIfMissing = true)
 @Import(PolarisContextAutoConfiguration.class)
 public class PolarisConfigBootstrapAutoConfiguration {
 
