@@ -11,4 +11,6 @@
 - [Update GitHub Actions workflow](https://github.com/Tencent/spring-cloud-tencent/pull/305)
 - [fix: use non-blocking call instead of blocking call](https://github.com/Tencent/spring-cloud-tencent/pull/309)
 - [fix:solve the chaos code problem on rejectTips](https://github.com/Tencent/spring-cloud-tencent/pull/283)
+- [Fix config file format misspell](https://github.com/Tencent/spring-cloud-tencent/pull/321)
+- [Feature: Add instance metadata spi for registration](https://github.com/Tencent/spring-cloud-tencent/pull/324)
 - [Improve: Improve code style & Upgrade spring boot version with 2.6.9](https://github.com/Tencent/spring-cloud-tencent/pull/322)
