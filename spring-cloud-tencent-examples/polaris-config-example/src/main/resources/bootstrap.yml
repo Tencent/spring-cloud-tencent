@@ -2,11 +2,11 @@ server:
   port: 48084
 spring:
   application:
-    name: xiaozou
+    name: polaris-config-example
   cloud:
     polaris:
       address: grpc://183.47.111.80:8091
-      namespace: xiaozou
+      namespace: default
       config:
         auto-refresh: true # auto refresh when config file changed
         groups:
