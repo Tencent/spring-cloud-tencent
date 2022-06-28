@@ -60,8 +60,6 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerTest {
-
-
 	private static final String CLIENT_NAME = "polaris-test-server";
 	private static final String NS = "testNamespace";
 	private static final String[] HOST_LIST = new String[] {
@@ -74,16 +72,13 @@ public class PolarisLoadBalancerTest {
 
 	@Mock
 	private RouterAPI routerAPI;
-
 	@Mock
 	private ConsumerAPI consumerAPI;
 
-
 	@Test
 	public void testPolarisLoadBalancer() {
-
 		//mock consumerAPI
-		when(consumerAPI.getHealthyInstancesInstance(any())).thenReturn(this.assembleInstanceResp());
+		when(consumerAPI.getHealthyInstances(any())).thenReturn(this.assembleInstanceResp());
 
 		//mock routerAPI for rule
 		when(routerAPI.processLoadBalance(any())).thenReturn(assembleProcessLoadBalanceResp());
@@ -108,19 +103,14 @@ public class PolarisLoadBalancerTest {
 					consumerAPI, properties);
 
 			String host = balancer.choose(null);
-			System.out.println(host);
 
 			Assert.assertNotNull(host);
 			Assert.assertEquals("127.0.0.1:8080", host);
 		}
-
 	}
-
 
 	@Test
 	public void testExtendDiscoveryServiceInstance() {
-
-
 		//mock routerAPI for rule
 		when(routerAPI.processLoadBalance(any())).thenReturn(assembleProcessLoadBalanceResp());
 		PolarisWeightedRule rule = new PolarisWeightedRule(routerAPI);
@@ -146,16 +136,13 @@ public class PolarisLoadBalancerTest {
 					consumerAPI, properties);
 
 			String host = balancer.choose(null);
-			System.out.println(host);
+			Assert.assertEquals("127.0.0.1:8080", host);
 		}
-
 	}
-
 
 	private ServerList<Server> assembleServerList() {
 		return new StaticServerList<>(Stream.of(HOST_LIST).map(this::convertServer).toArray(Server[]::new));
 	}
-
 
 	private ProcessLoadBalanceResponse assembleProcessLoadBalanceResp() {
 		ServiceInstances serviceInstances = assembleServiceInstances();
@@ -183,5 +170,4 @@ public class PolarisLoadBalancerTest {
 	private Server convertServer(String host) {
 		return new Server("http", host, 8080);
 	}
-
 }
