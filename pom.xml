@@ -91,6 +91,9 @@
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2021.0.3</spring.cloud.version>
 
+        <!-- Spring Boot -->
+		<spring.boot.version>2.6.9</spring.boot.version>
+
 		<!-- Spring Framework -->
 		<spring.framework.version>5.3.21</spring.framework.version>
 
@@ -126,6 +129,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
 			<!-- Spring Framework Dependencies -->
 			<dependency>
