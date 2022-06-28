@@ -26,7 +26,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.tencent.cloud.polaris.config.util.SpringInjector;
+import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
@@ -48,14 +48,18 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
 	private static final Set<BeanDefinitionRegistry> PROPERTY_VALUES_PROCESSED_BEAN_FACTORIES = Sets.newConcurrentHashSet();
 	private final PlaceholderHelper placeholderHelper;
 
-	public SpringValueDefinitionProcessor() {
-		placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
+	private final PolarisConfigProperties polarisConfigProperties;
+
+	public SpringValueDefinitionProcessor(PlaceholderHelper placeholderHelper, PolarisConfigProperties polarisConfigProperties) {
+		this.placeholderHelper = placeholderHelper;
+		this.polarisConfigProperties = polarisConfigProperties;
 	}
 
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-		// 默认开启
-		processPropertyValues(registry);
+		if (polarisConfigProperties.isAutoRefresh()) {
+			processPropertyValues(registry);
+		}
 	}
 
 	@Override

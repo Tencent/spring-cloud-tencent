@@ -9,12 +9,12 @@ import java.util.Set;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueDefinition;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueDefinitionProcessor;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
-import com.tencent.cloud.polaris.config.util.SpringInjector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,20 +40,22 @@ public class SpringValueProcessor extends AbstractPolarisProcessor implements Be
 	private final PlaceholderHelper placeholderHelper;
 	private final SpringValueRegistry springValueRegistry;
 
+	private final PolarisConfigProperties polarisConfigProperties;
+
 	private BeanFactory beanFactory;
 	private Multimap<String, SpringValueDefinition> beanName2SpringValueDefinitions;
 
-	public SpringValueProcessor() {
-		placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
-		springValueRegistry = SpringInjector.getInstance(SpringValueRegistry.class);
+	public SpringValueProcessor(PlaceholderHelper placeholderHelper, SpringValueRegistry springValueRegistry, PolarisConfigProperties polarisConfigProperties) {
+		this.placeholderHelper = placeholderHelper;
+		this.springValueRegistry = springValueRegistry;
 		beanName2SpringValueDefinitions = LinkedListMultimap.create();
+		this.polarisConfigProperties = polarisConfigProperties;
 	}
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
-		// 默认开启
-		if (beanFactory instanceof BeanDefinitionRegistry) {
+		if (polarisConfigProperties.isAutoRefresh() && beanFactory instanceof BeanDefinitionRegistry) {
 			beanName2SpringValueDefinitions = SpringValueDefinitionProcessor
 					.getBeanName2SpringValueDefinitions((BeanDefinitionRegistry) beanFactory);
 		}
@@ -62,9 +64,10 @@ public class SpringValueProcessor extends AbstractPolarisProcessor implements Be
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
-		// 默认开启
-		super.postProcessBeforeInitialization(bean, beanName);
-		processBeanPropertyValues(bean, beanName);
+		if (polarisConfigProperties.isAutoRefresh()) {
+			super.postProcessBeforeInitialization(bean, beanName);
+			processBeanPropertyValues(bean, beanName);
+		}
 		return bean;
 	}
 

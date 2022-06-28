@@ -29,8 +29,6 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
-import com.tencent.cloud.polaris.config.util.SpringInjector;
-import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,12 +79,14 @@ public class PolarisPropertySourceAutoRefresher
 	public PolarisPropertySourceAutoRefresher(
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisPropertySourceManager polarisPropertySourceManager,
-			ContextRefresher contextRefresher) {
+			ContextRefresher contextRefresher,
+			SpringValueRegistry springValueRegistry,
+			PlaceholderHelper placeholderHelper) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
 		this.contextRefresher = contextRefresher;
-		this.springValueRegistry = SpringInjector.getInstance(SpringValueRegistry.class);
-		this.placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
+		this.springValueRegistry = springValueRegistry;
+		this.placeholderHelper = placeholderHelper;
 		this.typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
 
 	}
@@ -122,35 +122,30 @@ public class PolarisPropertySourceAutoRefresher
 		// register polaris config publish event
 		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
 			polarisPropertySource.getConfigKVFile()
-					.addChangeListener(new ConfigKVFileChangeListener() {
-						@Override
-						public void onChange(
-								ConfigKVFileChangeEvent configKVFileChangeEvent) {
-							LOGGER.info(
-									"[SCT Config]  received polaris config change event and will refresh spring context."
-											+ "namespace = {}, group = {}, fileName = {}",
-									polarisPropertySource.getNamespace(),
-									polarisPropertySource.getGroup(),
-									polarisPropertySource.getFileName());
+					.addChangeListener((ConfigKVFileChangeListener) configKVFileChangeEvent -> {
+						LOGGER.info(
+								"[SCT Config]  received polaris config change event and will refresh spring context."
+										+ "namespace = {}, group = {}, fileName = {}",
+								polarisPropertySource.getNamespace(),
+								polarisPropertySource.getGroup(),
+								polarisPropertySource.getFileName());
 
-							Map<String, Object> source = polarisPropertySource
-									.getSource();
+						Map<String, Object> source = polarisPropertySource
+								.getSource();
+						for (String changedKey : configKVFileChangeEvent.changedKeys()) {
 
-							for (String changedKey : configKVFileChangeEvent.changedKeys()) {
-
-								// 1. check whether the changed key is relevant
-								Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, changedKey);
-								if (targetValues == null || targetValues.isEmpty()) {
-									continue;
-								}
-
-								// 2. update the value
-								for (SpringValue val : targetValues) {
-									updateSpringValue(val);
-								}
+							// 1. check whether the changed key is relevant
+							Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, changedKey);
+							if (targetValues == null || targetValues.isEmpty()) {
+								continue;
 							}
 
+							// 2. update the value
+							for (SpringValue val : targetValues) {
+								updateSpringValue(val);
+							}
 						}
+
 					});
 		}
 	}
