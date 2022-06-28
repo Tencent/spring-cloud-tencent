@@ -83,7 +83,7 @@ public class PolarisLoadBalancerTest {
 	public void testPolarisLoadBalancer() {
 
 		//mock consumerAPI
-		when(consumerAPI.getHealthyInstancesInstance(any())).thenReturn(this.assembleInstanceResp());
+		when(consumerAPI.getHealthyInstances(any())).thenReturn(this.assembleInstanceResp());
 
 		//mock routerAPI for rule
 		when(routerAPI.processLoadBalance(any())).thenReturn(assembleProcessLoadBalanceResp());
