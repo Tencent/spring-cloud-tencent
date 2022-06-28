@@ -22,3 +22,4 @@
 - [Fix config file format misspell](https://github.com/Tencent/spring-cloud-tencent/pull/319)
 - [UT: improve test coverage for load balancer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/325)
 - [feat:Add GitHub action of codecov.yml.](https://github.com/Tencent/spring-cloud-tencent/pull/328)
+- [Feature: add spring cloud tencent logo](https://github.com/Tencent/spring-cloud-tencent/pull/329)
