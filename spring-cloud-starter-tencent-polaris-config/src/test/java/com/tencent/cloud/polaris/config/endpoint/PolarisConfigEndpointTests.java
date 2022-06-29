@@ -56,8 +56,6 @@ public class PolarisConfigEndpointTests {
 
 	@Test
 	public void polarisConfigEndpoint() {
-		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
-
 
 		Map<String, Object> content = new HashMap<>();
 		content.put("k1", "v1");

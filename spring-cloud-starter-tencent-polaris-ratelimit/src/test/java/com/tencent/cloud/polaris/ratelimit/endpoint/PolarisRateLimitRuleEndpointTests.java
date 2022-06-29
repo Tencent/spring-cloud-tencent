@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.ratelimit.endpoint;
 import java.util.Map;
 
 import com.google.protobuf.StringValue;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.polaris.client.pb.ModelProto;
@@ -54,12 +53,10 @@ public class PolarisRateLimitRuleEndpointTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
-					PolarisContextAutoConfiguration.class,
 					PolarisRateLimitRuleEndpointTests.PolarisRateLimitAutoConfiguration.class,
 					PolarisRateLimitRuleEndpointAutoConfiguration.class,
 					PolarisRateLimitAutoConfiguration.class,
-					PolarisRateLimitAutoConfiguration.class,
-					PolarisContextAutoConfiguration.class))
+					PolarisRateLimitAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")

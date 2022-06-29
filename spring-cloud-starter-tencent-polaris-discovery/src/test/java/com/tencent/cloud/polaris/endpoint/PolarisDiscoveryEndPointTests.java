@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.endpoint;
 import java.util.Map;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
@@ -53,12 +52,10 @@ public class PolarisDiscoveryEndPointTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
-					PolarisContextAutoConfiguration.class,
 					PolarisDiscoveryEndPointTests.PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class,
-					PolarisDiscoveryEndpointAutoConfiguration.class,
-					PolarisContextAutoConfiguration.class))
+					PolarisDiscoveryEndpointAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
