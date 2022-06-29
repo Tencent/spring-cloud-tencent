@@ -13,69 +13,72 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.metadata;
-
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
+package com.tencent.cloud.metadata.core;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilterChain;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 /**
+ * Test for {@link DecodeTransferMetadataReactiveFilter}.
+ *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT,
+@SpringBootTest(webEnvironment = MOCK,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
 		properties = { "spring.config.location = classpath:application-test.yml" })
-public class DecodeTransferMetadataServletFilterTest {
+public class DecodeTransferMetadataReactiveFilterTest {
 
 	@Autowired
 	private MetadataLocalProperties metadataLocalProperties;
 
-	@Autowired
-	private DecodeTransferMetadataServletFilter metadataServletFilter;
+	private DecodeTransferMetadataReactiveFilter metadataReactiveFilter;
+
+	@Before
+	public void setUp() {
+		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter();
+	}
 
 	@Test
-	public void test1() throws ServletException, IOException {
-		// Create mock FilterChain
-		FilterChain filterChain = (servletRequest, servletResponse) -> {
+	public void test1() {
+		Assertions.assertThat(this.metadataReactiveFilter.getOrder())
+				.isEqualTo(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
+	}
 
-		};
+	@Test
+	public void test2() {
+		// Create mock WebFilterChain
+		WebFilterChain webFilterChain = serverWebExchange -> Mono.empty();
 
 		// Mock request
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.addHeader(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"c\": \"3\"}");
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		metadataServletFilter.doFilter(request, response, filterChain);
+		MockServerHttpRequest request = MockServerHttpRequest.get("test")
+				.header(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"c\": \"3\"}")
+				.build();
+		ServerWebExchange exchange = MockServerWebExchange.from(request);
+
+		metadataReactiveFilter.filter(exchange, webFilterChain);
 		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
 				.isEqualTo("1");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
 				.isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
-	}
-
-	@SpringBootApplication
-	protected static class TestApplication {
-
 	}
 
 }

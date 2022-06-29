@@ -17,3 +17,4 @@
 - [feat:Add GitHub action of codecov.yml.](https://github.com/Tencent/spring-cloud-tencent/pull/330)
 - [Feature: add spring cloud tencent logo](https://github.com/Tencent/spring-cloud-tencent/pull/331)
 - [UT: add metadata-transfer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/334)
+- [test:update junit of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/338)
