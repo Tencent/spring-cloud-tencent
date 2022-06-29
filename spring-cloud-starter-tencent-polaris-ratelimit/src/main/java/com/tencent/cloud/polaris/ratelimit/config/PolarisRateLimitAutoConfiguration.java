@@ -19,8 +19,8 @@
 package com.tencent.cloud.polaris.ratelimit.config;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
