@@ -16,39 +16,57 @@
  *
  */
 
-package com.tencent.cloud.polaris.router.spi;
+package com.tencent.cloud.common.spi;
 
 import java.util.Collections;
 import java.util.Map;
-
-import feign.RequestTemplate;
-
-import org.springframework.core.Ordered;
-import org.springframework.http.HttpRequest;
+import java.util.Set;
 
 /**
- * The spi for resolving labels from request.
  *
- * @author lepdou 2022-05-11
+ * Instance's custom metadata, metadata will be register to polaris server.
+ * @author lepdou 2022-06-16
  */
-public interface RouterLabelResolver extends Ordered {
+public interface InstanceMetadataProvider {
 
 	/**
-	 * resolve labels from feign request.
-	 * @param requestTemplate the feign request.
-	 * @return resolved labels
+	 * @return the metadata of instance.
 	 */
-	default Map<String, String> resolve(RequestTemplate requestTemplate) {
+	default Map<String, String> getMetadata() {
 		return Collections.emptyMap();
 	}
 
 	/**
-	 * resolve labels from rest template request.
-	 * @param request the rest template request.
-	 * @param body the rest template request body.
-	 * @return resolved labels
+	 * @return the keys of transitive metadata.
 	 */
-	default Map<String, String> resolve(HttpRequest request, byte[] body) {
-		return Collections.emptyMap();
+	default Set<String> getTransitiveMetadataKeys() {
+		return Collections.emptySet();
+	}
+
+	/**
+	 * The region of current instance.
+	 *
+	 * @return the region info.
+	 */
+	default String getRegion() {
+		return "";
+	}
+
+	/**
+	 * The zone of current instance.
+	 *
+	 * @return the zone info.
+	 */
+	default String getZone() {
+		return "";
+	}
+
+	/**
+	 * The campus/datacenter of current instance.
+	 *
+	 * @return the campus or datacenter info.
+	 */
+	default String getCampus() {
+		return "";
 	}
 }

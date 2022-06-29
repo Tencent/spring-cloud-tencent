@@ -18,3 +18,5 @@
 - [Feature: add spring cloud tencent logo](https://github.com/Tencent/spring-cloud-tencent/pull/331)
 - [UT: add metadata-transfer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/334)
 - [Optimize code style & unit test case](https://github.com/Tencent/spring-cloud-tencent/pull/337)
+- [test:update junit of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/338)
+- [Feature: Optimize static metadata manager](https://github.com/Tencent/spring-cloud-tencent/pull/341)
