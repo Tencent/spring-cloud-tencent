@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.discovery.reactive;
 
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.AfterClass;

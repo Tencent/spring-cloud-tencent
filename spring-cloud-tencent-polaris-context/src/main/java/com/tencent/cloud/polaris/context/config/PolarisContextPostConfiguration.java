@@ -16,20 +16,24 @@
  *
  */
 
-package com.tencent.cloud.polaris.context;
+package com.tencent.cloud.polaris.context.config;
 
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.polaris.context.PostInitPolarisSDKContext;
 import com.tencent.polaris.client.api.SDKContext;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Bootstrap autoconfiguration for Polaris {@link SDKContext}.
- *
- * @author Haotian Zhang
+ * Post-initialization operations after the application initialization phase is completed.
+ *@author lepdou 2022-06-28
  */
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import(PolarisContextAutoConfiguration.class)
-public class PolarisContextBootstrapAutoConfiguration {
+@Configuration
+public class PolarisContextPostConfiguration {
 
+	@Bean
+	public PostInitPolarisSDKContext postInitPolarisSDKContext(SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
+		return new PostInitPolarisSDKContext(sdkContext, staticMetadataManager);
+	}
 }
