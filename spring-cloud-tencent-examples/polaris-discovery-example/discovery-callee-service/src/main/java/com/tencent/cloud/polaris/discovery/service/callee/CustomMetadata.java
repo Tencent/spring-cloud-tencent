@@ -21,7 +21,7 @@ package com.tencent.cloud.polaris.discovery.service.callee;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.polaris.context.spi.InstanceMetadataProvider;
+import com.tencent.cloud.common.spi.InstanceMetadataProvider;
 
 import org.springframework.stereotype.Component;
 
@@ -40,17 +40,7 @@ public class CustomMetadata implements InstanceMetadataProvider {
 	}
 
 	@Override
-	public String getRegion() {
-		return "shanghai";
-	}
-
-	@Override
 	public String getZone() {
-		return null;
-	}
-
-	@Override
-	public String getCampus() {
-		return null;
+		return "shanghai-zone-1";
 	}
 }

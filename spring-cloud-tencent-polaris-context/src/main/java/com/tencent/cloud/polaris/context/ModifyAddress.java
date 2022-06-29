@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.util.AddressUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.lang.StringUtils;
 
