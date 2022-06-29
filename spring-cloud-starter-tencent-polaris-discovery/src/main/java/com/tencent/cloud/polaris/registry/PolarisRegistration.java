@@ -26,7 +26,6 @@ import java.util.Map;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-import com.tencent.cloud.polaris.context.spi.InstanceMetadataProvider;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
@@ -53,8 +52,6 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	private final StaticMetadataManager staticMetadataManager;
 
-	private final InstanceMetadataProvider instanceMetadataProvider;
-
 	private Map<String, String> metadata;
 
 	private final String host;
@@ -62,13 +59,11 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 	public PolarisRegistration(
 			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
 			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context,
-			StaticMetadataManager staticMetadataManager,
-			InstanceMetadataProvider instanceMetadataProvider) {
+			StaticMetadataManager staticMetadataManager) {
 		this.discoveryPropertiesAutoConfiguration = discoveryPropertiesAutoConfiguration;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisContext = context;
 		this.staticMetadataManager = staticMetadataManager;
-		this.instanceMetadataProvider = instanceMetadataProvider;
 
 		host = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 	}
@@ -116,23 +111,6 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 			// location info will be putted both in metadata and instance's field
 			instanceMetadata.putAll(staticMetadataManager.getLocationMetadata());
-
-			// custom metadata from spi
-			if (instanceMetadataProvider != null) {
-				if (StringUtils.isNotBlank(instanceMetadataProvider.getRegion())) {
-					instanceMetadata.put(StaticMetadataManager.LOCATION_KEY_ZONE, instanceMetadataProvider.getRegion());
-				}
-				if (StringUtils.isNotBlank(instanceMetadataProvider.getZone())) {
-					instanceMetadata.put(StaticMetadataManager.LOCATION_KEY_ZONE, instanceMetadataProvider.getZone());
-				}
-				if (StringUtils.isNotBlank(instanceMetadataProvider.getCampus())) {
-					instanceMetadata.put(StaticMetadataManager.LOCATION_KEY_ZONE, instanceMetadataProvider.getCampus());
-				}
-
-				if (!CollectionUtils.isEmpty(instanceMetadataProvider.getMetadata())) {
-					instanceMetadata.putAll(instanceMetadataProvider.getMetadata());
-				}
-			}
 
 			this.metadata = Collections.unmodifiableMap(instanceMetadata);
 		}
