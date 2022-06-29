@@ -16,20 +16,20 @@
  *
  */
 
-package com.tencent.cloud.polaris.context;
+package com.tencent.cloud.polaris.router.example;
 
-import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.cloud.common.spi.InstanceMetadataProvider;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Component;
 
 /**
- * Bootstrap autoconfiguration for Polaris {@link SDKContext}.
- *
- * @author Haotian Zhang
+ *@author lepdou 2022-06-29
  */
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import(PolarisContextAutoConfiguration.class)
-public class PolarisContextBootstrapAutoConfiguration {
+@Component
+public class CustomMetadataProvider implements InstanceMetadataProvider {
 
+	@Override
+	public String getRegion() {
+		return "huadong";
+	}
 }

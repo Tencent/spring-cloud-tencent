@@ -16,40 +16,20 @@
  *
  */
 
-package com.tencent.cloud.polaris.context.spi;
+package com.tencent.cloud.polaris.context.config;
 
-import java.util.Map;
+import com.tencent.polaris.client.api.SDKContext;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Import;
 
 /**
+ * Bootstrap autoconfiguration for Polaris {@link SDKContext}.
  *
- * Instance's custom metadata, metadata will be register to polaris server.
- * @author lepdou 2022-06-16
+ * @author Haotian Zhang
  */
-public interface InstanceMetadataProvider {
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
+@Import(PolarisContextAutoConfiguration.class)
+public class PolarisContextBootstrapAutoConfiguration {
 
-	/**
-	 * @return the metadata of instance.
-	 */
-	Map<String, String> getMetadata();
-
-	/**
-	 * The region of current instance.
-	 *
-	 * @return the region info.
-	 */
-	String getRegion();
-
-	/**
-	 * The zone of current instance.
-	 *
-	 * @return the zone info.
-	 */
-	String getZone();
-
-	/**
-	 * The campus/datacenter of current instance.
-	 *
-	 * @return the campus or datacenter info.
-	 */
-	String getCampus();
 }
