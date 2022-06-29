@@ -24,3 +24,4 @@
     & [optimize polaris load balancer test code format](https://github.com/Tencent/spring-cloud-tencent/pull/333)
 - [feat:Add GitHub action of codecov.yml.](https://github.com/Tencent/spring-cloud-tencent/pull/328)
 - [Feature: add spring cloud tencent logo](https://github.com/Tencent/spring-cloud-tencent/pull/329)
+- [test:update junit of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/340)
