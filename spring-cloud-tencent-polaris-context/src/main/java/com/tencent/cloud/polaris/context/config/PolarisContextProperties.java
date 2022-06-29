@@ -16,13 +16,14 @@
  *
  */
 
-package com.tencent.cloud.polaris.context;
+package com.tencent.cloud.polaris.context.config;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.ConfigProvider;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.factory.ConfigAPIFactory;
