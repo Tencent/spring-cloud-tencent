@@ -20,7 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker.config;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisResponseErrorHandler;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateModifier;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateResponseErrorHandler;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 
 import org.springframework.beans.factory.annotation.Autowired;

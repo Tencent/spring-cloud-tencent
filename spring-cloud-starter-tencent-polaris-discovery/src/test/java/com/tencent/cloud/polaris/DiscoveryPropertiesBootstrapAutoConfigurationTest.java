@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris;
 
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
