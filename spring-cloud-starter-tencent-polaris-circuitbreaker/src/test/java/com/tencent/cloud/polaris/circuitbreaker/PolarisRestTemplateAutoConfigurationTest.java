@@ -21,7 +21,7 @@ package com.tencent.cloud.polaris.circuitbreaker;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisRestTemplateAutoConfiguration;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateModifier;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateResponseErrorHandler;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
