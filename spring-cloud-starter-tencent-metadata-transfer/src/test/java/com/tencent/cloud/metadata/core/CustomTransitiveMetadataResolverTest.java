@@ -13,14 +13,12 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.metadata;
+package com.tencent.cloud.metadata.core;
 
 import java.util.Map;
 
-import com.tencent.cloud.metadata.core.CustomTransitiveMetadataResolver;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -30,6 +28,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 
 /**
  * Test for {@link CustomTransitiveMetadataResolver}.
+ *
  * @author quan
  */
 public class CustomTransitiveMetadataResolverTest {
