@@ -27,7 +27,6 @@ import feign.RequestTemplate;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
 
 /**
  *
@@ -59,10 +58,6 @@ public class CustomRouterLabelResolver implements RouterLabelResolver {
 		return labels;
 	}
 
-	@Override
-	public Map<String, String> resolve(ServerWebExchange exchange) {
-		return null;
-	}
 
 	@Override
 	public int getOrder() {
