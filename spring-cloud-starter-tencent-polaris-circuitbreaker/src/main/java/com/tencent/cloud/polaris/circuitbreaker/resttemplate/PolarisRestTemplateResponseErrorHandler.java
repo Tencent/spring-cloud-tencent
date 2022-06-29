@@ -47,7 +47,7 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisRestTemplateResponseErrorHandler.class);
 
-	private static final String FILE_NAME = "connection";
+	private static final String FIELD_NAME = "connection";
 
 	private final ConsumerAPI consumerAPI;
 
@@ -77,7 +77,7 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response) throws IOException {
 		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
-			HttpURLConnection connection = (HttpURLConnection) ReflectionUtils.getFieldValue(response, FILE_NAME);
+			HttpURLConnection connection = (HttpURLConnection) ReflectionUtils.getFieldValue(response, FIELD_NAME);
 			if (connection != null) {
 				URL realURL = connection.getURL();
 				resultRequest.setHost(realURL.getHost());
