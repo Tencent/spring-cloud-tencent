@@ -16,13 +16,14 @@
  *
  */
 
-package com.tencent.cloud.polaris.context;
+package com.tencent.cloud.polaris.context.config;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.ConfigProvider;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.factory.ConfigAPIFactory;
@@ -66,7 +67,7 @@ public class PolarisContextProperties {
 	 */
 	private String service;
 
-	protected Configuration configuration(Environment environment, List<PolarisConfigModifier> modifierList) {
+	public Configuration configuration(Environment environment, List<PolarisConfigModifier> modifierList) {
 		// 1. Read user-defined polaris.yml configuration
 		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
 				.defaultConfig(ConfigProvider.DEFAULT_CONFIG);

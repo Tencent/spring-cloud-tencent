@@ -16,31 +16,24 @@
  *
  */
 
-package com.tencent.cloud.polaris.discovery.service.callee;
+package com.tencent.cloud.polaris.context.config;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.polaris.context.PostInitPolarisSDKContext;
+import com.tencent.polaris.client.api.SDKContext;
 
-import com.tencent.cloud.common.spi.InstanceMetadataProvider;
-
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * custom metadata for instance.
- *@author lepdou 2022-06-16
+ * Post-initialization operations after the application initialization phase is completed.
+ *@author lepdou 2022-06-28
  */
-@Component
-public class CustomMetadata implements InstanceMetadataProvider {
+@Configuration
+public class PolarisContextPostConfiguration {
 
-	@Override
-	public Map<String, String> getMetadata() {
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("k1", "v1");
-		return metadata;
-	}
-
-	@Override
-	public String getZone() {
-		return "shanghai-zone-1";
+	@Bean
+	public PostInitPolarisSDKContext postInitPolarisSDKContext(SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
+		return new PostInitPolarisSDKContext(sdkContext, staticMetadataManager);
 	}
 }
