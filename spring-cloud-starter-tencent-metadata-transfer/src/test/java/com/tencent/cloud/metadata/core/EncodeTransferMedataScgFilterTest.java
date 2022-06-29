@@ -13,10 +13,9 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.metadata.core.filter;
+package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -24,7 +23,6 @@ import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataScgFilter;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +41,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 /**
  * Test for {@link EncodeTransferMedataScgFilter}.
+ *
  * @author quan
  */
 @RunWith(SpringRunner.class)
