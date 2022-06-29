@@ -31,6 +31,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
 
+import javax.annotation.PreDestroy;
+
 import static com.tencent.cloud.polaris.discovery.refresh.PolarisServiceStatusChangeListener.INDEX;
 
 /**
@@ -82,5 +84,10 @@ public class PolarisRefreshApplicationReadyEventListener implements ApplicationL
 	@Override
 	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
 		this.publisher = applicationEventPublisher;
+	}
+
+	@PreDestroy
+	public void destroy() {
+		refreshExecutor.shutdown();
 	}
 }
