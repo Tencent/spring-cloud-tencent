@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.polaris.config.endpoint;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +34,11 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
  *
  * @author shuiqingliu
  **/
-
 @Endpoint(id = "polaris-config")
 public class PolarisConfigEndpoint {
 
-	private PolarisConfigProperties polarisConfigProperties;
-	private PolarisPropertySourceManager polarisPropertySourceManager;
+	private final PolarisConfigProperties polarisConfigProperties;
+	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
 	public PolarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
 		this.polarisConfigProperties = polarisConfigProperties;

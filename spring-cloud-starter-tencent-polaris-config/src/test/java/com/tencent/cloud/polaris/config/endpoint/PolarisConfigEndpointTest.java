@@ -16,9 +16,7 @@
  *
  */
 
-
 package com.tencent.cloud.polaris.config.endpoint;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,12 +40,11 @@ import static org.mockito.Mockito.when;
  * @author shuiqingliu
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PolarisConfigEndpointTests {
+public class PolarisConfigEndpointTest {
 
 	private final String testNamespace = "testNamespace";
 	private final String testServiceName = "testServiceName";
 	private final String testFileName = "application.properties";
-
 
 	@Mock
 	private PolarisConfigProperties polarisConfigProperties;
@@ -55,8 +52,7 @@ public class PolarisConfigEndpointTests {
 	private PolarisPropertySourceManager polarisPropertySourceManager;
 
 	@Test
-	public void polarisConfigEndpoint() {
-
+	public void testPolarisConfigEndpoint() {
 		Map<String, Object> content = new HashMap<>();
 		content.put("k1", "v1");
 		content.put("k2", "v2");
@@ -70,7 +66,5 @@ public class PolarisConfigEndpointTests {
 		Map<String, Object> info = endpoint.polarisConfig();
 		assertThat(polarisConfigProperties).isEqualTo(info.get("PolarisConfigProperties"));
 		assertThat(Lists.newArrayList(polarisPropertySource)).isEqualTo(info.get("PolarisPropertySource"));
-
-
 	}
 }

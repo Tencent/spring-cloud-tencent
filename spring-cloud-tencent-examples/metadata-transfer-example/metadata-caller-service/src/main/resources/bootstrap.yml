@@ -29,4 +29,4 @@ management:
     web:
       exposure:
         include:
-          - metadata
+          - polaris-metadata

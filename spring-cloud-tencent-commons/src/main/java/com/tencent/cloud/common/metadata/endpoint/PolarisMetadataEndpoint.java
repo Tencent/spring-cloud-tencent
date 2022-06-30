@@ -26,28 +26,28 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
 /**
- * Endpoint of metadata.
+ * Endpoint of polaris's metadata.
  *
  * @author shuiqingliu
  **/
-
-@Endpoint(id = "metadata")
-public class MetadataEndpoint {
+@Endpoint(id = "polaris-metadata")
+public class PolarisMetadataEndpoint {
 
 	private final StaticMetadataManager staticMetadataManager;
 
-	public MetadataEndpoint(StaticMetadataManager staticMetadataManager) {
+	public PolarisMetadataEndpoint(StaticMetadataManager staticMetadataManager) {
 		this.staticMetadataManager = staticMetadataManager;
 	}
 
 	@ReadOperation
-	public Map<String, Object> metadate() {
+	public Map<String, Object> metadata() {
 		Map<String, Object>  result = new HashMap<>();
 		result.put("Env", staticMetadataManager.getAllEnvMetadata());
 		result.put("EnvTransitive", staticMetadataManager.getEnvTransitiveMetadata());
 		result.put("ConfigTransitive", staticMetadataManager.getConfigTransitiveMetadata());
 		result.put("Config", staticMetadataManager.getAllConfigMetadata());
 		result.put("MergeStatic", staticMetadataManager.getMergedStaticMetadata());
+		result.put("CustomSPI", staticMetadataManager.getCustomSPITransitiveMetadata());
 		result.put("zone", staticMetadataManager.getZone());
 		result.put("region", staticMetadataManager.getRegion());
 		result.put("campus", staticMetadataManager.getCampus());

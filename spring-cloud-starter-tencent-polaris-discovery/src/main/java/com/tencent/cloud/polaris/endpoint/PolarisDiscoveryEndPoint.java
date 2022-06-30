@@ -17,18 +17,20 @@
 
 package com.tencent.cloud.polaris.endpoint;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.polaris.api.pojo.ServiceInstances;
+import com.tencent.polaris.api.rpc.InstancesResponse;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
 /**
@@ -39,14 +41,13 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 @Endpoint(id = "polaris-discovery")
 public class PolarisDiscoveryEndPoint {
 
-	private PolarisDiscoveryProperties polarisDiscoveryProperties;
+	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
+	private final DiscoveryClient polarisDiscoveryClient;
+	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
-	private DiscoveryClient polarisDiscoveryClient;
-
-
-	public PolarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties, DiscoveryClient polarisDiscoveryClient) {
+	public PolarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties, DiscoveryClient polarisDiscoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
-		this.polarisDiscoveryClient = polarisDiscoveryClient;
+		this.polarisDiscoveryClient = polarisDiscoveryClient; this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 	}
 
 	@ReadOperation
@@ -54,19 +55,24 @@ public class PolarisDiscoveryEndPoint {
 		Map<String, Object> polarisDisConveryInfo = new HashMap<>();
 		polarisDisConveryInfo.put("PolarisDiscoveryProperties", polarisDiscoveryProperties);
 
-		List<ServiceInstance> serviceInstanceInfoList = Collections.emptyList();
+		List<ServiceInstances> serviceInstancesInfoList = new ArrayList<>();
 
 		if (StringUtils.isNotEmpty(serviceId)) {
-			serviceInstanceInfoList = polarisDiscoveryClient.getInstances(serviceId);
-			polarisDisConveryInfo.put("ServiceInstance", serviceInstanceInfoList);
-			return polarisDisConveryInfo;
+			ServiceInstances serviceInstances = getServiceInstances(serviceId);
+			serviceInstancesInfoList.add(serviceInstances);
+			polarisDisConveryInfo.put("ServiceInstances", serviceInstancesInfoList); return polarisDisConveryInfo;
 		}
 
 		for (String service : polarisDiscoveryClient.getServices()) {
-			serviceInstanceInfoList.addAll(polarisDiscoveryClient.getInstances(service));
+			ServiceInstances serviceInstances = getServiceInstances(service);
+			serviceInstancesInfoList.add(serviceInstances);
 		}
 
-		polarisDisConveryInfo.put("ServiceInstance", serviceInstanceInfoList);
-		return polarisDisConveryInfo;
+		polarisDisConveryInfo.put("ServiceInstances", serviceInstancesInfoList); return polarisDisConveryInfo;
+	}
+
+	private ServiceInstances getServiceInstances(String serviceId) {
+		InstancesResponse instancesResponse = polarisDiscoveryHandler.getHealthyInstances(serviceId);
+		ServiceInstances serviceInstances = instancesResponse.toServiceInstances(); return serviceInstances;
 	}
 }

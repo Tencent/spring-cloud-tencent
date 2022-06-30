@@ -44,9 +44,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- *	Test for polaris rete limit rule endpoint.
+ * Test for polaris rete limit rule endpoint.
  *
- *  @author shuiqingliu
+ * @author shuiqingliu
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisRateLimitRuleEndpointTests {
@@ -65,7 +65,6 @@ public class PolarisRateLimitRuleEndpointTests {
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
 	private ServiceRuleManager serviceRuleManager;
-
 	private PolarisRateLimitProperties polarisRateLimitProperties;
 
 	@Before
@@ -96,14 +95,12 @@ public class PolarisRateLimitRuleEndpointTests {
 	}
 
 	@Test
-	public void polarisRateLimit() {
-
+	public void testPolarisRateLimit() {
 		this.contextRunner.run(context -> polarisRateLimitProperties = context.getBean(PolarisRateLimitProperties.class));
 		PolarisRateLimitRuleEndpoint polarisRateLimitRuleEndpoint = new PolarisRateLimitRuleEndpoint(serviceRuleManager, polarisRateLimitProperties);
 		Map<String, Object> rateLimit = polarisRateLimitRuleEndpoint.rateLimit("namespaceTest", "TestApp2", "TestApp3");
 		assertThat(polarisRateLimitProperties).isEqualTo(rateLimit.get("properties"));
 	}
-
 
 	@Configuration
 	@EnableAutoConfiguration

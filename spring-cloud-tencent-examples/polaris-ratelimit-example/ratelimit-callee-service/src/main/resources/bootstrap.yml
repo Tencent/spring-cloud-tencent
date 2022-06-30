@@ -18,4 +18,4 @@ management:
     web:
       exposure:
         include:
-          - ratelimit
+          - polaris-ratelimit

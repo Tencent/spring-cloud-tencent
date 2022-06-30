@@ -32,19 +32,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
- *	Test for polaris metadata endpoint.
+ * Test for polaris metadata endpoint.
  *
- *  @author shuiqingliu
+ * @author shuiqingliu
  */
 @RunWith(MockitoJUnitRunner.class)
-public class MetadataEndpointTests {
+public class PolarisMetadataEndpointTests {
 
 	@Mock
 	private StaticMetadataManager staticMetadataManager;
 
 	@Test
-	public void metadataEndpoint() {
-
+	public void testPolarisMetadataEndpoint() {
 		Map<String, String> envMetadata = new HashMap<>();
 		envMetadata.put("k1", "v1");
 		envMetadata.put("k2", "v2");
@@ -52,9 +51,8 @@ public class MetadataEndpointTests {
 
 		when(staticMetadataManager.getAllEnvMetadata()).thenReturn(envMetadata);
 
-
-		MetadataEndpoint metadataEndpoint = new MetadataEndpoint(staticMetadataManager);
-		Map<String, Object> metaMap =  metadataEndpoint.metadate();
+		PolarisMetadataEndpoint polarisMetadataEndpoint = new PolarisMetadataEndpoint(staticMetadataManager);
+		Map<String, Object> metaMap = polarisMetadataEndpoint.metadata();
 		assertThat(envMetadata).isEqualTo(metaMap.get("Env"));
 	}
 }

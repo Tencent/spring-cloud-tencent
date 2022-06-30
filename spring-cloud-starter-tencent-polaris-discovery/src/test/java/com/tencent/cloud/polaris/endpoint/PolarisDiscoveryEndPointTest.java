@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package com.tencent.cloud.polaris.endpoint;
 
 import java.util.Map;
@@ -24,6 +23,7 @@ import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
+import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -42,17 +42,17 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- *	Test for polaris discovery endpoint.
+ * Test for polaris discovery endpoint.
  *
- *  @author shuiqingliu
+ * @author shuiqingliu
  */
-public class PolarisDiscoveryEndPointTests {
+public class PolarisDiscoveryEndPointTest {
 
 	private static NamingServer namingServer;
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
-					PolarisDiscoveryEndPointTests.PolarisPropertiesConfiguration.class,
+					PolarisDiscoveryEndPointTest.PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class,
 					PolarisDiscoveryEndpointAutoConfiguration.class))
@@ -75,15 +75,15 @@ public class PolarisDiscoveryEndPointTests {
 		}
 	}
 
-
 	@Test
-	public void polarisDiscoveryEndpoint() {
+	public void testPolarisDiscoveryEndpoint() {
 		this.contextRunner.run(context -> {
 			PolarisDiscoveryProperties polarisDiscoveryProperties = context
 					.getBean(PolarisDiscoveryProperties.class);
 			DiscoveryClient discoveryClient = context
 					.getBean(PolarisDiscoveryClient.class);
-			PolarisDiscoveryEndPoint polarisDiscoveryEndPoint = new PolarisDiscoveryEndPoint(polarisDiscoveryProperties, discoveryClient);
+			PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
+			PolarisDiscoveryEndPoint polarisDiscoveryEndPoint = new PolarisDiscoveryEndPoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
 
 			Map<String, Object> mapInfo = polarisDiscoveryEndPoint.polarisDiscovery("java_provider_test");
 
@@ -91,7 +91,6 @@ public class PolarisDiscoveryEndPointTests {
 
 		});
 	}
-
 
 	@Configuration
 	@EnableAutoConfiguration

@@ -35,17 +35,15 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 /**
- *	Endpoint of Polaris RateLimit rule.
+ * Endpoint of Polaris RateLimit rule.
  *
  * @author shuiqingliu
  **/
-
-@Endpoint(id = "ratelimit")
+@Endpoint(id = "polaris-ratelimit")
 public class PolarisRateLimitRuleEndpoint {
 
-	private ServiceRuleManager serviceRuleManager;
-
-	private PolarisRateLimitProperties polarisRateLimitProperties;
+	private final ServiceRuleManager serviceRuleManager;
+	private final PolarisRateLimitProperties polarisRateLimitProperties;
 
 	public PolarisRateLimitRuleEndpoint(ServiceRuleManager serviceRuleManager, PolarisRateLimitProperties polarisRateLimitProperties) {
 		this.serviceRuleManager = serviceRuleManager;

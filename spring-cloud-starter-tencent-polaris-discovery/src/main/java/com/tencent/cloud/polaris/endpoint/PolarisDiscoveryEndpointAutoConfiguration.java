@@ -19,9 +19,9 @@ package com.tencent.cloud.polaris.endpoint;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
+import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -34,14 +34,15 @@ import org.springframework.context.annotation.Configuration;
  * @author shuiqingliu
  **/
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Endpoint.class)
+@ConditionalOnClass(PolarisDiscoveryEndPoint.class)
 @ConditionalOnPolarisDiscoveryEnabled
 public class PolarisDiscoveryEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
-	public PolarisDiscoveryEndPoint polarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties, DiscoveryClient discoveryClient) {
-		return new PolarisDiscoveryEndPoint(polarisDiscoveryProperties, discoveryClient);
+	public PolarisDiscoveryEndPoint polarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties,
+			DiscoveryClient discoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
+		return new PolarisDiscoveryEndPoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
 	}
 }
