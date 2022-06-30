@@ -168,8 +168,7 @@ public class MetadataTransferAutoConfiguration {
 					List<ClientHttpRequestInterceptor> interceptors = restTemplate
 							.getInterceptors();
 					// Avoid setting interceptor repeatedly.
-					if (null != interceptors && !interceptors
-							.contains(encodeTransferMedataRestTemplateInterceptor)) {
+					if (!interceptors.contains(encodeTransferMedataRestTemplateInterceptor)) {
 						interceptors.add(encodeTransferMedataRestTemplateInterceptor);
 						restTemplate.setInterceptors(interceptors);
 					}
@@ -207,10 +206,8 @@ public class MetadataTransferAutoConfiguration {
 					List<ClientHttpRequestInterceptor> interceptors = restTemplate
 							.getInterceptors();
 					// Avoid setting interceptor repeatedly.
-					if (null != interceptors && !interceptors
-							.contains(encodeTransferMedataRestTemplateInterceptor)) {
-						interceptors
-								.add(this.encodeTransferMedataRestTemplateInterceptor);
+					if (!interceptors.contains(encodeTransferMedataRestTemplateInterceptor)) {
+						interceptors.add(this.encodeTransferMedataRestTemplateInterceptor);
 						restTemplate.setInterceptors(interceptors);
 					}
 				}
