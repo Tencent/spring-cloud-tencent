@@ -21,4 +21,5 @@
 - [test:update junit of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/338)
 - [Feature: Optimize static metadata manager](https://github.com/Tencent/spring-cloud-tencent/pull/341)
 - [fix: shutdown thread pool before the container closes](https://github.com/Tencent/spring-cloud-tencent/pull/354)
+- [rm code: Condition 'null != interceptors' is always 'true' ](https://github.com/Tencent/spring-cloud-tencent/pull/356)
 - [docs:update logo in README.](https://github.com/Tencent/spring-cloud-tencent/pull/359)
