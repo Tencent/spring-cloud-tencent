@@ -47,7 +47,8 @@ public class PolarisDiscoveryEndPoint {
 
 	public PolarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties, DiscoveryClient polarisDiscoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
-		this.polarisDiscoveryClient = polarisDiscoveryClient; this.polarisDiscoveryHandler = polarisDiscoveryHandler;
+		this.polarisDiscoveryClient = polarisDiscoveryClient;
+		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 	}
 
 	@ReadOperation
@@ -60,7 +61,8 @@ public class PolarisDiscoveryEndPoint {
 		if (StringUtils.isNotEmpty(serviceId)) {
 			ServiceInstances serviceInstances = getServiceInstances(serviceId);
 			serviceInstancesInfoList.add(serviceInstances);
-			polarisDisConveryInfo.put("ServiceInstances", serviceInstancesInfoList); return polarisDisConveryInfo;
+			polarisDisConveryInfo.put("ServiceInstances", serviceInstancesInfoList);
+			return polarisDisConveryInfo;
 		}
 
 		for (String service : polarisDiscoveryClient.getServices()) {
@@ -68,11 +70,13 @@ public class PolarisDiscoveryEndPoint {
 			serviceInstancesInfoList.add(serviceInstances);
 		}
 
-		polarisDisConveryInfo.put("ServiceInstances", serviceInstancesInfoList); return polarisDisConveryInfo;
+		polarisDisConveryInfo.put("ServiceInstances", serviceInstancesInfoList);
+		return polarisDisConveryInfo;
 	}
 
 	private ServiceInstances getServiceInstances(String serviceId) {
 		InstancesResponse instancesResponse = polarisDiscoveryHandler.getHealthyInstances(serviceId);
-		ServiceInstances serviceInstances = instancesResponse.toServiceInstances(); return serviceInstances;
+		ServiceInstances serviceInstances = instancesResponse.toServiceInstances();
+		return serviceInstances;
 	}
 }
