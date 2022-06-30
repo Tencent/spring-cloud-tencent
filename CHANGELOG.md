@@ -29,3 +29,4 @@
 - [Optimize code style & unit test case](https://github.com/Tencent/spring-cloud-tencent/pull/336)
 - [rm code: Condition 'null != interceptors' is always 'true' ](https://github.com/Tencent/spring-cloud-tencent/pull/342)
 - [fix: shutdown thread pool before the container closes](https://github.com/Tencent/spring-cloud-tencent/pull/353)
+- [docs:update logo in README.](https://github.com/Tencent/spring-cloud-tencent/pull/358)
