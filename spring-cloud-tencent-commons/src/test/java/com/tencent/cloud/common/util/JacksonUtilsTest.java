@@ -18,15 +18,16 @@
 
 package com.tencent.cloud.common.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test for {@link JacksonUtils}.
@@ -42,34 +43,27 @@ public class JacksonUtilsTest {
 		sourceMap.put("k1", "v1");
 		sourceMap.put("k2", "v2");
 		sourceMap.put("k3", "v3");
-
-		String jsonStr = JacksonUtils.serialize2Json(sourceMap);
-
-		assertThat(jsonStr).isEqualTo("{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}");
+		assertEquals(JacksonUtils.serialize2Json(sourceMap), "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}");
 	}
 
 	@Test
 	public void testDeserialize2Map() {
 		String jsonStr = "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}";
 		Map<String, String> map = JacksonUtils.deserialize2Map(jsonStr);
-		assertThat(map.size()).isEqualTo(3);
-		assertThat(map.get("k1")).isEqualTo("v1");
-		assertThat(map.get("k2")).isEqualTo("v2");
-		assertThat(map.get("k3")).isEqualTo("v3");
+		assertEquals(map.size(), 3);
+		assertEquals(map.get("k1"), "v1");
+		assertEquals(map.get("k2"), "v2");
+		assertEquals(map.get("k3"), "v3");
+	}
 
-		assertThat(JacksonUtils.deserialize2Map("")).isNotNull();
-		assertThat(JacksonUtils.deserialize2Map("")).isEmpty();
+	@Test
+	public void testDeserializeBlankIntoEmptyMap() {
+		assertTrue(JacksonUtils.deserialize2Map("").isEmpty());
+	}
 
-		jsonStr = "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"";
-		try {
-			JacksonUtils.deserialize2Map(jsonStr);
-			fail("RuntimeException should be thrown.");
-		}
-		catch (RuntimeException exception) {
-			assertThat(exception.getMessage()).isEqualTo("Json to map failed.");
-		}
-		catch (Throwable throwable) {
-			fail("RuntimeException should be thrown.");
-		}
+	@Test
+	public void testDeserializeThrowsRuntimeException() {
+		String jsonStr = "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"";
+		assertThrows(RuntimeException.class, () -> JacksonUtils.deserialize2Map(jsonStr), "Json to map failed.");
 	}
 }
