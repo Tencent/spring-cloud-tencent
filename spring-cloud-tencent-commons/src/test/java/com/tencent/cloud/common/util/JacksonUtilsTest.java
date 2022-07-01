@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class JacksonUtilsTest {
-	
+
 	@Test
 	public void testSerialize2Json() {
 		Map<String, String> sourceMap = new HashMap<>();
@@ -44,7 +44,7 @@ public class JacksonUtilsTest {
 		sourceMap.put("k3", "v3");
 		assertThat(JacksonUtils.serialize2Json(sourceMap)).isEqualTo("{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}");
 	}
-	
+
 	@Test
 	public void testDeserialize2Map() {
 		String jsonStr = "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}";
@@ -54,14 +54,14 @@ public class JacksonUtilsTest {
 		assertThat(map.get("k2")).isEqualTo("v2");
 		assertThat(map.get("k3")).isEqualTo("v3");
 	}
-	
+
 	@Test
 	public void testDeserializeBlankIntoEmptyMap() {
 		Map<String, String> map = JacksonUtils.deserialize2Map("");
 		assertThat(map).isNotNull();
 		assertThat(map).isEmpty();
 	}
-	
+
 	@Test
 	public void testDeserializeThrowsRuntimeException() {
 		String jsonStr = "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"";
