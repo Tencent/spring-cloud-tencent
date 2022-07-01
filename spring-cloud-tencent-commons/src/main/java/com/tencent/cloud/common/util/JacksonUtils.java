@@ -17,17 +17,18 @@
 
 package com.tencent.cloud.common.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.util.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Utils for Jackson.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 public final class JacksonUtils {
 
