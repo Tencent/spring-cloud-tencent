@@ -19,6 +19,7 @@
 - [UT: add metadata-transfer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/334)
 - [Optimize code style & unit test case](https://github.com/Tencent/spring-cloud-tencent/pull/337)
 - [test:update junit of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/338)
+- [Feature: support actuator for sct core components](https://github.com/Tencent/spring-cloud-tencent/pull/343)
 - [Feature: Optimize static metadata manager](https://github.com/Tencent/spring-cloud-tencent/pull/341)
 - [fix: shutdown thread pool before the container closes](https://github.com/Tencent/spring-cloud-tencent/pull/354)
 - [rm code: Condition 'null != interceptors' is always 'true' ](https://github.com/Tencent/spring-cloud-tencent/pull/356)
