@@ -22,13 +22,15 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.StringUtils;
 
 /**
  * Utils for Jackson.
  *
- * @author Haotian Zhang, cheese8
+ * @author Haotian Zhang
  */
 public final class JacksonUtils {
 
@@ -36,6 +38,8 @@ public final class JacksonUtils {
 	 * Object Mapper.
 	 */
 	public static final ObjectMapper OM = new ObjectMapper();
+
+	private static final Logger LOG = LoggerFactory.getLogger(JacksonUtils.class);
 
 	private JacksonUtils() {
 
@@ -52,6 +56,7 @@ public final class JacksonUtils {
 			return OM.writeValueAsString(object);
 		}
 		catch (JsonProcessingException e) {
+			LOG.error("Object to Json failed. {}", object, e);
 			throw new RuntimeException("Object to Json failed.", e);
 		}
 	}
@@ -74,6 +79,7 @@ public final class JacksonUtils {
 			return new HashMap<>();
 		}
 		catch (JsonProcessingException e) {
+			LOG.error("Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
 			throw new RuntimeException("Json to map failed.", e);
 		}
 	}
