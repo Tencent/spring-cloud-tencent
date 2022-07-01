@@ -17,6 +17,7 @@
 - [Feature: add spring cloud tencent logo](https://github.com/Tencent/spring-cloud-tencent/pull/332)
 - [UT: add metadata-transfer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/335)
 - [feat:Add GitHub action of codecov.yml and update junit of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/344)
+- [Feature: support actuator for sct core components](https://github.com/Tencent/spring-cloud-tencent/pull/343)
 - [Feature: optimize static metadata manager](https://github.com/Tencent/spring-cloud-tencent/pull/346)
 - [fix: shutdown thread pool before the container closes](https://github.com/Tencent/spring-cloud-tencent/pull/355)
 - [rm code: Condition 'null != interceptors' is always 'true' ](https://github.com/Tencent/spring-cloud-tencent/pull/357)

@@ -12,3 +12,10 @@ spring:
         enabled: true
         rejectRequestTipsFilePath: reject-tips.html
         maxQueuingTime: 500
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-ratelimit
