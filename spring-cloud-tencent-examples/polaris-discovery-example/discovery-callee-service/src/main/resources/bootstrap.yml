@@ -11,6 +11,10 @@ spring:
       discovery:
         enabled: true
         register: true
+    tencent:
+      metadata:
+        content:
+          region: shanghai
 #    consul:
 #      port: 8500
 #      host: 127.0.0.1

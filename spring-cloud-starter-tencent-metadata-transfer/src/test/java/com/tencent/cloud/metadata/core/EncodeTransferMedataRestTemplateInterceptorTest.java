@@ -13,20 +13,15 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.metadata.core.intercepter;
+package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,72 +29,61 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataFeignInterceptor}.
+ * Test for {@link EncodeTransferMedataRestTemplateInterceptor}.
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT,
-		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
-		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
-public class EncodeTransferMedataFeignInterceptorTest {
+@SpringBootTest(webEnvironment = RANDOM_PORT,
+		classes = EncodeTransferMedataRestTemplateInterceptorTest.TestApplication.class,
+		properties = { "spring.config.location = classpath:application-test.yml" })
+public class EncodeTransferMedataRestTemplateInterceptorTest {
 
 	@Autowired
-	private MetadataLocalProperties metadataLocalProperties;
+	private RestTemplate restTemplate;
 
-	@Autowired
-	private TestApplication.TestFeign testFeign;
+	@LocalServerPort
+	private int localServerPort;
 
 	@Test
 	public void testTransitiveMetadataFromApplicationConfig() {
-		String metadata = testFeign.test();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
+		String metadata = restTemplate
+				.exchange("http://localhost:" + localServerPort + "/test", HttpMethod.GET,
+						httpEntity, String.class)
+				.getBody();
 		Assertions.assertThat(metadata).isEqualTo("2");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
 	}
 
 	@SpringBootApplication
-	@EnableFeignClients
 	@RestController
 	protected static class TestApplication {
+
+		@Bean
+		public RestTemplate restTemplate() {
+			return new RestTemplate();
+		}
 
 		@RequestMapping("/test")
 		public String test(
 				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
 				throws UnsupportedEncodingException {
 			return MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b");
-		}
-
-		@FeignClient(name = "test-feign", url = "http://localhost:8081")
-		public interface TestFeign {
-
-			@RequestMapping("/test")
-			String test();
-
-		}
-
-		@Configuration
-		static class TestRequestInterceptor implements RequestInterceptor {
-
-			@Override
-			public void apply(RequestTemplate template) {
-				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
-			}
-
 		}
 
 	}

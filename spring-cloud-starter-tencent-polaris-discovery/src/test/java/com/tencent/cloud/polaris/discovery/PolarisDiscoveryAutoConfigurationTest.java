@@ -19,7 +19,7 @@
 package com.tencent.cloud.polaris.discovery;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.test.mock.discovery.NamingServer;

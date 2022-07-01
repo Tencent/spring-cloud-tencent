@@ -15,10 +15,10 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.config;
 
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProcessor;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
@@ -40,8 +40,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
  *
  * @author Haotian Zhang
  */
-@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = "org.springframework.cloud.openfeign.FeignAutoConfiguration")
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
