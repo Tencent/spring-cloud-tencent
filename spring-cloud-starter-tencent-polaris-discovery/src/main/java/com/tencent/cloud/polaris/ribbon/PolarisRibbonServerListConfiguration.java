@@ -36,12 +36,10 @@ public class PolarisRibbonServerListConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ServerList<Server> ribbonServerList(
-			PolarisDiscoveryHandler polarisDiscoveryHandler,
+	public ServerList<Server> ribbonServerList(PolarisDiscoveryHandler polarisDiscoveryHandler,
 			IClientConfig iClientConfig) {
 		PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
 		serverList.initWithNiwsConfig(iClientConfig);
 		return serverList;
 	}
-
 }

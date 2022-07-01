@@ -66,7 +66,5 @@ public class PolarisCircuitBreakerBootstrapConfiguration {
 		public int getOrder() {
 			return ContextConstant.ModifierOrder.CIRCUIT_BREAKER_ORDER;
 		}
-
 	}
-
 }

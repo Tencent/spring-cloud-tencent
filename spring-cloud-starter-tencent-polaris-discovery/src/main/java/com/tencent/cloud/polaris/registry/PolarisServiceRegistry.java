@@ -51,8 +51,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(PolarisServiceRegistry.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
 	private static final int ttl = 5;
 
@@ -82,7 +81,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	@Override
 	public void register(Registration registration) {
-
 		if (StringUtils.isEmpty(registration.getServiceId())) {
 			log.warn("No service to register for polaris client...");
 			return;
@@ -120,15 +118,13 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			}
 		}
 		catch (Exception e) {
-			log.error("polaris registry, {} register failed...{},",
-					registration.getServiceId(), registration, e);
+			log.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
 			rethrowRuntimeException(e);
 		}
 	}
 
 	@Override
 	public void deregister(Registration registration) {
-
 		log.info("De-registering from Polaris Server now...");
 
 		if (StringUtils.isEmpty(registration.getServiceId())) {
@@ -148,8 +144,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			providerClient.deRegister(deRegisterRequest);
 		}
 		catch (Exception e) {
-			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration,
-					e);
+			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
 		}
 		finally {
 			if (null != heartbeatExecutor) {
@@ -172,8 +167,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	@Override
 	public Object getStatus(Registration registration) {
 		String serviceName = registration.getServiceId();
-		InstancesResponse instancesResponse = polarisDiscoveryHandler
-				.getInstances(serviceName);
+		InstancesResponse instancesResponse = polarisDiscoveryHandler.getInstances(serviceName);
 		Instance[] instances = instancesResponse.getInstances();
 		if (null == instances || instances.length == 0) {
 			return null;
@@ -207,13 +201,10 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 					}
 
 					String healthCheckUrl = String.format("http://%s:%s%s",
-							heartbeatRequest.getHost(), heartbeatRequest.getPort(),
-							healthCheckEndpoint);
+							heartbeatRequest.getHost(), heartbeatRequest.getPort(), healthCheckEndpoint);
 
 					if (!OkHttpUtil.get(healthCheckUrl, null)) {
-						log.error(
-								"backend service health check failed. health check endpoint = {}",
-								healthCheckEndpoint);
+						log.error("backend service health check failed. health check endpoint = {}", healthCheckEndpoint);
 						return;
 					}
 				}
@@ -228,5 +219,4 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			}
 		}, ttl, ttl, TimeUnit.SECONDS);
 	}
-
 }

@@ -56,8 +56,7 @@ public class PolarisServerList extends AbstractServerList<Server> {
 	}
 
 	private List<Server> getServers() {
-		InstancesResponse allInstances = polarisDiscoveryHandler
-				.getHealthyInstances(serviceId);
+		InstancesResponse allInstances = polarisDiscoveryHandler.getHealthyInstances(serviceId);
 		ServiceInstances serviceInstances = allInstances.toServiceInstances();
 		List<Server> polarisServers = new ArrayList<>();
 		for (Instance instance : serviceInstances.getInstances()) {
@@ -74,5 +73,4 @@ public class PolarisServerList extends AbstractServerList<Server> {
 	public void initWithNiwsConfig(IClientConfig iClientConfig) {
 		this.serviceId = iClientConfig.getClientName();
 	}
-
 }

@@ -31,7 +31,6 @@ import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
 
-
 /**
  * Read configuration from spring cloud's configuration file and override polaris.yaml.
  *

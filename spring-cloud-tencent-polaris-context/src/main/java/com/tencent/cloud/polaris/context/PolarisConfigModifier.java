@@ -37,5 +37,4 @@ public interface PolarisConfigModifier {
 	 * @return order
 	 */
 	int getOrder();
-
 }

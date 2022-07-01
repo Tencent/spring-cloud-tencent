@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisDiscoveryRibbonAutoConfigurationTest {
 
-	private ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
+	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
 
 	@Test
 	public void testDefaultInitialization() {

@@ -38,7 +38,7 @@ import com.tencent.polaris.client.pb.RoutingProto;
 /**
  * the manager of service governance rules. for example: rate limit rule, router rules.
  *
- *@author lepdou 2022-05-13
+ * @author lepdou 2022-05-13
  */
 public class ServiceRuleManager {
 

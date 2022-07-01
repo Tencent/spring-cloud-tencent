@@ -55,5 +55,4 @@ public class PolarisRestTemplateAutoConfiguration {
 			PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
 		return new PolarisRestTemplateModifier(restTemplateResponseErrorHandler);
 	}
-
 }

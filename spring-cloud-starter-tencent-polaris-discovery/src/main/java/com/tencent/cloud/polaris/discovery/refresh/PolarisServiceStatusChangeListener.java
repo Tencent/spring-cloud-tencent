@@ -35,7 +35,8 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Change listener of Polaris service info. When service info is created or deleted, or, instance of service is from 0 to
+ * Change listener of Polaris service info. When service info is created or deleted, or, instance of service is from
+ * 0 to many.
  *
  * @author Haotian Zhang
  */
@@ -78,8 +79,10 @@ public class PolarisServiceStatusChangeListener extends AbstractResourceEventLis
 				LOG.debug("receive service instances={} change event", svcEventKey);
 				ServiceInstancesByProto oldIns = (ServiceInstancesByProto) oldValue;
 				ServiceInstancesByProto newIns = (ServiceInstancesByProto) newValue;
-				if ((CollectionUtils.isEmpty(oldIns.getInstances()) && !CollectionUtils.isEmpty(newIns.getInstances())) ||
-						(!CollectionUtils.isEmpty(oldIns.getInstances()) && CollectionUtils.isEmpty(newIns.getInstances()))) {
+				if ((CollectionUtils.isEmpty(oldIns.getInstances())
+						&& !CollectionUtils.isEmpty(newIns.getInstances())) ||
+						(!CollectionUtils.isEmpty(oldIns.getInstances())
+								&& CollectionUtils.isEmpty(newIns.getInstances()))) {
 					LOG.info("Service status of {} is update.", newIns.getService());
 
 					// Trigger reload of gateway route cache.

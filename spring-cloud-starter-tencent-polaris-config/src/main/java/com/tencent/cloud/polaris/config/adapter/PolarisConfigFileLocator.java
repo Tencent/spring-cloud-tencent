@@ -52,8 +52,7 @@ import org.springframework.util.StringUtils;
 @Order(0)
 public class PolarisConfigFileLocator implements PropertySourceLocator {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(PolarisConfigFileLocator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigFileLocator.class);
 
 	private static final String POLARIS_CONFIG_PROPERTY_SOURCE_NAME = "polaris-config";
 
@@ -115,7 +114,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	private List<ConfigFileMetadata> getInternalConfigFiles() {
 		String namespace = polarisContextProperties.getNamespace();
 		String serviceName = polarisContextProperties.getService();
-		if (StringUtils.isEmpty(serviceName)) {
+		if (!StringUtils.hasText(serviceName)) {
 			serviceName = environment.getProperty("spring.application.name");
 		}
 
@@ -125,7 +124,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		String[] activeProfiles = environment.getActiveProfiles();
 
 		for (String activeProfile : activeProfiles) {
-			if (StringUtils.isEmpty(activeProfile)) {
+			if (!StringUtils.hasText(activeProfile)) {
 				continue;
 			}
 
@@ -137,7 +136,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yml"));
 
 		for (String activeProfile : activeProfiles) {
-			if (StringUtils.isEmpty(activeProfile)) {
+			if (!StringUtils.hasText(activeProfile)) {
 				continue;
 			}
 
@@ -160,9 +159,8 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		for (ConfigFileGroup configFileGroup : configFileGroups) {
 			String group = configFileGroup.getName();
 
-			if (StringUtils.isEmpty(group)) {
-				throw new IllegalArgumentException(
-						"polaris config group name cannot be empty.");
+			if (!StringUtils.hasText(group)) {
+				throw new IllegalArgumentException("polaris config group name cannot be empty.");
 			}
 
 			List<String> files = configFileGroup.getFiles();
@@ -171,16 +169,14 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			}
 
 			for (String fileName : files) {
-				PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(
-						namespace, group, fileName);
+				PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(namespace, group, fileName);
 
 				compositePropertySource.addPropertySource(polarisPropertySource);
 
 				polarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
-				LOGGER.info(
-						"[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}",
-						namespace, group, fileName);
+				LOGGER.info("[SCT Config] Load and inject polaris config file success."
+						+ " namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
 			}
 		}
 	}
@@ -189,21 +185,18 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			String group, String fileName) {
 		ConfigKVFile configKVFile;
 		// unknown extension is resolved as properties file
-		if (ConfigFileFormat.isPropertyFile(fileName)
-				|| ConfigFileFormat.isUnknownFile(fileName)) {
+		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
 			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
 		}
 		else if (ConfigFileFormat.isYamlFile(fileName)) {
 			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
 		}
 		else {
-			LOGGER.warn(
-					"[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}",
+			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}",
 					namespace, group, fileName);
 
-			throw new IllegalStateException(
-					"Only configuration files in the format of properties / yaml / yaml"
-							+ " can be injected into the spring context");
+			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml"
+					+ " can be injected into the spring context");
 		}
 
 		Map<String, Object> map = new ConcurrentHashMap<>();
@@ -213,5 +206,4 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 		return new PolarisPropertySource(namespace, group, fileName, configKVFile, map);
 	}
-
 }

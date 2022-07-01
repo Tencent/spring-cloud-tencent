@@ -27,7 +27,7 @@ import com.netflix.loadbalancer.Server;
 /**
  * Simple load balancer only for getting and setting servers.
  *
- *@author lepdou 2022-05-17
+ * @author lepdou 2022-05-17
  */
 public class SimpleLoadBalancer implements ILoadBalancer {
 	private List<Server> servers;

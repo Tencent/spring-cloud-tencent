@@ -58,5 +58,4 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 	static class PolarisRibbonTest {
 
 	}
-
 }

@@ -31,11 +31,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-public class PolarisAutoServiceRegistration
-		extends AbstractAutoServiceRegistration<Registration> {
+public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistration<Registration> {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(PolarisAutoServiceRegistration.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisAutoServiceRegistration.class);
 
 	private final PolarisRegistration registration;
 
@@ -96,5 +94,4 @@ public class PolarisAutoServiceRegistration
 		String appName = registration.getPolarisProperties().getService();
 		return StringUtils.isEmpty(appName) ? super.getAppName() : appName;
 	}
-
 }

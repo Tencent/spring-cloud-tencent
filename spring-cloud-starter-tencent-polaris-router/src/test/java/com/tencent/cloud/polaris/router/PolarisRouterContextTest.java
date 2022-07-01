@@ -25,9 +25,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * test for {@link PolarisRouterContext}
+ * test for {@link PolarisRouterContext}.
  *
- *@author lepdou 2022-05-26
+ * @author lepdou 2022-05-26
  */
 public class PolarisRouterContextTest {
 

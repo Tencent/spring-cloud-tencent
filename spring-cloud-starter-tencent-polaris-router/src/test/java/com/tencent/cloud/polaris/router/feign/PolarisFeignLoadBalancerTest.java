@@ -46,7 +46,8 @@ import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import static org.mockito.Mockito.anyString;
 
 /**
- * test for {@link PolarisFeignLoadBalancer}
+ * test for {@link PolarisFeignLoadBalancer}.
+ *
  * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -73,7 +74,8 @@ public class PolarisFeignLoadBalancerTest {
 
 		// mock ApplicationContextAwareUtils#getProperties
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString())).thenReturn("unit-test");
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+					.thenReturn("unit-test");
 
 			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 			// mock MetadataContextHolder#get
@@ -105,8 +107,8 @@ public class PolarisFeignLoadBalancerTest {
 
 		// mock ApplicationContextAwareUtils#getProperties
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString())).thenReturn("unit-test");
-
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+					.thenReturn("unit-test");
 			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 			// mock MetadataContextHolder#get
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {

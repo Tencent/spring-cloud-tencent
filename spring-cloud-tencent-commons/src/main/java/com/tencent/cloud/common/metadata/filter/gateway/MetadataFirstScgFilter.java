@@ -50,16 +50,13 @@ public class MetadataFirstScgFilter implements GlobalFilter, Ordered {
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		// get metadata of current thread
-		MetadataContext metadataContext = exchange
-				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
+		MetadataContext metadataContext = exchange.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 		if (metadataContext == null) {
 			metadataContext = MetadataContextHolder.get();
 		}
 
-		exchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT,
-				metadataContext);
+		exchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT, metadataContext);
 
 		return chain.filter(exchange);
 	}
-
 }

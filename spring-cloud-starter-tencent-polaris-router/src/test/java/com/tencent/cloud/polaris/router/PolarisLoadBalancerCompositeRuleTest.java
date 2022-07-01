@@ -69,12 +69,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisLoadBalancerCompositeRule}
- *@author lepdou 2022-05-26
+ * test for {@link PolarisLoadBalancerCompositeRule}.
+ *
+ * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerCompositeRuleTest {
 
+	private static AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
 	@Mock
 	private PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 	@Mock
@@ -85,11 +87,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	private PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties;
 	@Mock
 	private RouterAPI routerAPI;
-
 	private IClientConfig config;
-
-	private static AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
-
 	private String testNamespace = "testNamespace";
 	private String testCallerService = "testCallerService";
 	private String testCalleeService = "testCalleeService";

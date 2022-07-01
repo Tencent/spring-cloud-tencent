@@ -164,7 +164,5 @@ public class ConsulContextProperties {
 		public int getOrder() {
 			return ModifierOrder.LAST;
 		}
-
 	}
-
 }

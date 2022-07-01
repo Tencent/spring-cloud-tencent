@@ -26,7 +26,8 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * After all configurations are loaded, post-initialize SDKContext.
- *@author lepdou 2022-06-28
+ *
+ * @author lepdou 2022-06-28
  */
 public class PostInitPolarisSDKContext {
 

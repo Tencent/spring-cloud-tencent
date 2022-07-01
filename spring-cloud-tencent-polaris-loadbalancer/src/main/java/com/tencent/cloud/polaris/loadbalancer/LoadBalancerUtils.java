@@ -32,9 +32,12 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 /**
  * load balancer utils.
  *
- *@author lepdou 2022-05-17
+ * @author lepdou 2022-05-17
  */
-public class LoadBalancerUtils {
+public final class LoadBalancerUtils {
+
+	private LoadBalancerUtils() {
+	}
 
 	public static ServiceInstances transferServersToServiceInstances(List<Server> servers) {
 		List<Instance> instances = new ArrayList<>(servers.size());

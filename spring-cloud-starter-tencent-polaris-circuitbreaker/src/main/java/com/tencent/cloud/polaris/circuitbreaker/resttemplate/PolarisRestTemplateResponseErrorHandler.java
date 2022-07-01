@@ -54,7 +54,8 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 	private final PolarisResponseErrorHandler polarisResponseErrorHandler;
 
 
-	public PolarisRestTemplateResponseErrorHandler(ConsumerAPI consumerAPI, PolarisResponseErrorHandler polarisResponseErrorHandler) {
+	public PolarisRestTemplateResponseErrorHandler(ConsumerAPI consumerAPI,
+			PolarisResponseErrorHandler polarisResponseErrorHandler) {
 		this.consumerAPI = consumerAPI;
 		this.polarisResponseErrorHandler = polarisResponseErrorHandler;
 	}
@@ -74,7 +75,8 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 	}
 
 	@Override
-	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response) throws IOException {
+	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response)
+			throws IOException {
 		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
 			HttpURLConnection connection = (HttpURLConnection) ReflectionUtils.getFieldValue(response, FIELD_NAME);
@@ -111,5 +113,4 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		}
 		return resultRequest;
 	}
-
 }

@@ -41,7 +41,8 @@ public class DiscoveryPropertiesAutoConfigurationTest {
 	@Test
 	public void testDefaultInitialization() {
 		ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner().withConfiguration(
-				AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+				AutoConfigurations.of(
+						PolarisContextAutoConfiguration.class,
 						DiscoveryPropertiesAutoConfiguration.class));
 		applicationContextRunner.run(context -> {
 			assertThat(context).hasSingleBean(DiscoveryPropertiesAutoConfiguration.class);
@@ -57,7 +58,8 @@ public class DiscoveryPropertiesAutoConfigurationTest {
 	@Test
 	public void testInit() {
 		ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner().withConfiguration(
-						AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+						AutoConfigurations.of(
+								PolarisContextAutoConfiguration.class,
 								TestConfiguration.class,
 								DiscoveryPropertiesAutoConfiguration.class))
 				.withPropertyValues("spring.cloud.polaris.discovery.register=false")
@@ -65,7 +67,8 @@ public class DiscoveryPropertiesAutoConfigurationTest {
 				.withPropertyValues("spring.cloud.consul.discovery.enabled=false");
 		applicationContextRunner.run(context -> {
 			assertThat(context).hasSingleBean(DiscoveryPropertiesAutoConfiguration.class);
-			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration = context.getBean(DiscoveryPropertiesAutoConfiguration.class);
+			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration =
+					context.getBean(DiscoveryPropertiesAutoConfiguration.class);
 			assertThat(discoveryPropertiesAutoConfiguration.isRegisterEnabled()).isFalse();
 			assertThat(discoveryPropertiesAutoConfiguration.isDiscoveryEnabled()).isFalse();
 		});

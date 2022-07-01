@@ -70,13 +70,11 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
-				requestContext.addZuulRequestHeader(
-						MetadataConstant.HeaderName.CUSTOM_METADATA,
+				requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA,
 						URLEncoder.encode(metadataStr, StandardCharsets.UTF_8.name()));
 			}
 			catch (UnsupportedEncodingException e) {
-				requestContext.addZuulRequestHeader(
-						MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
+				requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
 			}
 		}
 		return null;

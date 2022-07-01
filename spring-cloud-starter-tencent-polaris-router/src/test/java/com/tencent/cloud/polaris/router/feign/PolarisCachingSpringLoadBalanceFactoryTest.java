@@ -37,17 +37,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisCachingSpringLoadBalanceFactory}
- *@author lepdou 2022-05-26
+ * Test for {@link PolarisCachingSpringLoadBalanceFactory}.
+ *
+ * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisCachingSpringLoadBalanceFactoryTest {
 
+	private final String service1 = "service1";
+	private final String service2 = "service2";
 	@Mock
 	private SpringClientFactory factory;
-
-	private String service1 = "service1";
-	private String service2 = "service2";
 
 	@Test
 	public void test() {

@@ -63,5 +63,4 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 	public static String getProperties(String key, String defaultValue) {
 		return applicationContext.getEnvironment().getProperty(key, defaultValue);
 	}
-
 }

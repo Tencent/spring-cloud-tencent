@@ -45,8 +45,7 @@ import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.
  */
 public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 
-	private static final int METADATA_SCG_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER
-			+ 1;
+	private static final int METADATA_SCG_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
 
 	@Override
 	public int getOrder() {
@@ -59,8 +58,7 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 		ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
 
 		// get metadata of current thread
-		MetadataContext metadataContext = exchange
-				.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
+		MetadataContext metadataContext = exchange.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
 
 		// add new metadata and cover old
 		if (metadataContext == null) {
@@ -80,5 +78,4 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 
 		return chain.filter(exchange.mutate().request(builder.build()).build());
 	}
-
 }
