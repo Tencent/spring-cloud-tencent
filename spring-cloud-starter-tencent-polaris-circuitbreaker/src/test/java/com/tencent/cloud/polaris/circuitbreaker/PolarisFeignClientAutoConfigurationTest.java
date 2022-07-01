@@ -17,8 +17,9 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisFeignClientAutoConfiguration;
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProcessor;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.Test;
 

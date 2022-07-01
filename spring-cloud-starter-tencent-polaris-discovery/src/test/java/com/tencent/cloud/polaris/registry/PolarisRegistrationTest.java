@@ -78,7 +78,7 @@ public class PolarisRegistrationTest {
 		doReturn(Collections.singletonMap("key2", "value2")).when(staticMetadataManager).getLocationMetadata();
 
 		polarisRegistration = new PolarisRegistration(
-				discoveryPropertiesAutoConfiguration, polarisDiscoveryProperties, polarisContext, staticMetadataManager, null);
+				discoveryPropertiesAutoConfiguration, polarisDiscoveryProperties, polarisContext, staticMetadataManager);
 	}
 
 	@Test

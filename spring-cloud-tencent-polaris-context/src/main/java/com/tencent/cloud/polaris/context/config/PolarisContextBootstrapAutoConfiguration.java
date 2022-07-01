@@ -16,7 +16,7 @@
  *
  */
 
-package com.tencent.cloud.polaris.context;
+package com.tencent.cloud.polaris.context.config;
 
 import com.tencent.polaris.client.api.SDKContext;
 

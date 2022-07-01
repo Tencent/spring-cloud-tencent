@@ -13,43 +13,17 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.context.spi;
+package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 
-import java.util.Map;
+import org.springframework.web.client.ResponseErrorHandler;
 
 /**
+ * Polaris Response Error Handler Definition Of {@link ResponseErrorHandler}.
  *
- * Instance's custom metadata, metadata will be register to polaris server.
- * @author lepdou 2022-06-16
+ * @author wh 2022/6/21
  */
-public interface InstanceMetadataProvider {
+public interface PolarisResponseErrorHandler extends ResponseErrorHandler {
 
-	/**
-	 * @return the metadata of instance.
-	 */
-	Map<String, String> getMetadata();
-
-	/**
-	 * The region of current instance.
-	 *
-	 * @return the region info.
-	 */
-	String getRegion();
-
-	/**
-	 * The zone of current instance.
-	 *
-	 * @return the zone info.
-	 */
-	String getZone();
-
-	/**
-	 * The campus/datacenter of current instance.
-	 *
-	 * @return the campus or datacenter info.
-	 */
-	String getCampus();
 }

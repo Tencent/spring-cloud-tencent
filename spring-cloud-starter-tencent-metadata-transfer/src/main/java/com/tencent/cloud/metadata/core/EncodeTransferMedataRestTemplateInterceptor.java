@@ -21,6 +21,7 @@ package com.tencent.cloud.metadata.core;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -59,7 +60,7 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
 			try {
 				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(encodedTransitiveMetadata, "UTF-8"));
+						URLEncoder.encode(encodedTransitiveMetadata, StandardCharsets.UTF_8.name()));
 			}
 			catch (UnsupportedEncodingException e) {
 				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA, encodedTransitiveMetadata);
