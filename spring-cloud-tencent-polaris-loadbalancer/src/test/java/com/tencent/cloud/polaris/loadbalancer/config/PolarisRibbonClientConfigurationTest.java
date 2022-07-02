@@ -50,7 +50,6 @@ public class PolarisRibbonClientConfigurationTest {
 
 	@SpringBootApplication
 	static class TestApplication {
-
 	}
 
 }
