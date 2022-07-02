@@ -79,9 +79,7 @@ public final class JacksonUtils {
 			return new HashMap<>();
 		}
 		catch (JsonProcessingException e) {
-			LOG.error(
-					"Json to map failed. check if the format of the json string[{}] is correct.",
-					jsonStr, e);
+			LOG.error("Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
 			throw new RuntimeException("Json to map failed.", e);
 		}
 	}

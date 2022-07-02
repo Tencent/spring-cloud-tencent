@@ -28,10 +28,10 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * @author : wh
- * @date : 2022/6/21 21:20
- * @description: auto configuration RestTemplate Find the RestTemplate bean annotated with {@link LoadBalanced} and replace {@link org.springframework.web.client.ResponseErrorHandler}
- * with {@link PolarisRestTemplateResponseErrorHandler}
+ * Auto configuration RestTemplate, Find the RestTemplate bean annotated with {@link LoadBalanced},
+ * then replace {@link org.springframework.web.client.ResponseErrorHandler} with {@link PolarisRestTemplateResponseErrorHandler} .
+ *
+ * @author wh 2022/6/21
  */
 public class PolarisRestTemplateModifier implements ApplicationContextAware, SmartInitializingSingleton {
 
