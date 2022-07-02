@@ -43,6 +43,9 @@ public class RouterCalleeController {
 
 	/**
 	 * Get information of callee.
+	 *
+	 * @param name name
+	 * @param user user
 	 * @return information of callee
 	 */
 	@PostMapping("/info")

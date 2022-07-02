@@ -42,6 +42,8 @@ public class RouterCallerController {
 
 	/**
 	 * Get info of two value.
+	 *
+	 * @param name name
 	 * @return info
 	 */
 	@GetMapping("/feign")
@@ -54,6 +56,8 @@ public class RouterCallerController {
 
 	/**
 	 * Get information of callee.
+	 *
+	 * @param name name
 	 * @return information of callee
 	 */
 	@GetMapping("/rest")
@@ -67,6 +71,7 @@ public class RouterCallerController {
 
 	/**
 	 * health check.
+	 *
 	 * @return health check info
 	 */
 	@GetMapping("/healthCheck")

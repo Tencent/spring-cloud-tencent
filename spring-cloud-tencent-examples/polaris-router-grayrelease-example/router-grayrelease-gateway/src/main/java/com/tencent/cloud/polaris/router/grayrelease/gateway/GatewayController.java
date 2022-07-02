@@ -37,6 +37,8 @@ public class GatewayController {
 
 	/**
 	 * Get information of callee.
+	 *
+	 * @param userId userId
 	 * @return information of callee
 	 */
 	@GetMapping("/route_rule")

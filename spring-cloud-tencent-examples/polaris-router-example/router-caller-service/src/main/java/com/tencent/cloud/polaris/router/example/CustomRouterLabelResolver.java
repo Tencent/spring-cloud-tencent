@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.router.example;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,12 +28,12 @@ import feign.RequestTemplate;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
 
 /**
+ * Customize the business tag information obtained from the request.
  *
- * Customize the business tag information obtained from the request
- *
- *@author lepdou 2022-05-12
+ * @author lepdou 2022-05-12
  */
 @Component
 public class CustomRouterLabelResolver implements RouterLabelResolver {
@@ -58,6 +59,10 @@ public class CustomRouterLabelResolver implements RouterLabelResolver {
 		return labels;
 	}
 
+	@Override
+	public Map<String, String> resolve(ServerWebExchange exchange) {
+		return Collections.emptyMap();
+	}
 
 	@Override
 	public int getOrder() {
