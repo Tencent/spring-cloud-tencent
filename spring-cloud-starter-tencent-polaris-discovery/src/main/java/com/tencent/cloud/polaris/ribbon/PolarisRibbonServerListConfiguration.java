@@ -24,7 +24,6 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration of server list.
