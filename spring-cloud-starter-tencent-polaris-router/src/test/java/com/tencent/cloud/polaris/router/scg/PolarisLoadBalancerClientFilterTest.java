@@ -57,7 +57,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 
 /**
- * test for ${@link PolarisLoadBalancerClientFilter}
+ * test for ${@link PolarisLoadBalancerClientFilter}.
  *@author lepdou 2022-06-13
  */
 @RunWith(MockitoJUnitRunner.class)

@@ -46,7 +46,7 @@ import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import static org.mockito.Mockito.anyString;
 
 /**
- * test for {@link PolarisFeignLoadBalancer}
+ * test for {@link PolarisFeignLoadBalancer}.
  * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)

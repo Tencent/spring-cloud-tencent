@@ -69,7 +69,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisLoadBalancerCompositeRule}
+ * test for {@link PolarisLoadBalancerCompositeRule}.
  *@author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)

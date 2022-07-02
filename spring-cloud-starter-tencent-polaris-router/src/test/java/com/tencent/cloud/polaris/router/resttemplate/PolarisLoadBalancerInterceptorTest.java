@@ -59,7 +59,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisLoadBalancerInterceptor}
+ * test for {@link PolarisLoadBalancerInterceptor}.
  * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)

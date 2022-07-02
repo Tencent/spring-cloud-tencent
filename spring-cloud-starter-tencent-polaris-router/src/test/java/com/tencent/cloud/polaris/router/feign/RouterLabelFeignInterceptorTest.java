@@ -50,7 +50,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link RouterLabelFeignInterceptor}
+ * test for {@link RouterLabelFeignInterceptor}.
  * @author lepdou 2022-05-26
  * @author cheese8 2022-06-18
  */

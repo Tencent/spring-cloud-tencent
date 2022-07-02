@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * test for {@link SimpleLoadBalancer}
+ * test for {@link SimpleLoadBalancer}.
  *@author lepdou 2022-05-26
  */
 public class SimpleLoadBalancerTest {

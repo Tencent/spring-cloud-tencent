@@ -37,7 +37,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 
 /**
- * test for {@link ExpressionLabelUtils}
+ * test for {@link ExpressionLabelUtils}.
  * @author lepdou 2022-05-27
  * @auther cheese8 2022-06-20
  */

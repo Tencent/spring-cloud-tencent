@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisCachingSpringLoadBalanceFactory}
+ * Test for {@link PolarisCachingSpringLoadBalanceFactory}.
  *@author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)

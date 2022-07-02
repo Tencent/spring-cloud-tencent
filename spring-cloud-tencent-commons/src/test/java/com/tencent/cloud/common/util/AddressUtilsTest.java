@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
- * test for {@link AddressUtils}
+ * test for {@link AddressUtils}.
  *@author lepdou 2022-05-27
  */
 @RunWith(MockitoJUnitRunner.class)
