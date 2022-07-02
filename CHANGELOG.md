@@ -25,3 +25,4 @@
 - [docs:update logo in README.](https://github.com/Tencent/spring-cloud-tencent/pull/359)
 - [Use jdk constants instead of magic variables](https://github.com/Tencent/spring-cloud-tencent/pull/362)
 - [Refator JacksonUtils and JacksonUtilsTest](https://github.com/Tencent/spring-cloud-tencent/pull/366)
+- [Feature: support actuator for sct core components](https://github.com/Tencent/spring-cloud-tencent/pull/370)
