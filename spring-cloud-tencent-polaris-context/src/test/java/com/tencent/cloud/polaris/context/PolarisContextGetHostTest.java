@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.context;
 
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.Assert;
 import org.junit.Test;

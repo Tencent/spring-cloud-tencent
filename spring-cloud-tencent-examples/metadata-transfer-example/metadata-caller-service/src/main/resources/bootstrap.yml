@@ -24,3 +24,9 @@ spring:
         # Assigned which metadata key-value will be passed along the link
         transitive:
           - CUSTOM-METADATA-KEY-TRANSITIVE
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-metadata

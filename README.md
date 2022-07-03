@@ -1,4 +1,4 @@
-<img src="https://user-images.githubusercontent.com/4991116/176166888-9c8a4074-ba42-41b8-93db-d6e95b16656b.png" width="60%" height="60%"  alt="Spring-Cloud-Tencent-Logo"/>
+<img src="https://github.com/Tencent/spring-cloud-tencent/raw/2020.0/doc/logo/rectangle-white.png" width="60%" height="60%"  alt="Spring-Cloud-Tencent-Logo"/>
 
 
 [![Wiki](https://badgen.net/badge/icon/wiki?icon=wiki&label)](https://github.com/Tencent/spring-cloud-tencent/wiki)

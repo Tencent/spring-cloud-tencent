@@ -58,6 +58,7 @@ public class CustomRouterLabelResolver implements RouterLabelResolver {
 		return labels;
 	}
 
+
 	@Override
 	public int getOrder() {
 		return 0;

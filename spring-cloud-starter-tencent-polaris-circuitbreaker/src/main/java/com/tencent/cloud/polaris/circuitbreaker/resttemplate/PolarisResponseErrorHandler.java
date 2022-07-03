@@ -20,9 +20,9 @@ package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 import org.springframework.web.client.ResponseErrorHandler;
 
 /**
- * @author : wh
- * @date : 2022/6/21 19:12
- * @description: errorHandler {@link ResponseErrorHandler}
+ * Polaris Response Error Handler Definition Of {@link ResponseErrorHandler}.
+ *
+ * @author wh 2022/6/21
  */
 public interface PolarisResponseErrorHandler extends ResponseErrorHandler {
 
