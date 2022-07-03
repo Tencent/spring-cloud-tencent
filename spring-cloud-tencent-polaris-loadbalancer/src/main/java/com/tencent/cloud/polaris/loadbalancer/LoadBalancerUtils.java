@@ -42,7 +42,7 @@ public class LoadBalancerUtils {
 	private static final int DEFAULT_WEIGHT = 100;
 
 	/**
-	 * transfer servers to ServiceInstances
+	 * transfer servers to ServiceInstances.
 	 *
 	 * @param servers servers
 	 * @return ServiceInstances
@@ -63,7 +63,7 @@ public class LoadBalancerUtils {
 	}
 
 	/**
-	 * transfer ServiceInstance to DefaultInstance
+	 * transfer ServiceInstance to DefaultInstance.
 	 *
 	 * @param serviceInstance serviceInstance
 	 * @return defaultInstance
