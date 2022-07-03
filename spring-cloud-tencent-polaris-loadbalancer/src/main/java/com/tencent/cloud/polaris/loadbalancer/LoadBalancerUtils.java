@@ -35,24 +35,23 @@ import org.springframework.util.CollectionUtils;
 /**
  * load balancer utils.
  *
- *@author lepdou 2022-05-17
+ * @author lepdou 2022-05-17
  */
 public class LoadBalancerUtils {
 
-	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers) {
-		List<Instance> instances = servers.toStream().flatMap(List::stream).map(serviceInstance -> {
-			DefaultInstance instance = new DefaultInstance();
-			instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-			instance.setService(serviceInstance.getServiceId());
-			instance.setProtocol(serviceInstance.getScheme());
-			instance.setId(serviceInstance.getInstanceId());
-			instance.setHost(serviceInstance.getHost());
-			instance.setPort(serviceInstance.getPort());
-			instance.setWeight(100);
-			instance.setMetadata(serviceInstance.getMetadata());
-			return instance;
-		}).collect(Collectors.toList());
+	private static final int DEFAULT_WEIGHT = 100;
 
+	/**
+	 * transfer servers to ServiceInstances
+	 *
+	 * @param servers servers
+	 * @return ServiceInstances
+	 */
+	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers) {
+		List<Instance> instances = servers.toStream()
+				.flatMap(List::stream)
+				.map(LoadBalancerUtils::transferServerToServiceInstance)
+				.collect(Collectors.toList());
 		String serviceName = null;
 		if (!CollectionUtils.isEmpty(instances)) {
 			serviceName = instances.get(0).getService();
@@ -62,4 +61,24 @@ public class LoadBalancerUtils {
 
 		return new DefaultServiceInstances(serviceKey, instances);
 	}
+
+	/**
+	 * transfer ServiceInstance to DefaultInstance
+	 *
+	 * @param serviceInstance serviceInstance
+	 * @return defaultInstance
+	 */
+	public static DefaultInstance transferServerToServiceInstance(ServiceInstance serviceInstance) {
+		DefaultInstance instance = new DefaultInstance();
+		instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+		instance.setService(serviceInstance.getServiceId());
+		instance.setProtocol(serviceInstance.getScheme());
+		instance.setId(serviceInstance.getInstanceId());
+		instance.setHost(serviceInstance.getHost());
+		instance.setPort(serviceInstance.getPort());
+		instance.setWeight(DEFAULT_WEIGHT);
+		instance.setMetadata(serviceInstance.getMetadata());
+		return instance;
+	}
+
 }

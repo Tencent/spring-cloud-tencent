@@ -17,10 +17,9 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import org.apache.commons.lang.StringUtils;
@@ -63,20 +62,10 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 			throw new IllegalStateException(
 					"PolarisRoutingLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 		}
-		List<ServiceInstance> serviceInstances = new ArrayList<>(allServers.size());
-		for (ServiceInstance server : allServers) {
-			DefaultInstance instance = new DefaultInstance();
-			instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-			instance.setService(serviceName);
-			instance.setProtocol(server.getScheme());
-			instance.setId(server.getInstanceId());
-			instance.setHost(server.getHost());
-			instance.setPort(server.getPort());
-			instance.setWeight(100);
-			instance.setMetadata(server.getMetadata());
-			serviceInstances.add(new PolarisServiceInstance(instance));
-		}
-		return serviceInstances;
+		return allServers.stream().map(server -> {
+			DefaultInstance instance = LoadBalancerUtils.transferServerToServiceInstance(server);
+			return new PolarisServiceInstance(instance);
+		}).collect(Collectors.toList());
 	}
 
 }
