@@ -18,12 +18,18 @@
 package com.tencent.cloud.polaris.loadbalancer.config;
 
 import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.Test;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.loadbalancer.reactive.ReactiveLoadBalancer;
+import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.annotation.Configuration;
 
 import static com.tencent.polaris.test.common.Consts.PORT;
@@ -43,6 +49,16 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
+	private final ApplicationContextRunner polarisLoadbalancerContextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(PolarisRibbonTest.class,
+					PolarisLoadBalancerAutoConfiguration.class,
+					PolarisContextAutoConfiguration.class,
+					LoadBalancerAutoConfiguration.class))
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
+			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
+			.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisWeighted");
+
+
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
@@ -51,10 +67,24 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 		});
 	}
 
+	@Test
+	public void testPolarisLoadbalancerInitialization() {
+		this.polarisLoadbalancerContextRunner.run(context -> {
+			assertThat(context).hasSingleBean(RouterAPI.class);
+			assertThat(context).hasSingleBean(PolarisLoadBalancerProperties.class);
+			assertThat(hasPolarisLoadBalancer(context)).isTrue();
+		});
+	}
+
+	private boolean hasPolarisLoadBalancer(BeanFactory beanFactory) {
+		LoadBalancerClientFactory loadBalancerClientFactory = beanFactory.getBean(LoadBalancerClientFactory.class);
+		ReactiveLoadBalancer<ServiceInstance> instance = loadBalancerClientFactory.getInstance(SERVICE_PROVIDER);
+		return instance instanceof PolarisLoadBalancer;
+	}
+
 	@Configuration
 	@EnableAutoConfiguration
 	static class PolarisRibbonTest {
-
 	}
 
 }
