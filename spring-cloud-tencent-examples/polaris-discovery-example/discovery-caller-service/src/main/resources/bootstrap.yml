@@ -36,3 +36,9 @@ spring:
 #  client:
 #    serviceUrl:
 #      defaultZone: http://127.0.0.1:7654/eureka/
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-discovery
