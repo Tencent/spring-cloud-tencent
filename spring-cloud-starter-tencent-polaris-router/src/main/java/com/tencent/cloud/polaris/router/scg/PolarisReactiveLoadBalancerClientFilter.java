@@ -206,7 +206,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		return headers;
 	}
 
-	String genRouterHint(ServerWebExchange exchange, String peerServiceName) {
+	private String genRouterHint(ServerWebExchange exchange, String peerServiceName) {
 		Map<String, String> routerLabels = genRouterLabels(exchange, peerServiceName);
 		String encodedLabelsContent;
 		try {
@@ -218,7 +218,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		return encodedLabelsContent;
 	}
 
-	Map<String, String> genRouterLabels(ServerWebExchange exchange, String peerServiceName) {
+	private Map<String, String> genRouterLabels(ServerWebExchange exchange, String peerServiceName) {
 		// local service labels
 		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
 
