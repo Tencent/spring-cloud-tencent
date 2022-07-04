@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * Configuration for ribbon components. IRule is not singleton bean, Each service corresponds to an IRule.
+ *
  * @author lepdou 2022-05-17
  */
 public class RibbonConfiguration {

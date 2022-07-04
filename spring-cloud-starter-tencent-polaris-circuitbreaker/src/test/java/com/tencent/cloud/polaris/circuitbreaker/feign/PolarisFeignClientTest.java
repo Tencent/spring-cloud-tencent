@@ -73,7 +73,8 @@ public class PolarisFeignClientTest {
 		}
 
 		try {
-			assertThat(new PolarisFeignClient(mock(Client.class), mock(ConsumerAPI.class))).isInstanceOf(PolarisFeignClient.class);
+			assertThat(new PolarisFeignClient(mock(Client.class), mock(ConsumerAPI.class)))
+					.isInstanceOf(PolarisFeignClient.class);
 		}
 		catch (Throwable e) {
 			fail("Exception encountered.", e);
@@ -90,7 +91,7 @@ public class PolarisFeignClientTest {
 				return Response.builder().request(request).status(200).build();
 			}
 			else if (request.httpMethod().equals(Request.HttpMethod.POST)) {
-				return Response.builder().request(request).status(500).build();
+				return Response.builder().request(request).status(502).build();
 			}
 			throw new IOException("Mock exception.");
 		}).when(delegate).execute(any(Request.class), nullable(Request.Options.class));
@@ -113,10 +114,10 @@ public class PolarisFeignClientTest {
 				Maps.newHashMap(), null, requestTemplate), null);
 		assertThat(response.status()).isEqualTo(200);
 
-		// 200
+		// 502
 		response = polarisFeignClient.execute(Request.create(Request.HttpMethod.POST, "http://localhost:8080/test",
 				Maps.newHashMap(), null, requestTemplate), null);
-		assertThat(response.status()).isEqualTo(500);
+		assertThat(response.status()).isEqualTo(502);
 
 		// Exception
 		try {

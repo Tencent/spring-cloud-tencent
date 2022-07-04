@@ -56,15 +56,13 @@ public class DiscoveryPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ProviderAPI polarisProvider(SDKContext polarisContext)
-			throws PolarisException {
+	public ProviderAPI polarisProvider(SDKContext polarisContext) throws PolarisException {
 		return DiscoveryAPIFactory.createProviderAPIByContext(polarisContext);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ConsumerAPI polarisConsumer(SDKContext polarisContext)
-			throws PolarisException {
+	public ConsumerAPI polarisConsumer(SDKContext polarisContext) throws PolarisException {
 		return DiscoveryAPIFactory.createConsumerAPIByContext(polarisContext);
 	}
 
@@ -98,5 +96,4 @@ public class DiscoveryPropertiesAutoConfiguration {
 	public boolean isDiscoveryEnabled() {
 		return discoveryEnabled;
 	}
-
 }

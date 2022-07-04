@@ -42,8 +42,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Haotian Zhang
  */
-public class EncodeTransferMedataRestTemplateInterceptor
-		implements ClientHttpRequestInterceptor, Ordered {
+public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRequestInterceptor, Ordered {
 
 	@Override
 	public int getOrder() {
@@ -71,5 +70,4 @@ public class EncodeTransferMedataRestTemplateInterceptor
 
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
 	}
-
 }

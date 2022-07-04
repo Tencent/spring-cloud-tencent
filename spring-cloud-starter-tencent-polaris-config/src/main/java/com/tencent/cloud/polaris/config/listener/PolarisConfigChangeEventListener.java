@@ -107,5 +107,4 @@ public final class PolarisConfigChangeEventListener implements ApplicationListen
 		});
 		return ret;
 	}
-
 }

@@ -52,30 +52,25 @@ public class MetadataContext {
 	public static String LOCAL_SERVICE;
 
 	static {
-		String namespace = ApplicationContextAwareUtils
-				.getProperties("spring.cloud.polaris.namespace");
+		String namespace = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace");
 		if (StringUtils.isEmpty(namespace)) {
 			namespace = ApplicationContextAwareUtils
 					.getProperties("spring.cloud.polaris.discovery.namespace", "default");
 		}
-
 		if (StringUtils.isEmpty(namespace)) {
 			LOG.error("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
 					+ "spring.cloud.polaris.discovery.namespace");
 			throw new RuntimeException("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
 					+ "spring.cloud.polaris.discovery.namespace");
 		}
-
 		LOCAL_NAMESPACE = namespace;
 
-		String serviceName = ApplicationContextAwareUtils
-				.getProperties("spring.cloud.polaris.service");
+		String serviceName = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service");
 		if (StringUtils.isEmpty(serviceName)) {
 			serviceName = ApplicationContextAwareUtils.getProperties(
 					"spring.cloud.polaris.discovery.service", ApplicationContextAwareUtils
 							.getProperties("spring.application.name", null));
 		}
-
 		if (StringUtils.isEmpty(serviceName)) {
 			LOG.error("service name should not be blank. please configure spring.cloud.polaris.service or "
 					+ "spring.cloud.polaris.discovery.service or spring.application.name");
@@ -90,7 +85,6 @@ public class MetadataContext {
 	public MetadataContext() {
 		this.fragmentContexts = new ConcurrentHashMap<>();
 	}
-
 
 	public Map<String, String> getFragmentContext(String fragment) {
 		Map<String, String> fragmentContext = fragmentContexts.get(fragment);

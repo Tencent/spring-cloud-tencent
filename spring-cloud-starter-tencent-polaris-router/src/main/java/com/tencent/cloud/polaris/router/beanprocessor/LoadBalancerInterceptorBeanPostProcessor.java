@@ -37,7 +37,8 @@ import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 /**
  * Replace LoadBalancerInterceptor with PolarisLoadBalancerInterceptor.
  * PolarisLoadBalancerInterceptor can pass routing context information.
- *@author lepdou 2022-05-18
+ *
+ * @author lepdou 2022-05-18
  */
 public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 

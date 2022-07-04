@@ -49,7 +49,8 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 
 /**
  * Replaces the default LoadBalancerClientFilter implementation.
- *@author lepdou 2022-06-10
+ *
+ * @author lepdou 2022-06-10
  */
 public class PolarisLoadBalancerClientFilter extends LoadBalancerClientFilter {
 	private final static Logger LOGGER = LoggerFactory.getLogger(PolarisLoadBalancerClientFilter.class);

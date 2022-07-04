@@ -56,5 +56,4 @@ public class ConfigFileGroup {
 	public String toString() {
 		return "ConfigFileGroup{" + "name='" + name + '\'' + ", file=" + files + '}';
 	}
-
 }

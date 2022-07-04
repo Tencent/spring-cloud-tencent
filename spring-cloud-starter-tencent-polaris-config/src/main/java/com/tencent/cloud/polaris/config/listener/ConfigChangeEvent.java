@@ -84,5 +84,4 @@ public final class ConfigChangeEvent {
 	public Set<String> interestedChangedKeys() {
 		return interestedChangedKeys;
 	}
-
 }

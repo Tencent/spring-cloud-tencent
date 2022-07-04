@@ -52,6 +52,7 @@ import static com.tencent.polaris.configuration.api.core.ChangeType.MODIFIED;
  * <p>Refer to the Apollo project implementation：
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/internals/AbstractConfig.java>
  *     AbstractConfig</a></code>
+ *
  * @author Palmer Xu 2022-06-06
  */
 public final class PolarisConfigListenerContext {
@@ -60,31 +61,29 @@ public final class PolarisConfigListenerContext {
 	 * Logger instance.
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisConfigListenerContext.class);
-
 	/**
 	 * Execute service Atomic Reference Cache .
 	 */
 	private static final AtomicReference<ExecutorService> EAR = new AtomicReference<>();
-
 	/**
 	 * All custom {@link ConfigChangeListener} instance defined in application .
 	 */
 	private static final List<ConfigChangeListener> listeners = Lists.newCopyOnWriteArrayList();
-
 	/**
 	 * All custom interested keys defined in application .
 	 */
 	private static final Map<ConfigChangeListener, Set<String>> interestedKeys = Maps.newHashMap();
-
 	/**
 	 * All custom interested key prefixes defined in application .
 	 */
 	private static final Map<ConfigChangeListener, Set<String>> interestedKeyPrefixes = Maps.newHashMap();
-
 	/**
 	 * Cache all latest configuration information for users in the application environment .
 	 */
 	private static final Cache<String, Object> properties = CacheBuilder.newBuilder().build();
+
+	private PolarisConfigListenerContext() {
+	}
 
 	/**
 	 * Get or Created new execute server .
@@ -273,5 +272,4 @@ public final class PolarisConfigListenerContext {
 
 		return Collections.unmodifiableSet(interestedChangedKeys);
 	}
-
 }

@@ -54,18 +54,17 @@ public class PolarisServerListTest {
 
 	private static NamingServer namingServer;
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(PolarisContextAutoConfiguration.class,
-							PolarisServerListTest.PolarisPropertiesConfiguration.class,
-							PolarisDiscoveryClientConfiguration.class,
-							PolarisDiscoveryAutoConfiguration.class,
-							PolarisContextAutoConfiguration.class))
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(
+					PolarisContextAutoConfiguration.class,
+					PolarisServerListTest.PolarisPropertiesConfiguration.class,
+					PolarisDiscoveryClientConfiguration.class,
+					PolarisDiscoveryAutoConfiguration.class,
+					PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
-			.withPropertyValues(
-					"spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
+			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
 	private IClientConfig iClientConfig;
@@ -75,12 +74,11 @@ public class PolarisServerListTest {
 		namingServer = NamingServer.startNamingServer(10081);
 
 		// add service
-		namingServer.getNamingService()
-				.addService(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER));
+		namingServer.getNamingService().addService(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER));
 	}
 
 	@AfterClass
-	public static void afterClass() throws Exception {
+	public static void afterClass() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
@@ -97,8 +95,7 @@ public class PolarisServerListTest {
 	@Test
 	public void testGetInitialListOfServers() {
 		this.contextRunner.run(context -> {
-			PolarisDiscoveryHandler polarisDiscoveryHandler = context
-					.getBean(PolarisDiscoveryHandler.class);
+			PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
 			PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
 			serverList.initWithNiwsConfig(iClientConfig);
 
@@ -110,8 +107,7 @@ public class PolarisServerListTest {
 	@Test
 	public void testGetUpdatedListOfServers() {
 		this.contextRunner.run(context -> {
-			PolarisDiscoveryHandler polarisDiscoveryHandler = context
-					.getBean(PolarisDiscoveryHandler.class);
+			PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
 			PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
 			serverList.initWithNiwsConfig(iClientConfig);
 
@@ -121,8 +117,7 @@ public class PolarisServerListTest {
 			instanceParameter.setIsolated(false);
 			instanceParameter.setWeight(100);
 			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER);
-			namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3,
-					instanceParameter);
+			namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3, instanceParameter);
 
 			List<Server> servers = serverList.getUpdatedListOfServers();
 			assertThat(servers).hasSize(3);
@@ -135,8 +130,7 @@ public class PolarisServerListTest {
 	@Test
 	public void testProperties() {
 		this.contextRunner.run(context -> {
-			PolarisDiscoveryHandler polarisDiscoveryHandler = context
-					.getBean(PolarisDiscoveryHandler.class);
+			PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
 			PolarisServerList serverList = new PolarisServerList(polarisDiscoveryHandler);
 			serverList.initWithNiwsConfig(iClientConfig);
 
@@ -149,5 +143,4 @@ public class PolarisServerListTest {
 	static class PolarisPropertiesConfiguration {
 
 	}
-
 }

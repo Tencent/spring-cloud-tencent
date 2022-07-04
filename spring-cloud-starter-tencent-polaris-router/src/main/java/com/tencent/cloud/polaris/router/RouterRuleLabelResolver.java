@@ -33,6 +33,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * Resolve label expressions from routing rules.
+ *
  * @author lepdou 2022-05-19
  */
 public class RouterRuleLabelResolver {

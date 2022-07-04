@@ -45,8 +45,7 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  */
 public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor, Ordered {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(EncodeTransferMedataFeignInterceptor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EncodeTransferMedataFeignInterceptor.class);
 
 	@Override
 	public int getOrder() {

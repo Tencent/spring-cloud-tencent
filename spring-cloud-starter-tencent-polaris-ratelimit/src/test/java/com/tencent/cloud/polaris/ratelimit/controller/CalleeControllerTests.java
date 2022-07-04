@@ -88,7 +88,7 @@ public class CalleeControllerTests {
 	}
 
 	@AfterClass
-	public static void afterClass() throws Exception {
+	public static void afterClass() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
@@ -111,10 +111,8 @@ public class CalleeControllerTests {
 			try {
 				if (i > 9) {
 					QuotaResponse quotaResponse = mock(QuotaResponse.class);
-					when(quotaResponse.getCode())
-							.thenReturn(QuotaResultCode.QuotaResultLimited);
-					when(quotaResponse.getInfo())
-							.thenReturn("Testing rate limit after 10 times success.");
+					when(quotaResponse.getCode()).thenReturn(QuotaResultCode.QuotaResultLimited);
+					when(quotaResponse.getInfo()).thenReturn("Testing rate limit after 10 times success.");
 					when(limitAPI.getQuota(any())).thenReturn(quotaResponse);
 				}
 				String result = restTemplate.getForObject(url, String.class);
@@ -146,5 +144,4 @@ public class CalleeControllerTests {
 		}
 
 	}
-
 }

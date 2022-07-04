@@ -51,10 +51,8 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 	private final SDKContext polarisContext;
 
 	private final StaticMetadataManager staticMetadataManager;
-
-	private Map<String, String> metadata;
-
 	private final String host;
+	private Map<String, String> metadata;
 
 	public PolarisRegistration(
 			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
@@ -89,8 +87,7 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 
 	@Override
 	public boolean isSecure() {
-		return StringUtils.equalsIgnoreCase(polarisDiscoveryProperties.getProtocol(),
-				"https");
+		return StringUtils.equalsIgnoreCase(polarisDiscoveryProperties.getProtocol(), "https");
 	}
 
 	@Override

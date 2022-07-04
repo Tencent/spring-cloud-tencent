@@ -32,8 +32,7 @@
 - [fix: shutdown thread pool before the container closes](https://github.com/Tencent/spring-cloud-tencent/pull/353)
 - [docs:update logo in README.](https://github.com/Tencent/spring-cloud-tencent/pull/358)
 - [Refator JacksonUtils and JacksonUtilsTest](https://github.com/Tencent/spring-cloud-tencent/pull/365)
+- [refactor:optimize project and code.](https://github.com/Tencent/spring-cloud-tencent/pull/368)
 - [docs: Fix javadoc <br /> error](https://github.com/Tencent/spring-cloud-tencent/pull/371)
 - [UT: add Polaris LoadBalancer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/373)
 - [docs:update docs](https://github.com/Tencent/spring-cloud-tencent/pull/378)
-
-

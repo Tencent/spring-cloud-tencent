@@ -38,7 +38,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 /**
  * configuration for router module singleton beans.
  *
- *@author lepdou 2022-05-11
+ * @author lepdou 2022-05-11
  */
 @Configuration
 @RibbonClients(defaultConfiguration = {RibbonConfiguration.class})

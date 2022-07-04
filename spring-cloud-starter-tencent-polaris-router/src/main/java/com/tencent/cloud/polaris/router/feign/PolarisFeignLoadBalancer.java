@@ -41,8 +41,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * In order to pass router context for {@link com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule}.
  *
- * @author lepdou 2022-05-16
- * @author cheese8 2022-06-18
+ * @author lepdou, cheese8
  */
 public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 

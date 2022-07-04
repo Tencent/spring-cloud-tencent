@@ -53,6 +53,7 @@ public class PolarisDiscoveryHandler {
 
 	/**
 	 * Get a list of healthy instances.
+	 *
 	 * @param service service name
 	 * @return list of healthy instances
 	 */
@@ -66,6 +67,7 @@ public class PolarisDiscoveryHandler {
 
 	/**
 	 * Return all instances for the given service.
+	 *
 	 * @param service serviceName
 	 * @return list of instances
 	 */
@@ -87,6 +89,7 @@ public class PolarisDiscoveryHandler {
 
 	/**
 	 * Return all service for given namespace.
+	 *
 	 * @return service list
 	 */
 	public ServicesResponse GetServices() {
@@ -95,5 +98,4 @@ public class PolarisDiscoveryHandler {
 		request.setNamespace(namespace);
 		return polarisConsumer.getServices(request);
 	}
-
 }

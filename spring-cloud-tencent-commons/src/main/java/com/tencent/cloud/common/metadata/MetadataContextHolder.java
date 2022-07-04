@@ -89,7 +89,8 @@ public final class MetadataContextHolder {
 
 		// Save transitive metadata to ThreadLocal.
 		if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
-			Map<String, String> staticTransitiveMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+			Map<String, String> staticTransitiveMetadata =
+					metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 			Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 			mergedTransitiveMetadata.putAll(staticTransitiveMetadata);
 			mergedTransitiveMetadata.putAll(dynamicTransitiveMetadata);
@@ -106,5 +107,4 @@ public final class MetadataContextHolder {
 	public static void remove() {
 		METADATA_CONTEXT.remove();
 	}
-
 }

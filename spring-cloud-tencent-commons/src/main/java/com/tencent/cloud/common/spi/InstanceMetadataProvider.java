@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
  * Instance's custom metadata, metadata will be register to polaris server.
+ *
  * @author lepdou 2022-06-16
  */
 public interface InstanceMetadataProvider {

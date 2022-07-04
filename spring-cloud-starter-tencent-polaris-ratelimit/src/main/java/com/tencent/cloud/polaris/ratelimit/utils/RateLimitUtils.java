@@ -63,5 +63,4 @@ public final class RateLimitUtils {
 
 		return RateLimitConstant.QUOTA_LIMITED_INFO;
 	}
-
 }
