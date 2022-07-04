@@ -17,6 +17,7 @@
     <modules>
         <module>gateway-scg-service</module>
         <module>gateway-callee-service</module>
+        <module>gateway-callee-service2</module>
     </modules>
 
     <build>

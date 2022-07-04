@@ -13,34 +13,23 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.example;
+package com.tencent.cloud.polaris.gateway.example.callee;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
 
 /**
- * Circuit breaker example caller application.
+ * Gateway callee application.
  *
  * @author Haotian Zhang
  */
 @SpringBootApplication
-@EnableFeignClients
-public class ServiceA {
+public class GatewayCalleeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ServiceA.class, args);
+		SpringApplication.run(GatewayCalleeApplication.class, args);
 	}
 
-	@Bean
-	@LoadBalanced
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
 }
