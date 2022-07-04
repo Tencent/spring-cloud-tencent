@@ -18,9 +18,8 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;

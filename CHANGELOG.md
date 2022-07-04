@@ -30,3 +30,4 @@
 - [docs: Update Readme.md](https://github.com/Tencent/spring-cloud-tencent/pull/381)
 - [docs:optimize example](https://github.com/Tencent/spring-cloud-tencent/pull/386)
 - [Feature: support spring cloud gateway routers](https://github.com/Tencent/spring-cloud-tencent/pull/388)
+- [Optimize:optimize load balancer code and add testcase](https://github.com/Tencent/spring-cloud-tencent/pull/379)
