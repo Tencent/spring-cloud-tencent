@@ -63,6 +63,10 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerClientFilterTest {
 
+	private static final String callerService = "callerService";
+	private static final String calleeService = "calleeService";
+	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
+	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
 	@Mock
 	private MetadataLocalProperties metadataLocalProperties;
 	@Mock
@@ -73,12 +77,6 @@ public class PolarisLoadBalancerClientFilterTest {
 	private LoadBalancerClient loadBalancerClient;
 	@Mock
 	private LoadBalancerProperties loadBalancerProperties;
-
-	private static final String callerService = "callerService";
-	private static final String calleeService = "calleeService";
-
-	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
 
 	@BeforeClass
 	public static void beforeClass() {

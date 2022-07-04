@@ -59,5 +59,4 @@ public class PolarisConfigAutoConfiguration {
 	public PolarisConfigChangeEventListener polarisConfigChangeEventListener() {
 		return new PolarisConfigChangeEventListener();
 	}
-
 }

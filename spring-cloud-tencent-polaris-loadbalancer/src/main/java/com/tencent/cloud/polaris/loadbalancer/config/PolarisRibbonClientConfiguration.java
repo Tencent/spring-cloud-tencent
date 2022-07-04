@@ -45,5 +45,4 @@ public class PolarisRibbonClientConfiguration {
 		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
 				consumerAPI, polarisLoadBalancerProperties);
 	}
-
 }

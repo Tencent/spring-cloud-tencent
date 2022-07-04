@@ -36,7 +36,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,10 +65,8 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	public void testTransitiveMetadataFromApplicationConfig() {
 		String metadata = testFeign.test();
 		Assertions.assertThat(metadata).isEqualTo("2");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
 	}
 
 	@SpringBootApplication
@@ -78,9 +75,7 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	protected static class TestApplication {
 
 		@RequestMapping("/test")
-		public String test(
-				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
-				throws UnsupportedEncodingException {
+		public String test() throws UnsupportedEncodingException {
 			return MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b");
 		}
 
@@ -89,7 +84,6 @@ public class EncodeTransferMedataFeignInterceptorTest {
 
 			@RequestMapping("/test")
 			String test();
-
 		}
 
 		@Configuration
@@ -100,9 +94,6 @@ public class EncodeTransferMedataFeignInterceptorTest {
 				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
 						"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
 			}
-
 		}
-
 	}
-
 }

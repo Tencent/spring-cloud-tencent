@@ -43,7 +43,7 @@ import org.springframework.web.server.ServerWebExchange;
  * @author lepdou 2022-05-13
  * @author cheese8 2022-06-20
  */
-public class ExpressionLabelUtils {
+public final class ExpressionLabelUtils {
 
 	/**
 	 * the expression prefix of header label.
@@ -81,6 +81,8 @@ public class ExpressionLabelUtils {
 	 * the suffix of expression.
 	 */
 	public static final String LABEL_SUFFIX = "}";
+	private ExpressionLabelUtils() {
+	}
 
 	public static boolean isExpressionLabel(String labelKey) {
 		if (StringUtils.isEmpty(labelKey)) {

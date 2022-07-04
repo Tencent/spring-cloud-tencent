@@ -47,5 +47,4 @@ public class PolarisReactiveDiscoveryClientConfiguration {
 			PolarisServiceDiscovery polarisServiceDiscovery) {
 		return new PolarisReactiveDiscoveryClient(polarisServiceDiscovery);
 	}
-
 }

@@ -30,10 +30,8 @@ import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
  */
 public class PolarisLoadBalancerFeignClient extends LoadBalancerFeignClient {
 
-	public PolarisLoadBalancerFeignClient(Client delegate,
-			CachingSpringLoadBalancerFactory lbClientFactory,
+	public PolarisLoadBalancerFeignClient(Client delegate, CachingSpringLoadBalancerFactory lbClientFactory,
 			SpringClientFactory clientFactory) {
 		super(delegate, lbClientFactory, clientFactory);
 	}
-
 }

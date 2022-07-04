@@ -44,12 +44,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RouterRuleLabelResolverTest {
 
-	@Mock
-	private ServiceRuleManager serviceRuleManager;
-
 	private final String testNamespace = "testNamespace";
 	private final String testSourceService = "sourceService";
 	private final String testDstService = "dstService";
+	@Mock
+	private ServiceRuleManager serviceRuleManager;
 
 	@Test
 	public void test() {

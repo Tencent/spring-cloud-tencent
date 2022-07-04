@@ -21,12 +21,15 @@ package com.tencent.cloud.polaris.router;
 /**
  * Router constants.
  *
- *@author lepdou 2022-05-17
+ * @author lepdou 2022-05-17
  */
-public class RouterConstants {
+public final class RouterConstants {
 
 	/**
 	 * the header of router label.
 	 */
 	public static final String ROUTER_LABEL_HEADER = "internal-router-label";
+
+	private RouterConstants() {
+	}
 }

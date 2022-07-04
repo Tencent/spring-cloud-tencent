@@ -36,7 +36,8 @@ import org.springframework.cloud.gateway.filter.LoadBalancerClientFilter;
 
 /**
  * Replace LoadBalancerClientFilter with PolarisLoadBalancerClientFilter.
- *@author lepdou 2022-06-15
+ *
+ * @author lepdou 2022-06-15
  */
 public class LoadBalancerClientFilterBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 

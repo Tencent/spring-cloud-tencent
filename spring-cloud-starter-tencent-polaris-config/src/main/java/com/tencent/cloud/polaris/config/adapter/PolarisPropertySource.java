@@ -74,5 +74,4 @@ public class PolarisPropertySource extends MapPropertySource {
 		return "PolarisPropertySource{" + "namespace='" + namespace + '\'' + ", group='"
 				+ group + '\'' + ", fileName='" + fileName + '\'' + '}';
 	}
-
 }

@@ -102,5 +102,4 @@ public class SimpleClientHttpResponseTest extends AbstractClientHttpResponse {
 			// ignore
 		}
 	}
-
 }

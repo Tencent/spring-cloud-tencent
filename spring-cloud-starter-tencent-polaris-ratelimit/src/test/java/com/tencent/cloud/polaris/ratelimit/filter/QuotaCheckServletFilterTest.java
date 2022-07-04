@@ -73,27 +73,26 @@ import static org.mockito.Mockito.when;
 })
 public class QuotaCheckServletFilterTest {
 
-	private PolarisRateLimiterLabelServletResolver labelResolver = exchange -> Collections.singletonMap("ServletResolver", "ServletResolver");
-
-	private QuotaCheckServletFilter quotaCheckServletFilter;
-
-	private QuotaCheckServletFilter quotaCheckWithHtmlRejectTipsServletFilter;
-
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<ExpressionLabelUtils> expressionLabelUtilsMockedStatic;
+	private PolarisRateLimiterLabelServletResolver labelResolver =
+			exchange -> Collections.singletonMap("ServletResolver", "ServletResolver");
+	private QuotaCheckServletFilter quotaCheckServletFilter;
+	private QuotaCheckServletFilter quotaCheckWithHtmlRejectTipsServletFilter;
+
 	@BeforeClass
 	public static void beforeClass() {
 		expressionLabelUtilsMockedStatic = mockStatic(ExpressionLabelUtils.class);
-		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet())).thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
+		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet()))
+				.thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
 
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
-
 	}
 
 	@AfterClass
-	public static void afterClass() throws Exception {
+	public static void afterClass() {
 		mockedApplicationContextAwareUtils.close();
 		expressionLabelUtilsMockedStatic.close();
 	}
@@ -128,10 +127,11 @@ public class QuotaCheckServletFilterTest {
 		polarisRateLimitWithHtmlRejectTipsProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
-		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.EMPTY_SET);
+		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.emptySet());
 
 		this.quotaCheckServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
-		this.quotaCheckWithHtmlRejectTipsServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckWithHtmlRejectTipsServletFilter = new QuotaCheckServletFilter(
+				limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver);
 	}
 
 	@Test

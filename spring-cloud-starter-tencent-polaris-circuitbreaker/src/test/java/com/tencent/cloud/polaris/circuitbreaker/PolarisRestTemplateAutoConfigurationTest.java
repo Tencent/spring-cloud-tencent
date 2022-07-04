@@ -42,11 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolarisRestTemplateAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(
-							PolarisRestTemplateAutoConfigurationTester.class,
-							PolarisContextAutoConfiguration.class,
-							PolarisRestTemplateAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(
+					PolarisRestTemplateAutoConfigurationTester.class,
+					PolarisContextAutoConfiguration.class,
+					PolarisRestTemplateAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test
@@ -68,5 +67,4 @@ public class PolarisRestTemplateAutoConfigurationTest {
 			return new RestTemplate();
 		}
 	}
-
 }

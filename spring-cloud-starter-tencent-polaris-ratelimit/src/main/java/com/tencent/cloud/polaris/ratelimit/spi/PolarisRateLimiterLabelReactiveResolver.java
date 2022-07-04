@@ -35,5 +35,4 @@ public interface PolarisRateLimiterLabelReactiveResolver {
 	 * @return resolved labels
 	 */
 	Map<String, String> resolve(ServerWebExchange exchange);
-
 }

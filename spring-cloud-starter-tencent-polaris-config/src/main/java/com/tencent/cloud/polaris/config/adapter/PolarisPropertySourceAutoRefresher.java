@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.slf4j.Logger;
@@ -46,18 +45,14 @@ import org.springframework.util.CollectionUtils;
 public class PolarisPropertySourceAutoRefresher
 		implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(PolarisPropertySourceAutoRefresher.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisPropertySourceAutoRefresher.class);
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
-
-	private ApplicationContext applicationContext;
-
 	private final ContextRefresher contextRefresher;
-
 	private final AtomicBoolean registered = new AtomicBoolean(false);
+	private ApplicationContext applicationContext;
 
 	public PolarisPropertySourceAutoRefresher(
 			PolarisConfigProperties polarisConfigProperties,
@@ -69,8 +64,7 @@ public class PolarisPropertySourceAutoRefresher
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -84,8 +78,7 @@ public class PolarisPropertySourceAutoRefresher
 			return;
 		}
 
-		List<PolarisPropertySource> polarisPropertySources = polarisPropertySourceManager
-				.getAllPropertySources();
+		List<PolarisPropertySource> polarisPropertySources = polarisPropertySourceManager.getAllPropertySources();
 		if (CollectionUtils.isEmpty(polarisPropertySources)) {
 			return;
 		}
@@ -97,45 +90,36 @@ public class PolarisPropertySourceAutoRefresher
 		// register polaris config publish event
 		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
 			polarisPropertySource.getConfigKVFile()
-					.addChangeListener(new ConfigKVFileChangeListener() {
-						@Override
-						public void onChange(
-								ConfigKVFileChangeEvent configKVFileChangeEvent) {
-							LOGGER.info(
-									"[SCT Config]  received polaris config change event and will refresh spring context."
-											+ "namespace = {}, group = {}, fileName = {}",
-									polarisPropertySource.getNamespace(),
-									polarisPropertySource.getGroup(),
-									polarisPropertySource.getFileName());
+					.addChangeListener((ConfigKVFileChangeListener) configKVFileChangeEvent -> {
+						LOGGER.info(
+								"[SCT Config]  received polaris config change event and will refresh spring context."
+										+ "namespace = {}, group = {}, fileName = {}",
+								polarisPropertySource.getNamespace(),
+								polarisPropertySource.getGroup(),
+								polarisPropertySource.getFileName());
 
-							Map<String, Object> source = polarisPropertySource
-									.getSource();
+						Map<String, Object> source = polarisPropertySource.getSource();
 
-							for (String changedKey : configKVFileChangeEvent
-									.changedKeys()) {
-								ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent
-										.getChangeInfo(changedKey);
+						for (String changedKey : configKVFileChangeEvent.changedKeys()) {
+							ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent
+									.getChangeInfo(changedKey);
 
-								LOGGER.info("[SCT Config] changed property = {}",
-										configPropertyChangeInfo);
+							LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
 
-								switch (configPropertyChangeInfo.getChangeType()) {
-								case MODIFIED:
-								case ADDED:
-									source.put(changedKey,
-											configPropertyChangeInfo.getNewValue());
-									break;
-								case DELETED:
-									source.remove(changedKey);
-									break;
-								}
+							switch (configPropertyChangeInfo.getChangeType()) {
+							case MODIFIED:
+							case ADDED:
+								source.put(changedKey, configPropertyChangeInfo.getNewValue());
+								break;
+							case DELETED:
+								source.remove(changedKey);
+								break;
 							}
-
-							// rebuild beans with @RefreshScope annotation
-							contextRefresher.refresh();
 						}
+
+						// rebuild beans with @RefreshScope annotation
+						contextRefresher.refresh();
 					});
 		}
 	}
-
 }

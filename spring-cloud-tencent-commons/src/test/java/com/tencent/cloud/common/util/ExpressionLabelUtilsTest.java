@@ -210,5 +210,4 @@ public class ExpressionLabelUtilsTest {
 		Assert.assertNull(result.get(invalidLabel8));
 		Assert.assertNull(result.get(invalidLabel9));
 	}
-
 }

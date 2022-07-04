@@ -47,6 +47,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisConfigFileLocatorTest {
 
+	private final String testNamespace = "testNamespace";
+	private final String testServiceName = "testServiceName";
 	@Mock
 	private PolarisConfigProperties polarisConfigProperties;
 	@Mock
@@ -57,9 +59,6 @@ public class PolarisConfigFileLocatorTest {
 	private PolarisPropertySourceManager polarisPropertySourceManager;
 	@Mock
 	private Environment environment;
-
-	private final String testNamespace = "testNamespace";
-	private final String testServiceName = "testServiceName";
 
 	@Test
 	public void testLoadApplicationPropertiesFile() {

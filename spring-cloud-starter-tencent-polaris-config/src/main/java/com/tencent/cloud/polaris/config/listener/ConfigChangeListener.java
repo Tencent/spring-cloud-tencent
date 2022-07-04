@@ -31,5 +31,4 @@ public interface ConfigChangeListener {
 	 * @param changeEvent the event for this change
 	 */
 	void onChange(ConfigChangeEvent changeEvent);
-
 }

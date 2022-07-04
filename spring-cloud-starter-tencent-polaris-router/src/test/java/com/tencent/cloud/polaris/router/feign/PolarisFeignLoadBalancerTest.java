@@ -73,7 +73,8 @@ public class PolarisFeignLoadBalancerTest {
 
 		// mock ApplicationContextAwareUtils#getProperties
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString())).thenReturn("unit-test");
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+					.thenReturn("unit-test");
 
 			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 			// mock MetadataContextHolder#get
@@ -105,8 +106,8 @@ public class PolarisFeignLoadBalancerTest {
 
 		// mock ApplicationContextAwareUtils#getProperties
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString())).thenReturn("unit-test");
-
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+					.thenReturn("unit-test");
 			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 			// mock MetadataContextHolder#get
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {

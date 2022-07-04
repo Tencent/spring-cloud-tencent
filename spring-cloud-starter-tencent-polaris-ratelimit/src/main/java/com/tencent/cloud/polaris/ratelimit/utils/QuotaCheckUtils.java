@@ -57,5 +57,4 @@ public final class QuotaCheckUtils {
 					"get quota failed"));
 		}
 	}
-
 }

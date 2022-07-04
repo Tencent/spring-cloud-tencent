@@ -74,17 +74,17 @@ import static org.mockito.Mockito.when;
 })
 public class QuotaCheckReactiveFilterTest {
 
-	private PolarisRateLimiterLabelReactiveResolver labelResolver = exchange -> Collections.singletonMap("ReactiveResolver", "ReactiveResolver");
-
-	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
-
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<ExpressionLabelUtils> expressionLabelUtilsMockedStatic;
+	private final PolarisRateLimiterLabelReactiveResolver labelResolver =
+			exchange -> Collections.singletonMap("ReactiveResolver", "ReactiveResolver");
+	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
 
 	@BeforeClass
 	public static void beforeClass() {
 		expressionLabelUtilsMockedStatic = mockStatic(ExpressionLabelUtils.class);
-		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet())).thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
+		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet()))
+				.thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
 
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
@@ -125,7 +125,8 @@ public class QuotaCheckReactiveFilterTest {
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
 		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.EMPTY_SET);
 
-		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(
+				limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
 	}
 
 	@Test

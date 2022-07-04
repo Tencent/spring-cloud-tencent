@@ -15,33 +15,41 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris;
+package com.tencent.cloud.polaris.loadbalancer.config;
 
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link DiscoveryPropertiesBootstrapAutoConfiguration}.
+ * Test for {@link PolarisRibbonClientConfiguration}.
  *
- * @author Haotian Zhang
+ * @author wlx
+ * @date 2022/7/2 10:36 上午
  */
-public class DiscoveryPropertiesBootstrapAutoConfigurationTest {
+public class PolarisRibbonClientConfigurationTest {
+
+	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
 
 	@Test
 	public void testDefaultInitialization() {
-		ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner().withConfiguration(
-						AutoConfigurations.of(
-								PolarisContextAutoConfiguration.class,
-								DiscoveryPropertiesBootstrapAutoConfiguration.class))
-				.withPropertyValues("spring.cloud.polaris.enabled=true");
-		applicationContextRunner.run(context -> {
-			assertThat(context).hasSingleBean(DiscoveryPropertiesBootstrapAutoConfiguration.class);
-			assertThat(context).hasSingleBean(DiscoveryPropertiesAutoConfiguration.class);
-		});
+		this.applicationContextRunner
+				.withConfiguration(AutoConfigurations.of(
+						TestApplication.class,
+						PolarisRibbonClientConfiguration.class))
+				.run(context -> {
+					assertThat(context).hasSingleBean(PolarisRibbonClientConfiguration.class);
+					assertThat(context).hasSingleBean(PolarisLoadBalancer.class);
+				});
 	}
+
+	@SpringBootApplication
+	static class TestApplication {
+	}
+
 }

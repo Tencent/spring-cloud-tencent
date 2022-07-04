@@ -51,8 +51,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(PolarisServiceRegistry.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
 	private static final int ttl = 5;
 
@@ -82,9 +81,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	@Override
 	public void register(Registration registration) {
-
 		if (StringUtils.isEmpty(registration.getServiceId())) {
-			log.warn("No service to register for polaris client...");
+			LOG.warn("No service to register for polaris client...");
 			return;
 		}
 		// Register instance.
@@ -107,7 +105,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			providerClient.register(instanceRegisterRequest);
-			log.info("polaris registry, {} {} {}:{} {} register finished",
+			LOG.info("polaris registry, {} {} {}:{} {} register finished",
 					polarisDiscoveryProperties.getNamespace(),
 					registration.getServiceId(), registration.getHost(),
 					registration.getPort(), staticMetadataManager.getMergedStaticMetadata());
@@ -120,19 +118,17 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			}
 		}
 		catch (Exception e) {
-			log.error("polaris registry, {} register failed...{},",
-					registration.getServiceId(), registration, e);
+			LOG.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
 			rethrowRuntimeException(e);
 		}
 	}
 
 	@Override
 	public void deregister(Registration registration) {
-
-		log.info("De-registering from Polaris Server now...");
+		LOG.info("De-registering from Polaris Server now...");
 
 		if (StringUtils.isEmpty(registration.getServiceId())) {
-			log.warn("No dom to de-register for polaris client...");
+			LOG.warn("No dom to de-register for polaris client...");
 			return;
 		}
 
@@ -148,15 +144,14 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			providerClient.deRegister(deRegisterRequest);
 		}
 		catch (Exception e) {
-			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration,
-					e);
+			LOG.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
 		}
 		finally {
 			if (null != heartbeatExecutor) {
 				heartbeatExecutor.shutdown();
 			}
 		}
-		log.info("De-registration finished.");
+		LOG.info("De-registration finished.");
 	}
 
 	@Override
@@ -172,8 +167,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	@Override
 	public Object getStatus(Registration registration) {
 		String serviceName = registration.getServiceId();
-		InstancesResponse instancesResponse = polarisDiscoveryHandler
-				.getInstances(serviceName);
+		InstancesResponse instancesResponse = polarisDiscoveryHandler.getInstances(serviceName);
 		Instance[] instances = instancesResponse.getInstances();
 		if (null == instances || instances.length == 0) {
 			return null;
@@ -207,13 +201,10 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 					}
 
 					String healthCheckUrl = String.format("http://%s:%s%s",
-							heartbeatRequest.getHost(), heartbeatRequest.getPort(),
-							healthCheckEndpoint);
+							heartbeatRequest.getHost(), heartbeatRequest.getPort(), healthCheckEndpoint);
 
 					if (!OkHttpUtil.get(healthCheckUrl, null)) {
-						log.error(
-								"backend service health check failed. health check endpoint = {}",
-								healthCheckEndpoint);
+						LOG.error("backend service health check failed. health check endpoint = {}", healthCheckEndpoint);
 						return;
 					}
 				}
@@ -221,12 +212,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
 			}
 			catch (PolarisException e) {
-				log.error("polaris heartbeat[{}]", e.getCode(), e);
+				LOG.error("polaris heartbeat[{}]", e.getCode(), e);
 			}
 			catch (Exception e) {
-				log.error("polaris heartbeat runtime error", e);
+				LOG.error("polaris heartbeat runtime error", e);
 			}
 		}, ttl, ttl, TimeUnit.SECONDS);
 	}
-
 }

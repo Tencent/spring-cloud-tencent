@@ -47,8 +47,7 @@ import org.springframework.web.server.WebFilterChain;
  */
 public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(DecodeTransferMetadataReactiveFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataReactiveFilter.class);
 
 	@Override
 	public int getOrder() {

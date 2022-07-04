@@ -67,8 +67,7 @@ public class RouterLabelFeignInterceptorTest {
 	@Test
 	public void testResolveRouterLabel() {
 		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor(
-				Collections.singletonList(routerLabelResolver),
-				metadataLocalProperties, routerRuleLabelResolver);
+				Collections.singletonList(routerLabelResolver), metadataLocalProperties, routerRuleLabelResolver);
 
 		// mock request template
 		RequestTemplate requestTemplate = new RequestTemplate();
@@ -122,7 +121,8 @@ public class RouterLabelFeignInterceptorTest {
 				Map<String, String> routerLabelsMap = new HashMap<>();
 				try {
 					String routerLabelContent = routerLabels.stream().findFirst().get();
-					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(routerLabelContent, StandardCharsets.UTF_8.name())));
+					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(
+							URLDecoder.decode(routerLabelContent, StandardCharsets.UTF_8.name())));
 				}
 				catch (UnsupportedEncodingException e) {
 					throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());

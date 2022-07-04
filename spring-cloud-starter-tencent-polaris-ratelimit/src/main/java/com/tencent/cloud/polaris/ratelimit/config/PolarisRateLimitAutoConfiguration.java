@@ -95,7 +95,6 @@ public class PolarisRateLimitAutoConfiguration {
 			registrationBean.setOrder(RateLimitConstant.FILTER_ORDER);
 			return registrationBean;
 		}
-
 	}
 
 	/**
@@ -113,7 +112,5 @@ public class PolarisRateLimitAutoConfiguration {
 			return new QuotaCheckReactiveFilter(limitAPI, labelResolver,
 					polarisRateLimitProperties, rateLimitRuleLabelResolver);
 		}
-
 	}
-
 }

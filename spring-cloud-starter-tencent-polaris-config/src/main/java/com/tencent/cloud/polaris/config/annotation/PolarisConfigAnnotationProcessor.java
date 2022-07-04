@@ -96,10 +96,8 @@ public class PolarisConfigAnnotationProcessor implements BeanPostProcessor, Prio
 		Set<String> interestedKeys =
 				annotatedInterestedKeys.length > 0 ? Sets.newHashSet(annotatedInterestedKeys) : null;
 		Set<String> interestedKeyPrefixes =
-				annotatedInterestedKeyPrefixes.length > 0 ? Sets.newHashSet(annotatedInterestedKeyPrefixes)
-						: null;
+				annotatedInterestedKeyPrefixes.length > 0 ? Sets.newHashSet(annotatedInterestedKeyPrefixes) : null;
 
 		addChangeListener(configChangeListener, interestedKeys, interestedKeyPrefixes);
 	}
-
 }

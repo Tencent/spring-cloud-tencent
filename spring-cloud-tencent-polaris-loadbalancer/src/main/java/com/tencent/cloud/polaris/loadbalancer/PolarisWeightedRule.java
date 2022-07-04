@@ -36,7 +36,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * Polaris weighted load balancer.
  *
- *@author lepdou 2022-05-17
+ * @author lepdou 2022-05-17
  */
 public class PolarisWeightedRule extends AbstractLoadBalancerRule {
 

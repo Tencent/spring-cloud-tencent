@@ -140,5 +140,4 @@ public class PolarisAutoServiceRegistrationTest {
 		doReturn(SERVICE_PROVIDER).when(polarisDiscoveryProperties).getService();
 		assertThat(polarisAutoServiceRegistration.getAppName()).isEqualTo(SERVICE_PROVIDER);
 	}
-
 }

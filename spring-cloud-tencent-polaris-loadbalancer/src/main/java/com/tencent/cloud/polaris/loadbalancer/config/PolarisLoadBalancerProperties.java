@@ -73,5 +73,4 @@ public class PolarisLoadBalancerProperties {
 		return "PolarisLoadBalancerProperties{" + "loadbalancerEnabled=" + enabled
 				+ ", strategy='" + strategy + '\'' + '}';
 	}
-
 }

@@ -196,8 +196,10 @@ public class PolarisLoadBalancerInterceptorTest {
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
-				PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor = new PolarisLoadBalancerInterceptor(loadBalancerClient,
-						loadBalancerRequestFactory, Collections.singletonList(routerLabelResolver), metadataLocalProperties, routerRuleLabelResolver);
+				PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor =
+						new PolarisLoadBalancerInterceptor(loadBalancerClient, loadBalancerRequestFactory,
+								Collections.singletonList(routerLabelResolver), metadataLocalProperties,
+								routerRuleLabelResolver);
 
 				PolarisRouterContext routerContext = polarisLoadBalancerInterceptor.genRouterContext(request, null, calleeService);
 
@@ -219,7 +221,7 @@ public class PolarisLoadBalancerInterceptorTest {
 	static class MockedLoadBalancerRequest<T> implements LoadBalancerRequest<T> {
 
 		@Override
-		public T apply(ServiceInstance instance) throws Exception {
+		public T apply(ServiceInstance instance) {
 			return null;
 		}
 	}

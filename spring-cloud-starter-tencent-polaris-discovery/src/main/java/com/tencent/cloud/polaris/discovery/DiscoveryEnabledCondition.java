@@ -29,21 +29,17 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class DiscoveryEnabledCondition implements Condition {
 
 	@Override
-	public boolean matches(ConditionContext conditionContext,
-			AnnotatedTypeMetadata annotatedTypeMetadata) {
+	public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
 
-		boolean isDiscoveryEnabled = Boolean
-				.parseBoolean(conditionContext.getEnvironment()
-						.getProperty("spring.cloud.polaris.discovery.enabled", "true"));
+		boolean isDiscoveryEnabled = Boolean.parseBoolean(
+				conditionContext.getEnvironment().getProperty("spring.cloud.polaris.discovery.enabled", "true"));
 
-		boolean isConsulDiscoveryEnabled = Boolean
-				.parseBoolean(conditionContext.getEnvironment()
-						.getProperty("spring.cloud.consul.enabled", "false"))
+		boolean isConsulDiscoveryEnabled = Boolean.parseBoolean(
+				conditionContext.getEnvironment().getProperty("spring.cloud.consul.enabled", "false"))
 				&& Boolean.parseBoolean(conditionContext.getEnvironment()
-						.getProperty("spring.cloud.consul.discovery.enabled", "true"));
+				.getProperty("spring.cloud.consul.discovery.enabled", "true"));
 
 		isDiscoveryEnabled |= isConsulDiscoveryEnabled;
 		return isDiscoveryEnabled;
 	}
-
 }
