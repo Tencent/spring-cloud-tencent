@@ -64,5 +64,4 @@ public class ServiceAController {
 				String.class);
 		return entity.getBody();
 	}
-
 }
