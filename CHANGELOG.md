@@ -36,3 +36,4 @@
 - [docs: Fix javadoc <br /> error](https://github.com/Tencent/spring-cloud-tencent/pull/371)
 - [UT: add Polaris LoadBalancer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/373)
 - [docs:update docs](https://github.com/Tencent/spring-cloud-tencent/pull/378)
+- [docs:optimize example](https://github.com/Tencent/spring-cloud-tencent/pull/385)
