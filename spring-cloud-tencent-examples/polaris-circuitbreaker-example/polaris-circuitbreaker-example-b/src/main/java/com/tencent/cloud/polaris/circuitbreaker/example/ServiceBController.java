@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.example;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,21 +31,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/example/service/b")
 public class ServiceBController {
 
-	@Value("${is-throw-runtime-exception:#{false}}")
-	private boolean isThrowRuntimeException;
-
 	/**
 	 * Get service information.
 	 * @return service information
 	 */
 	@GetMapping("/info")
 	public String info() {
-		if (isThrowRuntimeException) {
-			throw new RuntimeException("failed for call my service");
-		}
-		else {
-			return "hello world ! I'm a service B1";
-		}
+		return "hello world ! I'm a service B1";
 	}
-
 }
