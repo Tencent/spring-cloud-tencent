@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
 public class ServiceA {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ServiceA.class);
+		SpringApplication.run(ServiceA.class, args);
 	}
 
 	@Bean
@@ -43,5 +43,4 @@ public class ServiceA {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }
