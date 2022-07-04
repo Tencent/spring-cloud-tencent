@@ -28,3 +28,4 @@
 - [Feature: support actuator for sct core components](https://github.com/Tencent/spring-cloud-tencent/pull/370)
 - [docs: Fix javadoc <br /> error](https://github.com/Tencent/spring-cloud-tencent/pull/375)
 - [docs: Update Readme.md](https://github.com/Tencent/spring-cloud-tencent/pull/381)
+- [docs:optimize example](https://github.com/Tencent/spring-cloud-tencent/pull/386)
