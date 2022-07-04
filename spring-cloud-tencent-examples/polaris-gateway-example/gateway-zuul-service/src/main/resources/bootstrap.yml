@@ -1,6 +1,6 @@
 server:
   session-timeout: 1800
-  port: 48082
+  port: 48084
 spring:
   application:
     name: GatewayZuulService
