@@ -63,5 +63,4 @@ public class ServiceAController {
 				.getForEntity("http://polaris-circuitbreaker-example-b/example/service/b/info", String.class);
 		return entity.getBody();
 	}
-
 }
