@@ -25,6 +25,7 @@ import feign.RequestTemplate;
 
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
+import org.springframework.web.server.ServerWebExchange;
 
 /**
  * The spi for resolving labels from request.
@@ -49,6 +50,15 @@ public interface RouterLabelResolver extends Ordered {
 	 * @return resolved labels
 	 */
 	default Map<String, String> resolve(HttpRequest request, byte[] body) {
+		return Collections.emptyMap();
+	}
+
+	/**
+	 * resolve labels from server web exchange.
+	 * @param exchange the server web exchange.
+	 * @return resolved labels
+	 */
+	default Map<String, String> resolve(ServerWebExchange exchange) {
 		return Collections.emptyMap();
 	}
 }
