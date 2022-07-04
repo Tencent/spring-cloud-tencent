@@ -18,7 +18,9 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -40,26 +42,32 @@ import org.springframework.util.CollectionUtils;
 public class LoadBalancerUtils {
 
 	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers) {
-		List<Instance> instances = servers.toStream().flatMap(List::stream).map(serviceInstance -> {
-			DefaultInstance instance = new DefaultInstance();
-			instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-			instance.setService(serviceInstance.getServiceId());
-			instance.setProtocol(serviceInstance.getScheme());
-			instance.setId(serviceInstance.getInstanceId());
-			instance.setHost(serviceInstance.getHost());
-			instance.setPort(serviceInstance.getPort());
-			instance.setWeight(100);
-			instance.setMetadata(serviceInstance.getMetadata());
-			return instance;
-		}).collect(Collectors.toList());
+		AtomicReference<List<Instance>> instances = new AtomicReference<>();
+		servers.subscribe(serviceInstances -> {
+			instances.set(serviceInstances.stream().map(serviceInstance -> {
+				DefaultInstance instance = new DefaultInstance();
+				instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+				instance.setService(serviceInstance.getServiceId());
+				instance.setProtocol(serviceInstance.getScheme());
+				instance.setId(serviceInstance.getInstanceId());
+				instance.setHost(serviceInstance.getHost());
+				instance.setPort(serviceInstance.getPort());
+				instance.setWeight(100);
+				instance.setMetadata(serviceInstance.getMetadata());
+				return instance;
+			}).collect(Collectors.toList()));
+		});
 
 		String serviceName = null;
-		if (!CollectionUtils.isEmpty(instances)) {
-			serviceName = instances.get(0).getService();
+		if (CollectionUtils.isEmpty(instances.get())) {
+			instances.set(Collections.emptyList());
+		}
+		else {
+			serviceName = instances.get().get(0).getService();
 		}
 
 		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
 
-		return new DefaultServiceInstances(serviceKey, instances);
+		return new DefaultServiceInstances(serviceKey, instances.get());
 	}
 }
