@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ServiceB {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ServiceB.class);
+		SpringApplication.run(ServiceB.class, args);
 	}
-
 }
