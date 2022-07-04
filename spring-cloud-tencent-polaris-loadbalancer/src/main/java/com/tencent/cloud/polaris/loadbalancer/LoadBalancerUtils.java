@@ -18,7 +18,9 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -48,18 +50,19 @@ public class LoadBalancerUtils {
 	 * @return ServiceInstances
 	 */
 	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers) {
-		List<Instance> instances = servers.toStream()
-				.flatMap(List::stream)
+		AtomicReference<List<Instance>> instances = new AtomicReference<>();
+		servers.subscribe(serviceInstances -> instances.set(serviceInstances.stream()
 				.map(LoadBalancerUtils::transferServerToServiceInstance)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList())));
 		String serviceName = null;
-		if (!CollectionUtils.isEmpty(instances)) {
-			serviceName = instances.get(0).getService();
+		if (CollectionUtils.isEmpty(instances.get())) {
+			instances.set(Collections.emptyList());
 		}
-
+		else {
+			serviceName = instances.get().get(0).getService();
+		}
 		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
-
-		return new DefaultServiceInstances(serviceKey, instances);
+		return new DefaultServiceInstances(serviceKey, instances.get());
 	}
 
 	/**
