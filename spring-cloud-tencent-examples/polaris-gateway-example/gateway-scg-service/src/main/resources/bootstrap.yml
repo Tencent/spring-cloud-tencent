@@ -9,14 +9,10 @@ spring:
       metadata:
         content:
           a: 1
-        transitive:
-          - a
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default
       enabled: true
-      discovery:
-        service-list-refresh-interval: 1000
     gateway:
       discovery:
         locator:
