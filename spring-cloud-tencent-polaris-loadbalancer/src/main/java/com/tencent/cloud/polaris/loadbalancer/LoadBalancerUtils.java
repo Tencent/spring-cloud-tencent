@@ -37,27 +37,23 @@ import org.springframework.util.CollectionUtils;
 /**
  * load balancer utils.
  *
- *@author lepdou 2022-05-17
+ * @author lepdou 2022-05-17
  */
 public class LoadBalancerUtils {
 
+	private static final int DEFAULT_WEIGHT = 100;
+
+	/**
+	 * transfer servers to ServiceInstances.
+	 *
+	 * @param servers servers
+	 * @return ServiceInstances
+	 */
 	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers) {
 		AtomicReference<List<Instance>> instances = new AtomicReference<>();
-		servers.subscribe(serviceInstances -> {
-			instances.set(serviceInstances.stream().map(serviceInstance -> {
-				DefaultInstance instance = new DefaultInstance();
-				instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-				instance.setService(serviceInstance.getServiceId());
-				instance.setProtocol(serviceInstance.getScheme());
-				instance.setId(serviceInstance.getInstanceId());
-				instance.setHost(serviceInstance.getHost());
-				instance.setPort(serviceInstance.getPort());
-				instance.setWeight(100);
-				instance.setMetadata(serviceInstance.getMetadata());
-				return instance;
-			}).collect(Collectors.toList()));
-		});
-
+		servers.subscribe(serviceInstances -> instances.set(serviceInstances.stream()
+				.map(LoadBalancerUtils::transferServerToServiceInstance)
+				.collect(Collectors.toList())));
 		String serviceName = null;
 		if (CollectionUtils.isEmpty(instances.get())) {
 			instances.set(Collections.emptyList());
@@ -65,9 +61,27 @@ public class LoadBalancerUtils {
 		else {
 			serviceName = instances.get().get(0).getService();
 		}
-
 		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
-
 		return new DefaultServiceInstances(serviceKey, instances.get());
 	}
+
+	/**
+	 * transfer ServiceInstance to DefaultInstance.
+	 *
+	 * @param serviceInstance serviceInstance
+	 * @return defaultInstance
+	 */
+	public static DefaultInstance transferServerToServiceInstance(ServiceInstance serviceInstance) {
+		DefaultInstance instance = new DefaultInstance();
+		instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+		instance.setService(serviceInstance.getServiceId());
+		instance.setProtocol(serviceInstance.getScheme());
+		instance.setId(serviceInstance.getInstanceId());
+		instance.setHost(serviceInstance.getHost());
+		instance.setPort(serviceInstance.getPort());
+		instance.setWeight(DEFAULT_WEIGHT);
+		instance.setMetadata(serviceInstance.getMetadata());
+		return instance;
+	}
+
 }
