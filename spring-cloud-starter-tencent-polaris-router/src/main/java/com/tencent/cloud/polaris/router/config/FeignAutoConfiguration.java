@@ -30,6 +30,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 
+/**
+ * Auto configuration for feign components.
+ * @author lepdou 2022-07-04
+ */
 @Configuration
 @ConditionalOnClass(name = {"feign.RequestInterceptor"})
 public class FeignAutoConfiguration {
