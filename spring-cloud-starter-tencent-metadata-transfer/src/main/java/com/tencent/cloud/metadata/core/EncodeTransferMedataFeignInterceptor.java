@@ -71,5 +71,4 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 			}
 		}
 	}
-
 }

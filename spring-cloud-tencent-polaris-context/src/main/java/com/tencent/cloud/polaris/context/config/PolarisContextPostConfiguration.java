@@ -27,7 +27,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Post-initialization operations after the application initialization phase is completed.
- *@author lepdou 2022-06-28
+ *
+ * @author lepdou 2022-06-28
  */
 @Configuration
 public class PolarisContextPostConfiguration {

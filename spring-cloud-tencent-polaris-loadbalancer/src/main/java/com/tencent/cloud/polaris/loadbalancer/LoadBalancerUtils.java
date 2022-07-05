@@ -39,9 +39,12 @@ import org.springframework.util.CollectionUtils;
  *
  * @author lepdou 2022-05-17
  */
-public class LoadBalancerUtils {
+public final class LoadBalancerUtils {
 
 	private static final int DEFAULT_WEIGHT = 100;
+
+	private LoadBalancerUtils() {
+	}
 
 	/**
 	 * transfer servers to ServiceInstances.
@@ -83,5 +86,4 @@ public class LoadBalancerUtils {
 		instance.setMetadata(serviceInstance.getMetadata());
 		return instance;
 	}
-
 }

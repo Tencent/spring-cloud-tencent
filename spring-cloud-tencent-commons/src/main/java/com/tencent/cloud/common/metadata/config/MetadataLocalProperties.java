@@ -64,5 +64,4 @@ public class MetadataLocalProperties {
 	public void setTransitive(List<String> transitive) {
 		this.transitive = transitive;
 	}
-
 }

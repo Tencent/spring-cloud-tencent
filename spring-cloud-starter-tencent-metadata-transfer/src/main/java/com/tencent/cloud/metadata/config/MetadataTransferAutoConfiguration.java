@@ -79,7 +79,6 @@ public class MetadataTransferAutoConfiguration {
 		public DecodeTransferMetadataServletFilter metadataServletFilter() {
 			return new DecodeTransferMetadataServletFilter();
 		}
-
 	}
 
 	/**
@@ -93,7 +92,6 @@ public class MetadataTransferAutoConfiguration {
 		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter() {
 			return new DecodeTransferMetadataReactiveFilter();
 		}
-
 	}
 
 	/**
@@ -121,7 +119,6 @@ public class MetadataTransferAutoConfiguration {
 		public EncodeTransferMedataFeignInterceptor encodeTransferMedataFeignInterceptor() {
 			return new EncodeTransferMedataFeignInterceptor();
 		}
-
 	}
 
 	/**
@@ -197,9 +194,6 @@ public class MetadataTransferAutoConfiguration {
 				}
 				return bean;
 			}
-
 		}
-
 	}
-
 }

@@ -39,13 +39,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 /**
  * Integration testing for change listener.
- *@author lepdou 2022-06-11
+ *
+ * @author lepdou 2022-06-11
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT,
 		classes = ConfigChangeListenerTest.TestApplication.class,
-		properties = {"server.port=8081",
-				"spring.config.location = classpath:application-test.yml"})
+		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
 public class ConfigChangeListenerTest {
 
 	@Autowired
@@ -120,5 +120,4 @@ public class ConfigChangeListenerTest {
 			}
 		}
 	}
-
 }

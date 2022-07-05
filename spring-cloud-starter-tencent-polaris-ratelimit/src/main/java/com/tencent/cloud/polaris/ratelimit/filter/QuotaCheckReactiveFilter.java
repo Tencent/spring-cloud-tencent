@@ -162,5 +162,4 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		Set<String> expressionLabels = rateLimitRuleLabelResolver.getExpressionLabelKeys(namespace, service);
 		return ExpressionLabelUtils.resolve(exchange, expressionLabels);
 	}
-
 }

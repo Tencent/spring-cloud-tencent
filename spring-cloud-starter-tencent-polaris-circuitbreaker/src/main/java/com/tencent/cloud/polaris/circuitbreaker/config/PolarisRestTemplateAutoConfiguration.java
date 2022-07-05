@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Auto configuration PolarisRestTemplateAutoConfiguration .
+ * Auto configuration PolarisRestTemplateAutoConfiguration.
  *
  * @author wh 2022/6/21
  */
@@ -55,5 +55,4 @@ public class PolarisRestTemplateAutoConfiguration {
 			PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
 		return new PolarisRestTemplateModifier(restTemplateResponseErrorHandler);
 	}
-
 }

@@ -256,7 +256,5 @@ public class PolarisDiscoveryProperties {
 		public int getOrder() {
 			return ContextConstant.ModifierOrder.LAST;
 		}
-
 	}
-
 }

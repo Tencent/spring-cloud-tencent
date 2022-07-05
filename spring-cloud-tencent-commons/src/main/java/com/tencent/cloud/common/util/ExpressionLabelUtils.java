@@ -40,11 +40,9 @@ import org.springframework.web.server.ServerWebExchange;
 /**
  * the utils for parse label expression.
  *
- * @author lepdou 2022-05-13
- * @author cheese8 2022-06-20
+ * @author lepdou, cheese8
  */
-public class ExpressionLabelUtils {
-
+public final class ExpressionLabelUtils {
 	/**
 	 * the expression prefix of header label.
 	 */
@@ -81,6 +79,8 @@ public class ExpressionLabelUtils {
 	 * the suffix of expression.
 	 */
 	public static final String LABEL_SUFFIX = "}";
+	private ExpressionLabelUtils() {
+	}
 
 	public static boolean isExpressionLabel(String labelKey) {
 		if (StringUtils.isEmpty(labelKey)) {

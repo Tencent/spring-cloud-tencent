@@ -85,7 +85,5 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 				throws UnsupportedEncodingException {
 			return MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b");
 		}
-
 	}
-
 }

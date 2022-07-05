@@ -58,8 +58,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for ${@link PolarisReactiveLoadBalancerClientFilter}
- *@author lepdou 2022-07-04
+ * Test for ${@link PolarisReactiveLoadBalancerClientFilter}.
+ *
+ * @author lepdou 2022-07-04
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisReactiveLoadBalancerClientFilterTest {

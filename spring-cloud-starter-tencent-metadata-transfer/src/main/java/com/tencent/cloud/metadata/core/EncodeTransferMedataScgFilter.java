@@ -78,5 +78,4 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 
 		return chain.filter(exchange.mutate().request(builder.build()).build());
 	}
-
 }

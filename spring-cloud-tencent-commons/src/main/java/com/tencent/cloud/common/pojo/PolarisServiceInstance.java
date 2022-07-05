@@ -93,5 +93,4 @@ public class PolarisServiceInstance implements ServiceInstance {
 	public String getScheme() {
 		return this.scheme;
 	}
-
 }

@@ -105,5 +105,4 @@ public final class MetadataContextHolder {
 	public static void remove() {
 		METADATA_CONTEXT.remove();
 	}
-
 }

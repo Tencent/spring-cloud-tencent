@@ -35,7 +35,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 /**
  * router module auto configuration.
  *
- *@author lepdou 2022-05-11
+ * @author lepdou 2022-05-11
  */
 @Configuration
 @LoadBalancerClients(defaultConfiguration = LoadBalancerConfiguration.class)

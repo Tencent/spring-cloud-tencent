@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
-@Import({ PolarisDiscoveryProperties.class, ConsulContextProperties.class })
+@Import({PolarisDiscoveryProperties.class, ConsulContextProperties.class})
 public class DiscoveryPropertiesAutoConfiguration {
 
 	@Autowired(required = false)
@@ -96,5 +96,4 @@ public class DiscoveryPropertiesAutoConfiguration {
 	public boolean isDiscoveryEnabled() {
 		return discoveryEnabled;
 	}
-
 }

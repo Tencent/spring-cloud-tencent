@@ -67,5 +67,4 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 			return new PolarisServiceInstance(instance);
 		}).collect(Collectors.toList());
 	}
-
 }

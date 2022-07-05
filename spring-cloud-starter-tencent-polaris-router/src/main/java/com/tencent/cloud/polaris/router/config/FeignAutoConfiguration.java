@@ -40,5 +40,4 @@ public class FeignAutoConfiguration {
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		return new RouterLabelFeignInterceptor(routerLabelResolvers, metadataLocalProperties, routerRuleLabelResolver);
 	}
-
 }

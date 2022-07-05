@@ -95,5 +95,4 @@ public class PolarisDiscoveryHandler {
 		request.setNamespace(namespace);
 		return polarisConsumer.getServices(request);
 	}
-
 }

@@ -59,9 +59,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisLoadBalancerInterceptor}
- * @author lepdou 2022-05-26
- * @author cheese8 2022-06-20
+ * test for {@link PolarisLoadBalancerInterceptor}.
+ *
+ * @author lepdou, cheese8
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerInterceptorTest {
@@ -198,7 +198,7 @@ public class PolarisLoadBalancerInterceptorTest {
 	static class MockedLoadBalancerRequest<T> implements LoadBalancerRequest<T> {
 
 		@Override
-		public T apply(ServiceInstance instance) throws Exception {
+		public T apply(ServiceInstance instance) {
 			return null;
 		}
 	}

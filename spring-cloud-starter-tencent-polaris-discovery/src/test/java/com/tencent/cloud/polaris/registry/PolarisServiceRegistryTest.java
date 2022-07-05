@@ -49,11 +49,14 @@ public class PolarisServiceRegistryTest {
 
 	private static NamingServer namingServer;
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(PolarisContextAutoConfiguration.class, PolarisPropertiesConfiguration.class,
-							PolarisDiscoveryClientConfiguration.class, PolarisDiscoveryAutoConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(
+					PolarisContextAutoConfiguration.class,
+					PolarisPropertiesConfiguration.class,
+					PolarisDiscoveryClientConfiguration.class,
+					PolarisDiscoveryAutoConfiguration.class))
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
+			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
@@ -67,7 +70,7 @@ public class PolarisServiceRegistryTest {
 	}
 
 	@AfterClass
-	public static void afterClass() throws Exception {
+	public static void afterClass() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
@@ -126,5 +129,4 @@ public class PolarisServiceRegistryTest {
 	static class PolarisPropertiesConfiguration {
 
 	}
-
 }

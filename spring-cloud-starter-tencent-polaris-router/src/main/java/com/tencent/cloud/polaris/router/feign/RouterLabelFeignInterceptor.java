@@ -46,8 +46,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * Resolver labels from request.
  *
- * @author lepdou 2022-05-12
- * @author cheese8 2022-06-20
+ * @author lepdou, cheese8
  */
 public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelFeignInterceptor.class);
@@ -131,5 +130,4 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 
 		return FeignExpressionLabelUtils.resolve(requestTemplate, labelKeys);
 	}
-
 }

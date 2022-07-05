@@ -54,5 +54,4 @@ public class PolarisDiscoveryClient implements DiscoveryClient {
 	public List<String> getServices() {
 		return polarisServiceDiscovery.getServices();
 	}
-
 }

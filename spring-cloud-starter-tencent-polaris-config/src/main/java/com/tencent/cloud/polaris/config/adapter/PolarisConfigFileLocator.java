@@ -204,5 +204,4 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 		return new PolarisPropertySource(namespace, group, fileName, configKVFile, map);
 	}
-
 }

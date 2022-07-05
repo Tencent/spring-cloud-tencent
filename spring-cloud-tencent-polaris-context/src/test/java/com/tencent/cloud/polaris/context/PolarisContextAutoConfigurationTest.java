@@ -27,14 +27,15 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 
 /**
+ * Test for {@link PolarisContextAutoConfiguration}.
+ *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
 public class PolarisContextAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(UtilAutoConfiguration.class))
-			.withConfiguration(
-					AutoConfigurations.of(PolarisContextAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:8083");
 
 	@Test
@@ -44,5 +45,4 @@ public class PolarisContextAutoConfigurationTest {
 			Assert.assertNotNull(sdkContext);
 		});
 	}
-
 }

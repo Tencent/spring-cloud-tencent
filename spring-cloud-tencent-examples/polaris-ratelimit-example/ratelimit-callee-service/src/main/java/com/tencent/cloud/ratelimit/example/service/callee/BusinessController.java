@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.ratelimit.example.service.callee;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -64,24 +65,28 @@ public class BusinessController {
 	}
 
 	@GetMapping("/invoke")
-	public String invokeInfo() {
-		StringBuilder builder = new StringBuilder();
+	public String invokeInfo() throws InterruptedException {
+		StringBuffer builder = new StringBuffer();
+		CountDownLatch count = new CountDownLatch(30);
 		for (int i = 0; i < 30; i++) {
-			try {
-				ResponseEntity<String> entity = restTemplate.getForEntity("http://" + appName + "/business/info",
-						String.class);
-				builder.append(entity.getBody()).append("<br/>");
-			}
-			catch (RestClientException e) {
-				if (e instanceof TooManyRequests) {
-					builder.append(((TooManyRequests) e).getResponseBodyAsString()).append(index.incrementAndGet())
-							.append("<br/>");
+			new Thread(() -> {
+				try {
+					ResponseEntity<String> entity = restTemplate.getForEntity("http://" + appName + "/business/info",
+							String.class);
+					builder.append(entity.getBody() + "\n");
 				}
-				else {
-					throw e;
+				catch (RestClientException e) {
+					if (e instanceof TooManyRequests) {
+						builder.append("TooManyRequests " + index.incrementAndGet() + "\n");
+					}
+					else {
+						throw e;
+					}
 				}
-			}
+				count.countDown();
+			}).start();
 		}
+		count.await();
 		return builder.toString();
 	}
 

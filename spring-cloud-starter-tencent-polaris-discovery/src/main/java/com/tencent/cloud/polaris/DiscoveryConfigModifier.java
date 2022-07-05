@@ -27,9 +27,9 @@ import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *  Spring Cloud Tencent config Override polaris config.
+ * Spring Cloud Tencent config Override polaris config.
  *
- *@author lepdou 2022-04-24
+ * @author lepdou 2022-04-24
  */
 public class DiscoveryConfigModifier implements PolarisConfigModifier {
 

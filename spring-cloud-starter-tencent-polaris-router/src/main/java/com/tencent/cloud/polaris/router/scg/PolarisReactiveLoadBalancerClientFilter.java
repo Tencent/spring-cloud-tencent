@@ -33,6 +33,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
@@ -71,9 +72,11 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.addOriginalRequestUrl;
 
 /**
- * ReactiveLoadBalancerClientFilter does not have the ability to pass route labels, so it is replaced with PolarisReactiveLoadBalancerClientFilter.
- * The passed route labels are used in {@link com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier}.
- *@author lepdou 2022-06-20
+ * ReactiveLoadBalancerClientFilter does not have the ability to pass route labels, so it is replaced
+ * with PolarisReactiveLoadBalancerClientFilter. The passed route labels are used in
+ * {@link PolarisRouterServiceInstanceListSupplier}.
+ *
+ * @author lepdou 2022-06-20
  */
 public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalancerClientFilter {
 	private static final Logger log = LoggerFactory.getLogger(PolarisReactiveLoadBalancerClientFilter.class);

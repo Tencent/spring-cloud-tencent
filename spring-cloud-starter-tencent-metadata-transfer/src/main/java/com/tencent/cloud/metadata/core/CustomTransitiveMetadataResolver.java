@@ -33,12 +33,14 @@ import org.springframework.web.server.ServerWebExchange;
 
 /**
  * Resolve custom transitive metadata from request.
+ *
  * @author lepdou 2022-05-20
  */
-public class CustomTransitiveMetadataResolver {
-
+public final class CustomTransitiveMetadataResolver {
 	private static final String TRANSITIVE_HEADER_PREFIX = "X-SCT-Metadata-Transitive-";
 	private static final int TRANSITIVE_HEADER_PREFIX_LENGTH = TRANSITIVE_HEADER_PREFIX.length();
+	private CustomTransitiveMetadataResolver() {
+	}
 
 	public static Map<String, String> resolve(ServerWebExchange exchange) {
 		Map<String, String> result = new HashMap<>();
