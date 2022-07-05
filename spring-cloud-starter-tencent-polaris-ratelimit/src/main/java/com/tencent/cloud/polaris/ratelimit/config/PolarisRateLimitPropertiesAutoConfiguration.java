@@ -39,5 +39,4 @@ public class PolarisRateLimitPropertiesAutoConfiguration {
 	public RateLimitConfigModifier rateLimitConfigModifier(PolarisRateLimitProperties polarisRateLimitProperties) {
 		return new RateLimitConfigModifier(polarisRateLimitProperties);
 	}
-
 }

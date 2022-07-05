@@ -21,7 +21,7 @@ import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProces
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisResponseErrorHandler;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateModifier;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateResponseErrorHandler;
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
@@ -72,7 +72,6 @@ public class PolarisCircuitBreakerAutoConfiguration {
 		public PolarisFeignBeanPostProcessor polarisFeignBeanPostProcessor(ConsumerAPI consumerAPI) {
 			return new PolarisFeignBeanPostProcessor(consumerAPI);
 		}
-
 	}
 
 	/**
@@ -99,7 +98,5 @@ public class PolarisCircuitBreakerAutoConfiguration {
 				PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
 			return new PolarisRestTemplateModifier(restTemplateResponseErrorHandler);
 		}
-
 	}
-
 }

@@ -65,5 +65,4 @@ public class LoadBalancerClientFilterBeanPostProcessor implements BeanPostProces
 		}
 		return bean;
 	}
-
 }

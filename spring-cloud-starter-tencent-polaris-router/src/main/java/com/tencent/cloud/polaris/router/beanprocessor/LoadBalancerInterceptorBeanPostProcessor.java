@@ -66,5 +66,4 @@ public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcess
 		}
 		return bean;
 	}
-
 }

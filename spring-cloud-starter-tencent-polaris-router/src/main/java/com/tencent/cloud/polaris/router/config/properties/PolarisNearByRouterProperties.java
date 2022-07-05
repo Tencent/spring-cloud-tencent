@@ -44,5 +44,4 @@ public class PolarisNearByRouterProperties {
 				"enabled=" + enabled +
 				'}';
 	}
-
 }

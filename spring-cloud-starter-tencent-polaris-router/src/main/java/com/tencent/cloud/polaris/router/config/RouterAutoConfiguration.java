@@ -63,5 +63,4 @@ public class RouterAutoConfiguration {
 	public RouterRuleLabelResolver routerRuleLabelResolver(ServiceRuleManager serviceRuleManager) {
 		return new RouterRuleLabelResolver(serviceRuleManager);
 	}
-
 }

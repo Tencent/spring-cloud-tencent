@@ -83,5 +83,4 @@ public final class FeignExpressionLabelUtils {
 	public static String getQueryValue(RequestTemplate request, String key) {
 		return ExpressionLabelUtils.getFirstValue(request.queries(), key);
 	}
-
 }
