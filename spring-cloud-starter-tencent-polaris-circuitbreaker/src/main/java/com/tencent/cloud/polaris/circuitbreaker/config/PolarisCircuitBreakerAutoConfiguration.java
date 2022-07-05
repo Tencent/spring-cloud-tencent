@@ -82,18 +82,17 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
+	@ConditionalOnBean(RestTemplate.class)
 	@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
 	protected static class PolarisRestTemplateAutoConfiguration {
 
 		@Bean
-		@ConditionalOnBean(RestTemplate.class)
 		public PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler(
 				ConsumerAPI consumerAPI, @Autowired(required = false) PolarisResponseErrorHandler polarisResponseErrorHandler) {
 			return new PolarisRestTemplateResponseErrorHandler(consumerAPI, polarisResponseErrorHandler);
 		}
 
 		@Bean
-		@ConditionalOnBean(RestTemplate.class)
 		public PolarisRestTemplateModifier polarisRestTemplateBeanPostProcessor(
 				PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
 			return new PolarisRestTemplateModifier(restTemplateResponseErrorHandler);
