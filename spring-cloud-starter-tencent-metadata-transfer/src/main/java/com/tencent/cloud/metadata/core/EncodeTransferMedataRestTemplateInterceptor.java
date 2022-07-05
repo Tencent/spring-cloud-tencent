@@ -68,5 +68,4 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		}
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
 	}
-
 }

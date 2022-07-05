@@ -33,7 +33,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Configuration;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -59,8 +58,7 @@ public class PolarisDiscoveryEndPointTest {
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
-			.withPropertyValues(
-					"spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
+			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
 	@BeforeClass
@@ -69,7 +67,7 @@ public class PolarisDiscoveryEndPointTest {
 	}
 
 	@AfterClass
-	public static void afterClass() throws Exception {
+	public static void afterClass() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
@@ -83,20 +81,18 @@ public class PolarisDiscoveryEndPointTest {
 			DiscoveryClient discoveryClient = context
 					.getBean(PolarisDiscoveryClient.class);
 			PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
-			PolarisDiscoveryEndPoint polarisDiscoveryEndPoint = new PolarisDiscoveryEndPoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
+			PolarisDiscoveryEndPoint polarisDiscoveryEndPoint =
+					new PolarisDiscoveryEndPoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
 
 			Map<String, Object> mapInfo = polarisDiscoveryEndPoint.polarisDiscovery("java_provider_test");
 
 			assertThat(polarisDiscoveryProperties).isEqualTo(mapInfo.get("PolarisDiscoveryProperties"));
-
 		});
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableDiscoveryClient
 	static class PolarisPropertiesConfiguration {
 
 	}
-
 }

@@ -88,5 +88,4 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		// create custom metadata.
 		return JacksonUtils.deserialize2Map(customMetadataStr);
 	}
-
 }

@@ -35,7 +35,8 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Change listener of Polaris service info. When service info is created or deleted, or, instance of service is from 0 to
+ * Change listener of Polaris service info. When service info is created or deleted, or, instance of service is from
+ * 0 to many.
  *
  * @author Haotian Zhang
  */

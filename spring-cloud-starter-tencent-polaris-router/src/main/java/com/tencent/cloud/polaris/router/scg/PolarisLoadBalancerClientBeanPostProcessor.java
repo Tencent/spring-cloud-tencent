@@ -36,7 +36,8 @@ import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 
 /**
  * Replaced ReactiveLoadBalancerClientFilter with PolarisReactiveLoadBalancerClientFilter during creating bean phase.
- *@author lepdou 2022-06-20
+ *
+ * @author lepdou 2022-06-20
  */
 public class PolarisLoadBalancerClientBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 

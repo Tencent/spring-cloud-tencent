@@ -43,15 +43,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 /**
  * Test for ${@link LoadBalancerUtils}.
- *@author lepdou 2022-07-04
+ *
+ * @author lepdou 2022-07-04
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LoadBalancerUtilsTest {
 
+	private static final String testNamespaceAndService = "testNamespaceAndService";
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
-
-	private static final String testNamespaceAndService = "testNamespaceAndService";
 
 	@BeforeClass
 	public static void beforeClass() {

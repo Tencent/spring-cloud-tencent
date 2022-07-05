@@ -38,7 +38,8 @@ import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for ${@link PolarisLoadBalancerBeanPostProcessor}
+ * Test for ${@link PolarisLoadBalancerBeanPostProcessor}.
+ *
  * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)

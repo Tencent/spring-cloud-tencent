@@ -95,5 +95,4 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 		return JacksonUtils.deserialize2Map(customMetadataStr);
 	}
-
 }

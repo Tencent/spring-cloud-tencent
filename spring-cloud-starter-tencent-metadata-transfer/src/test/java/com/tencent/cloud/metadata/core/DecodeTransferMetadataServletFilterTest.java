@@ -77,5 +77,4 @@ public class DecodeTransferMetadataServletFilterTest {
 	protected static class TestApplication {
 
 	}
-
 }

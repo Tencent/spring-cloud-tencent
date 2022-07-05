@@ -50,5 +50,4 @@ public final class AddressUtils {
 		}
 		return addressList;
 	}
-
 }

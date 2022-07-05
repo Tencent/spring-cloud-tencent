@@ -57,5 +57,4 @@ public class PolarisFeignClientAutoConfiguration {
 	public PolarisFeignBeanPostProcessor polarisFeignBeanPostProcessor(ConsumerAPI consumerAPI) {
 		return new PolarisFeignBeanPostProcessor(consumerAPI);
 	}
-
 }

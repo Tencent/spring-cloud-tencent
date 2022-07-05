@@ -53,8 +53,8 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 
 	private final PolarisResponseErrorHandler polarisResponseErrorHandler;
 
-
-	public PolarisRestTemplateResponseErrorHandler(ConsumerAPI consumerAPI, PolarisResponseErrorHandler polarisResponseErrorHandler) {
+	public PolarisRestTemplateResponseErrorHandler(
+			ConsumerAPI consumerAPI, PolarisResponseErrorHandler polarisResponseErrorHandler) {
 		this.consumerAPI = consumerAPI;
 		this.polarisResponseErrorHandler = polarisResponseErrorHandler;
 	}
@@ -111,5 +111,4 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		}
 		return resultRequest;
 	}
-
 }

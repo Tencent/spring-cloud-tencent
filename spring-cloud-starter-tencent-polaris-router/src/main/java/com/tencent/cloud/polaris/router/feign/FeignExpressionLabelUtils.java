@@ -33,9 +33,13 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * Resolve rule expression label from feign request.
+ *
  * @author lepdou 2022-05-20
  */
-public class FeignExpressionLabelUtils {
+public final class FeignExpressionLabelUtils {
+
+	private FeignExpressionLabelUtils() {
+	}
 
 	public static Map<String, String> resolve(RequestTemplate request, Set<String> labelKeys) {
 		if (CollectionUtils.isEmpty(labelKeys)) {

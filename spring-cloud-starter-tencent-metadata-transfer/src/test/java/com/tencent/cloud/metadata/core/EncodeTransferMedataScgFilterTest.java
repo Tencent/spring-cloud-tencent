@@ -48,7 +48,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = EncodeTransferMedataScgFilterTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive"})
+		properties = {"spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = reactive"})
 public class EncodeTransferMedataScgFilterTest {
 
 	@Autowired

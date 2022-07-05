@@ -55,8 +55,7 @@ import org.springframework.util.CollectionUtils;
  * PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor capabilities.
  * Parses the label from the request and puts it into the RouterContext for routing.
  *
- * @author lepdou 2022-05-18
- * @author cheese8 2022-06-20
+ * @author lepdou, cheese8
  */
 public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisLoadBalancerInterceptor.class);

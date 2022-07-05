@@ -220,5 +220,4 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			}
 		}, ttl, ttl, TimeUnit.SECONDS);
 	}
-
 }

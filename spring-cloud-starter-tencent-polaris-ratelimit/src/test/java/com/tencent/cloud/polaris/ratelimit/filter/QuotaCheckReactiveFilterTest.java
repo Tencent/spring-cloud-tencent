@@ -74,17 +74,17 @@ import static org.mockito.Mockito.when;
 })
 public class QuotaCheckReactiveFilterTest {
 
-	private PolarisRateLimiterLabelReactiveResolver labelResolver = exchange -> Collections.singletonMap("ReactiveResolver", "ReactiveResolver");
-
-	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
-
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<ExpressionLabelUtils> expressionLabelUtilsMockedStatic;
+	private final PolarisRateLimiterLabelReactiveResolver labelResolver =
+			exchange -> Collections.singletonMap("ReactiveResolver", "ReactiveResolver");
+	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
 
 	@BeforeClass
 	public static void beforeClass() {
 		expressionLabelUtilsMockedStatic = mockStatic(ExpressionLabelUtils.class);
-		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet())).thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
+		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet()))
+				.thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
 
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
@@ -123,7 +123,7 @@ public class QuotaCheckReactiveFilterTest {
 		polarisRateLimitProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
-		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.EMPTY_SET);
+		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.emptySet());
 
 		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
 	}
@@ -203,7 +203,9 @@ public class QuotaCheckReactiveFilterTest {
 		MetadataContext.LOCAL_SERVICE = "TestApp2";
 		long startTimestamp = System.currentTimeMillis();
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> { }, t -> { }, countDownLatch::countDown);
+		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> {
+		}, t -> {
+		}, countDownLatch::countDown);
 		try {
 			countDownLatch.await();
 		}

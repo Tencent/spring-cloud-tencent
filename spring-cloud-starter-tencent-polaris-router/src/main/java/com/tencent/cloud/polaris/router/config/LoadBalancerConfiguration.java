@@ -35,6 +35,7 @@ import org.springframework.core.annotation.Order;
 
 /**
  * Auto configuration for ribbon components.
+ *
  * @author lepdou 2022-05-17
  */
 @Configuration(proxyBeanMethods = false)

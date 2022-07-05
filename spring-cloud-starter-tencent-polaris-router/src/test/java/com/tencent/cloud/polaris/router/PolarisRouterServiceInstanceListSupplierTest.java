@@ -62,13 +62,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisRouterServiceInstanceListSupplier}
- *@author lepdou 2022-05-26
+ * test for {@link PolarisRouterServiceInstanceListSupplier}.
+ *
+ * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisRouterServiceInstanceListSupplierTest {
 
-	private static AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
+	private static final AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
+	private final String testNamespace = "testNamespace";
+	private final String testCallerService = "testCallerService";
+	private final String testCalleeService = "testCalleeService";
 	@Mock
 	private ServiceInstanceListSupplier delegate;
 	@Mock
@@ -81,9 +85,6 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 	private PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties;
 	@Mock
 	private RouterAPI routerAPI;
-	private String testNamespace = "testNamespace";
-	private String testCallerService = "testCallerService";
-	private String testCalleeService = "testCalleeService";
 
 	@Test
 	public void testBuildMetadataRouteRequest() {

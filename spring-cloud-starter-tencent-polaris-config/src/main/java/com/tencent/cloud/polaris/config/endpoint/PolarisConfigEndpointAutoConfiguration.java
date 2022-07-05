@@ -43,7 +43,8 @@ public class PolarisConfigEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnAvailableEndpoint
 	@ConditionalOnMissingBean
-	public PolarisConfigEndpoint polarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
+	public PolarisConfigEndpoint polarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties,
+			PolarisPropertySourceManager polarisPropertySourceManager) {
 		return new PolarisConfigEndpoint(polarisConfigProperties, polarisPropertySourceManager);
 	}
 }

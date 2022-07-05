@@ -35,11 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisFeignClientAutoConfigurationTest {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(
-							PolarisContextAutoConfiguration.class,
-							PolarisFeignClientAutoConfiguration.class))
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(
+					PolarisContextAutoConfiguration.class,
+					PolarisFeignClientAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test
@@ -49,5 +48,4 @@ public class PolarisFeignClientAutoConfigurationTest {
 			assertThat(context).hasSingleBean(PolarisFeignBeanPostProcessor.class);
 		});
 	}
-
 }

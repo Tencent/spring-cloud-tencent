@@ -97,5 +97,4 @@ public class PolarisRateLimitRuleEndpoint {
 		}
 		return rateLimitRule;
 	}
-
 }

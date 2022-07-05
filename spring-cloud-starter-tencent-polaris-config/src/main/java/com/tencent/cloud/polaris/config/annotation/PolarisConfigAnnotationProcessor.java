@@ -101,5 +101,4 @@ public class PolarisConfigAnnotationProcessor implements BeanPostProcessor, Prio
 
 		addChangeListener(configChangeListener, interestedKeys, interestedKeyPrefixes);
 	}
-
 }

@@ -80,5 +80,4 @@ public class DecodeTransferMetadataReactiveFilterTest {
 				.isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
-
 }

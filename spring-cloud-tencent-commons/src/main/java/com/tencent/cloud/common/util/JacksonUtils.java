@@ -84,5 +84,4 @@ public final class JacksonUtils {
 			throw new RuntimeException("Json to map failed.", e);
 		}
 	}
-
 }

@@ -31,7 +31,8 @@ import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 
 /**
  * Mock config kv file for test.
- *@author lepdou 2022-06-11
+ *
+ * @author lepdou 2022-06-11
  */
 public class MockedConfigKVFile implements ConfigKVFile {
 

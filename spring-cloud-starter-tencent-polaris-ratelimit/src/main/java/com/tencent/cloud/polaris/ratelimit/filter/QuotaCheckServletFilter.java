@@ -105,6 +105,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			}
 			// Unirate
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
+				LOG.debug("Unirate sleep for {}ms.", quotaResponse.getWaitMs());
 				Thread.sleep(quotaResponse.getWaitMs());
 			}
 

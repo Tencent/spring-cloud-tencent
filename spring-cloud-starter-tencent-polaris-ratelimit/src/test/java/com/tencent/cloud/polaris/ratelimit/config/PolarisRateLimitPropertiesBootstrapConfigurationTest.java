@@ -31,9 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisRateLimitPropertiesBootstrapConfigurationTest {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(PolarisRateLimitPropertiesBootstrapConfiguration.class))
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(PolarisRateLimitPropertiesBootstrapConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true");
 
 	@Test
