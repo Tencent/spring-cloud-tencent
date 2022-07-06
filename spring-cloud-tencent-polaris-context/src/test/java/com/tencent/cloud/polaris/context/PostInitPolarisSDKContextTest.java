@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.when;
 
-
 /**
  * Test for {@link PostInitPolarisSDKContext}.
  *
@@ -68,3 +67,4 @@ public final class PostInitPolarisSDKContextTest {
 		Assertions.assertThat(campusName).isEqualTo(CAMPUS);
 	}
 }
+
