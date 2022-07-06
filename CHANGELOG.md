@@ -25,6 +25,7 @@
 - [feat:Add GitHub action of codecov.yml.](https://github.com/Tencent/spring-cloud-tencent/pull/328)
 - [Feature: add spring cloud tencent logo](https://github.com/Tencent/spring-cloud-tencent/pull/329)
 - [Feature: Optimize static metadata manager](https://github.com/Tencent/spring-cloud-tencent/pull/327)
+- [Feature: optimization refreshScope](https://github.com/Tencent/spring-cloud-tencent/pull/326)
 - [Feature: support actuator for sct core components](https://github.com/Tencent/spring-cloud-tencent/pull/343)
 - [test:update junit of metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/340)
 - [Optimize code style & unit test case](https://github.com/Tencent/spring-cloud-tencent/pull/336)

@@ -23,10 +23,13 @@ import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProcessor;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
+import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
+import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
+import com.tencent.cloud.polaris.config.spring.property.SpringValueDefinitionProcessor;
+import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,9 +47,10 @@ public class PolarisConfigAutoConfiguration {
 	public PolarisPropertySourceAutoRefresher polarisPropertySourceAutoRefresher(
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisPropertySourceManager polarisPropertySourceManager,
-			ContextRefresher contextRefresher) {
+			SpringValueRegistry springValueRegistry,
+			PlaceholderHelper placeholderHelper) {
 		return new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, contextRefresher);
+				polarisPropertySourceManager, springValueRegistry, placeholderHelper);
 	}
 
 	@Bean
@@ -58,4 +62,25 @@ public class PolarisConfigAutoConfiguration {
 	public PolarisConfigChangeEventListener polarisConfigChangeEventListener() {
 		return new PolarisConfigChangeEventListener();
 	}
+
+	@Bean
+	public SpringValueRegistry springValueRegistry() {
+		return new SpringValueRegistry();
+	}
+
+	@Bean
+	public SpringValueProcessor springValueProcessor(PlaceholderHelper placeholderHelper, SpringValueRegistry springValueRegistry, PolarisConfigProperties polarisConfigProperties) {
+		return new SpringValueProcessor(placeholderHelper, springValueRegistry, polarisConfigProperties);
+	}
+
+	@Bean
+	public PlaceholderHelper placeholderHelper() {
+		return new PlaceholderHelper();
+	}
+
+	@Bean
+	public SpringValueDefinitionProcessor springValueDefinitionProcessor(PlaceholderHelper placeholderHelper, PolarisConfigProperties polarisConfigProperties) {
+		return new SpringValueDefinitionProcessor(placeholderHelper, polarisConfigProperties);
+	}
+
 }
