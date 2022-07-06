@@ -67,10 +67,10 @@ public class PolarisLoadBalancerClientConfiguration {
 				loadBalancerProperties, routerAPI);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnReactiveDiscoveryEnabled
 	@Order(REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER)
-	static class PolarisReactiveSupportConfiguration {
+	protected static class PolarisReactiveSupportConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -84,10 +84,10 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBlockingDiscoveryEnabled
 	@Order(REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER + 1)
-	static class PolarisBlockingSupportConfiguration {
+	protected static class PolarisBlockingSupportConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
