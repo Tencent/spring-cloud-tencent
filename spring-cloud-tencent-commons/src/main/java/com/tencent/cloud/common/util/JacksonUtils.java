@@ -42,7 +42,6 @@ public final class JacksonUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(JacksonUtils.class);
 
 	private JacksonUtils() {
-
 	}
 
 	/**
@@ -84,5 +83,4 @@ public final class JacksonUtils {
 			throw new RuntimeException("Json to map failed.", e);
 		}
 	}
-
 }

@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisRateLimitRuleEndpointTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisRateLimitRuleEndpointTests.PolarisRateLimitAutoConfiguration.class,
 					PolarisRateLimitRuleEndpointAutoConfiguration.class,

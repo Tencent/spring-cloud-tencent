@@ -132,5 +132,4 @@ public class PolarisContextProperties {
 	public void setService(String service) {
 		this.service = service;
 	}
-
 }

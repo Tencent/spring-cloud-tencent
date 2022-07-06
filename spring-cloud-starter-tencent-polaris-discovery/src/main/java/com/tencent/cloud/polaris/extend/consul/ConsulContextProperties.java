@@ -113,7 +113,7 @@ public class ConsulContextProperties {
 
 	private static class ConsulConfigModifier implements PolarisConfigModifier {
 
-		private final String ID = "consul";
+		private static final String ID = "consul";
 
 		@Autowired(required = false)
 		private ConsulContextProperties consulContextProperties;
@@ -164,7 +164,5 @@ public class ConsulContextProperties {
 		public int getOrder() {
 			return ModifierOrder.LAST;
 		}
-
 	}
-
 }

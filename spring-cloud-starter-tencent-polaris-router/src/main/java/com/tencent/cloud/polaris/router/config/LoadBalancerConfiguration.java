@@ -46,10 +46,10 @@ public class LoadBalancerConfiguration {
 	 */
 	private static final int REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER = 193827465;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnReactiveDiscoveryEnabled
 	@Order(REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER)
-	static class PolarisReactiveSupportConfiguration {
+	protected static class PolarisReactiveSupportConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
@@ -69,10 +69,10 @@ public class LoadBalancerConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBlockingDiscoveryEnabled
 	@Order(REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER + 1)
-	static class PolarisBlockingSupportConfiguration {
+	protected static class PolarisBlockingSupportConfiguration {
 
 		@Bean
 		@ConditionalOnBean(DiscoveryClient.class)

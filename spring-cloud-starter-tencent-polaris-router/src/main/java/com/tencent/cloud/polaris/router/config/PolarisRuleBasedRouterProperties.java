@@ -44,5 +44,4 @@ public class PolarisRuleBasedRouterProperties {
 				"enabled=" + enabled +
 				'}';
 	}
-
 }

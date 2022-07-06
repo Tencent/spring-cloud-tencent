@@ -24,6 +24,8 @@
 - [Use jdk constants instead of magic variables](https://github.com/Tencent/spring-cloud-tencent/pull/361)
 - [Refator JacksonUtils and JacksonUtilsTest](https://github.com/Tencent/spring-cloud-tencent/pull/367)
 - [Feature: support actuator for sct core components](https://github.com/Tencent/spring-cloud-tencent/pull/369)
-- [docs: Fix javadoc <br /> error](https://github.com/Tencent/spring-cloud-tencent/pull/376)
+- [docs: Fix javadoc <br \/> error](https://github.com/Tencent/spring-cloud-tencent/pull/376)
 - [docs:optimize example](https://github.com/Tencent/spring-cloud-tencent/pull/387)
 - [Feature: support spring cloud gateway routers](https://github.com/Tencent/spring-cloud-tencent/pull/390)
+- [Optimize starter's auto-configuration](https://github.com/Tencent/spring-cloud-tencent/pull/396)
+

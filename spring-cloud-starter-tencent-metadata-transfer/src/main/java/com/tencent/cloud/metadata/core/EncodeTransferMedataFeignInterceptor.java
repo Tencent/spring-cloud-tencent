@@ -20,7 +20,6 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -35,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
 /**
@@ -63,7 +63,7 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 			requestTemplate.removeHeader(CUSTOM_METADATA);
 			try {
 				requestTemplate.header(CUSTOM_METADATA,
-						URLEncoder.encode(encodedTransitiveMetadata, StandardCharsets.UTF_8.name()));
+						URLEncoder.encode(encodedTransitiveMetadata, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
 				LOG.error("Set header failed.", e);
@@ -71,5 +71,4 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 			}
 		}
 	}
-
 }

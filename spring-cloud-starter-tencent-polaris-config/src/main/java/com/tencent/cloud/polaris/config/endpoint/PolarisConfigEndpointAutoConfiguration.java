@@ -36,8 +36,7 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Endpoint.class)
-@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled", matchIfMissing = true)
 public class PolarisConfigEndpointAutoConfiguration {
 
 	@Bean

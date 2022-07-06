@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
-import com.tencent.cloud.polaris.circuitbreaker.config.PolarisRestTemplateAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateModifier;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateResponseErrorHandler;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test For {@link PolarisRestTemplateAutoConfiguration} .
+ * Test For {@link PolarisCircuitBreakerAutoConfiguration} .
  *
  * @author <a href="mailto:iskp.me@gmail.com">Palmer Xu</a> 2022-06-28
  */
@@ -46,7 +46,7 @@ public class PolarisRestTemplateAutoConfigurationTest {
 					AutoConfigurations.of(
 							PolarisRestTemplateAutoConfigurationTester.class,
 							PolarisContextAutoConfiguration.class,
-							PolarisRestTemplateAutoConfiguration.class))
+							PolarisCircuitBreakerAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test
@@ -60,7 +60,7 @@ public class PolarisRestTemplateAutoConfigurationTest {
 
 	@Configuration
 	@EnableAutoConfiguration
-	@AutoConfigureBefore(PolarisRestTemplateAutoConfiguration.class)
+	@AutoConfigureBefore(PolarisCircuitBreakerAutoConfiguration.class)
 	static class PolarisRestTemplateAutoConfigurationTester {
 
 		@Bean
@@ -68,5 +68,4 @@ public class PolarisRestTemplateAutoConfigurationTest {
 			return new RestTemplate();
 		}
 	}
-
 }

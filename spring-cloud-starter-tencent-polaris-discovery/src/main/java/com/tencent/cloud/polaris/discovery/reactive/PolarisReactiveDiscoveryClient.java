@@ -38,9 +38,9 @@ import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
  */
 public class PolarisReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisReactiveDiscoveryClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisReactiveDiscoveryClient.class);
 
-	private PolarisServiceDiscovery polarisServiceDiscovery;
+	private final PolarisServiceDiscovery polarisServiceDiscovery;
 
 	public PolarisReactiveDiscoveryClient(PolarisServiceDiscovery polarisServiceDiscovery) {
 		this.polarisServiceDiscovery = polarisServiceDiscovery;
@@ -64,7 +64,7 @@ public class PolarisReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 				return Flux.fromIterable(polarisServiceDiscovery.getInstances(serviceId));
 			}
 			catch (PolarisException e) {
-				log.error("get service instance[{}] from polaris error!", serviceId, e);
+				LOGGER.error("get service instance[{}] from polaris error!", serviceId, e);
 				return Flux.empty();
 			}
 		};
@@ -77,10 +77,9 @@ public class PolarisReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 				return Flux.fromIterable(polarisServiceDiscovery.getServices());
 			}
 			catch (Exception e) {
-				log.error("get services from polaris server fail,", e);
+				LOGGER.error("get services from polaris server fail,", e);
 				return Flux.empty();
 			}
 		}).subscribeOn(Schedulers.boundedElastic());
 	}
-
 }
