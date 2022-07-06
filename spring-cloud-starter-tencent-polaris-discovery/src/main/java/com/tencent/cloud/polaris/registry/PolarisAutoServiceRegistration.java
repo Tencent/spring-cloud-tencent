@@ -74,7 +74,6 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 			return;
 		}
 		super.registerManagement();
-
 	}
 
 	@Override
@@ -93,5 +92,4 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 		String appName = registration.getPolarisProperties().getService();
 		return StringUtils.isEmpty(appName) ? super.getAppName() : appName;
 	}
-
 }
