@@ -60,6 +60,11 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
 
+	/**
+	 * Default Filter Registration Bean Name Defined .
+	 */
+	public static final String QUOTA_FILTER_BEAN_NAME = "quotaFilterRegistrationBean";
+
 	private final LimitAPI limitAPI;
 
 	private final PolarisRateLimiterLabelServletResolver labelResolver;

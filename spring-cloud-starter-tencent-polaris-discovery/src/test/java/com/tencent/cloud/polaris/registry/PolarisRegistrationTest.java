@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
-import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.config.global.APIConfig;
 import com.tencent.polaris.api.config.global.GlobalConfig;
@@ -51,16 +51,15 @@ public class PolarisRegistrationTest {
 
 	@Before
 	public void setUp() {
-		// mock DiscoveryPropertiesAutoConfiguration
-		DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration =
-				mock(DiscoveryPropertiesAutoConfiguration.class);
-		doReturn(true).when(discoveryPropertiesAutoConfiguration).isRegisterEnabled();
-
 		// mock PolarisDiscoveryProperties
 		PolarisDiscoveryProperties polarisDiscoveryProperties = mock(PolarisDiscoveryProperties.class);
 		doReturn(SERVICE_PROVIDER).when(polarisDiscoveryProperties).getService();
 		doReturn(PORT).when(polarisDiscoveryProperties).getPort();
 		doReturn("http").when(polarisDiscoveryProperties).getProtocol();
+		doReturn(true).when(polarisDiscoveryProperties).isRegisterEnabled();
+
+		// mock
+		ConsulContextProperties consulContextProperties = mock(ConsulContextProperties.class);
 
 		// mock SDKContext
 		APIConfig apiConfig = mock(APIConfig.class);
@@ -77,8 +76,8 @@ public class PolarisRegistrationTest {
 		doReturn(Collections.singletonMap("key1", "value1")).when(staticMetadataManager).getMergedStaticMetadata();
 		doReturn(Collections.singletonMap("key2", "value2")).when(staticMetadataManager).getLocationMetadata();
 
-		polarisRegistration = new PolarisRegistration(
-				discoveryPropertiesAutoConfiguration, polarisDiscoveryProperties, polarisContext, staticMetadataManager);
+		polarisRegistration = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
+				polarisContext, staticMetadataManager);
 	}
 
 	@Test

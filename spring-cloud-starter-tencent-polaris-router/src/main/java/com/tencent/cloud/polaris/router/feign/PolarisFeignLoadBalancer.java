@@ -20,10 +20,10 @@ package com.tencent.cloud.polaris.router.feign;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
@@ -37,6 +37,8 @@ import com.tencent.cloud.polaris.router.RouterConstants;
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * In order to pass router context for {@link com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule}.
@@ -74,11 +76,15 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
 		try {
-			String labelHeaderValuesContent = labelHeaderValues.stream().findFirst().get();
-			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, StandardCharsets.UTF_8.name())));
+			Optional<String> opt = labelHeaderValues.stream().findFirst();
+			if (opt.isPresent()) {
+				String labelHeaderValuesContent = opt.get();
+				Map<String, String> labels = JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, UTF_8));
+				labelHeaderValuesMap.putAll(labels);
+			}
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
 		routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, labelHeaderValuesMap);
 
