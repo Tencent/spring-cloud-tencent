@@ -49,7 +49,7 @@ public final class PostInitPolarisSDKContextTest {
 	private static final String CAMPUS = "campus";
 
 	@Test
-	public void PostInitPolarisSDKContextTest() {
+	public void testConstructor() {
 		ValueContext valueContext = new ValueContext();
 
 		when(sdkContext.getValueContext()).thenReturn(valueContext);
