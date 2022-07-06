@@ -157,7 +157,7 @@ public class PolarisPropertySourceAutoRefresher
 			value = parseJsonValue((String) value, springValue.getTargetType());
 		}
 		else {
-			value = springValue.isField() ? this.typeConverter.convertIfNecessary(value, springValue.getTargetType()) :
+			value = springValue.isField() ? this.typeConverter.convertIfNecessary(value, springValue.getTargetType(), springValue.getField()) :
 					this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
 							springValue.getMethodParameter());
 		}
