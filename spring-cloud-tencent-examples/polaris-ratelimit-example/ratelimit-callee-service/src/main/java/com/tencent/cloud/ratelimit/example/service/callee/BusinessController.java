@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.ratelimit.example.service.callee;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -45,17 +46,15 @@ public class BusinessController {
 	private static final Logger LOG = LoggerFactory.getLogger(BusinessController.class);
 
 	private final AtomicInteger index = new AtomicInteger(0);
-
+	private final AtomicLong lastTimestamp = new AtomicLong(0);
 	@Autowired
 	private RestTemplate restTemplate;
-
 	@Value("${spring.application.name}")
 	private String appName;
 
-	private AtomicLong lastTimestamp = new AtomicLong(0);
-
 	/**
 	 * Get information.
+	 *
 	 * @return information
 	 */
 	@GetMapping("/info")
@@ -63,30 +62,41 @@ public class BusinessController {
 		return "hello world for ratelimit service " + index.incrementAndGet();
 	}
 
+	/**
+	 * Get information 30 times per 1 second.
+	 *
+	 * @return result of 30 calls.
+	 * @throws InterruptedException exception
+	 */
 	@GetMapping("/invoke")
-	public String invokeInfo() {
-		StringBuilder builder = new StringBuilder();
+	public String invokeInfo() throws InterruptedException {
+		StringBuffer builder = new StringBuffer();
+		CountDownLatch count = new CountDownLatch(30);
 		for (int i = 0; i < 30; i++) {
-			try {
-				ResponseEntity<String> entity = restTemplate.getForEntity(
-						"http://" + appName + "/business/info", String.class);
-				builder.append(entity.getBody()).append("<br/>");
-			}
-			catch (RestClientException e) {
-				if (e instanceof TooManyRequests) {
-					builder.append(((TooManyRequests) e).getResponseBodyAsString())
-							.append(index.incrementAndGet()).append("<br/>");
+			new Thread(() -> {
+				try {
+					ResponseEntity<String> entity = restTemplate.getForEntity("http://" + appName + "/business/info",
+							String.class);
+					builder.append(entity.getBody() + "\n");
 				}
-				else {
-					throw e;
+				catch (RestClientException e) {
+					if (e instanceof TooManyRequests) {
+						builder.append("TooManyRequests " + index.incrementAndGet() + "\n");
+					}
+					else {
+						throw e;
+					}
 				}
-			}
+				count.countDown();
+			}).start();
 		}
+		count.await();
 		return builder.toString();
 	}
 
 	/**
 	 * Get information with unirate.
+	 *
 	 * @return information
 	 */
 	@GetMapping("/unirate")
