@@ -67,3 +67,4 @@ public final class PostInitPolarisSDKContextTest {
 		Assertions.assertThat(campusName).isEqualTo(CAMPUS);
 	}
 }
+
