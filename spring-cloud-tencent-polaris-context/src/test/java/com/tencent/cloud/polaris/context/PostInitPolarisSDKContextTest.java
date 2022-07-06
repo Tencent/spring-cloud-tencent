@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 /**
  *@author : wh
  *@date : 2022/7/6 11:41
- *@description:
+ *@description: Test for {@link PostInitPolarisSDKContext}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PostInitPolarisSDKContextTest {
