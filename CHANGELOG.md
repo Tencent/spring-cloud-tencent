@@ -27,3 +27,5 @@
 - [docs: Fix javadoc <br /> error](https://github.com/Tencent/spring-cloud-tencent/pull/376)
 - [docs:optimize example](https://github.com/Tencent/spring-cloud-tencent/pull/387)
 - [Feature: support spring cloud gateway routers](https://github.com/Tencent/spring-cloud-tencent/pull/390)
+- [Optimize starter's auto-configuration](https://github.com/Tencent/spring-cloud-tencent/pull/396)
+- 
