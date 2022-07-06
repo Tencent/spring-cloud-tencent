@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,6 +44,10 @@ import org.springframework.util.CollectionUtils;
 /**
  * 1. Listen to the Polaris server configuration publishing event 2. Write the changed
  * configuration content to propertySource 3. Refresh the context through contextRefresher
+ * <p>Refer to the Apollo project implementation：
+ * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/AutoUpdateConfigChangeListener.java>
+ *      AutoUpdateConfigChangeListener</a></code>
+ * @author zhangzheng
  *
  * @author lepdou 2022-03-28
  */
@@ -54,7 +57,6 @@ public class PolarisPropertySourceAutoRefresher
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisPropertySourceAutoRefresher.class);
 	private final PolarisConfigProperties polarisConfigProperties;
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
-	private final boolean typeConverterHasConvertIfNecessaryWithFieldParameter;
 	private TypeConverter typeConverter;
 	private final SpringValueRegistry springValueRegistry;
 	private ConfigurableBeanFactory beanFactory;
@@ -71,8 +73,6 @@ public class PolarisPropertySourceAutoRefresher
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
-		this.typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
-
 	}
 
 	@Override
@@ -112,13 +112,11 @@ public class PolarisPropertySourceAutoRefresher
 								polarisPropertySource.getFileName());
 
 						for (String changedKey : configKVFileChangeEvent.changedKeys()) {
-
 							// 1. check whether the changed key is relevant
 							Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, changedKey);
 							if (targetValues == null || targetValues.isEmpty()) {
 								continue;
 							}
-
 							// 2. update the value
 							for (SpringValue val : targetValues) {
 								updateSpringValue(val);
@@ -163,7 +161,6 @@ public class PolarisPropertySourceAutoRefresher
 					this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
 							springValue.getMethodParameter());
 		}
-
 		return value;
 	}
 
@@ -176,15 +173,4 @@ public class PolarisPropertySourceAutoRefresher
 			throw ex;
 		}
 	}
-
-	private boolean testTypeConverterHasConvertIfNecessaryWithFieldParameter() {
-		try {
-			TypeConverter.class.getMethod("convertIfNecessary", Object.class, Class.class, Field.class);
-		}
-		catch (Throwable ex) {
-			return false;
-		}
-		return true;
-	}
-
 }
