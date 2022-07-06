@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -80,7 +79,6 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		when(applicationContext.getBeanFactory()).thenReturn(beanFactory);
 		refresher.setApplicationContext(applicationContext);
 		when(typeConverter.convertIfNecessary(any(), any(), (Field) any())).thenReturn("v11");
-		
 		Collection<SpringValue> springValues = new ArrayList<>();
 		MockedConfigChange mockedConfigChange = new MockedConfigChange();
 		mockedConfigChange.setK1("v1");
@@ -91,7 +89,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 
 		when(springValueRegistry.get(any(), any())).thenReturn(springValues);
 		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
-		
+
 		Map<String, Object> content = new HashMap<>();
 		content.put("k1", "v1");
 		content.put("k2", "v2");
