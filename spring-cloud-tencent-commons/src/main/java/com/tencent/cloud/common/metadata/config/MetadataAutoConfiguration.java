@@ -33,7 +33,7 @@ import org.springframework.lang.Nullable;
  *
  * @author Haotian Zhang
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MetadataAutoConfiguration {
 
 	/**

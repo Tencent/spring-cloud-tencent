@@ -40,7 +40,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
  *
  * @author lepdou 2022-05-11
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RibbonClients(defaultConfiguration = {RibbonConfiguration.class})
 @Import({PolarisNearByRouterProperties.class, PolarisMetadataRouterProperties.class, PolarisRuleBasedRouterProperties.class})
 public class RouterAutoConfiguration {

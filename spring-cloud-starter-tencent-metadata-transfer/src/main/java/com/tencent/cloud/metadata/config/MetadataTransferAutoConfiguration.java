@@ -55,15 +55,15 @@ import static javax.servlet.DispatcherType.REQUEST;
  *
  * @author Haotian Zhang
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MetadataTransferAutoConfiguration {
 
 	/**
 	 * Create when web application type is SERVLET.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	static class MetadataServletFilterConfig {
+	protected static class MetadataServletFilterConfig {
 
 		@Bean
 		public FilterRegistrationBean<DecodeTransferMetadataServletFilter> metadataServletFilterRegistrationBean(
@@ -85,9 +85,9 @@ public class MetadataTransferAutoConfiguration {
 	/**
 	 * Create when web application type is REACTIVE.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	static class MetadataReactiveFilterConfig {
+	protected static class MetadataReactiveFilterConfig {
 
 		@Bean
 		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter() {
@@ -99,9 +99,9 @@ public class MetadataTransferAutoConfiguration {
 	/**
 	 * Create when gateway application is Zuul.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "com.netflix.zuul.http.ZuulServlet")
-	static class MetadataTransferZuulFilterConfig {
+	protected static class MetadataTransferZuulFilterConfig {
 
 		@Bean
 		public ZuulFilter encodeTransferMetadataZuulFilter() {
@@ -113,9 +113,9 @@ public class MetadataTransferAutoConfiguration {
 	/**
 	 * Create when gateway application is SCG.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
-	static class MetadataTransferScgFilterConfig {
+	protected static class MetadataTransferScgFilterConfig {
 
 		@Bean
 		public GlobalFilter encodeTransferMedataScgFilter() {
@@ -127,9 +127,9 @@ public class MetadataTransferAutoConfiguration {
 	/**
 	 * Create when Feign exists.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "feign.Feign")
-	static class MetadataTransferFeignInterceptorConfig {
+	protected static class MetadataTransferFeignInterceptorConfig {
 
 		@Bean
 		public EncodeTransferMedataFeignInterceptor encodeTransferMedataFeignInterceptor() {
@@ -141,9 +141,9 @@ public class MetadataTransferAutoConfiguration {
 	/**
 	 * Create when RestTemplate exists.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-	static class MetadataTransferRestTemplateConfig implements ApplicationContextAware {
+	protected static class MetadataTransferRestTemplateConfig implements ApplicationContextAware {
 
 		private ApplicationContext context;
 
@@ -181,7 +181,7 @@ public class MetadataTransferAutoConfiguration {
 		public static class EncodeTransferMetadataRestTemplatePostProcessor
 				implements BeanPostProcessor {
 
-			private EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor;
+			private final EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor;
 
 			EncodeTransferMetadataRestTemplatePostProcessor(
 					EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor) {

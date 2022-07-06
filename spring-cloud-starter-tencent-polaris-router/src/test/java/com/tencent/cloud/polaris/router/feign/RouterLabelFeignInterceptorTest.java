@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router.feign;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +45,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -122,10 +122,10 @@ public class RouterLabelFeignInterceptorTest {
 				try {
 					String routerLabelContent = routerLabels.stream().findFirst().get();
 					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(
-							URLDecoder.decode(routerLabelContent, StandardCharsets.UTF_8.name())));
+							URLDecoder.decode(routerLabelContent, UTF_8)));
 				}
 				catch (UnsupportedEncodingException e) {
-					throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+					throw new RuntimeException("unsupported charset exception " + UTF_8);
 				}
 				Assert.assertNotNull(routerLabelsMap);
 				for (String value : routerLabelsMap.values()) {
