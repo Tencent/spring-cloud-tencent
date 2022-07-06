@@ -10,3 +10,4 @@
 - [fix:fix ClassNotFoundException while not importing openfeign when using circuit-breaker module.](https://github.com/Tencent/spring-cloud-tencent/pull/270)
 - [fix:solve the chaos code problem on rejectTips](https://github.com/Tencent/spring-cloud-tencent/pull/283)
 - [fix:solve ratelimit-callee-service UnknownHostException.](https://github.com/Tencent/spring-cloud-tencent/pull/291)
+- [test: add PostInitPolarisSDKContextTest](https://github.com/Tencent/spring-cloud-tencent/pull/399)
