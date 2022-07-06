@@ -66,6 +66,7 @@ public final class JacksonUtils {
 	 * @param jsonStr Json String
 	 * @return Map
 	 */
+	@SuppressWarnings("unchecked")
 	public static Map<String, String> deserialize2Map(String jsonStr) {
 		try {
 			if (StringUtils.hasText(jsonStr)) {

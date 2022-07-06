@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 
+import static com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter.QUOTA_FILTER_BEAN_NAME;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.FORWARD;
@@ -51,7 +52,7 @@ import static javax.servlet.DispatcherType.REQUEST;
  *
  * @author Haotian Zhang
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 @ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled", matchIfMissing = true)
@@ -71,9 +72,9 @@ public class PolarisRateLimitAutoConfiguration {
 	/**
 	 * Create when web application type is SERVLET.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	static class QuotaCheckFilterConfig {
+	protected static class QuotaCheckFilterConfig {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -91,7 +92,7 @@ public class PolarisRateLimitAutoConfiguration {
 			FilterRegistrationBean<QuotaCheckServletFilter> registrationBean = new FilterRegistrationBean<>(
 					quotaCheckServletFilter);
 			registrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
-			registrationBean.setName("quotaFilterRegistrationBean");
+			registrationBean.setName(QUOTA_FILTER_BEAN_NAME);
 			registrationBean.setOrder(RateLimitConstant.FILTER_ORDER);
 			return registrationBean;
 		}
@@ -100,9 +101,9 @@ public class PolarisRateLimitAutoConfiguration {
 	/**
 	 * Create when web application type is REACTIVE.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	static class MetadataReactiveFilterConfig {
+	protected static class MetadataReactiveFilterConfig {
 
 		@Bean
 		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(LimitAPI limitAPI,
