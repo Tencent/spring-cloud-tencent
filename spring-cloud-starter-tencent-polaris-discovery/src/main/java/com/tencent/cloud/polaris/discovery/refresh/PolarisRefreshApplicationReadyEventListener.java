@@ -25,11 +25,13 @@ import com.tencent.polaris.client.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
 
 import static com.tencent.cloud.polaris.discovery.refresh.PolarisServiceStatusChangeListener.INDEX;
 
@@ -38,7 +40,8 @@ import static com.tencent.cloud.polaris.discovery.refresh.PolarisServiceStatusCh
  *
  * @author Haotian Zhang
  */
-public class PolarisRefreshApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent>, ApplicationEventPublisherAware {
+public class PolarisRefreshApplicationReadyEventListener
+		implements ApplicationListener<ApplicationReadyEvent>, ApplicationEventPublisherAware, DisposableBean {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisRefreshApplicationReadyEventListener.class);
 	private static final int DELAY = 60;
@@ -80,7 +83,12 @@ public class PolarisRefreshApplicationReadyEventListener implements ApplicationL
 	}
 
 	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+	public void setApplicationEventPublisher(@NonNull ApplicationEventPublisher applicationEventPublisher) {
 		this.publisher = applicationEventPublisher;
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		refreshExecutor.shutdown();
 	}
 }

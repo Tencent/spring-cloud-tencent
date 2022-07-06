@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.context;
 
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,8 +32,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PolarisContextApplication.class,
-		properties = { "spring.config.location = classpath:bootstrap.yml" })
-@ImportAutoConfiguration({ PolarisContextAutoConfiguration.class })
+		properties = {"spring.config.location = classpath:bootstrap.yml"})
+@ImportAutoConfiguration({PolarisContextAutoConfiguration.class})
 public class PolarisContextGetHostTest {
 
 	@Autowired
@@ -47,5 +49,4 @@ public class PolarisContextGetHostTest {
 		Assert.assertEquals(bindIP, "192.168.1.1");
 		Assert.assertEquals(polarisContextProperties.getNamespace(), "dev");
 	}
-
 }

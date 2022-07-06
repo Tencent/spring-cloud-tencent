@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.loadbalancer.config;
 
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.loadbalancer.PolarisServiceInstanceListSupplier;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisLoadBalancerAutoConfiguration}
+ * Test for {@link PolarisLoadBalancerAutoConfiguration}.
  *
  * @author Haotian Zhang
  */
@@ -84,5 +84,4 @@ public class PolarisRouterAutoConfigurationTest {
 	static class PolarisLoadBalancerTest {
 
 	}
-
 }

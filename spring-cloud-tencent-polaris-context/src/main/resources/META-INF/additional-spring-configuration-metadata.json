@@ -2,8 +2,8 @@
   "groups": [
     {
       "name": "spring.cloud.polaris",
-      "type": "com.tencent.cloud.polaris.context.PolarisContextProperties",
-      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+      "type": "com.tencent.cloud.polaris.context.config.PolarisContextProperties",
+      "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     }
   ],
   "properties": [
@@ -11,28 +11,28 @@
       "name": "spring.cloud.polaris.address",
       "type": "java.lang.String",
       "description": "polaris server address list that can be separated by \",\"",
-      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+      "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     },
     {
       "name": "spring.cloud.polaris.namespace",
       "type": "java.lang.String",
       "description": "polaris namespace",
       "default": "default",
-      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+      "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     },
     {
       "name": "spring.cloud.polaris.service",
       "type": "java.lang.String",
       "description": "polaris service name",
       "default": "${spring.application.name}",
-      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+      "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     },
     {
       "name": "spring.cloud.polaris.enabled",
       "type": "java.lang.Boolean",
       "description": "polaris enabled",
       "default": "true",
-      "sourceType": "com.tencent.cloud.polaris.context.PolarisContextProperties"
+      "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     },
     {
       "name": "spring.cloud.polaris.local-ip-address",

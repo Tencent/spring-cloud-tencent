@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
-import com.tencent.cloud.polaris.context.PolarisContextProperties;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
@@ -204,5 +204,4 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 		return new PolarisPropertySource(namespace, group, fileName, configKVFile, map);
 	}
-
 }

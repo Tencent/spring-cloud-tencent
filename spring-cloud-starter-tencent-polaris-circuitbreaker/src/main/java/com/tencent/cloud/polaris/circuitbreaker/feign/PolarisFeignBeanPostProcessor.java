@@ -29,6 +29,7 @@ import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalanc
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
 import org.springframework.cloud.openfeign.loadbalancer.RetryableFeignBlockingLoadBalancerClient;
+import org.springframework.lang.NonNull;
 
 /**
  * Wrap Spring Bean and decorating proxy for Feign Client.
@@ -46,7 +47,7 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 		return wrapper(bean);
 	}
 
@@ -83,8 +84,7 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
 	}
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
 		this.factory = beanFactory;
 	}
-
 }

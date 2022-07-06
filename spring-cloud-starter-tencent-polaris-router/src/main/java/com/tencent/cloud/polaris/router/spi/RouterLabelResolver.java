@@ -18,12 +18,14 @@
 
 package com.tencent.cloud.polaris.router.spi;
 
+import java.util.Collections;
 import java.util.Map;
 
 import feign.RequestTemplate;
 
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
+import org.springframework.web.server.ServerWebExchange;
 
 /**
  * The spi for resolving labels from request.
@@ -37,7 +39,9 @@ public interface RouterLabelResolver extends Ordered {
 	 * @param requestTemplate the feign request.
 	 * @return resolved labels
 	 */
-	Map<String, String> resolve(RequestTemplate requestTemplate);
+	default Map<String, String> resolve(RequestTemplate requestTemplate) {
+		return Collections.emptyMap();
+	}
 
 	/**
 	 * resolve labels from rest template request.
@@ -45,5 +49,16 @@ public interface RouterLabelResolver extends Ordered {
 	 * @param body the rest template request body.
 	 * @return resolved labels
 	 */
-	Map<String, String> resolve(HttpRequest request, byte[] body);
+	default Map<String, String> resolve(HttpRequest request, byte[] body) {
+		return Collections.emptyMap();
+	}
+
+	/**
+	 * resolve labels from server web exchange.
+	 * @param exchange the server web exchange.
+	 * @return resolved labels
+	 */
+	default Map<String, String> resolve(ServerWebExchange exchange) {
+		return Collections.emptyMap();
+	}
 }

@@ -82,5 +82,4 @@ public class PolarisReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 			}
 		}).subscribeOn(Schedulers.boundedElastic());
 	}
-
 }

@@ -20,18 +20,20 @@ package com.tencent.cloud.common.metadata.config;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
+import com.tencent.cloud.common.spi.InstanceMetadataProvider;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 
 /**
  * Metadata auto configuration.
  *
  * @author Haotian Zhang
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MetadataAutoConfiguration {
 
 	/**
@@ -44,22 +46,21 @@ public class MetadataAutoConfiguration {
 	}
 
 	@Bean
-	public StaticMetadataManager metadataManager(MetadataLocalProperties metadataLocalProperties) {
-		return new StaticMetadataManager(metadataLocalProperties);
+	public StaticMetadataManager metadataManager(MetadataLocalProperties metadataLocalProperties,
+			@Nullable InstanceMetadataProvider instanceMetadataProvider) {
+		return new StaticMetadataManager(metadataLocalProperties, instanceMetadataProvider);
 	}
 
 	/**
 	 * Create when gateway application is SCG.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
-	static class MetadataScgFilterConfig {
+	protected static class MetadataScgFilterConfig {
 
 		@Bean
 		public GlobalFilter metadataFirstScgFilter() {
 			return new MetadataFirstScgFilter();
 		}
-
 	}
-
 }

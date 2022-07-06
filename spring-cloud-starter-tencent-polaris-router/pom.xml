@@ -52,6 +52,20 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- spring cloud gateway dependencies start -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-gateway-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<!-- spring cloud gateway dependencies end -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

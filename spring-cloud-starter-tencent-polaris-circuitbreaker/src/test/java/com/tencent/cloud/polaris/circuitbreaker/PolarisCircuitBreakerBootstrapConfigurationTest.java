@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerBootstrapConfiguration;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -31,14 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisCircuitBreakerBootstrapConfigurationTest {
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(PolarisCircuitBreakerBootstrapConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(PolarisCircuitBreakerBootstrapConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
-			assertThat(context).hasSingleBean(PolarisCircuitBreakerBootstrapConfiguration.CircuitBreakerConfigModifier.class);
+			assertThat(context).hasSingleBean(
+					PolarisCircuitBreakerBootstrapConfiguration.CircuitBreakerConfigModifier.class);
 		});
 	}
 }

@@ -19,7 +19,6 @@ package com.tencent.cloud.polaris.router;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,6 +56,8 @@ import org.springframework.cloud.loadbalancer.core.DelegatingServiceInstanceList
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Service routing entrance.
@@ -128,10 +129,10 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
 		try {
 			String labelHeaderValuesContent = labelHeaderValues.stream().findFirst().get();
-			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, StandardCharsets.UTF_8.name())));
+			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, UTF_8)));
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
 		routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, labelHeaderValuesMap);
 		return routerContext;

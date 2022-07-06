@@ -22,27 +22,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.spi.InstanceMetadataProvider;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.util.CollectionUtils;
+
 /**
- * manage metadata from env/config file.
+ * manage metadata from env/config file/custom spi.
  *
- *@author lepdou 2022-05-20
+ * @author lepdou 2022-05-20
  */
 public class StaticMetadataManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(StaticMetadataManager.class);
-
-	private static final String ENV_METADATA_PREFIX = "SCT_METADATA_CONTENT_";
-	private static final int ENV_METADATA_PREFIX_LENGTH = ENV_METADATA_PREFIX.length();
-	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
-	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
-	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
-	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
-
 	/**
 	 * the metadata key of region.
 	 */
@@ -55,22 +50,37 @@ public class StaticMetadataManager {
 	 * the metadata key of campus/datacenter.
 	 */
 	public static final String LOCATION_KEY_CAMPUS = "campus";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(StaticMetadataManager.class);
+	private static final String ENV_METADATA_PREFIX = "SCT_METADATA_CONTENT_";
+	private static final int ENV_METADATA_PREFIX_LENGTH = ENV_METADATA_PREFIX.length();
+	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
+	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
+	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
+	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
 	private Map<String, String> envMetadata;
 	private Map<String, String> envTransitiveMetadata;
 	private Map<String, String> configMetadata;
 	private Map<String, String> configTransitiveMetadata;
+	private Map<String, String> customSPIMetadata;
+	private Map<String, String> customSPITransitiveMetadata;
+
 	private Map<String, String> mergedStaticMetadata;
 	private Map<String, String> mergedStaticTransitiveMetadata;
 	private String zone;
 	private String region;
 	private String campus;
 
-	public StaticMetadataManager(MetadataLocalProperties metadataLocalProperties) {
+	public StaticMetadataManager(MetadataLocalProperties metadataLocalProperties,
+			InstanceMetadataProvider instanceMetadataProvider) {
 		parseConfigMetadata(metadataLocalProperties);
+
 		parseEnvMetadata();
+
+		parseCustomMetadata(instanceMetadataProvider);
+
+		parseLocationMetadata(metadataLocalProperties, instanceMetadataProvider);
+
 		merge();
-		parseLocationMetadata();
 
 		LOGGER.info("[SCT] Loaded static metadata info. {}", this);
 	}
@@ -125,26 +135,89 @@ public class StaticMetadataManager {
 		configMetadata = Collections.unmodifiableMap(allMetadata);
 	}
 
+	private void parseCustomMetadata(InstanceMetadataProvider instanceMetadataProvider) {
+		if (instanceMetadataProvider == null) {
+			customSPIMetadata = Collections.emptyMap();
+			customSPITransitiveMetadata = Collections.emptyMap();
+			return;
+		}
+
+		// resolve all metadata
+		Map<String, String> allMetadata = instanceMetadataProvider.getMetadata();
+		if (allMetadata == null) {
+			customSPIMetadata = Collections.emptyMap();
+		}
+		else {
+			customSPIMetadata = Collections.unmodifiableMap(allMetadata);
+		}
+
+		// resolve transitive metadata
+		Set<String> transitiveKeys = instanceMetadataProvider.getTransitiveMetadataKeys();
+		Map<String, String> transitiveMetadata = new HashMap<>();
+		if (!CollectionUtils.isEmpty(transitiveKeys)) {
+			for (String key : transitiveKeys) {
+				if (customSPIMetadata.containsKey(key)) {
+					transitiveMetadata.put(key, customSPIMetadata.get(key));
+				}
+			}
+		}
+		customSPITransitiveMetadata = Collections.unmodifiableMap(transitiveMetadata);
+	}
+
 	private void merge() {
-		// env priority is bigger than config
+		// the priority is : custom > env > config
 		Map<String, String> mergedMetadataResult = new HashMap<>();
 
 		mergedMetadataResult.putAll(configMetadata);
 		mergedMetadataResult.putAll(envMetadata);
+		mergedMetadataResult.putAll(customSPIMetadata);
+		// set location info as metadata
+		mergedMetadataResult.putAll(getLocationMetadata());
 
 		this.mergedStaticMetadata = Collections.unmodifiableMap(mergedMetadataResult);
 
 		Map<String, String> mergedTransitiveMetadataResult = new HashMap<>();
 		mergedTransitiveMetadataResult.putAll(configTransitiveMetadata);
 		mergedTransitiveMetadataResult.putAll(envTransitiveMetadata);
+		mergedTransitiveMetadataResult.putAll(customSPITransitiveMetadata);
 
 		this.mergedStaticTransitiveMetadata = Collections.unmodifiableMap(mergedTransitiveMetadataResult);
 	}
 
-	private void parseLocationMetadata() {
-		zone = System.getenv(ENV_METADATA_ZONE);
-		region = System.getenv(ENV_METADATA_REGION);
-		campus = System.getenv(ENV_METADATA_CAMPUS);
+	private void parseLocationMetadata(MetadataLocalProperties metadataLocalProperties,
+			InstanceMetadataProvider instanceMetadataProvider) {
+		// resolve zone info
+		if (instanceMetadataProvider != null) {
+			zone = instanceMetadataProvider.getZone();
+		}
+		if (StringUtils.isBlank(zone)) {
+			zone = System.getenv(ENV_METADATA_ZONE);
+		}
+		if (StringUtils.isBlank(zone)) {
+			zone = metadataLocalProperties.getContent().get(LOCATION_KEY_ZONE);
+		}
+
+		// resolve region info
+		if (instanceMetadataProvider != null) {
+			region = instanceMetadataProvider.getRegion();
+		}
+		if (StringUtils.isBlank(region)) {
+			region = System.getenv(ENV_METADATA_REGION);
+		}
+		if (StringUtils.isBlank(region)) {
+			region = metadataLocalProperties.getContent().get(LOCATION_KEY_REGION);
+		}
+
+		// resolve campus info
+		if (instanceMetadataProvider != null) {
+			campus = instanceMetadataProvider.getCampus();
+		}
+		if (StringUtils.isBlank(campus)) {
+			campus = System.getenv(ENV_METADATA_CAMPUS);
+		}
+		if (StringUtils.isBlank(campus)) {
+			campus = metadataLocalProperties.getContent().get(LOCATION_KEY_CAMPUS);
+		}
 	}
 
 	public Map<String, String> getAllEnvMetadata() {
@@ -161,6 +234,14 @@ public class StaticMetadataManager {
 
 	public Map<String, String> getConfigTransitiveMetadata() {
 		return configTransitiveMetadata;
+	}
+
+	public Map<String, String> getAllCustomMetadata() {
+		return customSPIMetadata;
+	}
+
+	public Map<String, String> getCustomSPITransitiveMetadata() {
+		return customSPITransitiveMetadata;
 	}
 
 	public Map<String, String> getMergedStaticMetadata() {
@@ -204,6 +285,8 @@ public class StaticMetadataManager {
 				", envTransitiveMetadata=" + envTransitiveMetadata +
 				", configMetadata=" + configMetadata +
 				", configTransitiveMetadata=" + configTransitiveMetadata +
+				", customSPIMetadata=" + customSPIMetadata +
+				", customSPITransitiveMetadata=" + customSPITransitiveMetadata +
 				", mergedStaticMetadata=" + mergedStaticMetadata +
 				", mergedStaticTransitiveMetadata=" + mergedStaticTransitiveMetadata +
 				", zone='" + zone + '\'' +

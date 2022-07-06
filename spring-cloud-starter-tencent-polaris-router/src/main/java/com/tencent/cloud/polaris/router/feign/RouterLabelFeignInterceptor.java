@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router.feign;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -43,11 +42,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+
 /**
  * Resolver labels from request.
  *
- * @author lepdou 2022-05-12
- * @author cheese8 2022-06-20
+ * @author lepdou, cheese8
  */
 public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelFeignInterceptor.class);
@@ -113,10 +113,10 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 
 		String encodedLabelsContent;
 		try {
-			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), UTF_8);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
 		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
@@ -131,5 +131,4 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 
 		return FeignExpressionLabelUtils.resolve(requestTemplate, labelKeys);
 	}
-
 }

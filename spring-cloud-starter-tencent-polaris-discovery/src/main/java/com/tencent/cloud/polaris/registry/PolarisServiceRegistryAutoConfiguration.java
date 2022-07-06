@@ -19,13 +19,13 @@
 package com.tencent.cloud.polaris.registry;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
-import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-import com.tencent.cloud.polaris.context.spi.InstanceMetadataProvider;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,7 +35,6 @@ import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationC
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.Nullable;
 
 /**
  * Autoconfiguration of service registry of Polaris.
@@ -60,11 +59,10 @@ public class PolarisServiceRegistryAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
 	public PolarisRegistration polarisRegistration(
-			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
-			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context,
-			StaticMetadataManager staticMetadataManager, @Nullable InstanceMetadataProvider instanceMetadataProvider) {
-		return new PolarisRegistration(discoveryPropertiesAutoConfiguration,
-				polarisDiscoveryProperties, context, staticMetadataManager, instanceMetadataProvider);
+			PolarisDiscoveryProperties polarisDiscoveryProperties,
+			@Autowired(required = false) ConsulContextProperties consulContextProperties,
+			SDKContext context, StaticMetadataManager staticMetadataManager) {
+		return new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties, context, staticMetadataManager);
 	}
 
 	@Bean

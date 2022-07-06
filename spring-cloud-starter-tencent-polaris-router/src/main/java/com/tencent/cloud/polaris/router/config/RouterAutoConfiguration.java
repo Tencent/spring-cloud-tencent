@@ -18,45 +18,42 @@
 
 package com.tencent.cloud.polaris.router.config;
 
-import java.util.List;
-
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerBeanPostProcessor;
-import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
+import com.tencent.cloud.polaris.router.scg.PolarisLoadBalancerClientBeanPostProcessor;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-import org.springframework.lang.Nullable;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
  * router module auto configuration.
  *
- *@author lepdou 2022-05-11
+ * @author lepdou 2022-05-11
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @LoadBalancerClients(defaultConfiguration = LoadBalancerConfiguration.class)
 @Import({PolarisNearByRouterProperties.class, PolarisMetadataRouterProperties.class, PolarisRuleBasedRouterProperties.class})
 public class RouterAutoConfiguration {
 
 	@Bean
-	public RouterLabelFeignInterceptor routerLabelInterceptor(@Nullable List<RouterLabelResolver> routerLabelResolvers,
-			MetadataLocalProperties metadataLocalProperties,
-			RouterRuleLabelResolver routerRuleLabelResolver) {
-		return new RouterLabelFeignInterceptor(routerLabelResolvers, metadataLocalProperties, routerRuleLabelResolver);
+	@Order(HIGHEST_PRECEDENCE)
+	@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
+	public PolarisLoadBalancerBeanPostProcessor polarisLoadBalancerBeanPostProcessor() {
+		return new PolarisLoadBalancerBeanPostProcessor();
 	}
 
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
-	public PolarisLoadBalancerBeanPostProcessor polarisLoadBalancerBeanPostProcessor() {
-		return new PolarisLoadBalancerBeanPostProcessor();
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter")
+	public PolarisLoadBalancerClientBeanPostProcessor polarisLoadBalancerClientBeanPostProcessor() {
+		return new PolarisLoadBalancerClientBeanPostProcessor();
 	}
 
 	@Bean

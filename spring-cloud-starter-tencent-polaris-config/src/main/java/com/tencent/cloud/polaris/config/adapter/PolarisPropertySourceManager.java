@@ -39,5 +39,4 @@ public class PolarisPropertySourceManager {
 	public List<PolarisPropertySource> getAllPropertySources() {
 		return new ArrayList<>(polarisPropertySources.values());
 	}
-
 }

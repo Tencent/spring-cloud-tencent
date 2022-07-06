@@ -28,7 +28,7 @@ public enum ConfigFileFormat {
 	/**
 	 * property format.
 	 */
-	PROPERTY(".property"),
+	PROPERTY(".properties"),
 	/**
 	 * yaml format.
 	 */
@@ -48,7 +48,7 @@ public enum ConfigFileFormat {
 	/**
 	 * text format.
 	 */
-	TEXT(".text"),
+	TEXT(".txt"),
 	/**
 	 * html format.
 	 */
@@ -80,5 +80,4 @@ public enum ConfigFileFormat {
 		}
 		return true;
 	}
-
 }

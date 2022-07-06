@@ -64,7 +64,8 @@ public class PolarisServiceStatusChangeListenerTest {
 		polarisServiceStatusChangeListener.setApplicationEventPublisher(publisher);
 
 		// Service update event
-		ServiceEventKey serviceUpdateEventKey = new ServiceEventKey(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER), ServiceEventKey.EventType.SERVICE);
+		ServiceEventKey serviceUpdateEventKey = new ServiceEventKey(
+				new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER), ServiceEventKey.EventType.SERVICE);
 		ServiceInfo serviceInfo = new ServiceInfo();
 		serviceInfo.setNamespace(NAMESPACE_TEST);
 		serviceInfo.setService(SERVICE_PROVIDER);
@@ -81,7 +82,8 @@ public class PolarisServiceStatusChangeListenerTest {
 
 
 		// Instance update event
-		ServiceEventKey instanceUpdateEventKey = new ServiceEventKey(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER), ServiceEventKey.EventType.INSTANCE);
+		ServiceEventKey instanceUpdateEventKey = new ServiceEventKey(
+				new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER), ServiceEventKey.EventType.INSTANCE);
 		DefaultInstance instance = new DefaultInstance();
 		instance.setNamespace(NAMESPACE_TEST);
 		instance.setService(SERVICE_PROVIDER);
@@ -96,7 +98,7 @@ public class PolarisServiceStatusChangeListenerTest {
 			instances.set(oldInstances, Collections.emptyList());
 			ServiceInstancesByProto newInstances = new ServiceInstancesByProto();
 			instances.set(newInstances, Collections.singletonList(instance));
-			polarisServiceStatusChangeListener.onResourceUpdated(serviceUpdateEventKey, oldInstances, newInstances);
+			polarisServiceStatusChangeListener.onResourceUpdated(instanceUpdateEventKey, oldInstances, newInstances);
 			verify(publisher, times(2)).publishEvent(any(ApplicationEvent.class));
 
 			// No need update
@@ -104,7 +106,7 @@ public class PolarisServiceStatusChangeListenerTest {
 			instances.set(oldInstances, Collections.singletonList(instance));
 			newInstances = new ServiceInstancesByProto();
 			instances.set(newInstances, Collections.singletonList(instance));
-			polarisServiceStatusChangeListener.onResourceUpdated(serviceUpdateEventKey, oldInstances, newInstances);
+			polarisServiceStatusChangeListener.onResourceUpdated(instanceUpdateEventKey, oldInstances, newInstances);
 			verify(publisher, times(2)).publishEvent(any(ApplicationEvent.class));
 		}
 		catch (NoSuchFieldException | IllegalAccessException e) {

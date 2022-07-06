@@ -60,6 +60,11 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
 
+	/**
+	 * Default Filter Registration Bean Name Defined .
+	 */
+	public static final String QUOTA_FILTER_BEAN_NAME = "quotaFilterRegistrationBean";
+
 	private final LimitAPI limitAPI;
 
 	private final PolarisRateLimiterLabelServletResolver labelResolver;
@@ -105,6 +110,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			}
 			// Unirate
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
+				LOG.debug("Unirate sleep for {}ms.", quotaResponse.getWaitMs());
 				Thread.sleep(quotaResponse.getWaitMs());
 			}
 

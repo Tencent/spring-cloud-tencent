@@ -43,5 +43,4 @@ public class PolarisDiscoveryAutoConfiguration {
 			PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		return new PolarisServiceDiscovery(polarisDiscoveryHandler);
 	}
-
 }

@@ -36,9 +36,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnReactiveDiscoveryEnabled
-@AutoConfigureAfter({ PolarisDiscoveryAutoConfiguration.class,
-		ReactiveCompositeDiscoveryClientAutoConfiguration.class })
-@AutoConfigureBefore({ ReactiveCommonsClientAutoConfiguration.class })
+@AutoConfigureAfter({PolarisDiscoveryAutoConfiguration.class, ReactiveCompositeDiscoveryClientAutoConfiguration.class})
+@AutoConfigureBefore({ReactiveCommonsClientAutoConfiguration.class})
 public class PolarisReactiveDiscoveryClientConfiguration {
 
 	@Bean
@@ -47,5 +46,4 @@ public class PolarisReactiveDiscoveryClientConfiguration {
 			PolarisServiceDiscovery polarisServiceDiscovery) {
 		return new PolarisReactiveDiscoveryClient(polarisServiceDiscovery);
 	}
-
 }

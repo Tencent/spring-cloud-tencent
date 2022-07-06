@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
 /**
@@ -61,7 +62,8 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
 			requestTemplate.removeHeader(CUSTOM_METADATA);
 			try {
-				requestTemplate.header(CUSTOM_METADATA, URLEncoder.encode(encodedTransitiveMetadata, "UTF-8"));
+				requestTemplate.header(CUSTOM_METADATA,
+						URLEncoder.encode(encodedTransitiveMetadata, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
 				LOG.error("Set header failed.", e);
@@ -69,5 +71,4 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 			}
 		}
 	}
-
 }

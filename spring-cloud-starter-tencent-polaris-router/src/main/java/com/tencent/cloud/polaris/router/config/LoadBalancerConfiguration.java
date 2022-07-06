@@ -35,6 +35,7 @@ import org.springframework.core.annotation.Order;
 
 /**
  * Auto configuration for ribbon components.
+ *
  * @author lepdou 2022-05-17
  */
 @Configuration(proxyBeanMethods = false)
@@ -46,7 +47,7 @@ public class LoadBalancerConfiguration {
 	 */
 	private static final int REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER = 193827465;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnReactiveDiscoveryEnabled
 	@Order(REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER)
 	static class PolarisReactiveSupportConfiguration {
@@ -69,7 +70,7 @@ public class LoadBalancerConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBlockingDiscoveryEnabled
 	@Order(REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER + 1)
 	static class PolarisBlockingSupportConfiguration {

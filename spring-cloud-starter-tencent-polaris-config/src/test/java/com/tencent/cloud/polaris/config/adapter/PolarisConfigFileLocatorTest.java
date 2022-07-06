@@ -26,7 +26,7 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.context.PolarisContextProperties;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import org.junit.Assert;
@@ -41,12 +41,15 @@ import org.springframework.core.env.PropertySource;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisConfigFileLocator}
- *@author lepdou 2022-06-11
+ * test for {@link PolarisConfigFileLocator}.
+ *
+ * @author lepdou 2022-06-11
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisConfigFileLocatorTest {
 
+	private final String testNamespace = "testNamespace";
+	private final String testServiceName = "testServiceName";
 	@Mock
 	private PolarisConfigProperties polarisConfigProperties;
 	@Mock
@@ -57,9 +60,6 @@ public class PolarisConfigFileLocatorTest {
 	private PolarisPropertySourceManager polarisPropertySourceManager;
 	@Mock
 	private Environment environment;
-
-	private final String testNamespace = "testNamespace";
-	private final String testServiceName = "testServiceName";
 
 	@Test
 	public void testLoadApplicationPropertiesFile() {

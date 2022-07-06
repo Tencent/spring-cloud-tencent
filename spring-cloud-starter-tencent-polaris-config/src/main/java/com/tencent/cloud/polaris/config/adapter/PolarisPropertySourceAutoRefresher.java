@@ -29,12 +29,10 @@ import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.BeansException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cloud.context.refresh.ContextRefresher;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -43,19 +41,14 @@ import org.springframework.util.CollectionUtils;
  *
  * @author lepdou 2022-03-28
  */
-public class PolarisPropertySourceAutoRefresher
-		implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
+public class PolarisPropertySourceAutoRefresher implements ApplicationListener<ApplicationReadyEvent> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisPropertySourceAutoRefresher.class);
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
-
-	private ApplicationContext applicationContext;
-
 	private final ContextRefresher contextRefresher;
-
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
 	public PolarisPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
@@ -66,12 +59,7 @@ public class PolarisPropertySourceAutoRefresher
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-
-	@Override
-	public void onApplicationEvent(ApplicationReadyEvent event) {
+	public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
 		registerPolarisConfigPublishEvent();
 	}
 
@@ -125,5 +113,4 @@ public class PolarisPropertySourceAutoRefresher
 			});
 		}
 	}
-
 }

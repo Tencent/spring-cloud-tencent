@@ -31,6 +31,8 @@ import com.tencent.polaris.api.rpc.InstancesResponse;
 import org.springframework.cloud.client.ServiceInstance;
 
 /**
+ * Polaris service discovery service.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisServiceDiscovery {
@@ -66,5 +68,4 @@ public class PolarisServiceDiscovery {
 		return polarisDiscoveryHandler.GetServices().getServices().stream().map(ServiceInfo::getService)
 				.collect(Collectors.toList());
 	}
-
 }

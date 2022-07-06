@@ -39,6 +39,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
  * SERVLET.
@@ -76,7 +78,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		String customMetadataStr = httpServletRequest.getHeader(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
-				customMetadataStr = URLDecoder.decode(customMetadataStr, "UTF-8");
+				customMetadataStr = URLDecoder.decode(customMetadataStr, UTF_8);
 			}
 		}
 		catch (UnsupportedEncodingException e) {
@@ -87,5 +89,4 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		// create custom metadata.
 		return JacksonUtils.deserialize2Map(customMetadataStr);
 	}
-
 }
