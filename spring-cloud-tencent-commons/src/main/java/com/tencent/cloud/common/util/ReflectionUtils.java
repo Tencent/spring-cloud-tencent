@@ -27,7 +27,6 @@ import java.lang.reflect.Field;
 public final class ReflectionUtils {
 
 	private ReflectionUtils() {
-
 	}
 
 	public static Object getFieldValue(Object instance, String fieldName) {
@@ -48,5 +47,4 @@ public final class ReflectionUtils {
 		}
 		return null;
 	}
-
 }

@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -53,15 +54,15 @@ import static javax.servlet.DispatcherType.REQUEST;
  *
  * @author Haotian Zhang
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MetadataTransferAutoConfiguration {
 
 	/**
 	 * Create when web application type is SERVLET.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	static class MetadataServletFilterConfig {
+	protected static class MetadataServletFilterConfig {
 
 		@Bean
 		public FilterRegistrationBean<DecodeTransferMetadataServletFilter> metadataServletFilterRegistrationBean(
@@ -79,57 +80,53 @@ public class MetadataTransferAutoConfiguration {
 		public DecodeTransferMetadataServletFilter metadataServletFilter() {
 			return new DecodeTransferMetadataServletFilter();
 		}
-
 	}
 
 	/**
 	 * Create when web application type is REACTIVE.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	static class MetadataReactiveFilterConfig {
+	protected static class MetadataReactiveFilterConfig {
 
 		@Bean
 		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter() {
 			return new DecodeTransferMetadataReactiveFilter();
 		}
-
 	}
 
 	/**
 	 * Create when gateway application is SCG.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
-	static class MetadataTransferScgFilterConfig {
+	protected static class MetadataTransferScgFilterConfig {
 
 		@Bean
 		public GlobalFilter encodeTransferMedataScgFilter() {
 			return new EncodeTransferMedataScgFilter();
 		}
-
 	}
 
 	/**
 	 * Create when Feign exists.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "feign.Feign")
-	static class MetadataTransferFeignInterceptorConfig {
+	protected static class MetadataTransferFeignInterceptorConfig {
 
 		@Bean
 		public EncodeTransferMedataFeignInterceptor encodeTransferMedataFeignInterceptor() {
 			return new EncodeTransferMedataFeignInterceptor();
 		}
-
 	}
 
 	/**
 	 * Create when RestTemplate exists.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-	static class MetadataTransferRestTemplateConfig implements ApplicationContextAware {
+	protected static class MetadataTransferRestTemplateConfig implements ApplicationContextAware {
 
 		private ApplicationContext context;
 
@@ -163,15 +160,14 @@ public class MetadataTransferAutoConfiguration {
 		}
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
+		public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
 			this.context = applicationContext;
 		}
 
 		public static class EncodeTransferMetadataRestTemplatePostProcessor
 				implements BeanPostProcessor {
 
-			private EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor;
+			private final EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor;
 
 			EncodeTransferMetadataRestTemplatePostProcessor(
 					EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor) {
@@ -179,12 +175,12 @@ public class MetadataTransferAutoConfiguration {
 			}
 
 			@Override
-			public Object postProcessBeforeInitialization(Object bean, String beanName) {
+			public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) {
 				return bean;
 			}
 
 			@Override
-			public Object postProcessAfterInitialization(Object bean, String beanName) {
+			public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) {
 				if (bean instanceof RestTemplate) {
 					RestTemplate restTemplate = (RestTemplate) bean;
 					List<ClientHttpRequestInterceptor> interceptors = restTemplate
@@ -197,9 +193,6 @@ public class MetadataTransferAutoConfiguration {
 				}
 				return bean;
 			}
-
 		}
-
 	}
-
 }

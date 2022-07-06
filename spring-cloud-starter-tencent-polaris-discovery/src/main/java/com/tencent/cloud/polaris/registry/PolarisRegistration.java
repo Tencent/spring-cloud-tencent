@@ -24,14 +24,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
-import com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
+import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -41,12 +42,12 @@ import org.springframework.util.CollectionUtils;
  */
 public class PolarisRegistration implements Registration, ServiceInstance {
 
-	private final static String METADATA_KEY_IP = "internal-ip";
-	private final static String METADATA_KEY_ADDRESS = "internal-address";
-
-	private final DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration;
+	private static final String METADATA_KEY_IP = "internal-ip";
+	private static final String METADATA_KEY_ADDRESS = "internal-address";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
+
+	private final ConsulContextProperties consulContextProperties;
 
 	private final SDKContext polarisContext;
 
@@ -57,11 +58,11 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 	private final String host;
 
 	public PolarisRegistration(
-			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration,
-			PolarisDiscoveryProperties polarisDiscoveryProperties, SDKContext context,
-			StaticMetadataManager staticMetadataManager) {
-		this.discoveryPropertiesAutoConfiguration = discoveryPropertiesAutoConfiguration;
+			PolarisDiscoveryProperties polarisDiscoveryProperties,
+			@Nullable ConsulContextProperties consulContextProperties,
+			SDKContext context, StaticMetadataManager staticMetadataManager) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
+		this.consulContextProperties = consulContextProperties;
 		this.polarisContext = context;
 		this.staticMetadataManager = staticMetadataManager;
 
@@ -121,14 +122,23 @@ public class PolarisRegistration implements Registration, ServiceInstance {
 	}
 
 	public boolean isRegisterEnabled() {
-		return discoveryPropertiesAutoConfiguration.isRegisterEnabled();
+
+		boolean registerEnabled = false;
+
+		if (null != polarisDiscoveryProperties) {
+			registerEnabled |= polarisDiscoveryProperties.isRegisterEnabled();
+		}
+		if (null != consulContextProperties && consulContextProperties.isEnabled()) {
+			registerEnabled |= consulContextProperties.isRegister();
+		}
+
+		return registerEnabled;
 	}
 
 	@Override
 	public String toString() {
 		return "PolarisRegistration{" +
-				"discoveryPropertiesAutoConfiguration=" + discoveryPropertiesAutoConfiguration +
-				", polarisDiscoveryProperties=" + polarisDiscoveryProperties +
+				" polarisDiscoveryProperties=" + polarisDiscoveryProperties +
 				", polarisContext=" + polarisContext +
 				", staticMetadataManager=" + staticMetadataManager +
 				", metadata=" + metadata +

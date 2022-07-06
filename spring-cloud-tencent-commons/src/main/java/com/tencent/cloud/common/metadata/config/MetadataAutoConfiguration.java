@@ -33,7 +33,7 @@ import org.springframework.lang.Nullable;
  *
  * @author Haotian Zhang
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MetadataAutoConfiguration {
 
 	/**
@@ -54,15 +54,13 @@ public class MetadataAutoConfiguration {
 	/**
 	 * Create when gateway application is SCG.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
-	static class MetadataScgFilterConfig {
+	protected static class MetadataScgFilterConfig {
 
 		@Bean
 		public GlobalFilter metadataFirstScgFilter() {
 			return new MetadataFirstScgFilter();
 		}
-
 	}
-
 }

@@ -28,7 +28,7 @@ import com.tencent.polaris.factory.config.ConfigurationImpl;
  */
 public class RateLimitConfigModifier implements PolarisConfigModifier {
 
-	private PolarisRateLimitProperties polarisRateLimitProperties;
+	private final PolarisRateLimitProperties polarisRateLimitProperties;
 
 	public RateLimitConfigModifier(PolarisRateLimitProperties polarisRateLimitProperties) {
 		this.polarisRateLimitProperties = polarisRateLimitProperties;
@@ -45,5 +45,4 @@ public class RateLimitConfigModifier implements PolarisConfigModifier {
 	public int getOrder() {
 		return ContextConstant.ModifierOrder.CIRCUIT_BREAKER_ORDER;
 	}
-
 }

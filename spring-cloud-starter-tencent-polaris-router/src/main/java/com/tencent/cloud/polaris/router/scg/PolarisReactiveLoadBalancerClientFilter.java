@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.router.scg;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +64,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_SCHEME_PREFIX_ATTR;
@@ -76,7 +76,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.a
  *@author lepdou 2022-06-20
  */
 public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalancerClientFilter {
-	private static final Logger log = LoggerFactory.getLogger(PolarisReactiveLoadBalancerClientFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisReactiveLoadBalancerClientFilter.class);
 
 	private final LoadBalancerClientFactory clientFactory;
 	private final GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
@@ -114,8 +114,8 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		// preserve the original url
 		addOriginalRequestUrl(exchange, url);
 
-		if (log.isTraceEnabled()) {
-			log.trace(ReactiveLoadBalancerClientFilter.class.getSimpleName() + " url before: " + url);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace(ReactiveLoadBalancerClientFilter.class.getSimpleName() + " url before: " + url);
 		}
 
 		URI requestUri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
@@ -158,8 +158,8 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 
 					URI requestUrl = reconstructURI(serviceInstance, uri);
 
-					if (log.isTraceEnabled()) {
-						log.trace("LoadBalancerClientFilter url chosen: " + requestUrl);
+					if (LOGGER.isTraceEnabled()) {
+						LOGGER.trace("LoadBalancerClientFilter url chosen: " + requestUrl);
 					}
 					exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUrl);
 					exchange.getAttributes().put(GATEWAY_LOADBALANCER_RESPONSE_ATTR, response);
@@ -210,10 +210,10 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		Map<String, String> routerLabels = genRouterLabels(exchange, peerServiceName);
 		String encodedLabelsContent;
 		try {
-			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), StandardCharsets.UTF_8.name());
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), UTF_8);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
 		return encodedLabelsContent;
 	}
@@ -238,7 +238,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 					}
 				}
 				catch (Throwable t) {
-					log.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
+					LOGGER.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
 				}
 			});
 		}

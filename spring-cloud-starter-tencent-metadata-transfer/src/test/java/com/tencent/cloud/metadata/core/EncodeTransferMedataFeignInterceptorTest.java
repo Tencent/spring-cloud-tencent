@@ -97,9 +97,6 @@ public class EncodeTransferMedataFeignInterceptorTest {
 				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
 						"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
 			}
-
 		}
-
 	}
-
 }

@@ -94,5 +94,4 @@ public class PolarisConfigProperties {
 	public void setGroups(List<ConfigFileGroup> groups) {
 		this.groups = groups;
 	}
-
 }
