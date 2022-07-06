@@ -47,5 +47,4 @@ public class PostInitPolarisSDKContextTest {
 		assertThat(valueContext.getValue(LocationLevel.zone.name()), is(zone));
 		assertThat(valueContext.getValue(LocationLevel.campus.name()), is(campus));
 	}
-
 }
