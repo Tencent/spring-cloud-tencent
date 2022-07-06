@@ -36,7 +36,8 @@ import org.springframework.lang.Nullable;
 /**
  * configuration for feign singleton components.
  * Feign-related components need to be loaded only in the feign environment.
- *@author lepdou 2022-06-10
+ *
+ * @author lepdou 2022-06-10
  */
 @Configuration
 @ConditionalOnClass(name = {"org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer"})
@@ -54,5 +55,4 @@ public class FeignAutoConfiguration {
 	public PolarisCachingSpringLoadBalanceFactory polarisCachingSpringLoadBalanceFactory(SpringClientFactory factory) {
 		return new PolarisCachingSpringLoadBalanceFactory(factory);
 	}
-
 }

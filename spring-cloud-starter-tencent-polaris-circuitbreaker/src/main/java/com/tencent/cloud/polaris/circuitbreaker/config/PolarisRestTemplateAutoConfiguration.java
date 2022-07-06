@@ -32,9 +32,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * @author : wh
- * @date : 2022/6/21 21:34
- * @description: Auto configuration PolarisRestTemplateAutoConfiguration
+ * Auto configuration PolarisRestTemplateAutoConfiguration .
+ *
+ * @author wh 2022/6/21
  */
 @ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled",
 		havingValue = "true", matchIfMissing = true)
@@ -44,13 +44,15 @@ public class PolarisRestTemplateAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(RestTemplate.class)
-	public PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler(ConsumerAPI consumerAPI, @Autowired(required = false) PolarisResponseErrorHandler polarisResponseErrorHandler) {
+	public PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler(
+			ConsumerAPI consumerAPI, @Autowired(required = false) PolarisResponseErrorHandler polarisResponseErrorHandler) {
 		return new PolarisRestTemplateResponseErrorHandler(consumerAPI, polarisResponseErrorHandler);
 	}
 
 	@Bean
 	@ConditionalOnBean(RestTemplate.class)
-	public PolarisRestTemplateModifier polarisRestTemplateBeanPostProcessor(PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
+	public PolarisRestTemplateModifier polarisRestTemplateBeanPostProcessor(
+			PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
 		return new PolarisRestTemplateModifier(restTemplateResponseErrorHandler);
 	}
 }

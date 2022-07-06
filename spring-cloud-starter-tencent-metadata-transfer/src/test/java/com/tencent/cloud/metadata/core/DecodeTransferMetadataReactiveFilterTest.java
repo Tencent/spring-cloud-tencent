@@ -13,14 +13,12 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.metadata;
+package com.tencent.cloud.metadata.core;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +36,8 @@ import org.springframework.web.server.WebFilterChain;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 /**
+ * Test for {@link DecodeTransferMetadataReactiveFilter}.
+ *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
@@ -80,5 +80,4 @@ public class DecodeTransferMetadataReactiveFilterTest {
 				.isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
-
 }

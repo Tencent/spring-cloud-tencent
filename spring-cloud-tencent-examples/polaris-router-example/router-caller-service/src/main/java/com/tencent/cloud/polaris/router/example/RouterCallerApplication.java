@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +31,6 @@ import org.springframework.web.client.RestTemplate;
  * @author lepdou 2022-04-06
  */
 @SpringBootApplication
-@EnableDiscoveryClient
 @EnableFeignClients
 public class RouterCallerApplication {
 

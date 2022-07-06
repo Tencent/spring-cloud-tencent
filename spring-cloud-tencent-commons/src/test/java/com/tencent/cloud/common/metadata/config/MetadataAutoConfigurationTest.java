@@ -38,7 +38,8 @@ public class MetadataAutoConfigurationTest {
 
 	private final WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
 
-	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
+	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner =
+			new ReactiveWebApplicationContextRunner();
 
 	/**
 	 * No any web application.
@@ -84,5 +85,4 @@ public class MetadataAutoConfigurationTest {
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
-
 }

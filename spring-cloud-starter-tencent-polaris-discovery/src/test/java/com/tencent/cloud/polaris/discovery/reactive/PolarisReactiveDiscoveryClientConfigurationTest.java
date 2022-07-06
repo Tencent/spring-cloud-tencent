@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Configuration;
 
 import static com.tencent.polaris.test.common.Consts.PORT;
@@ -43,12 +42,12 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 
 	private static NamingServer namingServer;
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(PolarisContextAutoConfiguration.class,
-							PolarisReactiveDiscoveryClientConfiguration.class,
-							PolarisDiscoveryClientConfiguration.class,
-							PolarisContextAutoConfiguration.class))
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(
+					PolarisContextAutoConfiguration.class,
+					PolarisReactiveDiscoveryClientConfiguration.class,
+					PolarisDiscoveryClientConfiguration.class,
+					PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
@@ -59,7 +58,7 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 	}
 
 	@AfterClass
-	public static void afterClass() throws Exception {
+	public static void afterClass() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
@@ -73,9 +72,7 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableDiscoveryClient
 	static class PolarisReactiveDiscoveryClientConfiguration {
 
 	}
-
 }

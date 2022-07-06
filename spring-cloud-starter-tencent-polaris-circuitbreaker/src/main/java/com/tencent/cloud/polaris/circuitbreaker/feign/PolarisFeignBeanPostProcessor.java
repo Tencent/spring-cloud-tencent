@@ -55,7 +55,8 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
 			if (bean instanceof LoadBalancerFeignClient) {
 				LoadBalancerFeignClient client = ((LoadBalancerFeignClient) bean);
 				return new PolarisLoadBalancerFeignClient(
-						createPolarisFeignClient(client.getDelegate()), factory(),
+						createPolarisFeignClient(client.getDelegate()),
+						factory(),
 						clientFactory());
 			}
 			if (bean instanceof FeignBlockingLoadBalancerClient) {
@@ -91,5 +92,4 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
 	SpringClientFactory clientFactory() {
 		return this.factory.getBean(SpringClientFactory.class);
 	}
-
 }

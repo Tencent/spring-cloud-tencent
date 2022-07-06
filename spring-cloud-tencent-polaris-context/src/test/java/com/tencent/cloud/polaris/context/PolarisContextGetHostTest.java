@@ -49,5 +49,4 @@ public class PolarisContextGetHostTest {
 		Assert.assertEquals(bindIP, "192.168.1.1");
 		Assert.assertEquals(polarisContextProperties.getNamespace(), "dev");
 	}
-
 }

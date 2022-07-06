@@ -48,12 +48,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisPropertySourceAutoRefresher}
- *@author lepdou 2022-06-11
+ * test for {@link PolarisPropertySourceAutoRefresher}.
+ *
+ * @author lepdou 2022-06-11
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisPropertiesSourceAutoRefresherTest {
 
+	private final String testNamespace = "testNamespace";
+	private final String testServiceName = "testServiceName";
+	private final String testFileName = "application.properties";
 	@Mock
 	private PolarisConfigProperties polarisConfigProperties;
 	@Mock
@@ -67,10 +71,6 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Mock
 	private PlaceholderHelper placeholderHelper;
 
-	private final String testNamespace = "testNamespace";
-	private final String testServiceName = "testServiceName";
-	private final String testFileName = "application.properties";
-
 	@Test
 	public void testConfigFileChanged() throws Exception {
 		PolarisPropertySourceAutoRefresher refresher = new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
@@ -83,8 +83,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		when(applicationContext.getBeanFactory()).thenReturn(beanFactory);
 		refresher.setApplicationContext(applicationContext);
 		when(typeConverter.convertIfNecessary(any(), any(), (Field) any())).thenReturn("v11");
-
-
+		
 		Collection<SpringValue> springValues = new ArrayList<>();
 		MockedConfigChange mockedConfigChange = new MockedConfigChange();
 		mockedConfigChange.setK1("v1");
@@ -95,8 +94,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 
 		when(springValueRegistry.get(any(), any())).thenReturn(springValues);
 		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
-
-
+		
 		Map<String, Object> content = new HashMap<>();
 		content.put("k1", "v1");
 		content.put("k2", "v2");
@@ -123,5 +121,4 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		Assert.assertEquals("v11", mockedConfigChange.getK1());
 
 	}
-
 }

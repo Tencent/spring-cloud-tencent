@@ -27,8 +27,10 @@ import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.context.annotation.Bean;
 
 /**
- * configuration for feign load balance components. PolarisFeignLoadBalancer is not singleton bean, Each service corresponds to a PolarisFeignLoadBalancer.
- *@author lepdou 2022-05-16
+ * configuration for feign load balance components. PolarisFeignLoadBalancer is not singleton bean,
+ * Each service corresponds to a PolarisFeignLoadBalancer.
+ *
+ * @author lepdou 2022-05-16
  */
 public class FeignLoadBalancerConfiguration {
 

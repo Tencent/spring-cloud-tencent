@@ -2,7 +2,7 @@
 
 ## Example Introduction
 
-This example shows how to use ```spring-cloud-tencent-polaris-gateway`` in Spring Cloud project for its features.
+This example shows how to use ```spring-cloud-tencent-polaris-gateway``` in Spring Cloud project for its features.
 
 This example contains ```gateway-zuul-service```, ```gateway-scg-service``` and ```gateway-callee-service```. ```gateway-zuul-service``` and ```gateway-scg-service``` invoke ```gateway-callee-service```.
 

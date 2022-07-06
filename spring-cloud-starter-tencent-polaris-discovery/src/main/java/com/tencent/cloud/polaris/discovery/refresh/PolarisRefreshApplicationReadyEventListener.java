@@ -25,6 +25,7 @@ import com.tencent.polaris.client.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -38,7 +39,8 @@ import static com.tencent.cloud.polaris.discovery.refresh.PolarisServiceStatusCh
  *
  * @author Haotian Zhang
  */
-public class PolarisRefreshApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent>, ApplicationEventPublisherAware {
+public class PolarisRefreshApplicationReadyEventListener
+		implements ApplicationListener<ApplicationReadyEvent>, ApplicationEventPublisherAware, DisposableBean {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisRefreshApplicationReadyEventListener.class);
 	private static final int DELAY = 60;
@@ -47,7 +49,8 @@ public class PolarisRefreshApplicationReadyEventListener implements ApplicationL
 	private final ScheduledExecutorService refreshExecutor;
 	private ApplicationEventPublisher publisher;
 
-	public PolarisRefreshApplicationReadyEventListener(PolarisDiscoveryHandler polarisDiscoveryHandler, PolarisServiceStatusChangeListener polarisServiceStatusChangeListener) {
+	public PolarisRefreshApplicationReadyEventListener(PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisServiceStatusChangeListener polarisServiceStatusChangeListener) {
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.polarisServiceStatusChangeListener = polarisServiceStatusChangeListener;
 		this.refreshExecutor = Executors.newSingleThreadScheduledExecutor(
@@ -82,5 +85,10 @@ public class PolarisRefreshApplicationReadyEventListener implements ApplicationL
 	@Override
 	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
 		this.publisher = applicationEventPublisher;
+	}
+
+	@Override
+	public void destroy() {
+		refreshExecutor.shutdown();
 	}
 }

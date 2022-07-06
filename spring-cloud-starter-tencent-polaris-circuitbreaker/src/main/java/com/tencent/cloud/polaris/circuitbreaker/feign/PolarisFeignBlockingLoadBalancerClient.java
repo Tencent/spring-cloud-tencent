@@ -32,5 +32,4 @@ public class PolarisFeignBlockingLoadBalancerClient extends FeignBlockingLoadBal
 	public PolarisFeignBlockingLoadBalancerClient(Client delegate, BlockingLoadBalancerClient loadBalancerClient) {
 		super(delegate, loadBalancerClient);
 	}
-
 }

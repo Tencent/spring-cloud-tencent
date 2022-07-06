@@ -53,8 +53,7 @@ import org.springframework.util.CollectionUtils;
 public class PolarisPropertySourceAutoRefresher
 		implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(PolarisPropertySourceAutoRefresher.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisPropertySourceAutoRefresher.class);
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
@@ -92,8 +91,7 @@ public class PolarisPropertySourceAutoRefresher
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 		this.beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
 		this.typeConverter = this.beanFactory.getTypeConverter();
@@ -109,8 +107,7 @@ public class PolarisPropertySourceAutoRefresher
 			return;
 		}
 
-		List<PolarisPropertySource> polarisPropertySources = polarisPropertySourceManager
-				.getAllPropertySources();
+		List<PolarisPropertySource> polarisPropertySources = polarisPropertySourceManager.getAllPropertySources();
 		if (CollectionUtils.isEmpty(polarisPropertySources)) {
 			return;
 		}

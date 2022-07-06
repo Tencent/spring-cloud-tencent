@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * the configuration for metadata router.
+ *
  * @author lepdou 2022-05-23
  */
 @ConfigurationProperties(prefix = "spring.cloud.polaris.router.metadata-router")

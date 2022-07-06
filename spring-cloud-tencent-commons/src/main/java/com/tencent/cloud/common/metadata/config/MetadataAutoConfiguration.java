@@ -62,7 +62,5 @@ public class MetadataAutoConfiguration {
 		public GlobalFilter metadataFirstScgFilter() {
 			return new MetadataFirstScgFilter();
 		}
-
 	}
-
 }

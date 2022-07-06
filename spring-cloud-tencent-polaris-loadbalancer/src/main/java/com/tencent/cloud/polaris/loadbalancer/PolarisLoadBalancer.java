@@ -136,5 +136,4 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 		request.setService(serviceName);
 		return consumerAPI.getHealthyInstances(request);
 	}
-
 }

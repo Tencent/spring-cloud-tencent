@@ -33,7 +33,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 /**
  * Extends CachingSpringLoadBalancerFactory to be able to create PolarisFeignLoadBalance.
  *
- *@author lepdou 2022-05-16
+ * @author lepdou 2022-05-16
  */
 public class PolarisCachingSpringLoadBalanceFactory extends CachingSpringLoadBalancerFactory {
 

@@ -62,8 +62,7 @@ public final class OkHttpUtil {
 
 			if (response.isSuccessful() && Objects.nonNull(response.body())) {
 				String result = response.body().string();
-				logger.debug("exec get request, url: {} success，response data: {}", url,
-						result);
+				logger.debug("exec get request, url: {} success，response data: {}", url, result);
 				return true;
 			}
 		}
@@ -88,5 +87,4 @@ public final class OkHttpUtil {
 			});
 		}
 	}
-
 }

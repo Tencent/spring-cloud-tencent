@@ -144,8 +144,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				return labelResolver.resolve(request);
 			}
 			catch (Throwable e) {
-				LOG.error("resolve custom label failed. resolver = {}",
-						labelResolver.getClass().getName(), e);
+				LOG.error("resolve custom label failed. resolver = {}", labelResolver.getClass().getName(), e);
 			}
 		}
 		return Collections.emptyMap();

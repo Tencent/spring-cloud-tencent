@@ -30,7 +30,11 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
  * the utils for bean factory.
  * @author lepdou 2022-05-23
  */
-public class BeanFactoryUtils {
+public final class BeanFactoryUtils {
+
+	private BeanFactoryUtils() {
+
+	}
 
 	public static <T> List<T> getBeans(BeanFactory beanFactory, Class<T> requiredType) {
 		if (!(beanFactory instanceof DefaultListableBeanFactory)) {

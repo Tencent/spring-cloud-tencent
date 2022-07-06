@@ -31,6 +31,8 @@ import com.tencent.polaris.api.rpc.InstancesResponse;
 import org.springframework.cloud.client.ServiceInstance;
 
 /**
+ * Polaris service discovery service.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 public class PolarisServiceDiscovery {
@@ -49,8 +51,7 @@ public class PolarisServiceDiscovery {
 	 */
 	public List<ServiceInstance> getInstances(String serviceId) throws PolarisException {
 		List<ServiceInstance> instances = new ArrayList<>();
-		InstancesResponse filteredInstances = polarisDiscoveryHandler
-				.getHealthyInstances(serviceId);
+		InstancesResponse filteredInstances = polarisDiscoveryHandler.getHealthyInstances(serviceId);
 		ServiceInstances serviceInstances = filteredInstances.toServiceInstances();
 		for (Instance instance : serviceInstances.getInstances()) {
 			instances.add(new PolarisServiceInstance(instance));
@@ -67,5 +68,4 @@ public class PolarisServiceDiscovery {
 		return polarisDiscoveryHandler.GetServices().getServices().stream()
 				.map(ServiceInfo::getService).collect(Collectors.toList());
 	}
-
 }

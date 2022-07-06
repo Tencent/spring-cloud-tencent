@@ -29,42 +29,44 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
-import com.tencent.polaris.api.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.web.client.ResponseErrorHandler;
 
 /**
- * @author : wh
- * @date : 2022/6/21 17:25
- * @description: Extend ResponseErrorHandler to get request information
+ * Extend ResponseErrorHandler to get request information.
+ *
+ * @author wh 2022/6/21
  */
 public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisRestTemplateResponseErrorHandler.class);
 
-	private static final String FileName = "connection";
+	private static final String FIELD_NAME = "connection";
 
 	private final ConsumerAPI consumerAPI;
 
 	private final PolarisResponseErrorHandler polarisResponseErrorHandler;
 
 
-	public PolarisRestTemplateResponseErrorHandler(ConsumerAPI consumerAPI, PolarisResponseErrorHandler polarisResponseErrorHandler) {
+	public PolarisRestTemplateResponseErrorHandler(ConsumerAPI consumerAPI,
+			PolarisResponseErrorHandler polarisResponseErrorHandler) {
 		this.consumerAPI = consumerAPI;
 		this.polarisResponseErrorHandler = polarisResponseErrorHandler;
 	}
 
 	@Override
-	public boolean hasError(ClientHttpResponse response) {
+	public boolean hasError(@NonNull ClientHttpResponse response) {
 		return true;
 	}
 
 	@Override
-	public void handleError(ClientHttpResponse response) throws IOException {
+	public void handleError(@NonNull ClientHttpResponse response) throws IOException {
 		if (Objects.nonNull(polarisResponseErrorHandler)) {
 			if (polarisResponseErrorHandler.hasError(response)) {
 				polarisResponseErrorHandler.handleError(response);
@@ -72,12 +74,23 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		}
 	}
 
-	public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
-		ServiceCallResult resultRequest = null;
+	@Override
+	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response)
+			throws IOException {
+		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
-			resultRequest = builderServiceCallResult(url, response);
+			HttpURLConnection connection = (HttpURLConnection) ReflectionUtils.getFieldValue(response, FIELD_NAME);
+			if (connection != null) {
+				URL realURL = connection.getURL();
+				resultRequest.setHost(realURL.getHost());
+				resultRequest.setPort(realURL.getPort());
+			}
+
+			if (response.getStatusCode().value() > 500) {
+				resultRequest.setRetStatus(RetStatus.RetFail);
+			}
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			LOG.error("Will report response of {} url {}", response, url, e);
 			throw e;
 		}
@@ -86,7 +99,7 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		}
 	}
 
-	private ServiceCallResult builderServiceCallResult(URI uri, ClientHttpResponse response) throws IOException {
+	private ServiceCallResult createServiceCallResult(URI uri) {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 		String serviceName = uri.getHost();
 		resultRequest.setService(serviceName);
@@ -98,14 +111,6 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
 			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
 		}
-		HttpURLConnection connection = (HttpURLConnection) ReflectionUtils.getFieldValue(response, FileName);
-		URL url = connection.getURL();
-		resultRequest.setHost(url.getHost());
-		resultRequest.setPort(url.getPort());
-		if (response.getStatusCode().value() > 500) {
-			resultRequest.setRetStatus(RetStatus.RetFail);
-		}
 		return resultRequest;
 	}
-
 }

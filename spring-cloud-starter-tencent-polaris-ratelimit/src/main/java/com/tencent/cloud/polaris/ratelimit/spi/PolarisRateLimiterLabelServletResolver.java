@@ -35,5 +35,4 @@ public interface PolarisRateLimiterLabelServletResolver {
 	 * @return resolved labels
 	 */
 	Map<String, String> resolve(HttpServletRequest request);
-
 }

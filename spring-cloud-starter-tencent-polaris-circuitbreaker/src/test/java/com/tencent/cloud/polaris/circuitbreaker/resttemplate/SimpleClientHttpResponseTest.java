@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,9 +29,9 @@ import org.springframework.util.StringUtils;
 
 
 /**
- * @author : wh
- * @date : 2022/6/22 09:00
- * @description: mock {@link org.springframework.http.client.SimpleClientHttpResponse}
+ * Mock Test for {@link AbstractClientHttpResponse}.
+ *
+ * @author wh 2022/6/22
  */
 public class SimpleClientHttpResponseTest extends AbstractClientHttpResponse {
 
@@ -102,5 +102,4 @@ public class SimpleClientHttpResponseTest extends AbstractClientHttpResponse {
 			// ignore
 		}
 	}
-
 }
