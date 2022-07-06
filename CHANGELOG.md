@@ -32,3 +32,4 @@
 - [Feature: support spring cloud gateway routers](https://github.com/Tencent/spring-cloud-tencent/pull/388)
 - [Optimize:optimize load balancer code and add testcase](https://github.com/Tencent/spring-cloud-tencent/pull/379)
 - [refactor:optimize project and code](https://github.com/Tencent/spring-cloud-tencent/pull/392)
+- [Optimize starter's auto-configuration](https://github.com/Tencent/spring-cloud-tencent/pull/395)
