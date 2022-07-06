@@ -40,6 +40,7 @@ public final class CustomTransitiveMetadataResolver {
 
 	private static final String TRANSITIVE_HEADER_PREFIX = "X-SCT-Metadata-Transitive-";
 	private static final int TRANSITIVE_HEADER_PREFIX_LENGTH = TRANSITIVE_HEADER_PREFIX.length();
+
 	private CustomTransitiveMetadataResolver() {
 	}
 
