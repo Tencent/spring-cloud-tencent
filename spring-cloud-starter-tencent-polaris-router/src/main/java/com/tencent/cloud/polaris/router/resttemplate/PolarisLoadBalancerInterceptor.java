@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -50,6 +49,8 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor capabilities.
@@ -136,10 +137,10 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		}
 		String encodedLabelsContent;
 		try {
-			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), StandardCharsets.UTF_8.name());
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), UTF_8);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
 		request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}

@@ -18,10 +18,13 @@
 
 package com.tencent.cloud.polaris.config.listener;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.collect.Sets;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
-import org.junit.Assert;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -55,10 +58,12 @@ public class ConfigChangeListenerTest {
 	@Autowired
 	private TestApplication.TestConfig testConfig;
 
+	private static final CountDownLatch hits = new CountDownLatch(2);
+
 	@Test
 	public void test() throws InterruptedException {
 		//before change
-		Assert.assertEquals(1000, testConfig.getTimeout());
+		Assertions.assertThat(testConfig.getTimeout()).isEqualTo(1000);
 
 		//submit change event
 		System.setProperty("timeout", "2000");
@@ -66,12 +71,14 @@ public class ConfigChangeListenerTest {
 				Sets.newHashSet("timeout"));
 
 		applicationEventPublisher.publishEvent(event);
-		Thread.sleep(200);
-		//after change
-		Assert.assertEquals(2, testConfig.getChangeCnt());
-		Assert.assertEquals(2000, testConfig.getTimeout());
-	}
 
+		//after change
+		boolean ret = hits.await(2, TimeUnit.SECONDS);
+		Assertions.assertThat(ret).isEqualTo(true);
+
+		Assertions.assertThat(testConfig.getChangeCnt()).isEqualTo(2);
+		Assertions.assertThat(testConfig.getTimeout()).isEqualTo(2000);
+	}
 
 	@SpringBootApplication
 	protected static class TestApplication {
@@ -101,6 +108,7 @@ public class ConfigChangeListenerTest {
 				ConfigPropertyChangeInfo changeInfo = event.getChange("timeout");
 				timeout = Integer.parseInt(changeInfo.getNewValue());
 				changeCnt++;
+				hits.countDown();
 			}
 
 			@PolarisConfigKVFileChangeListener(interestedKeyPrefixes = {"timeout"})
@@ -108,6 +116,7 @@ public class ConfigChangeListenerTest {
 				ConfigPropertyChangeInfo changeInfo = event.getChange("timeout");
 				timeout = Integer.parseInt(changeInfo.getNewValue());
 				changeCnt++;
+				hits.countDown();
 			}
 		}
 

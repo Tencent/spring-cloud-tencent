@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router.scg;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +53,7 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -136,7 +136,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 		List<String> routerHeaders = headers.get(RouterConstants.ROUTER_LABEL_HEADER);
 		Assert.assertFalse(CollectionUtils.isEmpty(routerHeaders));
 
-		Map<String, String> routerLabels = JacksonUtils.deserialize2Map(URLDecoder.decode(routerHeaders.get(0), StandardCharsets.UTF_8.name()));
+		Map<String, String> routerLabels = JacksonUtils.deserialize2Map(URLDecoder.decode(routerHeaders.get(0), UTF_8));
 		Assert.assertEquals("v1", routerLabels.get("${http.header.k1}"));
 		Assert.assertEquals("zhangsan", routerLabels.get("${http.query.userid}"));
 		Assert.assertEquals("blue", routerLabels.get("env"));

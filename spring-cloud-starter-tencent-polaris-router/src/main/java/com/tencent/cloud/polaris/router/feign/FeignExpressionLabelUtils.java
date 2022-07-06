@@ -78,7 +78,6 @@ public final class FeignExpressionLabelUtils {
 	public static String getHeaderValue(RequestTemplate request, String key) {
 		Map<String, Collection<String>> headers = request.headers();
 		return ExpressionLabelUtils.getFirstValue(headers, key);
-
 	}
 
 	public static String getQueryValue(RequestTemplate request, String key) {

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -91,7 +92,7 @@ public class PolarisServiceStatusChangeListener extends AbstractResourceEventLis
 	}
 
 	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+	public void setApplicationEventPublisher(@NonNull ApplicationEventPublisher applicationEventPublisher) {
 		this.publisher = applicationEventPublisher;
 	}
 }

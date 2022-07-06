@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = {"feign.RequestInterceptor"})
 public class FeignAutoConfiguration {
 

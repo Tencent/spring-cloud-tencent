@@ -36,7 +36,6 @@ public final class RateLimitUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(RateLimitUtils.class);
 
 	private RateLimitUtils() {
-
 	}
 
 	public static String getRejectTips(PolarisRateLimitProperties polarisRateLimitProperties) {

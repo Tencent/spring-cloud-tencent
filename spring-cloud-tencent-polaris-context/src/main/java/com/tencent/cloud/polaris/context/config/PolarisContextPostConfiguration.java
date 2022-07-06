@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author lepdou 2022-06-28
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class PolarisContextPostConfiguration {
 
 	@Bean

@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.router.scg;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +65,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_SCHEME_PREFIX_ATTR;
@@ -213,10 +213,10 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		Map<String, String> routerLabels = genRouterLabels(exchange, peerServiceName);
 		String encodedLabelsContent;
 		try {
-			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), StandardCharsets.UTF_8.name());
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), UTF_8);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + StandardCharsets.UTF_8.name());
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
 		return encodedLabelsContent;
 	}

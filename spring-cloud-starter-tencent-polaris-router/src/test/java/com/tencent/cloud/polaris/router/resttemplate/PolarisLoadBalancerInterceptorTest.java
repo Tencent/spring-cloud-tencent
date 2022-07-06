@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router.resttemplate;
 
 import java.net.URI;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +53,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -187,7 +187,7 @@ public class PolarisLoadBalancerInterceptorTest {
 		verify(routerLabelResolver).resolve(request, null);
 
 		Map<String, String> headers = JacksonUtils.deserialize2Map(URLDecoder.decode(request.getHeaders()
-				.get(RouterConstants.ROUTER_LABEL_HEADER).get(0), StandardCharsets.UTF_8.name()));
+				.get(RouterConstants.ROUTER_LABEL_HEADER).get(0), UTF_8));
 		Assert.assertEquals("v1", headers.get("k1"));
 		Assert.assertEquals("v22", headers.get("k2"));
 		Assert.assertEquals("v4", headers.get("k4"));
