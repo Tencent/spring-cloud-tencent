@@ -38,6 +38,8 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
  * REACTIVE.
@@ -80,11 +82,10 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 	private Map<String, String> getIntervalTransitiveMetadata(ServerHttpRequest serverHttpRequest) {
 		HttpHeaders httpHeaders = serverHttpRequest.getHeaders();
-		String customMetadataStr = httpHeaders
-				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
+		String customMetadataStr = httpHeaders.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
-				customMetadataStr = URLDecoder.decode(customMetadataStr, "UTF-8");
+				customMetadataStr = URLDecoder.decode(customMetadataStr, UTF_8);
 			}
 		}
 		catch (UnsupportedEncodingException e) {
@@ -94,5 +95,4 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 		return JacksonUtils.deserialize2Map(customMetadataStr);
 	}
-
 }

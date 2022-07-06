@@ -41,5 +41,4 @@ public class PolarisDiscoveryClientConfiguration {
 	public DiscoveryClient polarisDiscoveryClient(PolarisServiceDiscovery polarisServiceDiscovery) {
 		return new PolarisDiscoveryClient(polarisServiceDiscovery);
 	}
-
 }

@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
 /**
  * Utils for Jackson.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 public final class JacksonUtils {
 
@@ -42,7 +42,6 @@ public final class JacksonUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(JacksonUtils.class);
 
 	private JacksonUtils() {
-
 	}
 
 	/**
@@ -80,10 +79,8 @@ public final class JacksonUtils {
 		}
 		catch (JsonProcessingException e) {
 			LOG.error(
-					"Json to map failed. check if the format of the json string[{}] is correct.",
-					jsonStr, e);
+					"Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
 			throw new RuntimeException("Json to map failed.", e);
 		}
 	}
-
 }

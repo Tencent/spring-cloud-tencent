@@ -35,6 +35,8 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+
 /**
  * Interceptor used for adding the metadata in http headers from context when web client
  * is RestTemplate.
@@ -59,7 +61,7 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
 			try {
 				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(encodedTransitiveMetadata, "UTF-8"));
+						URLEncoder.encode(encodedTransitiveMetadata, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
 				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA, encodedTransitiveMetadata);
@@ -67,5 +69,4 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		}
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
 	}
-
 }

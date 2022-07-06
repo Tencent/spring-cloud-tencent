@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris;
 
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -65,9 +65,6 @@ public class DiscoveryPropertiesAutoConfigurationTest {
 				.withPropertyValues("spring.cloud.consul.discovery.enabled=false");
 		applicationContextRunner.run(context -> {
 			assertThat(context).hasSingleBean(DiscoveryPropertiesAutoConfiguration.class);
-			DiscoveryPropertiesAutoConfiguration discoveryPropertiesAutoConfiguration = context.getBean(DiscoveryPropertiesAutoConfiguration.class);
-			assertThat(discoveryPropertiesAutoConfiguration.isRegisterEnabled()).isFalse();
-			assertThat(discoveryPropertiesAutoConfiguration.isDiscoveryEnabled()).isFalse();
 		});
 	}
 

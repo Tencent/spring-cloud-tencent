@@ -35,7 +35,6 @@ public final class AddressUtils {
 	private static final String ADDRESS_SEPARATOR = ",";
 
 	private AddressUtils() {
-
 	}
 
 	public static List<String> parseAddressList(String addressInfo) {
@@ -50,5 +49,4 @@ public final class AddressUtils {
 		}
 		return addressList;
 	}
-
 }

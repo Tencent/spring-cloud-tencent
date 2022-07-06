@@ -1,0 +1,10 @@
+server:
+  session-timeout: 1800
+  port: 48082
+spring:
+  application:
+    name: GatewayCalleeService
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default

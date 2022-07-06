@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.common.constant;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Constant for Context.
  *
@@ -28,6 +30,11 @@ public final class ContextConstant {
 	 * Name of Polaris.
 	 */
 	public static final String POLARIS = "POLARIS";
+
+	/**
+	 * SCT Default Charset .
+	 */
+	public static final String UTF_8 = StandardCharsets.UTF_8.name();
 
 	private ContextConstant() {
 	}

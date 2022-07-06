@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
-import com.tencent.cloud.polaris.context.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
@@ -39,11 +39,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisRateLimitAutoConfigurationTest {
 
-	private ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
+	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
 
-	private WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
+	private final WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
 
-	private ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
+	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
 	public void testNoWebApplication() {

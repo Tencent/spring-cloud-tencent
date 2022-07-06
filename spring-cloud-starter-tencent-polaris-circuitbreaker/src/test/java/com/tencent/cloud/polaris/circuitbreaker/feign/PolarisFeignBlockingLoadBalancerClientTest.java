@@ -30,7 +30,7 @@ public class PolarisFeignBlockingLoadBalancerClientTest {
 	@Test
 	public void testConstructor() {
 		try {
-			new PolarisFeignBlockingLoadBalancerClient(null, null, null, null);
+			new PolarisFeignBlockingLoadBalancerClient(null, null, null);
 		}
 		catch (Exception e) {
 			Assertions.fail("Exception encountered.", e);

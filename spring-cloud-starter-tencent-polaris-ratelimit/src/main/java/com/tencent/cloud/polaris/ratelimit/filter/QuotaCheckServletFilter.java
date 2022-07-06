@@ -53,12 +53,17 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
 /**
  * Servlet filter to check quota.
  *
- * @author Haotian Zhang, lepdou
+ * @author Haotian Zhang, lepdou, cheese8
  */
 @Order(RateLimitConstant.FILTER_ORDER)
 public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
+
+	/**
+	 * Default Filter Registration Bean Name Defined .
+	 */
+	public static final String QUOTA_FILTER_BEAN_NAME = "quotaFilterRegistrationBean";
 
 	private final LimitAPI limitAPI;
 
@@ -99,6 +104,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
+				response.setContentType("text/html;charset=UTF-8");
 				response.getWriter().write(rejectTips);
 				return;
 			}

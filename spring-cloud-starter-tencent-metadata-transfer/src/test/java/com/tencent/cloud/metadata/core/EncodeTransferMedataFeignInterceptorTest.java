@@ -13,10 +13,9 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.metadata.core.intercepter;
+package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 
@@ -24,7 +23,6 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.assertj.core.api.Assertions;
@@ -99,9 +97,6 @@ public class EncodeTransferMedataFeignInterceptorTest {
 				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
 						"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
 			}
-
 		}
-
 	}
-
 }
