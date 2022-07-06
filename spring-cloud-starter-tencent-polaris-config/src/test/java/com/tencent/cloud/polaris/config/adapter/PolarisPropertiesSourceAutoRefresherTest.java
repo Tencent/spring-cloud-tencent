@@ -63,9 +63,6 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Mock
 	private PolarisPropertySourceManager polarisPropertySourceManager;
 	@Mock
-	private ContextRefresher contextRefresher;
-
-	@Mock
 	private SpringValueRegistry springValueRegistry;
 
 	@Mock
@@ -74,7 +71,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Test
 	public void testConfigFileChanged() throws Exception {
 		PolarisPropertySourceAutoRefresher refresher = new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, contextRefresher, springValueRegistry, placeholderHelper);
+				polarisPropertySourceManager, springValueRegistry, placeholderHelper);
 
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);

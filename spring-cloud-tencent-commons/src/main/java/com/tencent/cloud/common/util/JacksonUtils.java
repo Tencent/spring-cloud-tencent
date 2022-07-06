@@ -89,8 +89,8 @@ public final class JacksonUtils {
 			return OM.readValue(content, valueType);
 		}
 		catch (Exception e) {
-			LOG.error("Object to Json failed. {}", content, e);
-			throw new RuntimeException("Object to Json failed.", e);
+			LOG.error("json {} to class {} failed. ", content, valueType, e);
+			throw new RuntimeException("json to class failed.", e);
 		}
 	}
 

@@ -29,7 +29,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.tencent.cloud.common.util.PolarisThreadFactory;
+import com.tencent.polaris.client.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,19 +74,16 @@ public class SpringValueRegistry {
 	}
 
 	private void initialize() {
-		Executors.newSingleThreadScheduledExecutor(PolarisThreadFactory.create("SpringValueRegistry", true))
-				.scheduleAtFixedRate(
-						new Runnable() {
-							@Override
-							public void run() {
-								try {
-									scanAndClean();
-								}
-								catch (Throwable ex) {
-									logger.error(ex.getMessage(), ex);
-								}
-							}
-						}, CLEAN_INTERVAL_IN_SECONDS, CLEAN_INTERVAL_IN_SECONDS, TimeUnit.SECONDS);
+		Executors.newSingleThreadScheduledExecutor(
+				new NamedThreadFactory("polaris-spring-value-registry")).scheduleAtFixedRate(
+				() -> {
+					try {
+						scanAndClean();
+					}
+					catch (Throwable ex) {
+						logger.error(ex.getMessage(), ex);
+					}
+				}, CLEAN_INTERVAL_IN_SECONDS, CLEAN_INTERVAL_IN_SECONDS, TimeUnit.SECONDS);
 	}
 
 	private void scanAndClean() {

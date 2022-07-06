@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.config.adapter;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.util.JacksonUtils;
@@ -37,7 +36,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -54,36 +52,23 @@ public class PolarisPropertySourceAutoRefresher
 		implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisPropertySourceAutoRefresher.class);
-
 	private final PolarisConfigProperties polarisConfigProperties;
-
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
-
 	private final boolean typeConverterHasConvertIfNecessaryWithFieldParameter;
-
 	private TypeConverter typeConverter;
-
-	private ApplicationContext applicationContext;
-
 	private final SpringValueRegistry springValueRegistry;
-
 	private ConfigurableBeanFactory beanFactory;
-
 	private final PlaceholderHelper placeholderHelper;
-
-	private final ContextRefresher contextRefresher;
 
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
 	public PolarisPropertySourceAutoRefresher(
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisPropertySourceManager polarisPropertySourceManager,
-			ContextRefresher contextRefresher,
 			SpringValueRegistry springValueRegistry,
 			PlaceholderHelper placeholderHelper) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
-		this.contextRefresher = contextRefresher;
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
 		this.typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
@@ -92,7 +77,6 @@ public class PolarisPropertySourceAutoRefresher
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
 		this.beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
 		this.typeConverter = this.beanFactory.getTypeConverter();
 	}
@@ -127,8 +111,6 @@ public class PolarisPropertySourceAutoRefresher
 								polarisPropertySource.getGroup(),
 								polarisPropertySource.getFileName());
 
-						Map<String, Object> source = polarisPropertySource
-								.getSource();
 						for (String changedKey : configKVFileChangeEvent.changedKeys()) {
 
 							// 1. check whether the changed key is relevant
@@ -177,20 +159,9 @@ public class PolarisPropertySourceAutoRefresher
 			value = parseJsonValue((String) value, springValue.getTargetType());
 		}
 		else {
-			if (springValue.isField()) {
-				// org.springframework.beans.TypeConverter#convertIfNecessary(java.lang.Object, java.lang.Class, java.lang.reflect.Field) is available from Spring 3.2.0+
-				if (typeConverterHasConvertIfNecessaryWithFieldParameter) {
-					value = this.typeConverter
-							.convertIfNecessary(value, springValue.getTargetType(), springValue.getField());
-				}
-				else {
-					value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType());
-				}
-			}
-			else {
-				value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
-						springValue.getMethodParameter());
-			}
+			value = springValue.isField() ? this.typeConverter.convertIfNecessary(value, springValue.getTargetType()) :
+					this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
+							springValue.getMethodParameter());
 		}
 
 		return value;
