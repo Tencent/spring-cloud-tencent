@@ -151,7 +151,7 @@ public class PolarisPropertySourceAutoRefresher
 	 * java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
 	 */
 	private Object resolvePropertyValue(SpringValue springValue) {
-		// value will never be null, as @Value and @ApolloJsonValue will not allow that
+		// value will never be null
 		Object value = placeholderHelper
 				.resolvePropertyValue(beanFactory, springValue.getBeanName(), springValue.getPlaceholder());
 

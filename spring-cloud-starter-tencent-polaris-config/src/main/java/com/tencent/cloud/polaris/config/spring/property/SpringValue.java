@@ -35,13 +35,13 @@ public class SpringValue {
 
 	private MethodParameter methodParameter;
 	private Field field;
-	private WeakReference<Object> beanRef;
-	private String beanName;
-	private String key;
-	private String placeholder;
-	private Class<?> targetType;
+	private final WeakReference<Object> beanRef;
+	private final String beanName;
+	private final String key;
+	private final String placeholder;
+	private final Class<?> targetType;
 	private Type genericType;
-	private boolean isJson;
+	private final boolean isJson;
 
 	public SpringValue(String key, String placeholder, Object bean, String beanName, Field field, boolean isJson) {
 		this.beanRef = new WeakReference<>(bean);
