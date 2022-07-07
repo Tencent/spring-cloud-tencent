@@ -29,4 +29,4 @@
 - [Feature: support spring cloud gateway routers](https://github.com/Tencent/spring-cloud-tencent/pull/390)
 - [Optimize starter's auto-configuration](https://github.com/Tencent/spring-cloud-tencent/pull/396)
 - [test: add PostInitPolarisSDKContextTest](https://github.com/Tencent/spring-cloud-tencent/pull/403)
-
+- [refactor:optimize project and code](https://github.com/Tencent/spring-cloud-tencent/pull/407)

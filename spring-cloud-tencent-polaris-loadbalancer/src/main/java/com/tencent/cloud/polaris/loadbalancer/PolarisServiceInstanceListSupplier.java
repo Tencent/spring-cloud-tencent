@@ -78,5 +78,4 @@ public class PolarisServiceInstanceListSupplier extends DelegatingServiceInstanc
 		}
 		return serviceInstances;
 	}
-
 }

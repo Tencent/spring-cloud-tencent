@@ -39,7 +39,8 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Haotian Zhang
  */
-public class PolarisServiceStatusChangeListener extends AbstractResourceEventListener implements ApplicationEventPublisherAware {
+public class PolarisServiceStatusChangeListener extends AbstractResourceEventListener
+		implements ApplicationEventPublisherAware {
 
 	/**
 	 * Index of service info status.

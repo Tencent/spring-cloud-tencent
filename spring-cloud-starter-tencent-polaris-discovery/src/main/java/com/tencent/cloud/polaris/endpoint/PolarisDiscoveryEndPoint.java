@@ -45,7 +45,8 @@ public class PolarisDiscoveryEndPoint {
 	private final DiscoveryClient polarisDiscoveryClient;
 	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
-	public PolarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties, DiscoveryClient polarisDiscoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
+	public PolarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties,
+			DiscoveryClient polarisDiscoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryClient = polarisDiscoveryClient;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;

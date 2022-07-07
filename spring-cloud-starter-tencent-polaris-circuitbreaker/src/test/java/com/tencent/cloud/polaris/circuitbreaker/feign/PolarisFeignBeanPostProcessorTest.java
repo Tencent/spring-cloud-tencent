@@ -71,9 +71,7 @@ public class PolarisFeignBeanPostProcessorTest {
 		// isNeedWrap(bean) == false
 		Object bean1 = new Object();
 		Object bean = polarisFeignBeanPostProcessor.postProcessBeforeInitialization(bean1, "bean1");
-		assertThat(bean).isNotInstanceOfAny(
-				PolarisFeignClient.class,
-				PolarisFeignBlockingLoadBalancerClient.class);
+		assertThat(bean).isNotInstanceOfAny(PolarisFeignClient.class, PolarisFeignBlockingLoadBalancerClient.class);
 
 		// bean instanceOf Client.class
 		Client bean2 = mock(Client.class);

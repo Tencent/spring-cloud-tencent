@@ -26,8 +26,9 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
- * test for {@link ResourceFileUtils}
- *@author lepdou 2022-05-27
+ * test for {@link ResourceFileUtils}.
+ *
+ * @author lepdou 2022-05-27
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ResourceFileUtilsTest {

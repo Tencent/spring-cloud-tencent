@@ -37,8 +37,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 
 /**
- * test for {@link ExpressionLabelUtils}
- *@author lepdou 2022-05-27
+ * test for {@link ExpressionLabelUtils}.
+ *
+ * @author lepdou 2022-05-27
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ExpressionLabelUtilsTest {
@@ -209,5 +210,4 @@ public class ExpressionLabelUtilsTest {
 		Assert.assertNull(result.get(invalidLabel8));
 		Assert.assertNull(result.get(invalidLabel9));
 	}
-
 }

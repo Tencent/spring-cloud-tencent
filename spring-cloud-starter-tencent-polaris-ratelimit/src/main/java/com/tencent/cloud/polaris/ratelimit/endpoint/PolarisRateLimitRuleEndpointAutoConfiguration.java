@@ -46,5 +46,4 @@ public class PolarisRateLimitRuleEndpointAutoConfiguration {
 	public PolarisRateLimitRuleEndpoint polarisRateLimitRuleEndpoint(ServiceRuleManager serviceRuleManager, PolarisRateLimitProperties properties) {
 		return new PolarisRateLimitRuleEndpoint(serviceRuleManager, properties);
 	}
-
 }

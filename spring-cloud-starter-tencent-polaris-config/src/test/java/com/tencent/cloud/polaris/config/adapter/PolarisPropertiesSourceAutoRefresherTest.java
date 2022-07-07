@@ -38,22 +38,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisPropertySourceAutoRefresher}
- *@author lepdou 2022-06-11
+ * test for {@link PolarisPropertySourceAutoRefresher}.
+ *
+ * @author lepdou 2022-06-11
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisPropertiesSourceAutoRefresherTest {
 
+	private final String testNamespace = "testNamespace";
+	private final String testServiceName = "testServiceName";
+	private final String testFileName = "application.properties";
 	@Mock
 	private PolarisConfigProperties polarisConfigProperties;
 	@Mock
 	private PolarisPropertySourceManager polarisPropertySourceManager;
 	@Mock
 	private ContextRefresher contextRefresher;
-
-	private final String testNamespace = "testNamespace";
-	private final String testServiceName = "testServiceName";
-	private final String testFileName = "application.properties";
 
 	@Test
 	public void testConfigFileChanged() {
@@ -118,5 +118,4 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		Assert.assertEquals("v1", polarisPropertySource.getProperty("k1"));
 		verify(contextRefresher).refresh();
 	}
-
 }

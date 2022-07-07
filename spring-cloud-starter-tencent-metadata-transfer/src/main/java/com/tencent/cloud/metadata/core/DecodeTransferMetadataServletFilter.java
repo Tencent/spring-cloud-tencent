@@ -54,8 +54,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, FilterChain filterChain)
-			throws ServletException, IOException {
+			HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
 		Map<String, String> internalTransitiveMetadata = getInternalTransitiveMetadata(httpServletRequest);
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(httpServletRequest);
 
@@ -89,5 +88,4 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		// create custom metadata.
 		return JacksonUtils.deserialize2Map(customMetadataStr);
 	}
-
 }

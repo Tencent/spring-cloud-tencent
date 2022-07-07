@@ -55,5 +55,4 @@ public final class QuotaCheckUtils {
 			return new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultOk, 0, "get quota failed"));
 		}
 	}
-
 }

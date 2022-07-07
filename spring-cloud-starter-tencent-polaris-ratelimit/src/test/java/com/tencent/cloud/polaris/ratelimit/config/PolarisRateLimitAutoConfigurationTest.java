@@ -66,7 +66,8 @@ public class PolarisRateLimitAutoConfigurationTest {
 	@Test
 	public void testServletWebApplication() {
 		this.webApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(
+						PolarisContextAutoConfiguration.class,
 						PolarisRateLimitProperties.class,
 						PolarisRateLimitAutoConfiguration.class))
 				.run(context -> {
@@ -83,7 +84,8 @@ public class PolarisRateLimitAutoConfigurationTest {
 	@Test
 	public void testReactiveWebApplication() {
 		this.reactiveWebApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(
+						PolarisContextAutoConfiguration.class,
 						PolarisRateLimitProperties.class,
 						PolarisRateLimitAutoConfiguration.class))
 				.run(context -> {

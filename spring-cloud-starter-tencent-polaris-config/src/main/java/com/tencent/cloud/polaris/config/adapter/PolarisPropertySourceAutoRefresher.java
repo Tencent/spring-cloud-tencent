@@ -51,12 +51,9 @@ public class PolarisPropertySourceAutoRefresher
 	private final PolarisConfigProperties polarisConfigProperties;
 
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
-
-	private ApplicationContext applicationContext;
-
 	private final ContextRefresher contextRefresher;
-
 	private final AtomicBoolean registered = new AtomicBoolean(false);
+	private ApplicationContext applicationContext;
 
 	public PolarisPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
 			PolarisPropertySourceManager polarisPropertySourceManager, ContextRefresher contextRefresher) {
@@ -125,5 +122,4 @@ public class PolarisPropertySourceAutoRefresher
 			});
 		}
 	}
-
 }

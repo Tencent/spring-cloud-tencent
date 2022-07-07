@@ -46,19 +46,17 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * @author lepdou 2022-06-11
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT,
-		classes = ConfigChangeListenerTest.TestApplication.class,
+@SpringBootTest(webEnvironment = DEFINED_PORT, classes = ConfigChangeListenerTest.TestApplication.class,
 		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
 public class ConfigChangeListenerTest {
 
+	private static final CountDownLatch hits = new CountDownLatch(2);
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 	@Autowired
 	private ConfigurableApplicationContext applicationContext;
 	@Autowired
 	private TestApplication.TestConfig testConfig;
-
-	private static final CountDownLatch hits = new CountDownLatch(2);
 
 	@Test
 	public void test() throws InterruptedException {

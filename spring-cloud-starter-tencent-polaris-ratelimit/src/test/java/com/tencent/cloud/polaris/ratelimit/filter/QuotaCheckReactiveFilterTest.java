@@ -69,22 +69,21 @@ import static org.mockito.Mockito.when;
  * @author Haotian Zhang, kaiy
  */
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = QuotaCheckReactiveFilterTest.TestApplication.class, properties = {
-		"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"
-})
+@SpringBootTest(classes = QuotaCheckReactiveFilterTest.TestApplication.class,
+		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class QuotaCheckReactiveFilterTest {
-
-	private PolarisRateLimiterLabelReactiveResolver labelResolver = exchange -> Collections.singletonMap("ReactiveResolver", "ReactiveResolver");
-
-	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<ExpressionLabelUtils> expressionLabelUtilsMockedStatic;
+	private final PolarisRateLimiterLabelReactiveResolver labelResolver =
+			exchange -> Collections.singletonMap("ReactiveResolver", "ReactiveResolver");
+	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
 
 	@BeforeClass
 	public static void beforeClass() {
 		expressionLabelUtilsMockedStatic = mockStatic(ExpressionLabelUtils.class);
-		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet())).thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
+		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet()))
+				.thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
 
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
@@ -123,9 +122,11 @@ public class QuotaCheckReactiveFilterTest {
 		polarisRateLimitProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
-		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.EMPTY_SET);
+		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString()))
+				.thenReturn(Collections.emptySet());
 
-		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(
+				limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
 	}
 
 	@Test
@@ -149,7 +150,8 @@ public class QuotaCheckReactiveFilterTest {
 	@Test
 	public void testGetRuleExpressionLabels() {
 		try {
-			Method getCustomResolvedLabels = QuotaCheckReactiveFilter.class.getDeclaredMethod("getCustomResolvedLabels", ServerWebExchange.class);
+			Method getCustomResolvedLabels =
+					QuotaCheckReactiveFilter.class.getDeclaredMethod("getCustomResolvedLabels", ServerWebExchange.class);
 			getCustomResolvedLabels.setAccessible(true);
 
 			// Mock request
@@ -162,11 +164,8 @@ public class QuotaCheckReactiveFilterTest {
 			assertThat(result.get("ReactiveResolver")).isEqualTo("ReactiveResolver");
 
 			// throw exception
-			PolarisRateLimiterLabelReactiveResolver exceptionLabelResolver = new PolarisRateLimiterLabelReactiveResolver() {
-				@Override
-				public Map<String, String> resolve(ServerWebExchange exchange) {
-					throw new RuntimeException("Mock exception.");
-				}
+			PolarisRateLimiterLabelReactiveResolver exceptionLabelResolver = exchange1 -> {
+				throw new RuntimeException("Mock exception.");
 			};
 			quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(null, exceptionLabelResolver, null, null);
 			result = (Map<String, String>) getCustomResolvedLabels.invoke(quotaCheckReactiveFilter, exchange);
@@ -203,7 +202,9 @@ public class QuotaCheckReactiveFilterTest {
 		MetadataContext.LOCAL_SERVICE = "TestApp2";
 		long startTimestamp = System.currentTimeMillis();
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> { }, t -> { }, countDownLatch::countDown);
+		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> {
+		}, t -> {
+		}, countDownLatch::countDown);
 		try {
 			countDownLatch.await();
 		}
