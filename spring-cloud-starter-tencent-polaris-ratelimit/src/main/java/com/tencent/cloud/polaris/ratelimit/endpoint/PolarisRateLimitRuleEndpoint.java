@@ -25,6 +25,8 @@ import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.polaris.client.pb.RateLimitProto;
 import com.tencent.polaris.client.pb.RoutingProto;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -43,6 +45,8 @@ import java.util.Map;
  **/
 @Endpoint(id = "polaris-ratelimit")
 public class PolarisRateLimitRuleEndpoint {
+
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisRateLimitRuleEndpoint.class);
 
 	private final ServiceRuleManager serviceRuleManager;
 	private final PolarisRateLimitProperties polarisRateLimitProperties;
@@ -75,12 +79,12 @@ public class PolarisRateLimitRuleEndpoint {
 			return rateLimitRule;
 		}
 
-
 		for (RateLimitProto.Rule rule : rateLimit.getRulesList()) {
-			String ruleJson = null;
+			String ruleJson = "";
 			try {
 				ruleJson = JsonFormat.printer().print(rule);
 			} catch (InvalidProtocolBufferException e) {
+				LOG.error("rule to Json failed. check rule {}.", rule, e);
 				e.printStackTrace();
 			}
 			rateLimitRule.add(JacksonUtils.json2Map(ruleJson));
