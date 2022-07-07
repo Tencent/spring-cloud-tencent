@@ -86,12 +86,12 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.6.0-2021.0.3-SNAPSHOT</revision>
+		<revision>1.6.0-2021.0.3</revision>
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2021.0.3</spring.cloud.version>
 
-        <!-- Spring Boot -->
+		<!-- Spring Boot -->
 		<spring.boot.version>2.6.9</spring.boot.version>
 
 		<!-- Spring Framework -->
@@ -130,13 +130,13 @@
 				<scope>import</scope>
 			</dependency>
 
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 
 			<!-- Spring Framework Dependencies -->
 			<dependency>
