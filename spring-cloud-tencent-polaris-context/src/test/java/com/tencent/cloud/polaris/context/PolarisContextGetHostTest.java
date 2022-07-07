@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.context;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.platform.commons.util.StringUtils;
 import org.junit.runner.RunWith;
@@ -30,6 +29,13 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Test for {@link SDKContext}.
+ *
+ * @author Haotian Zhang
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PolarisContextApplication.class,
 		properties = {"spring.config.location = classpath:bootstrap.yml"})
@@ -45,8 +51,8 @@ public class PolarisContextGetHostTest {
 	@Test
 	public void testGetConfigHost() {
 		String bindIP = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
-		Assert.assertFalse(StringUtils.isBlank(bindIP));
-		Assert.assertEquals(bindIP, "192.168.1.1");
-		Assert.assertEquals(polarisContextProperties.getNamespace(), "dev");
+		assertThat(StringUtils.isBlank(bindIP)).isFalse();
+		assertThat(bindIP).isEqualTo("192.168.1.1");
+		assertThat(polarisContextProperties.getNamespace()).isEqualTo("dev");
 	}
 }
