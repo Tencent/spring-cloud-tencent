@@ -45,13 +45,15 @@ public class PolarisRateLimitRuleEndpoint {
 	private final ServiceRuleManager serviceRuleManager;
 	private final PolarisRateLimitProperties polarisRateLimitProperties;
 
-	public PolarisRateLimitRuleEndpoint(ServiceRuleManager serviceRuleManager, PolarisRateLimitProperties polarisRateLimitProperties) {
+	public PolarisRateLimitRuleEndpoint(ServiceRuleManager serviceRuleManager,
+			PolarisRateLimitProperties polarisRateLimitProperties) {
 		this.serviceRuleManager = serviceRuleManager;
 		this.polarisRateLimitProperties = polarisRateLimitProperties;
 	}
 
 	@ReadOperation
-	public Map<String, Object> rateLimit(@Selector String namespace, @Selector String service, @Nullable String dstService) {
+	public Map<String, Object> rateLimit(
+			@Selector String namespace, @Selector String service, @Nullable String dstService) {
 		Map<String, Object> result = new HashMap<>();
 		RateLimitProto.RateLimit rateLimit = serviceRuleManager.getServiceRateLimitRule(namespace, service);
 		result.put("properties", polarisRateLimitProperties);
@@ -97,5 +99,4 @@ public class PolarisRateLimitRuleEndpoint {
 		}
 		return rateLimitRule;
 	}
-
 }

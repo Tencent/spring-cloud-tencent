@@ -68,8 +68,7 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, UTF_8));
+				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, URLEncoder.encode(metadataStr, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
 				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
@@ -78,5 +77,4 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 
 		return chain.filter(exchange.mutate().request(builder.build()).build());
 	}
-
 }

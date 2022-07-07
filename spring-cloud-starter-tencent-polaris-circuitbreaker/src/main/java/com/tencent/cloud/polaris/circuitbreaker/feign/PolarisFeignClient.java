@@ -42,7 +42,6 @@ import static feign.Util.checkNotNull;
  */
 public class PolarisFeignClient implements Client {
 
-
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisFeignClient.class);
 
 	private final Client delegate;
@@ -60,7 +59,7 @@ public class PolarisFeignClient implements Client {
 		try {
 			Response response = delegate.execute(request, options);
 			// HTTP code greater than 500 is an exception
-			if (response.status() >= 500) {
+			if (response.status() > 500) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 			LOG.debug("Will report result of {}. Request=[{}]. Response=[{}].",
@@ -96,5 +95,4 @@ public class PolarisFeignClient implements Client {
 
 		return resultRequest;
 	}
-
 }

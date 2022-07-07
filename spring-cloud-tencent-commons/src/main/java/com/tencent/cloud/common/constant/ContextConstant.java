@@ -68,7 +68,5 @@ public final class ContextConstant {
 		 * Order of configuration modifier.
 		 */
 		public static Integer CONFIG_ORDER = 1;
-
 	}
-
 }

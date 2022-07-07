@@ -28,10 +28,12 @@ import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.context.annotation.Conditional;
 
 /**
+ * Condition if Polaris discovery is enabled.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @ConditionalOnDiscoveryEnabled
 @ConditionalOnPolarisEnabled
 @Conditional(DiscoveryEnabledCondition.class)

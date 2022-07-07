@@ -17,9 +17,6 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.io.UnsupportedEncodingException;
-
-import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import org.assertj.core.api.Assertions;
@@ -35,7 +32,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -50,7 +46,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = EncodeTransferMedataRestTemplateInterceptorTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
+		properties = {"spring.config.location = classpath:application-test.yml"})
 public class EncodeTransferMedataRestTemplateInterceptorTest {
 
 	@Autowired
@@ -64,8 +60,7 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
 		String metadata = restTemplate
-				.exchange("http://localhost:" + localServerPort + "/test", HttpMethod.GET,
-						httpEntity, String.class)
+				.exchange("http://localhost:" + localServerPort + "/test", HttpMethod.GET, httpEntity, String.class)
 				.getBody();
 		Assertions.assertThat(metadata).isEqualTo("2");
 	}
@@ -80,12 +75,8 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 		}
 
 		@RequestMapping("/test")
-		public String test(
-				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
-				throws UnsupportedEncodingException {
+		public String test() {
 			return MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b");
 		}
-
 	}
-
 }

@@ -27,6 +27,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 
 /**
+ * Test for {@link PolarisContextAutoConfiguration}.
+ *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
 public class PolarisContextAutoConfigurationTest {
@@ -44,5 +46,4 @@ public class PolarisContextAutoConfigurationTest {
 			Assert.assertNotNull(sdkContext);
 		});
 	}
-
 }

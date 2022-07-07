@@ -27,10 +27,12 @@ import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import org.springframework.context.annotation.Conditional;
 
 /**
+ * Condition if Polaris registry is enabled.
+ *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @ConditionalOnPolarisEnabled
 @Conditional(RegisterEnabledCondition.class)
 public @interface ConditionalOnPolarisRegisterEnabled {

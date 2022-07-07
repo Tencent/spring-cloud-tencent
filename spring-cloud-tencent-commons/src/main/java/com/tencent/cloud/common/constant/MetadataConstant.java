@@ -45,7 +45,6 @@ public final class MetadataConstant {
 		 * Order of Metadata2HeaderInterceptor.
 		 */
 		public static int METADATA_2_HEADER_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
-
 	}
 
 	/**
@@ -67,7 +66,5 @@ public final class MetadataConstant {
 		 * Metadata context.
 		 */
 		public static final String METADATA_CONTEXT = "SCT-METADATA-CONTEXT";
-
 	}
-
 }

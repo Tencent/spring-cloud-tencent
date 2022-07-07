@@ -58,13 +58,11 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
 @Order(RateLimitConstant.FILTER_ORDER)
 public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
-
 	/**
-	 * Default Filter Registration Bean Name Defined .
+	 * Default Filter Registration Bean Name Defined.
 	 */
 	public static final String QUOTA_FILTER_BEAN_NAME = "quotaFilterRegistrationBean";
-
+	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
 	private final LimitAPI limitAPI;
 
 	private final PolarisRateLimiterLabelServletResolver labelResolver;
@@ -99,8 +97,8 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 		Map<String, String> labels = getRequestLabels(request, localNamespace, localService);
 
 		try {
-			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
-					localNamespace, localService, 1, labels, request.getRequestURI());
+			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(
+					limitAPI, localNamespace, localService, 1, labels, request.getRequestURI());
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				response.setStatus(polarisRateLimitProperties.getRejectHttpCode());

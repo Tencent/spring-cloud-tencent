@@ -34,7 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = MetadataLocalPropertiesTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
+		properties = {"spring.config.location = classpath:application-test.yml"})
 public class MetadataLocalPropertiesTest {
 
 	@Autowired
@@ -42,22 +42,18 @@ public class MetadataLocalPropertiesTest {
 
 	@Test
 	public void test1() {
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
 
 	@Test
 	public void test2() {
-		Assertions.assertThat(metadataLocalProperties.getTransitive().contains("b"))
-				.isTrue();
+		Assertions.assertThat(metadataLocalProperties.getTransitive().contains("b")).isTrue();
 	}
 
 	@SpringBootApplication
 	protected static class TestApplication {
 
 	}
-
 }

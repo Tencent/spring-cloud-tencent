@@ -172,9 +172,8 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 				polarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
-				LOGGER.info(
-						"[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}",
-						namespace, group, fileName);
+				LOGGER.info("[SCT Config] Load and inject polaris config file success."
+						+ " namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
 			}
 		}
 	}
@@ -204,5 +203,4 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 		return new PolarisPropertySource(namespace, group, fileName, configKVFile, map);
 	}
-
 }

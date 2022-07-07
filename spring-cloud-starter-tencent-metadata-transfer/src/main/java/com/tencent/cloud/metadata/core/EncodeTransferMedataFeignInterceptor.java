@@ -62,8 +62,7 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
 			requestTemplate.removeHeader(CUSTOM_METADATA);
 			try {
-				requestTemplate.header(CUSTOM_METADATA,
-						URLEncoder.encode(encodedTransitiveMetadata, UTF_8));
+				requestTemplate.header(CUSTOM_METADATA, URLEncoder.encode(encodedTransitiveMetadata, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
 				LOG.error("Set header failed.", e);

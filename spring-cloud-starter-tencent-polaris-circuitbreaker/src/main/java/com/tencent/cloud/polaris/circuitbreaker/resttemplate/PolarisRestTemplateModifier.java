@@ -29,15 +29,15 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * Auto configuration RestTemplate, Find the RestTemplate bean annotated with {@link LoadBalanced},
- * then replace {@link org.springframework.web.client.ResponseErrorHandler} with {@link PolarisRestTemplateResponseErrorHandler} .
+ * then replace {@link org.springframework.web.client.ResponseErrorHandler}
+ * with {@link PolarisRestTemplateResponseErrorHandler} .
  *
  * @author wh 2022/6/21
  */
 public class PolarisRestTemplateModifier implements ApplicationContextAware, SmartInitializingSingleton {
 
-	private ApplicationContext applicationContext;
-
 	private final PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler;
+	private ApplicationContext applicationContext;
 
 	public PolarisRestTemplateModifier(PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler) {
 		this.polarisRestTemplateResponseErrorHandler = polarisRestTemplateResponseErrorHandler;
@@ -62,5 +62,4 @@ public class PolarisRestTemplateModifier implements ApplicationContextAware, Sma
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
-
 }

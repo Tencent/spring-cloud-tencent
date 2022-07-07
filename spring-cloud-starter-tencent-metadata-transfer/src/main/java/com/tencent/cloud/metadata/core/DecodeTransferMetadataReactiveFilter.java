@@ -70,13 +70,11 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		MetadataContextHolder.init(mergedTransitiveMetadata);
 
 		// Save to ServerWebExchange.
-		serverWebExchange.getAttributes().put(
-				MetadataConstant.HeaderName.METADATA_CONTEXT,
-				MetadataContextHolder.get());
+		serverWebExchange.getAttributes()
+				.put(MetadataConstant.HeaderName.METADATA_CONTEXT, MetadataContextHolder.get());
 
 		return webFilterChain.filter(serverWebExchange)
-				.doOnError(throwable -> LOG.error("handle metadata[{}] error.",
-						MetadataContextHolder.get(), throwable))
+				.doOnError(throwable -> LOG.error("handle metadata[{}] error.", MetadataContextHolder.get(), throwable))
 				.doFinally((type) -> MetadataContextHolder.remove());
 	}
 

@@ -33,6 +33,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 /**
  * Resolve custom transitive metadata from request.
+ *
  * @author lepdou 2022-05-20
  */
 public class CustomTransitiveMetadataResolver {
@@ -47,10 +48,8 @@ public class CustomTransitiveMetadataResolver {
 		for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
 			String key = entry.getKey();
 
-			if (StringUtils.isNotBlank(key) &&
-					StringUtils.startsWithIgnoreCase(key, TRANSITIVE_HEADER_PREFIX)
+			if (StringUtils.isNotBlank(key) && StringUtils.startsWithIgnoreCase(key, TRANSITIVE_HEADER_PREFIX)
 					&& !CollectionUtils.isEmpty(entry.getValue())) {
-
 				String sourceKey = StringUtils.substring(key, TRANSITIVE_HEADER_PREFIX_LENGTH);
 				result.put(sourceKey, entry.getValue().get(0));
 			}
@@ -66,10 +65,8 @@ public class CustomTransitiveMetadataResolver {
 		while (headers.hasMoreElements()) {
 			String key = headers.nextElement();
 
-			if (StringUtils.isNotBlank(key) &&
-					StringUtils.startsWithIgnoreCase(key, TRANSITIVE_HEADER_PREFIX)
+			if (StringUtils.isNotBlank(key) && StringUtils.startsWithIgnoreCase(key, TRANSITIVE_HEADER_PREFIX)
 					&& StringUtils.isNotBlank(request.getHeader(key))) {
-
 				String sourceKey = StringUtils.substring(key, TRANSITIVE_HEADER_PREFIX_LENGTH);
 				result.put(sourceKey, request.getHeader(key));
 			}

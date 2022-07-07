@@ -84,5 +84,4 @@ public class PolarisFeignBeanPostProcessor implements BeanPostProcessor, BeanFac
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.factory = beanFactory;
 	}
-
 }

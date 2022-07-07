@@ -35,18 +35,9 @@ import org.springframework.util.CollectionUtils;
 /**
  * manage metadata from env/config file/custom spi.
  *
- *@author lepdou 2022-05-20
+ * @author lepdou 2022-05-20
  */
 public class StaticMetadataManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(StaticMetadataManager.class);
-
-	private static final String ENV_METADATA_PREFIX = "SCT_METADATA_CONTENT_";
-	private static final int ENV_METADATA_PREFIX_LENGTH = ENV_METADATA_PREFIX.length();
-	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
-	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
-	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
-	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
-
 	/**
 	 * the metadata key of region.
 	 */
@@ -59,7 +50,13 @@ public class StaticMetadataManager {
 	 * the metadata key of campus/datacenter.
 	 */
 	public static final String LOCATION_KEY_CAMPUS = "campus";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(StaticMetadataManager.class);
+	private static final String ENV_METADATA_PREFIX = "SCT_METADATA_CONTENT_";
+	private static final int ENV_METADATA_PREFIX_LENGTH = ENV_METADATA_PREFIX.length();
+	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
+	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
+	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
+	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
 	private Map<String, String> envMetadata;
 	private Map<String, String> envTransitiveMetadata;
 	private Map<String, String> configMetadata;

@@ -38,9 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolarisLoadBalancerAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisRibbonTest.class,
-					PolarisLoadBalancerAutoConfiguration.class, PolarisContextAutoConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER).withPropertyValues("server.port=" + PORT)
+			.withConfiguration(AutoConfigurations.of(
+					PolarisRibbonTest.class,
+					PolarisLoadBalancerAutoConfiguration.class,
+					PolarisContextAutoConfiguration.class))
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
+			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
 	@Test
@@ -56,5 +59,4 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 	static class PolarisRibbonTest {
 
 	}
-
 }

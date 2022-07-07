@@ -67,12 +67,10 @@ public class MetadataTransferAutoConfiguration {
 		@Bean
 		public FilterRegistrationBean<DecodeTransferMetadataServletFilter> metadataServletFilterRegistrationBean(
 				DecodeTransferMetadataServletFilter decodeTransferMetadataServletFilter) {
-			FilterRegistrationBean<DecodeTransferMetadataServletFilter> filterRegistrationBean = new FilterRegistrationBean<>(
-					decodeTransferMetadataServletFilter);
-			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE,
-					REQUEST);
-			filterRegistrationBean
-					.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
+			FilterRegistrationBean<DecodeTransferMetadataServletFilter> filterRegistrationBean =
+					new FilterRegistrationBean<>(decodeTransferMetadataServletFilter);
+			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
+			filterRegistrationBean.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
 			return filterRegistrationBean;
 		}
 
@@ -146,8 +144,7 @@ public class MetadataTransferAutoConfiguration {
 			// is initialized, then manually set the interceptor.
 			if (!CollectionUtils.isEmpty(beans)) {
 				for (RestTemplate restTemplate : beans.values()) {
-					List<ClientHttpRequestInterceptor> interceptors = restTemplate
-							.getInterceptors();
+					List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
 					// Avoid setting interceptor repeatedly.
 					if (!interceptors.contains(encodeTransferMedataRestTemplateInterceptor)) {
 						interceptors.add(encodeTransferMedataRestTemplateInterceptor);
@@ -155,8 +152,7 @@ public class MetadataTransferAutoConfiguration {
 					}
 				}
 			}
-			return new EncodeTransferMetadataRestTemplatePostProcessor(
-					encodeTransferMedataRestTemplateInterceptor);
+			return new EncodeTransferMetadataRestTemplatePostProcessor(encodeTransferMedataRestTemplateInterceptor);
 		}
 
 		@Override
@@ -183,8 +179,7 @@ public class MetadataTransferAutoConfiguration {
 			public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) {
 				if (bean instanceof RestTemplate) {
 					RestTemplate restTemplate = (RestTemplate) bean;
-					List<ClientHttpRequestInterceptor> interceptors = restTemplate
-							.getInterceptors();
+					List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
 					// Avoid setting interceptor repeatedly.
 					if (!interceptors.contains(encodeTransferMedataRestTemplateInterceptor)) {
 						interceptors.add(this.encodeTransferMedataRestTemplateInterceptor);

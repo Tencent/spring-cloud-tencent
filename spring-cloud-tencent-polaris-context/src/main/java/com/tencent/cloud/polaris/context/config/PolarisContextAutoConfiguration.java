@@ -44,8 +44,7 @@ public class PolarisContextAutoConfiguration {
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean
 	public SDKContext polarisContext(PolarisContextProperties properties, Environment environment,
-			List<PolarisConfigModifier> modifierList)
-			throws PolarisException {
+			List<PolarisConfigModifier> modifierList) throws PolarisException {
 		return SDKContext.initContextByConfig(properties.configuration(environment, modifierList));
 	}
 

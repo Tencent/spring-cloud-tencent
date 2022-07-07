@@ -36,7 +36,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = MetadataContextHolderTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
+		properties = {"spring.config.location = classpath:application-test.yml"})
 public class MetadataContextHolderTest {
 
 	@Test
@@ -77,5 +77,4 @@ public class MetadataContextHolderTest {
 	protected static class TestApplication {
 
 	}
-
 }
