@@ -17,15 +17,16 @@
 
 package com.tencent.cloud.common.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utils for Jackson.
@@ -37,7 +38,7 @@ public final class JacksonUtils {
 	/**
 	 * Object Mapper.
 	 */
-	public static final ObjectMapper OM = new ObjectMapper();
+	public static final ObjectMapper OM = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
 	private static final Logger LOG = LoggerFactory.getLogger(JacksonUtils.class);
 
@@ -83,5 +84,14 @@ public final class JacksonUtils {
 			LOG.error("Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
 			throw new RuntimeException("Json to map failed.", e);
 		}
+	}
+
+	public static Map<String, Object> json2Map(String jsonStr) {
+		try {
+			return OM.readValue(jsonStr, Map.class);
+		} catch (IOException e) {
+			LOG.error("Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
+		}
+		return new HashMap<>();
 	}
 }
