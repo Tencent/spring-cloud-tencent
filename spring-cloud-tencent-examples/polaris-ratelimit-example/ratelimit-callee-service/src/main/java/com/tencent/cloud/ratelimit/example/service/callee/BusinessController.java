@@ -46,24 +46,28 @@ public class BusinessController {
 	private static final Logger LOG = LoggerFactory.getLogger(BusinessController.class);
 
 	private final AtomicInteger index = new AtomicInteger(0);
-
+	private final AtomicLong lastTimestamp = new AtomicLong(0);
 	@Autowired
 	private RestTemplate restTemplate;
-
 	@Value("${spring.application.name}")
 	private String appName;
 
-	private AtomicLong lastTimestamp = new AtomicLong(0);
-
 	/**
 	 * Get information.
+	 *
 	 * @return information
 	 */
-	@RequestMapping("/info")
+	@GetMapping("/info")
 	public String info() {
 		return "hello world for ratelimit service " + index.incrementAndGet();
 	}
 
+	/**
+	 * Get information 30 times per 1 second.
+	 *
+	 * @return result of 30 calls.
+	 * @throws InterruptedException exception
+	 */
 	@GetMapping("/invoke")
 	public String invokeInfo() throws InterruptedException {
 		StringBuffer builder = new StringBuffer();
@@ -92,6 +96,7 @@ public class BusinessController {
 
 	/**
 	 * Get information with unirate.
+	 *
 	 * @return information
 	 */
 	@GetMapping("/unirate")
