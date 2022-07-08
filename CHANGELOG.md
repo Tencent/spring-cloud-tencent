@@ -40,4 +40,3 @@
 - [Optimize starters auto-configuration. (main)](https://github.com/Tencent/spring-cloud-tencent/pull/391/files)
 - [Feature: format code](https://github.com/Tencent/spring-cloud-tencent/pull/394)
 - [test: add PostInitPolarisSDKContextTest](https://github.com/Tencent/spring-cloud-tencent/pull/397)
-- [bugfix: Improve the endpoint function of spring-cloud-starter-tencent-polaris-ratelimit](https://github.com/Tencent/spring-cloud-tencent/pull/413/files)

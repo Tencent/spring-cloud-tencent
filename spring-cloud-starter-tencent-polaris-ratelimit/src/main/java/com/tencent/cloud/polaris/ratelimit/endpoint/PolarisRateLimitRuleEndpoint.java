@@ -17,6 +17,11 @@
 
 package com.tencent.cloud.polaris.ratelimit.endpoint;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.util.JacksonUtils;
@@ -27,16 +32,12 @@ import com.tencent.polaris.client.pb.RoutingProto;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Endpoint of Polaris RateLimit rule.
@@ -83,11 +84,12 @@ public class PolarisRateLimitRuleEndpoint {
 			String ruleJson = "";
 			try {
 				ruleJson = JsonFormat.printer().print(rule);
-			} catch (InvalidProtocolBufferException e) {
-				LOG.error("rule to Json failed. check rule {}.", rule, e);
-				e.printStackTrace();
 			}
-			rateLimitRule.add(JacksonUtils.json2Map(ruleJson));
+			catch (InvalidProtocolBufferException e) {
+				LOG.error("rule to Json failed. check rule {}.", rule, e);
+				throw new RuntimeException("Json failed.", e);
+			}
+			rateLimitRule.add(JacksonUtils.deserialize2Map(ruleJson));
 		}
 		return rateLimitRule;
 	}
