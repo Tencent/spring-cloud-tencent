@@ -27,7 +27,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * custom metadata for instance.
- *@author lepdou 2022-06-16
+ *
+ * @author lepdou 2022-06-16
  */
 @Component
 public class CustomMetadata implements InstanceMetadataProvider {
