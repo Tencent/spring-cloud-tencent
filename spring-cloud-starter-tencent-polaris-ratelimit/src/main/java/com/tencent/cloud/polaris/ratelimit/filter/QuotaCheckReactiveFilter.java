@@ -104,6 +104,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
 					localNamespace, localService, 1, labels, path);
 
+			LOG.debug("The request of [{}] will waiting for {}ms.", path, quotaResponse.getWaitMs());
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
 				response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
