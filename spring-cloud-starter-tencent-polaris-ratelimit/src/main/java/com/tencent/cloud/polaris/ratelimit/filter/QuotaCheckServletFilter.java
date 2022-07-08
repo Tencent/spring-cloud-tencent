@@ -102,7 +102,6 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
 					localNamespace, localService, 1, labels, request.getRequestURI());
 
-			LOG.debug("The request of [{}] will waiting for {}ms.", request.getRequestURI(), quotaResponse.getWaitMs());
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
 				response.setContentType("text/html;charset=UTF-8");
@@ -111,6 +110,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			}
 			// Unirate
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
+				LOG.debug("The request of [{}] will waiting for {}ms.", request.getRequestURI(), quotaResponse.getWaitMs());
 				Thread.sleep(quotaResponse.getWaitMs());
 			}
 
