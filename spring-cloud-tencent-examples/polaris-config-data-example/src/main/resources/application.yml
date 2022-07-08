@@ -1,0 +1,23 @@
+server:
+  port: 48084
+spring:
+  application:
+    name: polaris-config-example
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      config:
+        auto-refresh: true # auto refresh when config file changed
+        groups:
+          - name: ${spring.application.name} # group name
+            files: [ "config/application.properties", "config/bootstrap.yml" ]
+  config:
+    import:
+      - optional:polaris:test.yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-config

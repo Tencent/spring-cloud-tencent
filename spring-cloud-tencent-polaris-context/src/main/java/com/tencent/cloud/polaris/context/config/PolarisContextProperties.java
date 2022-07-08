@@ -101,11 +101,11 @@ public class PolarisContextProperties {
 		this.address = address;
 	}
 
-	String getLocalIpAddress() {
+	public String getLocalIpAddress() {
 		return localIpAddress;
 	}
 
-	void setLocalIpAddress(String localIpAddress) {
+	public void setLocalIpAddress(String localIpAddress) {
 		this.localIpAddress = localIpAddress;
 	}
 
