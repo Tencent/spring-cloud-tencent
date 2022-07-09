@@ -18,13 +18,14 @@
 
 package com.tencent.cloud.metadata.concurrent.executor;
 
+import java.util.Objects;
+import java.util.concurrent.Executor;
+
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.metadata.concurrent.MetadataRunnable;
 import com.tencent.cloud.metadata.concurrent.MetadataWrap;
-import org.springframework.lang.NonNull;
 
-import java.util.Objects;
-import java.util.concurrent.Executor;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link MetadataContext} Wrapper of {@link Executor},
@@ -32,13 +33,12 @@ import java.util.concurrent.Executor;
  * to the execution time of {@link Runnable}.
  *
  * @author wlx
- * * @date 2022/7/8 9:35 下午
  */
 class MetadataExecutor implements Executor, MetadataWrap<Executor> {
 
 	private final Executor delegate;
 
-	public MetadataExecutor(Executor delegate) {
+	MetadataExecutor(Executor delegate) {
 		this.delegate = delegate;
 	}
 

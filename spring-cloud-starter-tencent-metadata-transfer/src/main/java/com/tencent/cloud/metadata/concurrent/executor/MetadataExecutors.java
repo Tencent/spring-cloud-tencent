@@ -18,20 +18,20 @@
 
 package com.tencent.cloud.metadata.concurrent.executor;
 
-import com.tencent.cloud.metadata.concurrent.MetadataWrap;
-import org.springframework.lang.Nullable;
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+
+import com.tencent.cloud.metadata.concurrent.MetadataWrap;
+
+import org.springframework.lang.Nullable;
 
 /**
  * Util methods for Metadata wrapper of jdk executors.
  *
  * @author wlx
- * @date 2022/7/8 11:58 下午
  */
-public class MetadataExecutors {
+public final class MetadataExecutors {
 
 	/**
 	 * wrap Executor instance to MetadataExecutorService instance.
@@ -65,8 +65,7 @@ public class MetadataExecutors {
 	 * @param scheduledExecutorService scheduledExecutorService
 	 * @return MetadataScheduledExecutorService instance
 	 */
-	public static ScheduledExecutorService getMetadataScheduledExecutorService(ScheduledExecutorService
-																					   scheduledExecutorService) {
+	public static ScheduledExecutorService getMetadataScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
 		if (null == scheduledExecutorService || isMetadataWrap(scheduledExecutorService)) {
 			return scheduledExecutorService;
 		}
@@ -98,8 +97,14 @@ public class MetadataExecutors {
 	 *
 	 * @param executor input executor
 	 * @param <T>      Executor type
+	 * @return         if the parameter executor is MetadataExecutor wrapper
 	 */
 	public static <T extends Executor> boolean isMetadataWrap(@Nullable T executor) {
 		return executor instanceof MetadataWrap;
 	}
+
+	private MetadataExecutors() {
+
+	}
+
 }

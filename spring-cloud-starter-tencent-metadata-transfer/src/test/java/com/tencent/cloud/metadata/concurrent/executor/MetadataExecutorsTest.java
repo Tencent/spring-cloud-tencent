@@ -18,19 +18,18 @@
 
 package com.tencent.cloud.metadata.concurrent.executor;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+
 /**
  * Test for {@link MetadataExecutors}.
  *
  * @author wlx
- * @date 2022/7/9 4:05 下午
  */
 public class MetadataExecutorsTest {
 

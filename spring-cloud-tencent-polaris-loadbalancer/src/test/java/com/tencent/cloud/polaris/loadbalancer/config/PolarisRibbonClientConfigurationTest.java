@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Test for {@link PolarisRibbonClientConfiguration}.
  *
  * @author wlx
- * @date 2022/7/2 10:36 上午
  */
 public class PolarisRibbonClientConfigurationTest {
 

@@ -23,14 +23,12 @@ package com.tencent.cloud.metadata.concurrent;
  * <p>
  * Used to mark wrapper types, for example:
  * <ul>
- *     <li/ {@link MetadataCallable}>
- *     <li/ {@link MetadataRunnable}>
+ *     <li>{@link MetadataCallable}</li>
+ *     <li>{@link MetadataRunnable}</li>
  * </ul>
  *
  * @author wlx
- * @date 2022/7/9 9:17 上午
  */
-
 public interface MetadataWrap<T> {
 
 	/**

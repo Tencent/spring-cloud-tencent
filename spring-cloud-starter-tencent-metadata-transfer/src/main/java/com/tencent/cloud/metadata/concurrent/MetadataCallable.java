@@ -18,15 +18,15 @@
 
 package com.tencent.cloud.metadata.concurrent;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 
 /**
  * {@link MetadataCallable} decorate {@link Callable} to get {@link MetadataContext} value
@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
  * Use factory methods {@link #get} / {@link #gets} to create instance.
  *
  * @author wlx
- * @date 2022/7/8 9:31 下午
  */
 public final class MetadataCallable<V> implements Callable<V>,
 		MetadataWrap<Callable<V>> {
@@ -56,7 +55,8 @@ public final class MetadataCallable<V> implements Callable<V>,
 		MetadataContextHolder.set(metadataContext);
 		try {
 			return delegate.call();
-		} finally {
+		}
+		finally {
 			MetadataContextHolder.set(metadataContextBackup);
 		}
 	}
@@ -71,7 +71,8 @@ public final class MetadataCallable<V> implements Callable<V>,
 	public static <V> Callable<V> get(Callable<V> delegate) {
 		if (null == delegate || delegate instanceof MetadataCallable) {
 			return delegate;
-		} else {
+		}
+		else {
 			return new MetadataCallable<>(delegate);
 		}
 	}

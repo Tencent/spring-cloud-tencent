@@ -18,14 +18,14 @@
 
 package com.tencent.cloud.metadata.concurrent;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 
 /**
  * {@link MetadataRunnable} decorate {@link Runnable} to get {@link MetadataContext} value
@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
  * <p>
  *
  * @author wlx
- * @date 2022/7/8 9:16 下午
  */
 public final class MetadataRunnable implements Runnable,
 		MetadataWrap<Runnable> {
@@ -56,7 +55,8 @@ public final class MetadataRunnable implements Runnable,
 		MetadataContextHolder.set(metadataContext);
 		try {
 			delegate.run();
-		} finally {
+		}
+		finally {
 			MetadataContextHolder.set(metadataContextBackup);
 		}
 	}
@@ -70,7 +70,8 @@ public final class MetadataRunnable implements Runnable,
 	public static Runnable get(Runnable delegate) {
 		if (null == delegate || delegate instanceof MetadataRunnable) {
 			return delegate;
-		} else {
+		}
+		else {
 			return new MetadataRunnable(delegate);
 		}
 	}

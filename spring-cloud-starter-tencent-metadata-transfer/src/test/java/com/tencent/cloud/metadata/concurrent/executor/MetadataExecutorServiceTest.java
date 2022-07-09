@@ -18,16 +18,6 @@
 
 package com.tencent.cloud.metadata.concurrent.executor;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +30,23 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import org.assertj.core.api.Assertions;
+import org.junit.AfterClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
  * Test for {@link MetadataExecutorService}.
  *
  * @author wlx
- * @date 2022/7/9 4:04 下午
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
@@ -89,7 +89,8 @@ public class MetadataExecutorServiceTest {
 				future -> {
 					try {
 						return future.get();
-					} catch (InterruptedException | ExecutionException e) {
+					}
+					catch (InterruptedException | ExecutionException e) {
 						return null;
 					}
 				}
@@ -109,10 +110,6 @@ public class MetadataExecutorServiceTest {
 		executorService.shutdownNow();
 	}
 
-	@SpringBootApplication
-	protected static class TestApplication {
-	}
-
 	private List<Callable<Map<String, String>>> getCallableList() {
 		List<Callable<Map<String, String>>> callableList = new ArrayList<>();
 		callableList.add(() -> {
@@ -122,5 +119,9 @@ public class MetadataExecutorServiceTest {
 			return MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		});
 		return callableList;
+	}
+
+	@SpringBootApplication
+	protected static class TestApplication {
 	}
 }

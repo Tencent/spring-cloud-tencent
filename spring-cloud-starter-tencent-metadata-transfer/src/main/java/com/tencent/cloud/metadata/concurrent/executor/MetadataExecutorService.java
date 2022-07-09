@@ -18,11 +18,6 @@
 
 package com.tencent.cloud.metadata.concurrent.executor;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.metadata.concurrent.MetadataCallable;
-import com.tencent.cloud.metadata.concurrent.MetadataRunnable;
-import org.springframework.lang.NonNull;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -33,19 +28,24 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.metadata.concurrent.MetadataCallable;
+import com.tencent.cloud.metadata.concurrent.MetadataRunnable;
+
+import org.springframework.lang.NonNull;
+
 /**
  * {@link MetadataContext} Wrapper of {@link ExecutorService},
  * transfer the {@link MetadataContext} from the task submit time of {@link Runnable} or {@link Callable}
  * to the execution time of {@link Runnable} or {@link Callable}.
  *
  * @author wlx
- * @date 2022/7/8 9:36 下午
  */
 class MetadataExecutorService extends MetadataExecutor implements ExecutorService {
 
 	private final ExecutorService delegate;
 
-	public MetadataExecutorService(ExecutorService delegate) {
+	MetadataExecutorService(ExecutorService delegate) {
 		super(delegate);
 		this.delegate = delegate;
 	}

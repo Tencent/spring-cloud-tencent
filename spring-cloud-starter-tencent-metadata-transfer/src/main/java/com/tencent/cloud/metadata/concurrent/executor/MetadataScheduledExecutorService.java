@@ -18,16 +18,17 @@
 
 package com.tencent.cloud.metadata.concurrent.executor;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.metadata.concurrent.MetadataCallable;
-import com.tencent.cloud.metadata.concurrent.MetadataRunnable;
-import org.springframework.lang.NonNull;
-
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.metadata.concurrent.MetadataCallable;
+import com.tencent.cloud.metadata.concurrent.MetadataRunnable;
+
+import org.springframework.lang.NonNull;
 
 /**
  * {@link MetadataContext} Wrapper of {@link ScheduledExecutorService},
@@ -35,14 +36,13 @@ import java.util.concurrent.TimeUnit;
  * to the execution time of {@link Runnable} or {@link Callable}.
  *
  * @author wlx
- * @date 2022/7/8 9:40 下午
  */
 class MetadataScheduledExecutorService extends MetadataExecutorService
 		implements ScheduledExecutorService {
 
 	private final ScheduledExecutorService delegate;
 
-	public MetadataScheduledExecutorService(ScheduledExecutorService delegate) {
+	MetadataScheduledExecutorService(ScheduledExecutorService delegate) {
 		super(delegate);
 		this.delegate = delegate;
 	}
@@ -61,15 +61,13 @@ class MetadataScheduledExecutorService extends MetadataExecutorService
 
 	@Override
 	@NonNull
-	public ScheduledFuture<?> scheduleAtFixedRate(@NonNull Runnable command, long initialDelay,
-												  long period, @NonNull TimeUnit unit) {
+	public ScheduledFuture<?> scheduleAtFixedRate(@NonNull Runnable command, long initialDelay, long period, @NonNull TimeUnit unit) {
 		return this.delegate.scheduleAtFixedRate(MetadataRunnable.get(command), initialDelay, period, unit);
 	}
 
 	@Override
 	@NonNull
-	public ScheduledFuture<?> scheduleWithFixedDelay(@NonNull Runnable command, long initialDelay,
-													 long delay, @NonNull TimeUnit unit) {
+	public ScheduledFuture<?> scheduleWithFixedDelay(@NonNull Runnable command, long initialDelay, long delay, @NonNull TimeUnit unit) {
 		return this.delegate.scheduleAtFixedRate(MetadataRunnable.get(command), initialDelay, delay, unit);
 	}
 

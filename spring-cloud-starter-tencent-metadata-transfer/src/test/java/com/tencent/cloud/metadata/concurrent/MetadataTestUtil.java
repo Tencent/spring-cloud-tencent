@@ -18,18 +18,20 @@
 
 package com.tencent.cloud.metadata.concurrent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import org.assertj.core.api.Assertions;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author wlx
- * @date 2022/7/9 3:23 下午
  */
-public class MetadataTestUtil {
+public final class MetadataTestUtil {
+
+	private MetadataTestUtil() {
+	}
 
 	public static void initMetadataContext() {
 		Map<String, String> customMetadata = new HashMap<>();
