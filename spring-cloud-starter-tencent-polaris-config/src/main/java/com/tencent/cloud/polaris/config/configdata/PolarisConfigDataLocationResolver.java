@@ -115,10 +115,8 @@ public class PolarisConfigDataLocationResolver implements
 		// stop sdkContext and register PolarisPropertySourceManager to context
 		bootstrapContext.addCloseListener(
 				event -> {
-					event.getApplicationContext().getBeanFactory().registerSingleton(
-							"sdkContext", event.getBootstrapContext().get(SDKContext.class)
+					event.getBootstrapContext().get(SDKContext.class).destroy();
 
-					);
 					event.getApplicationContext().getBeanFactory().registerSingleton(
 							"polarisPropertySourceManager",
 							event.getBootstrapContext().get(PolarisPropertySourceManager.class)

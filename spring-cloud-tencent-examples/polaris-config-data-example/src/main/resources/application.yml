@@ -14,7 +14,7 @@ spring:
             files: [ "config/application.properties", "config/bootstrap.yml" ]
   config:
     import:
-      - optional:polaris:test.yml
+      - optional:polaris:application.properties
 management:
   endpoints:
     web:
