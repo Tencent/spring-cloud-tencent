@@ -88,6 +88,36 @@ public class MetadataExecutorTest {
 		Assertions.assertThat(executor).isEqualTo(executorService);
 	}
 
+	@Test
+	public void threadMultiplexingTest() {
+		Map<String, String> fragmentContextBeforeInit =
+				MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+
+		executorService.execute(() -> {
+			Map<String, String> fragmentContext =
+					MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+			Assertions.assertThat(fragmentContextBeforeInit.equals(fragmentContext)).isTrue();
+		});
+
+		// init after new Task, won't see parent value in in task!
+		MetadataTestUtil.initMetadataContext();
+
+		Map<String, String> fragmentContextAfterInit =
+				MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+
+
+		executorService.execute(() -> {
+			Map<String, String> fragmentContext =
+					MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+			// init after new Task, won't see parent value in in task!
+			// so before init and after init task res will be same!
+			Assertions.assertThat(fragmentContextBeforeInit.equals(fragmentContext)).isTrue();
+		});
+
+		Assertions.assertThat(fragmentContextAfterInit.get("a")).isEqualTo("1");
+		Assertions.assertThat(fragmentContextAfterInit.get("b")).isEqualTo("2");
+	}
+
 	@AfterClass
 	public static void cleanUp() {
 		if (executorService instanceof ExecutorService) {
@@ -99,4 +129,5 @@ public class MetadataExecutorTest {
 	@SpringBootApplication
 	protected static class TestApplication {
 	}
+
 }

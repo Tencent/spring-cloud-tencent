@@ -56,6 +56,13 @@
 			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.alibaba/transmittable-thread-local -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>transmittable-thread-local</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>

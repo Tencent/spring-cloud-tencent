@@ -24,9 +24,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.ttl.threadpool.TtlExecutors;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.metadata.concurrent.MetadataCallable;
-import com.tencent.cloud.metadata.concurrent.MetadataRunnable;
 
 import org.springframework.lang.NonNull;
 
@@ -44,31 +43,31 @@ class MetadataScheduledExecutorService extends MetadataExecutorService
 
 	MetadataScheduledExecutorService(ScheduledExecutorService delegate) {
 		super(delegate);
-		this.delegate = delegate;
+		this.delegate = TtlExecutors.getTtlScheduledExecutorService(delegate);
 	}
 
 	@Override
 	@NonNull
 	public ScheduledFuture<?> schedule(@NonNull Runnable command, long delay, @NonNull TimeUnit unit) {
-		return this.delegate.schedule(MetadataRunnable.get(command), delay, unit);
+		return this.delegate.schedule(command, delay, unit);
 	}
 
 	@Override
 	@NonNull
 	public <V> ScheduledFuture<V> schedule(@NonNull Callable<V> callable, long delay, @NonNull TimeUnit unit) {
-		return this.delegate.schedule(MetadataCallable.get(callable), delay, unit);
+		return this.delegate.schedule(callable, delay, unit);
 	}
 
 	@Override
 	@NonNull
 	public ScheduledFuture<?> scheduleAtFixedRate(@NonNull Runnable command, long initialDelay, long period, @NonNull TimeUnit unit) {
-		return this.delegate.scheduleAtFixedRate(MetadataRunnable.get(command), initialDelay, period, unit);
+		return this.delegate.scheduleAtFixedRate(command, initialDelay, period, unit);
 	}
 
 	@Override
 	@NonNull
 	public ScheduledFuture<?> scheduleWithFixedDelay(@NonNull Runnable command, long initialDelay, long delay, @NonNull TimeUnit unit) {
-		return this.delegate.scheduleAtFixedRate(MetadataRunnable.get(command), initialDelay, delay, unit);
+		return this.delegate.scheduleAtFixedRate(command, initialDelay, delay, unit);
 	}
 
 	@Override
@@ -92,4 +91,5 @@ class MetadataScheduledExecutorService extends MetadataExecutorService
 	public int hashCode() {
 		return Objects.hash(delegate);
 	}
+
 }

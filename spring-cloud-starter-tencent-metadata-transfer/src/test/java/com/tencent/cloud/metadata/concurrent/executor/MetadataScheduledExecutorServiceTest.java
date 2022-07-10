@@ -85,4 +85,5 @@ public class MetadataScheduledExecutorServiceTest {
 	@SpringBootApplication
 	protected static class TestApplication {
 	}
+
 }

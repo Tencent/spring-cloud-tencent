@@ -79,6 +79,7 @@
 		<protobuf-java.version>3.16.1</protobuf-java.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 		<guava.version>31.0.1-jre</guava.version>
+		<transmittable-thread-local.version>2.12.0</transmittable-thread-local.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -234,6 +235,13 @@
 				<version>${byte-buddy.version}</version>
 				<scope>test</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>transmittable-thread-local</artifactId>
+				<version>${transmittable-thread-local.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

@@ -21,8 +21,8 @@ package com.tencent.cloud.metadata.concurrent.executor;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
+import com.alibaba.ttl.threadpool.TtlExecutors;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.metadata.concurrent.MetadataRunnable;
 import com.tencent.cloud.metadata.concurrent.MetadataWrap;
 
 import org.springframework.lang.NonNull;
@@ -39,12 +39,12 @@ class MetadataExecutor implements Executor, MetadataWrap<Executor> {
 	private final Executor delegate;
 
 	MetadataExecutor(Executor delegate) {
-		this.delegate = delegate;
+		this.delegate = TtlExecutors.getTtlExecutor(delegate);
 	}
 
 	@Override
 	public void execute(@NonNull Runnable command) {
-		delegate.execute(MetadataRunnable.get(command));
+		delegate.execute(command);
 	}
 
 	@Override
@@ -68,4 +68,5 @@ class MetadataExecutor implements Executor, MetadataWrap<Executor> {
 	public Executor unWrap() {
 		return this.delegate;
 	}
+
 }

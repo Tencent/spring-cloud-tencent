@@ -28,9 +28,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.alibaba.ttl.threadpool.TtlExecutors;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.metadata.concurrent.MetadataCallable;
-import com.tencent.cloud.metadata.concurrent.MetadataRunnable;
 
 import org.springframework.lang.NonNull;
 
@@ -47,7 +46,7 @@ class MetadataExecutorService extends MetadataExecutor implements ExecutorServic
 
 	MetadataExecutorService(ExecutorService delegate) {
 		super(delegate);
-		this.delegate = delegate;
+		this.delegate = TtlExecutors.getTtlExecutorService(delegate);
 	}
 
 	@Override
@@ -79,42 +78,42 @@ class MetadataExecutorService extends MetadataExecutor implements ExecutorServic
 	@Override
 	@NonNull
 	public <T> Future<T> submit(@NonNull Callable<T> task) {
-		return this.delegate.submit(MetadataCallable.get(task));
+		return this.delegate.submit(task);
 	}
 
 	@Override
 	@NonNull
 	public <T> Future<T> submit(@NonNull Runnable task, T result) {
-		return this.delegate.submit(MetadataRunnable.get(task), result);
+		return this.delegate.submit(task, result);
 	}
 
 	@Override
 	@NonNull
 	public Future<?> submit(@NonNull Runnable task) {
-		return this.delegate.submit(MetadataRunnable.get(task));
+		return this.delegate.submit(task);
 	}
 
 	@Override
 	@NonNull
 	public <T> List<Future<T>> invokeAll(@NonNull Collection<? extends Callable<T>> tasks) throws InterruptedException {
-		return this.delegate.invokeAll(MetadataCallable.gets(tasks));
+		return this.delegate.invokeAll(tasks);
 	}
 
 	@Override
 	@NonNull
 	public <T> List<Future<T>> invokeAll(@NonNull Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
-		return this.delegate.invokeAll(MetadataCallable.gets(tasks), timeout, unit);
+		return this.delegate.invokeAll(tasks, timeout, unit);
 	}
 
 	@Override
 	@NonNull
 	public <T> T invokeAny(@NonNull Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-		return this.delegate.invokeAny(MetadataCallable.gets(tasks));
+		return this.delegate.invokeAny(tasks);
 	}
 
 	@Override
 	public <T> T invokeAny(@NonNull Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-		return this.delegate.invokeAny(MetadataCallable.gets(tasks), timeout, unit);
+		return this.delegate.invokeAny(tasks, timeout, unit);
 	}
 
 	@Override
@@ -138,4 +137,5 @@ class MetadataExecutorService extends MetadataExecutor implements ExecutorServic
 	public int hashCode() {
 		return Objects.hash(delegate);
 	}
+
 }
