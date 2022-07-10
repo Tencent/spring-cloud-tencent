@@ -118,7 +118,7 @@ class MetadataExecutorService extends MetadataExecutor implements ExecutorServic
 
 	@Override
 	public ExecutorService unWrap() {
-		return this.delegate;
+		return TtlExecutors.unwrap(delegate);
 	}
 
 	@Override

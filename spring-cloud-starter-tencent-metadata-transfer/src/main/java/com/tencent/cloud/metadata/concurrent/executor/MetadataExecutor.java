@@ -66,7 +66,7 @@ class MetadataExecutor implements Executor, MetadataWrap<Executor> {
 
 	@Override
 	public Executor unWrap() {
-		return this.delegate;
+		return TtlExecutors.unwrap(delegate);
 	}
 
 }
