@@ -60,4 +60,5 @@ public class MetadataExecutorsTest {
 				MetadataExecutors.getMetadataScheduledExecutorService(scheduledExecutorService));
 		Assertions.assertThat(unwrap).isEqualTo(scheduledExecutorService);
 	}
+
 }
