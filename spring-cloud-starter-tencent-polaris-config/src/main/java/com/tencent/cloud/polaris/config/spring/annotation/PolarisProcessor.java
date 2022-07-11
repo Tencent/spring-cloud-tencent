@@ -12,9 +12,9 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.util.ReflectionUtils;
 
 /**
- *@author : wh
- *@date : 2022/7/10 14:35
- *@description:
+ * Get spring bean properties and methods
+ *
+ * @author weihubeats 2022-7-10
  */
 public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrdered {
 

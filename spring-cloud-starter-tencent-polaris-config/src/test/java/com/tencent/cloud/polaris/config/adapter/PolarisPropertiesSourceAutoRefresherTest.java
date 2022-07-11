@@ -123,6 +123,5 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		Assert.assertEquals("v3", polarisPropertySource.getProperty("k3"));
 		Assert.assertNull(polarisPropertySource.getProperty("k2"));
 		Assert.assertEquals("v4", polarisPropertySource.getProperty("k4"));
-		verify(contextRefresher).refresh();
 	}
 }

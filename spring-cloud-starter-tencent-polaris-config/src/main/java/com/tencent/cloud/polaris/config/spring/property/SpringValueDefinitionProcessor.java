@@ -37,9 +37,19 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 
 /**
- *@author : wh
- *@date : 2022/7/10 14:25
- *@description:
+ * To process xml config placeholders, e.g.
+ *
+ * <pre>
+ *  &lt;bean class=&quot;com.ctrip.framework.apollo.demo.spring.xmlConfigDemo.bean.XmlBean&quot;&gt;
+ *    &lt;property name=&quot;timeout&quot; value=&quot;${timeout:200}&quot;/&gt;
+ *    &lt;property name=&quot;batch&quot; value=&quot;${batch:100}&quot;/&gt;
+ *  &lt;/bean&gt;
+ * </pre>
+ * 
+ * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValueDefinitionProcessor.java>
+ *     SpringValueDefinitionProcessor</a></code>
+ *
+ * @author weihubeats 2022-7-10
  */
 public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPostProcessor {
 	private static final Map<BeanDefinitionRegistry, Multimap<String, SpringValueDefinition>> beanName2SpringValueDefinitions =

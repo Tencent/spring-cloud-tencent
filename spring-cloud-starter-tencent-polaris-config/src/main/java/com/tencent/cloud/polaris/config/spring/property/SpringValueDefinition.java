@@ -18,10 +18,13 @@
 package com.tencent.cloud.polaris.config.spring.property;
 
 /**
- *@author : wh
- *@date : 2022/7/10 14:24
- *@description:
+ * Spring value.
+ * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValueDefinition.java>
+ *     SpringValueDefinition</a></code>
+ *
+ * @author weihubeats 2022-7-10
  */
+
 public class SpringValueDefinition {
 
 	private final String key;

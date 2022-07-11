@@ -29,13 +29,15 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.Bean;
 
 /**
- *@author : wh
- *@date : 2022/7/10 14:15
- *@description:
+ * Spring value processor of field or method which has @Value and xml config placeholders.
+ * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/annotation/SpringValueProcessor.java>
+ *     SpringValueProcessor</a></code>
+ *
+ * @author weihubeats 2022-7-10
  */
 public class SpringValueProcessor extends PolarisProcessor implements BeanFactoryPostProcessor, BeanFactoryAware {
 
-	private static final Logger logger = LoggerFactory.getLogger(SpringValueProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SpringValueProcessor.class);
 
 	private final PolarisConfigProperties polarisConfigProperties;
 	private final PlaceholderHelper placeholderHelper;
@@ -96,7 +98,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 			return;
 		}
 		if (method.getParameterTypes().length != 1) {
-			logger.error("Ignore @Value setter {}.{}, expecting 1 parameter, actual {} parameters",
+			LOGGER.error("Ignore @Value setter {}.{}, expecting 1 parameter, actual {} parameters",
 					bean.getClass().getName(), method.getName(), method.getParameterTypes().length);
 			return;
 		}
@@ -121,12 +123,12 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 				springValue = new SpringValue(key, value.value(), bean, beanName, method, false);
 			}
 			else {
-				logger.error("Apollo @Value annotation currently only support to be used on methods and fields, "
+				LOGGER.error("Polaris @Value annotation currently only support to be used on methods and fields, "
 						+ "but is used on {}", member.getClass());
 				return;
 			}
 			springValueRegistry.register(beanFactory, key, springValue);
-			logger.info("Monitoring {}", springValue);
+			LOGGER.info("Monitoring {}", springValue);
 		}
 	}
 
@@ -148,10 +150,10 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 				SpringValue springValue = new SpringValue(definition.getKey(), definition.getPlaceholder(),
 						bean, beanName, method, false);
 				springValueRegistry.register(beanFactory, definition.getKey(), springValue);
-				logger.debug("Monitoring {}", springValue);
+				LOGGER.debug("Monitoring {}", springValue);
 			}
 			catch (Throwable ex) {
-				logger.error("Failed to enable auto update feature for {}.{}", bean.getClass(),
+				LOGGER.error("Failed to enable auto update feature for {}.{}", bean.getClass(),
 						definition.getPropertyName());
 			}
 		}

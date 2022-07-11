@@ -30,9 +30,11 @@ import org.springframework.beans.factory.config.Scope;
 import org.springframework.util.StringUtils;
 
 /**
- *@author : wh
- *@date : 2022/7/10 14:26
- *@description:
+ * Placeholder helper functions.
+ * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/PlaceholderHelper.java>
+ *     PlaceholderHelper</a></code>
+ *
+ * @author weihubeats 2022-7-10
  */
 public class PlaceholderHelper {
 

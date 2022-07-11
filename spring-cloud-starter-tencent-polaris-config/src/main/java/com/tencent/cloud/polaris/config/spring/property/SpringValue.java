@@ -26,9 +26,11 @@ import java.lang.reflect.Type;
 import org.springframework.core.MethodParameter;
 
 /**
- *@author : wh
- *@date : 2022/7/10 14:23
- *@description:
+ * Spring @Value method info.
+ * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValue.java>
+ *     SpringValue</a></code>
+ *
+ * @author weihubeats 2022-7-10
  */
 public class SpringValue {
 

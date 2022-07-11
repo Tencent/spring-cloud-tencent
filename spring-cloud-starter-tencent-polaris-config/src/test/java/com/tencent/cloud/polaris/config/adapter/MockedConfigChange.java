@@ -1,9 +1,9 @@
 package com.tencent.cloud.polaris.config.adapter;
 
 /**
- *@author : wh
- *@date : 2022/7/10 14:50
- *@description:
+ * Mock config kv file for test.
+ *
+ * @author weihubeats 2022-7-10
  */
 public class MockedConfigChange {
 

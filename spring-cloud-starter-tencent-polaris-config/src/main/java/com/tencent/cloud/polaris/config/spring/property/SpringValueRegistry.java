@@ -35,9 +35,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
- *@author : wh
- *@date : 2022/7/10 14:29
- *@description:
+ * Spring value auto registry.
+ * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValueRegistry.java>
+ *     SpringValueRegistry</a></code>
+ *
+ * @author weihubeats 2022-7-10
  */
 public class SpringValueRegistry {
 	private static final Logger logger = LoggerFactory.getLogger(SpringValueRegistry.class);
