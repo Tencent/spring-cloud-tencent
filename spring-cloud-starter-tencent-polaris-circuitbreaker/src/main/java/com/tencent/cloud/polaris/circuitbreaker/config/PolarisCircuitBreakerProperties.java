@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 
@@ -54,7 +52,7 @@ public class PolarisCircuitBreakerProperties {
 	/**
 	 * Specify the Http status code(s) that needs to be fused.
 	 */
-	private List<HttpStatus> statuses = Lists.newArrayList(NOT_IMPLEMENTED, BAD_GATEWAY,
+	private List<HttpStatus> statuses = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
 			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
 			INSUFFICIENT_STORAGE, LOOP_DETECTED, BANDWIDTH_LIMIT_EXCEEDED, NOT_EXTENDED, NETWORK_AUTHENTICATION_REQUIRED);
 
@@ -64,13 +62,52 @@ public class PolarisCircuitBreakerProperties {
 	private List<HttpStatus.Series> series = toList(HttpStatus.Series.SERVER_ERROR);
 
 	/**
+	 * Ignore Internal Server Error Http Status Code,
+	 * Only takes effect if the attribute {@link PolarisCircuitBreakerProperties#series} is not empty.
+	 */
+	private Boolean ignoreInternalServerError = true;
+
+	/**
 	 * Convert items to List.
+	 *
 	 * @param items item arrays
-	 * @param <T> Object Generics.
+	 * @param <T>   Object Generics.
 	 * @return list
 	 */
 	@SafeVarargs
 	private static <T> List<T> toList(T... items) {
 		return new ArrayList<>(Arrays.asList(items));
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public List<HttpStatus> getStatuses() {
+		return statuses;
+	}
+
+	public void setStatuses(List<HttpStatus> statuses) {
+		this.statuses = statuses;
+	}
+
+	public List<HttpStatus.Series> getSeries() {
+		return series;
+	}
+
+	public void setSeries(List<HttpStatus.Series> series) {
+		this.series = series;
+	}
+
+	public Boolean getIgnoreInternalServerError() {
+		return ignoreInternalServerError;
+	}
+
+	public void setIgnoreInternalServerError(Boolean ignoreInternalServerError) {
+		this.ignoreInternalServerError = ignoreInternalServerError;
 	}
 }
