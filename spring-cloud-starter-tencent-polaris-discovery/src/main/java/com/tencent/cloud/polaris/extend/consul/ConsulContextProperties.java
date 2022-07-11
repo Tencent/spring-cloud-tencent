@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import com.tencent.cloud.common.constant.ContextConstant.ModifierOrder;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -43,8 +46,18 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Haotian Zhang
  */
-@ConfigurationProperties("spring.cloud.consul")
+@ConfigurationProperties("spring.cloud.consul.discovery")
 public class ConsulContextProperties {
+
+	@Autowired
+	private Environment environment;
+
+	@PostConstruct
+	public void init() {
+		if (StringUtils.isEmpty(serviceName)) {
+			serviceName = environment.getProperty("spring.application.name");
+		}
+	}
 
 	/**
 	 * Host of consul(or consul agent).
@@ -55,22 +68,17 @@ public class ConsulContextProperties {
 
 	private boolean enabled = false;
 
-	@Value("${spring.cloud.consul.discovery.register:#{'true'}}")
-	private boolean register;
+	private boolean register = true;
 
-	@Value("${spring.cloud.consul.discovery.enabled:#{'true'}}")
+	@Value("${spring.cloud.consul.discovery.discovery-enabled:${spring.cloud.consul.discovery.enabled:#{true}}}")
 	private boolean discoveryEnabled;
 
-	@Value("${spring.cloud.consul.discovery.instance-id:}")
 	private String instanceId;
 
-	@Value("${spring.cloud.consul.discovery.service-name:${spring.application.name:}}")
 	private String serviceName;
 
-	@Value("${spring.cloud.consul.discovery.ip-address:}")
 	private String ipAddress;
 
-	@Value("${spring.cloud.consul.discovery.prefer-ip-address:#{'false'}}")
 	private boolean preferIpAddress;
 
 	public String getHost() {

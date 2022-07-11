@@ -18,17 +18,21 @@
 
 package com.tencent.cloud.polaris;
 
+import javax.annotation.PostConstruct;
+
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
 import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
+import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 /**
  * Properties for Polaris.
@@ -38,16 +42,28 @@ import org.springframework.context.annotation.Bean;
 @ConfigurationProperties("spring.cloud.polaris.discovery")
 public class PolarisDiscoveryProperties {
 
+	@Autowired
+	private Environment environment;
+
+	@PostConstruct
+	public void init() {
+		if (StringUtils.isEmpty(service)) {
+			service = environment.getProperty("spring.cloud.polaris.service");
+			if (StringUtils.isEmpty(service)) {
+				service = environment.getProperty("spring.application.name");
+			}
+		}
+		port = environment.containsProperty("server.port") ? Integer.valueOf(environment.getProperty("server.port")) : 8080;
+	}
+
 	/**
 	 * Namespace, separation registry of different environments.
 	 */
-	@Value("${spring.cloud.polaris.discovery.namespace:${spring.cloud.polaris.namespace:#{'default'}}}")
 	private String namespace;
 
 	/**
 	 * Service name to registry.
 	 */
-	@Value("${spring.cloud.polaris.discovery.service:${spring.cloud.polaris.service:${spring.application.name:}}}")
 	private String service;
 
 	/**
@@ -58,8 +74,7 @@ public class PolarisDiscoveryProperties {
 	/**
 	 * Load balance weight.
 	 */
-	@Value("${spring.cloud.polaris.discovery.weight:#{100}}")
-	private int weight;
+	private int weight = 100;
 
 	/**
 	 * Version number.
@@ -69,13 +84,11 @@ public class PolarisDiscoveryProperties {
 	/**
 	 * Protocol name such as http, https.
 	 */
-	@Value("${spring.cloud.polaris.discovery.protocol:http}")
-	private String protocol;
+	private String protocol = "http";
 
 	/**
 	 * Port of instance.
 	 */
-	@Value("${server.port:8080}")
 	private int port;
 
 	/**
@@ -86,19 +99,18 @@ public class PolarisDiscoveryProperties {
 	/**
 	 * If instance registered.
 	 */
-	@Value("${spring.cloud.polaris.discovery.register:#{true}}")
+	@Value("${spring.cloud.polaris.discovery.register-enabled:${spring.cloud.polaris.discovery.register:#{true}}}")
 	private Boolean registerEnabled;
 
 	/**
 	 * If heartbeat enabled.
 	 */
-	@Value("${spring.cloud.polaris.discovery.heartbeat.enabled:#{true}}")
+	@Value("${spring.cloud.polaris.discovery.heartbeat-enabled:${spring.cloud.polaris.discovery.heartbeat.enabled:#{true}}}")
 	private Boolean heartbeatEnabled = true;
 
 	/**
 	 * Custom health check url to override default.
 	 */
-	@Value("${spring.cloud.polaris.discovery.health-check-url:}")
 	private String healthCheckUrl;
 
 	/**
