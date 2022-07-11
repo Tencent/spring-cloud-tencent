@@ -39,6 +39,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -62,6 +63,8 @@ public class PolarisPropertySourceAutoRefresher
 
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
+	private ConfigurableApplicationContext context;
+
 	private TypeConverter typeConverter;
 	private final SpringValueRegistry springValueRegistry;
 	private ConfigurableBeanFactory beanFactory;
@@ -81,6 +84,7 @@ public class PolarisPropertySourceAutoRefresher
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.context = (ConfigurableApplicationContext) applicationContext;
 		this.beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
 		this.typeConverter = this.beanFactory.getTypeConverter();
 	}
@@ -138,12 +142,13 @@ public class PolarisPropertySourceAutoRefresher
 							if (targetValues == null || targetValues.isEmpty()) {
 								continue;
 							}
-							// 2. update the value
+							// update the value
 							for (SpringValue val : targetValues) {
 								updateSpringValue(val);
 							}
 
 						}
+						context.publishEvent(new EnvironmentChangeEvent(context, configKVFileChangeEvent.changedKeys()));
 					});
 		}
 	}
