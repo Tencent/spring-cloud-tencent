@@ -157,16 +157,8 @@ public class PolarisDiscoveryProperties {
 		return enabled;
 	}
 
-	public Boolean getEnabled() {
-		return enabled;
-	}
-
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public Boolean getRegisterEnabled() {
-		return registerEnabled;
 	}
 
 	public boolean isRegisterEnabled() {
