@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import com.alibaba.ttl.threadpool.TtlExecutors;
+import com.alibaba.ttl.threadpool.agent.TtlAgent;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.metadata.concurrent.MetadataWrap;
 
@@ -38,8 +39,13 @@ class MetadataExecutor implements Executor, MetadataWrap<Executor> {
 
 	private final Executor delegate;
 
-	MetadataExecutor(Executor delegate) {
-		this.delegate = TtlExecutors.getTtlExecutor(delegate);
+	MetadataExecutor(@NonNull Executor delegate) {
+		if (TtlAgent.isTtlAgentLoaded() || TtlExecutors.isTtlWrapper(delegate)) {
+			this.delegate = delegate;
+		}
+		else {
+			this.delegate = TtlExecutors.getTtlExecutor(delegate);
+		}
 	}
 
 	@Override

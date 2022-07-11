@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.alibaba.ttl.threadpool.TtlExecutors;
+import com.alibaba.ttl.threadpool.agent.TtlAgent;
 import com.tencent.cloud.common.metadata.MetadataContext;
 
 import org.springframework.lang.NonNull;
@@ -44,9 +45,14 @@ class MetadataExecutorService extends MetadataExecutor implements ExecutorServic
 
 	private final ExecutorService delegate;
 
-	MetadataExecutorService(ExecutorService delegate) {
+	MetadataExecutorService(@NonNull ExecutorService delegate) {
 		super(delegate);
-		this.delegate = TtlExecutors.getTtlExecutorService(delegate);
+		if (TtlAgent.isTtlAgentLoaded() || TtlExecutors.isTtlWrapper(delegate)) {
+			this.delegate = delegate;
+		}
+		else {
+			this.delegate = TtlExecutors.getTtlExecutorService(delegate);
+		}
 	}
 
 	@Override

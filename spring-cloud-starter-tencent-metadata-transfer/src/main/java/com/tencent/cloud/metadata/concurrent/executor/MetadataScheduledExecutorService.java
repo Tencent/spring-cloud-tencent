@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.ttl.threadpool.TtlExecutors;
+import com.alibaba.ttl.threadpool.agent.TtlAgent;
 import com.tencent.cloud.common.metadata.MetadataContext;
 
 import org.springframework.lang.NonNull;
@@ -41,9 +42,14 @@ class MetadataScheduledExecutorService extends MetadataExecutorService
 
 	private final ScheduledExecutorService delegate;
 
-	MetadataScheduledExecutorService(ScheduledExecutorService delegate) {
+	MetadataScheduledExecutorService(@NonNull ScheduledExecutorService delegate) {
 		super(delegate);
-		this.delegate = TtlExecutors.getTtlScheduledExecutorService(delegate);
+		if (TtlAgent.isTtlAgentLoaded() || TtlExecutors.isTtlWrapper(delegate)) {
+			this.delegate = delegate;
+		}
+		else {
+			this.delegate = TtlExecutors.getTtlScheduledExecutorService(delegate);
+		}
 	}
 
 	@Override
