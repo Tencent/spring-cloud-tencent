@@ -12,7 +12,7 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Get spring bean properties and methods
+ * Get spring bean properties and methods.
  *
  * @author weihubeats 2022-7-10
  */
@@ -37,12 +37,18 @@ public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrd
 	}
 
 	/**
-	 * subclass should implement this method to process field
+	 * subclass should implement this method to process field.
+	 * @param bean bean
+	 * @param beanName beanName
+	 * @param field field
 	 */
 	protected abstract void processField(Object bean, String beanName, Field field);
 
 	/**
-	 * subclass should implement this method to process method
+	 * subclass should implement this method to process method.
+	 * @param bean bean
+	 * @param beanName beanName
+	 * @param method method
 	 */
 	protected abstract void processMethod(Object bean, String beanName, Method method);
 

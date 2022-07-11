@@ -45,7 +45,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
  *    &lt;property name=&quot;batch&quot; value=&quot;${batch:100}&quot;/&gt;
  *  &lt;/bean&gt;
  * </pre>
- * 
+ *
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValueDefinitionProcessor.java>
  *     SpringValueDefinitionProcessor</a></code>
  *

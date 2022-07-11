@@ -45,7 +45,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -73,7 +72,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	private PlaceholderHelper placeholderHelper;
 
 	@Test
-	public void testConfigFileChanged() throws Exception{
+	public void testConfigFileChanged() throws Exception {
 		PolarisPropertySourceAutoRefresher refresher = new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
 				polarisPropertySourceManager, springValueRegistry, placeholderHelper);
 
