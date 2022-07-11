@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.URI;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.polaris.circuitbreaker.AbstractPolarisCircuitBreakAdapter;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -34,6 +36,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.http.HttpStatus;
+
 import static feign.Util.checkNotNull;
 
 /**
@@ -41,7 +45,7 @@ import static feign.Util.checkNotNull;
  *
  * @author Haotian Zhang
  */
-public class PolarisFeignClient implements Client {
+public class PolarisFeignClient extends AbstractPolarisCircuitBreakAdapter implements Client {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisFeignClient.class);
 
@@ -49,7 +53,8 @@ public class PolarisFeignClient implements Client {
 
 	private final ConsumerAPI consumerAPI;
 
-	public PolarisFeignClient(Client target, ConsumerAPI consumerAPI) {
+	public PolarisFeignClient(Client target, ConsumerAPI consumerAPI, PolarisCircuitBreakerProperties properties) {
+		super(properties);
 		this.delegate = checkNotNull(target, "target");
 		this.consumerAPI = checkNotNull(consumerAPI, "CircuitBreakAPI");
 	}
@@ -60,7 +65,7 @@ public class PolarisFeignClient implements Client {
 		try {
 			Response response = delegate.execute(request, options);
 			// HTTP code greater than 500 is an exception
-			if (response.status() > 500) {
+			if (super.apply(HttpStatus.resolve(response.status()))) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 			LOG.debug("Will report result of {}. Request=[{}]. Response=[{}].",

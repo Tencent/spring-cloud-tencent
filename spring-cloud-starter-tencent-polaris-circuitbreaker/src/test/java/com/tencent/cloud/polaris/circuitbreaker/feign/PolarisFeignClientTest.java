@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker.feign;
 import java.io.IOException;
 
 import com.google.common.collect.Maps;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import feign.Client;
@@ -30,6 +31,7 @@ import feign.Target;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -52,10 +54,13 @@ import static org.mockito.Mockito.mock;
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class PolarisFeignClientTest {
 
+	@Autowired
+	private PolarisCircuitBreakerProperties properties;
+
 	@Test
 	public void testConstructor() {
 		try {
-			new PolarisFeignClient(null, null);
+			new PolarisFeignClient(null, null, properties);
 			fail("NullPointerException should be thrown.");
 		}
 		catch (Throwable e) {
@@ -64,7 +69,7 @@ public class PolarisFeignClientTest {
 		}
 
 		try {
-			new PolarisFeignClient(mock(Client.class), null);
+			new PolarisFeignClient(mock(Client.class), null, properties);
 			fail("NullPointerException should be thrown.");
 		}
 		catch (Throwable e) {
@@ -73,7 +78,7 @@ public class PolarisFeignClientTest {
 		}
 
 		try {
-			assertThat(new PolarisFeignClient(mock(Client.class), mock(ConsumerAPI.class)))
+			assertThat(new PolarisFeignClient(mock(Client.class), mock(ConsumerAPI.class), properties))
 					.isInstanceOf(PolarisFeignClient.class);
 		}
 		catch (Throwable e) {
@@ -107,7 +112,7 @@ public class PolarisFeignClientTest {
 		RequestTemplate requestTemplate = new RequestTemplate();
 		requestTemplate.feignTarget(target);
 
-		PolarisFeignClient polarisFeignClient = new PolarisFeignClient(delegate, consumerAPI);
+		PolarisFeignClient polarisFeignClient = new PolarisFeignClient(delegate, consumerAPI, properties);
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",

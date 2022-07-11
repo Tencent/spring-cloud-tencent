@@ -89,8 +89,9 @@ public class PolarisCircuitBreakerAutoConfiguration {
 
 		@Bean
 		public PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler(
-				ConsumerAPI consumerAPI, @Autowired(required = false) PolarisResponseErrorHandler polarisResponseErrorHandler) {
-			return new PolarisRestTemplateResponseErrorHandler(consumerAPI, polarisResponseErrorHandler);
+				PolarisCircuitBreakerProperties properties, ConsumerAPI consumerAPI,
+				@Autowired(required = false) PolarisResponseErrorHandler polarisResponseErrorHandler) {
+			return new PolarisRestTemplateResponseErrorHandler(properties, consumerAPI, polarisResponseErrorHandler);
 		}
 
 		@Bean

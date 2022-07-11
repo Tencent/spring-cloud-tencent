@@ -22,10 +22,12 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
@@ -44,10 +46,14 @@ import static org.mockito.Mockito.when;
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class PolarisRestTemplateResponseErrorHandlerTest {
 
+	@Autowired
+	private PolarisCircuitBreakerProperties properties;
+
 	@Test
 	public void handleError() throws Exception {
 		ConsumerAPI consumerAPI = mock(ConsumerAPI.class);
-		PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler = new PolarisRestTemplateResponseErrorHandler(consumerAPI, null);
+		PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler =
+				new PolarisRestTemplateResponseErrorHandler(properties, consumerAPI, null);
 		URI uri = mock(URI.class);
 		when(uri.getPath()).thenReturn("/test");
 		when(uri.getHost()).thenReturn("host");

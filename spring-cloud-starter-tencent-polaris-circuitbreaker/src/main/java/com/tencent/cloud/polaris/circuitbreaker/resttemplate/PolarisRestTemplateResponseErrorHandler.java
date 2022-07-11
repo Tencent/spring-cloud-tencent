@@ -25,6 +25,8 @@ import java.util.Objects;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ReflectionUtils;
+import com.tencent.cloud.polaris.circuitbreaker.AbstractPolarisCircuitBreakAdapter;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -43,7 +45,7 @@ import org.springframework.web.client.ResponseErrorHandler;
  *
  * @author wh 2022/6/21
  */
-public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHandler {
+public class PolarisRestTemplateResponseErrorHandler extends AbstractPolarisCircuitBreakAdapter implements ResponseErrorHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisRestTemplateResponseErrorHandler.class);
 
@@ -53,9 +55,10 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 
 	private final PolarisResponseErrorHandler polarisResponseErrorHandler;
 
-
-	public PolarisRestTemplateResponseErrorHandler(ConsumerAPI consumerAPI,
+	public PolarisRestTemplateResponseErrorHandler(
+			PolarisCircuitBreakerProperties properties, ConsumerAPI consumerAPI,
 			PolarisResponseErrorHandler polarisResponseErrorHandler) {
+		super(properties);
 		this.consumerAPI = consumerAPI;
 		this.polarisResponseErrorHandler = polarisResponseErrorHandler;
 	}
@@ -86,7 +89,7 @@ public class PolarisRestTemplateResponseErrorHandler implements ResponseErrorHan
 				resultRequest.setPort(realURL.getPort());
 			}
 
-			if (response.getStatusCode().value() > 500) {
+			if (super.apply(response.getStatusCode())) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 		}
