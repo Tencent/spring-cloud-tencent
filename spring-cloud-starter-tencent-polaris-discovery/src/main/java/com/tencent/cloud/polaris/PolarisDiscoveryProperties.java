@@ -54,6 +54,9 @@ public class PolarisDiscoveryProperties {
 			}
 		}
 		port = environment.containsProperty("server.port") ? Integer.valueOf(environment.getProperty("server.port")) : 8080;
+		if (StringUtils.isEmpty(namespace)) {
+			namespace = environment.containsProperty("spring.cloud.polaris.namespace") ? environment.getProperty("spring.cloud.polaris.namespace") : "default";
+		}
 	}
 
 	/**
