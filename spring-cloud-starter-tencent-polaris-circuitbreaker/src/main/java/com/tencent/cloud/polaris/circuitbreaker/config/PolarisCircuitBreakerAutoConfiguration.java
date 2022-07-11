@@ -25,6 +25,7 @@ import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(PolarisCircuitBreakerProperties.class)
 public class PolarisCircuitBreakerAutoConfiguration {
 
 	@Bean
