@@ -109,8 +109,48 @@ public class ConsulContextProperties {
 		return register;
 	}
 
+	public void setRegister(boolean register) {
+		this.register = register;
+	}
+
 	public boolean isDiscoveryEnabled() {
 		return discoveryEnabled;
+	}
+
+	public void setDiscoveryEnabled(boolean discoveryEnabled) {
+		this.discoveryEnabled = discoveryEnabled;
+	}
+
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	public boolean isPreferIpAddress() {
+		return preferIpAddress;
+	}
+
+	public void setPreferIpAddress(boolean preferIpAddress) {
+		this.preferIpAddress = preferIpAddress;
 	}
 
 	@Bean

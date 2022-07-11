@@ -48,8 +48,7 @@ public class PolarisDiscoveryProperties {
 	@PostConstruct
 	public void init() {
 		if (StringUtils.isEmpty(service)) {
-			service = environment.getProperty("spring.cloud.polaris.service");
-			if (StringUtils.isEmpty(service)) {
+			service = environment.getProperty("spring.cloud.polaris.service"); if (StringUtils.isEmpty(service)) {
 				service = environment.getProperty("spring.application.name");
 			}
 		}
@@ -157,8 +156,16 @@ public class PolarisDiscoveryProperties {
 		return enabled;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public Boolean getRegisterEnabled() {
+		return registerEnabled;
 	}
 
 	public boolean isRegisterEnabled() {
@@ -219,20 +226,7 @@ public class PolarisDiscoveryProperties {
 
 	@Override
 	public String toString() {
-		return "PolarisDiscoveryProperties{" +
-				"namespace='" + namespace + '\'' +
-				", service='" + service + '\'' +
-				", token='" + token + '\'' +
-				", weight=" + weight +
-				", version='" + version + '\'' +
-				", protocol='" + protocol + '\'' +
-				", port=" + port +
-				", enabled=" + enabled +
-				", registerEnabled=" + registerEnabled +
-				", heartbeatEnabled=" + heartbeatEnabled +
-				", healthCheckUrl='" + healthCheckUrl + '\'' +
-				", serviceListRefreshInterval=" + serviceListRefreshInterval +
-				'}';
+		return "PolarisDiscoveryProperties{" + "namespace='" + namespace + '\'' + ", service='" + service + '\'' + ", token='" + token + '\'' + ", weight=" + weight + ", version='" + version + '\'' + ", protocol='" + protocol + '\'' + ", port=" + port + ", enabled=" + enabled + ", registerEnabled=" + registerEnabled + ", heartbeatEnabled=" + heartbeatEnabled + ", healthCheckUrl='" + healthCheckUrl + '\'' + ", serviceListRefreshInterval=" + serviceListRefreshInterval + '}';
 	}
 
 	@Bean
@@ -252,12 +246,10 @@ public class PolarisDiscoveryProperties {
 		public void modify(ConfigurationImpl configuration) {
 			if (polarisDiscoveryProperties != null) {
 				DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
-				discoveryConfig.setServerConnectorId(ID);
-				discoveryConfig.setEnable(polarisDiscoveryProperties.enabled);
+				discoveryConfig.setServerConnectorId(ID); discoveryConfig.setEnable(polarisDiscoveryProperties.enabled);
 				configuration.getConsumer().getDiscoveries().add(discoveryConfig);
 
-				RegisterConfigImpl registerConfig = new RegisterConfigImpl();
-				registerConfig.setServerConnectorId(ID);
+				RegisterConfigImpl registerConfig = new RegisterConfigImpl(); registerConfig.setServerConnectorId(ID);
 				registerConfig.setEnable(polarisDiscoveryProperties.registerEnabled);
 				configuration.getProvider().getRegisters().add(registerConfig);
 			}
