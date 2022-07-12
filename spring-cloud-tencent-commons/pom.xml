@@ -109,7 +109,6 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>transmittable-thread-local</artifactId>
-			<optional>true</optional>
 		</dependency>
 	</dependencies>
 
