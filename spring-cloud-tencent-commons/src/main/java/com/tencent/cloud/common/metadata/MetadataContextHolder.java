@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 
@@ -34,7 +35,7 @@ import org.springframework.util.CollectionUtils;
  */
 public final class MetadataContextHolder {
 
-	private static final ThreadLocal<MetadataContext> METADATA_CONTEXT = new InheritableThreadLocal<>();
+	private static final ThreadLocal<MetadataContext> METADATA_CONTEXT = new TransmittableThreadLocal<>();
 
 	private static MetadataLocalProperties metadataLocalProperties;
 	private static StaticMetadataManager staticMetadataManager;

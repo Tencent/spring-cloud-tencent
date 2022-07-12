@@ -105,6 +105,12 @@
 			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>transmittable-thread-local</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 </project>

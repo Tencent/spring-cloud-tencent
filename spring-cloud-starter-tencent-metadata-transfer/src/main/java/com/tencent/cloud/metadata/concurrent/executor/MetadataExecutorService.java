@@ -123,7 +123,7 @@ class MetadataExecutorService extends MetadataExecutor implements ExecutorServic
 	}
 
 	@Override
-	public ExecutorService unWrap() {
+	public ExecutorService unwrap() {
 		return TtlExecutors.unwrap(delegate);
 	}
 
@@ -143,5 +143,4 @@ class MetadataExecutorService extends MetadataExecutor implements ExecutorServic
 	public int hashCode() {
 		return Objects.hash(delegate);
 	}
-
 }

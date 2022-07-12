@@ -22,7 +22,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.tencent.cloud.metadata.concurrent.MetadataWrap;
+import com.alibaba.ttl.spi.TtlWrapper;
 
 import org.springframework.lang.Nullable;
 
@@ -85,7 +85,7 @@ public final class MetadataExecutors {
 		if (!isMetadataWrap(executor)) {
 			return executor;
 		}
-		return (T) ((MetadataExecutor) executor).unWrap();
+		return (T) ((MetadataExecutor) executor).unwrap();
 	}
 
 	/**
@@ -100,10 +100,9 @@ public final class MetadataExecutors {
 	 * @return         if the parameter executor is MetadataExecutor wrapper
 	 */
 	public static <T extends Executor> boolean isMetadataWrap(@Nullable T executor) {
-		return executor instanceof MetadataWrap;
+		return executor instanceof TtlWrapper;
 	}
 
 	private MetadataExecutors() {
 	}
-
 }

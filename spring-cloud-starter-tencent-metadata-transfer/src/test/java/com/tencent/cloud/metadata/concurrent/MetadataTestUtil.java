@@ -46,6 +46,5 @@ public final class MetadataTestUtil {
 		customMetadata = MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		Assertions.assertThat(customMetadata.get("a")).isEqualTo("1");
 		Assertions.assertThat(customMetadata.get("b")).isEqualTo("2");
-
 	}
 }

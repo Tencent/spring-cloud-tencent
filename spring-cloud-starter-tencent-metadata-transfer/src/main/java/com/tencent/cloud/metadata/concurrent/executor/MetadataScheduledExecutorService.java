@@ -77,7 +77,7 @@ class MetadataScheduledExecutorService extends MetadataExecutorService
 	}
 
 	@Override
-	public ScheduledExecutorService unWrap() {
+	public ScheduledExecutorService unwrap() {
 		return TtlExecutors.unwrap(delegate);
 	}
 
@@ -97,5 +97,4 @@ class MetadataScheduledExecutorService extends MetadataExecutorService
 	public int hashCode() {
 		return Objects.hash(delegate);
 	}
-
 }

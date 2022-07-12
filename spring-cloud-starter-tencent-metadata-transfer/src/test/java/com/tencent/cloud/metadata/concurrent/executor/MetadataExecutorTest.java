@@ -74,7 +74,7 @@ public class MetadataExecutorTest {
 		metadataExecutor.execute(() -> {
 			Map<String, String> fragmentContext =
 					MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-			Assertions.assertThat(fragmentContextAfterInit.equals(fragmentContext));
+			Assertions.assertThat(fragmentContextAfterInit.equals(fragmentContext)).isTrue();
 		});
 
 		// wait 200ms for metadataExecutor execute task
@@ -84,7 +84,7 @@ public class MetadataExecutorTest {
 	@Test
 	public void metadataExecutorUnWrap() {
 		MetadataExecutor metadataExecutor = new MetadataExecutor(executorService);
-		Executor executor = metadataExecutor.unWrap();
+		Executor executor = metadataExecutor.unwrap();
 		Assertions.assertThat(executor).isEqualTo(executorService);
 	}
 
@@ -129,5 +129,4 @@ public class MetadataExecutorTest {
 	@SpringBootApplication
 	protected static class TestApplication {
 	}
-
 }
