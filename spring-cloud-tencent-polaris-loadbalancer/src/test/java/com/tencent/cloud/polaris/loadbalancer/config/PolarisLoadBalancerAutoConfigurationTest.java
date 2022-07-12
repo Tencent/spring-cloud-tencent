@@ -113,6 +113,5 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 		public ConsumerAPI consumerAPI() {
 			return new DefaultConsumerAPI(sdkContext);
 		}
-
 	}
 }
