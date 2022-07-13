@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
@@ -31,12 +32,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.INTERNAL_METADATA_DISPOSABLE;
 import static com.tencent.cloud.common.util.JacksonUtils.deserialize2Map;
 import static com.tencent.cloud.common.util.JacksonUtils.serialize2Json;
-import static java.net.URLDecoder.decode;
-import static java.net.URLEncoder.encode;
 
 /**
  * Metadata Context Holder.
@@ -103,44 +101,52 @@ public final class MetadataContextHolder {
 		// Save transitive metadata to ThreadLocal.
 		if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
 
-			// processing disposable keys
-			if (dynamicTransitiveMetadata.containsKey(INTERNAL_METADATA_DISPOSABLE)) {
-				String disposableKeyStatus = dynamicTransitiveMetadata.get(INTERNAL_METADATA_DISPOSABLE);
-				try {
-					if (StringUtils.hasText(disposableKeyStatus)) {
-						Map<String, String> keyStatus = deserialize2Map(decode(disposableKeyStatus, UTF_8));
-						Iterator<Map.Entry<String, String>> it = keyStatus.entrySet().iterator();
-						while (it.hasNext()) {
-							Map.Entry<String, String> entry = it.next();
-							String key = entry.getKey();
-							boolean status = Boolean.parseBoolean(entry.getValue());
-							if (!status) {
-								keyStatus.put(key, "true");
-							}
-							else {
-								// removed disposable key
-								dynamicTransitiveMetadata.remove(key);
-								it.remove();
-							}
-						}
-						// reset
-						dynamicTransitiveMetadata.put(INTERNAL_METADATA_DISPOSABLE, encode(serialize2Json(keyStatus), UTF_8));
-					}
+			// Check local static metadata .
+			Map<String, String> localTransitives = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+			String localDisposable = localTransitives.get(INTERNAL_METADATA_DISPOSABLE);
+			Map<String, Boolean> localValidDisposables = new HashMap<>();
+			if (StringUtils.hasText(localDisposable)) {
+				Set<String> disposables = deserialize2Map(localDisposable).keySet();
+				for (String disposable : disposables) {
+					localValidDisposables.put(disposable, localTransitives.containsKey(disposable));
 				}
-				catch (Exception e) {
-					LOGGER.error("Runtime system does not support utf-8 coding.", e);
-				}
-
 			}
 
-			Map<String, String> staticTransitiveMetadata =
-					metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+			// processing disposable keys .
+			String disposableKeyStatus = dynamicTransitiveMetadata.get(INTERNAL_METADATA_DISPOSABLE);
+			if (StringUtils.hasText(disposableKeyStatus)) {
+				Map<String, String> keyStatus = deserialize2Map(disposableKeyStatus);
+				Iterator<Map.Entry<String, String>> it = keyStatus.entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry<String, String> entry = it.next();
+					String key = entry.getKey();
+					boolean status = Boolean.parseBoolean(entry.getValue());
+					if (!localValidDisposables.containsKey(key)) {
+						if (!status) {
+							keyStatus.put(key, "true");
+						}
+						else {
+							// removed disposable key
+							dynamicTransitiveMetadata.remove(key);
+							it.remove();
+						}
+					}
+					else {
+						// removed disposable key
+						dynamicTransitiveMetadata.remove(key);
+						keyStatus.put(key, "false");
+					}
+				}
+				// reset
+				dynamicTransitiveMetadata.put(INTERNAL_METADATA_DISPOSABLE, serialize2Json(keyStatus));
+			}
+
+			Map<String, String> staticTransitiveMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 			Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 			mergedTransitiveMetadata.putAll(staticTransitiveMetadata);
 			mergedTransitiveMetadata.putAll(dynamicTransitiveMetadata);
 
-			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE,
-					Collections.unmodifiableMap(mergedTransitiveMetadata));
+			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE, Collections.unmodifiableMap(mergedTransitiveMetadata));
 		}
 		MetadataContextHolder.set(metadataContext);
 	}

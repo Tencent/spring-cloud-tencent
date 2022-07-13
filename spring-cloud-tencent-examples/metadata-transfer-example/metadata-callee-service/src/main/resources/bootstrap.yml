@@ -19,9 +19,14 @@ spring:
           CUSTOM-METADATA-KEY-LOCAL-2: CUSTOM-VALUE-LOCAL-2
           # Example: transitive
           CUSTOM-METADATA-KEY-TRANSITIVE-2: CUSTOM-VALUE-TRANSITIVE-2
+          # Example: disposable
+#          CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE-CALLEE
         # Assigned which metadata key-value will be passed along the link
         transitive:
           - CUSTOM-METADATA-KEY-TRANSITIVE-2
+#          - CUSTOM-METADATA-KEY-DISPOSABLE
+        disposable:
+          - CUSTOM-METADATA-KEY-DISPOSABLE
 
 management:
   endpoints:
