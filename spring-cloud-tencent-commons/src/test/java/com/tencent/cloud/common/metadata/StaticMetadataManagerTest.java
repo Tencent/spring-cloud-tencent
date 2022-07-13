@@ -132,7 +132,7 @@ public class StaticMetadataManagerTest {
 		Assert.assertEquals("campus1", metadata.get("campus"));
 
 		Map<String, String> transitiveMetadata = metadataManager.getMergedStaticTransitiveMetadata();
-		Assert.assertEquals(2, transitiveMetadata.size());
+		Assert.assertEquals(3, transitiveMetadata.size());
 		Assert.assertEquals("v1", metadata.get("k1"));
 		Assert.assertEquals("v22", metadata.get("k2"));
 
