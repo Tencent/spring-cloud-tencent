@@ -20,12 +20,21 @@ package com.tencent.cloud.common.metadata;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.INTERNAL_METADATA_DISPOSABLE;
+import static com.tencent.cloud.common.util.JacksonUtils.deserialize2Map;
+import static java.net.URLDecoder.decode;
 
 /**
  * Metadata Context Holder.
@@ -33,6 +42,8 @@ import org.springframework.util.CollectionUtils;
  * @author Haotian Zhang
  */
 public final class MetadataContextHolder {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MetadataContextHolder.class);
 
 	private static final ThreadLocal<MetadataContext> METADATA_CONTEXT = new InheritableThreadLocal<>();
 
@@ -89,6 +100,34 @@ public final class MetadataContextHolder {
 
 		// Save transitive metadata to ThreadLocal.
 		if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
+
+			// processing disposable keys
+			if (dynamicTransitiveMetadata.containsKey(INTERNAL_METADATA_DISPOSABLE)) {
+				String disposableKeyStatus = dynamicTransitiveMetadata.get(INTERNAL_METADATA_DISPOSABLE);
+				try {
+					if (StringUtils.hasText(disposableKeyStatus)) {
+						Map<String, String> keyStatus = deserialize2Map(decode(disposableKeyStatus, UTF_8));
+						Iterator<Map.Entry<String, String>> it = keyStatus.entrySet().iterator();
+						while (it.hasNext()) {
+							Map.Entry<String, String> entry = it.next();
+							String key = entry.getKey();
+							boolean status = Boolean.parseBoolean(entry.getValue());
+							if (!status) {
+								keyStatus.put(key, "true");
+							}
+							else {
+								// removed disposable key
+								dynamicTransitiveMetadata.remove(key);
+								it.remove();
+							}
+						}
+					}
+				}
+				catch (Exception e) {
+					LOGGER.error("Runtime system does not support utf-8 coding.", e);
+				}
+			}
+
 			Map<String, String> staticTransitiveMetadata =
 					metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 			Map<String, String> mergedTransitiveMetadata = new HashMap<>();
