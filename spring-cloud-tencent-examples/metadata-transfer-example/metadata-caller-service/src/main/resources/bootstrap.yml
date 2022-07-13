@@ -19,7 +19,7 @@ spring:
         content:
           # Example: intransitive
           CUSTOM-METADATA-KEY-LOCAL: CUSTOM-VALUE-LOCAL
-          #
+          # Example: disposable
           CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE
           # Example: transitive
           CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE

@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -53,8 +54,8 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataServletFilter.class);
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, FilterChain filterChain)
+	protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest,
+			@NonNull HttpServletResponse httpServletResponse, FilterChain filterChain)
 			throws ServletException, IOException {
 		Map<String, String> internalTransitiveMetadata = getInternalTransitiveMetadata(httpServletRequest);
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(httpServletRequest);

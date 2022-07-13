@@ -53,7 +53,7 @@ public final class MetadataConstant {
 	/**
 	 * internal metadata disposable status key.
 	 */
-	public static final String INTERNAL_METADATA_DISPOSABLE = "internal-disposable-status";
+	public static final String INTERNAL_METADATA_DISPOSABLE = "internal-metadata-disposable-status";
 
 	/**
 	 * Order of filter, interceptor, ...

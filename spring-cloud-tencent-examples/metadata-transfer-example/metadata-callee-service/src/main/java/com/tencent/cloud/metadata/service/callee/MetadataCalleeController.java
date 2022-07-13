@@ -44,12 +44,12 @@ public class MetadataCalleeController {
 	@Value("${server.port:0}")
 	private int port;
 
-	private final MetadataCallee2Service metadataCallee2Service;
+	private final MetadataCalleeService2 metadataCalleeService2;
 
 	private final RestTemplate restTemplate;
 
-	public MetadataCalleeController(MetadataCallee2Service metadataCallee2Service, RestTemplate restTemplate) {
-		this.metadataCallee2Service = metadataCallee2Service;
+	public MetadataCalleeController(MetadataCalleeService2 metadataCalleeService2, RestTemplate restTemplate) {
+		this.metadataCalleeService2 = metadataCalleeService2;
 		this.restTemplate = restTemplate;
 	}
 
@@ -66,7 +66,13 @@ public class MetadataCalleeController {
 				"http://MetadataCalleeService2/metadata/service/callee2/info",
 				Map.class);
 		calleeMetadata.forEach((key, value) -> {
-			LOG.info("Callee2 Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("RestTemplate Callee2 Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		// Call remote service with Feign
+		Map<String, String> calleeMetadata2 = metadataCalleeService2.info();
+		calleeMetadata2.forEach((key, value) -> {
+			LOG.info("Feign Callee2 Metadata (Key-Value): {} : {}", key, value);
 		});
 
 		// Get Custom Metadata From Context

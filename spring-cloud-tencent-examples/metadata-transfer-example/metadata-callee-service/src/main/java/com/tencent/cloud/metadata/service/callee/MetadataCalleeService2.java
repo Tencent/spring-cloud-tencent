@@ -19,21 +19,23 @@ package com.tencent.cloud.metadata.service.callee;
 
 import java.util.Map;
 
-import com.google.common.collect.Maps;
-
-import org.springframework.stereotype.Component;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Metadata callee feign client fallback.
+ * Metadata callee feign client.
  *
  * @author Palmer Xu
  */
-@Component
-public class MetadataCallee2ServiceFallback implements MetadataCallee2Service {
+@FeignClient(value = "MetadataCalleeService2",
+		fallback = MetadataCalleeService2Fallback.class)
+public interface MetadataCalleeService2 {
 
-	@Override
-	public Map<String, String> info() {
-		return Maps.newHashMap();
-	}
+	/**
+	 * Get information of callee.
+	 * @return information of callee
+	 */
+	@GetMapping("/metadata/service/callee2/info")
+	Map<String, String> info();
 
 }
