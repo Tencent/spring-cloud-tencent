@@ -63,14 +63,9 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
-		try {
-			MetadataContextHolder.init(mergedTransitiveMetadata);
+		MetadataContextHolder.init(mergedTransitiveMetadata);
 
-			filterChain.doFilter(httpServletRequest, httpServletResponse);
-		}
-		catch (IOException | ServletException | RuntimeException e) {
-			throw e;
-		}
+		filterChain.doFilter(httpServletRequest, httpServletResponse);
 	}
 
 	private Map<String, String> getInternalTransitiveMetadata(HttpServletRequest httpServletRequest) {
