@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.common.metadata;
 
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
