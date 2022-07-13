@@ -74,7 +74,7 @@ public class EncodeTransferMetadataZuulFilterTest {
 
 		String decode = URLDecoder.decode(metadata, UTF_8);
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
-		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
+		Assertions.assertThat(transitiveMap.size()).isEqualTo(2);
 		Assertions.assertThat(transitiveMap.get("b")).isEqualTo("2");
 	}
 
