@@ -40,6 +40,7 @@ public class MetadataContext {
 	 * transitive context.
 	 */
 	public static final String FRAGMENT_TRANSITIVE = "transitive";
+
 	private static final Logger LOG = LoggerFactory.getLogger(MetadataContext.class);
 	/**
 	 * Namespace of local instance.

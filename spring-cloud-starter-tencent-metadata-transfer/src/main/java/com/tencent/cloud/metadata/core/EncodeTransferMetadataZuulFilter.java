@@ -79,5 +79,4 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 		}
 		return null;
 	}
-
 }

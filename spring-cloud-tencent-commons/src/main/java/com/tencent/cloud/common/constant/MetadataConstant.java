@@ -27,6 +27,17 @@ import org.springframework.core.Ordered;
 public final class MetadataConstant {
 
 	/**
+	 * Default private constructor .
+	 */
+	private MetadataConstant() {
+	}
+
+	/**
+	 * internal metadata disposable status key.
+	 */
+	public static final String INTERNAL_METADATA_DISPOSABLE = "internal-disposable-status";
+
+	/**
 	 * Order of filter, interceptor, ...
 	 */
 	public static class OrderConstant {

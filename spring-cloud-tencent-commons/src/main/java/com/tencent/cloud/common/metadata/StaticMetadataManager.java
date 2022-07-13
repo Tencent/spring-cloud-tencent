@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.common.metadata;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.INTERNAL_METADATA_DISPOSABLE;
+import static com.tencent.cloud.common.util.JacksonUtils.serialize2Json;
+import static java.net.URLEncoder.encode;
 
 /**
  * manage metadata from env/config file/custom spi.
@@ -63,7 +69,7 @@ public class StaticMetadataManager {
 	private Map<String, String> configTransitiveMetadata;
 	private Map<String, String> customSPIMetadata;
 	private Map<String, String> customSPITransitiveMetadata;
-
+	private Map<String, String> disposableStatusMetadata;
 	private Map<String, String> mergedStaticMetadata;
 	private Map<String, String> mergedStaticTransitiveMetadata;
 	private String zone;
@@ -79,6 +85,8 @@ public class StaticMetadataManager {
 		parseCustomMetadata(instanceMetadataProvider);
 
 		parseLocationMetadata(metadataLocalProperties, instanceMetadataProvider);
+
+		parseDisposableStatusMetadata(metadataLocalProperties);
 
 		merge();
 
@@ -164,6 +172,19 @@ public class StaticMetadataManager {
 		customSPITransitiveMetadata = Collections.unmodifiableMap(transitiveMetadata);
 	}
 
+	private void parseDisposableStatusMetadata(MetadataLocalProperties metadataLocalProperties) {
+		Map<String, String> allMetadata = metadataLocalProperties.getContent();
+		List<String> disposableKeys = metadataLocalProperties.getDisposable();
+
+		Map<String, String> result = new HashMap<>();
+		for (String key : disposableKeys) {
+			if (allMetadata.containsKey(key)) {
+				result.put(key, "false");
+			}
+		}
+		disposableStatusMetadata = Collections.unmodifiableMap(result);
+	}
+
 	private void merge() {
 		// the priority is : custom > env > config
 		Map<String, String> mergedMetadataResult = new HashMap<>();
@@ -180,6 +201,14 @@ public class StaticMetadataManager {
 		mergedTransitiveMetadataResult.putAll(configTransitiveMetadata);
 		mergedTransitiveMetadataResult.putAll(envTransitiveMetadata);
 		mergedTransitiveMetadataResult.putAll(customSPITransitiveMetadata);
+
+		// append disposable status
+		try {
+			mergedTransitiveMetadataResult.put(INTERNAL_METADATA_DISPOSABLE, encode(serialize2Json(disposableStatusMetadata), UTF_8));
+		}
+		catch (UnsupportedEncodingException e) {
+			LOGGER.error("Runtime system does not support utf-8 coding.", e);
+		}
 
 		this.mergedStaticTransitiveMetadata = Collections.unmodifiableMap(mergedTransitiveMetadataResult);
 	}
