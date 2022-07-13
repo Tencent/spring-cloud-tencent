@@ -27,6 +27,12 @@ import org.springframework.core.Ordered;
 public final class MetadataConstant {
 
 	/**
+	 * Default Private Constructor.
+	 */
+	private MetadataConstant() {
+	}
+
+	/**
 	 * sct transitive header prefix.
 	 */
 	public static final String SCT_TRANSITIVE_HEADER_PREFIX = "X-SCT-Metadata-Transitive-";
@@ -44,9 +50,11 @@ public final class MetadataConstant {
 	 */
 	public static final int POLARIS_TRANSITIVE_HEADER_PREFIX_LENGTH = POLARIS_TRANSITIVE_HEADER_PREFIX.length();
 
-	private MetadataConstant() {
+	/**
+	 * internal metadata disposable status key.
+	 */
+	public static final String INTERNAL_METADATA_DISPOSABLE = "internal-disposable-status";
 
-	}
 	/**
 	 * Order of filter, interceptor, ...
 	 */
