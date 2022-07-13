@@ -5,7 +5,7 @@ spring:
     name: MetadataCallerService
   cloud:
     polaris:
-      address: grpc://183.47.111.80:8091
+      address: grpc://127.0.0.1:8091
       namespace: default
       enabled: true
       discovery:
@@ -19,11 +19,16 @@ spring:
         content:
           # Example: intransitive
           CUSTOM-METADATA-KEY-LOCAL: CUSTOM-VALUE-LOCAL
+          #
+          CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE
           # Example: transitive
           CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE
         # Assigned which metadata key-value will be passed along the link
         transitive:
           - CUSTOM-METADATA-KEY-TRANSITIVE
+          - CUSTOM-METADATA-KEY-DISPOSABLE
+        disposable:
+          - CUSTOM-METADATA-KEY-DISPOSABLE
 management:
   endpoints:
     web:

@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.common.metadata;
 
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,7 +35,9 @@ import org.springframework.util.StringUtils;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.INTERNAL_METADATA_DISPOSABLE;
 import static com.tencent.cloud.common.util.JacksonUtils.deserialize2Map;
+import static com.tencent.cloud.common.util.JacksonUtils.serialize2Json;
 import static java.net.URLDecoder.decode;
+import static java.net.URLEncoder.encode;
 
 /**
  * Metadata Context Holder.
@@ -121,11 +124,14 @@ public final class MetadataContextHolder {
 								it.remove();
 							}
 						}
+						// reset
+						dynamicTransitiveMetadata.put(INTERNAL_METADATA_DISPOSABLE, encode(serialize2Json(keyStatus), UTF_8));
 					}
 				}
 				catch (Exception e) {
 					LOGGER.error("Runtime system does not support utf-8 coding.", e);
 				}
+
 			}
 
 			Map<String, String> staticTransitiveMetadata =

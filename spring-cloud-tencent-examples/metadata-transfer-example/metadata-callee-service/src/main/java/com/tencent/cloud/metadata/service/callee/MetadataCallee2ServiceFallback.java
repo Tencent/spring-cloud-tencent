@@ -17,30 +17,23 @@
 
 package com.tencent.cloud.metadata.service.callee;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+
+import org.springframework.stereotype.Component;
 
 /**
- * Metadata callee application.
+ * Metadata callee feign client fallback.
  *
  * @author Palmer Xu
  */
-@SpringBootApplication
-@EnableFeignClients
-public class MetadataCalleeService {
+@Component
+public class MetadataCallee2ServiceFallback implements MetadataCallee2Service {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MetadataCalleeService.class, args);
-	}
-
-	@Bean
-	@LoadBalanced
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
+	@Override
+	public Map<String, String> info() {
+		return Maps.newHashMap();
 	}
 
 }
