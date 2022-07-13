@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>metadata-callee-service</module>
+		<module>metadata-callee-service2</module>
 		<module>metadata-caller-service</module>
 	</modules>
 

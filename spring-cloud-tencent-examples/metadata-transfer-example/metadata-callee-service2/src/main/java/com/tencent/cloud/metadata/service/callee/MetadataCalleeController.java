@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Metadata callee controller.
@@ -36,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Palmer Xu
  */
 @RestController
-@RequestMapping("/metadata/service/callee")
+@RequestMapping("/metadata/service/callee2")
 public class MetadataCalleeController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MetadataCalleeController.class);
@@ -44,30 +43,13 @@ public class MetadataCalleeController {
 	@Value("${server.port:0}")
 	private int port;
 
-	private final MetadataCallee2Service metadataCallee2Service;
-
-	private final RestTemplate restTemplate;
-
-	public MetadataCalleeController(MetadataCallee2Service metadataCallee2Service, RestTemplate restTemplate) {
-		this.metadataCallee2Service = metadataCallee2Service;
-		this.restTemplate = restTemplate;
-	}
-
 	/**
 	 * Get information of callee.
 	 * @return information of callee
 	 */
 	@GetMapping("/info")
 	public Map<String, String> info() {
-		LOG.info("Metadata Service Callee [{}] is called.", port);
-
-		// Call remote service with RestTemplate
-		Map<String, String> calleeMetadata = restTemplate.getForObject(
-				"http://MetadataCalleeService2/metadata/service/callee2/info",
-				Map.class);
-		calleeMetadata.forEach((key, value) -> {
-			LOG.info("Callee2 Metadata (Key-Value): {} : {}", key, value);
-		});
+		LOG.info("Metadata Service Callee-2 [{}] is called.", port);
 
 		// Get Custom Metadata From Context
 		MetadataContext context = MetadataContextHolder.get();
