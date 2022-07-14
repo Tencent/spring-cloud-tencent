@@ -19,10 +19,7 @@
 package com.tencent.cloud.polaris.router;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
@@ -40,15 +37,11 @@ import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRule;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
-import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
-import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
-import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
+import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
-import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
-import com.tencent.polaris.plugins.router.nearby.NearbyRouter;
-import com.tencent.polaris.plugins.router.rule.RuleBasedRouter;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
@@ -82,24 +75,21 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 	final static String STRATEGY_AVAILABILITY_FILTERING = "availabilityFilteringRule";
 
 	private final PolarisLoadBalancerProperties loadBalancerProperties;
-	private final PolarisNearByRouterProperties polarisNearByRouterProperties;
-	private final PolarisMetadataRouterProperties polarisMetadataRouterProperties;
-	private final PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties;
 	private final RouterAPI routerAPI;
+	private final List<RouterRequestInterceptor> requestInterceptors;
+	private final List<RouterResponseInterceptor> responseInterceptors;
 
 	private final AbstractLoadBalancerRule delegateRule;
 
 	public PolarisLoadBalancerCompositeRule(RouterAPI routerAPI,
 			PolarisLoadBalancerProperties polarisLoadBalancerProperties,
-			PolarisNearByRouterProperties polarisNearByRouterProperties,
-			PolarisMetadataRouterProperties polarisMetadataRouterProperties,
-			PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties,
-			IClientConfig iClientConfig) {
+			IClientConfig iClientConfig,
+			List<RouterRequestInterceptor> requestInterceptors,
+			List<RouterResponseInterceptor> responseInterceptors) {
 		this.routerAPI = routerAPI;
-		this.polarisNearByRouterProperties = polarisNearByRouterProperties;
 		this.loadBalancerProperties = polarisLoadBalancerProperties;
-		this.polarisMetadataRouterProperties = polarisMetadataRouterProperties;
-		this.polarisRuleBasedRouterProperties = polarisRuleBasedRouterProperties;
+		this.requestInterceptors = requestInterceptors;
+		this.responseInterceptors = responseInterceptors;
 
 		delegateRule = getRule();
 		delegateRule.initWithNiwsConfig(iClientConfig);
@@ -118,80 +108,66 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		}
 
 		// 2. filter by router
-		List<Server> serversAfterRouter = doRouter(allServers, key);
-
-		// 3. filter by load balance.
-		// A LoadBalancer needs to be regenerated for each request,
-		// because the list of servers may be different after filtered by router
-		ILoadBalancer loadBalancer = new SimpleLoadBalancer();
-		loadBalancer.addServers(serversAfterRouter);
-		delegateRule.setLoadBalancer(loadBalancer);
+		if (key instanceof PolarisRouterContext) {
+			PolarisRouterContext routerContext = (PolarisRouterContext) key;
+			List<Server> serversAfterRouter = doRouter(allServers, routerContext);
+			// 3. filter by load balance.
+			// A LoadBalancer needs to be regenerated for each request,
+			// because the list of servers may be different after filtered by router
+			ILoadBalancer loadBalancer = new SimpleLoadBalancer();
+			loadBalancer.addServers(serversAfterRouter);
+			delegateRule.setLoadBalancer(loadBalancer);
+		}
 
 		return delegateRule.choose(key);
 	}
 
-	List<Server> doRouter(List<Server> allServers, Object key) {
+	List<Server> doRouter(List<Server> allServers, PolarisRouterContext routerContext) {
 		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(allServers);
 
-		// filter instance by routers
-		ProcessRoutersRequest processRoutersRequest = buildProcessRoutersRequest(serviceInstances, key);
+		ProcessRoutersRequest processRoutersRequest = buildProcessRoutersBaseRequest(serviceInstances);
 
+		// process request interceptors
+		processRouterRequestInterceptors(processRoutersRequest, routerContext);
+
+		// process router chain
 		ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
 
-		List<Server> filteredInstances = new ArrayList<>();
+		// process response interceptors
+		processRouterResponseInterceptors(routerContext, processRoutersResponse);
+
+		// transfer polaris server to ribbon server
 		ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
+		List<Server> filteredInstances = new ArrayList<>();
 		for (Instance instance : filteredServiceInstances.getInstances()) {
 			filteredInstances.add(new PolarisServer(serviceInstances, instance));
 		}
+
 		return filteredInstances;
 	}
 
-	ProcessRoutersRequest buildProcessRoutersRequest(ServiceInstances serviceInstances, Object key) {
+	ProcessRoutersRequest buildProcessRoutersBaseRequest(ServiceInstances serviceInstances) {
 		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
 		processRoutersRequest.setDstInstances(serviceInstances);
-
-		// metadata router
-		if (polarisMetadataRouterProperties.isEnabled()) {
-			Map<String, String> transitiveLabels = getRouterLabels(key, PolarisRouterContext.TRANSITIVE_LABELS);
-			processRoutersRequest.putRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA, transitiveLabels);
-		}
-
-		// nearby router
-		if (polarisNearByRouterProperties.isEnabled()) {
-			Map<String, String> nearbyRouterMetadata = new HashMap<>();
-			nearbyRouterMetadata.put(NearbyRouter.ROUTER_ENABLED, "true");
-			processRoutersRequest.putRouterMetadata(NearbyRouter.ROUTER_TYPE_NEAR_BY, nearbyRouterMetadata);
-		}
-
-		// rule based router
-		// set dynamic switch for rule based router
-		boolean ruleBasedRouterEnabled = polarisRuleBasedRouterProperties.isEnabled();
-		Map<String, String> ruleRouterMetadata = new HashMap<>();
-		ruleRouterMetadata.put(RuleBasedRouter.ROUTER_ENABLED, String.valueOf(ruleBasedRouterEnabled));
-		processRoutersRequest.putRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED, ruleRouterMetadata);
-
 		ServiceInfo serviceInfo = new ServiceInfo();
 		serviceInfo.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		serviceInfo.setService(MetadataContext.LOCAL_SERVICE);
-
-		if (ruleBasedRouterEnabled) {
-			Map<String, String> ruleRouterLabels = getRouterLabels(key, PolarisRouterContext.RULE_ROUTER_LABELS);
-			// The label information that the rule based routing depends on
-			// is placed in the metadata of the source service for transmission.
-			// Later, can consider putting it in routerMetadata like other routers.
-			serviceInfo.setMetadata(ruleRouterLabels);
-		}
-
 		processRoutersRequest.setSourceService(serviceInfo);
-
 		return processRoutersRequest;
 	}
 
-	private Map<String, String> getRouterLabels(Object key, String type) {
-		if (key instanceof PolarisRouterContext) {
-			return ((PolarisRouterContext) key).getLabels(type);
+	void processRouterRequestInterceptors(ProcessRoutersRequest processRoutersRequest, PolarisRouterContext routerContext) {
+		for (RouterRequestInterceptor requestInterceptor : requestInterceptors) {
+			requestInterceptor.apply(processRoutersRequest, routerContext);
 		}
-		return Collections.emptyMap();
+	}
+
+	private void processRouterResponseInterceptors(PolarisRouterContext routerContext, ProcessRoutersResponse processRoutersResponse) {
+		if (!CollectionUtils.isEmpty(responseInterceptors)) {
+			for (RouterResponseInterceptor responseInterceptor : responseInterceptors) {
+				responseInterceptor.apply(processRoutersResponse, routerContext);
+			}
+		}
 	}
 
 	public AbstractLoadBalancerRule getRule() {
