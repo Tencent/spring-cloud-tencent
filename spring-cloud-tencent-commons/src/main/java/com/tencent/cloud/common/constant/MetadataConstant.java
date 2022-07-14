@@ -36,6 +36,7 @@ public final class MetadataConstant {
 	 * sct transitive header prefix.
 	 */
 	public static final String SCT_TRANSITIVE_HEADER_PREFIX = "X-SCT-Metadata-Transitive-";
+
 	/**
 	 * sct transitive header prefix length.
 	 */
@@ -45,6 +46,7 @@ public final class MetadataConstant {
 	 * polaris transitive header prefix.
 	 */
 	public static final String POLARIS_TRANSITIVE_HEADER_PREFIX = "X-Polaris-Metadata-Transitive-";
+
 	/**
 	 * polaris transitive header prefix length.
 	 */
