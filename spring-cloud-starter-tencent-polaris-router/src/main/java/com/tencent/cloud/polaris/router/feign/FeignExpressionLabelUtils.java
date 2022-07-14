@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
 import feign.RequestTemplate;
 import org.apache.commons.lang.StringUtils;
 
