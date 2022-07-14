@@ -85,7 +85,7 @@ public class PolarisFeignLoadBalancerTest {
 				PolarisRouterContext routerContext = polarisFeignLoadBalancer.buildRouterContext(headers);
 
 				Assert.assertNotNull(routerContext);
-				Map<String, String> routerLabels = routerContext.getLabels(PolarisRouterContext.RULE_ROUTER_LABELS);
+				Map<String, String> routerLabels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
 				Assert.assertNotNull(routerLabels);
 				Assert.assertEquals("v1", routerLabels.get("k1"));
 				Assert.assertEquals("v2", routerLabels.get("k2"));

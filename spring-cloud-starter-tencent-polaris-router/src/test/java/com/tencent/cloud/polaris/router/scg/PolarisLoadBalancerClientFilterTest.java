@@ -128,7 +128,7 @@ public class PolarisLoadBalancerClientFilterTest {
 
 		PolarisRouterContext routerContext = polarisLoadBalancerClientFilter.genRouterContext(webExchange, calleeService);
 
-		Map<String, String> routerLabels = routerContext.getLabels(PolarisRouterContext.RULE_ROUTER_LABELS);
+		Map<String, String> routerLabels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
 		Assert.assertEquals("v1", routerLabels.get("${http.header.k1}"));
 		Assert.assertEquals("zhangsan", routerLabels.get("${http.query.userid}"));
 		Assert.assertEquals("blue", routerLabels.get("env"));

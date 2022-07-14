@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
+import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,7 +108,7 @@ public class ExpressionLabelUtilsTest {
 		request.setMethod(HttpMethod.GET.name());
 		request.setRequestURI("/users");
 
-		Map<String, String> result = ExpressionLabelUtils.resolve(request, labelKeys);
+		Map<String, String> result = ServletExpressionLabelUtils.resolve(request, labelKeys);
 
 		Assert.assertEquals("zhangsan", result.get(validLabel1));
 		Assert.assertEquals("zhangsan", result.get(validLabel2));
@@ -149,7 +152,7 @@ public class ExpressionLabelUtilsTest {
 				.cookie(new HttpCookie("uid", "zhangsan")).build();
 		MockServerWebExchange exchange = new MockServerWebExchange.Builder(httpRequest).build();
 
-		Map<String, String> result = ExpressionLabelUtils.resolve(exchange, labelKeys);
+		Map<String, String> result = SpringWebExpressionLabelUtils.resolve(exchange, labelKeys);
 
 		Assert.assertEquals("zhangsan", result.get(validLabel1));
 		Assert.assertEquals("zhangsan", result.get(validLabel2));
@@ -193,7 +196,7 @@ public class ExpressionLabelUtilsTest {
 		request.setURI(URI.create("http://calleeService/user/get?uid=zhangsan"));
 		request.getHeaders().add("uid", "zhangsan");
 
-		Map<String, String> result = ExpressionLabelUtils.resolve(request, labelKeys);
+		Map<String, String> result = SpringWebExpressionLabelUtils.resolve(request, labelKeys);
 
 		Assert.assertEquals("zhangsan", result.get(validLabel1));
 		Assert.assertEquals("zhangsan", result.get(validLabel2));
