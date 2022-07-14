@@ -61,6 +61,16 @@ public final class JacksonUtils {
 		}
 	}
 
+	public static <T> T deserialize(String jsonStr, Class<T> type) {
+		try {
+			return OM.readValue(jsonStr, type);
+		}
+		catch (JsonProcessingException e) {
+			LOG.error("Json to object failed. {}", type, e);
+			throw new RuntimeException("Json to object failed.", e);
+		}
+	}
+
 	/**
 	 * Json to Map.
 	 * @param jsonStr Json String

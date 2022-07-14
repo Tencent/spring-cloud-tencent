@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
 import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
@@ -158,6 +158,6 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 	private Map<String, String> getRuleExpressionLabels(HttpServletRequest request, String namespace, String service) {
 		Set<String> expressionLabels = rateLimitRuleLabelResolver.getExpressionLabelKeys(namespace, service);
-		return ExpressionLabelUtils.resolve(request, expressionLabels);
+		return ServletExpressionLabelUtils.resolve(request, expressionLabels);
 	}
 }

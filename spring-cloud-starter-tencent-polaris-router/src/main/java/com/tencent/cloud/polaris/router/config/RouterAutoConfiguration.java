@@ -25,8 +25,12 @@ import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBea
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
+import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,5 +66,23 @@ public class RouterAutoConfiguration {
 	@Bean
 	public RouterRuleLabelResolver routerRuleLabelResolver(ServiceRuleManager serviceRuleManager) {
 		return new RouterRuleLabelResolver(serviceRuleManager);
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.metadata-router.enabled", matchIfMissing = true)
+	public MetadataRouterRequestInterceptor metadataRouterRequestInterceptor(PolarisMetadataRouterProperties polarisMetadataRouterProperties) {
+		return new MetadataRouterRequestInterceptor(polarisMetadataRouterProperties);
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.nearby-router.enabled", matchIfMissing = true)
+	public NearbyRouterRequestInterceptor nearbyRouterRequestInterceptor(PolarisNearByRouterProperties polarisNearByRouterProperties) {
+		return new NearbyRouterRequestInterceptor(polarisNearByRouterProperties);
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.rule-router.enabled", matchIfMissing = true)
+	public RuleBasedRouterRequestInterceptor ruleBasedRouterRequestInterceptor(PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties) {
+		return new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties);
 	}
 }
