@@ -18,6 +18,12 @@
 
 package com.tencent.cloud.metadata.config;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulFilter;
@@ -26,7 +32,12 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Test for {@link MetadataTransferAutoConfiguration}.
@@ -55,10 +66,6 @@ public class MetadataTransferAutoConfigurationTest {
 					Assertions.assertThat(context).hasSingleBean(
 							EncodeTransferMedataRestTemplateInterceptor.class);
 					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration
-									.MetadataTransferRestTemplateConfig
-									.EncodeTransferMetadataRestTemplatePostProcessor.class);
-					Assertions.assertThat(context).hasSingleBean(
 							MetadataTransferAutoConfiguration.MetadataTransferZuulFilterConfig.class);
 					Assertions.assertThat(context)
 							.hasSingleBean(EncodeTransferMetadataZuulFilter.class);
@@ -66,5 +73,45 @@ public class MetadataTransferAutoConfigurationTest {
 							MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(GlobalFilter.class);
 				});
+	}
+
+
+	@Test
+	public void test2() {
+		this.applicationContextRunner
+				.withConfiguration(
+						AutoConfigurations.of(MetadataTransferAutoConfiguration.class, RestTemplateConfiguration.class))
+				.run(context -> {
+					Assertions.assertThat(context)
+							.hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
+					EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor = context.getBean(EncodeTransferMedataRestTemplateInterceptor.class);
+					Map<String, RestTemplate> restTemplateMap = context.getBeansOfType(RestTemplate.class);
+					Assertions.assertThat(restTemplateMap.size()).isEqualTo(2);
+					for (String beanName : Arrays.asList("restTemplate", "loadBalancedRestTemplate")) {
+						RestTemplate restTemplate = restTemplateMap.get(beanName);
+						Assertions.assertThat(restTemplate).isNotNull();
+						List<ClientHttpRequestInterceptor> encodeTransferMedataFeignInterceptorList = restTemplate.getInterceptors()
+								.stream()
+								.filter(interceptor -> Objects.equals(interceptor, encodeTransferMedataRestTemplateInterceptor))
+								.collect(Collectors.toList());
+						//EncodeTransferMedataFeignInterceptor is not added repeatedly
+						Assertions.assertThat(encodeTransferMedataFeignInterceptorList.size()).isEqualTo(1);
+					}
+				});
+	}
+
+	@Configuration
+	static class RestTemplateConfiguration {
+
+		@Bean
+		public RestTemplate restTemplate() {
+			return new RestTemplate();
+		}
+
+		@LoadBalanced
+		@Bean
+		public RestTemplate loadBalancedRestTemplate() {
+			return new RestTemplate();
+		}
 	}
 }
