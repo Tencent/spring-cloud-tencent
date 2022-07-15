@@ -18,22 +18,32 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
+import com.tencent.cloud.polaris.config.spring.property.SpringValue;
+import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.TypeConverter;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.cloud.context.refresh.ContextRefresher;
+import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -43,29 +53,40 @@ import org.springframework.util.CollectionUtils;
  * @author lepdou 2022-03-28
  */
 public class PolarisPropertySourceAutoRefresher
-		implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
+		implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware, BeanFactoryAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisPropertySourceAutoRefresher.class);
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
-	private final ContextRefresher contextRefresher;
+
 	private final AtomicBoolean registered = new AtomicBoolean(false);
-	private ApplicationContext applicationContext;
+
+	private ConfigurableApplicationContext context;
+
+	private TypeConverter typeConverter;
+	private final SpringValueRegistry springValueRegistry;
+	private ConfigurableBeanFactory beanFactory;
+	private final PlaceholderHelper placeholderHelper;
+
 
 	public PolarisPropertySourceAutoRefresher(
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisPropertySourceManager polarisPropertySourceManager,
-			ContextRefresher contextRefresher) {
+			SpringValueRegistry springValueRegistry,
+			PlaceholderHelper placeholderHelper) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
-		this.contextRefresher = contextRefresher;
+		this.springValueRegistry = springValueRegistry;
+		this.placeholderHelper = placeholderHelper;
 	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
+		this.context = (ConfigurableApplicationContext) applicationContext;
+		this.beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
+		this.typeConverter = this.beanFactory.getTypeConverter();
 	}
 
 	@Override
@@ -91,6 +112,7 @@ public class PolarisPropertySourceAutoRefresher
 		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
 			polarisPropertySource.getConfigKVFile()
 					.addChangeListener((ConfigKVFileChangeListener) configKVFileChangeEvent -> {
+
 						LOGGER.info(
 								"[SCT Config]  received polaris config change event and will refresh spring context."
 										+ "namespace = {}, group = {}, fileName = {}",
@@ -115,11 +137,70 @@ public class PolarisPropertySourceAutoRefresher
 								source.remove(changedKey);
 								break;
 							}
-						}
 
-						// rebuild beans with @RefreshScope annotation
-						contextRefresher.refresh();
+							Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, changedKey);
+							if (targetValues == null || targetValues.isEmpty()) {
+								continue;
+							}
+							// update the value
+							for (SpringValue val : targetValues) {
+								updateSpringValue(val);
+							}
+
+						}
+						context.publishEvent(new EnvironmentChangeEvent(context, configKVFileChangeEvent.changedKeys()));
 					});
 		}
+	}
+
+	private void updateSpringValue(SpringValue springValue) {
+		try {
+			Object value = resolvePropertyValue(springValue);
+			springValue.update(value);
+
+			LOGGER.info("Auto update polaris changed value successfully, new value: {}, {}", value,
+					springValue);
+		}
+		catch (Throwable ex) {
+			LOGGER.error("Auto update polaris changed value failed, {}", springValue.toString(), ex);
+		}
+	}
+
+
+	/**
+	 * Logic transplanted from DefaultListableBeanFactory.
+	 *
+	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor,
+	 * java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
+	 */
+	private Object resolvePropertyValue(SpringValue springValue) {
+		// value will never be null
+		Object value = placeholderHelper
+				.resolvePropertyValue(beanFactory, springValue.getBeanName(), springValue.getPlaceholder());
+
+		if (springValue.isJson()) {
+			value = parseJsonValue((String) value, springValue.getTargetType());
+		}
+		else {
+			value = springValue.isField() ? this.typeConverter.convertIfNecessary(value, springValue.getTargetType(), springValue.getField()) :
+					this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
+							springValue.getMethodParameter());
+		}
+		return value;
+	}
+
+	private Object parseJsonValue(String json, Class<?> targetType) {
+		try {
+			return JacksonUtils.json2JavaBean(json, targetType);
+		}
+		catch (Throwable ex) {
+			LOGGER.error("Parsing json '{}' to type {} failed!", json, targetType, ex);
+			throw ex;
+		}
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = (ConfigurableBeanFactory) beanFactory;
 	}
 }
