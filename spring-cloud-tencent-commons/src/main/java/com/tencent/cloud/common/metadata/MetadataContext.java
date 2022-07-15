@@ -41,6 +41,11 @@ public class MetadataContext {
 	 */
 	public static final String FRAGMENT_TRANSITIVE = "transitive";
 
+	/**
+	 * disposable Context.
+	 */
+	public static final String FRAGMENT_DISPOSABLE = "disposable";
+
 	private static final Logger LOG = LoggerFactory.getLogger(MetadataContext.class);
 	/**
 	 * Namespace of local instance.

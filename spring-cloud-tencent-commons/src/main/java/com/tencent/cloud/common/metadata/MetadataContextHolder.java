@@ -20,21 +20,15 @@ package com.tencent.cloud.common.metadata;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
-import static com.tencent.cloud.common.constant.MetadataConstant.INTERNAL_METADATA_DISPOSABLE;
-import static com.tencent.cloud.common.util.JacksonUtils.deserialize2Map;
-import static com.tencent.cloud.common.util.JacksonUtils.serialize2Json;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_DISPOSABLE;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_TRANSITIVE;
 
 /**
  * Metadata Context Holder.
@@ -42,8 +36,6 @@ import static com.tencent.cloud.common.util.JacksonUtils.serialize2Json;
  * @author Haotian Zhang
  */
 public final class MetadataContextHolder {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(MetadataContextHolder.class);
 
 	private static final ThreadLocal<MetadataContext> METADATA_CONTEXT = new InheritableThreadLocal<>();
 
@@ -73,8 +65,8 @@ public final class MetadataContextHolder {
 
 		// init static transitive metadata
 		MetadataContext metadataContext = new MetadataContext();
-		metadataContext.putFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE,
-				staticMetadataManager.getMergedStaticTransitiveMetadata());
+		metadataContext.putFragmentContext(FRAGMENT_TRANSITIVE, staticMetadataManager.getMergedStaticTransitiveMetadata());
+		metadataContext.putFragmentContext(FRAGMENT_DISPOSABLE, staticMetadataManager.getMergedStaticDisposableMetadata());
 
 		METADATA_CONTEXT.set(metadataContext);
 
@@ -93,62 +85,31 @@ public final class MetadataContextHolder {
 	 * Save metadata map to thread local.
 	 * @param dynamicTransitiveMetadata custom metadata collection
 	 */
-	public static void init(Map<String, String> dynamicTransitiveMetadata) {
+	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata) {
 		// Init ThreadLocal.
 		MetadataContextHolder.remove();
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		// Save transitive metadata to ThreadLocal.
 		if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
-
-			// Check local static metadata .
-			Map<String, String> localTransitives = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-			String localDisposable = localTransitives.get(INTERNAL_METADATA_DISPOSABLE);
-			Map<String, Boolean> localValidDisposables = new HashMap<>();
-			if (StringUtils.hasText(localDisposable)) {
-				Set<String> disposables = deserialize2Map(localDisposable).keySet();
-				for (String disposable : disposables) {
-					localValidDisposables.put(disposable, localTransitives.containsKey(disposable));
-				}
-			}
-
-			// processing disposable keys .
-			String disposableKeyStatus = dynamicTransitiveMetadata.get(INTERNAL_METADATA_DISPOSABLE);
-			if (StringUtils.hasText(disposableKeyStatus)) {
-				Map<String, String> keyStatus = deserialize2Map(disposableKeyStatus);
-				Iterator<Map.Entry<String, String>> it = keyStatus.entrySet().iterator();
-				while (it.hasNext()) {
-					Map.Entry<String, String> entry = it.next();
-					String key = entry.getKey();
-					boolean status = Boolean.parseBoolean(entry.getValue());
-					if (!localValidDisposables.containsKey(key)) {
-						if (!status) {
-							keyStatus.put(key, "true");
-						}
-						else {
-							// removed disposable key
-							dynamicTransitiveMetadata.remove(key);
-							it.remove();
-						}
-					}
-					else {
-						// removed disposable key
-						dynamicTransitiveMetadata.remove(key);
-						keyStatus.put(key, "false");
-					}
-				}
-				// reset
-				dynamicTransitiveMetadata.put(INTERNAL_METADATA_DISPOSABLE, serialize2Json(keyStatus));
-			}
-
-			Map<String, String> staticTransitiveMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+			Map<String, String> staticTransitiveMetadata = metadataContext.getFragmentContext(FRAGMENT_TRANSITIVE);
 			Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 			mergedTransitiveMetadata.putAll(staticTransitiveMetadata);
 			mergedTransitiveMetadata.putAll(dynamicTransitiveMetadata);
 
-			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE, Collections.unmodifiableMap(mergedTransitiveMetadata));
+			Map<String, String> mergedDisposableMetadata = new HashMap<>(dynamicDisposableMetadata);
+
+			metadataContext.putFragmentContext(FRAGMENT_TRANSITIVE, Collections.unmodifiableMap(mergedTransitiveMetadata));
+			metadataContext.putFragmentContext(FRAGMENT_DISPOSABLE, Collections.unmodifiableMap(mergedDisposableMetadata));
 		}
 		MetadataContextHolder.set(metadataContext);
+	}
+
+	/**
+	 * Clean up one-time metadata coming from upstream .
+	 */
+	public static void cleanDisposableMetadata() {
+
 	}
 
 	/**

@@ -53,11 +53,6 @@ public final class MetadataConstant {
 	public static final int POLARIS_TRANSITIVE_HEADER_PREFIX_LENGTH = POLARIS_TRANSITIVE_HEADER_PREFIX.length();
 
 	/**
-	 * internal metadata disposable status key.
-	 */
-	public static final String INTERNAL_METADATA_DISPOSABLE = "internal-metadata-disposable-status";
-
-	/**
 	 * Order of filter, interceptor, ...
 	 */
 	public static class OrderConstant {
@@ -87,6 +82,11 @@ public final class MetadataConstant {
 		 * Custom metadata.
 		 */
 		public static final String CUSTOM_METADATA = "SCT-CUSTOM-METADATA";
+
+		/**
+		 * Custom Disposable Metadata.
+		 */
+		public static final String CUSTOM_DISPOSABLE_METADATA = "SCT-CUSTOM-DISPOSABLE-METADATA";
 
 		/**
 		 * System Metadata.
