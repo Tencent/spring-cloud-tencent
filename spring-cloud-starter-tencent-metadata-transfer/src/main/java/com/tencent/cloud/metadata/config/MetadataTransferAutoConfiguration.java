@@ -18,8 +18,9 @@
 
 package com.tencent.cloud.metadata.config;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
@@ -28,19 +29,15 @@ import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgFilter;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import static javax.servlet.DispatcherType.ASYNC;
@@ -127,9 +124,10 @@ public class MetadataTransferAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-	protected static class MetadataTransferRestTemplateConfig implements ApplicationContextAware {
+	protected static class MetadataTransferRestTemplateConfig {
 
-		private ApplicationContext context;
+		@Autowired(required = false)
+		private List<RestTemplate> restTemplates = Collections.emptyList();
 
 		@Bean
 		public EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor() {
@@ -137,64 +135,12 @@ public class MetadataTransferAutoConfiguration {
 		}
 
 		@Bean
-		BeanPostProcessor encodeTransferMetadataRestTemplatePostProcessor(
-				EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor) {
-			// Coping with multiple bean injection scenarios
-			Map<String, RestTemplate> beans = this.context
-					.getBeansOfType(RestTemplate.class);
-			// If the restTemplate has been created when the
-			// MetadataRestTemplatePostProcessor Bean
-			// is initialized, then manually set the interceptor.
-			if (!CollectionUtils.isEmpty(beans)) {
-				for (RestTemplate restTemplate : beans.values()) {
-					List<ClientHttpRequestInterceptor> interceptors = restTemplate
-							.getInterceptors();
-					// Avoid setting interceptor repeatedly.
-					if (!interceptors.contains(encodeTransferMedataRestTemplateInterceptor)) {
-						interceptors.add(encodeTransferMedataRestTemplateInterceptor);
-						restTemplate.setInterceptors(interceptors);
-					}
-				}
-			}
-			return new EncodeTransferMetadataRestTemplatePostProcessor(
-					encodeTransferMedataRestTemplateInterceptor);
-		}
-
-		@Override
-		public void setApplicationContext(@NonNull ApplicationContext applicationContext)
-				throws BeansException {
-			this.context = applicationContext;
-		}
-
-		public static class EncodeTransferMetadataRestTemplatePostProcessor
-				implements BeanPostProcessor {
-
-			private final EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor;
-
-			EncodeTransferMetadataRestTemplatePostProcessor(
-					EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor) {
-				this.encodeTransferMedataRestTemplateInterceptor = encodeTransferMedataRestTemplateInterceptor;
-			}
-
-			@Override
-			public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) {
-				return bean;
-			}
-
-			@Override
-			public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) {
-				if (bean instanceof RestTemplate) {
-					RestTemplate restTemplate = (RestTemplate) bean;
-					List<ClientHttpRequestInterceptor> interceptors = restTemplate
-							.getInterceptors();
-					// Avoid setting interceptor repeatedly.
-					if (!interceptors.contains(encodeTransferMedataRestTemplateInterceptor)) {
-						interceptors.add(this.encodeTransferMedataRestTemplateInterceptor);
-						restTemplate.setInterceptors(interceptors);
-					}
-				}
-				return bean;
-			}
+		public SmartInitializingSingleton addEncodeTransferMedataInterceptorForRestTemplate(EncodeTransferMedataRestTemplateInterceptor interceptor) {
+			return () -> restTemplates.forEach(restTemplate -> {
+				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
+				list.add(interceptor);
+				restTemplate.setInterceptors(list);
+			});
 		}
 	}
 }
