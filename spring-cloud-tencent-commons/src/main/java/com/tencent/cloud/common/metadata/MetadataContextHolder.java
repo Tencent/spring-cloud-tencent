@@ -29,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_DISPOSABLE;
 import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_TRANSITIVE;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_UPSTREAM_DISPOSABLE;
 
 /**
  * Metadata Context Holder.
@@ -96,20 +97,15 @@ public final class MetadataContextHolder {
 			Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 			mergedTransitiveMetadata.putAll(staticTransitiveMetadata);
 			mergedTransitiveMetadata.putAll(dynamicTransitiveMetadata);
+			metadataContext.putFragmentContext(FRAGMENT_TRANSITIVE, Collections.unmodifiableMap(mergedTransitiveMetadata));
 
 			Map<String, String> mergedDisposableMetadata = new HashMap<>(dynamicDisposableMetadata);
+			metadataContext.putFragmentContext(FRAGMENT_UPSTREAM_DISPOSABLE, Collections.unmodifiableMap(mergedDisposableMetadata));
 
-			metadataContext.putFragmentContext(FRAGMENT_TRANSITIVE, Collections.unmodifiableMap(mergedTransitiveMetadata));
-			metadataContext.putFragmentContext(FRAGMENT_DISPOSABLE, Collections.unmodifiableMap(mergedDisposableMetadata));
+			Map<String, String> staticDisposableMetadata = metadataContext.getFragmentContext(FRAGMENT_DISPOSABLE);
+			metadataContext.putFragmentContext(FRAGMENT_DISPOSABLE, Collections.unmodifiableMap(staticDisposableMetadata));
 		}
 		MetadataContextHolder.set(metadataContext);
-	}
-
-	/**
-	 * Clean up one-time metadata coming from upstream .
-	 */
-	public static void cleanDisposableMetadata() {
-
 	}
 
 	/**

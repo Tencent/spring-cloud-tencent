@@ -46,6 +46,11 @@ public class MetadataContext {
 	 */
 	public static final String FRAGMENT_DISPOSABLE = "disposable";
 
+	/**
+	 * upstream disposable Context.
+	 */
+	public static final String FRAGMENT_UPSTREAM_DISPOSABLE = "upstream-disposable";
+
 	private static final Logger LOG = LoggerFactory.getLogger(MetadataContext.class);
 	/**
 	 * Namespace of local instance.

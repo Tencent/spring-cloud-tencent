@@ -64,13 +64,13 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
 
 		Map<String, String> internalTransitiveMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_METADATA);
-		Map<String, String> internalDisposableMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(serverWebExchange);
 
 		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
+		Map<String, String> internalDisposableMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
 		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
 
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata);

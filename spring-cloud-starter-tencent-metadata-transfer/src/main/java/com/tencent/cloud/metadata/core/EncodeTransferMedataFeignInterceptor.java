@@ -69,28 +69,28 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 				newestCustomMetadata.put(key, value);
 			}
 		});
-		this.doApply(requestTemplate, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+		this.buildMetadataHeader(requestTemplate, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
 		// process custom metadata finally
-		this.doApply(requestTemplate, newestCustomMetadata, CUSTOM_METADATA);
+		this.buildMetadataHeader(requestTemplate, newestCustomMetadata, CUSTOM_METADATA);
 	}
 
 	/**
-	 * Set metadata into the request header of {@link RestTemplate} .
+	 * Set metadata into the request header for {@link RestTemplate} .
 	 * @param requestTemplate instance of {@link RestTemplate}
 	 * @param metadata metadata map .
 	 * @param headerName target metadata http header name .
 	 */
-	private void doApply(RequestTemplate requestTemplate, Map<String, String> metadata, String headerName) {
+	private void buildMetadataHeader(RequestTemplate requestTemplate, Map<String, String> metadata, String headerName) {
 		if (!CollectionUtils.isEmpty(metadata)) {
-			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(metadata);
+			String encodedMetadata = JacksonUtils.serialize2Json(metadata);
 			requestTemplate.removeHeader(headerName);
 			try {
-				requestTemplate.header(headerName, encode(encodedTransitiveMetadata, UTF_8));
+				requestTemplate.header(headerName, encode(encodedMetadata, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
 				LOG.error("Set header failed.", e);
-				requestTemplate.header(headerName, encodedTransitiveMetadata);
+				requestTemplate.header(headerName, encodedMetadata);
 			}
 		}
 	}

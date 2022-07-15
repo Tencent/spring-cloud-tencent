@@ -21,6 +21,7 @@ package com.tencent.cloud.metadata.core;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -37,6 +38,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
 /**
  * Interceptor used for adding the metadata in http headers from context when web client
@@ -57,19 +60,39 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
 
-		if (!CollectionUtils.isEmpty(customMetadata)) {
-			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
-			try {
-				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(encodedTransitiveMetadata, UTF_8));
+		// build custom metadata request header
+		this.buildMetadataHeader(httpRequest, customMetadata, CUSTOM_METADATA);
+
+		// Clean up one-time metadata coming from upstream .
+		Map<String, String> newestCustomMetadata = new HashMap<>();
+		customMetadata.forEach((key, value) -> {
+			if (!disposableMetadata.containsKey(key)) {
+				newestCustomMetadata.put(key, value);
 			}
-			catch (UnsupportedEncodingException e) {
-				httpRequest.getHeaders().set(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						encodedTransitiveMetadata);
-			}
-		}
+		});
+		// build custom disposable metadata request header
+		this.buildMetadataHeader(httpRequest, newestCustomMetadata, CUSTOM_DISPOSABLE_METADATA);
 
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
+	}
+
+	/**
+	 * Set metadata into the request header for {@link HttpRequest} .
+	 * @param request instance of {@link HttpRequest}
+	 * @param metadata metadata map .
+	 * @param headerName target metadata http header name .
+	 */
+	private void buildMetadataHeader(HttpRequest request, Map<String, String> metadata, String headerName) {
+		if (!CollectionUtils.isEmpty(metadata)) {
+			String encodedMetadata = JacksonUtils.serialize2Json(metadata);
+			try {
+				request.getHeaders().set(headerName, URLEncoder.encode(encodedMetadata, UTF_8));
+			}
+			catch (UnsupportedEncodingException e) {
+				request.getHeaders().set(headerName, encodedMetadata);
+			}
+		}
 	}
 }

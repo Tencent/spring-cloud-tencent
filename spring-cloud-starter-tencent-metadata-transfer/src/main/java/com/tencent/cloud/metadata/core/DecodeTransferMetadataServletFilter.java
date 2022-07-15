@@ -60,13 +60,13 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 			@NonNull HttpServletResponse httpServletResponse, FilterChain filterChain)
 			throws ServletException, IOException {
 		Map<String, String> internalTransitiveMetadata = getInternalMetadata(httpServletRequest, CUSTOM_METADATA);
-		Map<String, String> internalDisposableMetadata = getInternalMetadata(httpServletRequest, CUSTOM_DISPOSABLE_METADATA);
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(httpServletRequest);
 
 		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
+		Map<String, String> internalDisposableMetadata = getInternalMetadata(httpServletRequest, CUSTOM_DISPOSABLE_METADATA);
 		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
 
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata);

@@ -20,11 +20,11 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
@@ -32,6 +32,8 @@ import com.tencent.cloud.common.util.JacksonUtils;
 import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
@@ -67,16 +69,38 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 
 		// add new metadata and cover old
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		if (!CollectionUtils.isEmpty(customMetadata)) {
-			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
+		this.buildMetadataHeader(requestContext, customMetadata, CUSTOM_METADATA);
+
+		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
+		// Clean up one-time metadata coming from upstream .
+		Map<String, String> newestCustomMetadata = new HashMap<>();
+		customMetadata.forEach((key, value) -> {
+			if (!disposableMetadata.containsKey(key)) {
+				newestCustomMetadata.put(key, value);
+			}
+		});
+
+		this.buildMetadataHeader(requestContext, newestCustomMetadata, CUSTOM_DISPOSABLE_METADATA);
+
+		return null;
+	}
+
+	/**
+	 * Set metadata into the request header for {@link RequestContext} .
+	 *
+	 * @param context    instance of {@link RequestContext}
+	 * @param metadata   metadata map .
+	 * @param headerName target metadata http header name .
+	 */
+	private void buildMetadataHeader(RequestContext context, Map<String, String> metadata, String headerName) {
+		if (!CollectionUtils.isEmpty(metadata)) {
+			String encodedMetadata = JacksonUtils.serialize2Json(metadata);
 			try {
-				requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, UTF_8));
+				context.addZuulRequestHeader(headerName, URLEncoder.encode(encodedMetadata, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
-				requestContext.addZuulRequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
+				context.addZuulRequestHeader(headerName, encodedMetadata);
 			}
 		}
-		return null;
 	}
 }
