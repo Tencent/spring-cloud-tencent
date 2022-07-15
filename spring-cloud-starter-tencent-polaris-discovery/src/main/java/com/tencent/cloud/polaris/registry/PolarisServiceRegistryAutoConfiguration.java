@@ -27,6 +27,7 @@ import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationAu
 import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationConfiguration;
 import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationProperties;
 import com.tencent.polaris.client.api.SDKContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

@@ -7,6 +7,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
@@ -57,8 +58,8 @@ public abstract class AbstractGracefulServiceRegistration<R extends Registration
 		this.serviceRegistry = serviceRegistry;
 	}
 
-	protected AbstractGracefulServiceRegistration(ServiceRegistry<R> serviceRegistry,
-												  GracefulServiceRegistrationProperties properties) {
+	protected AbstractGracefulServiceRegistration(ServiceRegistry<R> serviceRegistry, 
+												GracefulServiceRegistrationProperties properties) {
 		this.serviceRegistry = serviceRegistry;
 		this.properties = properties;
 	}
