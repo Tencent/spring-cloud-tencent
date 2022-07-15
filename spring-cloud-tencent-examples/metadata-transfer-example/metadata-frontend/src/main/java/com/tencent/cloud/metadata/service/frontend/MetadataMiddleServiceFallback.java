@@ -15,20 +15,24 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.service.callee;
+package com.tencent.cloud.metadata.service.frontend;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+
+import org.springframework.stereotype.Component;
 
 /**
- * Metadata callee application.
+ * Metadata callee feign client fallback.
  *
  * @author Palmer Xu
  */
-@SpringBootApplication
-public class MetadataBackendService {
+@Component
+public class MetadataMiddleServiceFallback implements MetadataMiddleService {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MetadataBackendService.class, args);
+	@Override
+	public Map<String, String> info() {
+		return Maps.newHashMap();
 	}
 }

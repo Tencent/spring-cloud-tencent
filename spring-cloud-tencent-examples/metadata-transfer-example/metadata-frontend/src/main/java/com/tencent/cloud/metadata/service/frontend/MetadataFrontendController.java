@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.service.caller;
+package com.tencent.cloud.metadata.service.frontend;
 
 import java.util.Map;
 

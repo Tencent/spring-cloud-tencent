@@ -15,24 +15,26 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.service.callee;
+package com.tencent.cloud.metadata.service.middle;
 
 import java.util.Map;
 
-import com.google.common.collect.Maps;
-
-import org.springframework.stereotype.Component;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Metadata callee feign client fallback.
+ * Metadata callee feign client.
  *
  * @author Palmer Xu
  */
-@Component
-public class MetadataBackendServiceFallback implements MetadataBackendService {
+@FeignClient(value = "MetadataBackendService",
+		fallback = MetadataBackendServiceFallback.class)
+public interface MetadataBackendService {
 
-	@Override
-	public Map<String, String> info() {
-		return Maps.newHashMap();
-	}
+	/**
+	 * Get information of callee.
+	 * @return information of callee
+	 */
+	@GetMapping("/metadata/service/backend/info")
+	Map<String, Map<String, String>> info();
 }

@@ -15,31 +15,24 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.service.caller;
+package com.tencent.cloud.metadata.service.middle;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+
+import org.springframework.stereotype.Component;
 
 /**
- * Metadata caller application.
+ * Metadata callee feign client fallback.
  *
  * @author Palmer Xu
  */
-@SpringBootApplication
-@EnableFeignClients
-public class MetadataFrontendService {
+@Component
+public class MetadataBackendServiceFallback implements MetadataBackendService {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MetadataFrontendService.class, args);
-	}
-
-	@Bean
-	@LoadBalanced
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
+	@Override
+	public Map<String, Map<String, String>> info() {
+		return Maps.newHashMap();
 	}
 }

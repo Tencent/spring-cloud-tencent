@@ -21,6 +21,7 @@ package com.tencent.cloud.common.metadata;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
@@ -75,6 +76,39 @@ public final class MetadataContextHolder {
 	}
 
 	/**
+	 * Get disposable metadata value from thread local .
+	 * @param key metadata key .
+	 * @param upstream upstream disposable , otherwise will return local static disposable metadata .
+	 * @return target disposable metadata value .
+	 */
+	public static Optional<String> getDisposableMetadata(String key, boolean upstream) {
+		MetadataContext context = get();
+		if (upstream) {
+			return Optional.ofNullable(context.getContext(FRAGMENT_UPSTREAM_DISPOSABLE, key));
+		}
+		else {
+			return Optional.ofNullable(context.getContext(FRAGMENT_DISPOSABLE, key));
+		}
+	}
+
+	/**
+	 * Get all disposable metadata value from thread local .
+	 * @param upstream upstream disposable , otherwise will return local static disposable metadata .
+	 * @return target disposable metadata value .
+	 */
+	public static Map<String, String> getAllDisposableMetadata(boolean upstream) {
+		Map<String, String> disposables = new HashMap<>();
+		MetadataContext context = get();
+		if (upstream) {
+			disposables.putAll(context.getFragmentContext(FRAGMENT_UPSTREAM_DISPOSABLE));
+		}
+		else {
+			disposables.putAll(context.getFragmentContext(FRAGMENT_DISPOSABLE));
+		}
+		return Collections.unmodifiableMap(disposables);
+	}
+
+	/**
 	 * Set metadata context.
 	 * @param metadataContext metadata context
 	 */
@@ -85,6 +119,7 @@ public final class MetadataContextHolder {
 	/**
 	 * Save metadata map to thread local.
 	 * @param dynamicTransitiveMetadata custom metadata collection
+	 * @param dynamicDisposableMetadata custom disposable metadata connection
 	 */
 	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata) {
 		// Init ThreadLocal.

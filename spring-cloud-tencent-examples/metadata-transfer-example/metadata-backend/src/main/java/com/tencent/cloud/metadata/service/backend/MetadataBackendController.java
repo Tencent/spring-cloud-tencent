@@ -15,9 +15,11 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.service.callee;
+package com.tencent.cloud.metadata.service.backend;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -28,7 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Metadata callee controller.
@@ -36,54 +37,53 @@ import org.springframework.web.client.RestTemplate;
  * @author Palmer Xu
  */
 @RestController
-@RequestMapping("/metadata/service/callee")
-public class MetadataCalleeController {
+@RequestMapping("/metadata/service/backend")
+public class MetadataBackendController {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MetadataCalleeController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MetadataBackendController.class);
 
 	@Value("${server.port:0}")
 	private int port;
-
-	private final MetadataBackendService metadataBackendService;
-
-	private final RestTemplate restTemplate;
-
-	public MetadataCalleeController(MetadataBackendService metadataBackendService, RestTemplate restTemplate) {
-		this.metadataBackendService = metadataBackendService;
-		this.restTemplate = restTemplate;
-	}
 
 	/**
 	 * Get information of callee.
 	 * @return information of callee
 	 */
 	@GetMapping("/info")
-	public Map<String, String> info() {
-		LOG.info("Metadata Service Callee [{}] is called.", port);
-
-		// Call remote service with RestTemplate
-		Map<String, String> calleeMetadata = restTemplate.getForObject(
-				"http://MetadataCalleeService2/metadata/service/callee2/info",
-				Map.class);
-		calleeMetadata.forEach((key, value) -> {
-			LOG.info("RestTemplate Callee2 Metadata (Key-Value): {} : {}", key, value);
-		});
-
-		// Call remote service with Feign
-		Map<String, String> calleeMetadata2 = metadataBackendService.info();
-		calleeMetadata2.forEach((key, value) -> {
-			LOG.info("Feign Callee2 Metadata (Key-Value): {} : {}", key, value);
-		});
+	public Map<String, Map<String, String>> info() {
+		LOG.info("Metadata Backend Service [{}] is called.", port);
+		Map<String, Map<String, String>> ret = new HashMap<>();
 
 		// Get Custom Metadata From Context
 		MetadataContext context = MetadataContextHolder.get();
 		Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 
 		customMetadataMap.forEach((key, value) -> {
-			LOG.info("Custom Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("Metadata Backend Custom Metadata (Key-Value): {} : {}", key, value);
 		});
 
-		return customMetadataMap;
-	}
+		ret.put("transitive-metadata", customMetadataMap);
 
+		// Get Disposable metadata from upstream service
+		Optional<String> upstreamDisposableMetadata = MetadataContextHolder.getDisposableMetadata("", true);
+		LOG.info("Upstream Disposable Metadata (Key-Value) : {}, {}", "", upstreamDisposableMetadata.get());
+
+		// Get All Disposable metadata from upstream service
+		Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
+		upstreamDisposableMetadatas.forEach((key, value) -> {
+			LOG.info("Backend All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		ret.put("upstream-disposable-metadata", upstreamDisposableMetadatas);
+
+		// Get All Disposable metadata from upstream service
+		Map<String, String> localDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(false);
+		localDisposableMetadatas.forEach((key, value) -> {
+			LOG.info("Backend All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		ret.put("local-disposable-metadata", localDisposableMetadatas);
+
+		return ret;
+	}
 }

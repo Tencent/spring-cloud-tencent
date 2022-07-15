@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.metadata.service.callee;
+package com.tencent.cloud.metadata.service.frontend;
 
 import java.util.Map;
 
@@ -27,15 +27,14 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Palmer Xu
  */
-@FeignClient(value = "MetadataBackendService2",
-		fallback = MetadataBackendServiceFallback.class)
-public interface MetadataBackendService {
+@FeignClient(value = "MetadataMiddleService",
+		fallback = MetadataMiddleServiceFallback.class)
+public interface MetadataMiddleService {
 
 	/**
 	 * Get information of callee.
 	 * @return information of callee
 	 */
-	@GetMapping("/metadata/service/backend/info")
+	@GetMapping("/metadata/service/middle/info")
 	Map<String, String> info();
-
 }
