@@ -64,10 +64,6 @@ public class MetadataBackendController {
 
 		ret.put("transitive-metadata", customMetadataMap);
 
-		// Get Disposable metadata from upstream service
-		Optional<String> upstreamDisposableMetadata = MetadataContextHolder.getDisposableMetadata("", true);
-		LOG.info("Upstream Disposable Metadata (Key-Value) : {}, {}", "", upstreamDisposableMetadata.get());
-
 		// Get All Disposable metadata from upstream service
 		Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
 		upstreamDisposableMetadatas.forEach((key, value) -> {

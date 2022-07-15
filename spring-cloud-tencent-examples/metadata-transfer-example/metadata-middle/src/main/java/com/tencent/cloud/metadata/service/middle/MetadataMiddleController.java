@@ -92,19 +92,15 @@ public class MetadataMiddleController {
 		Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 
 		customMetadataMap.forEach((key, value) -> {
-			LOG.info("Metadata Backend Custom Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("Metadata Middle Custom Metadata (Key-Value): {} : {}", key, value);
 		});
 
 		ret.put("transitive-metadata", customMetadataMap);
 
-		// Get Disposable metadata from upstream service
-		Optional<String> upstreamDisposableMetadata = MetadataContextHolder.getDisposableMetadata("", true);
-		LOG.info("Upstream Disposable Metadata (Key-Value) : {}, {}", "", upstreamDisposableMetadata.get());
-
 		// Get All Disposable metadata from upstream service
 		Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
 		upstreamDisposableMetadatas.forEach((key, value) -> {
-			LOG.info("Backend All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("Middle All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
 		});
 
 		ret.put("upstream-disposable-metadata", upstreamDisposableMetadatas);
@@ -112,7 +108,7 @@ public class MetadataMiddleController {
 		// Get All Disposable metadata from upstream service
 		Map<String, String> localDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(false);
 		localDisposableMetadatas.forEach((key, value) -> {
-			LOG.info("Backend All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("Middle All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
 		});
 
 		ret.put("local-disposable-metadata", localDisposableMetadatas);

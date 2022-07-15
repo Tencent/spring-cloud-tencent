@@ -36,5 +36,5 @@ public interface MetadataMiddleService {
 	 * @return information of callee
 	 */
 	@GetMapping("/metadata/service/middle/info")
-	Map<String, String> info();
+	Map<String, Map<String, String>> info();
 }

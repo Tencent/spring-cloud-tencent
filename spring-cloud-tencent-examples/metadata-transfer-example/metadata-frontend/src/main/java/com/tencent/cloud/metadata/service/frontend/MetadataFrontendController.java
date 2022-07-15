@@ -57,18 +57,12 @@ public class MetadataFrontendController {
 	 * @return metadata map
 	 */
 	@GetMapping("/feign/info")
-	public Map<String, Map<String, String>> feign() {
-		Map<String, Map<String, String>> ret = Maps.newHashMap();
+	public Map<String, Map<String, Map<String, String>>> feign() {
+		Map<String, Map<String, Map<String, String>>> ret = Maps.newHashMap();
 
 		// Call remote service with feign client
-		Map<String, String> calleeMetadata = metadataMiddleService.info();
+		Map<String, Map<String, String>> calleeMetadata = metadataMiddleService.info();
 		ret.put("callee-transitive-metadata", calleeMetadata);
-
-		// Get Custom Metadata From Context
-		MetadataContext context = MetadataContextHolder.get();
-		Map<String, String> callerTransitiveMetadata = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		ret.put("caller-transitive-metadata", callerTransitiveMetadata);
-		ret.put("caller-metadata-contents", metadataLocalProperties.getContent());
 
 		return ret;
 	}
@@ -79,20 +73,14 @@ public class MetadataFrontendController {
 	 */
 	@SuppressWarnings("unchecked")
 	@GetMapping("/rest/info")
-	public Map<String, Map<String, String>> rest() {
-		Map<String, Map<String, String>> ret = Maps.newHashMap();
+	public Map<String, Map<String, Map<String, String>>> rest() {
+		Map<String, Map<String, Map<String, String>>> ret = Maps.newHashMap();
 
 		// Call remote service with RestTemplate
-		Map<String, String> calleeMetadata = restTemplate.getForObject(
-				"http://MetadataCalleeService/metadata/service/callee/info",
-				Map.class);
+		Map<String, Map<String, String>> calleeMetadata = restTemplate.getForObject(
+				"http://MetadataMiddleService/metadata/service/middle/info", Map.class);
 		ret.put("callee-transitive-metadata", calleeMetadata);
 
-		// Get Custom Metadata From Context
-		MetadataContext context = MetadataContextHolder.get();
-		Map<String, String> callerTransitiveMetadata = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		ret.put("caller-transitive-metadata", callerTransitiveMetadata);
-		ret.put("caller-metadata-contents", metadataLocalProperties.getContent());
 
 		return ret;
 	}
