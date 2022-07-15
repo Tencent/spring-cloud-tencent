@@ -1,5 +1,10 @@
 package com.tencent.cloud.polaris.registry.graceful;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -14,11 +19,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
-
-import javax.annotation.PreDestroy;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 /**
  * Lifecycle methods that may be useful and common to {@link ServiceRegistry}

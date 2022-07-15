@@ -6,19 +6,10 @@ import org.springframework.boot.web.servlet.context.ServletWebServerInitializedE
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
-public class MyListenery implements ApplicationListener {
+public class SpringEventOrderListener implements ApplicationListener {
     
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-//        ApplicationStartingEvent//启动开始的时候执行的事件
-//        ApplicationEnvironmentPreparedEvent//上下文创建之前运行的事件
-//        ApplicationContextInitializedEvent//
-//        ApplicationPreparedEvent//上下文创建完成，注入的bean还没加载完成
-//        ContextRefreshedEvent//上下文刷新
-//        ServletWebServerInitializedEvent//web服务器初始化
-//        ApplicationStartedEvent//
-//        ApplicationReadyEvent//启动成功
-//        ApplicationFailedEvent//在启动Spring发生异常时触发
         switch (event.getClass().getSimpleName()){
             case "ApplicationStartingEvent":
                 System.out.println("事件ApplicationStartingEvent");

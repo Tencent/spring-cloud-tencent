@@ -1,11 +1,11 @@
 package com.tencent.cloud.polaris.registry.graceful;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author Spencer Gibb

@@ -35,7 +35,7 @@ public class DiscoveryCallerService {
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(DiscoveryCallerService.class);
-		app.addListeners(new MyListenery());
+		app.addListeners(new SpringEventOrderListener());
 		app.run(args);
 	}
 

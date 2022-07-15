@@ -21,6 +21,7 @@ import com.tencent.cloud.polaris.registry.graceful.AbstractGracefulServiceRegist
 import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.util.StringUtils;

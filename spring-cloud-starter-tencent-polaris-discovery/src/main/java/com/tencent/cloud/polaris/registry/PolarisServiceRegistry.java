@@ -18,6 +18,9 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
@@ -33,12 +36,10 @@ import com.tencent.polaris.client.util.NamedThreadFactory;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
