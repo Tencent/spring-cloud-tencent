@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @Import(GracefulServiceRegistrationConfiguration.class)
-@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled")
+@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled", matchIfMissing = true)
 public class GracefulServiceRegistrationAutoConfiguration {
 
 	@Autowired(required = false)

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(GracefulServiceRegistrationProperties.class)
-@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled")
+@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled", matchIfMissing = true)
 public class GracefulServiceRegistrationConfiguration {
 
 }

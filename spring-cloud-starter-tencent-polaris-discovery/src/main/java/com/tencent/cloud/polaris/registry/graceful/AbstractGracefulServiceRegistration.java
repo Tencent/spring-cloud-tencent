@@ -58,7 +58,7 @@ public abstract class AbstractGracefulServiceRegistration<R extends Registration
 		this.serviceRegistry = serviceRegistry;
 	}
 
-	protected AbstractGracefulServiceRegistration(ServiceRegistry<R> serviceRegistry, 
+	protected AbstractGracefulServiceRegistration(ServiceRegistry<R> serviceRegistry,
 												GracefulServiceRegistrationProperties properties) {
 		this.serviceRegistry = serviceRegistry;
 		this.properties = properties;
