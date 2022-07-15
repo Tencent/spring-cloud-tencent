@@ -34,7 +34,9 @@ import org.springframework.web.client.RestTemplate;
 public class DiscoveryCallerService {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DiscoveryCallerService.class, args);
+		SpringApplication app = new SpringApplication(DiscoveryCallerService.class);
+		app.addListeners(new MyListenery());
+		app.run(args);
 	}
 
 	@Bean

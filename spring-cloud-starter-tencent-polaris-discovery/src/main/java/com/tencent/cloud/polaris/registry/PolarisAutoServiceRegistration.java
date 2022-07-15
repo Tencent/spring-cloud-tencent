@@ -17,11 +17,10 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import com.tencent.cloud.polaris.registry.graceful.AbstractGracefulServiceRegistration;
+import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration;
-import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.util.StringUtils;
@@ -31,14 +30,14 @@ import org.springframework.util.StringUtils;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistration<Registration> {
+public class PolarisAutoServiceRegistration extends AbstractGracefulServiceRegistration<Registration> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisAutoServiceRegistration.class);
 
 	private final PolarisRegistration registration;
 
 	public PolarisAutoServiceRegistration(ServiceRegistry<Registration> serviceRegistry,
-			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
+			GracefulServiceRegistrationProperties autoServiceRegistrationProperties,
 			PolarisRegistration registration) {
 		super(serviceRegistry, autoServiceRegistrationProperties);
 		this.registration = registration;

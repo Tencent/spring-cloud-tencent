@@ -23,16 +23,15 @@ import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationAutoConfiguration;
+import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationConfiguration;
+import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationProperties;
 import com.tencent.polaris.client.api.SDKContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration;
-import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationConfiguration;
-import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,9 +43,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
 @ConditionalOnPolarisRegisterEnabled
-@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
-@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class,
-		AutoServiceRegistrationAutoConfiguration.class,
+@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled", matchIfMissing = false)
+@AutoConfigureAfter({GracefulServiceRegistrationConfiguration.class,
+		GracefulServiceRegistrationAutoConfiguration.class,
 		PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
@@ -58,7 +57,7 @@ public class PolarisServiceRegistryAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
+	@ConditionalOnBean(GracefulServiceRegistrationProperties.class)
 	public PolarisRegistration polarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Autowired(required = false) ConsulContextProperties consulContextProperties,
@@ -67,10 +66,10 @@ public class PolarisServiceRegistryAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
+	@ConditionalOnBean(GracefulServiceRegistrationProperties.class)
 	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
 			PolarisServiceRegistry registry,
-			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
+			GracefulServiceRegistrationProperties autoServiceRegistrationProperties,
 			PolarisRegistration registration) {
 		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
 	}
