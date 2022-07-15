@@ -68,7 +68,17 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-polaris-config</artifactId>
 		</dependency>
-	</dependencies>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-featureenv-plugin</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-gateway-plugin</artifactId>
+		</dependency>
+  </dependencies>
 
 	<build>
 		<plugins>

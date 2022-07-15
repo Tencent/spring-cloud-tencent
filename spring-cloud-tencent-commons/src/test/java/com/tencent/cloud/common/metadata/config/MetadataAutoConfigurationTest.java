@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.common.metadata.config;
 
-import com.tencent.cloud.common.metadata.filter.gateway.MetadataFirstScgFilter;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -50,9 +49,6 @@ public class MetadataAutoConfigurationTest {
 				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
 
@@ -65,9 +61,6 @@ public class MetadataAutoConfigurationTest {
 				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
 
@@ -80,9 +73,6 @@ public class MetadataAutoConfigurationTest {
 				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataAutoConfiguration.MetadataScgFilterConfig.class);
-					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
 }
