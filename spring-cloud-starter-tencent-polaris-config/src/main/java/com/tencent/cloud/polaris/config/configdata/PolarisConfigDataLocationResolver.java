@@ -1,5 +1,12 @@
 package com.tencent.cloud.polaris.config.configdata;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.tencent.cloud.polaris.config.ConfigurationModifier;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
@@ -13,6 +20,7 @@ import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.ConfigAPIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.logging.Log;
+
 import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.config.ConfigDataLocation;
@@ -27,19 +35,11 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Implementation of {@link ConfigDataLocationResolver}, used to resolve {@link ConfigDataLocation locations}
  * into one or more {@link PolarisConfigDataResource polarisConfigDataResource}.
  *
  * @author wlx
- * @date 2022/7/5 11:16 下午
  */
 public class PolarisConfigDataLocationResolver implements
 		ConfigDataLocationResolver<PolarisConfigDataResource>, Ordered {
@@ -48,19 +48,28 @@ public class PolarisConfigDataLocationResolver implements
 	/**
 	 * Prefix for Config Server imports.
 	 */
-	public static final String PREFIX = "polaris:";
+	public static final String PREFIX = "polaris";
 
 	/**
-	 * Prefix  for Polaris configurationProperties.
+	 * Prefix for Polaris configurationProperties.
 	 */
 	public static final String POLARIS_PREFIX = "spring.cloud.polaris";
+
+	/**
+	 * COLON.
+	 */
+	public static final String COLON = ":";
+
+	/**
+	 * Empty String.
+	 */
+	public static final String EMPTY_STRING = "";
 
 	private final Log log;
 
 	public PolarisConfigDataLocationResolver(DeferredLogFactory logFactory) {
 		this.log = logFactory.getLog(getClass());
 	}
-
 
 	@Override
 	public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
@@ -101,7 +110,8 @@ public class PolarisConfigDataLocationResolver implements
 				POLARIS_PREFIX
 		);
 
-		prepareAndInitPolaris(resolverContext, polarisConfigProperties, polarisContextProperties);
+		// prepare and init earlier Polaris SDKContext to pull config files from remote.
+		prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties, polarisContextProperties);
 
 		bootstrapContext.registerIfAbsent(PolarisConfigProperties.class,
 				BootstrapRegistry.InstanceSupplier.of(polarisConfigProperties));
@@ -112,15 +122,14 @@ public class PolarisConfigDataLocationResolver implements
 		bootstrapContext.registerIfAbsent(PolarisPropertySourceManager.class,
 				BootstrapRegistry.InstanceSupplier.of(new PolarisPropertySourceManager()));
 
-		// stop sdkContext and register PolarisPropertySourceManager to context
 		bootstrapContext.addCloseListener(
 				event -> {
+					// destroy earlier Polaris sdkContext
 					event.getBootstrapContext().get(SDKContext.class).destroy();
-
+					// register PolarisPropertySourceManager to context
+					PolarisPropertySourceManager polarisPropertySourceManager = event.getBootstrapContext().get(PolarisPropertySourceManager.class);
 					event.getApplicationContext().getBeanFactory().registerSingleton(
-							"polarisPropertySourceManager",
-							event.getBootstrapContext().get(PolarisPropertySourceManager.class)
-					);
+							"polarisPropertySourceManager", polarisPropertySourceManager);
 				}
 		);
 
@@ -133,8 +142,7 @@ public class PolarisConfigDataLocationResolver implements
 		return -1;
 	}
 
-
-	public  <T> T loadPolarisConfigProperties(
+	protected <T> T loadPolarisConfigProperties(
 			ConfigDataLocationResolverContext context,
 			Class<T> typeClass,
 			String prefix) {
@@ -143,27 +151,19 @@ public class PolarisConfigDataLocationResolver implements
 
 		T instance;
 		if (context.getBootstrapContext().isRegistered(typeClass)) {
-			instance = context.getBootstrapContext()
-					.get(typeClass);
+			instance = context.getBootstrapContext().get(typeClass);
 		}
 		else {
-			instance = binder
-					.bind(POLARIS_PREFIX, Bindable.of(typeClass),
-							bindHandler)
-					.map(properties -> binder
-							.bind(prefix,
-									Bindable.ofInstance(properties), bindHandler)
+			instance = binder.bind(prefix, Bindable.of(typeClass), bindHandler)
+					.map(properties -> binder.bind(prefix, Bindable.ofInstance(properties), bindHandler)
 							.orElse(properties))
-					.orElseGet(() -> binder
-							.bind(prefix,
-									Bindable.of(typeClass), bindHandler)
+					.orElseGet(() -> binder.bind(prefix, Bindable.of(typeClass), bindHandler)
 							.orElseGet(null));
 		}
-
 		return instance;
 	}
 
-	private  BindHandler getBindHandler(ConfigDataLocationResolverContext context) {
+	private BindHandler getBindHandler(ConfigDataLocationResolverContext context) {
 		return context.getBootstrapContext().getOrElse(BindHandler.class, null);
 	}
 
@@ -171,56 +171,70 @@ public class PolarisConfigDataLocationResolver implements
 																	ConfigDataLocation location,
 																	Profiles profiles,
 																	PolarisConfigProperties polarisConfigProperties,
-																	PolarisContextProperties polarisContextProperties
-
-	) {
+																	PolarisContextProperties polarisContextProperties) {
 		List<PolarisConfigDataResource> result = new ArrayList<>();
 		boolean optional = location.isOptional();
-		String fileName = location.getNonPrefixedValue(PREFIX);
+		String groupFileName = getRealGroupFileName(location);
 		String serviceName = loadPolarisConfigProperties(resolverContext,
 				String.class, "spring.application.name");
+		String groupName = StringUtils.isBlank(groupFileName) ? EMPTY_STRING : parseGroupName(groupFileName, serviceName);
+		log.info("group from configDataLocation is" + groupName);
+		String fileName = StringUtils.isBlank(groupFileName) ? EMPTY_STRING : parseFileName(groupFileName);
+		log.info("file from configDataLocation is" + fileName);
 		PolarisConfigDataResource polarisConfigDataResource = new PolarisConfigDataResource(
 				polarisConfigProperties,
 				polarisContextProperties,
 				profiles, optional,
-				fileName,serviceName
+				fileName, groupName, serviceName
 		);
 		result.add(polarisConfigDataResource);
 		return result;
 	}
 
+	private String getRealGroupFileName(ConfigDataLocation location) {
+		String prefixedValue = location.getNonPrefixedValue(PREFIX);
+		if (StringUtils.isBlank(prefixedValue) || !prefixedValue.startsWith(COLON)) {
+			return prefixedValue;
+		}
+		return prefixedValue.substring(1);
+	}
 
-	private void prepareAndInitPolaris(ConfigDataLocationResolverContext resolverContext,
-									   PolarisConfigProperties polarisConfigProperties,
-									   PolarisContextProperties polarisContextProperties) {
+	private String parseFileName(String groupFileName) {
+		String[] split = groupFileName.split(COLON);
+		if (split.length > 1) {
+			return split[1];
+		}
+		else {
+			return split[0];
+		}
+	}
+
+	private String parseGroupName(String groupFileName, String serviceName) {
+		String[] split = groupFileName.split(COLON);
+		if (split.length > 1) {
+			return split[0];
+		}
+		else {
+			return serviceName;
+		}
+	}
+
+	private void prepareAndInitEarlierPolarisSdkContext(ConfigDataLocationResolverContext resolverContext,
+														PolarisConfigProperties polarisConfigProperties,
+														PolarisContextProperties polarisContextProperties) {
 		ConfigurableBootstrapContext bootstrapContext = resolverContext.getBootstrapContext();
 		if (!bootstrapContext.isRegistered(SDKContext.class)) {
 			SDKContext sdkContext = sdkContext(resolverContext,
 					polarisConfigProperties, polarisContextProperties);
 			sdkContext.init();
-			bootstrapContext.register(SDKContext.class,
-					BootstrapRegistry.InstanceSupplier.of(sdkContext));
+			bootstrapContext.register(SDKContext.class, BootstrapRegistry.InstanceSupplier.of(sdkContext));
 		}
 
 	}
 
-	private List<PolarisConfigModifier> modifierList(PolarisConfigProperties polarisConfigProperties,
-													 PolarisContextProperties polarisContextProperties) {
-		// add ModifyAddress and ConfigurationModifier to load SDKContext
-		List<PolarisConfigModifier> modifierList = new ArrayList<>();
-		ModifyAddress modifyAddress = new ModifyAddress();
-		modifyAddress.setProperties(polarisContextProperties);
-
-		ConfigurationModifier configurationModifier = new ConfigurationModifier(polarisConfigProperties,
-				polarisContextProperties);
-		modifierList.add(modifyAddress);
-		modifierList.add(configurationModifier);
-		return modifierList;
-	}
-
 	private SDKContext sdkContext(ConfigDataLocationResolverContext resolverContext,
-								  PolarisConfigProperties polarisConfigProperties,
-								  PolarisContextProperties polarisContextProperties) {
+			PolarisConfigProperties polarisConfigProperties,
+			PolarisContextProperties polarisContextProperties) {
 
 		// 1. Read user-defined polaris.yml configuration
 		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
@@ -247,6 +261,18 @@ public class PolarisConfigDataLocationResolver implements
 		return SDKContext.initContextByConfig(configuration);
 	}
 
+	private List<PolarisConfigModifier> modifierList(PolarisConfigProperties polarisConfigProperties,
+			PolarisContextProperties polarisContextProperties) {
+		// add ModifyAddress and ConfigurationModifier to load SDKContext
+		List<PolarisConfigModifier> modifierList = new ArrayList<>();
+		ModifyAddress modifyAddress = new ModifyAddress();
+		modifyAddress.setProperties(polarisContextProperties);
 
+		ConfigurationModifier configurationModifier = new ConfigurationModifier(polarisConfigProperties,
+				polarisContextProperties);
+		modifierList.add(modifyAddress);
+		modifierList.add(configurationModifier);
+		return modifierList;
+	}
 }
 

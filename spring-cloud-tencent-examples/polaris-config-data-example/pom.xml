@@ -5,7 +5,8 @@
 	<parent>
 		<artifactId>spring-cloud-tencent-examples</artifactId>
 		<groupId>com.tencent.cloud</groupId>
-		<version>1.6.0-2021.0.3-SNAPSHOT</version>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 

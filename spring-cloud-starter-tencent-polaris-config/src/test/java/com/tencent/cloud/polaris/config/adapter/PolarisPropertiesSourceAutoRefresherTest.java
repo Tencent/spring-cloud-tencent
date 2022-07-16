@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisPropertySourceAutoRefresher}
+ * test for {@link PolarisPropertySourceAutoRefresher}.
  *@author lepdou 2022-06-11
  */
 @RunWith(MockitoJUnitRunner.class)

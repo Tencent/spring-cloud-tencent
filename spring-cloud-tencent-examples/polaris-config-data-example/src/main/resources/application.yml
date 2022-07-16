@@ -1,8 +1,8 @@
 server:
-  port: 48084
+  port: 48085
 spring:
   application:
-    name: polaris-config-example
+    name: polaris-config-data-example
   cloud:
     polaris:
       address: grpc://183.47.111.80:8091
@@ -14,7 +14,7 @@ spring:
             files: [ "config/application.properties", "config/bootstrap.yml" ]
   config:
     import:
-      - optional:polaris:application.properties
+      - optional:polaris
 management:
   endpoints:
     web:
