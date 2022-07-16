@@ -19,6 +19,9 @@ package com.tencent.cloud.polaris.config.spring.property;
 
 /**
  * Spring value.
+ * <br/>
+ * <br/>
+ * This source file was originally from:
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValueDefinition.java>
  *     SpringValueDefinition</a></code>
  *

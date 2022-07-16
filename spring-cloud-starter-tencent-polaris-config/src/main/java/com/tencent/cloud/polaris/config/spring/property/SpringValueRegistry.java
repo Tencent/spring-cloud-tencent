@@ -36,6 +36,9 @@ import org.springframework.beans.factory.BeanFactory;
 
 /**
  * Spring value auto registry.
+ * <br/>
+ * <br/>
+ * This source file was originally from:
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValueRegistry.java>
  *     SpringValueRegistry</a></code>
  *
