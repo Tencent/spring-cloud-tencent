@@ -23,8 +23,6 @@ import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.bootstrap.config.PropertySourceLocator;
 import org.springframework.core.annotation.Order;
