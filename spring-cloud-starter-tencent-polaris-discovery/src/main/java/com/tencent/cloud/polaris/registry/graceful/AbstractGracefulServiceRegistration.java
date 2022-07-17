@@ -83,6 +83,7 @@ public abstract class AbstractGracefulServiceRegistration<R extends Registration
 				return;
 			}
 		}
+		// Do it need to support random server port?
 		this.port.compareAndSet(0, Integer.parseInt(environment.getProperty("server.port")));
 		this.start();
 	}
