@@ -47,7 +47,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 /**
  * Service registry of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, cheese8
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
@@ -84,7 +84,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			return;
 		}
 		// Register instance.
-		System.out.println("事件注册");
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
 		instanceRegisterRequest.setNamespace(polarisDiscoveryProperties.getNamespace());
 		instanceRegisterRequest.setService(registration.getServiceId());

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * @author Spencer Gibb
+ * @author Spencer Gibb, cheese8
  */
 @Configuration(proxyBeanMethods = false)
 @Import(GracefulServiceRegistrationConfiguration.class)

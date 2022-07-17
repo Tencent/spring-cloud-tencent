@@ -12,38 +12,42 @@ public class SpringEventOrderListener implements ApplicationListener {
 	public void onApplicationEvent(ApplicationEvent event) {
 		switch (event.getClass().getSimpleName()) {
 			case "ApplicationStartingEvent":
-				System.out.println("事件ApplicationStartingEvent");
+				System.out.println("Event ApplicationStartingEvent occurred");
 				break;
 			case "ApplicationEnvironmentPreparedEvent":
-				System.out.println("事件ApplicationEnvironmentPreparedEvent");
+				System.out.println("Event ApplicationEnvironmentPreparedEvent occurred");
 				break;
 			case "ApplicationContextInitializedEvent":
-				System.out.println("事件ApplicationContextInitializedEvent");
+				System.out.println("Event ApplicationContextInitializedEvent occurred");
 				break;
 			case "ApplicationPreparedEvent":
-				System.out.println("事件ApplicationPreparedEvent");
+				System.out.println("Event ApplicationPreparedEvent occurred");
 				break;
 			case "ContextRefreshedEvent":
-				System.out.println("事件ContextRefreshedEvent");
+				System.out.println("Event ContextRefreshedEvent occurred");
 				break;
 			case "ApplicationStartedEvent":
-				System.out.println("事件ApplicationStartedEvent");
+				System.out.println("Event ApplicationStartedEvent occurred");
+				break;
+			case "AvailabilityChangeEvent":
+				System.out.println("Event AvailabilityChangeEvent occurred");
 				break;
 			case "ServletWebServerInitializedEvent":
 				if (event instanceof WebServerInitializedEvent) {
-					System.out.println("事件WebServerInitializedEvent");
+					System.out.println("Event WebServerInitializedEvent occurred");
 				}
 				if (event instanceof ServletWebServerInitializedEvent) {
-					System.out.println("事件ServletWebServerInitializedEvent");
+					System.out.println("Event ServletWebServerInitializedEvent occurred");
 				}
 				if (event instanceof ReactiveWebServerInitializedEvent) {
-					System.out.println("事件ReactiveWebServerInitializedEvent");
+					System.out.println("Event ReactiveWebServerInitializedEvent occurred");
 				}
 				break;
 			case "ApplicationReadyEvent":
-				System.out.println("事件ApplicationReadyEvent");
+				System.out.println("Event ApplicationReadyEvent occurred");
 				break;
 			case "ApplicationFailedEvent":
+				System.out.println("Event ApplicationFailedEvent occurred");
 				break;
 		}
 	}

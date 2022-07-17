@@ -27,7 +27,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Discovery caller application.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 @SpringBootApplication
 @EnableFeignClients

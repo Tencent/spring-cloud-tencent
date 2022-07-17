@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 /**
  * Auto service registration of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, cheese8
  */
 public class PolarisAutoServiceRegistration extends AbstractGracefulServiceRegistration<Registration> {
 

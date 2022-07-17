@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link PolarisServiceRegistry}.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 public class PolarisServiceRegistryTest {
 

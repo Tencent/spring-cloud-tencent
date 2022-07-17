@@ -28,7 +28,7 @@ import org.springframework.core.env.Environment;
  * TODO: Document the lifecycle.
  *
  * @param <R> Registration type passed to the {@link ServiceRegistry}.
- * @author Spencer Gibb
+ * @author Spencer Gibb, cheese8
  */
 public abstract class AbstractGracefulServiceRegistration<R extends Registration>
 		implements GracefulServiceRegistration, ApplicationContextAware,

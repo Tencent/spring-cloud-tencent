@@ -39,12 +39,12 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Autoconfiguration of service registry of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, cheese8
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
 @ConditionalOnPolarisRegisterEnabled
-@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled", matchIfMissing = false)
+@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled", matchIfMissing = true)
 @AutoConfigureAfter({GracefulServiceRegistrationConfiguration.class,
 		GracefulServiceRegistrationAutoConfiguration.class,
 		PolarisDiscoveryAutoConfiguration.class})
@@ -70,8 +70,8 @@ public class PolarisServiceRegistryAutoConfiguration {
 	@ConditionalOnBean(GracefulServiceRegistrationProperties.class)
 	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
 			PolarisServiceRegistry registry,
-			GracefulServiceRegistrationProperties autoServiceRegistrationProperties,
+			GracefulServiceRegistrationProperties gracefulServiceRegistrationProperties,
 			PolarisRegistration registration) {
-		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
+		return new PolarisAutoServiceRegistration(registry, gracefulServiceRegistrationProperties, registration);
 	}
 }

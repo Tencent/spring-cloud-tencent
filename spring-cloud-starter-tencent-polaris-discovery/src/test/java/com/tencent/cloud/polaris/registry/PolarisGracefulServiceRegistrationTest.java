@@ -42,7 +42,7 @@ import static org.mockito.Mockito.doReturn;
 /**
  * Test for {@link PolarisAutoServiceRegistration}.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisGracefulServiceRegistrationTest {
