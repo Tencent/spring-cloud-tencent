@@ -98,7 +98,7 @@ public class PolarisDiscoveryProperties {
 	private Boolean heartbeatEnabled = true;
 
 	/**
-	 * Heart beat interval (The time interval must be greater than zone).
+	 * Heart beat interval (The time interval must be greater than zero).
 	 * Time unit: millisecond. Default: 5000.
 	 * @see ContextConstant#DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL
 	 */
