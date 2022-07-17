@@ -47,6 +47,7 @@
 		<module>spring-cloud-starter-tencent-polaris-ratelimit</module>
 		<module>spring-cloud-starter-tencent-polaris-circuitbreaker</module>
 		<module>spring-cloud-starter-tencent-polaris-router</module>
+		<module>spring-cloud-tencent-plugin-starters</module>
 		<module>spring-cloud-tencent-dependencies</module>
 		<module>spring-cloud-tencent-examples</module>
 		<module>spring-cloud-tencent-coverage</module>

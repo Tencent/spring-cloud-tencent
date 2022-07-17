@@ -7,8 +7,6 @@ spring:
   cloud:
     tencent:
       metadata:
-        content:
-          env: blue
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default

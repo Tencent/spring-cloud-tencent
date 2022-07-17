@@ -49,7 +49,7 @@ import static com.tencent.polaris.configuration.api.core.ChangeType.MODIFIED;
 
 /**
  * Polaris Config Listener Context Defined .
- * <p>Refer to the Apollo project implementation：
+ * <p>This source file was reference from：
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/internals/AbstractConfig.java>
  *     AbstractConfig</a></code>
  *

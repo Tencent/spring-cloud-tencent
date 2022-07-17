@@ -34,7 +34,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 public class CustomTransitiveMetadataResolverTest {
 
 	@Test
-	public void test() {
+	public void testSCTTransitiveMetadata() {
 		MockServerHttpRequest.BaseBuilder<?> builder = MockServerHttpRequest.get("");
 		builder.header("X-SCT-Metadata-Transitive-a", "test");
 		MockServerWebExchange exchange = MockServerWebExchange.from(builder);
@@ -44,9 +44,28 @@ public class CustomTransitiveMetadataResolverTest {
 	}
 
 	@Test
-	public void testServlet() {
+	public void testPolarisTransitiveMetadata() {
+		MockServerHttpRequest.BaseBuilder<?> builder = MockServerHttpRequest.get("");
+		builder.header("X-Polaris-Metadata-Transitive-a", "test");
+		MockServerWebExchange exchange = MockServerWebExchange.from(builder);
+		Map<String, String> resolve = CustomTransitiveMetadataResolver.resolve(exchange);
+		Assertions.assertThat(resolve.size()).isEqualTo(1);
+		Assertions.assertThat(resolve.get("a")).isEqualTo("test");
+	}
+
+	@Test
+	public void testSCTServletTransitiveMetadata() {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("X-SCT-Metadata-Transitive-a", "test");
+		Map<String, String> resolve = CustomTransitiveMetadataResolver.resolve(request);
+		Assertions.assertThat(resolve.size()).isEqualTo(1);
+		Assertions.assertThat(resolve.get("a")).isEqualTo("test");
+	}
+
+	@Test
+	public void testPolarisServletTransitiveMetadata() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addHeader("X-Polaris-Metadata-Transitive-a", "test");
 		Map<String, String> resolve = CustomTransitiveMetadataResolver.resolve(request);
 		Assertions.assertThat(resolve.size()).isEqualTo(1);
 		Assertions.assertThat(resolve.get("a")).isEqualTo("test");

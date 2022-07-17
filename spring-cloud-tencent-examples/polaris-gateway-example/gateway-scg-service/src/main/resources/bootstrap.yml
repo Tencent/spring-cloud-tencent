@@ -6,11 +6,15 @@ spring:
     name: GatewayScgService
   cloud:
     tencent:
-      metadata:
-        content:
-          env: blue
-        transitive:
-          - env
+      plugin:
+        scg: 
+          staining:
+            enabled: true
+            rule-staining:
+              enabled: true
+        router:
+          feature-env:
+            enabled: true
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default
