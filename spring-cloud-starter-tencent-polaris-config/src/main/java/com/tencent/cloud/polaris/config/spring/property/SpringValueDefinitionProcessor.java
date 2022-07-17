@@ -40,12 +40,13 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
  * To process xml config placeholders, e.g.
  *
  * <pre>
- *  &lt;bean class=&quot;com.ctrip.framework.apollo.demo.spring.xmlConfigDemo.bean.XmlBean&quot;&gt;
+ *  &lt;bean class=&quot;com.demo.bean.XmlBean&quot;&gt;
  *    &lt;property name=&quot;timeout&quot; value=&quot;${timeout:200}&quot;/&gt;
  *    &lt;property name=&quot;batch&quot; value=&quot;${batch:100}&quot;/&gt;
  *  &lt;/bean&gt;
  * </pre>
  *
+ * This source file was originally from:
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValueDefinitionProcessor.java>
  *     SpringValueDefinitionProcessor</a></code>
  *

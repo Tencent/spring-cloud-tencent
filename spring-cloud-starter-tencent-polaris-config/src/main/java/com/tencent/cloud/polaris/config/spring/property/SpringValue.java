@@ -27,6 +27,9 @@ import org.springframework.core.MethodParameter;
 
 /**
  * Spring @Value method info.
+ * <br/>
+ * <br/>
+ * This source file was originally from:
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValue.java>
  *     SpringValue</a></code>
  *
