@@ -19,7 +19,6 @@ package com.tencent.cloud.metadata.service.backend;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -62,23 +61,23 @@ public class MetadataBackendController {
 			LOG.info("Metadata Backend Custom Metadata (Key-Value): {} : {}", key, value);
 		});
 
-		ret.put("transitive-metadata", customMetadataMap);
+		ret.put("backend-transitive-metadata", customMetadataMap);
 
 		// Get All Disposable metadata from upstream service
 		Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
 		upstreamDisposableMetadatas.forEach((key, value) -> {
-			LOG.info("Backend All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("Upstream Disposable Metadata (Key-Value): {} : {}", key, value);
 		});
 
-		ret.put("upstream-disposable-metadata", upstreamDisposableMetadatas);
+		ret.put("backend-upstream-disposable-metadata", upstreamDisposableMetadatas);
 
 		// Get All Disposable metadata from upstream service
 		Map<String, String> localDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(false);
 		localDisposableMetadatas.forEach((key, value) -> {
-			LOG.info("Backend All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("Local Custom Disposable Metadata (Key-Value): {} : {}", key, value);
 		});
 
-		ret.put("local-disposable-metadata", localDisposableMetadatas);
+		ret.put("backend-local-disposable-metadata", localDisposableMetadatas);
 
 		return ret;
 	}

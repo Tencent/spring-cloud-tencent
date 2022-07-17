@@ -69,10 +69,9 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 
 		// add new metadata and cover old
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		this.buildMetadataHeader(requestContext, customMetadata, CUSTOM_METADATA);
-
 		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
-		// Clean up one-time metadata coming from upstream .
+
+		// Clean upstream disposable metadata.
 		Map<String, String> newestCustomMetadata = new HashMap<>();
 		customMetadata.forEach((key, value) -> {
 			if (!disposableMetadata.containsKey(key)) {
@@ -80,7 +79,9 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 			}
 		});
 
-		this.buildMetadataHeader(requestContext, newestCustomMetadata, CUSTOM_DISPOSABLE_METADATA);
+		// Rebuild Metadata Header
+		this.buildMetadataHeader(requestContext, newestCustomMetadata, CUSTOM_METADATA);
+		this.buildMetadataHeader(requestContext, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
 		return null;
 	}

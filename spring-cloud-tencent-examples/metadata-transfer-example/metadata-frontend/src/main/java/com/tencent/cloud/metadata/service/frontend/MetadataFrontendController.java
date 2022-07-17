@@ -17,12 +17,13 @@
 
 package com.tencent.cloud.metadata.service.frontend;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,55 +39,113 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/metadata/service/frontend")
 public class MetadataFrontendController {
 
+	private static final Logger LOG = LoggerFactory.getLogger(MetadataFrontendController.class);
+
 	private final RestTemplate restTemplate;
 
 	private final MetadataMiddleService metadataMiddleService;
 
-	private final MetadataLocalProperties metadataLocalProperties;
-
 	public MetadataFrontendController(RestTemplate restTemplate,
-			MetadataMiddleService metadataMiddleService,
-			MetadataLocalProperties metadataLocalProperties) {
+			MetadataMiddleService metadataMiddleService) {
 		this.restTemplate = restTemplate;
 		this.metadataMiddleService = metadataMiddleService;
-		this.metadataLocalProperties = metadataLocalProperties;
 	}
 
 	/**
 	 * Get metadata info from remote service.
+	 *
 	 * @return metadata map
 	 */
 	@GetMapping("/feign/info")
-	public Map<String, Map<String, Map<String, String>>> feign() {
-		Map<String, Map<String, Map<String, String>>> ret = Maps.newHashMap();
+	public Map<String, Map<String, String>> feign() {
+		Map<String, Map<String, String>> ret = new HashMap<>();
 
 		// Call remote service with feign client
-		Map<String, Map<String, String>> calleeMetadata = metadataMiddleService.info();
-		ret.put("callee-transitive-metadata", calleeMetadata);
+		Map<String, Map<String, String>> middleResult = metadataMiddleService.info();
+
+		if (middleResult != null) {
+			ret.putAll(middleResult);
+		}
+
+		// Get Custom Metadata From Context
+		MetadataContext context = MetadataContextHolder.get();
+		Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+
+		customMetadataMap.forEach((key, value) -> {
+			LOG.info("Metadata Middle Custom Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		ret.put("frontend-transitive-metadata", customMetadataMap);
+
+		// Get All Disposable metadata from upstream service
+		Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
+		upstreamDisposableMetadatas.forEach((key, value) -> {
+			LOG.info("Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		ret.put("frontend-upstream-disposable-metadata", upstreamDisposableMetadatas);
+
+		// Get All Disposable metadata from upstream service
+		Map<String, String> localDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(false);
+		localDisposableMetadatas.forEach((key, value) -> {
+			LOG.info("Local Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		ret.put("frontend-local-disposable-metadata", localDisposableMetadatas);
 
 		return ret;
 	}
 
 	/**
 	 * Get metadata information of callee.
+	 *
 	 * @return information of callee
 	 */
 	@SuppressWarnings("unchecked")
 	@GetMapping("/rest/info")
-	public Map<String, Map<String, Map<String, String>>> rest() {
-		Map<String, Map<String, Map<String, String>>> ret = Maps.newHashMap();
+	public Map<String, Map<String, String>> rest() {
+		Map<String, Map<String, String>> ret = new HashMap<>();
 
 		// Call remote service with RestTemplate
-		Map<String, Map<String, String>> calleeMetadata = restTemplate.getForObject(
+		Map<String, Map<String, String>> middleResult = restTemplate.getForObject(
 				"http://MetadataMiddleService/metadata/service/middle/info", Map.class);
-		ret.put("callee-transitive-metadata", calleeMetadata);
 
+		if (middleResult != null) {
+			ret.putAll(middleResult);
+		}
+
+		// Get Custom Metadata From Context
+		MetadataContext context = MetadataContextHolder.get();
+		Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+
+		customMetadataMap.forEach((key, value) -> {
+			LOG.info("Metadata Middle Custom Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		ret.put("frontend-transitive-metadata", customMetadataMap);
+
+		// Get All Disposable metadata from upstream service
+		Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
+		upstreamDisposableMetadatas.forEach((key, value) -> {
+			LOG.info("Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		ret.put("frontend-upstream-disposable-metadata", upstreamDisposableMetadatas);
+
+		// Get All Disposable metadata from upstream service
+		Map<String, String> localDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(false);
+		localDisposableMetadatas.forEach((key, value) -> {
+			LOG.info("Local Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+		});
+
+		ret.put("frontend-local-disposable-metadata", localDisposableMetadatas);
 
 		return ret;
 	}
 
 	/**
 	 * health check.
+	 *
 	 * @return health check info
 	 */
 	@GetMapping("/healthCheck")

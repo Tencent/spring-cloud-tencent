@@ -22,11 +22,10 @@ spring:
           # Example: disposable
           CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE
           # Example: transitive
-          CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE
+          CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE-FRONTEND
         # Assigned which metadata key-value will be passed along the link
         transitive:
           - CUSTOM-METADATA-KEY-TRANSITIVE
-          - CUSTOM-METADATA-KEY-DISPOSABLE
         disposable:
           - CUSTOM-METADATA-KEY-DISPOSABLE
 management:

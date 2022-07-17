@@ -57,12 +57,10 @@ public final class MetadataContextHolder {
 		}
 
 		if (metadataLocalProperties == null) {
-			metadataLocalProperties = (MetadataLocalProperties) ApplicationContextAwareUtils
-					.getApplicationContext().getBean("metadataLocalProperties");
+			metadataLocalProperties = ApplicationContextAwareUtils.getApplicationContext().getBean(MetadataLocalProperties.class);
 		}
 		if (staticMetadataManager == null) {
-			staticMetadataManager = (StaticMetadataManager) ApplicationContextAwareUtils
-					.getApplicationContext().getBean("metadataManager");
+			staticMetadataManager = ApplicationContextAwareUtils.getApplicationContext().getBean(StaticMetadataManager.class);
 		}
 
 		// init static transitive metadata

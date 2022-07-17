@@ -19,7 +19,6 @@ package com.tencent.cloud.metadata.service.middle;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -59,10 +58,15 @@ public class MetadataMiddleController {
 
 	/**
 	 * Get information of callee.
+	 *
 	 * @return information of callee
 	 */
 	@GetMapping("/info")
 	public Map<String, Map<String, String>> info() {
+
+		// Build result
+		Map<String, Map<String, String>> ret = new HashMap<>();
+
 		LOG.info("Metadata Middle Service [{}] is called.", port);
 
 		// Call remote service with RestTemplate
@@ -71,7 +75,7 @@ public class MetadataMiddleController {
 
 		if (backendResult != null) {
 			LOG.info("RestTemplate Backend Metadata");
-			serialize2Json(backendResult, true);
+			LOG.info("\r{}", serialize2Json(backendResult, true));
 			backendResult.clear();
 		}
 
@@ -79,13 +83,12 @@ public class MetadataMiddleController {
 		backendResult = metadataBackendService.info();
 		if (backendResult != null) {
 			LOG.info("Feign Backend Metadata");
-			serialize2Json(backendResult, true);
-
-			backendResult.clear();
+			LOG.info("\r{}", serialize2Json(backendResult, true));
 		}
 
-		// Build result
-		Map<String, Map<String, String>> ret = new HashMap<>();
+		if (backendResult != null) {
+			ret.putAll(backendResult);
+		}
 
 		// Get Custom Metadata From Context
 		MetadataContext context = MetadataContextHolder.get();
@@ -95,23 +98,23 @@ public class MetadataMiddleController {
 			LOG.info("Metadata Middle Custom Metadata (Key-Value): {} : {}", key, value);
 		});
 
-		ret.put("transitive-metadata", customMetadataMap);
+		ret.put("middle-transitive-metadata", customMetadataMap);
 
 		// Get All Disposable metadata from upstream service
 		Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
 		upstreamDisposableMetadatas.forEach((key, value) -> {
-			LOG.info("Middle All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
 		});
 
-		ret.put("upstream-disposable-metadata", upstreamDisposableMetadatas);
+		ret.put("middle-upstream-disposable-metadata", upstreamDisposableMetadatas);
 
 		// Get All Disposable metadata from upstream service
 		Map<String, String> localDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(false);
 		localDisposableMetadatas.forEach((key, value) -> {
-			LOG.info("Middle All Upstream Custom Disposable Metadata (Key-Value): {} : {}", key, value);
+			LOG.info("Local Custom Disposable Metadata (Key-Value): {} : {}", key, value);
 		});
 
-		ret.put("local-disposable-metadata", localDisposableMetadatas);
+		ret.put("middle-local-disposable-metadata", localDisposableMetadatas);
 
 		return ret;
 	}

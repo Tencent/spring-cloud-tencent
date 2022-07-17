@@ -62,10 +62,6 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
 
-		// build custom metadata request header
-		this.buildMetadataHeader(httpRequest, customMetadata, CUSTOM_METADATA);
-
-		// Clean up one-time metadata coming from upstream .
 		Map<String, String> newestCustomMetadata = new HashMap<>();
 		customMetadata.forEach((key, value) -> {
 			if (!disposableMetadata.containsKey(key)) {
@@ -73,15 +69,19 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 			}
 		});
 		// build custom disposable metadata request header
-		this.buildMetadataHeader(httpRequest, newestCustomMetadata, CUSTOM_DISPOSABLE_METADATA);
+		this.buildMetadataHeader(httpRequest, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+
+		// build custom metadata request header
+		this.buildMetadataHeader(httpRequest, newestCustomMetadata, CUSTOM_METADATA);
 
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
 	}
 
 	/**
 	 * Set metadata into the request header for {@link HttpRequest} .
-	 * @param request instance of {@link HttpRequest}
-	 * @param metadata metadata map .
+	 *
+	 * @param request    instance of {@link HttpRequest}
+	 * @param metadata   metadata map .
 	 * @param headerName target metadata http header name .
 	 */
 	private void buildMetadataHeader(HttpRequest request, Map<String, String> metadata, String headerName) {

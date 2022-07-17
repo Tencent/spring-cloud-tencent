@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 public class MetadataMiddleServiceFallback implements MetadataMiddleService {
 
 	@Override
-	public Map<String, String> info() {
+	public Map<String, Map<String, String>> info() {
 		return Maps.newHashMap();
 	}
 }

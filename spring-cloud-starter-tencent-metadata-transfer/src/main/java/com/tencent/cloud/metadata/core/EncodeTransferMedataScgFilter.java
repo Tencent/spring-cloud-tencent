@@ -67,10 +67,9 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 		}
 
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		this.buildMetadataHeader(builder, customMetadata, CUSTOM_METADATA);
-
 		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
-		// Clean up one-time metadata coming from upstream .
+
+		// Clean upstream disposable metadata.
 		Map<String, String> newestCustomMetadata = new HashMap<>();
 		customMetadata.forEach((key, value) -> {
 			if (!disposableMetadata.containsKey(key)) {
@@ -78,7 +77,8 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 			}
 		});
 
-		this.buildMetadataHeader(builder, newestCustomMetadata, CUSTOM_DISPOSABLE_METADATA);
+		this.buildMetadataHeader(builder, newestCustomMetadata, CUSTOM_METADATA);
+		this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
 		return chain.filter(exchange.mutate().request(builder.build()).build());
 	}
