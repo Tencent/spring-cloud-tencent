@@ -38,6 +38,7 @@ import org.springframework.boot.context.config.ConfigDataResourceNotFoundExcepti
 import org.springframework.boot.context.config.Profiles;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.CompositePropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -89,7 +90,9 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 
 	public ConfigData load(ConfigurableBootstrapContext bootstrapContext, PolarisConfigDataResource resource) {
 		CompositePropertySource compositePropertySource = locate(bootstrapContext, resource);
-		return new ConfigData(compositePropertySource.getPropertySources(), getOptions(resource));
+		List<PropertySource<?>> propertySources = new ArrayList<>();
+		propertySources.add(compositePropertySource);
+		return new ConfigData(propertySources, getOptions(resource));
 	}
 
 	private CompositePropertySource locate(ConfigurableBootstrapContext bootstrapContext,
@@ -101,7 +104,7 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 			this.configFileService = ConfigFileServiceFactory.createConfigFileService(sdkContext);
 		}
 		if (null == this.puller) {
-			this.puller = new PolarisConfigFilePuller(resource.getPolarisContextProperties(),
+			this.puller = PolarisConfigFilePuller.get(resource.getPolarisContextProperties(),
 					configFileService, bootstrapContext.get(PolarisPropertySourceManager.class));
 		}
 		Profiles profiles = resource.getProfiles();

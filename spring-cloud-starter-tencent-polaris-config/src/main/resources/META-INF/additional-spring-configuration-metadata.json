@@ -41,6 +41,12 @@
       "defaultValue": "true",
       "description": "Whether to connect to a remote server, suitable for local development mode.",
       "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.config.import-check.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to enable import-check."
     }
   ]
 }

@@ -11,3 +11,8 @@ org.springframework.boot.context.config.ConfigDataLocationResolver=\
 # ConfigData Loaders
 org.springframework.boot.context.config.ConfigDataLoader=\
   com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+  com.tencent.cloud.polaris.config.configdata.PolarisImportExceptionFailureAnalyzer
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.tencent.cloud.polaris.config.configdata.PolarisConfigDataMissingEnvironmentPostProcessor
+
