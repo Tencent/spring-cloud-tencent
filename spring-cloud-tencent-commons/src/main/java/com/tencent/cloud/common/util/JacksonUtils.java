@@ -61,6 +61,16 @@ public final class JacksonUtils {
 		}
 	}
 
+	public static <T> T deserialize(String jsonStr, Class<T> type) {
+		try {
+			return OM.readValue(jsonStr, type);
+		}
+		catch (JsonProcessingException e) {
+			LOG.error("Json to object failed. {}", type, e);
+			throw new RuntimeException("Json to object failed.", e);
+		}
+	}
+
 	/**
 	 * Json to Map.
 	 * @param jsonStr Json String
@@ -82,6 +92,16 @@ public final class JacksonUtils {
 		catch (JsonProcessingException e) {
 			LOG.error("Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
 			throw new RuntimeException("Json to map failed.", e);
+		}
+	}
+
+	public static <T> T json2JavaBean(String content, Class<T> valueType) {
+		try {
+			return OM.readValue(content, valueType);
+		}
+		catch (Exception e) {
+			LOG.error("json {} to class {} failed. ", content, valueType, e);
+			throw new RuntimeException("json to class failed.", e);
 		}
 	}
 }

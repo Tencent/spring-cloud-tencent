@@ -27,6 +27,27 @@ import org.springframework.core.Ordered;
 public final class MetadataConstant {
 
 	/**
+	 * sct transitive header prefix.
+	 */
+	public static final String SCT_TRANSITIVE_HEADER_PREFIX = "X-SCT-Metadata-Transitive-";
+	/**
+	 * sct transitive header prefix length.
+	 */
+	public static final int SCT_TRANSITIVE_HEADER_PREFIX_LENGTH = SCT_TRANSITIVE_HEADER_PREFIX.length();
+
+	/**
+	 * polaris transitive header prefix.
+	 */
+	public static final String POLARIS_TRANSITIVE_HEADER_PREFIX = "X-Polaris-Metadata-Transitive-";
+	/**
+	 * polaris transitive header prefix length.
+	 */
+	public static final int POLARIS_TRANSITIVE_HEADER_PREFIX_LENGTH = POLARIS_TRANSITIVE_HEADER_PREFIX.length();
+
+	private MetadataConstant() {
+
+	}
+	/**
 	 * Order of filter, interceptor, ...
 	 */
 	public static class OrderConstant {
