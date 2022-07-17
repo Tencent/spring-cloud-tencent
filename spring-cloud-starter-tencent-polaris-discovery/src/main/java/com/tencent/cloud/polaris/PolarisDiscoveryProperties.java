@@ -30,6 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import static com.tencent.cloud.common.constant.ContextConstant.DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
+
 /**
  * Properties for Polaris.
  *
@@ -94,6 +96,13 @@ public class PolarisDiscoveryProperties {
 	 */
 	@Value("${spring.cloud.polaris.discovery.heartbeat.enabled:#{true}}")
 	private Boolean heartbeatEnabled = true;
+
+	/**
+	 * Heart beat interval (The time interval must be greater than zone).
+	 * Time unit: millisecond. Default: 5000.
+	 * @see ContextConstant#DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL
+	 */
+	private Integer heartbeatInterval = 5000;
 
 	/**
 	 * Custom health check url to override default.
@@ -202,6 +211,17 @@ public class PolarisDiscoveryProperties {
 		this.serviceListRefreshInterval = serviceListRefreshInterval;
 	}
 
+	public Integer getHeartbeatInterval() {
+		if (this.heartbeatEnabled && this.heartbeatInterval <= 0) {
+			return DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
+		}
+		return heartbeatInterval;
+	}
+
+	public void setHeartbeatInterval(Integer heartbeatInterval) {
+		this.heartbeatInterval = heartbeatInterval;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisDiscoveryProperties{" +
@@ -215,6 +235,7 @@ public class PolarisDiscoveryProperties {
 				", enabled=" + enabled +
 				", registerEnabled=" + registerEnabled +
 				", heartbeatEnabled=" + heartbeatEnabled +
+				", heartbeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
 				'}';
