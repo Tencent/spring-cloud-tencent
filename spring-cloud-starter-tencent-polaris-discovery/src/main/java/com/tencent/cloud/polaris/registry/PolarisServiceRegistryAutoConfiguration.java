@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
 @ConditionalOnPolarisRegisterEnabled
-@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled", matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.service-registry.graceful-registration.enabled")
 @AutoConfigureAfter({GracefulServiceRegistrationConfiguration.class,
 		GracefulServiceRegistrationAutoConfiguration.class,
 		PolarisDiscoveryAutoConfiguration.class})
