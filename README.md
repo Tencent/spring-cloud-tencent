@@ -56,6 +56,10 @@ directly with one click.
 All the components of Spring Cloud Tencent have been uploaded to the Maven central repository, just need to introduce
 dependencies.
 
+> Notice:
+>
+> The version list of Spring Cloud Tencent can be found in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86).
+
 For example:
 
 ```` xml  

@@ -10,6 +10,9 @@ spring:
       enabled: true
       circuitbreaker:
         enabled: true
+      stat:
+        enabled: true
+        port: 28081
     loadbalancer:
       configurations: polaris
 feign:
