@@ -90,9 +90,7 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 
 	public ConfigData load(ConfigurableBootstrapContext bootstrapContext, PolarisConfigDataResource resource) {
 		CompositePropertySource compositePropertySource = locate(bootstrapContext, resource);
-		List<PropertySource<?>> propertySources = new ArrayList<>();
-		propertySources.add(compositePropertySource);
-		return new ConfigData(propertySources, getOptions(resource));
+		return new ConfigData(compositePropertySource.getPropertySources(), getOptions(resource));
 	}
 
 	private CompositePropertySource locate(ConfigurableBootstrapContext bootstrapContext,
@@ -110,7 +108,9 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 		Profiles profiles = resource.getProfiles();
 		if (INTERNAL_CONFIG_FILES_LOADED.compareAndSet(false, true)) {
 			log.info("loading internal config files");
-			this.puller.initInternalConfigFiles(compositePropertySource, profiles, resource.getServiceName());
+			List<String> profilesActive = profiles.getActive();
+			String[] activeProfiles = profilesActive.toArray(new String[]{});
+			this.puller.initInternalConfigFiles(compositePropertySource, activeProfiles, resource.getServiceName());
 		}
 
 		PolarisConfigProperties polarisConfigProperties = resource.getPolarisConfigProperties();

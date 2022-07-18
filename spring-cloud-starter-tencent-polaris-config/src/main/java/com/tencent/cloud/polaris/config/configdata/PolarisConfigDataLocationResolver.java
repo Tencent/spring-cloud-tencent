@@ -252,30 +252,10 @@ public class PolarisConfigDataLocationResolver implements
 	private SDKContext sdkContext(ConfigDataLocationResolverContext resolverContext,
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties) {
-
-		// 1. Read user-defined polaris.yml configuration
-		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
-				.defaultConfig(ConfigProvider.DEFAULT_CONFIG);
-
-		// 2. Override user-defined polaris.yml configuration with SCT configuration
-
-		String defaultHost = polarisContextProperties.getLocalIpAddress();
-		if (StringUtils.isBlank(defaultHost)) {
-			defaultHost = loadPolarisConfigProperties(resolverContext, String.class, "spring.cloud.client.ip-address");
-		}
-
-		configuration.getGlobal().getAPI().setBindIP(defaultHost);
-
-		Collection<PolarisConfigModifier> modifiers = modifierList(polarisConfigProperties, polarisContextProperties);
-		modifiers = modifiers.stream()
-				.sorted(Comparator.comparingInt(PolarisConfigModifier::getOrder))
-				.collect(Collectors.toList());
-		if (!CollectionUtils.isEmpty(modifiers)) {
-			for (PolarisConfigModifier modifier : modifiers) {
-				modifier.modify(configuration);
-			}
-		}
-		return SDKContext.initContextByConfig(configuration);
+		List<PolarisConfigModifier> modifierList = modifierList(polarisConfigProperties, polarisContextProperties);
+		return SDKContext.initContextByConfig(polarisContextProperties.configuration(modifierList, () -> {
+			return loadPolarisConfigProperties(resolverContext, String.class, "spring.cloud.client.ip-address");
+		}));
 	}
 
 	private List<PolarisConfigModifier> modifierList(PolarisConfigProperties polarisConfigProperties,
