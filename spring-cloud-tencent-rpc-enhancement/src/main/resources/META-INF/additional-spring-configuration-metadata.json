@@ -1,0 +1,27 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.polaris.stat.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enable polaris stat reporter or not."
+    },
+    {
+      "name": "spring.cloud.polaris.stat.host",
+      "type": "java.lang.String",
+      "description": "Local host for prometheus to pull."
+    },
+    {
+      "name": "spring.cloud.polaris.stat.port",
+      "type": "java.lang.Integer",
+      "defaultValue": "28080",
+      "description": "Port for prometheus to pull."
+    },
+    {
+      "name": "spring.cloud.polaris.stat.path",
+      "type": "java.lang.String",
+      "defaultValue": "/metrics",
+      "description": "Path for prometheus to pull."
+    }
+  ]
+}
