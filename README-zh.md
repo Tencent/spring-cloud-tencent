@@ -54,6 +54,10 @@ Tencent，可直接一键运行任何 example。
 
 Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要引入依赖即可。
 
+> 注意：
+>
+> Spring Cloud Tencent 的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86) 。
+
 例如：
 
 ```` xml  

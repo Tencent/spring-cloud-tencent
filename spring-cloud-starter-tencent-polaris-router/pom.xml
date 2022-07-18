@@ -21,6 +21,10 @@
 		</dependency>
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
 		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
