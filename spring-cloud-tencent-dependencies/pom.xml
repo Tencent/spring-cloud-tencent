@@ -110,6 +110,12 @@
 
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
 				<version>${revision}</version>
 			</dependency>
