@@ -142,6 +142,11 @@ public class EnhancedFeignClientTest {
 			}
 
 			@Override
+			public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+
+			}
+
+			@Override
 			public int getOrder() {
 				return 0;
 			}
@@ -155,6 +160,11 @@ public class EnhancedFeignClientTest {
 
 			@Override
 			public void run(EnhancedFeignContext context) {
+
+			}
+
+			@Override
+			public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
 
 			}
 
@@ -176,6 +186,11 @@ public class EnhancedFeignClientTest {
 			}
 
 			@Override
+			public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+
+			}
+
+			@Override
 			public int getOrder() {
 				return 0;
 			}
@@ -189,6 +204,11 @@ public class EnhancedFeignClientTest {
 
 			@Override
 			public void run(EnhancedFeignContext context) {
+
+			}
+
+			@Override
+			public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
 
 			}
 

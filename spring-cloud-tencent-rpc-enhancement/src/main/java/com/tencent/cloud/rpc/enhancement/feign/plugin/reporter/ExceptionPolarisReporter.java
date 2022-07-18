@@ -72,6 +72,13 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 	}
 
 	@Override
+	public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+		Request request = context.getRequest();
+		Response response = context.getResponse();
+		LOG.error("ExceptionPolarisReporter runs failed. Request=[{}]. Response=[{}].", request, response, throwable);
+	}
+
+	@Override
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}

@@ -91,7 +91,12 @@ public class EnhancedFeignClient implements Client {
 
 		// Run pre enhanced feign plugins.
 		for (EnhancedFeignPlugin plugin : preEnhancedFeignPlugins) {
-			plugin.run(enhancedFeignContext);
+			try {
+				plugin.run(enhancedFeignContext);
+			}
+			catch (Throwable throwable) {
+				plugin.handlerThrowable(enhancedFeignContext, throwable);
+			}
 		}
 		try {
 			Response response = delegate.execute(request, options);
@@ -99,7 +104,12 @@ public class EnhancedFeignClient implements Client {
 
 			// Run post enhanced feign plugins.
 			for (EnhancedFeignPlugin plugin : postEnhancedFeignPlugins) {
-				plugin.run(enhancedFeignContext);
+				try {
+					plugin.run(enhancedFeignContext);
+				}
+				catch (Throwable throwable) {
+					plugin.handlerThrowable(enhancedFeignContext, throwable);
+				}
 			}
 			return response;
 		}
@@ -107,14 +117,24 @@ public class EnhancedFeignClient implements Client {
 			enhancedFeignContext.setException(origin);
 			// Run exception enhanced feign plugins.
 			for (EnhancedFeignPlugin plugin : exceptionEnhancedFeignPlugins) {
-				plugin.run(enhancedFeignContext);
+				try {
+					plugin.run(enhancedFeignContext);
+				}
+				catch (Throwable throwable) {
+					plugin.handlerThrowable(enhancedFeignContext, throwable);
+				}
 			}
 			throw origin;
 		}
 		finally {
 			// Run finally enhanced feign plugins.
 			for (EnhancedFeignPlugin plugin : finallyEnhancedFeignPlugins) {
-				plugin.run(enhancedFeignContext);
+				try {
+					plugin.run(enhancedFeignContext);
+				}
+				catch (Throwable throwable) {
+					plugin.handlerThrowable(enhancedFeignContext, throwable);
+				}
 			}
 		}
 	}

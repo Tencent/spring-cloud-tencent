@@ -47,5 +47,15 @@ public interface EnhancedFeignPlugin extends Ordered {
 	 *
 	 * @param context context in enhanced feign client.
 	 */
-	void run(EnhancedFeignContext context);
+	void run(EnhancedFeignContext context) throws Throwable;
+
+	/**
+	 * Handler throwable from {@link EnhancedFeignPlugin#run(EnhancedFeignContext)}.
+	 *
+	 * @param context context in enhanced feign client.
+	 * @param throwable throwable thrown from run method.
+	 */
+	default void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+
+	}
 }
