@@ -47,7 +47,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 /**
  * Service registry of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, cheese8
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 

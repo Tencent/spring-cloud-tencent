@@ -27,14 +27,16 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Discovery caller application.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 @SpringBootApplication
 @EnableFeignClients
 public class DiscoveryCallerService {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DiscoveryCallerService.class, args);
+		SpringApplication app = new SpringApplication(DiscoveryCallerService.class);
+		app.addListeners(new SpringEventOrderListener());
+		app.run(args);
 	}
 
 	@Bean

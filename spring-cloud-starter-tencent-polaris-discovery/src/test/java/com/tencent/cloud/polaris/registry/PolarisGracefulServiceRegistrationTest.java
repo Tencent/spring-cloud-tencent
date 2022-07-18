@@ -18,13 +18,13 @@
 package com.tencent.cloud.polaris.registry;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.registry.graceful.GracefulServiceRegistrationProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.context.ApplicationContext;
@@ -42,16 +42,16 @@ import static org.mockito.Mockito.doReturn;
 /**
  * Test for {@link PolarisAutoServiceRegistration}.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, cheese8
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PolarisAutoServiceRegistrationTest {
+public class PolarisGracefulServiceRegistrationTest {
 
 	@Mock
 	private ServiceRegistry<Registration> serviceRegistry;
 
 	@Mock
-	private AutoServiceRegistrationProperties autoServiceRegistrationProperties;
+	private GracefulServiceRegistrationProperties autoServiceRegistrationProperties;
 
 	@Mock
 	private PolarisDiscoveryProperties polarisDiscoveryProperties;
