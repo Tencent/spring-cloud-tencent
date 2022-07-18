@@ -73,5 +73,10 @@ public final class ContextConstant {
 		 * Order of configuration modifier.
 		 */
 		public static Integer CONFIG_ORDER = 1;
+
+		/**
+		 * Order of stat reporter configuration modifier.
+		 */
+		public static Integer STAT_REPORTER_ORDER = 1;
 	}
 }
