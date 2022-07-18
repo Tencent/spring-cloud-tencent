@@ -87,4 +87,17 @@ public class SuccessPolarisReporterTest {
 		context.setResponse(response);
 		successPolarisReporter.run(context);
 	}
+
+	@Test
+	public void testHandlerThrowable() {
+		// mock request
+		Request request = mock(Request.class);
+		// mock response
+		Response response = mock(Response.class);
+
+		EnhancedFeignContext context = new EnhancedFeignContext();
+		context.setRequest(request);
+		context.setResponse(response);
+		successPolarisReporter.handlerThrowable(context, new RuntimeException("Mock exception."));
+	}
 }
