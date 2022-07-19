@@ -15,12 +15,12 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.rpc.enhancement;
 
 import java.util.List;
 import java.util.Objects;
 
-import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,22 +30,22 @@ import org.springframework.lang.Nullable;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
- * Abstract Polaris Circuit-Break Adapter .
+ * Abstract Polaris Reporter Adapter .
  *
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022-07-11
  */
-public abstract class AbstractPolarisCircuitBreakAdapter {
+public abstract class AbstractPolarisReporterAdapter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractPolarisCircuitBreakAdapter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractPolarisReporterAdapter.class);
 
-	protected final PolarisCircuitBreakerProperties properties;
+	protected final RpcEnhancementProperties properties;
 
 	/**
-	 * Constructor With {@link PolarisCircuitBreakerProperties} .
+	 * Constructor With {@link RpcEnhancementProperties} .
 	 *
-	 * @param properties instance of {@link PolarisCircuitBreakerProperties}.
+	 * @param properties instance of {@link RpcEnhancementProperties}.
 	 */
-	protected AbstractPolarisCircuitBreakAdapter(PolarisCircuitBreakerProperties properties) {
+	protected AbstractPolarisReporterAdapter(RpcEnhancementProperties properties) {
 		this.properties = properties;
 	}
 
@@ -66,7 +66,7 @@ public abstract class AbstractPolarisCircuitBreakAdapter {
 			if (status.isEmpty()) {
 				List<HttpStatus.Series> series = properties.getSeries();
 				// Check INTERNAL_SERVER_ERROR (500) status.
-				if (properties.getIgnoreInternalServerError() && Objects.equals(httpStatus, INTERNAL_SERVER_ERROR)) {
+				if (properties.isIgnoreInternalServerError() && Objects.equals(httpStatus, INTERNAL_SERVER_ERROR)) {
 					return false;
 				}
 				if (series.isEmpty()) {

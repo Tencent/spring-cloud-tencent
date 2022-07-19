@@ -15,27 +15,26 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.rpc.enhancement;
 
-import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import org.springframework.http.HttpStatus;
 
 /**
- * Test For {@link AbstractPolarisCircuitBreakAdapter}.
+ * Test For {@link AbstractPolarisReporterAdapter}.
  *
- * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a>
- * @version ${project.version} - 2022/7/11
+ * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022/7/11
  */
-public class AbstractPolarisCircuitBreakAdapterTest {
+public class AbstractPolarisReporterAdapterTest {
 
 	@Test
 	public void testApplyWithDefaultConfig() {
-		PolarisCircuitBreakerProperties properties = new PolarisCircuitBreakerProperties();
+		RpcEnhancementProperties properties = new RpcEnhancementProperties();
 		// Mock Condition
-		SimplePolarisCircuitBreakAdapter adapter = new SimplePolarisCircuitBreakAdapter(properties);
+		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties);
 
 		// Assert
 		Assertions.assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
@@ -45,12 +44,12 @@ public class AbstractPolarisCircuitBreakAdapterTest {
 
 	@Test
 	public void testApplyWithoutIgnoreInternalServerError() {
-		PolarisCircuitBreakerProperties properties = new PolarisCircuitBreakerProperties();
+		RpcEnhancementProperties properties = new RpcEnhancementProperties();
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.setIgnoreInternalServerError(false);
 
-		SimplePolarisCircuitBreakAdapter adapter = new SimplePolarisCircuitBreakAdapter(properties);
+		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties);
 
 		// Assert
 		Assertions.assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
@@ -60,12 +59,12 @@ public class AbstractPolarisCircuitBreakAdapterTest {
 
 	@Test
 	public void testApplyWithIgnoreInternalServerError() {
-		PolarisCircuitBreakerProperties properties = new PolarisCircuitBreakerProperties();
+		RpcEnhancementProperties properties = new RpcEnhancementProperties();
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.setIgnoreInternalServerError(true);
 
-		SimplePolarisCircuitBreakAdapter adapter = new SimplePolarisCircuitBreakAdapter(properties);
+		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties);
 
 		// Assert
 		Assertions.assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
@@ -75,12 +74,12 @@ public class AbstractPolarisCircuitBreakAdapterTest {
 
 	@Test
 	public void testApplyWithoutSeries() {
-		PolarisCircuitBreakerProperties properties = new PolarisCircuitBreakerProperties();
+		RpcEnhancementProperties properties = new RpcEnhancementProperties();
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.getSeries().clear();
 
-		SimplePolarisCircuitBreakAdapter adapter = new SimplePolarisCircuitBreakAdapter(properties);
+		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties);
 
 		// Assert
 		Assertions.assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
@@ -90,13 +89,13 @@ public class AbstractPolarisCircuitBreakAdapterTest {
 
 	@Test
 	public void testApplyWithSeries() {
-		PolarisCircuitBreakerProperties properties = new PolarisCircuitBreakerProperties();
+		RpcEnhancementProperties properties = new RpcEnhancementProperties();
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.getSeries().clear();
 		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
 
-		SimplePolarisCircuitBreakAdapter adapter = new SimplePolarisCircuitBreakAdapter(properties);
+		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties);
 
 		// Assert
 		Assertions.assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
@@ -108,9 +107,9 @@ public class AbstractPolarisCircuitBreakAdapterTest {
 	/**
 	 * Simple Polaris CircuitBreak Adapter Implements .
 	 */
-	public static class SimplePolarisCircuitBreakAdapter extends AbstractPolarisCircuitBreakAdapter {
+	public static class SimplePolarisReporterAdapter extends AbstractPolarisReporterAdapter {
 
-		public SimplePolarisCircuitBreakAdapter(PolarisCircuitBreakerProperties properties) {
+		public SimplePolarisReporterAdapter(RpcEnhancementProperties properties) {
 			super(properties);
 		}
 	}

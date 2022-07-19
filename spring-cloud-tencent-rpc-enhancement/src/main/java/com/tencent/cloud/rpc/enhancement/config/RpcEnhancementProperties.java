@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.rpc.enhancement.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,13 +41,13 @@ import static org.springframework.http.HttpStatus.VARIANT_ALSO_NEGOTIATES;
  *
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022-07-08
  */
-@ConfigurationProperties("spring.cloud.polaris.circuitbreaker")
-public class PolarisCircuitBreakerProperties {
+@ConfigurationProperties("spring.cloud.tencent.rpc-enhancement")
+public class RpcEnhancementProperties {
 
 	/**
 	 * If circuit-breaker enabled.
 	 */
-	private Boolean enabled = true;
+	private boolean enabled = true;
 
 	/**
 	 * Specify the Http status code(s) that needs to be fused.
@@ -63,9 +63,9 @@ public class PolarisCircuitBreakerProperties {
 
 	/**
 	 * Ignore Internal Server Error Http Status Code,
-	 * Only takes effect if the attribute {@link PolarisCircuitBreakerProperties#series} is not empty.
+	 * Only takes effect if the attribute {@link RpcEnhancementProperties#series} is not empty.
 	 */
-	private Boolean ignoreInternalServerError = true;
+	private boolean ignoreInternalServerError = true;
 
 	/**
 	 * Convert items to List.
@@ -79,13 +79,6 @@ public class PolarisCircuitBreakerProperties {
 		return new ArrayList<>(Arrays.asList(items));
 	}
 
-	public Boolean getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
 
 	public List<HttpStatus> getStatuses() {
 		return statuses;
@@ -103,11 +96,19 @@ public class PolarisCircuitBreakerProperties {
 		this.series = series;
 	}
 
-	public Boolean getIgnoreInternalServerError() {
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isIgnoreInternalServerError() {
 		return ignoreInternalServerError;
 	}
 
-	public void setIgnoreInternalServerError(Boolean ignoreInternalServerError) {
+	public void setIgnoreInternalServerError(boolean ignoreInternalServerError) {
 		this.ignoreInternalServerError = ignoreInternalServerError;
 	}
 }
