@@ -210,11 +210,11 @@ public class PolarisLoadBalancerInterceptorTest {
 
 				Assert.assertEquals("v1", routerContext.getLabels(PolarisRouterContext.TRANSITIVE_LABELS).get("k1"));
 				Assert.assertEquals("v22", routerContext.getLabels(PolarisRouterContext.TRANSITIVE_LABELS).get("k2"));
-				Assert.assertEquals("v1", routerContext.getLabels(PolarisRouterContext.RULE_ROUTER_LABELS).get("k1"));
-				Assert.assertEquals("v22", routerContext.getLabels(PolarisRouterContext.RULE_ROUTER_LABELS).get("k2"));
-				Assert.assertEquals("v4", routerContext.getLabels(PolarisRouterContext.RULE_ROUTER_LABELS).get("k4"));
-				Assert.assertEquals("GET", routerContext.getLabels(PolarisRouterContext.RULE_ROUTER_LABELS).get("${http.method}"));
-				Assert.assertEquals("/user/get", routerContext.getLabels(PolarisRouterContext.RULE_ROUTER_LABELS).get("${http.uri}"));
+				Assert.assertEquals("v1", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k1"));
+				Assert.assertEquals("v22", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k2"));
+				Assert.assertEquals("v4", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k4"));
+				Assert.assertEquals("GET", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("${http.method}"));
+				Assert.assertEquals("/user/get", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("${http.uri}"));
 			}
 		}
 	}

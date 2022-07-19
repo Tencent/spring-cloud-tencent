@@ -8,3 +8,12 @@ spring:
       address: grpc://183.47.111.80:8091
       namespace: default
       enabled: true
+      stat:
+        enabled: true
+        port: 28083
+#    tencent:
+#      rpc-enhancement:
+#        enabled: true
+#        ignore-internal-server-error: true
+#        series: server_error
+#        statuses: gateway_timeout, bad_gateway, service_unavailable

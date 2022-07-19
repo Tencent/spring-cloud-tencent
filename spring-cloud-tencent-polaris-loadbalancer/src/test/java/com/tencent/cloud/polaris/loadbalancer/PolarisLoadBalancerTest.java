@@ -39,7 +39,7 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
-import org.junit.Assert;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -104,8 +104,8 @@ public class PolarisLoadBalancerTest {
 
 			String host = balancer.choose(null);
 
-			Assert.assertNotNull(host);
-			Assert.assertEquals("127.0.0.1:8080", host);
+			Assertions.assertThat(host).isNotNull();
+			Assertions.assertThat(host).isEqualTo("127.0.0.1:8080");
 		}
 	}
 
@@ -136,7 +136,7 @@ public class PolarisLoadBalancerTest {
 					consumerAPI, properties);
 
 			String host = balancer.choose(null);
-			Assert.assertEquals("127.0.0.1:8080", host);
+			Assertions.assertThat(host).isEqualTo("127.0.0.1:8080");
 		}
 	}
 

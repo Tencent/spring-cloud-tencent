@@ -30,7 +30,7 @@ import java.util.Set;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
@@ -137,8 +137,8 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
 
-		routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, labels);
-		routerContext.setLabels(PolarisRouterContext.TRANSITIVE_LABELS, transitiveLabels);
+		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
+		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, transitiveLabels);
 
 		return routerContext;
 	}
@@ -151,6 +151,6 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 			return Collections.emptyMap();
 		}
 
-		return ExpressionLabelUtils.resolve(request, labelKeys);
+		return SpringWebExpressionLabelUtils.resolve(request, labelKeys);
 	}
 }

@@ -59,11 +59,10 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 
 		// get metadata of current thread
 		MetadataContext metadataContext = exchange.getAttribute(MetadataConstant.HeaderName.METADATA_CONTEXT);
-
-		// add new metadata and cover old
 		if (metadataContext == null) {
 			metadataContext = MetadataContextHolder.get();
 		}
+
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);

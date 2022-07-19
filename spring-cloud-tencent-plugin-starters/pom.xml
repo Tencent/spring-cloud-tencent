@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>spring-cloud-tencent</artifactId>
+		<groupId>com.tencent.cloud</groupId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>spring-cloud-tencent-plugin-starters</artifactId>
+	<packaging>pom</packaging>
+	<name>Spring Cloud Starter Tencent Solution</name>
+
+	<modules>
+		<module>spring-cloud-tencent-featureenv-plugin</module>
+		<module>spring-cloud-tencent-gateway-plugin</module>
+	</modules>
+
+</project>

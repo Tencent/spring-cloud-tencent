@@ -17,87 +17,53 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.config;
 
-import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignBeanPostProcessor;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisResponseErrorHandler;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateModifier;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisRestTemplateResponseErrorHandler;
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
+import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
+import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.web.client.RestTemplate;
-
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
- * Auto Configuration for Polaris {@link feign.Feign} OR {@link RestTemplate} which can automatically bring in the call
- * results for reporting.
+ * Autoconfiguration at bootstrap phase.
  *
- * @author <a href="mailto:iskp.me@gmail.com">Palmer.Xu</a> 2022-06-29
+ * @author lepdou 2022-03-29
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(PolarisCircuitBreakerProperties.class)
+@ConditionalOnPolarisEnabled
+@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
 public class PolarisCircuitBreakerAutoConfiguration {
 
-	/**
-	 * Configuration for Polaris {@link feign.Feign} which can automatically bring in the call
-	 * results for reporting.
-	 *
-	 * @author Haotian Zhang
-	 */
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(name = "org.springframework.cloud.openfeign.FeignAutoConfiguration")
-	@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
-	@AutoConfigureBefore(FeignAutoConfiguration.class)
-	@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
-	protected static class PolarisFeignClientAutoConfiguration {
-
-		@Bean
-		public ConsumerAPI consumerAPI(SDKContext context) {
-			return DiscoveryAPIFactory.createConsumerAPIByContext(context);
-		}
-
-		@Bean
-		@Order(HIGHEST_PRECEDENCE)
-		public PolarisFeignBeanPostProcessor polarisFeignBeanPostProcessor(ConsumerAPI consumerAPI) {
-			return new PolarisFeignBeanPostProcessor(consumerAPI);
-		}
+	@Bean
+	public CircuitBreakerConfigModifier circuitBreakerConfigModifier() {
+		return new CircuitBreakerConfigModifier();
 	}
 
-	/**
-	 * Configuration for Polaris {@link RestTemplate} which can automatically bring in the call
-	 * results for reporting.
-	 *
-	 * @author wh 2022/6/21
-	 */
-	@Configuration(proxyBeanMethods = false)
-	@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
-	@ConditionalOnClass(RestTemplate.class)
-	@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
-	protected static class PolarisRestTemplateAutoConfiguration {
+	public static class CircuitBreakerConfigModifier implements PolarisConfigModifier {
 
-		@Bean
-		public PolarisRestTemplateResponseErrorHandler polarisRestTemplateResponseErrorHandler(
-				PolarisCircuitBreakerProperties properties, ConsumerAPI consumerAPI,
-				@Autowired(required = false) PolarisResponseErrorHandler polarisResponseErrorHandler) {
-			return new PolarisRestTemplateResponseErrorHandler(properties, consumerAPI, polarisResponseErrorHandler);
+		@Override
+		public void modify(ConfigurationImpl configuration) {
+			// Turn on circuitbreaker configuration
+			configuration.getConsumer().getCircuitBreaker().setEnable(true);
+
+			// Set excludeCircuitBreakInstances to false
+			RecoverRouterConfig recoverRouterConfig = configuration.getConsumer().getServiceRouter()
+					.getPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, RecoverRouterConfig.class);
+
+			recoverRouterConfig.setExcludeCircuitBreakInstances(true);
+
+			// Update modified config to source properties
+			configuration.getConsumer().getServiceRouter()
+					.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
 		}
 
-		@Bean
-		public PolarisRestTemplateModifier polarisRestTemplateBeanPostProcessor(
-				PolarisRestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
-			return new PolarisRestTemplateModifier(restTemplateResponseErrorHandler);
+		@Override
+		public int getOrder() {
+			return ContextConstant.ModifierOrder.CIRCUIT_BREAKER_ORDER;
 		}
 	}
 }

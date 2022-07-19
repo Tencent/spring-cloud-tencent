@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.registry;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -42,6 +41,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
 /**
@@ -52,8 +52,6 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisServiceRegistry.class);
-
-	private static final int ttl = 5;
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
@@ -97,7 +95,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setZone(staticMetadataManager.getZone());
 		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
 		if (null != heartbeatExecutor) {
-			instanceRegisterRequest.setTtl(ttl);
+			instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartBeatInterval());
 		}
 		instanceRegisterRequest.setMetadata(registration.getMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
@@ -217,6 +215,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			catch (Exception e) {
 				LOG.error("polaris heartbeat runtime error", e);
 			}
-		}, ttl, ttl, TimeUnit.SECONDS);
+		}, polarisDiscoveryProperties.getHeartBeatInterval(), polarisDiscoveryProperties.getHeartBeatInterval(), MILLISECONDS);
 	}
 }

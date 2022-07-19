@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.http.HttpHeaders;
@@ -38,9 +39,6 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public final class CustomTransitiveMetadataResolver {
 
-	private static final String TRANSITIVE_HEADER_PREFIX = "X-SCT-Metadata-Transitive-";
-	private static final int TRANSITIVE_HEADER_PREFIX_LENGTH = TRANSITIVE_HEADER_PREFIX.length();
-
 	private CustomTransitiveMetadataResolver() {
 	}
 
@@ -50,10 +48,20 @@ public final class CustomTransitiveMetadataResolver {
 		HttpHeaders headers = exchange.getRequest().getHeaders();
 		for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
 			String key = entry.getKey();
-			if (StringUtils.isNotBlank(key)
-					&& StringUtils.startsWithIgnoreCase(key, TRANSITIVE_HEADER_PREFIX)
+			if (StringUtils.isBlank(key)) {
+				continue;
+			}
+			// resolve sct transitive header
+			if (StringUtils.startsWithIgnoreCase(key, MetadataConstant.SCT_TRANSITIVE_HEADER_PREFIX)
 					&& !CollectionUtils.isEmpty(entry.getValue())) {
-				String sourceKey = StringUtils.substring(key, TRANSITIVE_HEADER_PREFIX_LENGTH);
+				String sourceKey = StringUtils.substring(key, MetadataConstant.SCT_TRANSITIVE_HEADER_PREFIX_LENGTH);
+				result.put(sourceKey, entry.getValue().get(0));
+			}
+
+			//resolve polaris transitive header
+			if (StringUtils.startsWithIgnoreCase(key, MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX)
+					&& !CollectionUtils.isEmpty(entry.getValue())) {
+				String sourceKey = StringUtils.substring(key, MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX_LENGTH);
 				result.put(sourceKey, entry.getValue().get(0));
 			}
 		}
@@ -67,11 +75,21 @@ public final class CustomTransitiveMetadataResolver {
 		Enumeration<String> headers = request.getHeaderNames();
 		while (headers.hasMoreElements()) {
 			String key = headers.nextElement();
+			if (StringUtils.isBlank(key)) {
+				continue;
+			}
 
-			if (StringUtils.isNotBlank(key)
-					&& StringUtils.startsWithIgnoreCase(key, TRANSITIVE_HEADER_PREFIX)
+			// resolve sct transitive header
+			if (StringUtils.startsWithIgnoreCase(key, MetadataConstant.SCT_TRANSITIVE_HEADER_PREFIX)
 					&& StringUtils.isNotBlank(request.getHeader(key))) {
-				String sourceKey = StringUtils.substring(key, TRANSITIVE_HEADER_PREFIX_LENGTH);
+				String sourceKey = StringUtils.substring(key, MetadataConstant.SCT_TRANSITIVE_HEADER_PREFIX_LENGTH);
+				result.put(sourceKey, request.getHeader(key));
+			}
+
+			// resolve polaris transitive header
+			if (StringUtils.startsWithIgnoreCase(key, MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX)
+					&& StringUtils.isNotBlank(request.getHeader(key))) {
+				String sourceKey = StringUtils.substring(key, MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX_LENGTH);
 				result.put(sourceKey, request.getHeader(key));
 			}
 		}
