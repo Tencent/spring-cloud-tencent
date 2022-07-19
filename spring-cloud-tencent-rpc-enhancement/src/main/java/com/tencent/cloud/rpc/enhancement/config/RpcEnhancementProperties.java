@@ -24,18 +24,6 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.BAD_GATEWAY;
-import static org.springframework.http.HttpStatus.BANDWIDTH_LIMIT_EXCEEDED;
-import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
-import static org.springframework.http.HttpStatus.HTTP_VERSION_NOT_SUPPORTED;
-import static org.springframework.http.HttpStatus.INSUFFICIENT_STORAGE;
-import static org.springframework.http.HttpStatus.LOOP_DETECTED;
-import static org.springframework.http.HttpStatus.NETWORK_AUTHENTICATION_REQUIRED;
-import static org.springframework.http.HttpStatus.NOT_EXTENDED;
-import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
-import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
-import static org.springframework.http.HttpStatus.VARIANT_ALSO_NEGOTIATES;
-
 /**
  * Properties of Polaris CircuitBreaker .
  *
@@ -52,9 +40,7 @@ public class RpcEnhancementProperties {
 	/**
 	 * Specify the Http status code(s) that needs to be fused.
 	 */
-	private List<HttpStatus> statuses = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
-			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
-			INSUFFICIENT_STORAGE, LOOP_DETECTED, BANDWIDTH_LIMIT_EXCEEDED, NOT_EXTENDED, NETWORK_AUTHENTICATION_REQUIRED);
+	private List<HttpStatus> statuses = new ArrayList<>();
 
 	/**
 	 * Specify List of HTTP status series.
@@ -78,7 +64,6 @@ public class RpcEnhancementProperties {
 	private static <T> List<T> toList(T... items) {
 		return new ArrayList<>(Arrays.asList(items));
 	}
-
 
 	public List<HttpStatus> getStatuses() {
 		return statuses;

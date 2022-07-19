@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.rpc.enhancement;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,7 +29,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BANDWIDTH_LIMIT_EXCEEDED;
+import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
+import static org.springframework.http.HttpStatus.HTTP_VERSION_NOT_SUPPORTED;
+import static org.springframework.http.HttpStatus.INSUFFICIENT_STORAGE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.LOOP_DETECTED;
+import static org.springframework.http.HttpStatus.NETWORK_AUTHENTICATION_REQUIRED;
+import static org.springframework.http.HttpStatus.NOT_EXTENDED;
+import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.springframework.http.HttpStatus.VARIANT_ALSO_NEGOTIATES;
 
 /**
  * Abstract Polaris Reporter Adapter .
@@ -40,6 +53,10 @@ public abstract class AbstractPolarisReporterAdapter {
 
 	protected final RpcEnhancementProperties properties;
 
+	private static final List<HttpStatus> HTTP_STATUSES = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
+			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
+			INSUFFICIENT_STORAGE, LOOP_DETECTED, BANDWIDTH_LIMIT_EXCEEDED, NOT_EXTENDED, NETWORK_AUTHENTICATION_REQUIRED);
+
 	/**
 	 * Constructor With {@link RpcEnhancementProperties} .
 	 *
@@ -47,6 +64,18 @@ public abstract class AbstractPolarisReporterAdapter {
 	 */
 	protected AbstractPolarisReporterAdapter(RpcEnhancementProperties properties) {
 		this.properties = properties;
+	}
+
+	/**
+	 * Convert items to List.
+	 *
+	 * @param items item arrays
+	 * @param <T>   Object Generics.
+	 * @return list
+	 */
+	@SafeVarargs
+	private static <T> List<T> toList(T... items) {
+		return new ArrayList<>(Arrays.asList(items));
 	}
 
 	/**
@@ -70,7 +99,7 @@ public abstract class AbstractPolarisReporterAdapter {
 					return false;
 				}
 				if (series.isEmpty()) {
-					return false;
+					return HTTP_STATUSES.contains(httpStatus);
 				}
 				else {
 					try {

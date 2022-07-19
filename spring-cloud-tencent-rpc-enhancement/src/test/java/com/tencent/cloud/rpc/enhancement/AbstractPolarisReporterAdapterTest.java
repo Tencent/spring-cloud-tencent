@@ -84,7 +84,7 @@ public class AbstractPolarisReporterAdapterTest {
 		// Assert
 		Assertions.assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
 		Assertions.assertThat(adapter.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
-		Assertions.assertThat(adapter.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(false);
+		Assertions.assertThat(adapter.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
 	}
 
 	@Test

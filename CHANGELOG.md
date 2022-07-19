@@ -9,3 +9,4 @@
 - [Optimize: add EncodeTransferMedataRestTemplateInterceptor to RestTemplate](https://github.com/Tencent/spring-cloud-tencent/pull/434)
 - [feat:enhance Feign and RestTemplate and support Polaris monitor.](https://github.com/Tencent/spring-cloud-tencent/pull/435)
 - [Optimize: Specification apollo code reference notes](https://github.com/Tencent/spring-cloud-tencent/pull/442)
+- [Optimize feign & rest-template circuit-breaker logic](https://github.com/Tencent/spring-cloud-tencent/pull/424)
