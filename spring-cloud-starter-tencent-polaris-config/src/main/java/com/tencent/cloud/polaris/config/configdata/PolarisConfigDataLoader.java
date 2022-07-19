@@ -38,7 +38,6 @@ import org.springframework.boot.context.config.ConfigDataResourceNotFoundExcepti
 import org.springframework.boot.context.config.Profiles;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.CompositePropertySource;
-import org.springframework.core.env.PropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -65,9 +64,9 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 
 	private PolarisConfigFilePuller puller;
 
-	private static final AtomicBoolean INTERNAL_CONFIG_FILES_LOADED = new AtomicBoolean(false);
+	static final AtomicBoolean INTERNAL_CONFIG_FILES_LOADED = new AtomicBoolean(false);
 
-	private static final AtomicBoolean CUSTOM_POLARIS_CONFIG_FILE_LOADED = new AtomicBoolean(false);
+	static final AtomicBoolean CUSTOM_POLARIS_CONFIG_FILE_LOADED = new AtomicBoolean(false);
 
 	public PolarisConfigDataLoader(DeferredLogFactory logFactory) {
 		this.log = logFactory.getLog(getClass());

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
-import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
@@ -18,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import org.springframework.boot.context.config.Profiles;
 import org.springframework.core.env.CompositePropertySource;
 
 import static org.mockito.Mockito.when;

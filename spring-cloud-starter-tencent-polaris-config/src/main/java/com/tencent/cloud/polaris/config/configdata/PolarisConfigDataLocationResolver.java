@@ -18,11 +18,8 @@
 package com.tencent.cloud.polaris.config.configdata;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.tencent.cloud.polaris.config.ConfigurationModifier;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
@@ -30,12 +27,8 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.ModifyAddress;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.polaris.api.config.ConfigProvider;
-import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.factory.ConfigAPIFactory;
-import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.BootstrapRegistry;
@@ -167,7 +160,7 @@ public class PolarisConfigDataLocationResolver implements
 		BindHandler bindHandler = getBindHandler(context);
 
 		T instance;
-		if (context.getBootstrapContext().isRegistered(typeClass)) {
+		if (!registerNotNecessary(typeClass) && context.getBootstrapContext().isRegistered(typeClass)) {
 			instance = context.getBootstrapContext().get(typeClass);
 		}
 		else {
@@ -270,6 +263,14 @@ public class PolarisConfigDataLocationResolver implements
 		modifierList.add(modifyAddress);
 		modifierList.add(configurationModifier);
 		return modifierList;
+	}
+
+	private boolean registerNotNecessary(Class<?> typeClass) {
+		return typeClass.isPrimitive() ||
+				Number.class.isAssignableFrom(typeClass) ||
+				String.class.isAssignableFrom(typeClass) ||
+				Character.class.isAssignableFrom(typeClass) ||
+				Boolean.class.isAssignableFrom(typeClass);
 	}
 }
 

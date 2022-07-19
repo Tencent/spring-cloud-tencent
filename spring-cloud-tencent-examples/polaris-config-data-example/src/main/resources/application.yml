@@ -15,6 +15,9 @@ spring:
   config:
     import:
       - optional:polaris
+      - optional:polaris:test.yml
+      - optional:polaris:configdataexample:test.yml
+      - optional:polaris:config/bootstrap.yml
 management:
   endpoints:
     web:
