@@ -34,5 +34,4 @@ public class TestController {
 	public String info() throws Exception {
 		return "hello service info";
 	}
-
 }

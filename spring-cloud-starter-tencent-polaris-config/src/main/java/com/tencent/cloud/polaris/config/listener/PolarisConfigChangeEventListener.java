@@ -55,7 +55,6 @@ public final class PolarisConfigChangeEventListener implements ApplicationListen
 	 */
 	@Override
 	public void onApplicationEvent(@NonNull ApplicationEvent event) {
-
 		// Initialize application all environment properties .
 		if (event instanceof ApplicationStartedEvent && started.compareAndSet(false, true)) {
 			ApplicationStartedEvent applicationStartedEvent = (ApplicationStartedEvent) event;
@@ -107,5 +106,4 @@ public final class PolarisConfigChangeEventListener implements ApplicationListen
 		});
 		return ret;
 	}
-
 }

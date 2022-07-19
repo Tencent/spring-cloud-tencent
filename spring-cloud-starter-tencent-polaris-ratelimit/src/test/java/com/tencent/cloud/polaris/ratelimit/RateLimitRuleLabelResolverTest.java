@@ -42,13 +42,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RateLimitRuleLabelResolverTest {
 
-	private ServiceRuleManager serviceRuleManager;
-
 	private RateLimitRuleLabelResolver rateLimitRuleLabelResolver;
 
 	@Before
 	public void setUp() {
-		serviceRuleManager = mock(ServiceRuleManager.class);
+		ServiceRuleManager serviceRuleManager = mock(ServiceRuleManager.class);
 		when(serviceRuleManager.getServiceRateLimitRule(any(), anyString())).thenAnswer(invocationOnMock -> {
 			String serviceName = invocationOnMock.getArgument(1).toString();
 			if (serviceName.equals("TestApp1")) {

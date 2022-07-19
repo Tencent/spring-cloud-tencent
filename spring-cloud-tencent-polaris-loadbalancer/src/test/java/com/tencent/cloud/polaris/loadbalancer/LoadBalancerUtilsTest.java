@@ -43,21 +43,21 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 /**
  * Test for ${@link LoadBalancerUtils}.
- *@author lepdou 2022-07-04
+ *
+ * @author lepdou 2022-07-04
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LoadBalancerUtilsTest {
 
+	private static final String TEST_NAMESPACE_AND_SERVICE = "testNamespaceAndService";
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
-
-	private static final String testNamespaceAndService = "testNamespaceAndService";
 
 	@BeforeClass
 	public static void beforeClass() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
-				.thenReturn(testNamespaceAndService);
+				.thenReturn(TEST_NAMESPACE_AND_SERVICE);
 
 		MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 		mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class);
@@ -83,7 +83,7 @@ public class LoadBalancerUtilsTest {
 
 		List<ServiceInstance> instances = new ArrayList<>();
 		for (int i = 0; i < instanceSize; i++) {
-			instances.add(new DefaultServiceInstance("ins" + i, testNamespaceAndService, "127.0.0." + i,
+			instances.add(new DefaultServiceInstance("ins" + i, TEST_NAMESPACE_AND_SERVICE, "127.0.0." + i,
 					8080, false));
 		}
 
@@ -95,8 +95,8 @@ public class LoadBalancerUtilsTest {
 		List<Instance> polarisInstances = serviceInstances.getInstances();
 		for (int i = 0; i < instanceSize; i++) {
 			Instance instance = polarisInstances.get(i);
-			Assert.assertEquals(testNamespaceAndService, instance.getNamespace());
-			Assert.assertEquals(testNamespaceAndService, instance.getService());
+			Assert.assertEquals(TEST_NAMESPACE_AND_SERVICE, instance.getNamespace());
+			Assert.assertEquals(TEST_NAMESPACE_AND_SERVICE, instance.getService());
 			Assert.assertEquals("ins" + i, instance.getId());
 			Assert.assertEquals("127.0.0." + i, instance.getHost());
 			Assert.assertEquals(8080, instance.getPort());

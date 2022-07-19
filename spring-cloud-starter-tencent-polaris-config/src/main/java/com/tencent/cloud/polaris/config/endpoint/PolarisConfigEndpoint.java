@@ -40,7 +40,8 @@ public class PolarisConfigEndpoint {
 	private final PolarisConfigProperties polarisConfigProperties;
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
-	public PolarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
+	public PolarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties,
+			PolarisPropertySourceManager polarisPropertySourceManager) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
 	}

@@ -37,9 +37,12 @@ import org.springframework.util.CollectionUtils;
 /**
  * load balancer utils.
  *
- *@author lepdou 2022-05-17
+ * @author lepdou 2022-05-17
  */
-public class LoadBalancerUtils {
+public final class LoadBalancerUtils {
+
+	private LoadBalancerUtils() {
+	}
 
 	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers) {
 		AtomicReference<List<Instance>> instances = new AtomicReference<>();

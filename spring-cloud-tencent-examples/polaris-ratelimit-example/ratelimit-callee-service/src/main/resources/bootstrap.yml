@@ -11,7 +11,7 @@ spring:
       ratelimit:
         enabled: true
         rejectRequestTipsFilePath: reject-tips.html
-        maxQueuingTime: 500
+        maxQueuingTime: 1000
 
 management:
   endpoints:
@@ -19,3 +19,6 @@ management:
       exposure:
         include:
           - polaris-ratelimit
+logging:
+  level:
+    com.tencent.cloud.polaris: debug

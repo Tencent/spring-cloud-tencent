@@ -27,13 +27,15 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Post-initialization operations after the application initialization phase is completed.
- *@author lepdou 2022-06-28
+ *
+ * @author lepdou 2022-06-28
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class PolarisContextPostConfiguration {
 
 	@Bean
-	public PostInitPolarisSDKContext postInitPolarisSDKContext(SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
+	public PostInitPolarisSDKContext postInitPolarisSDKContext(
+			SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
 		return new PostInitPolarisSDKContext(sdkContext, staticMetadataManager);
 	}
 }

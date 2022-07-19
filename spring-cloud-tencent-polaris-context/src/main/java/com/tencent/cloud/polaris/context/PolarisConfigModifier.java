@@ -28,14 +28,15 @@ public interface PolarisConfigModifier {
 
 	/**
 	 * Modify configuration.
+	 *
 	 * @param configuration configuration to be modified
 	 */
 	void modify(ConfigurationImpl configuration);
 
 	/**
 	 * Get modifier order for sorting.
+	 *
 	 * @return order
 	 */
 	int getOrder();
-
 }

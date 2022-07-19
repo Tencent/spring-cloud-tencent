@@ -34,7 +34,7 @@ import org.springframework.lang.Nullable;
  * Auto configuration for feign components.
  * @author lepdou 2022-07-04
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = {"feign.RequestInterceptor"})
 public class FeignAutoConfiguration {
 
@@ -44,5 +44,4 @@ public class FeignAutoConfiguration {
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		return new RouterLabelFeignInterceptor(routerLabelResolvers, metadataLocalProperties, routerRuleLabelResolver);
 	}
-
 }

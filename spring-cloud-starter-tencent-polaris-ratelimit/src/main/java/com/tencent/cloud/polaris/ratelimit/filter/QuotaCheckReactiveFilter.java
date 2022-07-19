@@ -101,8 +101,8 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 		try {
 			String path = exchange.getRequest().getURI().getPath();
-			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
-					localNamespace, localService, 1, labels, path);
+			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(
+					limitAPI, localNamespace, localService, 1, labels, path);
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
@@ -114,6 +114,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			}
 			// Unirate
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
+				LOG.debug("The request of [{}] will waiting for {}ms.", path, quotaResponse.getWaitMs());
 				return Mono.delay(Duration.ofMillis(quotaResponse.getWaitMs())).flatMap(e -> chain.filter(exchange));
 			}
 		}
@@ -162,5 +163,4 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		Set<String> expressionLabels = rateLimitRuleLabelResolver.getExpressionLabelKeys(namespace, service);
 		return ExpressionLabelUtils.resolve(exchange, expressionLabels);
 	}
-
 }

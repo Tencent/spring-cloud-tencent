@@ -53,7 +53,7 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  */
 public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisLoadBalancer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisLoadBalancer.class);
 
 	private final String serviceId;
 
@@ -61,7 +61,7 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 
 	private final RouterAPI routerAPI;
 
-	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
+	private final ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
 	public PolarisLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
 			PolarisLoadBalancerProperties loadBalancerProperties, RouterAPI routerAPI) {
@@ -92,7 +92,7 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 
 	private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> serviceInstances) {
 		if (serviceInstances.isEmpty()) {
-			log.warn("No servers available for service: " + this.serviceId);
+			LOGGER.warn("No servers available for service: " + this.serviceId);
 			return new EmptyResponse();
 		}
 
@@ -106,9 +106,8 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 			return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
 		}
 		catch (Exception e) {
-			log.warn("PolarisRoutingLoadbalancer error", e);
+			LOGGER.warn("PolarisRoutingLoadbalancer error", e);
 			return new EmptyResponse();
 		}
 	}
-
 }

@@ -80,5 +80,4 @@ public enum ConfigFileFormat {
 		}
 		return true;
 	}
-
 }

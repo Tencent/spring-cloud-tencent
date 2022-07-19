@@ -81,5 +81,4 @@ public class PolarisConfigBootstrapAutoConfiguration {
 			PolarisContextProperties polarisContextProperties) {
 		return new ConfigurationModifier(polarisConfigProperties, polarisContextProperties);
 	}
-
 }

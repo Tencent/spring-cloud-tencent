@@ -20,7 +20,6 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -36,6 +35,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 
 /**
@@ -68,8 +68,7 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 		if (!CollectionUtils.isEmpty(customMetadata)) {
 			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
 			try {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, StandardCharsets.UTF_8.name()));
+				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, URLEncoder.encode(metadataStr, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
 				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
@@ -78,5 +77,4 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 
 		return chain.filter(exchange.mutate().request(builder.build()).build());
 	}
-
 }

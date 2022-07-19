@@ -39,7 +39,8 @@ import static com.tencent.cloud.polaris.discovery.refresh.PolarisServiceStatusCh
  *
  * @author Haotian Zhang
  */
-public class PolarisRefreshApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent>, ApplicationEventPublisherAware, DisposableBean {
+public class PolarisRefreshApplicationReadyEventListener
+		implements ApplicationListener<ApplicationReadyEvent>, ApplicationEventPublisherAware, DisposableBean {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisRefreshApplicationReadyEventListener.class);
 	private static final int DELAY = 60;
@@ -48,7 +49,8 @@ public class PolarisRefreshApplicationReadyEventListener implements ApplicationL
 	private final ScheduledExecutorService refreshExecutor;
 	private ApplicationEventPublisher publisher;
 
-	public PolarisRefreshApplicationReadyEventListener(PolarisDiscoveryHandler polarisDiscoveryHandler, PolarisServiceStatusChangeListener polarisServiceStatusChangeListener) {
+	public PolarisRefreshApplicationReadyEventListener(PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisServiceStatusChangeListener polarisServiceStatusChangeListener) {
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.polarisServiceStatusChangeListener = polarisServiceStatusChangeListener;
 		this.refreshExecutor = Executors.newSingleThreadScheduledExecutor(
@@ -86,7 +88,7 @@ public class PolarisRefreshApplicationReadyEventListener implements ApplicationL
 	}
 
 	@Override
-	public void destroy() throws Exception {
+	public void destroy() {
 		refreshExecutor.shutdown();
 	}
 }

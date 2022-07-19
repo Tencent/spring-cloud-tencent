@@ -39,11 +39,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisRateLimitAutoConfigurationTest {
 
-	private ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
+	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
 
-	private WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
+	private final WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
 
-	private ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
+	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
 	public void testNoWebApplication() {
@@ -66,7 +66,8 @@ public class PolarisRateLimitAutoConfigurationTest {
 	@Test
 	public void testServletWebApplication() {
 		this.webApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(
+						PolarisContextAutoConfiguration.class,
 						PolarisRateLimitProperties.class,
 						PolarisRateLimitAutoConfiguration.class))
 				.run(context -> {
@@ -83,7 +84,8 @@ public class PolarisRateLimitAutoConfigurationTest {
 	@Test
 	public void testReactiveWebApplication() {
 		this.reactiveWebApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(
+						PolarisContextAutoConfiguration.class,
 						PolarisRateLimitProperties.class,
 						PolarisRateLimitAutoConfiguration.class))
 				.run(context -> {

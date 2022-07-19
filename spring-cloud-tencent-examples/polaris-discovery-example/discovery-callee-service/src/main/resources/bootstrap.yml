@@ -11,6 +11,9 @@ spring:
       discovery:
         enabled: true
         register: true
+      stat:
+        enabled: true
+        port: 28082
     tencent:
       metadata:
         content:

@@ -84,5 +84,4 @@ public class MetadataAutoConfigurationTest {
 					Assertions.assertThat(context).hasSingleBean(MetadataFirstScgFilter.class);
 				});
 	}
-
 }

@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.registry;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -42,6 +41,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
 /**
@@ -51,9 +51,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  */
 public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisServiceRegistry.class);
-
-	private static final int ttl = 5;
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
@@ -71,8 +69,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		this.staticMetadataManager = staticMetadataManager;
 
 		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
-			this.heartbeatExecutor = Executors
-					.newSingleThreadScheduledExecutor(new NamedThreadFactory("spring-cloud-heartbeat"));
+			this.heartbeatExecutor = Executors.newSingleThreadScheduledExecutor(
+					new NamedThreadFactory("spring-cloud-heartbeat"));
 		}
 		else {
 			this.heartbeatExecutor = null;
@@ -83,7 +81,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	public void register(Registration registration) {
 
 		if (StringUtils.isBlank(registration.getServiceId())) {
-			log.warn("No service to register for polaris client...");
+			LOGGER.warn("No service to register for polaris client...");
 			return;
 		}
 		// Register instance.
@@ -98,7 +96,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setZone(staticMetadataManager.getZone());
 		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
 		if (null != heartbeatExecutor) {
-			instanceRegisterRequest.setTtl(ttl);
+			instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 		}
 		instanceRegisterRequest.setMetadata(registration.getMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
@@ -106,7 +104,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			providerClient.register(instanceRegisterRequest);
-			log.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
+			LOGGER.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
 					registration.getServiceId(), registration.getHost(), registration.getPort(),
 					staticMetadataManager.getMergedStaticMetadata());
 
@@ -118,7 +116,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			}
 		}
 		catch (Exception e) {
-			log.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
+			LOGGER.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
 			rethrowRuntimeException(e);
 		}
 	}
@@ -126,10 +124,10 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	@Override
 	public void deregister(Registration registration) {
 
-		log.info("De-registering from Polaris Server now...");
+		LOGGER.info("De-registering from Polaris Server now...");
 
 		if (StringUtils.isEmpty(registration.getServiceId())) {
-			log.warn("No dom to de-register for polaris client...");
+			LOGGER.warn("No dom to de-register for polaris client...");
 			return;
 		}
 
@@ -145,24 +143,22 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			providerClient.deRegister(deRegisterRequest);
 		}
 		catch (Exception e) {
-			log.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
+			LOGGER.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
 		}
 		finally {
 			if (null != heartbeatExecutor) {
 				heartbeatExecutor.shutdown();
 			}
 		}
-		log.info("De-registration finished.");
+		LOGGER.info("De-registration finished.");
 	}
 
 	@Override
 	public void close() {
-
 	}
 
 	@Override
 	public void setStatus(Registration registration, String status) {
-
 	}
 
 	@Override
@@ -204,7 +200,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 							heartbeatRequest.getPort(), healthCheckEndpoint);
 
 					if (!OkHttpUtil.get(healthCheckUrl, null)) {
-						log.error("backend service health check failed. health check endpoint = {}",
+						LOGGER.error("backend service health check failed. health check endpoint = {}",
 								healthCheckEndpoint);
 						return;
 					}
@@ -213,12 +209,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
 			}
 			catch (PolarisException e) {
-				log.error("polaris heartbeat[{}]", e.getCode(), e);
+				LOGGER.error("polaris heartbeat[{}]", e.getCode(), e);
 			}
 			catch (Exception e) {
-				log.error("polaris heartbeat runtime error", e);
+				LOGGER.error("polaris heartbeat runtime error", e);
 			}
-		}, ttl, ttl, TimeUnit.SECONDS);
+		}, polarisDiscoveryProperties.getHeartbeatInterval(), polarisDiscoveryProperties.getHeartbeatInterval(), MILLISECONDS);
 	}
-
 }

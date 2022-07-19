@@ -66,5 +66,4 @@ public class PolarisServiceDiscovery {
 		return polarisDiscoveryHandler.GetServices().getServices().stream().map(ServiceInfo::getService)
 				.collect(Collectors.toList());
 	}
-
 }

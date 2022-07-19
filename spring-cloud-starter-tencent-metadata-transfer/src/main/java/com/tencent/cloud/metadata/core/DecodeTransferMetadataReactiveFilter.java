@@ -20,7 +20,6 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +37,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
@@ -69,23 +70,20 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		MetadataContextHolder.init(mergedTransitiveMetadata);
 
 		// Save to ServerWebExchange.
-		serverWebExchange.getAttributes().put(
-				MetadataConstant.HeaderName.METADATA_CONTEXT,
-				MetadataContextHolder.get());
+		serverWebExchange.getAttributes()
+				.put(MetadataConstant.HeaderName.METADATA_CONTEXT, MetadataContextHolder.get());
 
 		return webFilterChain.filter(serverWebExchange)
-				.doOnError(throwable -> LOG.error("handle metadata[{}] error.",
-						MetadataContextHolder.get(), throwable))
+				.doOnError(throwable -> LOG.error("handle metadata[{}] error.", MetadataContextHolder.get(), throwable))
 				.doFinally((type) -> MetadataContextHolder.remove());
 	}
 
 	private Map<String, String> getIntervalTransitiveMetadata(ServerHttpRequest serverHttpRequest) {
 		HttpHeaders httpHeaders = serverHttpRequest.getHeaders();
-		String customMetadataStr = httpHeaders
-				.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
+		String customMetadataStr = httpHeaders.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
-				customMetadataStr = URLDecoder.decode(customMetadataStr, StandardCharsets.UTF_8.name());
+				customMetadataStr = URLDecoder.decode(customMetadataStr, UTF_8);
 			}
 		}
 		catch (UnsupportedEncodingException e) {
@@ -95,5 +93,4 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 		return JacksonUtils.deserialize2Map(customMetadataStr);
 	}
-
 }

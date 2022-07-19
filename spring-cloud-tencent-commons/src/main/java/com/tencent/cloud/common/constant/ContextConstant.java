@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.common.constant;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Constant for Context.
  *
@@ -28,6 +30,16 @@ public final class ContextConstant {
 	 * Name of Polaris.
 	 */
 	public static final String POLARIS = "POLARIS";
+
+	/**
+	 * SCT Default Charset .
+	 */
+	public static final String UTF_8 = StandardCharsets.UTF_8.name();
+
+	/**
+	 * Default registry heartbeat time interval, default: 5000 (ms).
+	 */
+	public static final Integer DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL = 5000;
 
 	private ContextConstant() {
 	}
@@ -62,6 +74,9 @@ public final class ContextConstant {
 		 */
 		public static Integer CONFIG_ORDER = 1;
 
+		/**
+		 * Order of stat reporter configuration modifier.
+		 */
+		public static Integer STAT_REPORTER_ORDER = 1;
 	}
-
 }
