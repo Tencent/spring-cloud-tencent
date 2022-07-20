@@ -33,7 +33,7 @@ import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
+import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 
 	private final LoadBalancerClient loadBalancer;
 	private final LoadBalancerRequestFactory requestFactory;
-	private final List<RouterLabelResolver> routerLabelResolvers;
+	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
 	private final MetadataLocalProperties metadataLocalProperties;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
@@ -67,7 +67,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 
 	public PolarisLoadBalancerInterceptor(LoadBalancerClient loadBalancer,
 			LoadBalancerRequestFactory requestFactory,
-			List<RouterLabelResolver> routerLabelResolvers,
+			List<SpringWebRouterLabelResolver> routerLabelResolvers,
 			MetadataLocalProperties metadataLocalProperties,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		super(loadBalancer, requestFactory);
@@ -110,7 +110,9 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
 
 		// labels from rule expression
-		Map<String, String> ruleExpressionLabels = getExpressionLabels(request, peerServiceName);
+		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
+				MetadataContext.LOCAL_SERVICE, peerServiceName);
+		Map<String, String> ruleExpressionLabels = getExpressionLabels(request, expressionLabelKeys);
 		if (!CollectionUtils.isEmpty(ruleExpressionLabels)) {
 			labels.putAll(ruleExpressionLabels);
 		}
@@ -119,7 +121,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
 			routerLabelResolvers.forEach(resolver -> {
 				try {
-					Map<String, String> customResolvedLabels = resolver.resolve(request, body);
+					Map<String, String> customResolvedLabels = resolver.resolve(request, body, expressionLabelKeys);
 					if (!CollectionUtils.isEmpty(customResolvedLabels)) {
 						labels.putAll(customResolvedLabels);
 					}
@@ -143,10 +145,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		return routerContext;
 	}
 
-	private Map<String, String> getExpressionLabels(HttpRequest request, String peerServiceName) {
-		Set<String> labelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
-				MetadataContext.LOCAL_SERVICE, peerServiceName);
-
+	private Map<String, String> getExpressionLabels(HttpRequest request, Set<String> labelKeys) {
 		if (CollectionUtils.isEmpty(labelKeys)) {
 			return Collections.emptyMap();
 		}
