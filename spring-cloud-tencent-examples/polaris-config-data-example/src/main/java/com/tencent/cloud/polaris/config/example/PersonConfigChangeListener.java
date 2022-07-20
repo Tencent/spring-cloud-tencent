@@ -18,11 +18,12 @@
 
 package com.tencent.cloud.polaris.config.example;
 
+import java.util.Set;
+
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigKVFileChangeListener;
 import com.tencent.cloud.polaris.config.listener.ConfigChangeEvent;
-import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import org.springframework.stereotype.Component;
 
 /**
  * Custom Config Listener Example .
