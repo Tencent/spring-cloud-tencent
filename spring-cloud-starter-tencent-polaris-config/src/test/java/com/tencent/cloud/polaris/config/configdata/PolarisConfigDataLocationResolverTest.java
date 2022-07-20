@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -33,13 +32,9 @@ public class PolarisConfigDataLocationResolverTest {
 
 	private final Binder environmentBinder = Binder.get(this.environment);
 
-	@Mock
-	private ConfigurableBootstrapContext bootstrapContext;
-
 	@Test
 	public void testIsResolvable() {
 		when(context.getBinder()).thenReturn(environmentBinder);
-		when(context.getBootstrapContext()).thenReturn(bootstrapContext);
 		assertThat(
 				this.resolver.isResolvable(this.context, ConfigDataLocation.of("configserver:")))
 				.isFalse();
@@ -55,7 +50,6 @@ public class PolarisConfigDataLocationResolverTest {
 	public void unEnabledPolarisConfigData() {
 		environment.setProperty("spring.cloud.polaris.config.enabled", "false");
 		when(context.getBinder()).thenReturn(environmentBinder);
-		when(context.getBootstrapContext()).thenReturn(bootstrapContext);
 		assertThat(
 				this.resolver.isResolvable(this.context, ConfigDataLocation.of("polaris:")))
 				.isFalse();

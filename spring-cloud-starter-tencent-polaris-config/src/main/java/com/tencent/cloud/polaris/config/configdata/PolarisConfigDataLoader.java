@@ -121,7 +121,7 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 		}
 		// load config data
 		if (StringUtils.hasText(resource.getFileName())) {
-			log.info("loading config data config file,group:" + resource.getGroupName() + "file:" + resource.getFileName());
+			log.info("loading config data config file, group:" + resource.getGroupName() + " file: " + resource.getFileName());
 			this.puller.initCustomPolarisConfigFile(compositePropertySource, configFileGroup(resource));
 		}
 		return compositePropertySource;

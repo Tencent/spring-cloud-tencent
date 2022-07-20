@@ -188,9 +188,13 @@ public class PolarisConfigDataLocationResolver implements
 		String serviceName = loadPolarisConfigProperties(resolverContext,
 				String.class, "spring.application.name");
 		String groupName = StringUtils.isBlank(groupFileName) ? EMPTY_STRING : parseGroupName(groupFileName, serviceName);
-		log.info("group from configDataLocation is" + groupName);
+		if (StringUtils.isNotBlank(groupName)) {
+			log.info("group from configDataLocation is " + groupName);
+		}
 		String fileName = StringUtils.isBlank(groupFileName) ? EMPTY_STRING : parseFileName(groupFileName);
-		log.info("file from configDataLocation is" + fileName);
+		if (StringUtils.isNotBlank(fileName)) {
+			log.info("file from configDataLocation is " + fileName);
+		}
 		PolarisConfigDataResource polarisConfigDataResource = new PolarisConfigDataResource(
 				polarisConfigProperties,
 				polarisContextProperties,
