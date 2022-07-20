@@ -33,7 +33,7 @@ import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
+import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
@@ -52,11 +52,11 @@ import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelFeignInterceptor.class);
 
-	private final List<RouterLabelResolver> routerLabelResolvers;
+	private final List<FeignRouterLabelResolver> routerLabelResolvers;
 	private final MetadataLocalProperties metadataLocalProperties;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
-	public RouterLabelFeignInterceptor(List<RouterLabelResolver> routerLabelResolvers,
+	public RouterLabelFeignInterceptor(List<FeignRouterLabelResolver> routerLabelResolvers,
 			MetadataLocalProperties metadataLocalProperties,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
@@ -82,14 +82,16 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 
 		// labels from rule expression
 		String peerServiceName = requestTemplate.feignTarget().name();
-		Map<String, String> ruleExpressionLabels = getRuleExpressionLabels(requestTemplate, peerServiceName);
+		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
+				MetadataContext.LOCAL_SERVICE, peerServiceName);
+		Map<String, String> ruleExpressionLabels = getRuleExpressionLabels(requestTemplate, expressionLabelKeys);
 		labels.putAll(ruleExpressionLabels);
 
-		// labels from request
+		// labels from custom spi
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
 			routerLabelResolvers.forEach(resolver -> {
 				try {
-					Map<String, String> customResolvedLabels = resolver.resolve(requestTemplate);
+					Map<String, String> customResolvedLabels = resolver.resolve(requestTemplate, expressionLabelKeys);
 					if (!CollectionUtils.isEmpty(customResolvedLabels)) {
 						labels.putAll(customResolvedLabels);
 					}
@@ -121,9 +123,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
-	private Map<String, String> getRuleExpressionLabels(RequestTemplate requestTemplate, String peerService) {
-		Set<String> labelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
-				MetadataContext.LOCAL_SERVICE, peerService);
+	private Map<String, String> getRuleExpressionLabels(RequestTemplate requestTemplate, Set<String> labelKeys) {
 
 		if (CollectionUtils.isEmpty(labelKeys)) {
 			return Collections.emptyMap();

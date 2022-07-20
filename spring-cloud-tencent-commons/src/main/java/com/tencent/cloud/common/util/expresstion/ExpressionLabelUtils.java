@@ -34,6 +34,10 @@ import org.springframework.util.CollectionUtils;
 public final class ExpressionLabelUtils {
 
 	/**
+	 * the prefix of expression.
+	 */
+	public static final String LABEL_PREFIX = "${";
+	/**
 	 * the expression prefix of header label.
 	 */
 	public static final String LABEL_HEADER_PREFIX = "${http.header.";
@@ -77,14 +81,7 @@ public final class ExpressionLabelUtils {
 		if (StringUtils.isEmpty(labelKey)) {
 			return false;
 		}
-		if (StringUtils.equalsIgnoreCase(LABEL_METHOD, labelKey) ||
-				StringUtils.startsWithIgnoreCase(LABEL_URI, labelKey)) {
-			return true;
-		}
-		return (StringUtils.startsWithIgnoreCase(labelKey, LABEL_HEADER_PREFIX) ||
-				StringUtils.startsWithIgnoreCase(labelKey, LABEL_QUERY_PREFIX) ||
-				StringUtils.startsWithIgnoreCase(labelKey, LABEL_COOKIE_PREFIX))
-				&& StringUtils.endsWith(labelKey, LABEL_SUFFIX);
+		return StringUtils.startsWith(labelKey, LABEL_PREFIX) && StringUtils.endsWith(labelKey, LABEL_SUFFIX);
 	}
 
 	public static String parseHeaderKey(String expression) {
