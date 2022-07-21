@@ -7,7 +7,7 @@ spring:
       namespace: default
       config:
         connect-remote-server: false
-        auto-refresh: true
+#        auto-refresh: true
   config:
     import:
       - optional:polaris

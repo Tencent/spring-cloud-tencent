@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.config.configdata;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import com.tencent.cloud.polaris.config.ConfigurationModifier;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
@@ -113,12 +114,18 @@ public class PolarisConfigDataLocationResolver implements
 				PolarisConfigProperties.class,
 				POLARIS_PREFIX + ".config"
 		);
+		if (Objects.isNull(polarisConfigProperties)) {
+			polarisConfigProperties = new PolarisConfigProperties();
+		}
 
 		PolarisContextProperties polarisContextProperties = loadPolarisConfigProperties(
 				resolverContext,
 				PolarisContextProperties.class,
 				POLARIS_PREFIX
 		);
+		if (Objects.isNull(polarisContextProperties)) {
+			polarisContextProperties = new PolarisContextProperties();
+		}
 
 		// prepare and init earlier Polaris SDKContext to pull config files from remote.
 		prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties, polarisContextProperties);
@@ -168,7 +175,7 @@ public class PolarisConfigDataLocationResolver implements
 					.map(properties -> binder.bind(prefix, Bindable.ofInstance(properties), bindHandler)
 							.orElse(properties))
 					.orElseGet(() -> binder.bind(prefix, Bindable.of(typeClass), bindHandler)
-							.orElseGet(null));
+							.orElseGet(() -> null));
 		}
 		return instance;
 	}
@@ -187,6 +194,10 @@ public class PolarisConfigDataLocationResolver implements
 		String groupFileName = getRealGroupFileName(location);
 		String serviceName = loadPolarisConfigProperties(resolverContext,
 				String.class, "spring.application.name");
+		if (StringUtils.isBlank(serviceName)) {
+			serviceName = "application";
+			log.warn("No spring.application.name found, defaulting to 'application'");
+		}
 		String groupName = StringUtils.isBlank(groupFileName) ? EMPTY_STRING : parseGroupName(groupFileName, serviceName);
 		if (StringUtils.isNotBlank(groupName)) {
 			log.info("group from configDataLocation is " + groupName);
