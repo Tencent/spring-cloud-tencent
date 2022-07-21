@@ -107,6 +107,7 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 			return null;
 		}
 
+		ILoadBalancer loadBalancer = new SimpleLoadBalancer();
 		// 2. filter by router
 		if (key instanceof PolarisRouterContext) {
 			PolarisRouterContext routerContext = (PolarisRouterContext) key;
@@ -114,10 +115,12 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 			// 3. filter by load balance.
 			// A LoadBalancer needs to be regenerated for each request,
 			// because the list of servers may be different after filtered by router
-			ILoadBalancer loadBalancer = new SimpleLoadBalancer();
 			loadBalancer.addServers(serversAfterRouter);
-			delegateRule.setLoadBalancer(loadBalancer);
 		}
+		else {
+			loadBalancer.addServers(allServers);
+		}
+		delegateRule.setLoadBalancer(loadBalancer);
 
 		return delegateRule.choose(key);
 	}

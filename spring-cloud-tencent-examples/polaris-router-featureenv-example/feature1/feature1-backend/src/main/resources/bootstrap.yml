@@ -1,0 +1,19 @@
+server:
+  session-timeout: 1800
+  port: 11002
+spring:
+  application:
+    name: featureenv-backend-example
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+    tencent:
+      metadata:
+        content:
+          featureenv: feature1
+logging:
+  level:
+    org.springframework.cloud.gateway: info
+    com.tencent.cloud.polaris: debug

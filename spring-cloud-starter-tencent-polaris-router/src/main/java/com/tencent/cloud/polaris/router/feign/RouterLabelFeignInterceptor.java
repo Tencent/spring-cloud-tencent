@@ -103,16 +103,10 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		}
 
 		// labels from downstream
-		Map<String, String> transitiveLabels = MetadataContextHolder.get()
-				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		Map<String, String> transitiveLabels = MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		labels.putAll(transitiveLabels);
 
 		// pass label by header
-		if (labels.size() == 0) {
-			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER);
-			return;
-		}
-
 		String encodedLabelsContent;
 		try {
 			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), UTF_8);
