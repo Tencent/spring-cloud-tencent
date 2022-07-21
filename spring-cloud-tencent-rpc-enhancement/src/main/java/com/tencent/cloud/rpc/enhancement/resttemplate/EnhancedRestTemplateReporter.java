@@ -25,6 +25,8 @@ import java.util.Objects;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ReflectionUtils;
+import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -43,7 +45,7 @@ import org.springframework.web.client.ResponseErrorHandler;
  *
  * @author wh 2022/6/21
  */
-public class EnhancedRestTemplateReporter implements ResponseErrorHandler {
+public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter implements ResponseErrorHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EnhancedRestTemplateReporter.class);
 
@@ -53,8 +55,9 @@ public class EnhancedRestTemplateReporter implements ResponseErrorHandler {
 
 	private final PolarisResponseErrorHandler polarisResponseErrorHandler;
 
-	public EnhancedRestTemplateReporter(
-			ConsumerAPI consumerAPI, PolarisResponseErrorHandler polarisResponseErrorHandler) {
+	public EnhancedRestTemplateReporter(RpcEnhancementProperties properties, ConsumerAPI consumerAPI,
+			PolarisResponseErrorHandler polarisResponseErrorHandler) {
+		super(properties);
 		this.consumerAPI = consumerAPI;
 		this.polarisResponseErrorHandler = polarisResponseErrorHandler;
 	}
@@ -85,7 +88,7 @@ public class EnhancedRestTemplateReporter implements ResponseErrorHandler {
 				resultRequest.setPort(realURL.getPort());
 			}
 
-			if (response.getStatusCode().value() > 500) {
+			if (apply(response.getStatusCode())) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 		}
