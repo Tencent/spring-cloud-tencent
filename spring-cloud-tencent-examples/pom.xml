@@ -24,6 +24,7 @@
 		<module>polaris-router-example</module>
 		<module>metadata-transfer-example</module>
 		<module>polaris-router-grayrelease-example</module>
+		<module>polaris-router-featureenv-example</module>
 	</modules>
 
     <properties>

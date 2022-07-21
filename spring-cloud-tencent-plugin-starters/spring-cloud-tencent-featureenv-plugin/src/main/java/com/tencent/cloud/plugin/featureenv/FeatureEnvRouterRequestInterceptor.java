@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
 public class FeatureEnvRouterRequestInterceptor implements RouterRequestInterceptor {
 
 	private static final String LABEL_KEY_FEATURE_ENV_ROUTER_KEY = "system-feature-env-router-label";
-	private static final String DEFAULT_FEATURE_ENV_ROUTER_LABEL = "env";
+	private static final String DEFAULT_FEATURE_ENV_ROUTER_LABEL = "featureenv";
 	private static final String NOT_EXISTED_ENV = "NOT_EXISTED_ENV";
 
 	@Override

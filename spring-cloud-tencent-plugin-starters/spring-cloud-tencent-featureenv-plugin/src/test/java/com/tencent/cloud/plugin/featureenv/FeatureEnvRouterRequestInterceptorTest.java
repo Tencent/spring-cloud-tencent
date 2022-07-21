@@ -44,7 +44,7 @@ public class FeatureEnvRouterRequestInterceptorTest {
 	@Test
 	public void testDefaultRouterKey() {
 		Map<String, String> labels = new HashMap<>();
-		labels.put("env", "blue");
+		labels.put("featureenv", "blue");
 		PolarisRouterContext routerContext = new PolarisRouterContext();
 		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
 
@@ -58,7 +58,7 @@ public class FeatureEnvRouterRequestInterceptorTest {
 
 		Map<String, String> metadataRouterLabels = request.getRouterMetadata().get(MetadataRouter.ROUTER_TYPE_METADATA);
 		Assert.assertEquals(1, metadataRouterLabels.size());
-		Assert.assertEquals("blue", metadataRouterLabels.get("env"));
+		Assert.assertEquals("blue", metadataRouterLabels.get("featureenv"));
 	}
 
 	@Test

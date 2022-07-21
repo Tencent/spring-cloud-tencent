@@ -1,0 +1,68 @@
+server:
+  session-timeout: 1800
+  port: 9999
+spring:
+  application:
+    name: featureenv-gateway
+  cloud:
+    tencent:
+      plugin:
+        scg: 
+          staining:
+            enabled: true
+            rule-staining:
+              enabled: true
+        router:
+          feature-env:
+            enabled: true
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          'predicates[0]':
+            name: Path
+            args:
+              patterns: '''/'' + serviceId + ''/**'''
+          'filters[0]':
+            name: RewritePath
+            args:
+              regexp: '''/'' + serviceId + ''/(?<remaining>.*)'''
+              replacement: '''/$\{remaining}'''
+          'filters[1]':
+            name: Retry
+            args:
+              retries: 3
+              exceptions:
+                '[0]': '''java.net.ConnectException'''
+                '[1]': '''java.io.IOException'''
+              statuses:
+                '[0]': '''BAD_GATEWAY'''
+                '[1]': '''SERVICE_UNAVAILABLE'''
+              series:
+                '[0]': '''CLIENT_ERROR'''
+              methods:
+                '[0]': '''GET'''
+                '[1]': '''POST'''
+                '[2]': '''PUT'''
+                '[3]': '''DELETE'''
+              backoff:
+                firstBackoff: '''100ms'''
+                maxBackoff: '''500ms'''
+                factor: 2
+                basedOnPreviousValue: false
+      routes:
+        - id: featureenv-front-example
+          uri: lb://featureenv-front-example
+          predicates:
+            - Path=/featureenv-front-example/**
+          filters:
+            - StripPrefix=1
+
+logging:
+  level:
+    org.springframework.cloud.gateway: info
+    com.tencent.cloud.polaris: debug
