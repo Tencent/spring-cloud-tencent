@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Haotian Zhang
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class SuccessPolarisReporterTest {
 
 	private static MockedStatic<ReporterUtils> mockedReporterUtils;
