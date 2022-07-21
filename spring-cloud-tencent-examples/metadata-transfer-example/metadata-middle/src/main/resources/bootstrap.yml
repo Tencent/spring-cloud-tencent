@@ -1,0 +1,35 @@
+server:
+  port: 48084
+spring:
+  application:
+    name: MetadataMiddleService
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
+    tencent:
+      metadata:
+        # Defined your metadata keys & values
+        content:
+          # Example: intransitive
+          CUSTOM-METADATA-KEY-LOCAL-2: CUSTOM-VALUE-LOCAL-2
+          # Example: transitive
+          CUSTOM-METADATA-KEY-TRANSITIVE-2: CUSTOM-VALUE-TRANSITIVE-2
+          # Example: disposable
+          CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE-MIDDLE
+        # Assigned which metadata key-value will be passed along the link
+        transitive:
+          - CUSTOM-METADATA-KEY-TRANSITIVE-2
+        disposable:
+          - CUSTOM-METADATA-KEY-DISPOSABLE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-metadata

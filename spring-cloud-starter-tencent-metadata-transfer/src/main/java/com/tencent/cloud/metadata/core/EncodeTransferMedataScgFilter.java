@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -36,6 +37,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 
 /**
@@ -64,17 +67,37 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 		}
 
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		if (!CollectionUtils.isEmpty(customMetadata)) {
-			String metadataStr = JacksonUtils.serialize2Json(customMetadata);
-			try {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						URLEncoder.encode(metadataStr, UTF_8));
+		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
+
+		// Clean upstream disposable metadata.
+		Map<String, String> newestCustomMetadata = new HashMap<>();
+		customMetadata.forEach((key, value) -> {
+			if (!disposableMetadata.containsKey(key)) {
+				newestCustomMetadata.put(key, value);
 			}
-			catch (UnsupportedEncodingException e) {
-				builder.header(MetadataConstant.HeaderName.CUSTOM_METADATA, metadataStr);
-			}
-		}
+		});
+
+		this.buildMetadataHeader(builder, newestCustomMetadata, CUSTOM_METADATA);
+		this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
 		return chain.filter(exchange.mutate().request(builder.build()).build());
+	}
+
+	/**
+	 * Set metadata into the request header for {@link ServerHttpRequest.Builder} .
+	 * @param builder instance of {@link ServerHttpRequest.Builder}
+	 * @param metadata metadata map .
+	 * @param headerName target metadata http header name .
+	 */
+	private void buildMetadataHeader(ServerHttpRequest.Builder builder, Map<String, String> metadata, String headerName) {
+		if (!CollectionUtils.isEmpty(metadata)) {
+			String encodedMetadata = JacksonUtils.serialize2Json(metadata);
+			try {
+				builder.header(headerName, URLEncoder.encode(encodedMetadata, UTF_8));
+			}
+			catch (UnsupportedEncodingException e) {
+				builder.header(headerName, encodedMetadata);
+			}
+		}
 	}
 }

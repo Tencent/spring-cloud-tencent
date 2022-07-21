@@ -54,18 +54,23 @@ public class StaticMetadataManager {
 	private static final String ENV_METADATA_PREFIX = "SCT_METADATA_CONTENT_";
 	private static final int ENV_METADATA_PREFIX_LENGTH = ENV_METADATA_PREFIX.length();
 	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
+
+	private static final String ENV_METADATA_CONTENT_DISPOSABLE = "SCT_METADATA_CONTENT_DISPOSABLE";
 	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
 	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
 	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
 	private Map<String, String> envMetadata;
 	private Map<String, String> envTransitiveMetadata;
+	private Map<String, String> envDisposableMetadata;
 	private Map<String, String> configMetadata;
 	private Map<String, String> configTransitiveMetadata;
+	private Map<String, String> configDisposableMetadata;
 	private Map<String, String> customSPIMetadata;
 	private Map<String, String> customSPITransitiveMetadata;
-
+	private Map<String, String> customSPIDisposableMetadata;
 	private Map<String, String> mergedStaticMetadata;
 	private Map<String, String> mergedStaticTransitiveMetadata;
+	private Map<String, String> mergedStaticDisposableMetadata;
 	private String zone;
 	private String region;
 	private String campus;
@@ -85,6 +90,7 @@ public class StaticMetadataManager {
 		LOGGER.info("[SCT] Loaded static metadata info. {}", this);
 	}
 
+	@SuppressWarnings("DuplicatedCode")
 	private void parseEnvMetadata() {
 		Map<String, String> allEnvs = System.getenv();
 
@@ -118,27 +124,54 @@ public class StaticMetadataManager {
 			}
 		}
 		envTransitiveMetadata = Collections.unmodifiableMap(envTransitiveMetadata);
+
+		envDisposableMetadata = new HashMap<>();
+		// parse disposable metadata
+		String disposableKeys = allEnvs.get(ENV_METADATA_CONTENT_DISPOSABLE);
+		if (StringUtils.isNotBlank(disposableKeys)) {
+			String[] keyArr = StringUtils.split(disposableKeys, ",");
+			if (keyArr != null && keyArr.length > 0) {
+				for (String key : keyArr) {
+					String value = envMetadata.get(key);
+					if (StringUtils.isNotBlank(value)) {
+						envDisposableMetadata.put(key, value);
+					}
+				}
+			}
+		}
+		envDisposableMetadata = Collections.unmodifiableMap(envDisposableMetadata);
 	}
 
 	private void parseConfigMetadata(MetadataLocalProperties metadataLocalProperties) {
 		Map<String, String> allMetadata = metadataLocalProperties.getContent();
 		List<String> transitiveKeys = metadataLocalProperties.getTransitive();
+		List<String> disposableKeys = metadataLocalProperties.getDisposable();
 
-		Map<String, String> result = new HashMap<>();
+		Map<String, String> transitiveResult = new HashMap<>();
 		for (String key : transitiveKeys) {
 			if (allMetadata.containsKey(key)) {
-				result.put(key, allMetadata.get(key));
+				transitiveResult.put(key, allMetadata.get(key));
 			}
 		}
 
-		configTransitiveMetadata = Collections.unmodifiableMap(result);
+		Map<String, String> disposableResult = new HashMap<>();
+		for (String key : disposableKeys) {
+			if (allMetadata.containsKey(key)) {
+				disposableResult.put(key, allMetadata.get(key));
+			}
+		}
+
+		configTransitiveMetadata = Collections.unmodifiableMap(transitiveResult);
+		configDisposableMetadata = Collections.unmodifiableMap(disposableResult);
 		configMetadata = Collections.unmodifiableMap(allMetadata);
 	}
 
+	@SuppressWarnings("DuplicatedCode")
 	private void parseCustomMetadata(InstanceMetadataProvider instanceMetadataProvider) {
 		if (instanceMetadataProvider == null) {
 			customSPIMetadata = Collections.emptyMap();
 			customSPITransitiveMetadata = Collections.emptyMap();
+			customSPIDisposableMetadata = Collections.emptyMap();
 			return;
 		}
 
@@ -162,6 +195,17 @@ public class StaticMetadataManager {
 			}
 		}
 		customSPITransitiveMetadata = Collections.unmodifiableMap(transitiveMetadata);
+
+		Set<String> disposableKeys = instanceMetadataProvider.getDisposableMetadataKeys();
+		Map<String, String> disposableMetadata = new HashMap<>();
+		if (!CollectionUtils.isEmpty(disposableKeys)) {
+			for (String key : disposableKeys) {
+				if (customSPIMetadata.containsKey(key)) {
+					disposableMetadata.put(key, customSPIMetadata.get(key));
+				}
+			}
+		}
+		customSPIDisposableMetadata = Collections.unmodifiableMap(disposableMetadata);
 	}
 
 	private void merge() {
@@ -173,15 +217,19 @@ public class StaticMetadataManager {
 		mergedMetadataResult.putAll(customSPIMetadata);
 		// set location info as metadata
 		mergedMetadataResult.putAll(getLocationMetadata());
-
 		this.mergedStaticMetadata = Collections.unmodifiableMap(mergedMetadataResult);
 
 		Map<String, String> mergedTransitiveMetadataResult = new HashMap<>();
 		mergedTransitiveMetadataResult.putAll(configTransitiveMetadata);
 		mergedTransitiveMetadataResult.putAll(envTransitiveMetadata);
 		mergedTransitiveMetadataResult.putAll(customSPITransitiveMetadata);
-
 		this.mergedStaticTransitiveMetadata = Collections.unmodifiableMap(mergedTransitiveMetadataResult);
+
+		Map<String, String> mergedDisposableMetadataResult = new HashMap<>();
+		mergedDisposableMetadataResult.putAll(configDisposableMetadata);
+		mergedDisposableMetadataResult.putAll(envDisposableMetadata);
+		mergedDisposableMetadataResult.putAll(customSPIDisposableMetadata);
+		this.mergedStaticDisposableMetadata = Collections.unmodifiableMap(mergedDisposableMetadataResult);
 	}
 
 	private void parseLocationMetadata(MetadataLocalProperties metadataLocalProperties,
@@ -228,12 +276,20 @@ public class StaticMetadataManager {
 		return envTransitiveMetadata;
 	}
 
+	public Map<String, String> getEnvDisposableMetadata() {
+		return envDisposableMetadata;
+	}
+
 	public Map<String, String> getAllConfigMetadata() {
 		return configMetadata;
 	}
 
 	public Map<String, String> getConfigTransitiveMetadata() {
 		return configTransitiveMetadata;
+	}
+
+	public Map<String, String> getConfigDisposableMetadata() {
+		return configDisposableMetadata;
 	}
 
 	public Map<String, String> getAllCustomMetadata() {
@@ -244,12 +300,20 @@ public class StaticMetadataManager {
 		return customSPITransitiveMetadata;
 	}
 
+	public Map<String, String> getCustomSPIDisposableMetadata() {
+		return customSPIDisposableMetadata;
+	}
+
 	public Map<String, String> getMergedStaticMetadata() {
 		return mergedStaticMetadata;
 	}
 
 	public Map<String, String> getMergedStaticTransitiveMetadata() {
 		return mergedStaticTransitiveMetadata;
+	}
+
+	public Map<String, String> getMergedStaticDisposableMetadata() {
+		return mergedStaticDisposableMetadata;
 	}
 
 	public String getZone() {
