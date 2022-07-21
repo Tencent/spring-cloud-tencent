@@ -23,6 +23,8 @@ import com.tencent.polaris.api.plugin.common.ValueContext;
 import com.tencent.polaris.api.plugin.route.LocationLevel;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * After all configurations are loaded, post-initialize SDKContext.
@@ -30,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
  * @author lepdou 2022-06-28
  */
 public class PostInitPolarisSDKContext {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PostInitPolarisSDKContext.class);
 
 	public PostInitPolarisSDKContext(SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
 		// set instance's location info
@@ -40,12 +43,15 @@ public class PostInitPolarisSDKContext {
 		ValueContext valueContext = sdkContext.getValueContext();
 		if (StringUtils.isNotBlank(region)) {
 			valueContext.setValue(LocationLevel.region.name(), region);
+			LOGGER.info("[SCT] init location metadata with region = " + region);
 		}
 		if (StringUtils.isNotBlank(zone)) {
 			valueContext.setValue(LocationLevel.zone.name(), zone);
+			LOGGER.info("[SCT] init location metadata with zone = " + zone);
 		}
 		if (StringUtils.isNotBlank(campus)) {
 			valueContext.setValue(LocationLevel.campus.name(), campus);
+			LOGGER.info("[SCT] init location metadata with campus = " + campus);
 		}
 	}
 }
