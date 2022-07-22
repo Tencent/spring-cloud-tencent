@@ -1,0 +1,20 @@
+server:
+  port: 48088
+spring:
+  application:
+    name: MetadataBackendService
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-metadata

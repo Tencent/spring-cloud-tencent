@@ -8,3 +8,4 @@
 - [feat:enhance Feign and RestTemplate and support Polaris monitor.](https://github.com/Tencent/spring-cloud-tencent/pull/446)
 - [Optimize feign & rest-template circuit-breaker logic](https://github.com/Tencent/spring-cloud-tencent/pull/453)
 - [Bugfix: Removed unused class for circuit-breaker module](https://github.com/Tencent/spring-cloud-tencent/pull/456)
+- [Feature: Add disposable metadata transfer support](https://github.com/Tencent/spring-cloud-tencent/pull/458)
