@@ -35,22 +35,22 @@ public class OperationTest {
 
 	@Test
 	public void testEqual() {
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "v1", Operation.EQUAL.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "v2", Operation.EQUAL.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList(""), "v2", Operation.EQUAL.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "", Operation.EQUAL.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), null, Operation.EQUAL.getValue()));
-		Assert.assertFalse(Operation.match(Collections.emptyList(), "v1", Operation.EQUAL.getValue()));
+		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "v1", Operation.EQUALS.getValue()));
+		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "v2", Operation.EQUALS.getValue()));
+		Assert.assertFalse(Operation.match(Collections.singletonList(""), "v2", Operation.EQUALS.getValue()));
+		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "", Operation.EQUALS.getValue()));
+		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), null, Operation.EQUALS.getValue()));
+		Assert.assertFalse(Operation.match(Collections.emptyList(), "v1", Operation.EQUALS.getValue()));
 	}
 
 	@Test
 	public void testNotEqual() {
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "v1", Operation.NOT_EQUAL.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "v2", Operation.NOT_EQUAL.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList(""), "v2", Operation.NOT_EQUAL.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "", Operation.NOT_EQUAL.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), null, Operation.NOT_EQUAL.getValue()));
-		Assert.assertTrue(Operation.match(Collections.emptyList(), "v1", Operation.NOT_EQUAL.getValue()));
+		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "v1", Operation.NOT_EQUALS.getValue()));
+		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "v2", Operation.NOT_EQUALS.getValue()));
+		Assert.assertTrue(Operation.match(Collections.singletonList(""), "v2", Operation.NOT_EQUALS.getValue()));
+		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "", Operation.NOT_EQUALS.getValue()));
+		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), null, Operation.NOT_EQUALS.getValue()));
+		Assert.assertTrue(Operation.match(Collections.emptyList(), "v1", Operation.NOT_EQUALS.getValue()));
 	}
 
 	@Test
