@@ -44,7 +44,7 @@ public class RuleStainingExecutorTest {
 	public void testMatchCondition() {
 		Condition condition1 = new Condition();
 		condition1.setKey("${http.header.uid}");
-		condition1.setOperation(Operation.EQUAL.toString());
+		condition1.setOperation(Operation.EQUALS.toString());
 		condition1.setValues(Collections.singletonList("1000"));
 
 		Condition condition2 = new Condition();
@@ -81,7 +81,7 @@ public class RuleStainingExecutorTest {
 	public void testNotMatchCondition() {
 		Condition condition1 = new Condition();
 		condition1.setKey("${http.header.uid}");
-		condition1.setOperation(Operation.EQUAL.toString());
+		condition1.setOperation(Operation.EQUALS.toString());
 		condition1.setValues(Collections.singletonList("1000"));
 
 		Condition condition2 = new Condition();
@@ -117,7 +117,7 @@ public class RuleStainingExecutorTest {
 	public void testMatchTwoRulesAndNotMatchOneRule() {
 		Condition condition1 = new Condition();
 		condition1.setKey("${http.header.uid}");
-		condition1.setOperation(Operation.EQUAL.toString());
+		condition1.setOperation(Operation.EQUALS.toString());
 		condition1.setValues(Collections.singletonList("1000"));
 
 		Condition condition2 = new Condition();

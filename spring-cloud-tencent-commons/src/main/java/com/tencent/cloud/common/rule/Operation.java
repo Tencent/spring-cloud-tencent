@@ -34,11 +34,11 @@ public enum Operation {
 	/**
 	 * case sensitive string equals.
 	 */
-	EQUAL("EQUAL"),
+	EQUALS("EQUALS"),
 	/**
 	 * case sensitive string not equals.
 	 */
-	NOT_EQUAL("NOT_EQUAL"),
+	NOT_EQUALS("NOT_EQUALS"),
 	/**
 	 * whether element in collection.
 	 */
@@ -73,9 +73,9 @@ public enum Operation {
 		}
 
 		switch (getOperation(rawOperation)) {
-		case EQUAL:
+		case EQUALS:
 			return firstExpectedValue != null && StringUtils.equals(actualValue, firstExpectedValue);
-		case NOT_EQUAL:
+		case NOT_EQUALS:
 			return firstExpectedValue == null || !StringUtils.equals(actualValue, firstExpectedValue);
 		case BLANK:
 			return StringUtils.isBlank(actualValue);
@@ -103,11 +103,11 @@ public enum Operation {
 	}
 
 	public static Operation getOperation(String operation) {
-		if (StringUtils.equalsIgnoreCase(operation, EQUAL.value)) {
-			return EQUAL;
+		if (StringUtils.equalsIgnoreCase(operation, EQUALS.value)) {
+			return EQUALS;
 		}
-		if (StringUtils.equalsIgnoreCase(operation, NOT_EQUAL.value)) {
-			return NOT_EQUAL;
+		if (StringUtils.equalsIgnoreCase(operation, NOT_EQUALS.value)) {
+			return NOT_EQUALS;
 		}
 		if (StringUtils.equalsIgnoreCase(operation, IN.value)) {
 			return IN;
