@@ -93,10 +93,10 @@
 		<spring.cloud.version>2021.0.3</spring.cloud.version>
 
 		<!-- Spring Boot -->
-		<spring.boot.version>2.6.9</spring.boot.version>
+		<spring.boot.version>2.6.10</spring.boot.version>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>5.3.21</spring.framework.version>
+		<spring.framework.version>5.3.22</spring.framework.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
