@@ -12,3 +12,4 @@
 - [Optimize: Specification apollo code reference notes](https://github.com/Tencent/spring-cloud-tencent/pull/442)
 - [Optimize:  optimize router label resolver spi](https://github.com/Tencent/spring-cloud-tencent/pull/449)
 - [Feature: add feature env examples](https://github.com/Tencent/spring-cloud-tencent/pull/450)
+- [Bugfix: Removed unused class for circuit-breaker module](https://github.com/Tencent/spring-cloud-tencent/pull/455)
