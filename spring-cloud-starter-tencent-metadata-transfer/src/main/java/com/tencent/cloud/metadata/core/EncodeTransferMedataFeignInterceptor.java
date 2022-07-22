@@ -19,7 +19,7 @@
 package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -33,9 +33,12 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static java.net.URLEncoder.encode;
 
 /**
  * Interceptor used for adding the metadata in http headers from context when web client
@@ -57,17 +60,37 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
 
-		if (!CollectionUtils.isEmpty(customMetadata)) {
-			String encodedTransitiveMetadata = JacksonUtils.serialize2Json(customMetadata);
-			requestTemplate.removeHeader(CUSTOM_METADATA);
+		// Clean up one-time metadata coming from upstream .
+		Map<String, String> newestCustomMetadata = new HashMap<>();
+		customMetadata.forEach((key, value) -> {
+			if (!disposableMetadata.containsKey(key)) {
+				newestCustomMetadata.put(key, value);
+			}
+		});
+		this.buildMetadataHeader(requestTemplate, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+
+		// process custom metadata finally
+		this.buildMetadataHeader(requestTemplate, newestCustomMetadata, CUSTOM_METADATA);
+	}
+
+	/**
+	 * Set metadata into the request header for {@link RestTemplate} .
+	 * @param requestTemplate instance of {@link RestTemplate}
+	 * @param metadata metadata map .
+	 * @param headerName target metadata http header name .
+	 */
+	private void buildMetadataHeader(RequestTemplate requestTemplate, Map<String, String> metadata, String headerName) {
+		if (!CollectionUtils.isEmpty(metadata)) {
+			String encodedMetadata = JacksonUtils.serialize2Json(metadata);
+			requestTemplate.removeHeader(headerName);
 			try {
-				requestTemplate.header(CUSTOM_METADATA,
-						URLEncoder.encode(encodedTransitiveMetadata, UTF_8));
+				requestTemplate.header(headerName, encode(encodedMetadata, UTF_8));
 			}
 			catch (UnsupportedEncodingException e) {
 				LOG.error("Set header failed.", e);
-				requestTemplate.header(CUSTOM_METADATA, encodedTransitiveMetadata);
+				requestTemplate.header(headerName, encodedMetadata);
 			}
 		}
 	}

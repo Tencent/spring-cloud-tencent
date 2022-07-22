@@ -27,6 +27,12 @@ import org.springframework.core.Ordered;
 public final class MetadataConstant {
 
 	/**
+	 * Default Private Constructor.
+	 */
+	private MetadataConstant() {
+	}
+
+	/**
 	 * Order of filter, interceptor, ...
 	 */
 	public static class OrderConstant {
@@ -56,6 +62,11 @@ public final class MetadataConstant {
 		 * Custom metadata.
 		 */
 		public static final String CUSTOM_METADATA = "SCT-CUSTOM-METADATA";
+
+		/**
+		 * Custom Disposable Metadata.
+		 */
+		public static final String CUSTOM_DISPOSABLE_METADATA = "SCT-CUSTOM-DISPOSABLE-METADATA";
 
 		/**
 		 * System Metadata.
