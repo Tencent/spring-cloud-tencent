@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +52,25 @@ public final class JacksonUtils {
 	 * @return Json String
 	 */
 	public static <T> String serialize2Json(T object) {
+		return serialize2Json(object, false);
+	}
+
+	/**
+	 * Object to Json.
+	 * @param object object to be serialized
+	 * @param pretty pretty print
+	 * @param <T> type of object
+	 * @return Json String
+	 */
+	public static <T> String serialize2Json(T object, boolean pretty) {
 		try {
-			return OM.writeValueAsString(object);
+			if (pretty) {
+				ObjectWriter objectWriter = OM.writerWithDefaultPrettyPrinter();
+				return objectWriter.writeValueAsString(object);
+			}
+			else {
+				return OM.writeValueAsString(object);
+			}
 		}
 		catch (JsonProcessingException e) {
 			LOG.error("Object to Json failed. {}", object, e);
