@@ -1,5 +1,7 @@
 # 多测试环境样例说明
 
+[English](./README.md) | 简体中文
+
 ## 一、部署结构
 
 <img src="./imgs/structs.png"/>
