@@ -235,7 +235,7 @@ public class PolarisDiscoveryProperties {
 				", enabled=" + enabled +
 				", registerEnabled=" + registerEnabled +
 				", heartbeatEnabled=" + heartbeatEnabled +
-				", heartBeatInterval=" + heartbeatInterval +
+				", heartbeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
 				'}';
