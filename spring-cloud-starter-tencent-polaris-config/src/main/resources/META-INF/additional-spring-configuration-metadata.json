@@ -47,6 +47,12 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Whether to enable import-check."
+    },
+    {
+      "name": "spring.cloud.polaris.config.preference",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to preferentially load the remote configuration."
     }
   ]
 }

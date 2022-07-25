@@ -144,9 +144,9 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 		String groupName = polarisConfigDataResource.getGroupName();
 		ConfigFileGroup configFileGroup = new ConfigFileGroup();
 		configFileGroup.setName(groupName);
-		List<String> flies = new ArrayList<>();
-		flies.add(fileName);
-		configFileGroup.setFiles(flies);
+		List<String> files = new ArrayList<>();
+		files.add(fileName);
+		configFileGroup.setFiles(files);
 		return configFileGroup;
 	}
 }
