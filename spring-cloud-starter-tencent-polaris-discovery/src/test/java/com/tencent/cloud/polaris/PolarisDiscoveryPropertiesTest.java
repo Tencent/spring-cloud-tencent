@@ -100,7 +100,7 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", enabled=true"
 						+ ", registerEnabled=true"
 						+ ", heartbeatEnabled=true"
-						+ ", heartBeatInterval=2000"
+						+ ", heartbeatInterval=2000"
 						+ ", healthCheckUrl='/health'"
 						+ ", serviceListRefreshInterval=1000}");
 	}
