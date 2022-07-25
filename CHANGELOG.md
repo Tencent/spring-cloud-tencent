@@ -16,3 +16,4 @@
 - [Bugfix: Removed unused class for circuit-breaker module](https://github.com/Tencent/spring-cloud-tencent/pull/455)
 - [Optimize: rename opertion EQUAL to EQUALS](https://github.com/Tencent/spring-cloud-tencent/pull/457)
 - [Docs: Add featureenv example readme(en) file](https://github.com/Tencent/spring-cloud-tencent/pull/460)
+- [docs:update configuration metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/463)
