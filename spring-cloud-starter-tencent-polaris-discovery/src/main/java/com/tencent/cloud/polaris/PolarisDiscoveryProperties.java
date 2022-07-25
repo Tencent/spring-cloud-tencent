@@ -102,7 +102,7 @@ public class PolarisDiscoveryProperties {
 	 * Time unit: millisecond. Default: 5000.
 	 * @see ContextConstant#DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL
 	 */
-	private Integer heartBeatInterval = 5000;
+	private Integer heartbeatInterval = 5000;
 
 	/**
 	 * Custom health check url to override default.
@@ -211,15 +211,15 @@ public class PolarisDiscoveryProperties {
 		this.serviceListRefreshInterval = serviceListRefreshInterval;
 	}
 
-	public Integer getHeartBeatInterval() {
-		if (this.heartbeatEnabled && this.heartBeatInterval <= 0) {
+	public Integer getHeartbeatInterval() {
+		if (this.heartbeatEnabled && this.heartbeatInterval <= 0) {
 			return DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
 		}
-		return heartBeatInterval;
+		return heartbeatInterval;
 	}
 
-	public void setHeartBeatInterval(Integer heartBeatInterval) {
-		this.heartBeatInterval = heartBeatInterval;
+	public void setHeartbeatInterval(Integer heartbeatInterval) {
+		this.heartbeatInterval = heartbeatInterval;
 	}
 
 	@Override
@@ -235,7 +235,7 @@ public class PolarisDiscoveryProperties {
 				", enabled=" + enabled +
 				", registerEnabled=" + registerEnabled +
 				", heartbeatEnabled=" + heartbeatEnabled +
-				", heartBeatInterval=" + heartBeatInterval +
+				", heartBeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
 				'}';

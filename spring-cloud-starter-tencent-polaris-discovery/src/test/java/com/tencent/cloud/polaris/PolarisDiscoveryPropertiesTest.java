@@ -42,8 +42,8 @@ public class PolarisDiscoveryPropertiesTest {
 		assertThat(polarisDiscoveryProperties.isHeartbeatEnabled()).isTrue();
 
 		// HeartbeatEnabled
-		polarisDiscoveryProperties.setHeartBeatInterval(2000);
-		assertThat(polarisDiscoveryProperties.getHeartBeatInterval()).isEqualTo(2000);
+		polarisDiscoveryProperties.setHeartbeatInterval(2000);
+		assertThat(polarisDiscoveryProperties.getHeartbeatInterval()).isEqualTo(2000);
 
 		// Namespace
 		polarisDiscoveryProperties.setNamespace(NAMESPACE_TEST);

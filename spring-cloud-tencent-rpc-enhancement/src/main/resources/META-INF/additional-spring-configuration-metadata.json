@@ -1,6 +1,30 @@
 {
   "properties": [
     {
+      "name": "spring.cloud.tencent.rpc-enhancement.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "If rpc enhancement enabled."
+    },
+    {
+      "name": "spring.cloud.tencent.rpc-enhancement.ignore-internal-server-error",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "If ignore \"Internal Server Error Http Status Code (500)\"."
+    },
+    {
+      "name": "sspring.cloud.tencent.rpc-enhancement.series",
+      "type": "java.util.List<org.springframework.http.HttpStatus.Series>",
+      "defaultValue": "HttpStatus.Series.SERVER_ERROR",
+      "description": "Specify List of HTTP status series that needs to be reported as FAILED when status list is empty."
+    },
+    {
+      "name": "sspring.cloud.tencent.rpc-enhancement.statuses",
+      "type": "java.util.List<org.springframework.http.HttpStatus>",
+      "defaultValue": "",
+      "description": "Specify the Http status code(s) that needs to be reported as FAILED."
+    },
+    {
       "name": "spring.cloud.polaris.stat.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": false,

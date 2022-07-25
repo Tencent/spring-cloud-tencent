@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.discovery;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Polaris service discovery service.
@@ -65,6 +67,9 @@ public class PolarisServiceDiscovery {
 	 * @throws PolarisException polarisException
 	 */
 	public List<String> getServices() throws PolarisException {
+		if (CollectionUtils.isEmpty(polarisDiscoveryHandler.GetServices().getServices())) {
+			return Collections.emptyList();
+		}
 		return polarisDiscoveryHandler.GetServices().getServices().stream()
 				.map(ServiceInfo::getService).collect(Collectors.toList());
 	}

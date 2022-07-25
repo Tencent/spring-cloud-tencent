@@ -95,7 +95,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setZone(staticMetadataManager.getZone());
 		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
 		if (null != heartbeatExecutor) {
-			instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartBeatInterval());
+			instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 		}
 		instanceRegisterRequest.setMetadata(registration.getMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
@@ -186,8 +186,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	public void heartbeat(InstanceHeartbeatRequest heartbeatRequest) {
 		heartbeatExecutor.scheduleWithFixedDelay(() -> {
 			try {
-				String healthCheckEndpoint = polarisDiscoveryProperties
-						.getHealthCheckUrl();
+				String healthCheckEndpoint = polarisDiscoveryProperties.getHealthCheckUrl();
 				// First determine whether health-check-url is configured.
 				// If configured, the service instance health check needs to be executed
 				// first.
@@ -215,6 +214,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 			catch (Exception e) {
 				LOG.error("polaris heartbeat runtime error", e);
 			}
-		}, polarisDiscoveryProperties.getHeartBeatInterval(), polarisDiscoveryProperties.getHeartBeatInterval(), MILLISECONDS);
+		}, polarisDiscoveryProperties.getHeartbeatInterval(), polarisDiscoveryProperties.getHeartbeatInterval(), MILLISECONDS);
 	}
 }

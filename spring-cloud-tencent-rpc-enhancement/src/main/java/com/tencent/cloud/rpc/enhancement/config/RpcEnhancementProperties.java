@@ -33,22 +33,22 @@ import org.springframework.http.HttpStatus;
 public class RpcEnhancementProperties {
 
 	/**
-	 * If circuit-breaker enabled.
+	 * If rpc enhancement enabled.
 	 */
 	private boolean enabled = true;
 
 	/**
-	 * Specify the Http status code(s) that needs to be fused.
+	 * Specify the Http status code(s) that needs to be reported as FAILED.
 	 */
 	private List<HttpStatus> statuses = new ArrayList<>();
 
 	/**
-	 * Specify List of HTTP status series.
+	 * Specify List of HTTP status series that needs to be reported as FAILED when status list is empty.
 	 */
 	private List<HttpStatus.Series> series = toList(HttpStatus.Series.SERVER_ERROR);
 
 	/**
-	 * Ignore Internal Server Error Http Status Code,
+	 * If ignore "Internal Server Error Http Status Code (500)",
 	 * Only takes effect if the attribute {@link RpcEnhancementProperties#series} is not empty.
 	 */
 	private boolean ignoreInternalServerError = true;
