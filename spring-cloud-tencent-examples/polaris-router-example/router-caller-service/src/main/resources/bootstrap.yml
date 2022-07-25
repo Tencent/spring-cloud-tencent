@@ -14,3 +14,9 @@ spring:
       enabled: true
       loadbalancer:
         enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-router

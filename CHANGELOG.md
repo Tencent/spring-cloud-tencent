@@ -14,5 +14,6 @@
 - [Feature: add feature env examples](https://github.com/Tencent/spring-cloud-tencent/pull/450)
 - [Feature: Add disposable metadata transfer support](https://github.com/Tencent/spring-cloud-tencent/pull/430)
 - [Bugfix: Removed unused class for circuit-breaker module](https://github.com/Tencent/spring-cloud-tencent/pull/455)
-- [Optimize: rename opertion EQUAL to EQUALS](https://github.com/Tencent/spring-cloud-tencent/pull/457)
-- [Docs: Add featureenv example readme(en) file](https://github.com/Tencent/spring-cloud-tencent/pull/460)
+- [Optimize: rename operation EQUAL to EQUALS](https://github.com/Tencent/spring-cloud-tencent/pull/457)
+- [Docs: Add feature env example readme(en) file](https://github.com/Tencent/spring-cloud-tencent/pull/460)
+- [Feature: Add router actuate endpoint](https://github.com/Tencent/spring-cloud-tencent/pull/464)

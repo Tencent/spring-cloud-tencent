@@ -15,34 +15,32 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.config.endpoint;
+package com.tencent.cloud.polaris.router.endpoint;
 
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
-import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.ServiceRuleManager;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * The AutoConfiguration for Polaris Config's endpoint.
+ * The AutoConfiguration for polaris router endpoint.
  *
- * @author shuiqingliu
+ * @author lepdou 2022-07-25
  **/
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Endpoint.class)
-@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled",
-		matchIfMissing = true)
-public class PolarisConfigEndpointAutoConfiguration {
+@ConditionalOnPolarisEnabled
+public class PolarisRouterEndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnAvailableEndpoint
 	@ConditionalOnMissingBean
-	public PolarisConfigEndpoint polarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
-		return new PolarisConfigEndpoint(polarisConfigProperties, polarisPropertySourceManager);
+	@ConditionalOnAvailableEndpoint
+	public PolarisRouterEndpoint polarisRouterEndpoint(ServiceRuleManager serviceRuleManager) {
+		return new PolarisRouterEndpoint(serviceRuleManager);
 	}
 }

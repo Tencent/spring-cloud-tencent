@@ -98,7 +98,7 @@ public class PolarisRateLimitRuleEndpointTests {
 	public void testPolarisRateLimit() {
 		this.contextRunner.run(context -> polarisRateLimitProperties = context.getBean(PolarisRateLimitProperties.class));
 		PolarisRateLimitRuleEndpoint polarisRateLimitRuleEndpoint = new PolarisRateLimitRuleEndpoint(serviceRuleManager, polarisRateLimitProperties);
-		Map<String, Object> rateLimit = polarisRateLimitRuleEndpoint.rateLimit("namespaceTest", "TestApp2", "TestApp3");
+		Map<String, Object> rateLimit = polarisRateLimitRuleEndpoint.rateLimit();
 		assertThat(polarisRateLimitProperties).isEqualTo(rateLimit.get("properties"));
 	}
 
