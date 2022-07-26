@@ -19,3 +19,4 @@
 - [docs:update configuration metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/463)
 - [Feature: Add router actuate endpoint](https://github.com/Tencent/spring-cloud-tencent/pull/464)
 - [feat:rename the configuration of reporter.](https://github.com/Tencent/spring-cloud-tencent/pull/465)
+- [docs:update mvnw.](https://github.com/Tencent/spring-cloud-tencent/pull/466)
