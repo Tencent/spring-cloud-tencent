@@ -24,19 +24,16 @@ import java.util.Map;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.polaris.client.pb.RateLimitProto;
-import com.tencent.polaris.client.pb.RoutingProto;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -58,19 +55,17 @@ public class PolarisRateLimitRuleEndpoint {
 	}
 
 	@ReadOperation
-	public Map<String, Object> rateLimit(@Selector String namespace, @Selector String service, @Nullable String dstService) {
-		Map<String, Object> result = new HashMap<>();
-		RateLimitProto.RateLimit rateLimit = serviceRuleManager.getServiceRateLimitRule(namespace, service);
-		result.put("properties", polarisRateLimitProperties);
-		result.put("namespace", namespace);
-		result.put("service", service);
-		result.put("rateLimits", parseRateLimitRule(rateLimit));
+	public Map<String, Object> rateLimit() {
+		RateLimitProto.RateLimit rateLimit = serviceRuleManager.getServiceRateLimitRule(MetadataContext.LOCAL_NAMESPACE,
+				MetadataContext.LOCAL_SERVICE);
 
-		if (StringUtils.isEmpty(dstService)) {
-			return result;
-		}
-		List<RoutingProto.Route> routes = serviceRuleManager.getServiceRouterRule(namespace, service, dstService);
-		result.put("routes", routes);
+		Map<String, Object> result = new HashMap<>();
+
+		result.put("properties", polarisRateLimitProperties);
+		result.put("namespace", MetadataContext.LOCAL_NAMESPACE);
+		result.put("service", MetadataContext.LOCAL_SERVICE);
+		result.put("rateLimitRules", parseRateLimitRule(rateLimit));
+
 		return result;
 	}
 
@@ -93,5 +88,4 @@ public class PolarisRateLimitRuleEndpoint {
 		}
 		return rateLimitRule;
 	}
-
 }

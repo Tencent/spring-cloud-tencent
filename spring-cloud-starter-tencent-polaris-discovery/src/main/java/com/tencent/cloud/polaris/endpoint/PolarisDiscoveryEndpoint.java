@@ -39,13 +39,13 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
  * @author shuiqingliu
  */
 @Endpoint(id = "polaris-discovery")
-public class PolarisDiscoveryEndPoint {
+public class PolarisDiscoveryEndpoint {
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 	private final DiscoveryClient polarisDiscoveryClient;
 	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
-	public PolarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties, DiscoveryClient polarisDiscoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
+	public PolarisDiscoveryEndpoint(PolarisDiscoveryProperties polarisDiscoveryProperties, DiscoveryClient polarisDiscoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryClient = polarisDiscoveryClient;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
@@ -53,16 +53,16 @@ public class PolarisDiscoveryEndPoint {
 
 	@ReadOperation
 	public Map<String, Object> polarisDiscovery(@Selector String serviceId) {
-		Map<String, Object> polarisDisConveryInfo = new HashMap<>();
-		polarisDisConveryInfo.put("PolarisDiscoveryProperties", polarisDiscoveryProperties);
+		Map<String, Object> polarisDiscoveryInfo = new HashMap<>();
+		polarisDiscoveryInfo.put("PolarisDiscoveryProperties", polarisDiscoveryProperties);
 
 		List<ServiceInstances> serviceInstancesInfoList = new ArrayList<>();
 
 		if (StringUtils.isNotEmpty(serviceId)) {
 			ServiceInstances serviceInstances = getServiceInstances(serviceId);
 			serviceInstancesInfoList.add(serviceInstances);
-			polarisDisConveryInfo.put("ServiceInstances", serviceInstancesInfoList);
-			return polarisDisConveryInfo;
+			polarisDiscoveryInfo.put("ServiceInstances", serviceInstancesInfoList);
+			return polarisDiscoveryInfo;
 		}
 
 		for (String service : polarisDiscoveryClient.getServices()) {
@@ -70,13 +70,12 @@ public class PolarisDiscoveryEndPoint {
 			serviceInstancesInfoList.add(serviceInstances);
 		}
 
-		polarisDisConveryInfo.put("ServiceInstances", serviceInstancesInfoList);
-		return polarisDisConveryInfo;
+		polarisDiscoveryInfo.put("ServiceInstances", serviceInstancesInfoList);
+		return polarisDiscoveryInfo;
 	}
 
 	private ServiceInstances getServiceInstances(String serviceId) {
 		InstancesResponse instancesResponse = polarisDiscoveryHandler.getHealthyInstances(serviceId);
-		ServiceInstances serviceInstances = instancesResponse.toServiceInstances();
-		return serviceInstances;
+		return instancesResponse.toServiceInstances();
 	}
 }
