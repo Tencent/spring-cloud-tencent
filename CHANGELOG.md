@@ -18,3 +18,4 @@
 - [Docs: Add featureenv example readme(en) file](https://github.com/Tencent/spring-cloud-tencent/pull/460)
 - [docs:update configuration metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/463)
 - [feat:rename the configuration of reporter.](https://github.com/Tencent/spring-cloud-tencent/pull/465)
+- [docs:update mvnw.](https://github.com/Tencent/spring-cloud-tencent/pull/466)
