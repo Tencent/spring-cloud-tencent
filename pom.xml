@@ -40,6 +40,7 @@
 	<modules>
 		<module>spring-cloud-tencent-commons</module>
 		<module>spring-cloud-tencent-polaris-context</module>
+		<module>spring-cloud-tencent-rpc-enhancement</module>
 		<module>spring-cloud-tencent-polaris-loadbalancer</module>
 		<module>spring-cloud-starter-tencent-metadata-transfer</module>
 		<module>spring-cloud-starter-tencent-polaris-config</module>
@@ -86,7 +87,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.6.0-2020.0.5</revision>
+		<revision>1.7.0-2020.0.5-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2020.0.5</spring.cloud.version>

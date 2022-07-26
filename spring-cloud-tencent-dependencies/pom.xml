@@ -70,10 +70,10 @@
 	</developers>
 
 	<properties>
-		<revision>1.6.0-2020.0.5</revision>
+		<revision>1.7.0-2020.0.5-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.7.0</polaris.version>
+		<polaris.version>1.7.1</polaris.version>
 		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
@@ -107,6 +107,12 @@
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-polaris-context</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
 				<version>${revision}</version>
 			</dependency>
 

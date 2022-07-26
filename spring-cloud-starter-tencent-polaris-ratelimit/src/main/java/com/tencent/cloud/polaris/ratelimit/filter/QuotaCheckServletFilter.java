@@ -110,7 +110,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 			}
 			// Unirate
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
-				LOG.debug("Unirate sleep for {}ms.", quotaResponse.getWaitMs());
+				LOG.debug("The request of [{}] will waiting for {}ms.", request.getRequestURI(), quotaResponse.getWaitMs());
 				Thread.sleep(quotaResponse.getWaitMs());
 			}
 
@@ -150,8 +150,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				return labelResolver.resolve(request);
 			}
 			catch (Throwable e) {
-				LOG.error("resolve custom label failed. resolver = {}",
-						labelResolver.getClass().getName(), e);
+				LOG.error("resolve custom label failed. resolver = {}", labelResolver.getClass().getName(), e);
 			}
 		}
 		return Collections.emptyMap();
