@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,19 +50,17 @@ import static org.springframework.http.HttpStatus.VARIANT_ALSO_NEGOTIATES;
 public abstract class AbstractPolarisReporterAdapter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractPolarisReporterAdapter.class);
-
-	protected final RpcEnhancementProperties properties;
-
 	private static final List<HttpStatus> HTTP_STATUSES = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
 			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
 			INSUFFICIENT_STORAGE, LOOP_DETECTED, BANDWIDTH_LIMIT_EXCEEDED, NOT_EXTENDED, NETWORK_AUTHENTICATION_REQUIRED);
+	protected final RpcEnhancementReporterProperties properties;
 
 	/**
-	 * Constructor With {@link RpcEnhancementProperties} .
+	 * Constructor With {@link RpcEnhancementReporterProperties} .
 	 *
-	 * @param properties instance of {@link RpcEnhancementProperties}.
+	 * @param properties instance of {@link RpcEnhancementReporterProperties}.
 	 */
-	protected AbstractPolarisReporterAdapter(RpcEnhancementProperties properties) {
+	protected AbstractPolarisReporterAdapter(RpcEnhancementReporterProperties properties) {
 		this.properties = properties;
 	}
 

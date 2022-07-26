@@ -29,13 +29,8 @@ import org.springframework.http.HttpStatus;
  *
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022-07-08
  */
-@ConfigurationProperties("spring.cloud.tencent.rpc-enhancement")
-public class RpcEnhancementProperties {
-
-	/**
-	 * If rpc enhancement enabled.
-	 */
-	private boolean enabled = true;
+@ConfigurationProperties("spring.cloud.tencent.rpc-enhancement.reporter")
+public class RpcEnhancementReporterProperties {
 
 	/**
 	 * Specify the Http status code(s) that needs to be reported as FAILED.
@@ -49,7 +44,7 @@ public class RpcEnhancementProperties {
 
 	/**
 	 * If ignore "Internal Server Error Http Status Code (500)",
-	 * Only takes effect if the attribute {@link RpcEnhancementProperties#series} is not empty.
+	 * Only takes effect if the attribute {@link RpcEnhancementReporterProperties#series} is not empty.
 	 */
 	private boolean ignoreInternalServerError = true;
 
@@ -79,14 +74,6 @@ public class RpcEnhancementProperties {
 
 	public void setSeries(List<HttpStatus.Series> series) {
 		this.series = series;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	public boolean isIgnoreInternalServerError() {
