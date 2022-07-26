@@ -22,7 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +49,7 @@ public class EnhancedRestTemplateReporterTest {
 	public void handleError() throws Exception {
 		ConsumerAPI consumerAPI = mock(ConsumerAPI.class);
 		EnhancedRestTemplateReporter enhancedRestTemplateReporter =
-				new EnhancedRestTemplateReporter(mock(RpcEnhancementProperties.class), consumerAPI);
+				new EnhancedRestTemplateReporter(mock(RpcEnhancementReporterProperties.class), consumerAPI);
 		URI uri = mock(URI.class);
 		when(uri.getPath()).thenReturn("/test");
 		when(uri.getHost()).thenReturn("host");
