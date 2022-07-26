@@ -34,3 +34,4 @@
 - [refactor:optimize project and code](https://github.com/Tencent/spring-cloud-tencent/pull/392)
 - [Optimize starter's auto-configuration](https://github.com/Tencent/spring-cloud-tencent/pull/395)
 - [test: add PostInitPolarisSDKContextTest](https://github.com/Tencent/spring-cloud-tencent/pull/404)
+- [loadBalancer module add unit test.](https://github.com/Tencent/spring-cloud-tencent/pull/467)
