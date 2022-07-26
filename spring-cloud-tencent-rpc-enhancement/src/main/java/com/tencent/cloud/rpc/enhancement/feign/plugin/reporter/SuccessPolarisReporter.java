@@ -18,7 +18,7 @@
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
@@ -42,13 +42,12 @@ import org.springframework.http.HttpStatus;
 public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter implements EnhancedFeignPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SuccessPolarisReporter.class);
-
-	public SuccessPolarisReporter(RpcEnhancementProperties properties) {
-		super(properties);
-	}
-
 	@Autowired(required = false)
 	private ConsumerAPI consumerAPI;
+
+	public SuccessPolarisReporter(RpcEnhancementReporterProperties properties) {
+		super(properties);
+	}
 
 	@Override
 	public String getName() {

@@ -49,7 +49,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
-@EnableConfigurationProperties(RpcEnhancementProperties.class)
+@EnableConfigurationProperties(RpcEnhancementReporterProperties.class)
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 public class RpcEnhancementAutoConfiguration {
 
@@ -75,7 +75,7 @@ public class RpcEnhancementAutoConfiguration {
 		static class PolarisReporterConfig {
 
 			@Bean
-			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementProperties properties) {
+			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties) {
 				return new SuccessPolarisReporter(properties);
 			}
 
@@ -98,7 +98,7 @@ public class RpcEnhancementAutoConfiguration {
 
 		@Bean
 		public EnhancedRestTemplateReporter polarisRestTemplateResponseErrorHandler(
-				RpcEnhancementProperties properties,
+				RpcEnhancementReporterProperties properties,
 				ConsumerAPI consumerAPI) {
 			return new EnhancedRestTemplateReporter(properties, consumerAPI);
 		}
