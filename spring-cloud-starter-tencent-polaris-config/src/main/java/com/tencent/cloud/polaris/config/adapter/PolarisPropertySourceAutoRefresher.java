@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
+import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -61,6 +63,8 @@ public class PolarisPropertySourceAutoRefresher
 
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
+	private final ContextRefresher contextRefresher;
+
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
 	private ConfigurableApplicationContext context;
@@ -70,16 +74,17 @@ public class PolarisPropertySourceAutoRefresher
 	private ConfigurableBeanFactory beanFactory;
 	private final PlaceholderHelper placeholderHelper;
 
-
 	public PolarisPropertySourceAutoRefresher(
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisPropertySourceManager polarisPropertySourceManager,
 			SpringValueRegistry springValueRegistry,
-			PlaceholderHelper placeholderHelper) {
+			PlaceholderHelper placeholderHelper,
+			ContextRefresher contextRefresher) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
+		this.contextRefresher = contextRefresher;
 	}
 
 	@Override
@@ -138,17 +143,25 @@ public class PolarisPropertySourceAutoRefresher
 								break;
 							}
 
-							Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, changedKey);
-							if (targetValues == null || targetValues.isEmpty()) {
-								continue;
+							if (polarisConfigProperties.getRefreshType() == RefreshType.REFLECT) {
+								Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, changedKey);
+								if (targetValues == null || targetValues.isEmpty()) {
+									continue;
+								}
+								// update the attribute with @Value annotation
+								for (SpringValue val : targetValues) {
+									updateSpringValue(val);
+								}
 							}
-							// update the value
-							for (SpringValue val : targetValues) {
-								updateSpringValue(val);
-							}
-
 						}
-						context.publishEvent(new EnvironmentChangeEvent(context, configKVFileChangeEvent.changedKeys()));
+
+						if (polarisConfigProperties.getRefreshType() == RefreshType.REFLECT) {
+							// update @ConfigurationProperties beans
+							context.publishEvent(new EnvironmentChangeEvent(context, configKVFileChangeEvent.changedKeys()));
+						}
+						else {
+							contextRefresher.refresh();
+						}
 					});
 		}
 	}
