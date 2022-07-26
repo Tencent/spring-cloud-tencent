@@ -23,7 +23,7 @@ import java.util.List;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import org.junit.Assert;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -39,7 +39,7 @@ import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_NAMESPACE;
 import static org.mockito.ArgumentMatchers.anyString;
 
 /**
- * Test for {@link PolarisServiceInstanceListSupplier}
+ * Test for {@link PolarisServiceInstanceListSupplier}.
  *
  * @author rod.xu
  * @date 2022/7/21 5:45 下午
@@ -69,21 +69,22 @@ public class PolarisServiceInstanceListSupplierTest {
 			allServers.add(instance2);
 
 			List<ServiceInstance> polarisInstanceList = instanceListSupplier.chooseInstances(allServers);
-			Assert.assertNotNull(polarisInstanceList);
-			Assert.assertEquals(polarisInstanceList.size(), allServers.size());
+
+			Assertions.assertThat(polarisInstanceList).isNotNull();
+			Assertions.assertThat(polarisInstanceList.size()).isEqualTo(allServers.size());
+
 			for (ServiceInstance serviceInstance : polarisInstanceList) {
-				Assert.assertTrue("", serviceInstance instanceof PolarisServiceInstance);
+				Assertions.assertThat(serviceInstance instanceof PolarisServiceInstance).isTrue();
+
 				PolarisServiceInstance polarisServiceInstance = (PolarisServiceInstance) serviceInstance;
 
-				Assert.assertFalse(polarisServiceInstance.isSecure());
-				Assert.assertEquals("unit-test-serviceId", polarisServiceInstance.getPolarisInstance().getService());
-				Assert.assertEquals(8090, polarisServiceInstance.getPolarisInstance().getPort());
-				Assert.assertEquals(LOCAL_NAMESPACE, polarisServiceInstance.getPolarisInstance().getNamespace());
+				Assertions.assertThat(polarisServiceInstance.isSecure()).isFalse();
+				Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getService()).isEqualTo("unit-test-serviceId");
+				Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getNamespace()).isEqualTo(LOCAL_NAMESPACE);
+				Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getPort()).isEqualTo(8090);
+				Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getId().startsWith("unit-test-instanceId")).isTrue();
+				Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getHost().startsWith("unit-test-host")).isTrue();
 
-				Assert.assertTrue("instance id assert",
-						polarisServiceInstance.getPolarisInstance().getId().startsWith("unit-test-instanceId"));
-				Assert.assertTrue("host assert",
-						polarisServiceInstance.getPolarisInstance().getHost().startsWith("unit-test-host"));
 			}
 		}
 	}

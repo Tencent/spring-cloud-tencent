@@ -27,8 +27,8 @@ import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperti
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 
 /**
- * Test for {@link PolarisLoadBalancer}
+ * Test for {@link PolarisLoadBalancer}.
  *
  * @author rod.xu
  * @date 2022/7/21 5:44 下午
@@ -114,16 +114,16 @@ public class PolarisLoadBalancerTest {
 		verify(supplierObjectProvider).getIfAvailable(any());
 
 		//result assert
-		Assert.assertNotNull(serviceInstance);
-		Assert.assertTrue("polaris service instance",
-				serviceInstance instanceof PolarisServiceInstance);
+		Assertions.assertThat(serviceInstance).isNotNull();
+		Assertions.assertThat(serviceInstance instanceof PolarisServiceInstance).isTrue();
 
 		PolarisServiceInstance polarisServiceInstance = (PolarisServiceInstance) serviceInstance;
-		Assert.assertEquals("instance-id", polarisServiceInstance.getPolarisInstance().getId());
-		Assert.assertEquals(LOCAL_NAMESPACE, polarisServiceInstance.getPolarisInstance().getNamespace());
-		Assert.assertEquals(LOCAL_SERVICE, polarisServiceInstance.getPolarisInstance().getService());
-		Assert.assertEquals("host", polarisServiceInstance.getPolarisInstance().getHost());
-		Assert.assertEquals(8090, polarisServiceInstance.getPolarisInstance().getPort());
+
+		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getId()).isEqualTo("instance-id");
+		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getNamespace()).isEqualTo(LOCAL_NAMESPACE);
+		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getService()).isEqualTo(LOCAL_SERVICE);
+		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getHost()).isEqualTo("host");
+		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getPort()).isEqualTo(8090);
 	}
 
 }
