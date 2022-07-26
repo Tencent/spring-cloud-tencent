@@ -82,9 +82,9 @@ public class PolarisDiscoveryEndpointTest {
 			DiscoveryClient discoveryClient = context
 					.getBean(PolarisDiscoveryClient.class);
 			PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
-			PolarisDiscoveryEndpoint polarisDiscoveryEndPoint = new PolarisDiscoveryEndpoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
+			PolarisDiscoveryEndpoint polarisDiscoveryEndpoint = new PolarisDiscoveryEndpoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
 
-			Map<String, Object> mapInfo = polarisDiscoveryEndPoint.polarisDiscovery("java_provider_test");
+			Map<String, Object> mapInfo = polarisDiscoveryEndpoint.polarisDiscovery("java_provider_test");
 
 			assertThat(polarisDiscoveryProperties).isEqualTo(mapInfo.get("PolarisDiscoveryProperties"));
 
