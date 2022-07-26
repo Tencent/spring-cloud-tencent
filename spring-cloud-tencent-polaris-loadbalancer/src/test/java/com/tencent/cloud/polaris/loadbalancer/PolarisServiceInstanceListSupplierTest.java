@@ -42,7 +42,6 @@ import static org.mockito.ArgumentMatchers.anyString;
  * Test for {@link PolarisServiceInstanceListSupplier}.
  *
  * @author rod.xu
- * @date 2022/7/21 5:45 下午
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisServiceInstanceListSupplierTest {
@@ -84,7 +83,6 @@ public class PolarisServiceInstanceListSupplierTest {
 				Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getPort()).isEqualTo(8090);
 				Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getId().startsWith("unit-test-instanceId")).isTrue();
 				Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getHost().startsWith("unit-test-host")).isTrue();
-
 			}
 		}
 	}

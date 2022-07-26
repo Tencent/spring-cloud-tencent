@@ -57,7 +57,6 @@ import static org.mockito.Mockito.when;
  * Test for {@link PolarisLoadBalancer}.
  *
  * @author rod.xu
- * @date 2022/7/21 5:44 下午
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerTest {
@@ -70,7 +69,7 @@ public class PolarisLoadBalancerTest {
 	private PolarisLoadBalancerProperties loadBalancerProperties;
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	private static Instance TestInstance;
+	private static Instance testInstance;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -78,7 +77,7 @@ public class PolarisLoadBalancerTest {
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
 
-		TestInstance = Instance.createDefaultInstance("instance-id", LOCAL_NAMESPACE,
+		testInstance = Instance.createDefaultInstance("instance-id", LOCAL_NAMESPACE,
 				LOCAL_SERVICE, "host", 8090);
 	}
 
@@ -89,10 +88,9 @@ public class PolarisLoadBalancerTest {
 
 	@Test
 	public void chooseNormalLogicTest_thenReturnAvailablePolarisInstance() {
-
 		Request request = Mockito.mock(Request.class);
 		List<ServiceInstance> mockInstanceList = new ArrayList<>();
-		mockInstanceList.add(new PolarisServiceInstance(TestInstance));
+		mockInstanceList.add(new PolarisServiceInstance(testInstance));
 
 		ServiceInstanceListSupplier serviceInstanceListSupplier = Mockito.mock(ServiceInstanceListSupplier.class);
 		when(serviceInstanceListSupplier.get(request)).thenReturn(Flux.just(mockInstanceList));
@@ -100,7 +98,7 @@ public class PolarisLoadBalancerTest {
 		when(supplierObjectProvider.getIfAvailable(any())).thenReturn(serviceInstanceListSupplier);
 		when(loadBalancerProperties.getEnabled()).thenReturn(true);
 
-		ProcessLoadBalanceResponse mockLbRes = new ProcessLoadBalanceResponse(TestInstance);
+		ProcessLoadBalanceResponse mockLbRes = new ProcessLoadBalanceResponse(testInstance);
 		when(routerAPI.processLoadBalance(any())).thenReturn(mockLbRes);
 
 		// request construct and execute invoke
@@ -125,5 +123,4 @@ public class PolarisLoadBalancerTest {
 		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getHost()).isEqualTo("host");
 		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getPort()).isEqualTo(8090);
 	}
-
 }
