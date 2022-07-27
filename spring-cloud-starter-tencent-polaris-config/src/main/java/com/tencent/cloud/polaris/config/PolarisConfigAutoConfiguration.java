@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.cloud.context.properties.ConfigurationPropertiesBeans;
 import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
+import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -53,9 +54,10 @@ public class PolarisConfigAutoConfiguration {
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisPropertySourceManager polarisPropertySourceManager,
 			SpringValueRegistry springValueRegistry,
-			PlaceholderHelper placeholderHelper) {
+			PlaceholderHelper placeholderHelper,
+			ContextRefresher contextRefresher) {
 		return new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, springValueRegistry, placeholderHelper);
+				polarisPropertySourceManager, springValueRegistry, placeholderHelper, contextRefresher);
 	}
 
 	@Bean

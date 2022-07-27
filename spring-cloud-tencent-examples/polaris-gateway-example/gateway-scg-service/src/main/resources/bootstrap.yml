@@ -64,5 +64,6 @@ spring:
 
 logging:
   level:
+    com.tencent.cloud.plugin.gateway: debug
     org.springframework.cloud.gateway: info
     com.tencent.cloud.polaris: debug

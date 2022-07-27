@@ -26,6 +26,9 @@ import java.util.Map;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.JacksonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -42,6 +45,8 @@ import static org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter.R
  * @author lepdou 2022-07-06
  */
 public class TrafficStainingGatewayFilter implements GlobalFilter, Ordered {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TrafficStainingGatewayFilter.class);
 
 	private final List<TrafficStainer> trafficStainers;
 
@@ -87,13 +92,23 @@ public class TrafficStainingGatewayFilter implements GlobalFilter, Ordered {
 	Map<String, String> getStainedLabels(ServerWebExchange exchange) {
 		Map<String, String> stainedLabels = new HashMap<>();
 		int size = trafficStainers.size();
+		TrafficStainer stainer = null;
 		for (int i = size - 1; i >= 0; i--) {
-			TrafficStainer stainer = trafficStainers.get(i);
-			Map<String, String> labels = stainer.apply(exchange);
-			if (!CollectionUtils.isEmpty(labels)) {
-				stainedLabels.putAll(labels);
+			try {
+				stainer = trafficStainers.get(i);
+				Map<String, String> labels = stainer.apply(exchange);
+				if (!CollectionUtils.isEmpty(labels)) {
+					stainedLabels.putAll(labels);
+				}
+			}
+			catch (Exception e) {
+				if (stainer != null) {
+					LOGGER.error("[SCT] traffic stained error. stainer = {}", stainer.getClass().getName(), e);
+				}
 			}
 		}
+		LOGGER.debug("[SCT] traffic stained labels. {}", JacksonUtils.serialize2Json(stainedLabels));
+
 		return stainedLabels;
 	}
 

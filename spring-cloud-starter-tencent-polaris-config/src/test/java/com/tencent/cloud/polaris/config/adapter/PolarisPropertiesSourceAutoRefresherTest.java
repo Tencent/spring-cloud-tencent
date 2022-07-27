@@ -26,6 +26,7 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
@@ -74,8 +75,9 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Test
 	public void testConfigFileChanged() throws Exception {
 		PolarisPropertySourceAutoRefresher refresher = new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, springValueRegistry, placeholderHelper);
+				polarisPropertySourceManager, springValueRegistry, placeholderHelper, contextRefresher);
 
+		when(polarisConfigProperties.getRefreshType()).thenReturn(RefreshType.REFLECT);
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
 		TypeConverter typeConverter = mock(TypeConverter.class);

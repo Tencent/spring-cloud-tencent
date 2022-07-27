@@ -19,6 +19,8 @@ package com.tencent.cloud.polaris.config.config;
 
 import java.util.List;
 
+import com.tencent.cloud.polaris.config.enums.RefreshType;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -49,6 +51,11 @@ public class PolarisConfigProperties {
 	 * is updated
 	 */
 	private boolean autoRefresh = true;
+
+	/**
+	 * Attribute refresh type.
+	 */
+	private RefreshType refreshType = RefreshType.REFRESH_CONTEXT;
 
 	/**
 	 * List of injected configuration files.
@@ -85,6 +92,14 @@ public class PolarisConfigProperties {
 
 	public void setAutoRefresh(boolean autoRefresh) {
 		this.autoRefresh = autoRefresh;
+	}
+
+	public RefreshType getRefreshType() {
+		return refreshType;
+	}
+
+	public void setRefreshType(RefreshType refreshType) {
+		this.refreshType = refreshType;
 	}
 
 	public List<ConfigFileGroup> getGroups() {
