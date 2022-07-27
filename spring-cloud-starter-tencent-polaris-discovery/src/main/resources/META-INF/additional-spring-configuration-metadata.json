@@ -25,6 +25,12 @@
       "description": "enable polaris registration or not."
     },
     {
+      "name": "spring.cloud.polaris.discovery.heartbeat-interval",
+      "type": "java.lang.Integer",
+      "defaultValue": "5000",
+      "description": "Millis interval of Heart beat. Default: 5000."
+    },
+    {
       "name": "spring.cloud.polaris.discovery.health-check-url",
       "type": "java.lang.String",
       "defaultValue": "",
