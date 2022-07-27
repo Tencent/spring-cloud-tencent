@@ -29,27 +29,22 @@ import org.springframework.http.HttpStatus;
  *
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022-07-08
  */
-@ConfigurationProperties("spring.cloud.tencent.rpc-enhancement")
-public class RpcEnhancementProperties {
+@ConfigurationProperties("spring.cloud.tencent.rpc-enhancement.reporter")
+public class RpcEnhancementReporterProperties {
 
 	/**
-	 * If circuit-breaker enabled.
-	 */
-	private boolean enabled = true;
-
-	/**
-	 * Specify the Http status code(s) that needs to be fused.
+	 * Specify the Http status code(s) that needs to be reported as FAILED.
 	 */
 	private List<HttpStatus> statuses = new ArrayList<>();
 
 	/**
-	 * Specify List of HTTP status series.
+	 * Specify List of HTTP status series that needs to be reported as FAILED when status list is empty.
 	 */
 	private List<HttpStatus.Series> series = toList(HttpStatus.Series.SERVER_ERROR);
 
 	/**
-	 * Ignore Internal Server Error Http Status Code,
-	 * Only takes effect if the attribute {@link RpcEnhancementProperties#series} is not empty.
+	 * If ignore "Internal Server Error Http Status Code (500)",
+	 * Only takes effect if the attribute {@link RpcEnhancementReporterProperties#series} is not empty.
 	 */
 	private boolean ignoreInternalServerError = true;
 
@@ -79,14 +74,6 @@ public class RpcEnhancementProperties {
 
 	public void setSeries(List<HttpStatus.Series> series) {
 		this.series = series;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	public boolean isIgnoreInternalServerError() {
