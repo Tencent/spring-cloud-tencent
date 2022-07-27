@@ -26,7 +26,7 @@ import java.util.Objects;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ReflectionUtils;
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -55,7 +55,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 
 	private final PolarisResponseErrorHandler polarisResponseErrorHandler;
 
-	public EnhancedRestTemplateReporter(RpcEnhancementProperties properties, ConsumerAPI consumerAPI,
+	public EnhancedRestTemplateReporter(RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI,
 			PolarisResponseErrorHandler polarisResponseErrorHandler) {
 		super(properties);
 		this.consumerAPI = consumerAPI;
