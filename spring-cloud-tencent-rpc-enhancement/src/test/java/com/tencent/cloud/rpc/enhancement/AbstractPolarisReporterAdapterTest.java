@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement;
 
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class AbstractPolarisReporterAdapterTest {
 
 	@Test
 	public void testApplyWithDefaultConfig() {
-		RpcEnhancementProperties properties = new RpcEnhancementProperties();
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
 		// Mock Condition
 		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties);
 
@@ -44,7 +44,7 @@ public class AbstractPolarisReporterAdapterTest {
 
 	@Test
 	public void testApplyWithoutIgnoreInternalServerError() {
-		RpcEnhancementProperties properties = new RpcEnhancementProperties();
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.setIgnoreInternalServerError(false);
@@ -59,7 +59,7 @@ public class AbstractPolarisReporterAdapterTest {
 
 	@Test
 	public void testApplyWithIgnoreInternalServerError() {
-		RpcEnhancementProperties properties = new RpcEnhancementProperties();
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.setIgnoreInternalServerError(true);
@@ -74,7 +74,7 @@ public class AbstractPolarisReporterAdapterTest {
 
 	@Test
 	public void testApplyWithoutSeries() {
-		RpcEnhancementProperties properties = new RpcEnhancementProperties();
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.getSeries().clear();
@@ -89,7 +89,7 @@ public class AbstractPolarisReporterAdapterTest {
 
 	@Test
 	public void testApplyWithSeries() {
-		RpcEnhancementProperties properties = new RpcEnhancementProperties();
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.getSeries().clear();
@@ -109,7 +109,7 @@ public class AbstractPolarisReporterAdapterTest {
 	 */
 	public static class SimplePolarisReporterAdapter extends AbstractPolarisReporterAdapter {
 
-		public SimplePolarisReporterAdapter(RpcEnhancementProperties properties) {
+		public SimplePolarisReporterAdapter(RpcEnhancementReporterProperties properties) {
 			super(properties);
 		}
 	}
