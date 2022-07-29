@@ -115,7 +115,7 @@ public class PolarisPropertySourceAutoRefresher
 
 						LOGGER.info(
 								"[SCT Config]  received polaris config change event and will refresh spring context."
-										+ "namespace = {}, group = {}, fileName = {}",
+										+ " namespace = {}, group = {}, fileName = {}",
 								polarisPropertySource.getNamespace(),
 								polarisPropertySource.getGroup(),
 								polarisPropertySource.getFileName());
