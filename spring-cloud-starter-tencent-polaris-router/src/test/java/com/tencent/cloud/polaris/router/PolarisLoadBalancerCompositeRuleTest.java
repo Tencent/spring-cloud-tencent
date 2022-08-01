@@ -113,7 +113,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	public void testGetDefaultLB() {
 		when(polarisLoadBalancerProperties.getStrategy()).thenReturn("");
 		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-				polarisLoadBalancerProperties, config, requestInterceptors, null);
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 		AbstractLoadBalancerRule defaultRule = compositeRule.getRule();
 
@@ -124,7 +124,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	public void testRandomLB() {
 		when(polarisLoadBalancerProperties.getStrategy()).thenReturn(PolarisLoadBalancerCompositeRule.STRATEGY_RANDOM);
 		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-				polarisLoadBalancerProperties, config, requestInterceptors, null);
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
@@ -135,7 +135,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	public void testWeightLB() {
 		when(polarisLoadBalancerProperties.getStrategy()).thenReturn(PolarisLoadBalancerCompositeRule.STRATEGY_WEIGHT);
 		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-				polarisLoadBalancerProperties, config, requestInterceptors, null);
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
@@ -146,7 +146,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	public void testRetryLB() {
 		when(polarisLoadBalancerProperties.getStrategy()).thenReturn(PolarisLoadBalancerCompositeRule.STRATEGY_RETRY);
 		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-				polarisLoadBalancerProperties, config, requestInterceptors, null);
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
@@ -157,7 +157,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	public void testWeightedResponseTimeLB() {
 		when(polarisLoadBalancerProperties.getStrategy()).thenReturn(PolarisLoadBalancerCompositeRule.STRATEGY_RESPONSE_TIME_WEIGHTED);
 		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-				polarisLoadBalancerProperties, config, requestInterceptors, null);
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
@@ -168,7 +168,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	public void tesBestAvailableLB() {
 		when(polarisLoadBalancerProperties.getStrategy()).thenReturn(PolarisLoadBalancerCompositeRule.STRATEGY_BEST_AVAILABLE);
 		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-				polarisLoadBalancerProperties, config, requestInterceptors, null);
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
@@ -179,7 +179,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	public void tesRoundRobinLB() {
 		when(polarisLoadBalancerProperties.getStrategy()).thenReturn(PolarisLoadBalancerCompositeRule.STRATEGY_ROUND_ROBIN);
 		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-				polarisLoadBalancerProperties, config, requestInterceptors, null);
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
@@ -190,7 +190,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	public void testAvailabilityFilteringLB() {
 		when(polarisLoadBalancerProperties.getStrategy()).thenReturn(PolarisLoadBalancerCompositeRule.STRATEGY_AVAILABILITY_FILTERING);
 		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-				polarisLoadBalancerProperties, config, requestInterceptors, null);
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
@@ -209,7 +209,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 			setTransitiveMetadata();
 
 			PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-					polarisLoadBalancerProperties, config, requestInterceptors, null);
+					polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
@@ -244,7 +244,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 			setTransitiveMetadata();
 
 			PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-					polarisLoadBalancerProperties, config, requestInterceptors, null);
+					polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
@@ -275,7 +275,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 			setTransitiveMetadata();
 
 			PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-					polarisLoadBalancerProperties, config, requestInterceptors, null);
+					polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
@@ -306,7 +306,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 			setTransitiveMetadata();
 
 			PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
-					polarisLoadBalancerProperties, config, requestInterceptors, null);
+					polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
 			ProcessRoutersResponse assembleResponse = assembleProcessRoutersResponse();
 			when(routerAPI.processRouters(any())).thenReturn(assembleResponse);
