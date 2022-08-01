@@ -117,7 +117,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule defaultRule = compositeRule.getRule();
 
-		Assert.assertTrue(defaultRule instanceof ZoneAvoidanceRule);
+		Assert.assertNull(defaultRule);
 	}
 
 	@Test
