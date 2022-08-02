@@ -1,0 +1,51 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.tencent.rpc-enhancement.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "If rpc enhancement enabled."
+    },
+    {
+      "name": "spring.cloud.tencent.rpc-enhancement.reporter.ignore-internal-server-error",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "If ignore \"Internal Server Error Http Status Code (500)\"."
+    },
+    {
+      "name": "spring.cloud.tencent.rpc-enhancement.reporter.series",
+      "type": "java.util.List<org.springframework.http.HttpStatus.Series>",
+      "defaultValue": "HttpStatus.Series.SERVER_ERROR",
+      "description": "Specify List of HTTP status series that needs to be reported as FAILED when status list is empty."
+    },
+    {
+      "name": "spring.cloud.tencent.rpc-enhancement.reporter.statuses",
+      "type": "java.util.List<org.springframework.http.HttpStatus>",
+      "defaultValue": "",
+      "description": "Specify the Http status code(s) that needs to be reported as FAILED."
+    },
+    {
+      "name": "spring.cloud.polaris.stat.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enable polaris stat reporter or not."
+    },
+    {
+      "name": "spring.cloud.polaris.stat.host",
+      "type": "java.lang.String",
+      "description": "Local host for prometheus to pull."
+    },
+    {
+      "name": "spring.cloud.polaris.stat.port",
+      "type": "java.lang.Integer",
+      "defaultValue": "28080",
+      "description": "Port for prometheus to pull."
+    },
+    {
+      "name": "spring.cloud.polaris.stat.path",
+      "type": "java.lang.String",
+      "defaultValue": "/metrics",
+      "description": "Path for prometheus to pull."
+    }
+  ]
+}

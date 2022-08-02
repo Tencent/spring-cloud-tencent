@@ -43,6 +43,11 @@ public class MetadataLocalProperties {
 	 */
 	private List<String> transitive;
 
+	/**
+	 * A disposable metadata key list .
+	 */
+	private List<String> disposable;
+
 	public Map<String, String> getContent() {
 		if (CollectionUtils.isEmpty(content)) {
 			content = new HashMap<>();
@@ -63,5 +68,16 @@ public class MetadataLocalProperties {
 
 	public void setTransitive(List<String> transitive) {
 		this.transitive = transitive;
+	}
+
+	public List<String> getDisposable() {
+		if (CollectionUtils.isEmpty(disposable)) {
+			disposable = new ArrayList<>();
+		}
+		return disposable;
+	}
+
+	public void setDisposable(List<String> disposable) {
+		this.disposable = disposable;
 	}
 }
