@@ -18,12 +18,17 @@
 
 package com.tencent.cloud.polaris.router.example.xss;
 
-import org.springframework.stereotype.Component;
+import java.io.IOException;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+
+import org.springframework.stereotype.Component;
 
 /**
  * filter request aim at defending against XSS

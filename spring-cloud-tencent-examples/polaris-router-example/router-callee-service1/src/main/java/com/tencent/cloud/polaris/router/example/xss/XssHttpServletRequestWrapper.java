@@ -18,26 +18,24 @@
 
 package com.tencent.cloud.polaris.router.example.xss;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.util.HtmlUtils;
-import org.springframework.web.util.JavaScriptUtils;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Map;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringEscapeUtils;
+
+import org.springframework.web.servlet.HandlerMapping;
 
 /**
- * Wrap HttpServletRequest to escape String arguments
+ * Wrap HttpServletRequest to escape String arguments.
  *
  * @author Daifu Wu
  */
@@ -66,13 +64,12 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 	}
 
 	/**
-	 * Handles arguments annotated by @RequestBody
+	 * Handles arguments annotated by @RequestBody.
 	 *
 	 * @return
-	 * @throws IOException
 	 */
 	@Override
-	public ServletInputStream getInputStream() throws IOException {
+	public ServletInputStream getInputStream() {
 		final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(requestBody);
 		return new ServletInputStream() {
 			@Override
@@ -98,9 +95,9 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 	}
 
 	/**
-	 * Handles arguments annotated by @RequestParam
+	 * Handles arguments annotated by @RequestParam.
 	 *
-	 * @param name
+	 * @param name string parameter
 	 * @return
 	 */
 	@Override
@@ -119,7 +116,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 	/**
 	 * Handles arguments annotated by @PathVariable
 	 *
-	 * @param name
+	 * @param name string parameter
 	 * @return
 	 */
 	@Override
@@ -153,7 +150,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 	/**
 	 * Escape string to defend against XSS
 	 *
-	 * @param value
+	 * @param value string request content
 	 */
 	private String cleanXSS(String value) {
 		value = StringEscapeUtils.escapeHtml(value);

@@ -40,4 +40,3 @@
 - [Optimize starters auto-configuration. (main)](https://github.com/Tencent/spring-cloud-tencent/pull/391/files)
 - [Feature: format code](https://github.com/Tencent/spring-cloud-tencent/pull/394)
 - [test: add PostInitPolarisSDKContextTest](https://github.com/Tencent/spring-cloud-tencent/pull/397)
-- [Fix the code analysis error.](https://github.com/Tencent/spring-cloud-tencent/issues/462)
