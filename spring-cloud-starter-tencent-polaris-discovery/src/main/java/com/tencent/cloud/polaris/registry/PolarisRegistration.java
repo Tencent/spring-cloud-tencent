@@ -30,7 +30,6 @@ import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
-import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -40,7 +39,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-public class PolarisRegistration implements Registration, ServiceInstance {
+public class PolarisRegistration implements Registration {
 
 	private static final String METADATA_KEY_IP = "internal-ip";
 	private static final String METADATA_KEY_ADDRESS = "internal-address";
