@@ -10,3 +10,4 @@
 - [Feature: Add disposable metadata transfer support](https://github.com/Tencent/spring-cloud-tencent/pull/459)
 - [docs:update mvnw.](https://github.com/Tencent/spring-cloud-tencent/pull/476)
 - [docs:update configuration metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/474)
+- [Feature: delete implement ServiceInstance](https://github.com/Tencent/spring-cloud-tencent/pull/483)
