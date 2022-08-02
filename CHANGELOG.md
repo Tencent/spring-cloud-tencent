@@ -12,5 +12,4 @@
 - [loadBalancer module add unit test.](https://github.com/Tencent/spring-cloud-tencent/pull/468)
 - [docs:update mvnw.](https://github.com/Tencent/spring-cloud-tencent/pull/475)
 - [docs:update configuration metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/473)
-
-- [Feature: delete implement ServiceInstance](https://github.com/Tencent/spring-cloud-tencent/pull/481)
+- [Feature: delete implement ServiceInstance](https://github.com/Tencent/spring-cloud-tencent/pull/482)
