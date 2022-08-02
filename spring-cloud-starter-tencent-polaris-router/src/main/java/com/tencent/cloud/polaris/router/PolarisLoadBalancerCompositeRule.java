@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.router;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
 import com.netflix.loadbalancer.AvailabilityFilteringRule;
@@ -207,7 +206,6 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		}
 	}
 
-	@VisibleForTesting
 	public AbstractLoadBalancerRule getDelegateRule() {
 		return delegateRule;
 	}

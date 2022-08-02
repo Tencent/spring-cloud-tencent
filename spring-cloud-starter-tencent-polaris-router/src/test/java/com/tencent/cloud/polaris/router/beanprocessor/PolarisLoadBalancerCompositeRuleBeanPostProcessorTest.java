@@ -27,8 +27,9 @@ import org.springframework.context.annotation.Configuration;
 
 
 /**
- * @author derekyi
- * @date 2022/8/1
+ * Test for {@link PolarisLoadBalancerCompositeRuleBeanPostProcessor}.
+ *
+ * @author derekyi 2022-08-01
  */
 public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 
