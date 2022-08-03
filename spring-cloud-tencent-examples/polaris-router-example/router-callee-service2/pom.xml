@@ -17,6 +17,11 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.owasp.esapi</groupId>
+			<artifactId>esapi</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
