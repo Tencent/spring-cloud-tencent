@@ -45,9 +45,14 @@ public class PolarisMetadataEndpoint {
 		result.put("Env", staticMetadataManager.getAllEnvMetadata());
 		result.put("EnvTransitive", staticMetadataManager.getEnvTransitiveMetadata());
 		result.put("ConfigTransitive", staticMetadataManager.getConfigTransitiveMetadata());
+		result.put("ConfigDisposable", staticMetadataManager.getConfigDisposableMetadata());
 		result.put("Config", staticMetadataManager.getAllConfigMetadata());
 		result.put("MergeStatic", staticMetadataManager.getMergedStaticMetadata());
-		result.put("CustomSPI", staticMetadataManager.getCustomSPITransitiveMetadata());
+		result.put("MergeStaticTransitive", staticMetadataManager.getMergedStaticTransitiveMetadata());
+		result.put("MergeStaticDisposable", staticMetadataManager.getMergedStaticDisposableMetadata());
+		result.put("CustomSPI", staticMetadataManager.getAllCustomMetadata());
+		result.put("CustomSPITransitive", staticMetadataManager.getCustomSPITransitiveMetadata());
+		result.put("CustomSPIDisposable", staticMetadataManager.getCustomSPIDisposableMetadata());
 		result.put("zone", staticMetadataManager.getZone());
 		result.put("region", staticMetadataManager.getRegion());
 		result.put("campus", staticMetadataManager.getCampus());

@@ -44,6 +44,13 @@ public interface InstanceMetadataProvider {
 	}
 
 	/**
+	 * @return the keys of disposable metadata.
+	 */
+	default Set<String> getDisposableMetadataKeys() {
+		return Collections.emptySet();
+	}
+
+	/**
 	 * The region of current instance.
 	 *
 	 * @return the region info.
