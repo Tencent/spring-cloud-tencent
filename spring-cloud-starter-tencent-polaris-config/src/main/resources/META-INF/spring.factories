@@ -2,4 +2,17 @@ org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.polaris.config.PolarisConfigAutoConfiguration,\
-  com.tencent.cloud.polaris.config.endpoint.PolarisConfigEndpointAutoConfiguration
+  com.tencent.cloud.polaris.config.endpoint.PolarisConfigEndpointAutoConfiguration,\
+  com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration
+
+# ConfigData Location Resolvers
+org.springframework.boot.context.config.ConfigDataLocationResolver=\
+  com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLocationResolver
+# ConfigData Loaders
+org.springframework.boot.context.config.ConfigDataLoader=\
+  com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+  com.tencent.cloud.polaris.config.configdata.PolarisImportExceptionFailureAnalyzer
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.tencent.cloud.polaris.config.configdata.PolarisConfigDataMissingEnvironmentPostProcessor
+

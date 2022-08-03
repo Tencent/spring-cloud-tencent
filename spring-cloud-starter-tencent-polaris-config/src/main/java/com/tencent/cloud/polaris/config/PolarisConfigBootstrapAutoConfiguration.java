@@ -27,6 +27,7 @@ import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +51,7 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public PolarisPropertySourceManager polarisPropertySourceManager() {
 		return new PolarisPropertySourceManager();
 	}
