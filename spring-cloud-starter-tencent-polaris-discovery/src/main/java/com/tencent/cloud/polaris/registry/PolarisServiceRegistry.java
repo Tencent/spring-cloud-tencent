@@ -222,6 +222,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration>, Di
 
 	@Override
 	public void destroy() throws Exception {
-		heartbeatExecutor.shutdown();
+		if (heartbeatExecutor != null) {
+			heartbeatExecutor.shutdown();
+		}
 	}
 }
