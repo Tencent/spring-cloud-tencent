@@ -15,8 +15,9 @@
 	<name>Spring Cloud Starter Tencent Metadata Transfer Example</name>
 
 	<modules>
-		<module>metadata-callee-service</module>
-		<module>metadata-caller-service</module>
+		<module>metadata-frontend</module>
+		<module>metadata-middle</module>
+		<module>metadata-backend</module>
 	</modules>
 
 	<dependencies>
