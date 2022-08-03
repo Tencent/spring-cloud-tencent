@@ -73,7 +73,7 @@
 		<revision>1.7.0-2021.0.3-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.7.0</polaris.version>
+		<polaris.version>1.7.2</polaris.version>
 		<guava.version>31.0.1-jre</guava.version>
 		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
@@ -106,6 +106,12 @@
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-polaris-context</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
 				<version>${revision}</version>
 			</dependency>
 
