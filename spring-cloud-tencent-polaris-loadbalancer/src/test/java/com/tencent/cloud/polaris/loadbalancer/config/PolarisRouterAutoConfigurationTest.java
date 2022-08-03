@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisLoadBalancerAutoConfiguration}
+ * Test for {@link PolarisLoadBalancerAutoConfiguration}.
  *
  * @author Haotian Zhang
  */

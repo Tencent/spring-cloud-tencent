@@ -47,13 +47,10 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	private final PolarisConfigFilePuller polarisConfigFilePuller;
 
-	private final Environment environment;
-
 	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
 			PolarisPropertySourceManager polarisPropertySourceManager, Environment environment) {
 		this.polarisConfigProperties = polarisConfigProperties;
-		this.environment = environment;
 		this.polarisConfigFilePuller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService,
 				polarisPropertySourceManager);
 	}

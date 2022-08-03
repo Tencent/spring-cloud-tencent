@@ -93,7 +93,7 @@ public final class PolarisConfigFilePuller {
 	 * @param configFileGroup         configFileGroup
 	 */
 	public void initCustomPolarisConfigFile(CompositePropertySource compositePropertySource,
-ConfigFileGroup configFileGroup) {
+			ConfigFileGroup configFileGroup) {
 		String namespace = polarisContextProperties.getNamespace();
 		String group = configFileGroup.getName();
 		if (!StringUtils.hasText(group)) {
