@@ -39,6 +39,8 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
@@ -60,27 +62,32 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		// Get metadata string from http header.
 		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
 
-		Map<String, String> internalTransitiveMetadata = getIntervalTransitiveMetadata(serverHttpRequest);
+		Map<String, String> internalTransitiveMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_METADATA);
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(serverWebExchange);
 
 		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
-		MetadataContextHolder.init(mergedTransitiveMetadata);
+		Map<String, String> internalDisposableMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
+		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
+
+		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata);
 
 		// Save to ServerWebExchange.
-		serverWebExchange.getAttributes()
-				.put(MetadataConstant.HeaderName.METADATA_CONTEXT, MetadataContextHolder.get());
+		serverWebExchange.getAttributes().put(
+				MetadataConstant.HeaderName.METADATA_CONTEXT,
+				MetadataContextHolder.get());
 
 		return webFilterChain.filter(serverWebExchange)
-				.doOnError(throwable -> LOG.error("handle metadata[{}] error.", MetadataContextHolder.get(), throwable))
+				.doOnError(throwable -> LOG.error("handle metadata[{}] error.",
+						MetadataContextHolder.get(), throwable))
 				.doFinally((type) -> MetadataContextHolder.remove());
 	}
 
-	private Map<String, String> getIntervalTransitiveMetadata(ServerHttpRequest serverHttpRequest) {
+	private Map<String, String> getIntervalMetadata(ServerHttpRequest serverHttpRequest, String headerName) {
 		HttpHeaders httpHeaders = serverHttpRequest.getHeaders();
-		String customMetadataStr = httpHeaders.getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
+		String customMetadataStr = httpHeaders.getFirst(headerName);
 		try {
 			if (StringUtils.hasText(customMetadataStr)) {
 				customMetadataStr = URLDecoder.decode(customMetadataStr, UTF_8);

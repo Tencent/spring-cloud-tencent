@@ -19,6 +19,9 @@ spring:
         heartbeat:
           enabled: true
         health-check-url: /discovery/service/caller/healthCheck
+      stat:
+        enabled: true
+        port: 28081
 #    consul:
 #      port: 8500
 #      host: 127.0.0.1
