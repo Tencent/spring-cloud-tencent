@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 
@@ -49,7 +50,7 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
+public class PolarisServiceRegistry implements ServiceRegistry<Registration>, DisposableBean {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
@@ -215,5 +216,10 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				LOG.error("polaris heartbeat runtime error", e);
 			}
 		}, polarisDiscoveryProperties.getHeartbeatInterval(), polarisDiscoveryProperties.getHeartbeatInterval(), MILLISECONDS);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		heartbeatExecutor.shutdown();
 	}
 }
