@@ -61,9 +61,6 @@ public class ServiceAController {
 	 */
 	@GetMapping("/testRest")
 	public String testRest() {
-		ResponseEntity<String> entity = restTemplate
-				.getForEntity("http://polaris-circuitbreaker-example-b/example/service/b/info", String.class);
-		return entity.getBody();
 		ResponseEntity<String> entity = restTemplate.getForEntity(
 				"http://polaris-circuitbreaker-example-b/example/service/b/info",
 				String.class);
