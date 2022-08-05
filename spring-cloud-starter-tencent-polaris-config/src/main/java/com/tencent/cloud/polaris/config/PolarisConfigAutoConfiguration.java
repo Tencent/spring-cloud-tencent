@@ -38,6 +38,7 @@ import org.springframework.cloud.context.properties.ConfigurationPropertiesRebin
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 
 /**
  * polaris config module auto configuration at init application context phase.
@@ -71,16 +72,19 @@ public class PolarisConfigAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnConfigReflectEnabled
 	public SpringValueRegistry springValueRegistry() {
 		return new SpringValueRegistry();
 	}
 
 	@Bean
+	@ConditionalOnConfigReflectEnabled
 	public PlaceholderHelper placeholderHelper() {
 		return new PlaceholderHelper();
 	}
 
 	@Bean
+	@ConditionalOnConfigReflectEnabled
 	public SpringValueProcessor springValueProcessor(PlaceholderHelper placeholderHelper, SpringValueRegistry springValueRegistry, PolarisConfigProperties polarisConfigProperties) {
 		return new SpringValueProcessor(placeholderHelper, springValueRegistry, polarisConfigProperties);
 	}
