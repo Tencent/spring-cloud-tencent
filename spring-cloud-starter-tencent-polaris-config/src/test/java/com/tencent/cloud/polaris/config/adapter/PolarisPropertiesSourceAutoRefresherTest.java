@@ -41,7 +41,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisPropertySourceAutoRefresher}.
+ * test for {@link PolarisReflectPropertySourceAutoRefresher}.
  *
  * @author lepdou 2022-06-11
  */
@@ -63,8 +62,6 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	private PolarisConfigProperties polarisConfigProperties;
 	@Mock
 	private PolarisPropertySourceManager polarisPropertySourceManager;
-	@Mock
-	private ContextRefresher contextRefresher;
 
 	@Mock
 	private SpringValueRegistry springValueRegistry;
@@ -74,9 +71,8 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 
 	@Test
 	public void testConfigFileChanged() throws Exception {
-		PolarisPropertySourceAutoRefresher refresher = new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, springValueRegistry, placeholderHelper, contextRefresher);
-
+		PolarisReflectPropertySourceAutoRefresher refresher = new PolarisReflectPropertySourceAutoRefresher(polarisConfigProperties,
+				polarisPropertySourceManager, springValueRegistry, placeholderHelper);
 		when(polarisConfigProperties.getRefreshType()).thenReturn(RefreshType.REFLECT);
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);

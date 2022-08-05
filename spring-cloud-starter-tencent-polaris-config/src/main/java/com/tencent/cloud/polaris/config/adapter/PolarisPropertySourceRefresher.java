@@ -16,22 +16,25 @@
  *
  */
 
-package com.tencent.cloud.polaris.config;
+package com.tencent.cloud.polaris.config.adapter;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Set;
 
 /**
- * When the refresh type is reflect, load the beans required by the reflect mode
- *
  * @author lingxiao.wlx
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-@ConditionalOnProperty(value = "spring.cloud.polaris.config.refresh-type", havingValue = "reflect")
-public @interface ConditionalOnConfigReflectEnabled {
+public interface PolarisPropertySourceRefresher {
+
+	/**
+	 * refresh the attribute with @Value annotation.
+	 *
+	 * @param changedKey changedKey
+	 */
+	void refreshSpringValue(String changedKey);
+
+	/**
+	 * refresh @ConfigurationProperties beans.
+	 * @param changeKeys changeKeys
+	 */
+	void refreshConfigurationProperties(Set<String> changeKeys);
 }

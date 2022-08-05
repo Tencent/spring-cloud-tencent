@@ -16,15 +16,23 @@
  *
  */
 
-package com.tencent.cloud.polaris.config;
+package com.tencent.cloud.polaris.config.condition;
 
+import com.tencent.cloud.polaris.config.PolarisConfigAutoConfiguration;
+import com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration;
+import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
+import com.tencent.cloud.polaris.config.adapter.PolarisReflectPropertySourceAutoRefresher;
+import com.tencent.cloud.polaris.config.adapter.PolarisRefreshContextPropertySourceAutoRefresher;
+import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
+import org.springframework.cloud.context.refresh.ContextRefresher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,18 +44,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConditionalOnConfigReflectEnabledTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(PolarisConfigBootstrapAutoConfiguration.class))
 			.withConfiguration(AutoConfigurations.of(PolarisConfigAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(RefreshAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + "conditionalOnConfigReflectEnabledTest")
 			.withPropertyValues("server.port=" + 8080)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
 	@Test
-	public void testReflectEnable(){
+	public void testReflectEnable() {
 		contextRunner.withPropertyValues("spring.cloud.polaris.config.refresh-type=reflect");
+		contextRunner.withPropertyValues("spring.cloud.polaris.config.enabled=true");
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(PlaceholderHelper.class);
 			assertThat(context).hasSingleBean(SpringValueRegistry.class);
 			assertThat(context).hasSingleBean(SpringValueProcessor.class);
+			assertThat(context).hasSingleBean(PolarisReflectPropertySourceAutoRefresher.class);
+		});
+	}
+
+	@Test
+	public void testWithoutReflectEnable() {
+		contextRunner.withPropertyValues("spring.cloud.polaris.config.enabled=true");
+		this.contextRunner.run(context -> {
+			assertThat(context).hasSingleBean(PolarisConfigProperties.class);
+			assertThat(context).hasSingleBean(PolarisPropertySourceManager.class);
+			assertThat(context).hasSingleBean(ContextRefresher.class);
+			assertThat(context).hasSingleBean(PolarisRefreshContextPropertySourceAutoRefresher.class);
 		});
 	}
 }

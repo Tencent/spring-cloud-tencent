@@ -18,10 +18,13 @@
 
 package com.tencent.cloud.polaris.config;
 
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceAutoRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
+import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceRefresher;
+import com.tencent.cloud.polaris.config.adapter.PolarisReflectPropertySourceAutoRefresher;
+import com.tencent.cloud.polaris.config.adapter.PolarisRefreshContextPropertySourceAutoRefresher;
 import com.tencent.cloud.polaris.config.adapter.SmartConfigurationPropertiesRebinder;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProcessor;
+import com.tencent.cloud.polaris.config.condition.ConditionalOnConfigReflectEnabled;
 import com.tencent.cloud.polaris.config.condition.ConditionalOnNonDefaultBehavior;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
@@ -38,7 +41,6 @@ import org.springframework.cloud.context.properties.ConfigurationPropertiesRebin
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.Nullable;
 
 /**
  * polaris config module auto configuration at init application context phase.
@@ -49,17 +51,6 @@ import org.springframework.lang.Nullable;
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled", matchIfMissing = true)
 public class PolarisConfigAutoConfiguration {
-
-	@Bean
-	public PolarisPropertySourceAutoRefresher polarisPropertySourceAutoRefresher(
-			PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager,
-			SpringValueRegistry springValueRegistry,
-			PlaceholderHelper placeholderHelper,
-			ContextRefresher contextRefresher) {
-		return new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, springValueRegistry, placeholderHelper, contextRefresher);
-	}
 
 	@Bean
 	public PolarisConfigAnnotationProcessor polarisConfigAnnotationProcessor() {
@@ -90,6 +81,15 @@ public class PolarisConfigAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnConfigReflectEnabled
+	public PolarisPropertySourceRefresher polarisReflectPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
+																					PolarisPropertySourceManager polarisPropertySourceManager,
+																					SpringValueRegistry springValueRegistry,
+																					PlaceholderHelper placeholderHelper) {
+		return new PolarisReflectPropertySourceAutoRefresher(polarisConfigProperties, polarisPropertySourceManager, springValueRegistry, placeholderHelper);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	@ConditionalOnNonDefaultBehavior
 	public ConfigurationPropertiesRebinder smartConfigurationPropertiesRebinder(
@@ -99,4 +99,10 @@ public class PolarisConfigAutoConfiguration {
 		return new SmartConfigurationPropertiesRebinder(beans);
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
+	public PolarisPropertySourceRefresher polarisRefreshContextPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
+		PolarisPropertySourceManager polarisPropertySourceManager, ContextRefresher contextRefresher) {
+		return new PolarisRefreshContextPropertySourceAutoRefresher(polarisConfigProperties, polarisPropertySourceManager, contextRefresher);
+	}
 }
