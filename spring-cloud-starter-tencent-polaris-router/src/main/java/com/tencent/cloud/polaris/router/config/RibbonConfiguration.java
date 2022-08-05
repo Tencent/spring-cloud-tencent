@@ -18,15 +18,7 @@
 
 package com.tencent.cloud.polaris.router.config;
 
-import java.util.List;
-
-import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.IRule;
-import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
-import com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule;
-import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
-import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
-import com.tencent.polaris.router.api.core.RouterAPI;
+import com.tencent.cloud.polaris.router.beanprocessor.PolarisLoadBalancerCompositeRuleBeanPostProcessor;
 
 import org.springframework.context.annotation.Bean;
 
@@ -38,11 +30,7 @@ import org.springframework.context.annotation.Bean;
 public class RibbonConfiguration {
 
 	@Bean
-	public IRule polarisLoadBalancerCompositeRule(RouterAPI routerAPI,
-			PolarisLoadBalancerProperties polarisLoadBalancerProperties,
-			IClientConfig iClientConfig, List<RouterRequestInterceptor> requestInterceptors,
-			List<RouterResponseInterceptor> responseInterceptors) {
-		return new PolarisLoadBalancerCompositeRule(routerAPI, polarisLoadBalancerProperties, iClientConfig,
-				requestInterceptors, responseInterceptors);
+	public PolarisLoadBalancerCompositeRuleBeanPostProcessor polarisLoadBalancerCompositeRuleBeanPostProcessor() {
+		return new PolarisLoadBalancerCompositeRuleBeanPostProcessor();
 	}
 }
