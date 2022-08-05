@@ -38,6 +38,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
+ * PolarisReflectPropertySourceAutoRefresher to refresh config in reflect type
+ * we can use it by setting spring.cloud.polaris.config.refresh-type=reflect.
+ *
  * @author lingxiao.wlx
  */
 public class PolarisReflectPropertySourceAutoRefresher extends PolarisPropertySourceAutoRefresher

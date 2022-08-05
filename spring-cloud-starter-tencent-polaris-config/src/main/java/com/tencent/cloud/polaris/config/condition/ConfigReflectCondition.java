@@ -26,6 +26,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
+ * ConfigReflectCondition used by {@link ConditionalOnConfigReflectEnabled}.
+ *
  * @author lingxiao.wlx
  */
 public class ConfigReflectCondition extends SpringBootCondition {

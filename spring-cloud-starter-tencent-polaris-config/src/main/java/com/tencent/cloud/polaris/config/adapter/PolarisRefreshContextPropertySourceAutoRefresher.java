@@ -25,6 +25,8 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 
 /**
+ * PolarisRefreshContextPropertySourceAutoRefresher refresh config by refreshContext.
+ *
  * @author lingxiao.wlx
  */
 public class PolarisRefreshContextPropertySourceAutoRefresher extends PolarisPropertySourceAutoRefresher {
@@ -40,6 +42,7 @@ public class PolarisRefreshContextPropertySourceAutoRefresher extends PolarisPro
 
 	@Override
 	public void refreshSpringValue(String changedKey) {
+		// do nothing,all config will be refreshed by contextRefresher.refresh
 	}
 
 	@Override

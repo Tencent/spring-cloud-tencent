@@ -21,6 +21,9 @@ package com.tencent.cloud.polaris.config.adapter;
 import java.util.Set;
 
 /**
+ * PolarisPropertySourceRefresher refresh spring value filed and configurationProperties bean
+ * when config exchange.
+ *
  * @author lingxiao.wlx
  */
 public interface PolarisPropertySourceRefresher {
@@ -34,6 +37,7 @@ public interface PolarisPropertySourceRefresher {
 
 	/**
 	 * refresh @ConfigurationProperties beans.
+	 *
 	 * @param changeKeys changeKeys
 	 */
 	void refreshConfigurationProperties(Set<String> changeKeys);
