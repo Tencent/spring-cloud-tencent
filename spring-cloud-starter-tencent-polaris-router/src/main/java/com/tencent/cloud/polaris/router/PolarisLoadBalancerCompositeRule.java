@@ -85,14 +85,21 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 			PolarisLoadBalancerProperties polarisLoadBalancerProperties,
 			IClientConfig iClientConfig,
 			List<RouterRequestInterceptor> requestInterceptors,
-			List<RouterResponseInterceptor> responseInterceptors) {
+			List<RouterResponseInterceptor> responseInterceptors,
+			AbstractLoadBalancerRule delegate) {
 		this.routerAPI = routerAPI;
 		this.loadBalancerProperties = polarisLoadBalancerProperties;
 		this.requestInterceptors = requestInterceptors;
 		this.responseInterceptors = responseInterceptors;
 
-		delegateRule = getRule();
-		delegateRule.initWithNiwsConfig(iClientConfig);
+		AbstractLoadBalancerRule loadBalancerRule = getRule();
+		if (loadBalancerRule != null) {
+			delegateRule = loadBalancerRule;
+			delegateRule.initWithNiwsConfig(iClientConfig);
+		}
+		else {
+			delegateRule = delegate;
+		}
 	}
 
 	@Override
@@ -176,7 +183,7 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 	public AbstractLoadBalancerRule getRule() {
 		String loadBalanceStrategy = loadBalancerProperties.getStrategy();
 		if (StringUtils.isEmpty(loadBalanceStrategy)) {
-			return new ZoneAvoidanceRule();
+			return null;
 		}
 		switch (loadBalanceStrategy) {
 		case STRATEGY_RANDOM:
@@ -197,5 +204,9 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		default:
 			return new ZoneAvoidanceRule();
 		}
+	}
+
+	public AbstractLoadBalancerRule getDelegateRule() {
+		return delegateRule;
 	}
 }
