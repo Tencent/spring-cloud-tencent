@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.polaris.config.condition;
 
+import java.util.Objects;
+
 import com.tencent.cloud.polaris.config.enums.RefreshType;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -38,18 +40,16 @@ public class ConfigReflectCondition extends SpringBootCondition {
 	public static final String POLARIS_CONFIG_REFRESH_TYPE = "spring.cloud.polaris.config.refresh-type";
 
 	/**
-	 * Refresh type default value.
+	 * Reflect refresh type value.
 	 */
-	private static final RefreshType DEFAULT_REFRESH_TYPE = RefreshType.REFRESH_CONTEXT;
+	private static final RefreshType REFLECT_TYPE = RefreshType.REFLECT;
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		RefreshType refreshType = context.getEnvironment().getProperty(
-				POLARIS_CONFIG_REFRESH_TYPE, RefreshType.class,
-				DEFAULT_REFRESH_TYPE);
-		if (DEFAULT_REFRESH_TYPE == refreshType) {
-			return ConditionOutcome.noMatch("no matched");
+		RefreshType refreshType = context.getEnvironment().getProperty(POLARIS_CONFIG_REFRESH_TYPE, RefreshType.class);
+		if (!Objects.isNull(refreshType) && REFLECT_TYPE == refreshType) {
+			return ConditionOutcome.match("matched");
 		}
-		return ConditionOutcome.match("matched");
+		return ConditionOutcome.noMatch("no matched");
 	}
 }
