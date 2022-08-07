@@ -12,3 +12,4 @@
 - [docs:update configuration metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/474)
 - [Feature: delete implement ServiceInstance](https://github.com/Tencent/spring-cloud-tencent/pull/483)
 - [test: add loadbalancer unit test](https://github.com/Tencent/spring-cloud-tencent/pull/485)
+- [Bugfix: update byte-buddy scope test to compile](https://github.com/Tencent/spring-cloud-tencent/pull/498)
