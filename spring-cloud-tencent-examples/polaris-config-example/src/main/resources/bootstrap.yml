@@ -8,6 +8,7 @@ spring:
       address: grpc://183.47.111.80:8091
       namespace: default
       config:
+        address: grpc://183.47.111.80:8093 # the address of polaris config server
         auto-refresh: true # auto refresh when config file changed
         groups:
           - name: ${spring.application.name} # group name
