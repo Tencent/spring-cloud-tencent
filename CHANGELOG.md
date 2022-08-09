@@ -14,3 +14,4 @@
 - [docs:update configuration metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/473)
 - [Feature: delete implement ServiceInstance](https://github.com/Tencent/spring-cloud-tencent/pull/482)
 - [Bugfix: update byte-buddy scope test to compile](https://github.com/Tencent/spring-cloud-tencent/pull/497)
+- [Fix the code analysis error.](https://github.com/Tencent/spring-cloud-tencent/pull/499)

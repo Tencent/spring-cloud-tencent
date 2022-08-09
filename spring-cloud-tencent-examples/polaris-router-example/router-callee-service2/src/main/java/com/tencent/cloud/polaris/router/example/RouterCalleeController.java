@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.router.example;
 
+import org.owasp.esapi.ESAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,15 @@ public class RouterCalleeController {
 	@PostMapping("/info")
 	public String info(@RequestParam("name") String name, @RequestBody User user) {
 		LOG.info("Discovery Service Callee [{}] is called.", port);
-		return String.format("Discovery Service Callee [%s] is called. user = %s", port, user);
+		return String.format("Discovery Service Callee [%s] is called. user = %s", port, cleanXSS(user));
+	}
+
+	private User cleanXSS(User user) {
+		User u = new User();
+		String name = ESAPI.encoder().encodeForHTML(user.getName());
+		u.setName(name);
+		u.setAge(user.getAge());
+		return u;
 	}
 
 }
