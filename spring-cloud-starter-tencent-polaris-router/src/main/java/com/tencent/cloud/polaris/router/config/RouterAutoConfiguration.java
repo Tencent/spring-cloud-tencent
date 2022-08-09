@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.polaris.router.config;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
@@ -35,11 +34,9 @@ import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterc
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import com.tencent.cloud.polaris.router.zuul.PolarisRibbonRoutingFilter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
-import org.springframework.cloud.netflix.ribbon.support.RibbonRequestCustomizer;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.route.RibbonCommandFactory;
 import org.springframework.context.annotation.Bean;
@@ -96,18 +93,14 @@ public class RouterAutoConfiguration {
 		return new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties);
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Autowired(required = false)
-	private List<RibbonRequestCustomizer> requestCustomizers = Collections.emptyList();
-
-	@Bean
+	@Bean(initMethod = "init")
 	@ConditionalOnClass(name = "org.springframework.cloud.netflix.zuul.filters.route.RibbonRoutingFilter")
 	public PolarisRibbonRoutingFilter ribbonRoutingFilter(ProxyRequestHelper helper,
 			RibbonCommandFactory<?> ribbonCommandFactory,
 			MetadataLocalProperties metadataLocalProperties,
 			RouterRuleLabelResolver routerRuleLabelResolver,
 			List<ServletRouterLabelResolver> routerLabelResolvers) {
-		return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory,
-				this.requestCustomizers, metadataLocalProperties, routerRuleLabelResolver, routerLabelResolvers);
+		return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory, metadataLocalProperties,
+				routerRuleLabelResolver, routerLabelResolvers);
 	}
 }

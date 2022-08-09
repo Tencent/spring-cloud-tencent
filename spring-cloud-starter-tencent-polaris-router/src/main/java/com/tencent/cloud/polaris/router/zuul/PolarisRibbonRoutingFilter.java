@@ -32,6 +32,7 @@ import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.util.BeanFactoryUtils;
 import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
@@ -39,6 +40,9 @@ import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.cloud.netflix.ribbon.support.RibbonCommandContext;
 import org.springframework.cloud.netflix.ribbon.support.RibbonRequestCustomizer;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
@@ -57,9 +61,11 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
  *
  * @author jarvisxiong 2022-08-04
  */
-public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter {
+public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements BeanFactoryAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisRibbonRoutingFilter.class);
+
+	private BeanFactory factory;
 
 	private final MetadataLocalProperties metadataLocalProperties;
 
@@ -71,11 +77,10 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter {
 
 	public PolarisRibbonRoutingFilter(ProxyRequestHelper helper,
 			RibbonCommandFactory<?> ribbonCommandFactory,
-			List<RibbonRequestCustomizer> requestCustomizers,
 			MetadataLocalProperties metadataLocalProperties,
 			RouterRuleLabelResolver routerRuleLabelResolver,
 			List<ServletRouterLabelResolver> routerLabelResolvers) {
-		super(helper, ribbonCommandFactory, requestCustomizers);
+		super(helper, ribbonCommandFactory, Collections.emptyList());
 		this.metadataLocalProperties = metadataLocalProperties;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 
@@ -95,6 +100,7 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter {
 			useServlet31 = false;
 		}
 	}
+
 
 	@Override
 	protected RibbonCommandContext buildCommandContext(RequestContext context) {
@@ -170,11 +176,20 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter {
 		return routerContext;
 	}
 
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.factory = beanFactory;
+	}
+
 	private Map<String, String> getExpressionLabels(HttpServletRequest request, Set<String> labelKeys) {
 		if (CollectionUtils.isEmpty(labelKeys)) {
 			return Collections.emptyMap();
 		}
 
 		return ServletExpressionLabelUtils.resolve(request, labelKeys);
+	}
+
+	private void init() {
+		this.requestCustomizers = BeanFactoryUtils.getBeans(factory, RibbonRequestCustomizer.class);
 	}
 }
