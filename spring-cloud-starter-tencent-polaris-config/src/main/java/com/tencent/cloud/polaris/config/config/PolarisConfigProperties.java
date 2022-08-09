@@ -51,6 +51,12 @@ public class PolarisConfigProperties {
 	private boolean autoRefresh = true;
 
 	/**
+	 * When the local configuration is consistent with the remote configuration, whether to
+	 * preferentially load the remote configuration.
+	 */
+	private boolean preference = true;
+
+	/**
 	 * List of injected configuration files.
 	 */
 	private List<ConfigFileGroup> groups;
@@ -93,5 +99,13 @@ public class PolarisConfigProperties {
 
 	public void setGroups(List<ConfigFileGroup> groups) {
 		this.groups = groups;
+	}
+
+	public boolean isPreference() {
+		return preference;
+	}
+
+	public void setPreference(boolean preference) {
+		this.preference = preference;
 	}
 }

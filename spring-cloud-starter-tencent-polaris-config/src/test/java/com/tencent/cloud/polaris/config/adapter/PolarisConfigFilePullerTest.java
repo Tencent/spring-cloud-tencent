@@ -13,11 +13,10 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
-
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
-import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
@@ -35,35 +33,33 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.CompositePropertySource;
 
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisConfigFileLocator}.
- *@author lepdou 2022-06-11
+ * Test for {@link PolarisConfigFilePuller}.
+ *
+ * @author wlx
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PolarisConfigFileLocatorTest {
+public class PolarisConfigFilePullerTest {
 
-	private final String testNamespace = "testNamespace";
-	private final String testServiceName = "testServiceName";
-	@Mock
-	private PolarisConfigProperties polarisConfigProperties;
 	@Mock
 	private PolarisContextProperties polarisContextProperties;
 	@Mock
 	private ConfigFileService configFileService;
 	@Mock
 	private PolarisPropertySourceManager polarisPropertySourceManager;
-	@Mock
-	private Environment environment;
+
+	private final String testNamespace = "testNamespace";
+	private final String testServiceName = "testServiceName";
+	private final String polarisConfigPropertySourceName = "polaris-config";
 
 	@Test
-	public void testLoadApplicationPropertiesFile() {
-		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+	public void testPullInternalConfigFiles() {
+		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService,
+				polarisPropertySourceManager);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -82,21 +78,19 @@ public class PolarisConfigFileLocatorTest {
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap.properties")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
+		CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
 
-		when(polarisConfigProperties.getGroups()).thenReturn(null);
-		when(environment.getActiveProfiles()).thenReturn(new String[] {});
+		puller.initInternalConfigFiles(compositePropertySource, new String[]{}, testServiceName);
 
-		PropertySource<?> propertySource = locator.locate(environment);
-
-		Assert.assertEquals("v1", propertySource.getProperty("k1"));
-		Assert.assertEquals("v2", propertySource.getProperty("k2"));
-		Assert.assertEquals("v3", propertySource.getProperty("k3"));
+		Assert.assertEquals("v1", compositePropertySource.getProperty("k1"));
+		Assert.assertEquals("v2", compositePropertySource.getProperty("k2"));
+		Assert.assertEquals("v3", compositePropertySource.getProperty("k3"));
 	}
 
 	@Test
-	public void testActiveProfileFilesPriorityBiggerThanDefault() {
-		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+	public void testPullInternalConfigFilesWithProfile() {
+		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService,
+				polarisPropertySourceManager);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -125,32 +119,23 @@ public class PolarisConfigFileLocatorTest {
 		when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap-dev.properties")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yml")).thenReturn(emptyConfigFile);
+		List<String> active = new ArrayList<>();
+		active.add("dev");
+		String[] activeProfiles = active.toArray(new String[]{});
+		CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
+		puller.initInternalConfigFiles(compositePropertySource, activeProfiles, testServiceName);
 
-		when(polarisConfigProperties.getGroups()).thenReturn(null);
-		when(environment.getActiveProfiles()).thenReturn(new String[] {"dev"});
-
-		PropertySource<?> propertySource = locator.locate(environment);
-
-		Assert.assertEquals("v11", propertySource.getProperty("k1"));
-		Assert.assertEquals("v2", propertySource.getProperty("k2"));
-		Assert.assertEquals("v3", propertySource.getProperty("k3"));
+		Assert.assertEquals("v11", compositePropertySource.getProperty("k1"));
+		Assert.assertEquals("v2", compositePropertySource.getProperty("k2"));
+		Assert.assertEquals("v3", compositePropertySource.getProperty("k3"));
 	}
 
 	@Test
-	public void testGetCustomFiles() {
-		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+	public void testPullCustomConfigFilesWithProfile() {
+		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService,
+				polarisPropertySourceManager);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
-		when(polarisContextProperties.getService()).thenReturn(testServiceName);
-
-		Map<String, Object> emptyMap = new HashMap<>();
-		ConfigKVFile emptyConfigFile = new MockedConfigKVFile(emptyMap);
-
-		when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "application.properties")).thenReturn(emptyConfigFile);
-		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yml")).thenReturn(emptyConfigFile);
-		when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap.properties")).thenReturn(emptyConfigFile);
-		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
 
 		List<ConfigFileGroup> customFiles = new LinkedList<>();
 		ConfigFileGroup configFileGroup = new ConfigFileGroup();
@@ -160,9 +145,6 @@ public class PolarisConfigFileLocatorTest {
 		String customFile2 = "file2.properties";
 		configFileGroup.setFiles(Lists.newArrayList(customFile1, customFile2));
 		customFiles.add(configFileGroup);
-
-		when(polarisConfigProperties.getGroups()).thenReturn(customFiles);
-		when(environment.getActiveProfiles()).thenReturn(new String[] {});
 
 		// file1.properties
 		Map<String, Object> file1Map = new HashMap<>();
@@ -178,10 +160,11 @@ public class PolarisConfigFileLocatorTest {
 		ConfigKVFile file2 = new MockedConfigKVFile(file2Map);
 		when(configFileService.getConfigPropertiesFile(testNamespace, customGroup, customFile2)).thenReturn(file2);
 
-		PropertySource<?> propertySource = locator.locate(environment);
+		CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
+		puller.initCustomPolarisConfigFiles(compositePropertySource, customFiles);
 
-		Assert.assertEquals("v1", propertySource.getProperty("k1"));
-		Assert.assertEquals("v2", propertySource.getProperty("k2"));
-		Assert.assertEquals("v3", propertySource.getProperty("k3"));
+		Assert.assertEquals("v1", compositePropertySource.getProperty("k1"));
+		Assert.assertEquals("v2", compositePropertySource.getProperty("k2"));
+		Assert.assertEquals("v3", compositePropertySource.getProperty("k3"));
 	}
 }

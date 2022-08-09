@@ -53,4 +53,8 @@ public class ModifyAddress implements PolarisConfigModifier {
 	public int getOrder() {
 		return ContextConstant.ModifierOrder.FIRST;
 	}
+
+	public void setProperties(PolarisContextProperties properties) {
+		this.properties = properties;
+	}
 }
