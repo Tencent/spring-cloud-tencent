@@ -31,4 +31,14 @@
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.owasp.esapi</groupId>
+				<artifactId>esapi</artifactId>
+				<version>2.3.0.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 </project>
