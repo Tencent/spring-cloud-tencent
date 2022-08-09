@@ -25,15 +25,15 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 
 /**
- * PolarisRefreshContextPropertySourceAutoRefresher refresh config by refreshContext.
+ * PolarisRefreshContextConfigPropertyAutoRefresher refresh config by refreshContext.
  *
  * @author lingxiao.wlx
  */
-public class PolarisRefreshContextPropertySourceAutoRefresher extends PolarisPropertySourceAutoRefresher {
+public class PolarisRefreshContextConfigPropertyAutoRefresher extends PolarisConfigPropertyAutoRefresher {
 
 	private final ContextRefresher contextRefresher;
 
-	public PolarisRefreshContextPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
+	public PolarisRefreshContextConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties,
 															PolarisPropertySourceManager polarisPropertySourceManager,
 															ContextRefresher contextRefresher) {
 		super(polarisConfigProperties, polarisPropertySourceManager);

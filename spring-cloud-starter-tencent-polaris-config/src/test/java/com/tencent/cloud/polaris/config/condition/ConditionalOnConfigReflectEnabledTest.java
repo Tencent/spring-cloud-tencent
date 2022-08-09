@@ -21,14 +21,14 @@ package com.tencent.cloud.polaris.config.condition;
 import com.tencent.cloud.polaris.config.PolarisConfigAutoConfiguration;
 import com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
-import com.tencent.cloud.polaris.config.adapter.PolarisReflectPropertySourceAutoRefresher;
-import com.tencent.cloud.polaris.config.adapter.PolarisRefreshContextPropertySourceAutoRefresher;
+import com.tencent.cloud.polaris.config.adapter.PolarisReflectConfigPropertyAutoRefresher;
+import com.tencent.cloud.polaris.config.adapter.PolarisRefreshContextConfigPropertyAutoRefresher;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConditionalOnConfigReflectEnabledTest {
 
 	@Test
-	public void testReflectEnable() {
+	public void testReflectEnabled() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(PolarisConfigBootstrapAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(PolarisConfigAutoConfiguration.class))
@@ -59,12 +59,12 @@ public class ConditionalOnConfigReflectEnabledTest {
 			assertThat(context).hasSingleBean(PlaceholderHelper.class);
 			assertThat(context).hasSingleBean(SpringValueRegistry.class);
 			assertThat(context).hasSingleBean(SpringValueProcessor.class);
-			assertThat(context).hasSingleBean(PolarisReflectPropertySourceAutoRefresher.class);
+			assertThat(context).hasSingleBean(PolarisReflectConfigPropertyAutoRefresher.class);
 		});
 	}
 
 	@Test
-	public void testWithoutReflectEnable() {
+	public void testWithoutReflectEnabled() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(PolarisConfigBootstrapAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(PolarisConfigAutoConfiguration.class))
@@ -77,7 +77,7 @@ public class ConditionalOnConfigReflectEnabledTest {
 			assertThat(context).hasSingleBean(PolarisConfigProperties.class);
 			assertThat(context).hasSingleBean(PolarisPropertySourceManager.class);
 			assertThat(context).hasSingleBean(ContextRefresher.class);
-			assertThat(context).hasSingleBean(PolarisRefreshContextPropertySourceAutoRefresher.class);
+			assertThat(context).hasSingleBean(PolarisRefreshContextConfigPropertyAutoRefresher.class);
 		});
 	}
 }

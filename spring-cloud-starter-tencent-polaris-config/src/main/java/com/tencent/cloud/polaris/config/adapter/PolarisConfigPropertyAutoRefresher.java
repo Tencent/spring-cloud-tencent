@@ -38,10 +38,10 @@ import org.springframework.util.CollectionUtils;
  *
  * @author lepdou 2022-03-28
  */
-public abstract class PolarisPropertySourceAutoRefresher
-		implements ApplicationListener<ApplicationReadyEvent>, PolarisPropertySourceRefresher {
+public abstract class PolarisConfigPropertyAutoRefresher
+		implements ApplicationListener<ApplicationReadyEvent>, PolarisConfigPropertyRefresher {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisPropertySourceAutoRefresher.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigPropertyAutoRefresher.class);
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
@@ -49,7 +49,7 @@ public abstract class PolarisPropertySourceAutoRefresher
 
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
-	public PolarisPropertySourceAutoRefresher(
+	public PolarisConfigPropertyAutoRefresher(
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisPropertySourceManager polarisPropertySourceManager) {
 		this.polarisConfigProperties = polarisConfigProperties;

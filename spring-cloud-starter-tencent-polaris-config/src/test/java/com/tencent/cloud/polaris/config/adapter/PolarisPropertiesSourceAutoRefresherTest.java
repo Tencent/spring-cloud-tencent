@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisReflectPropertySourceAutoRefresher}.
+ * test for {@link PolarisReflectConfigPropertyAutoRefresher}.
  *
  * @author lepdou 2022-06-11
  */
@@ -70,7 +70,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 
 	@Test
 	public void testConfigFileChanged() throws Exception {
-		PolarisReflectPropertySourceAutoRefresher refresher = new PolarisReflectPropertySourceAutoRefresher(polarisConfigProperties,
+		PolarisReflectConfigPropertyAutoRefresher refresher = new PolarisReflectConfigPropertyAutoRefresher(polarisConfigProperties,
 				polarisPropertySourceManager, springValueRegistry, placeholderHelper);
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);

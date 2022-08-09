@@ -38,15 +38,15 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * PolarisReflectPropertySourceAutoRefresher to refresh config in reflect type
+ * PolarisReflectConfigPropertyAutoRefresher to refresh config in reflect type
  * we can use it by setting spring.cloud.polaris.config.refresh-type=reflect.
  *
  * @author lingxiao.wlx
  */
-public class PolarisReflectPropertySourceAutoRefresher extends PolarisPropertySourceAutoRefresher
+public class PolarisReflectConfigPropertyAutoRefresher extends PolarisConfigPropertyAutoRefresher
 		implements ApplicationContextAware {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisReflectPropertySourceAutoRefresher.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisReflectConfigPropertyAutoRefresher.class);
 
 	private final SpringValueRegistry springValueRegistry;
 
@@ -58,9 +58,9 @@ public class PolarisReflectPropertySourceAutoRefresher extends PolarisPropertySo
 
 	private TypeConverter typeConverter;
 
-	public PolarisReflectPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
-		PolarisPropertySourceManager polarisPropertySourceManager, SpringValueRegistry springValueRegistry,
-		PlaceholderHelper placeholderHelper) {
+	public PolarisReflectConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties,
+				PolarisPropertySourceManager polarisPropertySourceManager, SpringValueRegistry springValueRegistry,
+				PlaceholderHelper placeholderHelper) {
 		super(polarisConfigProperties, polarisPropertySourceManager);
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
