@@ -15,6 +15,11 @@ spring:
         router:
           feature-env:
             enabled: true
+      metadata:
+        content:
+          a: 1
+        transitive:
+          - a
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default
