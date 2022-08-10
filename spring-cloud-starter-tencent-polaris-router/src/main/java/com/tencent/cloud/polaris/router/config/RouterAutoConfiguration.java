@@ -18,6 +18,9 @@
 
 package com.tencent.cloud.polaris.router.config;
 
+import java.util.List;
+
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerClientFilterBeanPostProcessor;
@@ -28,10 +31,14 @@ import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouter
 import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
+import com.tencent.cloud.polaris.router.zuul.PolarisRibbonRoutingFilter;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
+import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
+import org.springframework.cloud.netflix.zuul.filters.route.RibbonCommandFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -84,5 +91,16 @@ public class RouterAutoConfiguration {
 	@ConditionalOnProperty(value = "spring.cloud.polaris.router.rule-router.enabled", matchIfMissing = true)
 	public RuleBasedRouterRequestInterceptor ruleBasedRouterRequestInterceptor(PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties) {
 		return new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties);
+	}
+
+	@Bean(initMethod = "init")
+	@ConditionalOnClass(name = "org.springframework.cloud.netflix.zuul.filters.route.RibbonRoutingFilter")
+	public PolarisRibbonRoutingFilter ribbonRoutingFilter(ProxyRequestHelper helper,
+			RibbonCommandFactory<?> ribbonCommandFactory,
+			MetadataLocalProperties metadataLocalProperties,
+			RouterRuleLabelResolver routerRuleLabelResolver,
+			List<ServletRouterLabelResolver> routerLabelResolvers) {
+		return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory, metadataLocalProperties,
+				routerRuleLabelResolver, routerLabelResolvers);
 	}
 }
