@@ -59,11 +59,13 @@ public class RouterRuleLabelResolverTest {
 		String validKey2 = "${http.query.name}";
 		String validKey3 = "${http.method}";
 		String validKey4 = "${http.uri}";
-		String invalidKey = "${http.expression.wrong}";
+		String validKey5 = "${http.body.customkey}";
+		String invalidKey = "$http.expression.wrong}";
 		labels.put(validKey1, matchString);
 		labels.put(validKey2, matchString);
 		labels.put(validKey3, matchString);
 		labels.put(validKey4, matchString);
+		labels.put(validKey5, matchString);
 		labels.put(invalidKey, matchString);
 
 		RoutingProto.Source source1 = RoutingProto.Source.newBuilder().putAllMetadata(labels).build();
@@ -83,11 +85,12 @@ public class RouterRuleLabelResolverTest {
 		Set<String> resolvedExpressionLabelKeys = resolver.getExpressionLabelKeys(testNamespace, testSourceService, testDstService);
 
 		Assert.assertNotNull(resolvedExpressionLabelKeys);
-		Assert.assertEquals(4, resolvedExpressionLabelKeys.size());
+		Assert.assertEquals(5, resolvedExpressionLabelKeys.size());
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey1));
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey2));
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey3));
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey4));
+		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey5));
 		Assert.assertFalse(resolvedExpressionLabelKeys.contains(invalidKey));
 	}
 }

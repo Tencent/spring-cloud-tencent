@@ -16,41 +16,27 @@
  *
  */
 
-package com.tencent.cloud.polaris.router.example;
+package com.tencent.cloud.polaris.router.spi;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.gson.Gson;
-import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 import feign.RequestTemplate;
 
-import org.springframework.stereotype.Component;
+import org.springframework.core.Ordered;
 
 /**
- *
- * Customize the business tag information obtained from the request
- *
- *@author lepdou 2022-05-12
+ * Router label resolver for feign request.
+ * @author lepdou 2022-07-20
  */
-@Component
-public class CustomRouterLabelResolver implements FeignRouterLabelResolver {
-	private final Gson gson = new Gson();
+public interface FeignRouterLabelResolver extends Ordered {
 
-	@Override
-	public Map<String, String> resolve(RequestTemplate requestTemplate, Set<String> expressionLabelKeys) {
-		Map<String, String> labels = new HashMap<>();
-
-		User user = gson.fromJson(new String(requestTemplate.body()), User.class);
-
-		labels.put("user", user.getName());
-
-		return labels;
-	}
-
-	@Override
-	public int getOrder() {
-		return 0;
-	}
+	/**
+	 * Resolve labels from feign request. User can customize expression parser to extract labels.
+	 *
+	 * @param requestTemplate the feign request.
+	 * @param expressionLabelKeys the expression labels which are configured in router rule.
+	 * @return resolved labels
+	 */
+	Map<String, String> resolve(RequestTemplate requestTemplate, Set<String> expressionLabelKeys);
 }
