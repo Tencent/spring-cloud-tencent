@@ -13,52 +13,45 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.router.spi;
 
 import java.util.Collections;
 import java.util.Map;
-
-import feign.RequestTemplate;
+import java.util.Set;
 
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
- * The spi for resolving labels from request.
- *
- * @author lepdou 2022-05-11
+ * Router label resolver for spring web http request.
+ * @author lepdou 2022-07-20
  */
-public interface RouterLabelResolver extends Ordered {
+public interface SpringWebRouterLabelResolver extends Ordered {
 
 	/**
-	 * resolve labels from feign request.
-	 * @param requestTemplate the feign request.
-	 * @return resolved labels
-	 */
-	default Map<String, String> resolve(RequestTemplate requestTemplate) {
-		return Collections.emptyMap();
-	}
-
-	/**
-	 * resolve labels from rest template request.
+	 * resolve labels from rest template request. User can customize expression parser to extract labels.
+	 *
 	 * @param request the rest template request.
 	 * @param body the rest template request body.
+	 * @param expressionLabelKeys the expression labels which are configured in router rule.
 	 * @return resolved labels
 	 */
-	default Map<String, String> resolve(HttpRequest request, byte[] body) {
+	default Map<String, String> resolve(HttpRequest request, byte[] body, Set<String> expressionLabelKeys) {
 		return Collections.emptyMap();
 	}
 
+
 	/**
-	 * resolve labels from server web exchange.
+	 * resolve labels from server web exchange. User can customize expression parser to extract labels.
+	 *
 	 * @param exchange the server web exchange.
+	 * @param expressionLabelKeys the expression labels which are configured in router rule.
 	 * @return resolved labels
 	 */
-	default Map<String, String> resolve(ServerWebExchange exchange) {
+	default Map<String, String> resolve(ServerWebExchange exchange, Set<String> expressionLabelKeys) {
 		return Collections.emptyMap();
 	}
 }
