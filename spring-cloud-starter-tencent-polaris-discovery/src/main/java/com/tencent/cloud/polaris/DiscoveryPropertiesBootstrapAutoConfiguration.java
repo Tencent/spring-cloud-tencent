@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations under the License.
  *
  */
+
 package com.tencent.cloud.polaris;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

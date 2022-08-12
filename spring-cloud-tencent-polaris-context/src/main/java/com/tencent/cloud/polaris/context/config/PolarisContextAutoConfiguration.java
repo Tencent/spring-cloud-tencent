@@ -63,8 +63,8 @@ public class PolarisContextAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ModifyAddress polarisConfigModifier() {
-		return new ModifyAddress();
+	public ModifyAddress polarisConfigModifier(PolarisContextProperties properties) {
+		return new ModifyAddress(properties);
 	}
 
 	@Bean

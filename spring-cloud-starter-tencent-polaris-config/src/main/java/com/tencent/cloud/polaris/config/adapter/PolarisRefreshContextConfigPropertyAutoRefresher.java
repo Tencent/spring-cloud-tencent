@@ -41,11 +41,6 @@ public class PolarisRefreshContextConfigPropertyAutoRefresher extends PolarisCon
 	}
 
 	@Override
-	public void refreshSpringValue(String changedKey) {
-		// do nothing,all config will be refreshed by contextRefresher.refresh
-	}
-
-	@Override
 	public void refreshConfigurationProperties(Set<String> changeKeys) {
 		contextRefresher.refresh();
 	}

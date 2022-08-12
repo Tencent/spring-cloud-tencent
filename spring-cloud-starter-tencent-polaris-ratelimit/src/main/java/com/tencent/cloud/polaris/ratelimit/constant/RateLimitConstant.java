@@ -27,6 +27,13 @@ import org.springframework.core.Ordered;
  */
 public final class RateLimitConstant {
 
+
+	/**
+	 * Default Private Constructor .
+	 */
+	private RateLimitConstant() {
+	}
+
 	/**
 	 * Order of filter.
 	 */
@@ -41,7 +48,4 @@ public final class RateLimitConstant {
 	 * The build in label method.
 	 */
 	public static String LABEL_METHOD = "method";
-
-	private RateLimitConstant() {
-	}
 }

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -102,6 +103,7 @@ public class SmartConfigurationPropertiesRebinder extends ConfigurationPropertie
 			case SPECIFIC_BEAN:
 				rebindSpecificBean(event);
 				break;
+			case ALL_BEANS:
 			default:
 				rebind();
 				break;
@@ -112,7 +114,7 @@ public class SmartConfigurationPropertiesRebinder extends ConfigurationPropertie
 	private void rebindSpecificBean(EnvironmentChangeEvent event) {
 		Set<String> refreshedSet = new HashSet<>();
 		beanMap.forEach((name, bean) -> event.getKeys().forEach(changeKey -> {
-			String prefix = AnnotationUtils.getValue(bean.getAnnotation()).toString();
+			String prefix = Objects.requireNonNull(AnnotationUtils.getValue(bean.getAnnotation())).toString();
 			// prevent multiple refresh one ConfigurationPropertiesBean.
 			if (changeKey.startsWith(prefix) && refreshedSet.add(name)) {
 				rebind(name);

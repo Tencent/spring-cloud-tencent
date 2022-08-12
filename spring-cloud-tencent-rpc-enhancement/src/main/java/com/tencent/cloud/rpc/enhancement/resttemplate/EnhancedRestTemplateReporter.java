@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.rpc.enhancement.resttemplate;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -46,7 +45,7 @@ import org.springframework.web.client.ResponseErrorHandler;
  */
 public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter implements ResponseErrorHandler {
 
-	private static final Logger LOG = LoggerFactory.getLogger(EnhancedRestTemplateReporter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedRestTemplateReporter.class);
 
 	private static final String FIELD_NAME = "connection";
 
@@ -67,10 +66,10 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 	}
 
 	@Override
-	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response)
-			throws IOException {
+	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response) {
 		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
+
 			HttpURLConnection connection = (HttpURLConnection) ReflectionUtils.getFieldValue(response, FIELD_NAME);
 			if (connection != null) {
 				URL realURL = connection.getURL();
@@ -78,19 +77,18 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 				resultRequest.setPort(realURL.getPort());
 			}
 
+			// checking response http status code
 			if (apply(response.getStatusCode())) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
-		}
-		catch (Exception e) {
-			LOG.error("Will report response of {} url {}", response, url, e);
-			resultRequest.setRetStatus(RetStatus.RetFail);
-			throw e;
-		}
-		finally {
-			LOG.debug("Will report result of {}. URL=[{}]. Response=[{}].", resultRequest.getRetStatus().name(),
+
+			// processing report with consumerAPI .
+			LOGGER.debug("Will report result of {}. URL=[{}]. Response=[{}].", resultRequest.getRetStatus().name(),
 					url, response);
 			consumerAPI.updateServiceCallResult(resultRequest);
+		}
+		catch (Exception e) {
+			LOGGER.error("RestTemplate response reporter execute failed of {} url {}", response, url, e);
 		}
 	}
 

@@ -14,10 +14,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-// CHECKSTYLE:OFF
 
 package com.tencent.cloud.polaris.loadbalancer;
-
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,7 +49,6 @@ import org.springframework.cloud.netflix.ribbon.StaticServerList;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
 
 /**
  * Test for {@link PolarisLoadBalancer}.

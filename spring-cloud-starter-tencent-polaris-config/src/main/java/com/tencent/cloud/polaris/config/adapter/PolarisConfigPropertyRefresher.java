@@ -33,7 +33,9 @@ public interface PolarisConfigPropertyRefresher {
 	 *
 	 * @param changedKey changedKey
 	 */
-	void refreshSpringValue(String changedKey);
+	default void refreshSpringValue(String changedKey) {
+		// do nothing,all config will be refreshed by contextRefresher.refresh
+	}
 
 	/**
 	 * refresh @ConfigurationProperties beans.

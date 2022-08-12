@@ -35,6 +35,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.lang.NonNull;
 
 /**
  * To process xml config placeholders, e.g.
@@ -59,7 +60,7 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
 
 	private final PlaceholderHelper placeholderHelper;
 
-	private PolarisConfigProperties polarisConfigProperties;
+	private final PolarisConfigProperties polarisConfigProperties;
 
 	public SpringValueDefinitionProcessor(PlaceholderHelper placeholderHelper, PolarisConfigProperties polarisConfigProperties) {
 		this.polarisConfigProperties = polarisConfigProperties;
@@ -67,14 +68,14 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
 	}
 
 	@Override
-	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+	public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
 		if (polarisConfigProperties.isAutoRefresh()) {
 			processPropertyValues(registry);
 		}
 	}
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+	public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
 	}
 
