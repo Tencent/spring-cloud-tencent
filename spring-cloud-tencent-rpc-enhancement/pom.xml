@@ -69,6 +69,11 @@
 			<artifactId>mockito-inline</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>io.prometheus</groupId>
+			<artifactId>simpleclient_pushgateway</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>

@@ -79,6 +79,7 @@
 		<protobuf-java.version>3.16.1</protobuf-java.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 		<guava.version>31.0.1-jre</guava.version>
+		<pushgateway.version>0.12.0</pushgateway.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -251,6 +252,12 @@
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
 				<version>${byte-buddy.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.prometheus</groupId>
+				<artifactId>simpleclient_pushgateway</artifactId>
+				<version>${pushgateway.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

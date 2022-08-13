@@ -17,6 +17,10 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -47,6 +51,10 @@ public class PolarisStatProperties {
 	 */
 	private String path = "/metrics";
 
+	/**
+	 * PushGatewayProperties.
+	 */
+	private PushGatewayProperties pushgateway;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -78,5 +86,109 @@ public class PolarisStatProperties {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public PushGatewayProperties getPushgateway() {
+		return pushgateway;
+	}
+
+	public void setPushgateway(PushGatewayProperties pushgateway) {
+		this.pushgateway = pushgateway;
+	}
+
+	public static class PushGatewayProperties {
+		/**
+		 * Enable publishing via a Prometheus pushGateway.
+		 */
+		private Boolean enabled = false;
+
+		/**
+		 * Required host:port or ip:port of the pushGateway.
+		 */
+		private String address = "localhost:9091";
+
+		/**
+		 * Required identifier for this application instance.
+		 */
+		private String job;
+
+		/**
+		 * Frequency with which to push metrics to pushGateway,default 1 minutes.
+		 */
+		private Duration pushRate = Duration.ofMinutes(1);
+
+		/**
+		 * PushGateway shutDownStrategy when application is is shut-down.
+		 */
+		private ShutDownStrategy shutDownStrategy;
+
+		/**
+		 * Used to group metrics in pushGateway. eg:instance:instanceName
+		 */
+		private Map<String, String> groupingKeys = new HashMap<>();
+
+		public Boolean getEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(Boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getAddress() {
+			return address;
+		}
+
+		public void setAddress(String address) {
+			this.address = address;
+		}
+
+		public String getJob() {
+			return job;
+		}
+
+		public void setJob(String job) {
+			this.job = job;
+		}
+
+		public Duration getPushRate() {
+			return pushRate;
+		}
+
+		public void setPushRate(Duration pushRate) {
+			this.pushRate = pushRate;
+		}
+
+		public Map<String, String> getGroupingKeys() {
+			return groupingKeys;
+		}
+
+		public void setGroupingKeys(Map<String, String> groupingKeys) {
+			this.groupingKeys = groupingKeys;
+		}
+
+		public ShutDownStrategy getShutDownStrategy() {
+			return shutDownStrategy;
+		}
+
+		public void setShutDownStrategy(ShutDownStrategy shutDownStrategy) {
+			this.shutDownStrategy = shutDownStrategy;
+		}
+	}
+
+	/**
+	 * PushGateway shutDownStrategy when application is is shut-down.
+	 */
+	public enum ShutDownStrategy {
+
+		/**
+		 * Delete metrics from pushGateway when application is shut-down.
+		 */
+		DELETE,
+
+		/**
+		 * Push metrics right before shut-down. Mostly useful for batch jobs.
+		 */
+		PUSH
 	}
 }
