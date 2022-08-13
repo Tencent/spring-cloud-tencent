@@ -42,6 +42,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = PrometheusPushGatewayContainerTest.TestApplication.class,
 		properties = {"spring.cloud.polaris.stat.pushgateway.enabled=true",
+				"spring.cloud.polaris.stat.enabled=true",
 				"spring.cloud.polaris.stat.pushgateway.shut-down-strategy=DELETE",
 				"spring.cloud.polaris.stat.pushgateway.push-rate=1m",
 				"spring.cloud.polaris.stat.pushgateway.job=test",

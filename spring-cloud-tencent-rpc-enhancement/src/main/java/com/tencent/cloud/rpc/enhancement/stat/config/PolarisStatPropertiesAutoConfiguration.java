@@ -21,11 +21,11 @@ import java.time.Duration;
 import java.util.Map;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.rpc.enhancement.condition.ConditionalOnPushGatewayEnabled;
 import com.tencent.cloud.rpc.enhancement.stat.config.plugin.PrometheusPushGatewayContainer;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -48,7 +48,7 @@ public class PolarisStatPropertiesAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(name = "spring.cloud.polaris.stat.pushgateway.enabled", havingValue = "true")
+	@ConditionalOnPushGatewayEnabled
 	public static class PolarisStatPrometheusPushGatewayAutoConfiguration {
 
 		private static final String DEFAULT_JOB_NAME = "spring-cloud-tencent-application";
