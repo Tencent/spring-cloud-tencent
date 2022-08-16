@@ -80,8 +80,8 @@ public class PolarisConfigAutoConfiguration {
 		return new PolarisRefreshContextConfigPropertyAutoRefresher(polarisConfigProperties, polarisPropertySourceManager, contextRefresher);
 	}
 
-	@ConditionalOnConfigReflectEnabled
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnConfigReflectEnabled
 	@AutoConfigureBefore(PolarisConfigAutoConfiguration.class)
 	public static class PolarisReflectRefresherAutoConfiguration {
 		@Bean

@@ -36,6 +36,7 @@ import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.lang.NonNull;
 
 /**
  * PolarisReflectConfigPropertyAutoRefresher to refresh config in reflect type
@@ -107,14 +108,10 @@ public class PolarisReflectConfigPropertyAutoRefresher extends PolarisConfigProp
 		Object value = placeholderHelper
 				.resolvePropertyValue(beanFactory, springValue.getBeanName(), springValue.getPlaceholder());
 
-		if (springValue.isJson()) {
-			value = parseJsonValue((String) value, springValue.getTargetType());
-		}
-		else {
-			value = springValue.isField() ? this.typeConverter.convertIfNecessary(value, springValue.getTargetType(), springValue.getField()) :
-					this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
-							springValue.getMethodParameter());
-		}
+		value = springValue.isField() ? this.typeConverter.convertIfNecessary(value, springValue.getTargetType(), springValue.getField()) :
+				this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
+						springValue.getMethodParameter());
+
 		return value;
 	}
 
@@ -129,7 +126,7 @@ public class PolarisReflectConfigPropertyAutoRefresher extends PolarisConfigProp
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
 		this.context = (ConfigurableApplicationContext) applicationContext;
 		this.beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
 		this.typeConverter = this.beanFactory.getTypeConverter();

@@ -369,5 +369,4 @@ public class PolarisRibbonRoutingFilterTest {
 		verify(polarisLoadBalancer).chooseServer(routerContext);
 		verify(metadataLocalProperties, times(1)).getContent();
 	}
-
 }
