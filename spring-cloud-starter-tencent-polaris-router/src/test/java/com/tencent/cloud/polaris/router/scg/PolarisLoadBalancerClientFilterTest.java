@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.polaris.router.scg;
 
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;

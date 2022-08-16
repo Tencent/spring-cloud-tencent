@@ -80,7 +80,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerCompositeRuleTest {
 
-	private static AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
+	private static final AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
 	@Mock
 	private PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 	@Mock

@@ -33,6 +33,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.lang.NonNull;
 
 /**
  * Decorate IRule with PolarisLoadBalancerCompositeRule.
@@ -44,7 +45,7 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessor implements BeanPo
 	private BeanFactory beanFactory;
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 		if (bean instanceof AbstractLoadBalancerRule) {
 			RouterAPI routerAPI = beanFactory.getBean(RouterAPI.class);
 			PolarisLoadBalancerProperties polarisLoadBalancerProperties = beanFactory.getBean(PolarisLoadBalancerProperties.class);
@@ -59,7 +60,7 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessor implements BeanPo
 	}
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 }

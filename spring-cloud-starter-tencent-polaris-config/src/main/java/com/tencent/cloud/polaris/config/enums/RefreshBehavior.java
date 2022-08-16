@@ -16,7 +16,6 @@
  *
  */
 
-
 package com.tencent.cloud.polaris.config.enums;
 
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
@@ -36,5 +35,4 @@ public enum RefreshBehavior {
 	 * Refresh specific {@link ConfigurationPropertiesBean} base on change key.
 	 */
 	SPECIFIC_BEAN,
-
 }

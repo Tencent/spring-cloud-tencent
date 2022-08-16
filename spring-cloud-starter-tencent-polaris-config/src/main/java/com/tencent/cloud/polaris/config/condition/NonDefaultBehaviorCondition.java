@@ -46,12 +46,10 @@ public class NonDefaultBehaviorCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		RefreshBehavior behavior = context.getEnvironment().getProperty(
-				POLARIS_CONFIG_REFRESH_BEHAVIOR, RefreshBehavior.class,
-				DEFAULT_REFRESH_BEHAVIOR);
+				POLARIS_CONFIG_REFRESH_BEHAVIOR, RefreshBehavior.class, DEFAULT_REFRESH_BEHAVIOR);
 		if (DEFAULT_REFRESH_BEHAVIOR == behavior) {
 			return ConditionOutcome.noMatch("no matched");
 		}
 		return ConditionOutcome.match("matched");
 	}
-
 }

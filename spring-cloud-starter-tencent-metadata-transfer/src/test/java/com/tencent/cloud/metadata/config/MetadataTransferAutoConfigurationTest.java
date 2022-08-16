@@ -94,7 +94,7 @@ public class MetadataTransferAutoConfigurationTest {
 								.stream()
 								.filter(interceptor -> Objects.equals(interceptor, encodeTransferMedataRestTemplateInterceptor))
 								.collect(Collectors.toList());
-						//EncodeTransferMedataFeignInterceptor is not added repeatedly
+						//EncodeTransferMetadataFeignInterceptor is not added repeatedly
 						Assertions.assertThat(encodeTransferMedataFeignInterceptorList.size()).isEqualTo(1);
 					}
 				});

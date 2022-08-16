@@ -39,7 +39,7 @@ public class PolarisServerList extends AbstractServerList<Server> {
 
 	private String serviceId;
 
-	private PolarisDiscoveryHandler polarisDiscoveryHandler;
+	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
 	public PolarisServerList(PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;

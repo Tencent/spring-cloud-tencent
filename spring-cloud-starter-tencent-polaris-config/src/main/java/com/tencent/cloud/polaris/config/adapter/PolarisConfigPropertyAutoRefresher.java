@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -57,7 +58,7 @@ public abstract class PolarisConfigPropertyAutoRefresher
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationReadyEvent event) {
+	public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
 		registerPolarisConfigPublishEvent();
 	}
 
