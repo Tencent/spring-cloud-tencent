@@ -17,18 +17,12 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
-import java.time.Duration;
-import java.util.Map;
-
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.cloud.rpc.enhancement.condition.ConditionalOnPushGatewayEnabled;
-import com.tencent.cloud.rpc.enhancement.stat.config.plugin.PrometheusPushGatewayContainer;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
 /**
@@ -38,44 +32,12 @@ import org.springframework.core.env.Environment;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
-@EnableConfigurationProperties(PolarisStatProperties.class)
+@Import(PolarisStatProperties.class)
 public class PolarisStatPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public StatConfigModifier statReporterConfigModifier(PolarisStatProperties polarisStatProperties, Environment environment) {
 		return new StatConfigModifier(polarisStatProperties, environment);
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnPushGatewayEnabled
-	public static class PolarisStatPrometheusPushGatewayAutoConfiguration {
-
-		private static final String DEFAULT_JOB_NAME = "spring-cloud-tencent-application";
-
-		@Bean
-		@ConditionalOnMissingBean
-		public PrometheusPushGatewayContainer prometheusPushGatewayContainer(PolarisStatProperties polarisStatProperties,
-					Environment environment) {
-			PolarisStatProperties.PushGatewayProperties pushGatewayProperties = polarisStatProperties.getPushgateway();
-			String job = job(pushGatewayProperties, environment);
-			Duration pushRate = pushGatewayProperties.getPushRate();
-			String address = pushGatewayProperties.getAddress();
-			PolarisStatProperties.ShutDownStrategy shutDownStrategy = pushGatewayProperties.getShutDownStrategy();
-			Map<String, String> groupingKeys = pushGatewayProperties.getGroupingKeys();
-			return new PrometheusPushGatewayContainer(address, pushRate, job, shutDownStrategy, groupingKeys);
-
-		}
-
-		private String job(PolarisStatProperties.PushGatewayProperties pushGatewayProperties, Environment environment) {
-			String job = pushGatewayProperties.getJob();
-			if (StringUtils.isBlank(job)) {
-				job = environment.getProperty("spring.application.name");
-			}
-			if (StringUtils.isBlank(job)) {
-				job = DEFAULT_JOB_NAME;
-			}
-			return job;
-		}
 	}
 }

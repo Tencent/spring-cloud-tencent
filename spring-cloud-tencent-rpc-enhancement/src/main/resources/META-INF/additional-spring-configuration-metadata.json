@@ -46,45 +46,6 @@
       "type": "java.lang.String",
       "defaultValue": "/metrics",
       "description": "Path for prometheus to pull."
-    },
-    {
-      "name": "spring.cloud.polaris.stat.pushgateway.address",
-      "type": "java.lang.String",
-      "description": "Required host:port or ip:port of the pushGateway.",
-      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties$PushGatewayProperties",
-      "defaultValue": "localhost:9091"
-    },
-    {
-      "name": "spring.cloud.polaris.stat.pushgateway.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Enable publishing via a Prometheus pushGateway.",
-      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties$PushGatewayProperties",
-      "defaultValue": false
-    },
-    {
-      "name": "spring.cloud.polaris.stat.pushgateway.grouping-keys",
-      "type": "java.util.Map<java.lang.String,java.lang.String>",
-      "description": "Used to group metrics in pushGateway. eg:instance:instanceName",
-      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties$PushGatewayProperties"
-    },
-    {
-      "name": "spring.cloud.polaris.stat.pushgateway.job",
-      "type": "java.lang.String",
-      "description": "Required identifier for this application instance.",
-      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties$PushGatewayProperties"
-    },
-    {
-      "name": "spring.cloud.polaris.stat.pushgateway.push-rate",
-      "type": "java.time.Duration",
-      "description": "Frequency with which to push metrics to pushGateway,default 1 minutes.",
-      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties$PushGatewayProperties",
-      "defaultValue": "1m"
-    },
-    {
-      "name": "spring.cloud.polaris.stat.pushgateway.shut-down-strategy",
-      "type": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties$ShutDownStrategy",
-      "description": "PushGateway shutDownStrategy when application is is shut-down.",
-      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties$PushGatewayProperties"
     }
   ]
 }
