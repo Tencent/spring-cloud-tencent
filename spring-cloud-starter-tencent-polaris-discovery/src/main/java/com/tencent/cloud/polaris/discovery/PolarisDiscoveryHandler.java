@@ -92,7 +92,7 @@ public class PolarisDiscoveryHandler {
 	 *
 	 * @return service list
 	 */
-	public ServicesResponse GetServices() {
+	public ServicesResponse getServices() {
 		String namespace = polarisDiscoveryProperties.getNamespace();
 		GetServicesRequest request = new GetServicesRequest();
 		request.setNamespace(namespace);
