@@ -171,6 +171,12 @@
 				<version>${revision}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-pushgateway-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
 			<!-- third part framework dependencies -->
 			<dependency>
 				<groupId>com.google.guava</groupId>
@@ -255,9 +261,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>io.prometheus</groupId>
-				<artifactId>simpleclient_pushgateway</artifactId>
-				<version>${pushgateway.version}</version>
+				<groupId>com.tencent.polaris</groupId>
+				<artifactId>stat-pushgateway</artifactId>
+				<version>${polaris.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
