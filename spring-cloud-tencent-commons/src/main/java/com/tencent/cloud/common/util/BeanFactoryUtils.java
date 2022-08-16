@@ -33,7 +33,6 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 public final class BeanFactoryUtils {
 
 	private BeanFactoryUtils() {
-
 	}
 
 	public static <T> List<T> getBeans(BeanFactory beanFactory, Class<T> requiredType) {

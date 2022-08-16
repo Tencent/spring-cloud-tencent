@@ -34,4 +34,5 @@ import org.springframework.context.annotation.Conditional;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Conditional(ConfigReflectCondition.class)
 public @interface ConditionalOnConfigReflectEnabled {
+
 }

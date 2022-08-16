@@ -152,7 +152,7 @@ public class MetadataTransferAutoConfiguration {
 		}
 
 		@Bean
-		public SmartInitializingSingleton addEncodeTransferMedataInterceptorForRestTemplate(EncodeTransferMedataRestTemplateInterceptor interceptor) {
+		public SmartInitializingSingleton addEncodeTransferMetadataInterceptorForRestTemplate(EncodeTransferMedataRestTemplateInterceptor interceptor) {
 			return () -> restTemplates.forEach(restTemplate -> {
 				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
 				list.add(interceptor);

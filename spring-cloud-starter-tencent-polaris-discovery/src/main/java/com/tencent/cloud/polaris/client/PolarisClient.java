@@ -46,5 +46,4 @@ public @interface PolarisClient {
 	 * @return namespace
 	 */
 	String namespace() default "";
-
 }

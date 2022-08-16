@@ -34,9 +34,11 @@ import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterc
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import com.tencent.cloud.polaris.router.zuul.PolarisRibbonRoutingFilter;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
+import org.springframework.cloud.netflix.zuul.ZuulServerAutoConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.route.RibbonCommandFactory;
 import org.springframework.context.annotation.Bean;
@@ -93,14 +95,22 @@ public class RouterAutoConfiguration {
 		return new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties);
 	}
 
-	@Bean(initMethod = "init")
+	/**
+	 * AutoConfiguration for router module integrate for zuul.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.cloud.netflix.zuul.filters.route.RibbonRoutingFilter")
-	public PolarisRibbonRoutingFilter ribbonRoutingFilter(ProxyRequestHelper helper,
-			RibbonCommandFactory<?> ribbonCommandFactory,
-			MetadataLocalProperties metadataLocalProperties,
-			RouterRuleLabelResolver routerRuleLabelResolver,
-			List<ServletRouterLabelResolver> routerLabelResolvers) {
-		return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory, metadataLocalProperties,
-				routerRuleLabelResolver, routerLabelResolvers);
+	@AutoConfigureAfter(ZuulServerAutoConfiguration.class)
+	public static class ZuulRouterAutoConfiguration {
+
+		@Bean(initMethod = "init")
+		public PolarisRibbonRoutingFilter ribbonRoutingFilter(ProxyRequestHelper helper,
+				RibbonCommandFactory<?> ribbonCommandFactory,
+				MetadataLocalProperties metadataLocalProperties,
+				RouterRuleLabelResolver routerRuleLabelResolver,
+				List<ServletRouterLabelResolver> routerLabelResolvers) {
+			return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory, metadataLocalProperties,
+					routerRuleLabelResolver, routerLabelResolvers);
+		}
 	}
 }

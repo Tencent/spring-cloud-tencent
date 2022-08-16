@@ -83,7 +83,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		MockedConfigChange mockedConfigChange = new MockedConfigChange();
 		mockedConfigChange.setK1("v1");
 		Field field = mockedConfigChange.getClass().getDeclaredField("k1");
-		SpringValue springValue = new SpringValue("v1", "placeholder", mockedConfigChange, "mockedConfigChange", field, false);
+		SpringValue springValue = new SpringValue("v1", "placeholder", mockedConfigChange, "mockedConfigChange", field);
 
 		springValues.add(springValue);
 

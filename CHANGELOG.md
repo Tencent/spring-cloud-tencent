@@ -9,3 +9,5 @@
 - [feature:add @ConditionalOnConfigReflectEnabled annotation](https://github.com/Tencent/spring-cloud-tencent/pull/496)
 - [Feature: zuul supports polaris router](https://github.com/Tencent/spring-cloud-tencent/pull/502)
 - [Feature：support pushGateway push metrics](https://github.com/Tencent/spring-cloud-tencent/pull/504)
+- [Refactor : optimize project and code](https://github.com/Tencent/spring-cloud-tencent/pull/506)
+- [Fix typo & Code optimization](https://github.com/Tencent/spring-cloud-tencent/pull/507)
