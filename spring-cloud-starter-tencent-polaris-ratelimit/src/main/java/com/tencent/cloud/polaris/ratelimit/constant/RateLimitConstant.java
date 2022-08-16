@@ -42,7 +42,7 @@ public final class RateLimitConstant {
 	/**
 	 * Info of rate limit.
 	 */
-	public static String QUOTA_LIMITED_INFO = "The request is deny by rate limit because the throttling threshold is reached";
+	public static String QUOTA_LIMITED_INFO = "The request is denied by rate limit because the throttling threshold is reached";
 
 	/**
 	 * The build in label method.

@@ -67,10 +67,10 @@ public class PolarisServiceDiscovery {
 	 * @throws PolarisException polarisException
 	 */
 	public List<String> getServices() throws PolarisException {
-		if (CollectionUtils.isEmpty(polarisDiscoveryHandler.GetServices().getServices())) {
+		if (CollectionUtils.isEmpty(polarisDiscoveryHandler.getServices().getServices())) {
 			return Collections.emptyList();
 		}
-		return polarisDiscoveryHandler.GetServices().getServices().stream()
+		return polarisDiscoveryHandler.getServices().getServices().stream()
 				.map(ServiceInfo::getService).collect(Collectors.toList());
 	}
 }
