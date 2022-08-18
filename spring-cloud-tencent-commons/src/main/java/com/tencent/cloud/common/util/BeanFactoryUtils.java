@@ -24,11 +24,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
+
+import static org.springframework.beans.factory.BeanFactoryUtils.beanNamesForTypeIncludingAncestors;
 
 /**
  * the utils for bean factory.
- *
  * @author lepdou 2022-05-23
  */
 public final class BeanFactoryUtils {
@@ -37,13 +38,12 @@ public final class BeanFactoryUtils {
 	}
 
 	public static <T> List<T> getBeans(BeanFactory beanFactory, Class<T> requiredType) {
-		if (!(beanFactory instanceof DefaultListableBeanFactory)) {
+		if (!(beanFactory instanceof ListableBeanFactory)) {
 			throw new RuntimeException("bean factory not support get list bean. factory type = " + beanFactory.getClass()
 					.getName());
 		}
 
-		String[] beanNames = ((DefaultListableBeanFactory) beanFactory).getBeanNamesForType(requiredType);
-
+		String[] beanNames = beanNamesForTypeIncludingAncestors((ListableBeanFactory) beanFactory, requiredType);
 		if (beanNames.length == 0) {
 			return Collections.emptyList();
 		}
