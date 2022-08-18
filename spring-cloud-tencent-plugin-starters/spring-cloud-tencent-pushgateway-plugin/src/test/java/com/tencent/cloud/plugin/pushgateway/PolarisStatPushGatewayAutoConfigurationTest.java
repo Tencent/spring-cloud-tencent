@@ -19,6 +19,7 @@
 package com.tencent.cloud.plugin.pushgateway;
 
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 

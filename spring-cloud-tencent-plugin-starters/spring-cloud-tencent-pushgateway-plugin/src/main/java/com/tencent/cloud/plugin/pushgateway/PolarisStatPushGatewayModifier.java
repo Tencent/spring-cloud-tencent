@@ -21,8 +21,8 @@ package com.tencent.cloud.plugin.pushgateway;
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
-
 import com.tencent.polaris.plugins.stat.pushgateway.handler.PrometheusPushHandlerConfig;
+
 import org.springframework.core.env.Environment;
 
 /**
@@ -39,7 +39,7 @@ public class PolarisStatPushGatewayModifier implements PolarisConfigModifier {
 	private final Environment environment;
 
 	public PolarisStatPushGatewayModifier(PolarisStatPushGatewayProperties polarisStatPushGatewayProperties,
-										  Environment environment) {
+				Environment environment) {
 		this.polarisStatPushGatewayProperties = polarisStatPushGatewayProperties;
 		this.environment = environment;
 	}

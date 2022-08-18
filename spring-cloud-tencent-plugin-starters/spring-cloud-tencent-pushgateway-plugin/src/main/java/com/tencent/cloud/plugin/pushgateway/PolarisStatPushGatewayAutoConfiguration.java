@@ -19,6 +19,7 @@
 package com.tencent.cloud.plugin.pushgateway;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,7 @@ public class PolarisStatPushGatewayAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PolarisStatPushGatewayModifier polarisStatPushGatewayModifier(PolarisStatPushGatewayProperties polarisStatPushGatewayProperties,
-																		 Environment environment) {
+				Environment environment) {
 		return new PolarisStatPushGatewayModifier(polarisStatPushGatewayProperties, environment);
 	}
 }
