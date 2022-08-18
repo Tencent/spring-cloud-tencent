@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisRouterEndpoint}
+ * Test for {@link PolarisRouterEndpoint}.
  * @author lepdou 2022-07-25
  */
 @RunWith(MockitoJUnitRunner.class)
