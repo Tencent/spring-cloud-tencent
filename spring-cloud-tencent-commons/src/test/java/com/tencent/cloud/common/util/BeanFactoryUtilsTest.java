@@ -19,12 +19,18 @@ public class BeanFactoryUtilsTest {
 		parentBeanFactory.registerBeanDefinition("foo", new RootBeanDefinition(Foo.class));
 
 		DefaultListableBeanFactory childBeanFactory = new DefaultListableBeanFactory(parentBeanFactory);
-		Assert.assertTrue(childBeanFactory.getBeansOfType(Foo.class).isEmpty());
 
+		Assert.assertTrue(childBeanFactory.getBeansOfType(Foo.class).isEmpty());
 		Assert.assertTrue(BeanFactoryUtils.getBeans(childBeanFactory, Foo.class).size() == 1);
+
+		Assert.assertTrue(BeanFactoryUtils.getBeans(childBeanFactory, Bar.class).isEmpty());
 	}
 
 	static class Foo {
+
+	}
+
+	static class Bar {
 
 	}
 }
