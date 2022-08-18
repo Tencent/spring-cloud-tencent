@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+
+import static org.springframework.beans.factory.BeanFactoryUtils.beanNamesForTypeIncludingAncestors;
 
 /**
  * the utils for bean factory.
@@ -41,8 +44,7 @@ public final class BeanFactoryUtils {
 					.getName());
 		}
 
-		String[] beanNames = ((DefaultListableBeanFactory) beanFactory).getBeanNamesForType(requiredType);
-
+		String[] beanNames = beanNamesForTypeIncludingAncestors((ListableBeanFactory) beanFactory, requiredType);
 		if (beanNames.length == 0) {
 			return Collections.emptyList();
 		}
