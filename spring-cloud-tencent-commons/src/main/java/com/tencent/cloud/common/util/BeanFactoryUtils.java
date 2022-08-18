@@ -18,15 +18,14 @@
 
 package com.tencent.cloud.common.util;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 
-import static org.springframework.beans.factory.BeanFactoryUtils.beanNamesForTypeIncludingAncestors;
+import static org.springframework.beans.factory.BeanFactoryUtils.beansOfTypeIncludingAncestors;
 
 /**
  * the utils for bean factory.
@@ -43,13 +42,7 @@ public final class BeanFactoryUtils {
 					.getName());
 		}
 
-		String[] beanNames = beanNamesForTypeIncludingAncestors((ListableBeanFactory) beanFactory, requiredType);
-		if (beanNames.length == 0) {
-			return Collections.emptyList();
-		}
-
-		return Arrays.stream(beanNames).map(
-				beanName -> beanFactory.getBean(beanName, requiredType)
-		).collect(Collectors.toList());
+		Map<String, T> beanMap = beansOfTypeIncludingAncestors((ListableBeanFactory) beanFactory, requiredType);
+		return new ArrayList<>(beanMap.values());
 	}
 }
