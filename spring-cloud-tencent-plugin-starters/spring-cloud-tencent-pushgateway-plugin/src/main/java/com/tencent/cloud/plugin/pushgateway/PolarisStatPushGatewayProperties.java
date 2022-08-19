@@ -39,12 +39,12 @@ public class PolarisStatPushGatewayProperties {
 	private String address;
 
 	/**
-	 * Service.
+	 * Service for pushGateway.
 	 */
 	private String service;
 
 	/**
-	 * Namespace.
+	 * Namespace for pushGateway.
 	 */
 	private String namespace;
 

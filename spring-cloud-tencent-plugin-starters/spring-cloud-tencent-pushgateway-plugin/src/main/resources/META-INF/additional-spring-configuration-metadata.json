@@ -16,7 +16,7 @@
     {
       "name": "spring.cloud.polaris.stat.pushgateway.namespace",
       "type": "java.lang.String",
-      "description": "Namespace.",
+      "description": "Namespace for pushGateway.",
       "sourceType": "com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayProperties"
     },
     {
@@ -28,7 +28,7 @@
     {
       "name": "spring.cloud.polaris.stat.pushgateway.service",
       "type": "java.lang.String",
-      "description": "Service.",
+      "description": "Service for pushGateway.",
       "sourceType": "com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayProperties"
     }
   ]
