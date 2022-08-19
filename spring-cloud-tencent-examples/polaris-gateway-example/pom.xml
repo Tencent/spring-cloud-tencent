@@ -20,6 +20,13 @@
         <module>gateway-callee-service2</module>
     </modules>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+		</dependency>
+	</dependencies>
+
     <build>
         <plugins>
             <plugin>
