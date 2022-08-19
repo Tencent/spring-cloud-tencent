@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.router.resttemplate;
 
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
@@ -51,7 +51,7 @@ public class PolarisLoadBalancerBeanPostProcessorTest {
 	@Mock
 	private LoadBalancerRequestFactory loadBalancerRequestFactory;
 	@Mock
-	private MetadataLocalProperties metadataLocalProperties;
+	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 	@Mock
@@ -61,7 +61,7 @@ public class PolarisLoadBalancerBeanPostProcessorTest {
 	public void testWrapperLoadBalancerInterceptor() {
 		when(beanFactory.getBean(LoadBalancerRequestFactory.class)).thenReturn(loadBalancerRequestFactory);
 		when(beanFactory.getBean(LoadBalancerClient.class)).thenReturn(loadBalancerClient);
-		when(beanFactory.getBean(MetadataLocalProperties.class)).thenReturn(metadataLocalProperties);
+		when(beanFactory.getBean(StaticMetadataManager.class)).thenReturn(staticMetadataManager);
 		when(beanFactory.getBean(RouterRuleLabelResolver.class)).thenReturn(routerRuleLabelResolver);
 
 		try (MockedStatic<BeanFactoryUtils> mockedBeanFactoryUtils = Mockito.mockStatic(BeanFactoryUtils.class)) {
