@@ -87,7 +87,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
+	public Object postProcessBeforeInitialization(Object bean, @NonNull String beanName)
 			throws BeansException {
 		if (polarisConfigProperties.isAutoRefresh()) {
 			super.postProcessBeforeInitialization(bean, beanName);
