@@ -20,4 +20,10 @@
 		<module>router-grayrelease-middle</module>
 		<module>router-grayrelease-backend</module>
 	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+		</dependency>
+	</dependencies>
 </project>
