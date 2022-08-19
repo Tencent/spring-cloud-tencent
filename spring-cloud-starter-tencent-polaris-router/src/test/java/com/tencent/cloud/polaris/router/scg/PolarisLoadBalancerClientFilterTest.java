@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
@@ -68,7 +68,7 @@ public class PolarisLoadBalancerClientFilterTest {
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
 	@Mock
-	private MetadataLocalProperties metadataLocalProperties;
+	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 	@Mock
@@ -105,12 +105,12 @@ public class PolarisLoadBalancerClientFilterTest {
 	@Test
 	public void testGenRouterContext() {
 		PolarisLoadBalancerClientFilter polarisLoadBalancerClientFilter = new PolarisLoadBalancerClientFilter(
-				loadBalancerClient, loadBalancerProperties, metadataLocalProperties, routerRuleLabelResolver,
+				loadBalancerClient, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
 				Lists.newArrayList(routerLabelResolver));
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");
-		when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
+		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
 
 		Set<String> expressionLabelKeys = Sets.newHashSet("${http.header.k1}", "${http.query.userid}");
 		when(routerRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString(), anyString())).thenReturn(expressionLabelKeys);
@@ -138,7 +138,7 @@ public class PolarisLoadBalancerClientFilterTest {
 	@Test
 	public void testChooseInstanceWithoutRibbon() {
 		PolarisLoadBalancerClientFilter polarisLoadBalancerClientFilter = new PolarisLoadBalancerClientFilter(
-				loadBalancerClient, loadBalancerProperties, metadataLocalProperties, routerRuleLabelResolver,
+				loadBalancerClient, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
 				Lists.newArrayList(routerLabelResolver));
 
 		String url = "/" + calleeService + "/users";
@@ -152,7 +152,7 @@ public class PolarisLoadBalancerClientFilterTest {
 		polarisLoadBalancerClientFilter.choose(webExchange);
 
 		verify(loadBalancerClient).choose(calleeService);
-		verify(metadataLocalProperties, times(0)).getContent();
+		verify(staticMetadataManager, times(0)).getMergedStaticMetadata();
 	}
 
 	@Test
@@ -160,12 +160,12 @@ public class PolarisLoadBalancerClientFilterTest {
 		RibbonLoadBalancerClient ribbonLoadBalancerClient = Mockito.mock(RibbonLoadBalancerClient.class);
 
 		PolarisLoadBalancerClientFilter polarisLoadBalancerClientFilter = new PolarisLoadBalancerClientFilter(
-				ribbonLoadBalancerClient, loadBalancerProperties, metadataLocalProperties, routerRuleLabelResolver,
+				ribbonLoadBalancerClient, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
 				Lists.newArrayList(routerLabelResolver));
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");
-		when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
+		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
 
 		Set<String> expressionLabelKeys = Sets.newHashSet("${http.header.k1}", "${http.query.userid}");
 		when(routerRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString(), anyString())).thenReturn(expressionLabelKeys);
@@ -185,6 +185,6 @@ public class PolarisLoadBalancerClientFilterTest {
 		polarisLoadBalancerClientFilter.choose(webExchange);
 
 		verify(ribbonLoadBalancerClient).choose(anyString(), any());
-		verify(metadataLocalProperties, times(1)).getContent();
+		verify(staticMetadataManager, times(1)).getMergedStaticMetadata();
 	}
 }
