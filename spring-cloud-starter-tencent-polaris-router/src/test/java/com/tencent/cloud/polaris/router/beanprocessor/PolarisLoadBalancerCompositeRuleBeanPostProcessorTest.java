@@ -18,15 +18,21 @@
 
 package com.tencent.cloud.polaris.router.beanprocessor;
 
+import java.util.List;
+
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
 import com.netflix.loadbalancer.BestAvailableRule;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.RandomRule;
 import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
+import com.tencent.cloud.common.util.ReflectionUtils;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule;
 import com.tencent.cloud.polaris.router.config.RibbonConfiguration;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
+import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.client.api.DefaultRouterAPI;
@@ -34,6 +40,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
@@ -42,6 +49,7 @@ import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Test for {@link PolarisLoadBalancerCompositeRuleBeanPostProcessor}.
@@ -57,12 +65,18 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 	@Test
 	public void test1() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(RibbonDefaultConfig.class, PolarisRibbonTest.class, RibbonAutoConfiguration.class));
+				.withConfiguration(AutoConfigurations.of(
+						RibbonDefaultConfig.class,
+						PolarisRibbonTest.class,
+						RibbonAutoConfiguration.class,
+						RouterConfiguration.class));
 		contextRunner.run(context -> {
 			SpringClientFactory springClientFactory = context.getBean(SpringClientFactory.class);
 
 			IRule rule = springClientFactory.getInstance(SERVICE_1, IRule.class);
 			Assert.assertTrue(rule instanceof PolarisLoadBalancerCompositeRule);
+			List<RouterRequestInterceptor> requestInterceptors = (List<RouterRequestInterceptor>) ReflectionUtils.getFieldValue(rule, "requestInterceptors");
+			Assert.assertFalse(CollectionUtils.isEmpty(requestInterceptors));
 			AbstractLoadBalancerRule delegateRule = ((PolarisLoadBalancerCompositeRule) rule).getDelegateRule();
 			//ZoneAvoidanceRule default
 			Assert.assertTrue(delegateRule instanceof ZoneAvoidanceRule);
@@ -160,6 +174,16 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 		@Bean
 		public RouterAPI routerAPI(SDKContext sdkContext) {
 			return new DefaultRouterAPI(sdkContext);
+		}
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(PolarisNearByRouterProperties.class)
+	static class RouterConfiguration {
+		@Bean
+		@ConditionalOnProperty(value = "spring.cloud.polaris.router.nearby-router.enabled", matchIfMissing = true)
+		public NearbyRouterRequestInterceptor nearbyRouterRequestInterceptor(PolarisNearByRouterProperties polarisNearByRouterProperties) {
+			return new NearbyRouterRequestInterceptor(polarisNearByRouterProperties);
 		}
 	}
 }
