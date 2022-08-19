@@ -31,7 +31,7 @@ import com.netflix.niws.client.http.RestClient;
 import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
@@ -81,7 +81,7 @@ public class PolarisRibbonRoutingFilterTest {
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
 	@Mock
-	private MetadataLocalProperties metadataLocalProperties;
+	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 	@Mock
@@ -122,12 +122,12 @@ public class PolarisRibbonRoutingFilterTest {
 	@Test
 	public void testGenRouterContext() {
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(proxyRequestHelper,
-				ribbonCommandFactory, metadataLocalProperties, routerRuleLabelResolver,
+				ribbonCommandFactory, staticMetadataManager, routerRuleLabelResolver,
 				Lists.newArrayList(routerLabelResolver));
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");
-		when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
+		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
 
 		Set<String> expressionLabelKeys = Sets.newHashSet("${http.header.k1}", "${http.query.userid}");
 		when(routerRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString(), anyString()))
@@ -159,7 +159,7 @@ public class PolarisRibbonRoutingFilterTest {
 		zuulProperties.setThreadPool(new ZuulProperties.HystrixThreadPool());
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
-				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, metadataLocalProperties,
+				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
 				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -184,7 +184,7 @@ public class PolarisRibbonRoutingFilterTest {
 		command.execute();
 
 		verify(polarisLoadBalancer).chooseServer(calleeService);
-		verify(metadataLocalProperties, times(0)).getContent();
+		verify(staticMetadataManager, times(0)).getMergedStaticMetadata();
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class PolarisRibbonRoutingFilterTest {
 		zuulProperties.setThreadPool(new ZuulProperties.HystrixThreadPool());
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
-				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, metadataLocalProperties,
+				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
 				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -220,7 +220,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		// RestClient not use loadBalancerKey
 		verify(polarisLoadBalancer).chooseServer(null);
-		verify(metadataLocalProperties, times(0)).getContent();
+		verify(staticMetadataManager, times(0)).getMergedStaticMetadata();
 	}
 
 	@Test
@@ -230,7 +230,7 @@ public class PolarisRibbonRoutingFilterTest {
 		zuulProperties.setThreadPool(new ZuulProperties.HystrixThreadPool());
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
-				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, metadataLocalProperties,
+				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
 				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -255,7 +255,7 @@ public class PolarisRibbonRoutingFilterTest {
 		command.execute();
 
 		verify(polarisLoadBalancer).chooseServer(calleeService);
-		verify(metadataLocalProperties, times(0)).getContent();
+		verify(staticMetadataManager, times(0)).getMergedStaticMetadata();
 	}
 
 	@Test
@@ -265,7 +265,7 @@ public class PolarisRibbonRoutingFilterTest {
 		zuulProperties.setThreadPool(new ZuulProperties.HystrixThreadPool());
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
-				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, metadataLocalProperties,
+				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
 				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -290,7 +290,7 @@ public class PolarisRibbonRoutingFilterTest {
 				zuulProperties, fallbackProvider, clientConfig);
 		command.execute();
 		verify(polarisLoadBalancer).chooseServer(routerContext);
-		verify(metadataLocalProperties, times(1)).getContent();
+		verify(staticMetadataManager, times(1)).getMergedStaticMetadata();
 	}
 
 	@Test
@@ -300,7 +300,7 @@ public class PolarisRibbonRoutingFilterTest {
 		zuulProperties.setThreadPool(new ZuulProperties.HystrixThreadPool());
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
-				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, metadataLocalProperties,
+				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
 				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -327,7 +327,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		// RestClient not use loadBalancerKey
 		verify(polarisLoadBalancer).chooseServer(null);
-		verify(metadataLocalProperties, times(1)).getContent();
+		verify(staticMetadataManager, times(1)).getMergedStaticMetadata();
 	}
 
 	@Test
@@ -337,7 +337,7 @@ public class PolarisRibbonRoutingFilterTest {
 		zuulProperties.setThreadPool(new ZuulProperties.HystrixThreadPool());
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
-				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, metadataLocalProperties,
+				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
 				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -367,6 +367,6 @@ public class PolarisRibbonRoutingFilterTest {
 		command.execute();
 
 		verify(polarisLoadBalancer).chooseServer(routerContext);
-		verify(metadataLocalProperties, times(1)).getContent();
+		verify(staticMetadataManager, times(1)).getMergedStaticMetadata();
 	}
 }

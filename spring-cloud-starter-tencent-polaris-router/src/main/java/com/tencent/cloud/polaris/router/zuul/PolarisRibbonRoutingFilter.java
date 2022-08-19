@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
 import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
@@ -65,24 +65,19 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements BeanFactoryAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisRibbonRoutingFilter.class);
-
-	private BeanFactory factory;
-
-	private final MetadataLocalProperties metadataLocalProperties;
-
+	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
-
 	private final List<ServletRouterLabelResolver> routerLabelResolvers;
-
+	private BeanFactory factory;
 	private boolean useServlet31 = true;
 
 	public PolarisRibbonRoutingFilter(ProxyRequestHelper helper,
 			RibbonCommandFactory<?> ribbonCommandFactory,
-			MetadataLocalProperties metadataLocalProperties,
+			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver,
 			List<ServletRouterLabelResolver> routerLabelResolvers) {
 		super(helper, ribbonCommandFactory, Collections.emptyList());
-		this.metadataLocalProperties = metadataLocalProperties;
+		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
@@ -139,7 +134,7 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements B
 
 	PolarisRouterContext genRouterContext(HttpServletRequest request, String serviceId) {
 		// local service labels
-		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
+		Map<String, String> labels = new HashMap<>(staticMetadataManager.getMergedStaticMetadata());
 
 		// labels from rule expression
 		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
