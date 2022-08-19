@@ -20,7 +20,7 @@ package com.tencent.cloud.polaris.router.config;
 
 import java.util.List;
 
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerClientFilterBeanPostProcessor;
@@ -106,10 +106,10 @@ public class RouterAutoConfiguration {
 		@Bean(initMethod = "init")
 		public PolarisRibbonRoutingFilter ribbonRoutingFilter(ProxyRequestHelper helper,
 				RibbonCommandFactory<?> ribbonCommandFactory,
-				MetadataLocalProperties metadataLocalProperties,
+				StaticMetadataManager staticMetadataManager,
 				RouterRuleLabelResolver routerRuleLabelResolver,
 				List<ServletRouterLabelResolver> routerLabelResolvers) {
-			return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory, metadataLocalProperties,
+			return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory, staticMetadataManager,
 					routerRuleLabelResolver, routerLabelResolvers);
 		}
 	}

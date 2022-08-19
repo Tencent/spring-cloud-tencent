@@ -29,7 +29,7 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
@@ -53,11 +53,11 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelFeignInterceptor.class);
 
 	private final List<FeignRouterLabelResolver> routerLabelResolvers;
-	private final MetadataLocalProperties metadataLocalProperties;
+	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
 	public RouterLabelFeignInterceptor(List<FeignRouterLabelResolver> routerLabelResolvers,
-			MetadataLocalProperties metadataLocalProperties,
+			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
 			routerLabelResolvers.sort(Comparator.comparingInt(Ordered::getOrder));
@@ -66,7 +66,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		else {
 			this.routerLabelResolvers = null;
 		}
-		this.metadataLocalProperties = metadataLocalProperties;
+		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 	}
 
@@ -78,7 +78,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 	@Override
 	public void apply(RequestTemplate requestTemplate) {
 		// local service labels
-		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
+		Map<String, String> labels = new HashMap<>(staticMetadataManager.getMergedStaticMetadata());
 
 		// labels from rule expression
 		String peerServiceName = requestTemplate.feignTarget().name();
@@ -103,7 +103,8 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		}
 
 		// labels from downstream
-		Map<String, String> transitiveLabels = MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		Map<String, String> transitiveLabels = MetadataContextHolder.get()
+				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		labels.putAll(transitiveLabels);
 
 		// pass label by header

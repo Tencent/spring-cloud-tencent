@@ -28,7 +28,7 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
@@ -55,18 +55,18 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 public class PolarisLoadBalancerClientFilter extends LoadBalancerClientFilter {
 	private final static Logger LOGGER = LoggerFactory.getLogger(PolarisLoadBalancerClientFilter.class);
 
-	private final MetadataLocalProperties metadataLocalProperties;
+	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
 
 	private final boolean isRibbonLoadBalanceClient;
 
 	public PolarisLoadBalancerClientFilter(LoadBalancerClient loadBalancer, LoadBalancerProperties properties,
-			MetadataLocalProperties metadataLocalProperties,
+			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver,
 			List<SpringWebRouterLabelResolver> routerLabelResolvers) {
 		super(loadBalancer, properties);
-		this.metadataLocalProperties = metadataLocalProperties;
+		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
@@ -96,7 +96,7 @@ public class PolarisLoadBalancerClientFilter extends LoadBalancerClientFilter {
 
 	PolarisRouterContext genRouterContext(ServerWebExchange exchange, String peerServiceName) {
 		// local service labels
-		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
+		Map<String, String> labels = new HashMap<>(staticMetadataManager.getMergedStaticMetadata());
 
 		// labels from rule expression
 		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
