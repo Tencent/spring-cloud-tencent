@@ -24,7 +24,6 @@ import com.tencent.polaris.api.utils.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 /**
  * Test for {@link PlaceholderHelper}.
  *
@@ -72,7 +71,7 @@ public class PlaceholderHelperTest {
 	}
 
 	@Test
-	public void extractIllegalPlaceholderKeysTest(){
+	public void extractIllegalPlaceholderKeysTest() {
 		final String placeholderCase = "${some.key";
 		final String placeholderCase1 = "{some.key}";
 		final String placeholderCase2 = "some.key";

@@ -18,6 +18,11 @@
 
 package com.tencent.cloud.polaris.config.spring.annotation;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
+
 import com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration;
 import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
@@ -25,6 +30,7 @@ import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,11 +40,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Test for {@link SpringValueProcessor}.
