@@ -17,4 +17,5 @@
 - [Fix the code analysis error.](https://github.com/Tencent/spring-cloud-tencent/pull/499)
 - [Optimize router label resolver spi](https://github.com/Tencent/spring-cloud-tencent/pull/503)
 - [Fix typo & Code optimization](https://github.com/Tencent/spring-cloud-tencent/pull/511)
+- [BeanFactoryUtils returns all beans including beans defined in ancestor bean factories](https://github.com/Tencent/spring-cloud-tencent/pull/516)
 - [Feature: Add router actuate endpoint](https://github.com/Tencent/spring-cloud-tencent/pull/519)

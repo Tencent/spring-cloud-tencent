@@ -18,17 +18,17 @@
 
 package com.tencent.cloud.common.util;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
+
+import static org.springframework.beans.factory.BeanFactoryUtils.beansOfTypeIncludingAncestors;
 
 /**
  * the utils for bean factory.
- *
  * @author lepdou 2022-05-23
  */
 public final class BeanFactoryUtils {
@@ -37,19 +37,12 @@ public final class BeanFactoryUtils {
 	}
 
 	public static <T> List<T> getBeans(BeanFactory beanFactory, Class<T> requiredType) {
-		if (!(beanFactory instanceof DefaultListableBeanFactory)) {
+		if (!(beanFactory instanceof ListableBeanFactory)) {
 			throw new RuntimeException("bean factory not support get list bean. factory type = " + beanFactory.getClass()
 					.getName());
 		}
 
-		String[] beanNames = ((DefaultListableBeanFactory) beanFactory).getBeanNamesForType(requiredType);
-
-		if (beanNames.length == 0) {
-			return Collections.emptyList();
-		}
-
-		return Arrays.stream(beanNames).map(
-				beanName -> beanFactory.getBean(beanName, requiredType)
-		).collect(Collectors.toList());
+		Map<String, T> beanMap = beansOfTypeIncludingAncestors((ListableBeanFactory) beanFactory, requiredType);
+		return new ArrayList<>(beanMap.values());
 	}
 }
