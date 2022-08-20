@@ -20,7 +20,7 @@ package com.tencent.cloud.rpc.enhancement.feign.plugin;
 import org.springframework.core.Ordered;
 
 /**
- * Pre plugin used by EnhancedFeignClient.
+ * Plugin used by EnhancedFeignClient.
  *
  * @author Haotian Zhang
  */
