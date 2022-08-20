@@ -16,4 +16,5 @@
 - [Bugfix: update byte-buddy scope test to compile](https://github.com/Tencent/spring-cloud-tencent/pull/498)
 - [Fix the code analysis error.](https://github.com/Tencent/spring-cloud-tencent/pull/500)
 - [Fix typo & Code optimization](https://github.com/Tencent/spring-cloud-tencent/pull/512)
+- [BeanFactoryUtils returns all beans including beans defined in ancestor bean factories](https://github.com/Tencent/spring-cloud-tencent/pull/517)
 - [fix:add spring-cloud-starter-bootstrap dependency for example](https://github.com/Tencent/spring-cloud-tencent/pull/521)
