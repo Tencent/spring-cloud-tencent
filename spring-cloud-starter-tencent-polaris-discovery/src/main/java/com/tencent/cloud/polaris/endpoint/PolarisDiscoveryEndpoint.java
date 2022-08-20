@@ -39,14 +39,13 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
  * @author shuiqingliu
  */
 @Endpoint(id = "polaris-discovery")
-public class PolarisDiscoveryEndPoint {
+public class PolarisDiscoveryEndpoint {
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 	private final DiscoveryClient polarisDiscoveryClient;
 	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
-	public PolarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties,
-			DiscoveryClient polarisDiscoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
+	public PolarisDiscoveryEndpoint(PolarisDiscoveryProperties polarisDiscoveryProperties, DiscoveryClient polarisDiscoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryClient = polarisDiscoveryClient;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
@@ -77,7 +76,6 @@ public class PolarisDiscoveryEndPoint {
 
 	private ServiceInstances getServiceInstances(String serviceId) {
 		InstancesResponse instancesResponse = polarisDiscoveryHandler.getHealthyInstances(serviceId);
-		ServiceInstances serviceInstances = instancesResponse.toServiceInstances();
-		return serviceInstances;
+		return instancesResponse.toServiceInstances();
 	}
 }

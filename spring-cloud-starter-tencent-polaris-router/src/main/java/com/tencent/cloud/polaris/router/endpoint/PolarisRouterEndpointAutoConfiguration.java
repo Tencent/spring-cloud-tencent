@@ -15,35 +15,32 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.endpoint;
+package com.tencent.cloud.polaris.router.endpoint;
 
-import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
-import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.ServiceRuleManager;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * The AutoConfiguration for Polaris Discovery's Endpoint.
+ * The AutoConfiguration for polaris router endpoint.
  *
- * @author shuiqingliu
+ * @author lepdou 2022-07-25
  **/
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Endpoint.class)
-@ConditionalOnPolarisDiscoveryEnabled
-public class PolarisDiscoveryEndpointAutoConfiguration {
+@ConditionalOnPolarisEnabled
+public class PolarisRouterEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
-	public PolarisDiscoveryEndpoint polarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties,
-			DiscoveryClient discoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
-		return new PolarisDiscoveryEndpoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
+	public PolarisRouterEndpoint polarisRouterEndpoint(ServiceRuleManager serviceRuleManager) {
+		return new PolarisRouterEndpoint(serviceRuleManager);
 	}
 }
