@@ -86,7 +86,7 @@ public class SpringValue {
 	private void injectMethod(Object newVal)
 			throws InvocationTargetException, IllegalAccessException {
 		Object bean = beanRef.get();
-		if (bean == null) {
+		if (bean == null || methodParameter.getMethod() == null) {
 			return;
 		}
 		methodParameter.getMethod().invoke(bean, newVal);
@@ -131,7 +131,12 @@ public class SpringValue {
 					.format("key: %s, beanName: %s, field: %s.%s", key, beanName, bean.getClass()
 							.getName(), field.getName());
 		}
-		return String.format("key: %s, beanName: %s, method: %s.%s", key, beanName, bean.getClass().getName(),
-				methodParameter.getMethod().getName());
+		if (null != methodParameter.getMethod()) {
+			return String.format("key: %s, beanName: %s, method: %s.%s", key, beanName, bean.getClass().getName(),
+					methodParameter.getMethod().getName());
+		}
+		else {
+			return String.format("key: %s, beanName: %s", key, beanName);
+		}
 	}
 }

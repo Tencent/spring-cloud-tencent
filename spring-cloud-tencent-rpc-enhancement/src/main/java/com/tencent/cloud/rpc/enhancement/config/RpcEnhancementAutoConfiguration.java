@@ -20,11 +20,12 @@ package com.tencent.cloud.rpc.enhancement.config;
 import java.util.List;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.rpc.enhancement.feign.DefaultEnhancedFeignPluginRunner;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
+import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignPluginRunner;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateModifier;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
 
@@ -34,12 +35,10 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
-
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
  * Auto Configuration for Polaris {@link feign.Feign} OR {@link RestTemplate} which can automatically bring in the call
@@ -65,10 +64,14 @@ public class RpcEnhancementAutoConfiguration {
 	protected static class PolarisFeignClientAutoConfiguration {
 
 		@Bean
-		@Order(HIGHEST_PRECEDENCE)
-		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(
+		public EnhancedFeignPluginRunner enhancedFeignPluginRunner(
 				@Autowired(required = false) List<EnhancedFeignPlugin> enhancedFeignPlugins) {
-			return new EnhancedFeignBeanPostProcessor(enhancedFeignPlugins);
+			return new DefaultEnhancedFeignPluginRunner(enhancedFeignPlugins);
+		}
+
+		@Bean
+		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(EnhancedFeignPluginRunner pluginRunner) {
+			return new EnhancedFeignBeanPostProcessor(pluginRunner);
 		}
 
 		@Configuration
@@ -104,9 +107,8 @@ public class RpcEnhancementAutoConfiguration {
 		}
 
 		@Bean
-		public EnhancedRestTemplateModifier polarisRestTemplateBeanPostProcessor(
-				EnhancedRestTemplateReporter restTemplateResponseErrorHandler) {
-			return new EnhancedRestTemplateModifier(restTemplateResponseErrorHandler);
+		public RestTemplateCustomizer setErrorHandlerCustomizer(EnhancedRestTemplateReporter reporter) {
+			return restTemplate -> restTemplate.setErrorHandler(reporter);
 		}
 	}
 }

@@ -11,5 +11,7 @@
 - [Feature：support pushGateway push metrics](https://github.com/Tencent/spring-cloud-tencent/pull/504)
 - [Refactor : optimize project and code](https://github.com/Tencent/spring-cloud-tencent/pull/506)
 - [Fix typo & Code optimization](https://github.com/Tencent/spring-cloud-tencent/pull/507)
+- [Code optimization for rpc-enhancement module](https://github.com/Tencent/spring-cloud-tencent/pull/510)
 - [Bugfix：BeanFactoryUtils returns all beans including beans defined in ancestor bean factories](https://github.com/Tencent/spring-cloud-tencent/pull/515)
 - [fix:fix only config file metadata can be used in routing bug.](https://github.com/Tencent/spring-cloud-tencent/pull/518)
+- [optimize：optimize config module code](https://github.com/Tencent/spring-cloud-tencent/pull/520)
