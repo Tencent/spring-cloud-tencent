@@ -45,10 +45,6 @@ import org.springframework.web.server.ServerWebExchange;
 public final class ExpressionLabelUtils {
 
 	/**
-	 * the prefix of expression.
-	 */
-	public static final String LABEL_PREFIX = "${";
-	/**
 	 * the expression prefix of header label.
 	 */
 	public static final String LABEL_HEADER_PREFIX = "${http.header.";
@@ -88,6 +84,7 @@ public final class ExpressionLabelUtils {
 	 * the suffix of expression.
 	 */
 	public static final String LABEL_SUFFIX = "}";
+
 	private ExpressionLabelUtils() {
 	}
 
