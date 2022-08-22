@@ -18,6 +18,9 @@ spring:
       stat:
         enabled: true
         port: 28081
+        pushgateway:
+          enabled: true
+          address: 127.0.0.1
 #    consul:
 #      port: 8500
 #      host: 127.0.0.1
