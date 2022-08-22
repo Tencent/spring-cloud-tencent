@@ -17,9 +17,6 @@
 
 package com.tencent.cloud.rpc.enhancement.feign;
 
-import java.util.List;
-
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import feign.Client;
 
 import org.springframework.beans.BeansException;
@@ -38,12 +35,12 @@ import org.springframework.cloud.openfeign.loadbalancer.RetryableFeignBlockingLo
  */
 public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
-	private final List<EnhancedFeignPlugin> enhancedFeignPlugins;
+	private EnhancedFeignPluginRunner pluginRunner;
 
 	private BeanFactory factory;
 
-	public EnhancedFeignBeanPostProcessor(List<EnhancedFeignPlugin> enhancedFeignPlugins) {
-		this.enhancedFeignPlugins = enhancedFeignPlugins;
+	public EnhancedFeignBeanPostProcessor(EnhancedFeignPluginRunner pluginRunner) {
+		this.pluginRunner = pluginRunner;
 	}
 
 	@Override
@@ -79,7 +76,7 @@ public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFa
 	}
 
 	private EnhancedFeignClient createPolarisFeignClient(Client delegate) {
-		return new EnhancedFeignClient(delegate, enhancedFeignPlugins);
+		return new EnhancedFeignClient(delegate, pluginRunner);
 	}
 
 	@Override
