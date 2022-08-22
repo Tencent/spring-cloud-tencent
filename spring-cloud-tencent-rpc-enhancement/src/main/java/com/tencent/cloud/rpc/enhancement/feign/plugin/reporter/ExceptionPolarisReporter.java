@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 
 /**
- * Polaris reporter when feign call is successful.
+ * Polaris reporter when feign call fails.
  *
  * @author Haotian Zhang
  */
