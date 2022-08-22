@@ -42,8 +42,8 @@ public class PolarisDiscoveryEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
-	public PolarisDiscoveryEndPoint polarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties,
+	public PolarisDiscoveryEndpoint polarisDiscoveryEndPoint(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			DiscoveryClient discoveryClient, PolarisDiscoveryHandler polarisDiscoveryHandler) {
-		return new PolarisDiscoveryEndPoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
+		return new PolarisDiscoveryEndpoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
 	}
 }
