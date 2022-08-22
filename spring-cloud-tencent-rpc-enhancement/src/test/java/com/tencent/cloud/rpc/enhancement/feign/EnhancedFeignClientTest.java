@@ -74,7 +74,7 @@ public class EnhancedFeignClientTest {
 
 		List<EnhancedFeignPlugin> enhancedFeignPlugins = getMockEnhancedFeignPlugins();
 		try {
-			new EnhancedFeignClient(mock(Client.class), enhancedFeignPlugins);
+			new EnhancedFeignClient(mock(Client.class), new DefaultEnhancedFeignPluginRunner(enhancedFeignPlugins));
 		}
 		catch (Throwable e) {
 			fail("Exception encountered.", e);
@@ -103,7 +103,7 @@ public class EnhancedFeignClientTest {
 		RequestTemplate requestTemplate = new RequestTemplate();
 		requestTemplate.feignTarget(target);
 
-		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate, getMockEnhancedFeignPlugins());
+		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate, new DefaultEnhancedFeignPluginRunner(getMockEnhancedFeignPlugins()));
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",

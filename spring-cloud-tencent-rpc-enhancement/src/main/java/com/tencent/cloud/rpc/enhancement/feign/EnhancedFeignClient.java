@@ -18,21 +18,17 @@
 package com.tencent.cloud.rpc.enhancement.feign;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import feign.Client;
 import feign.Request;
 import feign.Request.Options;
 import feign.Response;
 
-import org.springframework.util.CollectionUtils;
-
+import static com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType.EXCEPTION;
+import static com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType.FINALLY;
+import static com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType.POST;
+import static com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType.PRE;
 import static feign.Util.checkNotNull;
 
 /**
@@ -44,43 +40,11 @@ public class EnhancedFeignClient implements Client {
 
 	private final Client delegate;
 
-	private List<EnhancedFeignPlugin> preEnhancedFeignPlugins;
+	private EnhancedFeignPluginRunner pluginRunner;
 
-	private List<EnhancedFeignPlugin> postEnhancedFeignPlugins;
-
-	private List<EnhancedFeignPlugin> exceptionEnhancedFeignPlugins;
-
-	private List<EnhancedFeignPlugin> finallyEnhancedFeignPlugins;
-
-	public EnhancedFeignClient(Client target, List<EnhancedFeignPlugin> enhancedFeignPlugins) {
+	public EnhancedFeignClient(Client target, EnhancedFeignPluginRunner pluginRunner) {
 		this.delegate = checkNotNull(target, "target");
-
-		// Init the EnhancedFeignPlugins list.
-		this.preEnhancedFeignPlugins = new ArrayList<>();
-		this.postEnhancedFeignPlugins = new ArrayList<>();
-		this.exceptionEnhancedFeignPlugins = new ArrayList<>();
-		this.finallyEnhancedFeignPlugins = new ArrayList<>();
-		if (!CollectionUtils.isEmpty(enhancedFeignPlugins)) {
-			for (EnhancedFeignPlugin feignPlugin : enhancedFeignPlugins) {
-				if (feignPlugin.getType().equals(EnhancedFeignPluginType.PRE)) {
-					this.preEnhancedFeignPlugins.add(feignPlugin);
-				}
-				else if (feignPlugin.getType().equals(EnhancedFeignPluginType.POST)) {
-					this.postEnhancedFeignPlugins.add(feignPlugin);
-				}
-				else if (feignPlugin.getType().equals(EnhancedFeignPluginType.EXCEPTION)) {
-					this.exceptionEnhancedFeignPlugins.add(feignPlugin);
-				}
-				else if (feignPlugin.getType().equals(EnhancedFeignPluginType.FINALLY)) {
-					this.finallyEnhancedFeignPlugins.add(feignPlugin);
-				}
-			}
-		}
-		// Set the ordered enhanced feign plugins.
-		this.preEnhancedFeignPlugins = getSortedEnhancedFeignPlugin(this.preEnhancedFeignPlugins);
-		this.postEnhancedFeignPlugins = getSortedEnhancedFeignPlugin(this.postEnhancedFeignPlugins);
-		this.exceptionEnhancedFeignPlugins = getSortedEnhancedFeignPlugin(this.exceptionEnhancedFeignPlugins);
-		this.finallyEnhancedFeignPlugins = getSortedEnhancedFeignPlugin(this.finallyEnhancedFeignPlugins);
+		this.pluginRunner = pluginRunner;
 	}
 
 	@Override
@@ -90,64 +54,24 @@ public class EnhancedFeignClient implements Client {
 		enhancedFeignContext.setOptions(options);
 
 		// Run pre enhanced feign plugins.
-		for (EnhancedFeignPlugin plugin : preEnhancedFeignPlugins) {
-			try {
-				plugin.run(enhancedFeignContext);
-			}
-			catch (Throwable throwable) {
-				plugin.handlerThrowable(enhancedFeignContext, throwable);
-			}
-		}
+		pluginRunner.run(PRE, enhancedFeignContext);
 		try {
 			Response response = delegate.execute(request, options);
 			enhancedFeignContext.setResponse(response);
 
 			// Run post enhanced feign plugins.
-			for (EnhancedFeignPlugin plugin : postEnhancedFeignPlugins) {
-				try {
-					plugin.run(enhancedFeignContext);
-				}
-				catch (Throwable throwable) {
-					plugin.handlerThrowable(enhancedFeignContext, throwable);
-				}
-			}
+			pluginRunner.run(POST, enhancedFeignContext);
 			return response;
 		}
 		catch (IOException origin) {
 			enhancedFeignContext.setException(origin);
 			// Run exception enhanced feign plugins.
-			for (EnhancedFeignPlugin plugin : exceptionEnhancedFeignPlugins) {
-				try {
-					plugin.run(enhancedFeignContext);
-				}
-				catch (Throwable throwable) {
-					plugin.handlerThrowable(enhancedFeignContext, throwable);
-				}
-			}
+			pluginRunner.run(EXCEPTION, enhancedFeignContext);
 			throw origin;
 		}
 		finally {
 			// Run finally enhanced feign plugins.
-			for (EnhancedFeignPlugin plugin : finallyEnhancedFeignPlugins) {
-				try {
-					plugin.run(enhancedFeignContext);
-				}
-				catch (Throwable throwable) {
-					plugin.handlerThrowable(enhancedFeignContext, throwable);
-				}
-			}
+			pluginRunner.run(FINALLY, enhancedFeignContext);
 		}
-	}
-
-	/**
-	 * Ascending, which means the lower order number, the earlier executing enhanced feign plugin.
-	 *
-	 * @return sorted feign pre plugin list
-	 */
-	private List<EnhancedFeignPlugin> getSortedEnhancedFeignPlugin(List<EnhancedFeignPlugin> preEnhancedFeignPlugins) {
-		return new ArrayList<>(preEnhancedFeignPlugins)
-				.stream()
-				.sorted(Comparator.comparing(EnhancedFeignPlugin::getOrder))
-				.collect(Collectors.toList());
 	}
 }
