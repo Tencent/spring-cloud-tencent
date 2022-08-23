@@ -47,7 +47,6 @@ public class PolarisStatProperties {
 	 */
 	private String path = "/metrics";
 
-
 	public boolean isEnabled() {
 		return enabled;
 	}
