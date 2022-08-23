@@ -40,7 +40,7 @@ import static com.tencent.cloud.polaris.config.listener.PolarisConfigListenerCon
 
 /**
  * {@link PolarisConfigAnnotationProcessor} implementation for spring .
- * <p>Refer to the Apollo project implementation：
+ * <p>This source file was reference from：
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/annotation/ApolloAnnotationProcessor.java>
  *     ApolloAnnotationProcessor</a></code>
  * @author <a href="mailto:iskp.me@gmail.com">Palmer Xu</a> 2022-06-07

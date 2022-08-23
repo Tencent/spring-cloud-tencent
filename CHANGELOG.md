@@ -21,3 +21,4 @@
 - [Feature: Add router actuate endpoint](https://github.com/Tencent/spring-cloud-tencent/pull/523)
 - [Optimize router label resolver spi](https://github.com/Tencent/spring-cloud-tencent/pull/524)
 - [Code optimization for rpc-enhancement module](https://github.com/Tencent/spring-cloud-tencent/pull/526)
+- [Feature: Optimized configuration update](https://github.com/Tencent/spring-cloud-tencent/pull/528)

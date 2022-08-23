@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 
 /**
  * Configuring the change listener annotation.
- * <p>Refer to the Apollo project implementation：
+ * <p>This source file was reference from：
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/annotation/ApolloAnnotationProcessor.java>
  *     ApolloAnnotationProcessor</a></code>
  * @author Palmer Xu 2022-05-31
