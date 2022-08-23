@@ -34,7 +34,7 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
+import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -72,7 +72,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	@Mock
 	private MetadataLocalProperties metadataLocalProperties;
 	@Mock
-	private RouterLabelResolver routerLabelResolver;
+	private SpringWebRouterLabelResolver routerLabelResolver;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 	@Mock
@@ -127,7 +127,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 
 		Map<String, String> customMetadata = new HashMap<>();
 		customMetadata.put("k2", "v2");
-		when(routerLabelResolver.resolve(webExchange)).thenReturn(customMetadata);
+		when(routerLabelResolver.resolve(webExchange, expressionLabelKeys)).thenReturn(customMetadata);
 
 		HttpHeaders headers = filter.genRouterHttpHeaders(webExchange, calleeService);
 

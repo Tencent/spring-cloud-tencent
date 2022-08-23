@@ -66,12 +66,12 @@ public class ExpressionLabelUtilsTest {
 		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(validLabel3));
 		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(validLabel4));
 		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(validLabel5));
-		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel1));
+		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel1));
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel2));
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel3));
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel4));
-		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel5));
-		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel6));
+		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel5));
+		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel6));
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel7));
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel8));
 		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel9));

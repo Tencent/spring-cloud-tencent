@@ -84,6 +84,7 @@ public final class ExpressionLabelUtils {
 	 * the suffix of expression.
 	 */
 	public static final String LABEL_SUFFIX = "}";
+
 	private ExpressionLabelUtils() {
 	}
 
@@ -91,14 +92,7 @@ public final class ExpressionLabelUtils {
 		if (StringUtils.isEmpty(labelKey)) {
 			return false;
 		}
-		if (StringUtils.equalsIgnoreCase(LABEL_METHOD, labelKey) ||
-				StringUtils.startsWithIgnoreCase(LABEL_URI, labelKey)) {
-			return true;
-		}
-		return (StringUtils.startsWithIgnoreCase(labelKey, LABEL_HEADER_PREFIX) ||
-				StringUtils.startsWithIgnoreCase(labelKey, LABEL_QUERY_PREFIX) ||
-				StringUtils.startsWithIgnoreCase(labelKey, LABEL_COOKIE_PREFIX))
-				&& StringUtils.endsWith(labelKey, LABEL_SUFFIX);
+		return StringUtils.startsWith(labelKey, LABEL_PREFIX) && StringUtils.endsWith(labelKey, LABEL_SUFFIX);
 	}
 
 	public static Map<String, String> resolve(HttpServletRequest request, Set<String> labelKeys) {
