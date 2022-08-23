@@ -34,7 +34,7 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.spi.RouterLabelResolver;
+import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 import feign.RequestTemplate;
 import feign.Target;
 import org.junit.Assert;
@@ -60,7 +60,7 @@ public class RouterLabelFeignInterceptorTest {
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 	@Mock
-	private RouterLabelResolver routerLabelResolver;
+	private FeignRouterLabelResolver routerLabelResolver;
 
 	@Test
 	public void testResolveRouterLabel() throws UnsupportedEncodingException {
@@ -95,12 +95,6 @@ public class RouterLabelFeignInterceptorTest {
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
-				// mock custom resolved labels from request
-				Map<String, String> customResolvedLabels = new HashMap<>();
-				customResolvedLabels.put("k2", "v2");
-				customResolvedLabels.put("k3", "v3");
-				when(routerLabelResolver.resolve(requestTemplate)).thenReturn(customResolvedLabels);
-
 				// mock expression rule labels
 				Set<String> expressionKeys = new HashSet<>();
 				expressionKeys.add("${http.header.uid}");
@@ -108,7 +102,12 @@ public class RouterLabelFeignInterceptorTest {
 				when(routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
 						MetadataContext.LOCAL_SERVICE, peerService)).thenReturn(expressionKeys);
 
-				// mock local metadata
+				// mock custom resolved labels from request
+				Map<String, String> customResolvedLabels = new HashMap<>();
+				customResolvedLabels.put("k2", "v2");
+				customResolvedLabels.put("k3", "v3");
+				when(routerLabelResolver.resolve(requestTemplate, expressionKeys)).thenReturn(customResolvedLabels);
+
 				Map<String, String> localMetadata = new HashMap<>();
 				localMetadata.put("k3", "v31");
 				localMetadata.put("k4", "v4");
