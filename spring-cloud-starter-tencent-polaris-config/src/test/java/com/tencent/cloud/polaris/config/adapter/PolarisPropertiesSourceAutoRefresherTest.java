@@ -18,11 +18,18 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.enums.RefreshType;
+import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
+import com.tencent.cloud.polaris.config.spring.property.SpringValue;
+import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
@@ -32,9 +39,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import org.springframework.beans.TypeConverter;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.cloud.context.refresh.ContextRefresher;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -55,10 +66,34 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Mock
 	private ContextRefresher contextRefresher;
 
+	@Mock
+	private SpringValueRegistry springValueRegistry;
+
+	@Mock
+	private PlaceholderHelper placeholderHelper;
+
 	@Test
-	public void testConfigFileChanged() {
+	public void testConfigFileChanged() throws Exception {
 		PolarisPropertySourceAutoRefresher refresher = new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, contextRefresher);
+				polarisPropertySourceManager, springValueRegistry, placeholderHelper, contextRefresher);
+
+		when(polarisConfigProperties.getRefreshType()).thenReturn(RefreshType.REFLECT);
+		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
+		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
+		TypeConverter typeConverter = mock(TypeConverter.class);
+		when(beanFactory.getTypeConverter()).thenReturn(typeConverter);
+		when(applicationContext.getBeanFactory()).thenReturn(beanFactory);
+		refresher.setApplicationContext(applicationContext);
+		when(typeConverter.convertIfNecessary(any(), any(), (Field) any())).thenReturn("v11");
+		Collection<SpringValue> springValues = new ArrayList<>();
+		MockedConfigChange mockedConfigChange = new MockedConfigChange();
+		mockedConfigChange.setK1("v1");
+		Field field = mockedConfigChange.getClass().getDeclaredField("k1");
+		SpringValue springValue = new SpringValue("v1", "placeholder", mockedConfigChange, "mockedConfigChange", field, false);
+
+		springValues.add(springValue);
+
+		when(springValueRegistry.get(any(), any())).thenReturn(springValues);
 
 		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
 
@@ -89,33 +124,5 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		Assert.assertEquals("v3", polarisPropertySource.getProperty("k3"));
 		Assert.assertNull(polarisPropertySource.getProperty("k2"));
 		Assert.assertEquals("v4", polarisPropertySource.getProperty("k4"));
-		verify(contextRefresher).refresh();
-	}
-
-	@Test
-	public void testNewConfigFile() {
-		PolarisPropertySourceAutoRefresher refresher = new PolarisPropertySourceAutoRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, contextRefresher);
-
-		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
-
-		Map<String, Object> emptyContent = new HashMap<>();
-		MockedConfigKVFile file = new MockedConfigKVFile(emptyContent);
-		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testServiceName, testFileName,
-				file, emptyContent);
-
-		when(polarisPropertySourceManager.getAllPropertySources()).thenReturn(Lists.newArrayList(polarisPropertySource));
-
-		ConfigPropertyChangeInfo changeInfo = new ConfigPropertyChangeInfo("k1", null, "v1", ChangeType.ADDED);
-		Map<String, ConfigPropertyChangeInfo> changeInfos = new HashMap<>();
-		changeInfos.put("k1", changeInfo);
-
-		ConfigKVFileChangeEvent event = new ConfigKVFileChangeEvent(changeInfos);
-		refresher.onApplicationEvent(null);
-
-		file.fireChangeListener(event);
-
-		Assert.assertEquals("v1", polarisPropertySource.getProperty("k1"));
-		verify(contextRefresher).refresh();
 	}
 }

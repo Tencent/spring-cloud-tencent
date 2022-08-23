@@ -41,6 +41,18 @@
       "defaultValue": "true",
       "description": "Whether to connect to a remote server, suitable for local development mode.",
       "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.config.refresh-behavior",
+      "type": "com.tencent.cloud.polaris.config.enums.RefreshBehavior",
+      "defaultValue": "all_beans",
+      "description": "ConfigurationPropertiesBean refresh behavior."
+    },
+    {
+      "name": "spring.cloud.polaris.config.refresh-type",
+      "type": "com.tencent.cloud.polaris.config.enums.RefreshType",
+      "defaultValue": "refresh_context",
+      "description": "Attribute refresh type when config updated. refresh_context or reflect."
     }
   ]
 }
