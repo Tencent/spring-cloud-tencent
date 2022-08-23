@@ -20,3 +20,4 @@
 - [BeanFactoryUtils returns all beans including beans defined in ancestor bean factories](https://github.com/Tencent/spring-cloud-tencent/pull/516)
 - [Feature: Add router actuate endpoint](https://github.com/Tencent/spring-cloud-tencent/pull/519)
 - [Code optimization for rpc-enhancement module](https://github.com/Tencent/spring-cloud-tencent/pull/525)
+- [Feature: Optimized configuration update](https://github.com/Tencent/spring-cloud-tencent/pull/527)
