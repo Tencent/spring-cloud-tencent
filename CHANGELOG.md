@@ -20,3 +20,4 @@
 - [fix:add spring-cloud-starter-bootstrap dependency for example](https://github.com/Tencent/spring-cloud-tencent/pull/521)
 - [Feature: Add router actuate endpoint](https://github.com/Tencent/spring-cloud-tencent/pull/523)
 - [Code optimization for rpc-enhancement module](https://github.com/Tencent/spring-cloud-tencent/pull/526)
+- [Feature: Optimized configuration update](https://github.com/Tencent/spring-cloud-tencent/pull/528)

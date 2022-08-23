@@ -19,6 +19,8 @@ package com.tencent.cloud.polaris.config;
 
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFileLocator;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
+import com.tencent.cloud.polaris.config.adapter.SmartConfigurationPropertiesRebinder;
+import com.tencent.cloud.polaris.config.condition.ConditionalOnNonDefaultBehavior;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
@@ -29,6 +31,9 @@ import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.cloud.context.properties.ConfigurationPropertiesBeans;
+import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -80,5 +85,15 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	public ConfigurationModifier configurationModifier(PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties) {
 		return new ConfigurationModifier(polarisConfigProperties, polarisContextProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
+	@ConditionalOnNonDefaultBehavior
+	public ConfigurationPropertiesRebinder smartConfigurationPropertiesRebinder(
+			ConfigurationPropertiesBeans beans) {
+		// If using default behavior, not use SmartConfigurationPropertiesRebinder.
+		// Minimize te possibility of making mistakes.
+		return new SmartConfigurationPropertiesRebinder(beans);
 	}
 }
