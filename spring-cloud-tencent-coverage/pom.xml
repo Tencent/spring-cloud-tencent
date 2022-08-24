@@ -78,7 +78,12 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-gateway-plugin</artifactId>
 		</dependency>
-  </dependencies>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-pushgateway-plugin</artifactId>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
