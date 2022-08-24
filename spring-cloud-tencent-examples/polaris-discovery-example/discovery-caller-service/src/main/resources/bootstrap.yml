@@ -24,7 +24,7 @@ spring:
         port: 28081
 #        pushgateway:
 #          enabled: true
-#          address: 183.47.111.80:9091
+#          address: 127.0.0.1:9091
 #    consul:
 #      port: 8500
 #      host: 127.0.0.1
