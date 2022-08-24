@@ -10,7 +10,6 @@
 [![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2020.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2020.0)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/Tencent/spring-cloud-tencent.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Tencent/spring-cloud-tencent/context:java)
 
-
 English | [简体中文](./README-zh.md)
 
 ## Introduction
@@ -73,7 +72,7 @@ For example:
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>${version}</version>
+            <version>1.6.0-2020.0.5</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>

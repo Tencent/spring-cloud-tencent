@@ -15,37 +15,33 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.stat.config;
+package com.tencent.cloud.plugin.pushgateway;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * The properties for stat reporter.
+ * The properties for stat pushGateway reporter.
  *
- * @author Haotian Zhang
+ * @author lingxiao.wlx
  */
-@ConfigurationProperties("spring.cloud.polaris.stat")
-public class PolarisStatProperties {
+@ConfigurationProperties("spring.cloud.polaris.stat.pushgateway")
+public class PolarisStatPushGatewayProperties {
 
 	/**
-	 * If state reporter enabled.
+	 * If state pushGateway reporter enabled.
 	 */
 	private boolean enabled = false;
 
 	/**
-	 * Local host for prometheus to pull.
+	 * PushGateway address.
 	 */
-	private String host;
+	private String address;
 
 	/**
-	 * Port for prometheus to pull.
+	 * Push metrics interval.
+	 * unit: milliseconds default 30s.
 	 */
-	private int port = 28080;
-
-	/**
-	 * Path for prometheus to pull.
-	 */
-	private String path = "/metrics";
+	private Long pushInterval = 30 * 1000L;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -55,27 +51,19 @@ public class PolarisStatProperties {
 		this.enabled = enabled;
 	}
 
-	public String getHost() {
-		return host;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setHost(String host) {
-		this.host = host;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
-	public int getPort() {
-		return port;
+	public Long getPushInterval() {
+		return pushInterval;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
+	public void setPushInterval(Long pushInterval) {
+		this.pushInterval = pushInterval;
 	}
 }
