@@ -21,3 +21,4 @@
 - [Feature: Add router actuate endpoint](https://github.com/Tencent/spring-cloud-tencent/pull/519)
 - [Code optimization for rpc-enhancement module](https://github.com/Tencent/spring-cloud-tencent/pull/525)
 - [Feature: Optimized configuration update](https://github.com/Tencent/spring-cloud-tencent/pull/527)
+- [Feature：support pushGateway push metrics](https://github.com/Tencent/spring-cloud-tencent/pull/531)
