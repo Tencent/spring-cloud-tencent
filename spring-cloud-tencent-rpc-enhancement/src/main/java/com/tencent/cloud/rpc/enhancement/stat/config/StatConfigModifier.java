@@ -61,6 +61,14 @@ public class StatConfigModifier implements PolarisConfigModifier {
 			configuration.getGlobal().getStatReporter()
 					.setPluginConfig(DEFAULT_REPORTER_PROMETHEUS, prometheusHandlerConfig);
 		}
+		else {
+			PrometheusHandlerConfig prometheusHandlerConfig = configuration.getGlobal().getStatReporter()
+					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
+			// Set port to -1 to disable stat plugin.
+			prometheusHandlerConfig.setPort(-1);
+			configuration.getGlobal().getStatReporter()
+					.setPluginConfig(DEFAULT_REPORTER_PROMETHEUS, prometheusHandlerConfig);
+		}
 	}
 
 	@Override
