@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayAutoConfiguration
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+  com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayBootstrapConfiguration
