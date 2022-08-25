@@ -1,41 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://maven.apache.org/POM/4.0.0"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>spring-cloud-tencent</artifactId>
-        <groupId>com.tencent.cloud</groupId>
-        <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>spring-cloud-tencent</artifactId>
+		<groupId>com.tencent.cloud</groupId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
 
-    <artifactId>spring-cloud-tencent-examples</artifactId>
-    <packaging>pom</packaging>
-    <name>Spring Cloud Tencent Examples</name>
-    <description>Examples of Spring Cloud Tencent</description>
+	<artifactId>spring-cloud-tencent-examples</artifactId>
+	<packaging>pom</packaging>
+	<name>Spring Cloud Tencent Examples</name>
+	<description>Examples of Spring Cloud Tencent</description>
 
-    <modules>
-        <module>polaris-discovery-example</module>
-        <module>polaris-ratelimit-example</module>
-        <module>polaris-circuitbreaker-example</module>
-        <module>polaris-gateway-example</module>
+	<modules>
+		<module>polaris-discovery-example</module>
+		<module>polaris-ratelimit-example</module>
+		<module>polaris-circuitbreaker-example</module>
+		<module>polaris-gateway-example</module>
 		<module>polaris-config-example</module>
 		<module>polaris-router-example</module>
 		<module>metadata-transfer-example</module>
 		<module>polaris-router-grayrelease-example</module>
+		<module>polaris-router-featureenv-example</module>
 	</modules>
 
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.owasp.esapi</groupId>
 				<artifactId>esapi</artifactId>
-				<version>2.1.0.1</version>
+				<version>2.5.0.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

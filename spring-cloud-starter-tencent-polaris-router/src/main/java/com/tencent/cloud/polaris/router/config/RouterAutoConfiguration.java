@@ -20,10 +20,17 @@ package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerBeanPostProcessor;
-import com.tencent.cloud.polaris.router.scg.PolarisLoadBalancerClientBeanPostProcessor;
+import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
+import com.tencent.cloud.polaris.router.beanprocessor.ReactiveLoadBalancerClientFilterBeanPostProcessor;
+import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
+import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +40,7 @@ import org.springframework.core.annotation.Order;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
- * router module auto configuration.
+ * configuration for router module singleton beans.
  *
  * @author lepdou 2022-05-11
  */
@@ -45,19 +52,37 @@ public class RouterAutoConfiguration {
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
 	@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
-	public PolarisLoadBalancerBeanPostProcessor polarisLoadBalancerBeanPostProcessor() {
-		return new PolarisLoadBalancerBeanPostProcessor();
+	public LoadBalancerInterceptorBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
+		return new LoadBalancerInterceptorBeanPostProcessor();
 	}
 
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
 	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter")
-	public PolarisLoadBalancerClientBeanPostProcessor polarisLoadBalancerClientBeanPostProcessor() {
-		return new PolarisLoadBalancerClientBeanPostProcessor();
+	public ReactiveLoadBalancerClientFilterBeanPostProcessor loadBalancerClientFilterBeanPostProcessor() {
+		return new ReactiveLoadBalancerClientFilterBeanPostProcessor();
 	}
 
 	@Bean
 	public RouterRuleLabelResolver routerRuleLabelResolver(ServiceRuleManager serviceRuleManager) {
 		return new RouterRuleLabelResolver(serviceRuleManager);
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.metadata-router.enabled", matchIfMissing = true)
+	public MetadataRouterRequestInterceptor metadataRouterRequestInterceptor(PolarisMetadataRouterProperties polarisMetadataRouterProperties) {
+		return new MetadataRouterRequestInterceptor(polarisMetadataRouterProperties);
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.nearby-router.enabled", matchIfMissing = true)
+	public NearbyRouterRequestInterceptor nearbyRouterRequestInterceptor(PolarisNearByRouterProperties polarisNearByRouterProperties) {
+		return new NearbyRouterRequestInterceptor(polarisNearByRouterProperties);
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.rule-router.enabled", matchIfMissing = true)
+	public RuleBasedRouterRequestInterceptor ruleBasedRouterRequestInterceptor(PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties) {
+		return new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties);
 	}
 }

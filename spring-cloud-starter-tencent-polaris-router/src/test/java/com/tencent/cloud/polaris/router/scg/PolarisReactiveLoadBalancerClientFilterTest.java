@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
@@ -71,7 +71,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
 
 	@Mock
-	private MetadataLocalProperties metadataLocalProperties;
+	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private SpringWebRouterLabelResolver routerLabelResolver;
 	@Mock
@@ -110,12 +110,12 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	@Test
 	public void testGenRouterHttpHeaders() throws UnsupportedEncodingException {
 		PolarisReactiveLoadBalancerClientFilter filter = new PolarisReactiveLoadBalancerClientFilter(loadBalancerClientFactory,
-				gatewayLoadBalancerProperties, loadBalancerProperties, metadataLocalProperties, routerRuleLabelResolver,
+				gatewayLoadBalancerProperties, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
 				Lists.newArrayList(routerLabelResolver));
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");
-		when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
+		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
 
 		Set<String> expressionLabelKeys = Sets.newHashSet("${http.header.k1}", "${http.query.userid}");
 		when(routerRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString(), anyString())).thenReturn(expressionLabelKeys);
