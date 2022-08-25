@@ -28,7 +28,7 @@ import javax.annotation.PostConstruct;
 
 import com.google.common.collect.Maps;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
@@ -161,6 +161,6 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 	private Map<String, String> getRuleExpressionLabels(ServerWebExchange exchange, String namespace, String service) {
 		Set<String> expressionLabels = rateLimitRuleLabelResolver.getExpressionLabelKeys(namespace, service);
-		return ExpressionLabelUtils.resolve(exchange, expressionLabels);
+		return SpringWebExpressionLabelUtils.resolve(exchange, expressionLabels);
 	}
 }

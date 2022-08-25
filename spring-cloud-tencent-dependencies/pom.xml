@@ -159,6 +159,19 @@
 				<version>${revision}</version>
 			</dependency>
 
+			<!-- spring cloud tencent plugins -->
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-featureenv-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-gateway-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-pushgateway-plugin</artifactId>

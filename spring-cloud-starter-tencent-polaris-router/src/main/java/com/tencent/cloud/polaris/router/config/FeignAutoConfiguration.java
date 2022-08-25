@@ -20,7 +20,7 @@ package com.tencent.cloud.polaris.router.config;
 
 import java.util.List;
 
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
 import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
@@ -40,8 +40,8 @@ public class FeignAutoConfiguration {
 
 	@Bean
 	public RouterLabelFeignInterceptor routerLabelInterceptor(@Nullable List<FeignRouterLabelResolver> routerLabelResolvers,
-			MetadataLocalProperties metadataLocalProperties,
+			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
-		return new RouterLabelFeignInterceptor(routerLabelResolvers, metadataLocalProperties, routerRuleLabelResolver);
+		return new RouterLabelFeignInterceptor(routerLabelResolvers, staticMetadataManager, routerRuleLabelResolver);
 	}
 }
