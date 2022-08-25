@@ -9,7 +9,7 @@
     {
       "name": "spring.cloud.tencent.plugin.scg.staining.enabled",
       "type": "java.lang.Boolean",
-      "defaultValue": true,
+      "defaultValue": false,
       "description": "the switch for spring cloud gateway staining plugin."
     },
     {
