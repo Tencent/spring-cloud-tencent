@@ -74,7 +74,6 @@ public class PolarisRegistrationTest {
 		// mock StaticMetadataManager
 		StaticMetadataManager staticMetadataManager = mock(StaticMetadataManager.class);
 		doReturn(Collections.singletonMap("key1", "value1")).when(staticMetadataManager).getMergedStaticMetadata();
-		doReturn(Collections.singletonMap("key2", "value2")).when(staticMetadataManager).getLocationMetadata();
 
 		polarisRegistration = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
 				polarisContext, staticMetadataManager);
@@ -110,9 +109,8 @@ public class PolarisRegistrationTest {
 		Map<String, String> metadata = polarisRegistration.getMetadata();
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
-		assertThat(metadata.size()).isEqualTo(4);
+		assertThat(metadata.size()).isEqualTo(3);
 		assertThat(metadata.get("key1")).isEqualTo("value1");
-		assertThat(metadata.get("key2")).isEqualTo("value2");
 	}
 
 	@Test
