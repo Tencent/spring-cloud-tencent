@@ -23,3 +23,4 @@
 - [Code optimization for rpc-enhancement module](https://github.com/Tencent/spring-cloud-tencent/pull/526)
 - [Feature: Optimized configuration update](https://github.com/Tencent/spring-cloud-tencent/pull/528)
 - [Feature：support pushGateway push metrics](https://github.com/Tencent/spring-cloud-tencent/pull/529)
+- [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/536)
