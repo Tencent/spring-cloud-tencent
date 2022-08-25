@@ -28,7 +28,7 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
@@ -75,7 +75,7 @@ public class PolarisLoadBalancerInterceptorTest {
 	@Mock
 	private SpringWebRouterLabelResolver routerLabelResolver;
 	@Mock
-	private MetadataLocalProperties metadataLocalProperties;
+	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 
@@ -104,7 +104,7 @@ public class PolarisLoadBalancerInterceptorTest {
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("k1", "v1");
 		localMetadata.put("k2", "v2");
-		when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
+		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
 
 		// mock expression rule labels
 
@@ -133,11 +133,11 @@ public class PolarisLoadBalancerInterceptorTest {
 		when(loadBalancerRequestFactory.createRequest(request, null, null)).thenReturn(loadBalancerRequest);
 
 		PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor = new PolarisLoadBalancerInterceptor(loadBalancerClient,
-				loadBalancerRequestFactory, Collections.singletonList(routerLabelResolver), metadataLocalProperties, routerRuleLabelResolver);
+				loadBalancerRequestFactory, Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver);
 
 		polarisLoadBalancerInterceptor.intercept(request, null, null);
 
-		verify(metadataLocalProperties).getContent();
+		verify(staticMetadataManager).getMergedStaticMetadata();
 		verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
 		verify(routerLabelResolver).resolve(request, null, expressionKeys);
 	}
@@ -152,7 +152,7 @@ public class PolarisLoadBalancerInterceptorTest {
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("k1", "v1");
 		localMetadata.put("k2", "v2");
-		when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
+		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
 
 		// mock expression rule labels
 
@@ -178,11 +178,11 @@ public class PolarisLoadBalancerInterceptorTest {
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
 		PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor = new PolarisLoadBalancerInterceptor(loadBalancerClient,
-				loadBalancerRequestFactory, Collections.singletonList(routerLabelResolver), metadataLocalProperties, routerRuleLabelResolver);
+				loadBalancerRequestFactory, Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver);
 
 		polarisLoadBalancerInterceptor.setLabelsToHeaders(request, null, calleeService);
 
-		verify(metadataLocalProperties).getContent();
+		verify(staticMetadataManager).getMergedStaticMetadata();
 		verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
 		verify(routerLabelResolver).resolve(request, null, expressionKeys);
 

@@ -1,0 +1,40 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.tencent.plugin.scg.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the switch for spring cloud gateway plugin."
+    },
+    {
+      "name": "spring.cloud.tencent.plugin.scg.staining.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "the switch for spring cloud gateway staining plugin."
+    },
+    {
+      "name": "spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the switch for spring cloud gateway rule staining plugin."
+    },
+    {
+      "name": "spring.cloud.tencent.plugin.scg.staining.rule-staining.namespace",
+      "type": "java.lang.String",
+      "defaultValue": "default",
+      "description": "The namespace used to config staining rules."
+    },
+    {
+      "name": "spring.cloud.tencent.plugin.scg.staining.rule-staining.group",
+      "type": "java.lang.String",
+      "defaultValue": "${spring.application.name}",
+      "description": "The group used to config staining rules."
+    },
+    {
+      "name": "spring.cloud.tencent.plugin.scg.staining.rule-staining.fileName",
+      "type": "java.lang.String",
+      "defaultValue": "rule/staining.json",
+      "description": "The file name used to config staining rules."
+    }
+  ]
+}
