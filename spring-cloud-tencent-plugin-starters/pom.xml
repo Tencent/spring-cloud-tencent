@@ -15,6 +15,8 @@
 	<name>Spring Cloud Starter Tencent Solution</name>
 
 	<modules>
+		<module>spring-cloud-tencent-featureenv-plugin</module>
+		<module>spring-cloud-tencent-gateway-plugin</module>
 		<module>spring-cloud-tencent-pushgateway-plugin</module>
 	</modules>
 

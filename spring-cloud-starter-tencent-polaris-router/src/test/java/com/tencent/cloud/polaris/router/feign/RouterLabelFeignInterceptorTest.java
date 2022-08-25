@@ -29,7 +29,7 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 public class RouterLabelFeignInterceptorTest {
 
 	@Mock
-	private MetadataLocalProperties metadataLocalProperties;
+	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 	@Mock
@@ -68,7 +68,7 @@ public class RouterLabelFeignInterceptorTest {
 	public void testResolveRouterLabel() {
 		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor(
 				Collections.singletonList(routerLabelResolver),
-				metadataLocalProperties, routerRuleLabelResolver);
+				staticMetadataManager, routerRuleLabelResolver);
 
 		// mock request template
 		RequestTemplate requestTemplate = new RequestTemplate();
@@ -113,7 +113,7 @@ public class RouterLabelFeignInterceptorTest {
 				Map<String, String> localMetadata = new HashMap<>();
 				localMetadata.put("k3", "v31");
 				localMetadata.put("k4", "v4");
-				when(metadataLocalProperties.getContent()).thenReturn(localMetadata);
+				when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
 
 				routerLabelFeignInterceptor.apply(requestTemplate);
 

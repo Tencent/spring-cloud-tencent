@@ -18,7 +18,11 @@
 
 package com.tencent.cloud.polaris.router.config;
 
+import java.util.List;
+
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
+import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -56,16 +60,13 @@ public class LoadBalancerConfiguration {
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(
 				ConfigurableApplicationContext context,
-				RouterAPI routerAPI,
-				PolarisNearByRouterProperties polarisNearByRouterProperties,
-				PolarisMetadataRouterProperties polarisMetadataRouterProperties,
-				PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties) {
+				RouterAPI routerAPI, List<RouterRequestInterceptor> requestInterceptors,
+				List<RouterResponseInterceptor> responseInterceptors) {
 			return new PolarisRouterServiceInstanceListSupplier(
 					ServiceInstanceListSupplier.builder().withDiscoveryClient().build(context),
 					routerAPI,
-					polarisNearByRouterProperties,
-					polarisMetadataRouterProperties,
-					polarisRuleBasedRouterProperties);
+					requestInterceptors,
+					responseInterceptors);
 		}
 
 	}
@@ -79,16 +80,13 @@ public class LoadBalancerConfiguration {
 		@ConditionalOnBean(DiscoveryClient.class)
 		public ServiceInstanceListSupplier polarisRouterDiscoveryClientServiceInstanceListSupplier(
 				ConfigurableApplicationContext context,
-				RouterAPI routerAPI,
-				PolarisNearByRouterProperties polarisNearByRouterProperties,
-				PolarisMetadataRouterProperties polarisMetadataRouterProperties,
-				PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties) {
+				RouterAPI routerAPI, List<RouterRequestInterceptor> requestInterceptors,
+				List<RouterResponseInterceptor> responseInterceptors) {
 			return new PolarisRouterServiceInstanceListSupplier(
 					ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().build(context),
 					routerAPI,
-					polarisNearByRouterProperties,
-					polarisMetadataRouterProperties,
-					polarisRuleBasedRouterProperties);
+					requestInterceptors,
+					responseInterceptors);
 		}
 	}
 }

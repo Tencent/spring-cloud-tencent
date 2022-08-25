@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
@@ -74,7 +74,7 @@ import static org.mockito.Mockito.when;
 public class QuotaCheckServletFilterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	private static MockedStatic<ExpressionLabelUtils> expressionLabelUtilsMockedStatic;
+	private static MockedStatic<SpringWebExpressionLabelUtils> expressionLabelUtilsMockedStatic;
 	private final PolarisRateLimiterLabelServletResolver labelResolver =
 			exchange -> Collections.singletonMap("ServletResolver", "ServletResolver");
 	private QuotaCheckServletFilter quotaCheckServletFilter;
@@ -82,8 +82,8 @@ public class QuotaCheckServletFilterTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		expressionLabelUtilsMockedStatic = mockStatic(ExpressionLabelUtils.class);
-		when(ExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet()))
+		expressionLabelUtilsMockedStatic = mockStatic(SpringWebExpressionLabelUtils.class);
+		when(SpringWebExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet()))
 				.thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
 
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
@@ -129,10 +129,9 @@ public class QuotaCheckServletFilterTest {
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
 		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.emptySet());
 
-		this.quotaCheckServletFilter =
-				new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
-		this.quotaCheckWithHtmlRejectTipsServletFilter =
-				new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckWithHtmlRejectTipsServletFilter = new QuotaCheckServletFilter(
+				limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver);
 	}
 
 	@Test
@@ -223,6 +222,7 @@ public class QuotaCheckServletFilterTest {
 			quotaCheckWithHtmlRejectTipsServletFilter.doFilterInternal(request, response, filterChain);
 			assertThat(response.getStatus()).isEqualTo(419);
 			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
+
 
 			// Exception
 			MetadataContext.LOCAL_SERVICE = "TestApp4";

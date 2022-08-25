@@ -29,9 +29,9 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
@@ -84,14 +84,14 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 	private final LoadBalancerClientFactory clientFactory;
 	private final GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
 	private final LoadBalancerProperties loadBalancerProperties;
-	private final MetadataLocalProperties metadataLocalProperties;
+	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
 
 	public PolarisReactiveLoadBalancerClientFilter(LoadBalancerClientFactory clientFactory,
 			GatewayLoadBalancerProperties gatewayLoadBalancerProperties,
 			LoadBalancerProperties loadBalancerProperties,
-			MetadataLocalProperties metadataLocalProperties,
+			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver,
 			List<SpringWebRouterLabelResolver> routerLabelResolvers) {
 		super(clientFactory, gatewayLoadBalancerProperties, loadBalancerProperties);
@@ -99,7 +99,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		this.clientFactory = clientFactory;
 		this.gatewayLoadBalancerProperties = gatewayLoadBalancerProperties;
 		this.loadBalancerProperties = loadBalancerProperties;
-		this.metadataLocalProperties = metadataLocalProperties;
+		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 		this.routerLabelResolvers = routerLabelResolvers;
 	}
@@ -223,7 +223,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 
 	private Map<String, String> genRouterLabels(ServerWebExchange exchange, String peerServiceName) {
 		// local service labels
-		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
+		Map<String, String> labels = new HashMap<>(staticMetadataManager.getMergedStaticMetadata());
 
 		// labels from rule expression
 		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
@@ -262,6 +262,6 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 			return Collections.emptyMap();
 		}
 
-		return ExpressionLabelUtils.resolve(exchange, labelKeys);
+		return SpringWebExpressionLabelUtils.resolve(exchange, labelKeys);
 	}
 }
