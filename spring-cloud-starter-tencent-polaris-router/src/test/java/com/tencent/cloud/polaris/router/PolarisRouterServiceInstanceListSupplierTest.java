@@ -31,9 +31,13 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
-import com.tencent.cloud.polaris.router.config.PolarisMetadataRouterProperties;
-import com.tencent.cloud.polaris.router.config.PolarisNearByRouterProperties;
-import com.tencent.cloud.polaris.router.config.PolarisRuleBasedRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
+import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
@@ -46,6 +50,7 @@ import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -62,13 +67,18 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link PolarisRouterServiceInstanceListSupplier}
- *@author lepdou 2022-05-26
+ * test for {@link PolarisRouterServiceInstanceListSupplier}.
+ *
+ * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisRouterServiceInstanceListSupplierTest {
 
-	private static AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
+	private static final AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
+	private final String testNamespace = "testNamespace";
+	private final String testCallerService = "testCallerService";
+	private final String testCalleeService = "testCalleeService";
+	private final List<RouterRequestInterceptor> requestInterceptors = new ArrayList<>();
 	@Mock
 	private ServiceInstanceListSupplier delegate;
 	@Mock
@@ -81,9 +91,13 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 	private PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties;
 	@Mock
 	private RouterAPI routerAPI;
-	private String testNamespace = "testNamespace";
-	private String testCallerService = "testCallerService";
-	private String testCalleeService = "testCalleeService";
+
+	@Before
+	public void before() {
+		requestInterceptors.add(new MetadataRouterRequestInterceptor(polarisMetadataRouterProperties));
+		requestInterceptors.add(new NearbyRouterRequestInterceptor(polarisNearByRouterProperties));
+		requestInterceptors.add(new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties));
+	}
 
 	@Test
 	public void testBuildMetadataRouteRequest() {
@@ -95,14 +109,19 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 
 			setTransitiveMetadata();
 
-			PolarisRouterServiceInstanceListSupplier compositeRule = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, polarisNearByRouterProperties,
-					polarisMetadataRouterProperties, polarisRuleBasedRouterProperties);
+			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
+					delegate, routerAPI, requestInterceptors, null);
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
 
-			ProcessRoutersRequest request = compositeRule.buildProcessRoutersRequest(serviceInstances, routerContext);
+			Map<String, String> oldRouterLabels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
+			Map<String, String> newRouterLabels = new HashMap<>(oldRouterLabels);
+			newRouterLabels.put("system-metadata-router-keys", "k2");
+			routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, newRouterLabels);
+
+			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
+			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
 			Map<String, String> routerMetadata = request.getRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA);
 
@@ -124,14 +143,14 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 
 			setTransitiveMetadata();
 
-			PolarisRouterServiceInstanceListSupplier compositeRule = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, polarisNearByRouterProperties,
-					polarisMetadataRouterProperties, polarisRuleBasedRouterProperties);
+			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
+					delegate, routerAPI, requestInterceptors, null);
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
 
-			ProcessRoutersRequest request = compositeRule.buildProcessRoutersRequest(serviceInstances, routerContext);
+			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
+			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
 			Map<String, String> routerMetadata = request.getRouterMetadata(NearbyRouter.ROUTER_TYPE_NEAR_BY);
 
@@ -154,14 +173,14 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 
 			setTransitiveMetadata();
 
-			PolarisRouterServiceInstanceListSupplier compositeRule = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, polarisNearByRouterProperties,
-					polarisMetadataRouterProperties, polarisRuleBasedRouterProperties);
+			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
+					delegate, routerAPI, requestInterceptors, null);
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
 
-			ProcessRoutersRequest request = compositeRule.buildProcessRoutersRequest(serviceInstances, routerContext);
+			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
+			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
 			Map<String, String> routerMetadata = request.getRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED);
 
@@ -184,14 +203,13 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 
 			setTransitiveMetadata();
 
-			PolarisRouterServiceInstanceListSupplier compositeRule = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, polarisNearByRouterProperties,
-					polarisMetadataRouterProperties, polarisRuleBasedRouterProperties);
+			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
+					delegate, routerAPI, requestInterceptors, null);
 
 			ProcessRoutersResponse assembleResponse = assembleProcessRoutersResponse();
 			when(routerAPI.processRouters(any())).thenReturn(assembleResponse);
 
-			Flux<List<ServiceInstance>> servers = compositeRule.doRouter(assembleServers(), assembleRouterContext());
+			Flux<List<ServiceInstance>> servers = polarisSupplier.doRouter(assembleServers(), assembleRouterContext());
 
 
 			Assert.assertEquals(assembleResponse.getServiceInstances().getInstances().size(),
@@ -228,8 +246,8 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 		Map<String, String> routerLabels = new HashMap<>();
 		routerLabels.put("k2", "v2");
 		routerLabels.put("k3", "v3");
-		routerContext.setLabels(PolarisRouterContext.TRANSITIVE_LABELS, transitiveLabels);
-		routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, routerLabels);
+		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, transitiveLabels);
+		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, routerLabels);
 		return routerContext;
 	}
 

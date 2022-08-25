@@ -31,23 +31,17 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
-import com.tencent.cloud.polaris.router.config.PolarisMetadataRouterProperties;
-import com.tencent.cloud.polaris.router.config.PolarisNearByRouterProperties;
-import com.tencent.cloud.polaris.router.config.PolarisRuleBasedRouterProperties;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerRequest;
+import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
 import com.tencent.polaris.api.exception.ErrorCode;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
-import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
-import com.tencent.polaris.plugins.router.nearby.NearbyRouter;
-import com.tencent.polaris.plugins.router.rule.RuleBasedRouter;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
 import org.springframework.cloud.client.ServiceInstance;
@@ -58,6 +52,8 @@ import org.springframework.cloud.loadbalancer.core.DelegatingServiceInstanceList
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Service routing entrance.
@@ -73,23 +69,17 @@ import org.springframework.util.CollectionUtils;
  */
 public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceInstanceListSupplier {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisRouterServiceInstanceListSupplier.class);
-
-	private final PolarisNearByRouterProperties polarisNearByRouterProperties;
-	private final PolarisMetadataRouterProperties polarisMetadataRouterProperties;
-	private final PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties;
 	private final RouterAPI routerAPI;
+	private final List<RouterRequestInterceptor> requestInterceptors;
+	private final List<RouterResponseInterceptor> responseInterceptors;
 
 	public PolarisRouterServiceInstanceListSupplier(ServiceInstanceListSupplier delegate,
-			RouterAPI routerAPI,
-			PolarisNearByRouterProperties polarisNearByRouterProperties,
-			PolarisMetadataRouterProperties polarisMetadataRouterProperties,
-			PolarisRuleBasedRouterProperties polarisRuleBasedRouterProperties) {
+			RouterAPI routerAPI, List<RouterRequestInterceptor> requestInterceptors,
+			List<RouterResponseInterceptor> responseInterceptors) {
 		super(delegate);
 		this.routerAPI = routerAPI;
-		this.polarisNearByRouterProperties = polarisNearByRouterProperties;
-		this.polarisMetadataRouterProperties = polarisMetadataRouterProperties;
-		this.polarisRuleBasedRouterProperties = polarisRuleBasedRouterProperties;
+		this.requestInterceptors = requestInterceptors;
+		this.responseInterceptors = responseInterceptors;
 	}
 
 	@Override
@@ -125,33 +115,37 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
 
-		routerContext.setLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get()
+		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get()
 				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE));
 
-		labelHeaderValues.forEach(labelHeaderValue -> {
-			try {
-				Map<String, String> labels = JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValue, "UTF-8"));
-				if (!CollectionUtils.isEmpty(labels)) {
-					routerContext.setLabels(PolarisRouterContext.RULE_ROUTER_LABELS, labels);
-				}
-			}
-			catch (UnsupportedEncodingException e) {
-				LOGGER.error("Decode header[{}] failed.", labelHeaderValue, e);
-				throw new RuntimeException(e);
-			}
-		});
-
+		Map<String, String> labelHeaderValuesMap = new HashMap<>();
+		try {
+			String labelHeaderValuesContent = labelHeaderValues.stream().findFirst().get();
+			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, UTF_8)));
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
+		}
+		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labelHeaderValuesMap);
 		return routerContext;
 	}
 
-	Flux<List<ServiceInstance>> doRouter(Flux<List<ServiceInstance>> allServers, PolarisRouterContext key) {
+	Flux<List<ServiceInstance>> doRouter(Flux<List<ServiceInstance>> allServers, PolarisRouterContext routerContext) {
 		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(allServers);
 
 		// filter instance by routers
-		ProcessRoutersRequest processRoutersRequest = buildProcessRoutersRequest(serviceInstances, key);
+		ProcessRoutersRequest processRoutersRequest = buildProcessRoutersRequest(serviceInstances, routerContext);
 
+		// process request interceptors
+		processRouterRequestInterceptors(processRoutersRequest, routerContext);
+
+		// process router chain
 		ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
 
+		// process response interceptors
+		processRouterResponseInterceptors(routerContext, processRoutersResponse);
+
+		// transfer polaris server to ServiceInstance
 		List<ServiceInstance> filteredInstances = new ArrayList<>();
 		ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
 		for (Instance instance : filteredServiceInstances.getInstances()) {
@@ -163,42 +157,25 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 	ProcessRoutersRequest buildProcessRoutersRequest(ServiceInstances serviceInstances, PolarisRouterContext key) {
 		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
 		processRoutersRequest.setDstInstances(serviceInstances);
-
-		// metadata router
-		if (polarisMetadataRouterProperties.isEnabled()) {
-			Map<String, String> transitiveLabels = getRouterLabels(key, PolarisRouterContext.TRANSITIVE_LABELS);
-			processRoutersRequest.putRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA, transitiveLabels);
-		}
-
-		// nearby router
-		if (polarisNearByRouterProperties.isEnabled()) {
-			Map<String, String> nearbyRouterMetadata = new HashMap<>();
-			nearbyRouterMetadata.put(NearbyRouter.ROUTER_ENABLED, "true");
-			processRoutersRequest.putRouterMetadata(NearbyRouter.ROUTER_TYPE_NEAR_BY, nearbyRouterMetadata);
-		}
-
-		// rule based router
-		// set dynamic switch for rule based router
-		boolean ruleBasedRouterEnabled = polarisRuleBasedRouterProperties.isEnabled();
-		Map<String, String> ruleRouterMetadata = new HashMap<>();
-		ruleRouterMetadata.put(RuleBasedRouter.ROUTER_ENABLED, String.valueOf(ruleBasedRouterEnabled));
-		processRoutersRequest.putRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED, ruleRouterMetadata);
-
 		ServiceInfo serviceInfo = new ServiceInfo();
 		serviceInfo.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		serviceInfo.setService(MetadataContext.LOCAL_SERVICE);
-
-		if (ruleBasedRouterEnabled) {
-			Map<String, String> ruleRouterLabels = getRouterLabels(key, PolarisRouterContext.RULE_ROUTER_LABELS);
-			// The label information that the rule based routing depends on
-			// is placed in the metadata of the source service for transmission.
-			// Later, can consider putting it in routerMetadata like other routers.
-			serviceInfo.setMetadata(ruleRouterLabels);
-		}
-
 		processRoutersRequest.setSourceService(serviceInfo);
-
 		return processRoutersRequest;
+	}
+
+	void processRouterRequestInterceptors(ProcessRoutersRequest processRoutersRequest, PolarisRouterContext routerContext) {
+		for (RouterRequestInterceptor requestInterceptor : requestInterceptors) {
+			requestInterceptor.apply(processRoutersRequest, routerContext);
+		}
+	}
+
+	private void processRouterResponseInterceptors(PolarisRouterContext routerContext, ProcessRoutersResponse processRoutersResponse) {
+		if (!CollectionUtils.isEmpty(responseInterceptors)) {
+			for (RouterResponseInterceptor responseInterceptor : responseInterceptors) {
+				responseInterceptor.apply(processRoutersResponse, routerContext);
+			}
+		}
 	}
 
 	private Map<String, String> getRouterLabels(PolarisRouterContext key, String type) {

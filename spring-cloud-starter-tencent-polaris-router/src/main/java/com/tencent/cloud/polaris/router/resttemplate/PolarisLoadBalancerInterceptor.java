@@ -31,9 +31,9 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
@@ -62,18 +62,18 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 	private final LoadBalancerClient loadBalancer;
 	private final LoadBalancerRequestFactory requestFactory;
 	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
-	private final MetadataLocalProperties metadataLocalProperties;
+	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
 	public PolarisLoadBalancerInterceptor(LoadBalancerClient loadBalancer,
 			LoadBalancerRequestFactory requestFactory,
 			List<SpringWebRouterLabelResolver> routerLabelResolvers,
-			MetadataLocalProperties metadataLocalProperties,
+			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		super(loadBalancer, requestFactory);
 		this.loadBalancer = loadBalancer;
 		this.requestFactory = requestFactory;
-		this.metadataLocalProperties = metadataLocalProperties;
+		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
@@ -100,7 +100,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 
 	void setLabelsToHeaders(HttpRequest request, byte[] body, String peerServiceName) {
 		// local service labels
-		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
+		Map<String, String> labels = new HashMap<>(staticMetadataManager.getMergedStaticMetadata());
 
 		// labels from rule expression
 		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
@@ -151,6 +151,6 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 			return Collections.emptyMap();
 		}
 
-		return ExpressionLabelUtils.resolve(request, labelKeys);
+		return SpringWebExpressionLabelUtils.resolve(request, labelKeys);
 	}
 }

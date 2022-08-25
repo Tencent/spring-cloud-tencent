@@ -29,7 +29,7 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+
 /**
  * Resolver labels from request.
  *
@@ -51,11 +53,11 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelFeignInterceptor.class);
 
 	private final List<FeignRouterLabelResolver> routerLabelResolvers;
-	private final MetadataLocalProperties metadataLocalProperties;
+	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
 	public RouterLabelFeignInterceptor(List<FeignRouterLabelResolver> routerLabelResolvers,
-			MetadataLocalProperties metadataLocalProperties,
+			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
 			routerLabelResolvers.sort(Comparator.comparingInt(Ordered::getOrder));
@@ -64,7 +66,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		else {
 			this.routerLabelResolvers = null;
 		}
-		this.metadataLocalProperties = metadataLocalProperties;
+		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 	}
 
@@ -76,7 +78,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 	@Override
 	public void apply(RequestTemplate requestTemplate) {
 		// local service labels
-		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
+		Map<String, String> labels = new HashMap<>(staticMetadataManager.getMergedStaticMetadata());
 
 		// labels from rule expression
 		String peerServiceName = requestTemplate.feignTarget().name();
@@ -107,18 +109,14 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		labels.putAll(transitiveLabels);
 
 		// pass label by header
-		if (labels.size() == 0) {
-			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER);
-			return;
-		}
+		String encodedLabelsContent;
 		try {
-			String headerMetadataStr = URLEncoder.encode(JacksonUtils.serialize2Json(labels), "UTF-8");
-			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, headerMetadataStr);
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), UTF_8);
 		}
 		catch (UnsupportedEncodingException e) {
-			LOGGER.error("Set header failed.", e);
-			throw new RuntimeException(e);
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
+		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
 	private Map<String, String> getRuleExpressionLabels(RequestTemplate requestTemplate, Set<String> labelKeys) {
@@ -128,5 +126,4 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 
 		return FeignExpressionLabelUtils.resolve(requestTemplate, labelKeys);
 	}
-
 }
