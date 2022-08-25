@@ -108,9 +108,6 @@ public class PolarisRegistration implements Registration {
 
 			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
 
-			// location info will be putted both in metadata and instance's field
-			instanceMetadata.putAll(staticMetadataManager.getLocationMetadata());
-
 			this.metadata = Collections.unmodifiableMap(instanceMetadata);
 		}
 		return metadata;
