@@ -29,9 +29,10 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import com.tencent.cloud.common.util.ExpressionLabelUtils;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
+import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
 import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
@@ -71,24 +72,26 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.addOriginalRequestUrl;
 
 /**
- * ReactiveLoadBalancerClientFilter does not have the ability to pass route labels, so it is replaced with PolarisReactiveLoadBalancerClientFilter.
- * The passed route labels are used in {@link com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier}.
- *@author lepdou 2022-06-20
+ * ReactiveLoadBalancerClientFilter does not have the ability to pass route labels, so it is replaced
+ * with PolarisReactiveLoadBalancerClientFilter. The passed route labels are used in
+ * {@link PolarisRouterServiceInstanceListSupplier}.
+ *
+ * @author lepdou 2022-06-20
  */
 public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalancerClientFilter {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisReactiveLoadBalancerClientFilter.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisReactiveLoadBalancerClientFilter.class);
 
 	private final LoadBalancerClientFactory clientFactory;
 	private final GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
 	private final LoadBalancerProperties loadBalancerProperties;
-	private final MetadataLocalProperties metadataLocalProperties;
+	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
 
 	public PolarisReactiveLoadBalancerClientFilter(LoadBalancerClientFactory clientFactory,
 			GatewayLoadBalancerProperties gatewayLoadBalancerProperties,
 			LoadBalancerProperties loadBalancerProperties,
-			MetadataLocalProperties metadataLocalProperties,
+			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver,
 			List<SpringWebRouterLabelResolver> routerLabelResolvers) {
 		super(clientFactory, gatewayLoadBalancerProperties, loadBalancerProperties);
@@ -96,7 +99,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		this.clientFactory = clientFactory;
 		this.gatewayLoadBalancerProperties = gatewayLoadBalancerProperties;
 		this.loadBalancerProperties = loadBalancerProperties;
-		this.metadataLocalProperties = metadataLocalProperties;
+		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 		this.routerLabelResolvers = routerLabelResolvers;
 	}
@@ -114,8 +117,8 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		// preserve the original url
 		addOriginalRequestUrl(exchange, url);
 
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace(ReactiveLoadBalancerClientFilter.class.getSimpleName() + " url before: " + url);
+		if (log.isTraceEnabled()) {
+			log.trace(ReactiveLoadBalancerClientFilter.class.getSimpleName() + " url before: " + url);
 		}
 
 		URI requestUri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
@@ -158,8 +161,8 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 
 					URI requestUrl = reconstructURI(serviceInstance, uri);
 
-					if (LOGGER.isTraceEnabled()) {
-						LOGGER.trace("LoadBalancerClientFilter url chosen: " + requestUrl);
+					if (log.isTraceEnabled()) {
+						log.trace("LoadBalancerClientFilter url chosen: " + requestUrl);
 					}
 					exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUrl);
 					exchange.getAttributes().put(GATEWAY_LOADBALANCER_RESPONSE_ATTR, response);
@@ -206,7 +209,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		return headers;
 	}
 
-	String genRouterHint(ServerWebExchange exchange, String peerServiceName) {
+	private String genRouterHint(ServerWebExchange exchange, String peerServiceName) {
 		Map<String, String> routerLabels = genRouterLabels(exchange, peerServiceName);
 		String encodedLabelsContent;
 		try {
@@ -218,9 +221,9 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		return encodedLabelsContent;
 	}
 
-	Map<String, String> genRouterLabels(ServerWebExchange exchange, String peerServiceName) {
+	private Map<String, String> genRouterLabels(ServerWebExchange exchange, String peerServiceName) {
 		// local service labels
-		Map<String, String> labels = new HashMap<>(metadataLocalProperties.getContent());
+		Map<String, String> labels = new HashMap<>(staticMetadataManager.getMergedStaticMetadata());
 
 		// labels from rule expression
 		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
@@ -241,7 +244,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 					}
 				}
 				catch (Throwable t) {
-					LOGGER.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
+					log.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
 				}
 			});
 		}
@@ -259,6 +262,6 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 			return Collections.emptyMap();
 		}
 
-		return ExpressionLabelUtils.resolve(exchange, labelKeys);
+		return SpringWebExpressionLabelUtils.resolve(exchange, labelKeys);
 	}
 }
