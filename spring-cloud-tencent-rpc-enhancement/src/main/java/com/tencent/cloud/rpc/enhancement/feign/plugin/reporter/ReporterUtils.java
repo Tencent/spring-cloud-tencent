@@ -17,14 +17,22 @@
 
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.util.Collection;
 
+import com.tencent.cloud.common.constant.RouterConstants;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import feign.Request;
+import feign.RequestTemplate;
 import org.apache.commons.lang.StringUtils;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Util for polaris reporter.
@@ -40,7 +48,20 @@ public final class ReporterUtils {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-		String serviceName = request.requestTemplate().feignTarget().name();
+		RequestTemplate requestTemplate = request.requestTemplate();
+		String serviceName = requestTemplate.feignTarget().name();
+		Collection<String> labels = requestTemplate.headers().get(RouterConstants.ROUTER_LABEL_HEADER);
+		if (CollectionUtils.isNotEmpty(labels) && labels.iterator().hasNext()) {
+			String label = labels.iterator().next();
+			try {
+				label = URLDecoder.decode(label, UTF_8);
+			}
+			catch (UnsupportedEncodingException e) {
+				throw new RuntimeException("unsupported charset exception " + UTF_8);
+			}
+			label = convertLabel(label);
+			resultRequest.setLabels(label);
+		}
 		resultRequest.setService(serviceName);
 		URI uri = URI.create(request.url());
 		resultRequest.setMethod(uri.getPath());
@@ -52,7 +73,12 @@ public final class ReporterUtils {
 		}
 		resultRequest.setHost(uri.getHost());
 		resultRequest.setPort(uri.getPort());
-
 		return resultRequest;
+	}
+
+	private static String convertLabel(String label) {
+		label = label.replaceAll("\"|\\{|\\}", "")
+				.replaceAll(",", "|");
+		return label;
 	}
 }

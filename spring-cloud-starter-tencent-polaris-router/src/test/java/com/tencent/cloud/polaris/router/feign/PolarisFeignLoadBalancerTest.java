@@ -26,12 +26,12 @@ import java.util.Map;
 
 import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.loadbalancer.ILoadBalancer;
+import com.tencent.cloud.common.constant.RouterConstants;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
-import com.tencent.cloud.polaris.router.RouterConstants;
 import com.tencent.cloud.polaris.router.SimpleLoadBalancer;
 import org.junit.Assert;
 import org.junit.Test;

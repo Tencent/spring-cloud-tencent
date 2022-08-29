@@ -17,6 +17,10 @@
 
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import com.tencent.cloud.common.constant.RouterConstants;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.api.pojo.RetStatus;
@@ -33,6 +37,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,6 +82,12 @@ public class ReporterUtilsTest {
 		// mock RequestTemplate.class
 		RequestTemplate requestTemplate = new RequestTemplate();
 		requestTemplate.feignTarget(target);
+		try {
+			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, URLEncoder.encode("k1:v1|k2:v2", UTF_8));
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
+		}
 
 		// mock request
 		Request request = mock(Request.class);
@@ -92,5 +103,6 @@ public class ReporterUtilsTest {
 		assertThat(serviceCallResult.getMethod()).isEqualTo("/path");
 		assertThat(serviceCallResult.getCallerService().getNamespace()).isEqualTo(NAMESPACE_TEST);
 		assertThat(serviceCallResult.getCallerService().getService()).isEqualTo(SERVICE_PROVIDER);
+		assertThat(serviceCallResult.getLabels()).isEqualTo("k1:v1|k2:v2");
 	}
 }
