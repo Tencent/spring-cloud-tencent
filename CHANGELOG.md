@@ -25,3 +25,4 @@
 - [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/534)
 - [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/540)
 - [add feature-env plugin & add spring cloud gateway staining plugin](https://github.com/Tencent/spring-cloud-tencent/pull/532)
+- [fix:set error handler named EnhancedRestTemplateReporter for RestTemplate](https://github.com/Tencent/spring-cloud-tencent/pull/544)
