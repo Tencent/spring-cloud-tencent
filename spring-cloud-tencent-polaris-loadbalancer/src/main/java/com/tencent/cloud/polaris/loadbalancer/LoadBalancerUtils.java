@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
@@ -84,6 +85,14 @@ public final class LoadBalancerUtils {
 		instance.setPort(serviceInstance.getPort());
 		instance.setWeight(DEFAULT_WEIGHT);
 		instance.setMetadata(serviceInstance.getMetadata());
+
+		if (serviceInstance instanceof PolarisServiceInstance) {
+			PolarisServiceInstance polarisServiceInstance = (PolarisServiceInstance) serviceInstance;
+			instance.setRegion(polarisServiceInstance.getPolarisInstance().getRegion());
+			instance.setZone(polarisServiceInstance.getPolarisInstance().getZone());
+			instance.setCampus(polarisServiceInstance.getPolarisInstance().getCampus());
+		}
+
 		return instance;
 	}
 }
