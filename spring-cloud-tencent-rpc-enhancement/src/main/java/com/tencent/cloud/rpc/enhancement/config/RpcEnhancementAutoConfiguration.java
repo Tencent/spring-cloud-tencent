@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.config;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
@@ -29,13 +30,14 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisRep
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
 
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -99,6 +101,10 @@ public class RpcEnhancementAutoConfiguration {
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
 	protected static class PolarisRestTemplateAutoConfiguration {
 
+		@LoadBalanced
+		@Autowired(required = false)
+		private List<RestTemplate> restTemplates = Collections.emptyList();
+
 		@Bean
 		public EnhancedRestTemplateReporter polarisRestTemplateResponseErrorHandler(
 				RpcEnhancementReporterProperties properties,
@@ -107,8 +113,12 @@ public class RpcEnhancementAutoConfiguration {
 		}
 
 		@Bean
-		public RestTemplateCustomizer setErrorHandlerCustomizer(EnhancedRestTemplateReporter reporter) {
-			return restTemplate -> restTemplate.setErrorHandler(reporter);
+		public SmartInitializingSingleton setErrorHandlerForRestTemplate(EnhancedRestTemplateReporter reporter) {
+			return () -> {
+				for (RestTemplate restTemplate : restTemplates) {
+					restTemplate.setErrorHandler(reporter);
+				}
+			};
 		}
 	}
 }
