@@ -23,4 +23,5 @@
 - [Feature: Optimized configuration update](https://github.com/Tencent/spring-cloud-tencent/pull/527)
 - [Feature：support pushGateway push metrics](https://github.com/Tencent/spring-cloud-tencent/pull/531)
 - [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/534)
+- [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/540)
 - [add feature-env plugin & add spring cloud gateway staining plugin](https://github.com/Tencent/spring-cloud-tencent/pull/532)
