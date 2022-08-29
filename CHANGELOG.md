@@ -18,3 +18,4 @@
 - [feat:optimize pushgateway plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/530)
 - [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/535)
 - [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/541)
+- [Fix issue: report the labels in request when report the result of invocation by Feign](https://github.com/Tencent/spring-cloud-tencent/pull/546)
