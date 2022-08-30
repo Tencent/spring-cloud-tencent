@@ -17,9 +17,6 @@
 
 package com.tencent.cloud.rpc.enhancement.config;
 
-import java.io.IOException;
-import java.net.URI;
-
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignPluginRunner;
@@ -32,11 +29,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -54,8 +47,7 @@ public class RpcEnhancementAutoConfigurationTest {
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
 					RpcEnhancementAutoConfiguration.class,
-					PolarisRestTemplateAutoConfigurationTester.class,
-					LoadBalancerAutoConfiguration.class))
+					PolarisRestTemplateAutoConfigurationTester.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test
@@ -81,31 +73,6 @@ public class RpcEnhancementAutoConfigurationTest {
 		@LoadBalanced
 		RestTemplate restTemplate() {
 			return new RestTemplate();
-		}
-
-		@Bean
-		LoadBalancerClient loadBalancerClient() {
-			return new LoadBalancerClient() {
-				@Override
-				public ServiceInstance choose(String serviceId) {
-					return null;
-				}
-
-				@Override
-				public <T> T execute(String serviceId, LoadBalancerRequest<T> request) throws IOException {
-					return null;
-				}
-
-				@Override
-				public <T> T execute(String serviceId, ServiceInstance serviceInstance, LoadBalancerRequest<T> request) throws IOException {
-					return null;
-				}
-
-				@Override
-				public URI reconstructURI(ServiceInstance instance, URI original) {
-					return null;
-				}
-			};
 		}
 	}
 }
