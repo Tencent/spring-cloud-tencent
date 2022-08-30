@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.config.adapter;
 import java.util.Collection;
 import java.util.Set;
 
-import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
@@ -39,15 +38,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.lang.NonNull;
 
 /**
- * PolarisReflectConfigPropertyAutoRefresher to refresh config in reflect type
- * we can use it by setting spring.cloud.polaris.config.refresh-type=reflect.
+ * 1. The refresh of @Value properties is implemented through reflection.
+ * 2. Implement @ConfigurationProperties bean property refresh via EnvironmentChangeEvent,
+ * while rebuilding only beans with property changes.
  *
  * @author lingxiao.wlx
  */
-public class PolarisReflectConfigPropertyAutoRefresher extends PolarisConfigPropertyAutoRefresher
-		implements ApplicationContextAware {
+public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropertyAutoRefresher implements ApplicationContextAware {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisReflectConfigPropertyAutoRefresher.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisRefreshAffectedContextRefresher.class);
 
 	private final SpringValueRegistry springValueRegistry;
 
@@ -59,9 +58,9 @@ public class PolarisReflectConfigPropertyAutoRefresher extends PolarisConfigProp
 
 	private TypeConverter typeConverter;
 
-	public PolarisReflectConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties,
-				PolarisPropertySourceManager polarisPropertySourceManager, SpringValueRegistry springValueRegistry,
-				PlaceholderHelper placeholderHelper) {
+	public PolarisRefreshAffectedContextRefresher(PolarisConfigProperties polarisConfigProperties,
+			PolarisPropertySourceManager polarisPropertySourceManager, SpringValueRegistry springValueRegistry,
+			PlaceholderHelper placeholderHelper) {
 		super(polarisConfigProperties, polarisPropertySourceManager);
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
@@ -89,11 +88,11 @@ public class PolarisReflectConfigPropertyAutoRefresher extends PolarisConfigProp
 			Object value = resolvePropertyValue(springValue);
 			springValue.update(value);
 
-			LOGGER.info("Auto update polaris changed value successfully, new value: {}, {}", value,
+			LOGGER.info("[SCT Config] Auto update polaris changed value successfully, new value: {}, {}", value,
 					springValue);
 		}
 		catch (Throwable ex) {
-			LOGGER.error("Auto update polaris changed value failed, {}", springValue.toString(), ex);
+			LOGGER.error("[SCT Config] Auto update polaris changed value failed, {}", springValue.toString(), ex);
 		}
 	}
 
@@ -113,16 +112,6 @@ public class PolarisReflectConfigPropertyAutoRefresher extends PolarisConfigProp
 						springValue.getMethodParameter());
 
 		return value;
-	}
-
-	private Object parseJsonValue(String json, Class<?> targetType) {
-		try {
-			return JacksonUtils.json2JavaBean(json, targetType);
-		}
-		catch (Throwable ex) {
-			LOGGER.error("Parsing json '{}' to type {} failed!", json, targetType, ex);
-			throw ex;
-		}
 	}
 
 	@Override

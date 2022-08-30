@@ -18,14 +18,14 @@
 
 package com.tencent.cloud.polaris.config;
 
+import com.tencent.cloud.polaris.config.adapter.AffectedConfigurationPropertiesRebinder;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigPropertyRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
-import com.tencent.cloud.polaris.config.adapter.PolarisReflectConfigPropertyAutoRefresher;
-import com.tencent.cloud.polaris.config.adapter.PolarisRefreshContextConfigPropertyAutoRefresher;
-import com.tencent.cloud.polaris.config.adapter.SmartConfigurationPropertiesRebinder;
+import com.tencent.cloud.polaris.config.adapter.PolarisRefreshAffectedContextRefresher;
+import com.tencent.cloud.polaris.config.adapter.PolarisRefreshEntireContextRefresher;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProcessor;
 import com.tencent.cloud.polaris.config.condition.ConditionalOnConfigReflectEnabled;
-import com.tencent.cloud.polaris.config.condition.ConditionalOnNonDefaultBehavior;
+import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshType;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
@@ -65,19 +65,17 @@ public class PolarisConfigAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	@ConditionalOnNonDefaultBehavior
-	public ConfigurationPropertiesRebinder smartConfigurationPropertiesRebinder(
+	@ConditionalOnReflectRefreshType
+	public ConfigurationPropertiesRebinder affectedConfigurationPropertiesRebinder(
 			ConfigurationPropertiesBeans beans) {
-		// If using default behavior, not use SmartConfigurationPropertiesRebinder.
-		// Minimize te possibility of making mistakes.
-		return new SmartConfigurationPropertiesRebinder(beans);
+		return new AffectedConfigurationPropertiesRebinder(beans);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public PolarisConfigPropertyRefresher polarisRefreshContextPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
-				PolarisPropertySourceManager polarisPropertySourceManager, ContextRefresher contextRefresher) {
-		return new PolarisRefreshContextConfigPropertyAutoRefresher(polarisConfigProperties, polarisPropertySourceManager, contextRefresher);
+			PolarisPropertySourceManager polarisPropertySourceManager, ContextRefresher contextRefresher) {
+		return new PolarisRefreshEntireContextRefresher(polarisConfigProperties, polarisPropertySourceManager, contextRefresher);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -104,7 +102,8 @@ public class PolarisConfigAutoConfiguration {
 		public PolarisConfigPropertyRefresher polarisReflectPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
 				PolarisPropertySourceManager polarisPropertySourceManager, SpringValueRegistry springValueRegistry,
 				PlaceholderHelper placeholderHelper) {
-			return new PolarisReflectConfigPropertyAutoRefresher(polarisConfigProperties, polarisPropertySourceManager, springValueRegistry, placeholderHelper);
+			return new PolarisRefreshAffectedContextRefresher(polarisConfigProperties, polarisPropertySourceManager,
+					springValueRegistry, placeholderHelper);
 		}
 	}
 }

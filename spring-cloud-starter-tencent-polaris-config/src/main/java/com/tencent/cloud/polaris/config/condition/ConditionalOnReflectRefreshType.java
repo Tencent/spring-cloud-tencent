@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@Conditional(NonDefaultBehaviorCondition.class)
-public @interface ConditionalOnNonDefaultBehavior {
+@Conditional(ReflectRefreshTypeCondition.class)
+public @interface ConditionalOnReflectRefreshType {
 
 }
