@@ -20,3 +20,4 @@
 - [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/541)
 - [fix:set error handler named EnhancedRestTemplateReporter for RestTemplate](https://github.com/Tencent/spring-cloud-tencent/pull/543)
 - [Fix issue: report the labels in request when report the result of invocation by Feign](https://github.com/Tencent/spring-cloud-tencent/pull/546)
+- [optimize：add switch for report call result and default false](https://github.com/Tencent/spring-cloud-tencent/pull/547)
