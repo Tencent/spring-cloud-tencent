@@ -12,7 +12,7 @@ spring:
         groups:
           - name: ${spring.application.name} # group name
             files: [ "config/application.properties", "config/bootstrap.yml" ] # config/application.properties takes precedence over config/bootstrap.yml
-        refresh-behavior: specific_bean
+        refresh-type: reflect
 management:
   endpoints:
     web:

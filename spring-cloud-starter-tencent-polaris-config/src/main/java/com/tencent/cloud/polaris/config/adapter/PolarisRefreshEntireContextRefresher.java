@@ -25,17 +25,18 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 
 /**
- * PolarisRefreshContextConfigPropertyAutoRefresher refresh config by refreshContext.
+ * The default implement of Spring Cloud refreshes the entire Spring Context.
+ * The disadvantage is that the entire context is rebuilt, which has a large impact and low performance.
  *
  * @author lingxiao.wlx
  */
-public class PolarisRefreshContextConfigPropertyAutoRefresher extends PolarisConfigPropertyAutoRefresher {
+public class PolarisRefreshEntireContextRefresher extends PolarisConfigPropertyAutoRefresher {
 
 	private final ContextRefresher contextRefresher;
 
-	public PolarisRefreshContextConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties,
-															PolarisPropertySourceManager polarisPropertySourceManager,
-															ContextRefresher contextRefresher) {
+	public PolarisRefreshEntireContextRefresher(PolarisConfigProperties polarisConfigProperties,
+			PolarisPropertySourceManager polarisPropertySourceManager,
+			ContextRefresher contextRefresher) {
 		super(polarisConfigProperties, polarisPropertySourceManager);
 		this.contextRefresher = contextRefresher;
 	}

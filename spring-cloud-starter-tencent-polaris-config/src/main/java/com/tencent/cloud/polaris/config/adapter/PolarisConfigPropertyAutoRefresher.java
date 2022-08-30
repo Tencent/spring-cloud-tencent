@@ -82,7 +82,7 @@ public abstract class PolarisConfigPropertyAutoRefresher
 					.addChangeListener((ConfigKVFileChangeListener) configKVFileChangeEvent -> {
 
 						LOGGER.info(
-								"[SCT Config]  received polaris config change event and will refresh spring context."
+								"[SCT Config] received polaris config change event and will refresh spring context."
 										+ " namespace = {}, group = {}, fileName = {}",
 								polarisPropertySource.getNamespace(),
 								polarisPropertySource.getGroup(),

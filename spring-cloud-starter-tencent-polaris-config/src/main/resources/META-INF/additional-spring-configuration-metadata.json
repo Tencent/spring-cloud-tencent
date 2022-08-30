@@ -43,12 +43,6 @@
       "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
     },
     {
-      "name": "spring.cloud.polaris.config.refresh-behavior",
-      "type": "com.tencent.cloud.polaris.config.enums.RefreshBehavior",
-      "defaultValue": "all_beans",
-      "description": "ConfigurationPropertiesBean refresh behavior."
-    },
-    {
       "name": "spring.cloud.polaris.config.refresh-type",
       "type": "com.tencent.cloud.polaris.config.enums.RefreshType",
       "defaultValue": "refresh_context",
