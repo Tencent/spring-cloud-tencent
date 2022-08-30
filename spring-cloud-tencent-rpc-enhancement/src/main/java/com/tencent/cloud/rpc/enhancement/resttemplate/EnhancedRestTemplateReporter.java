@@ -67,6 +67,10 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 
 	@Override
 	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response) {
+		if (!properties.isEnabled()) {
+			return;
+		}
+
 		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
 
