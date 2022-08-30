@@ -33,17 +33,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Extend {@link ConfigurationPropertiesRebinder}.
- * <p>
- * Spring team doesn't seem to support single {@link ConfigurationPropertiesBean} refresh.
- * <p>
- * AffectedConfigurationPropertiesRebinder can only refresh affected
- * {@link ConfigurationPropertiesBean} base on the change keys.
- * <p>
- * <strong> NOTE: We still use Spring's default behavior (full refresh) as default
- * behavior, This feature can be considered an advanced feature, it may not be as stable
- * as the default behavior. </strong>
- *
+ * Optimize #{@link ConfigurationPropertiesRebinder}, only rebuild affected beans.
  * @author weihubeats 2022-7-10
  */
 public class AffectedConfigurationPropertiesRebinder extends ConfigurationPropertiesRebinder {
