@@ -19,6 +19,7 @@ package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
 import java.net.SocketTimeoutException;
 
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
@@ -45,6 +46,12 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 	@Autowired(required = false)
 	private ConsumerAPI consumerAPI;
 
+	private RpcEnhancementReporterProperties reporterProperties;
+
+	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reporterProperties) {
+		this.reporterProperties = reporterProperties;
+	}
+
 	@Override
 	public String getName() {
 		return ExceptionPolarisReporter.class.getName();
@@ -57,6 +64,10 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 
 	@Override
 	public void run(EnhancedFeignContext context) {
+		if (!reporterProperties.isEnabled()) {
+			return;
+		}
+
 		if (consumerAPI != null) {
 			Request request = context.getRequest();
 			Response response = context.getResponse();

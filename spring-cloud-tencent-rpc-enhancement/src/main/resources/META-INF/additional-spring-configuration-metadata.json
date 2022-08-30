@@ -7,6 +7,12 @@
       "description": "If rpc enhancement enabled."
     },
     {
+      "name": "spring.cloud.tencent.rpc-enhancement.reporter.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Whether report call result to polaris."
+    },
+    {
       "name": "spring.cloud.tencent.rpc-enhancement.reporter.ignore-internal-server-error",
       "type": "java.lang.Boolean",
       "defaultValue": true,
