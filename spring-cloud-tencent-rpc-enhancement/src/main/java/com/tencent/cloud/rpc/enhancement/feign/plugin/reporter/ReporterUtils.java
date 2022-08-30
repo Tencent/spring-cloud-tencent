@@ -31,6 +31,8 @@ import com.tencent.polaris.api.utils.CollectionUtils;
 import feign.Request;
 import feign.RequestTemplate;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
@@ -40,6 +42,8 @@ import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
  * @author Haotian Zhang
  */
 public final class ReporterUtils {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReporterUtils.class);
 
 	private ReporterUtils() {
 	}
@@ -57,10 +61,9 @@ public final class ReporterUtils {
 				label = URLDecoder.decode(label, UTF_8);
 			}
 			catch (UnsupportedEncodingException e) {
-				throw new RuntimeException("unsupported charset exception " + UTF_8);
+				LOGGER.error("unsupported charset exception " + UTF_8, e);
 			}
-			label = convertLabel(label);
-			resultRequest.setLabels(label);
+			resultRequest.setLabels(convertLabel(label));
 		}
 		resultRequest.setService(serviceName);
 		URI uri = URI.create(request.url());

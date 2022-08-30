@@ -83,7 +83,7 @@ public class ReporterUtilsTest {
 		RequestTemplate requestTemplate = new RequestTemplate();
 		requestTemplate.feignTarget(target);
 		try {
-			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, URLEncoder.encode("k1:v1|k2:v2", UTF_8));
+			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, URLEncoder.encode("{\"k1\":\"v1\",\"k2\":\"v2\"}", UTF_8));
 		}
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);
