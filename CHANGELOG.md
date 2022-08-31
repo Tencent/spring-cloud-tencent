@@ -24,3 +24,4 @@
 - [Feature：support pushGateway push metrics](https://github.com/Tencent/spring-cloud-tencent/pull/531)
 - [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/534)
 - [add feature-env plugin & add spring cloud gateway staining plugin](https://github.com/Tencent/spring-cloud-tencent/pull/532)
+- [feature:add @ConditionalOnConfigReflectEnabled annotation](https://github.com/Tencent/spring-cloud-tencent/pull/538)
