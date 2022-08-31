@@ -24,5 +24,7 @@
 - [Feature: Optimized configuration update](https://github.com/Tencent/spring-cloud-tencent/pull/528)
 - [Feature：support pushGateway push metrics](https://github.com/Tencent/spring-cloud-tencent/pull/529)
 - [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/536)
+- [Feature: remove location metadata](https://github.com/Tencent/spring-cloud-tencent/pull/542)
 - [add feature-env plugin & add spring cloud gateway staining plugin](https://github.com/Tencent/spring-cloud-tencent/pull/533)
 - [feature:add @ConditionalOnConfigReflectEnabled annotation](https://github.com/Tencent/spring-cloud-tencent/pull/539)
+- [fix:set error handler named EnhancedRestTemplateReporter for RestTemplate](https://github.com/Tencent/spring-cloud-tencent/pull/545)
