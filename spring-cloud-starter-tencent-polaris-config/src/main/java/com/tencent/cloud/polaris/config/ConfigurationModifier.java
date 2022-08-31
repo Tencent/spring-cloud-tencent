@@ -28,6 +28,8 @@ import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
 
@@ -37,6 +39,7 @@ import org.springframework.util.CollectionUtils;
  * @author lepdou 2022-03-10
  */
 public class ConfigurationModifier implements PolarisConfigModifier {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationModifier.class);
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
@@ -69,6 +72,8 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 					+ " with spring.cloud.polaris.address or spring.cloud.polaris.config.address");
 		}
 
+		checkAddressAccessible(configAddresses);
+
 		configuration.getConfigFile().getServerConnector().setAddresses(configAddresses);
 	}
 
@@ -96,5 +101,27 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 		}
 
 		return configAddresses;
+	}
+
+	private void checkAddressAccessible(List<String> configAddresses) {
+		// check address can connect
+		configAddresses.forEach(address -> {
+			String[] ipPort = address.split(":");
+
+			if (ipPort.length != 2) {
+				throw new IllegalArgumentException("Config server address (" + address + ") is wrong, please check address like grpc://183.47.111.8:8091.");
+			}
+
+			if (!AddressUtils.accessible(ipPort[0], Integer.parseInt(ipPort[1]), 3000)) {
+				String errMsg = "Config server address (" + address + ") can not be connected. Please check your config in bootstrap.yml"
+						+ " with spring.cloud.polaris.address or spring.cloud.polaris.config.address.";
+				if (polarisConfigProperties.isShutdownIfConnectToConfigServerFailed()) {
+					throw new IllegalArgumentException(errMsg);
+				}
+				else {
+					LOGGER.error(errMsg);
+				}
+			}
+		});
 	}
 }

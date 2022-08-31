@@ -18,6 +18,10 @@
 
 package com.tencent.cloud.common.util;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,5 +52,24 @@ public final class AddressUtils {
 			addressList.add(uri.getAuthority());
 		}
 		return addressList;
+	}
+
+	public static boolean accessible(String ip, int port, int timeout) {
+		Socket socket = new Socket();
+		try {
+			socket.connect(new InetSocketAddress(InetAddress.getByName(ip), port), timeout);
+		}
+		catch (IOException e) {
+			return false;
+		}
+		finally {
+			try {
+				socket.close();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return true;
 	}
 }
