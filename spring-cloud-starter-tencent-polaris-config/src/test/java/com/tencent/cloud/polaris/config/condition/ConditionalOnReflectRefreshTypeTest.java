@@ -18,6 +18,9 @@
 
 package com.tencent.cloud.polaris.config.condition;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+
 import com.tencent.cloud.polaris.config.PolarisConfigAutoConfiguration;
 import com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
@@ -28,6 +31,8 @@ import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -44,6 +49,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author lingxiao.wlx
  */
 public class ConditionalOnReflectRefreshTypeTest {
+
+	private static ServerSocket serverSocket;
+
+	@BeforeClass
+	public static void before() {
+		new Thread(() -> {
+			try {
+				serverSocket = new ServerSocket(8093);
+				serverSocket.accept();
+			}
+			catch (IOException e) {
+				//ignore
+			}
+		}).start();
+	}
+
+	@AfterClass
+	public static void after() throws IOException {
+		serverSocket.close();
+	}
 
 	@Test
 	public void testReflectEnabled() {
