@@ -43,6 +43,18 @@
       "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
     },
     {
+      "name": "spring.cloud.polaris.config.import-check.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to enable import-check."
+    },
+    {
+      "name": "spring.cloud.polaris.config.preference",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to preferentially load the remote configuration."
+    },
+    {
       "name": "spring.cloud.polaris.config.refresh-behavior",
       "type": "com.tencent.cloud.polaris.config.enums.RefreshBehavior",
       "defaultValue": "all_beans",

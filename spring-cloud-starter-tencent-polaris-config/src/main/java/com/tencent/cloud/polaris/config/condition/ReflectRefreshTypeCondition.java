@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.config.condition;
 
-import com.tencent.cloud.polaris.config.enums.RefreshBehavior;
+import com.tencent.cloud.polaris.config.enums.RefreshType;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -26,31 +26,28 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Extend SpringBootCondition.
+ * The refresh type of reflect condition.
  *
  * @author weihubeats 2022-7-13
  */
-public class NonDefaultBehaviorCondition extends SpringBootCondition {
+public class ReflectRefreshTypeCondition extends SpringBootCondition {
 
 	/**
-	 * refresh behavior config.
+	 * the property key of refresh type.
 	 */
-	public static final String POLARIS_CONFIG_REFRESH_BEHAVIOR = "spring.cloud.polaris.config.refresh-behavior";
+	public static final String POLARIS_CONFIG_REFRESH_TYPE = "spring.cloud.polaris.config.refresh-type";
 
-	/**
-	 * refresh behavior config default value.
-	 */
-	private static final RefreshBehavior DEFAULT_REFRESH_BEHAVIOR = RefreshBehavior.ALL_BEANS;
+	private static final RefreshType DEFAULT_REFRESH_TYPE = RefreshType.REFRESH_CONTEXT;
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		RefreshBehavior behavior = context.getEnvironment().getProperty(
-				POLARIS_CONFIG_REFRESH_BEHAVIOR, RefreshBehavior.class,
-				DEFAULT_REFRESH_BEHAVIOR);
-		if (DEFAULT_REFRESH_BEHAVIOR == behavior) {
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		RefreshType refreshType = context.getEnvironment()
+				.getProperty(POLARIS_CONFIG_REFRESH_TYPE, RefreshType.class, DEFAULT_REFRESH_TYPE);
+
+		if (refreshType == DEFAULT_REFRESH_TYPE) {
 			return ConditionOutcome.noMatch("no matched");
 		}
+
 		return ConditionOutcome.match("matched");
 	}
 }

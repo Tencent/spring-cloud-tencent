@@ -9,6 +9,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -19,9 +20,9 @@ import org.springframework.util.ReflectionUtils;
 public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrdered {
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
+	public Object postProcessBeforeInitialization(Object bean, @NonNull String beanName)
 			throws BeansException {
-		Class clazz = bean.getClass();
+		Class<?> clazz = bean.getClass();
 		for (Field field : findAllField(clazz)) {
 			processField(bean, beanName, field);
 		}
@@ -32,7 +33,7 @@ public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrd
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 		return bean;
 	}
 
@@ -59,15 +60,15 @@ public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrd
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
-	private List<Field> findAllField(Class clazz) {
+	private List<Field> findAllField(Class<?> clazz) {
 		final List<Field> res = new LinkedList<>();
-		ReflectionUtils.doWithFields(clazz, field -> res.add(field));
+		ReflectionUtils.doWithFields(clazz, res::add);
 		return res;
 	}
 
-	private List<Method> findAllMethod(Class clazz) {
+	private List<Method> findAllMethod(Class<?> clazz) {
 		final List<Method> res = new LinkedList<>();
-		ReflectionUtils.doWithMethods(clazz, method -> res.add(method));
+		ReflectionUtils.doWithMethods(clazz, res::add);
 		return res;
 	}
 }
