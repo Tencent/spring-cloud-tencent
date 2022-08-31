@@ -77,8 +77,11 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 	}
 
 	@Override
-	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response)
-			throws IOException {
+	public void handleError(@NonNull URI url, @NonNull HttpMethod method, @NonNull ClientHttpResponse response) {
+		if (!properties.isEnabled()) {
+			return;
+		}
+
 		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
 			HttpURLConnection connection = (HttpURLConnection) ReflectionUtils.getFieldValue(response, FIELD_NAME);
@@ -95,7 +98,6 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		catch (Exception e) {
 			LOG.error("Will report response of {} url {}", response, url, e);
 			resultRequest.setRetStatus(RetStatus.RetFail);
-			throw e;
 		}
 		finally {
 			LOG.debug("Will report result of {}. URL=[{}]. Response=[{}].", resultRequest.getRetStatus().name(),
