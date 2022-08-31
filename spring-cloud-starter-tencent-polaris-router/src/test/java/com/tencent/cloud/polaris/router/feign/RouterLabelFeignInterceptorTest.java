@@ -32,7 +32,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.polaris.router.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstants;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 import feign.RequestTemplate;
