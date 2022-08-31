@@ -24,7 +24,6 @@ import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshAffectedContextRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshEntireContextRefresher;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProcessor;
-import com.tencent.cloud.polaris.config.condition.ConditionalOnConfigReflectEnabled;
 import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshType;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
@@ -78,8 +77,8 @@ public class PolarisConfigAutoConfiguration {
 		return new PolarisRefreshEntireContextRefresher(polarisConfigProperties, polarisPropertySourceManager, contextRefresher);
 	}
 
-	@ConditionalOnConfigReflectEnabled
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnReflectRefreshType
 	@AutoConfigureBefore(PolarisConfigAutoConfiguration.class)
 	public static class PolarisReflectRefresherAutoConfiguration {
 		@Bean
