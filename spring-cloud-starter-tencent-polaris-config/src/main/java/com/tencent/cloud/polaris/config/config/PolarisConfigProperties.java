@@ -52,6 +52,8 @@ public class PolarisConfigProperties {
 	 */
 	private boolean autoRefresh = true;
 
+	private boolean shutdownIfConnectToConfigServerFailed = true;
+
 	/**
 	 * When the local configuration is consistent with the remote configuration, whether to
 	 * preferentially load the remote configuration.
@@ -98,6 +100,14 @@ public class PolarisConfigProperties {
 
 	public void setAutoRefresh(boolean autoRefresh) {
 		this.autoRefresh = autoRefresh;
+	}
+
+	public boolean isShutdownIfConnectToConfigServerFailed() {
+		return shutdownIfConnectToConfigServerFailed;
+	}
+
+	public void setShutdownIfConnectToConfigServerFailed(boolean shutdownIfConnectToConfigServerFailed) {
+		this.shutdownIfConnectToConfigServerFailed = shutdownIfConnectToConfigServerFailed;
 	}
 
 	public RefreshType getRefreshType() {
