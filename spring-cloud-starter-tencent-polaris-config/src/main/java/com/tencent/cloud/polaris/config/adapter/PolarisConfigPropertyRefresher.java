@@ -16,25 +16,29 @@
  *
  */
 
-package com.tencent.cloud.polaris.config.condition;
+package com.tencent.cloud.polaris.config.adapter;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.context.annotation.Conditional;
+import java.util.Set;
 
 /**
- * custom annotation.
+ * PolarisConfigPropertyRefresher refresh spring value filed and configurationProperties bean
+ * when config exchange.
  *
- * @author weihubeats 2022-7-13
+ * @author lingxiao.wlx
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
-@Documented
-@Conditional(NonDefaultBehaviorCondition.class)
-public @interface ConditionalOnNonDefaultBehavior {
+public interface PolarisConfigPropertyRefresher {
 
+	/**
+	 * refresh the attribute with @Value annotation.
+	 *
+	 * @param changedKey changedKey
+	 */
+	void refreshSpringValue(String changedKey);
+
+	/**
+	 * refresh @ConfigurationProperties beans.
+	 *
+	 * @param changeKeys changeKeys
+	 */
+	void refreshConfigurationProperties(Set<String> changeKeys);
 }

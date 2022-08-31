@@ -17,10 +17,10 @@
  */
 package com.tencent.cloud.polaris.config;
 
+import com.tencent.cloud.polaris.config.adapter.AffectedConfigurationPropertiesRebinder;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFileLocator;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
-import com.tencent.cloud.polaris.config.adapter.SmartConfigurationPropertiesRebinder;
-import com.tencent.cloud.polaris.config.condition.ConditionalOnNonDefaultBehavior;
+import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshType;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
@@ -89,11 +89,9 @@ public class PolarisConfigBootstrapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	@ConditionalOnNonDefaultBehavior
-	public ConfigurationPropertiesRebinder smartConfigurationPropertiesRebinder(
+	@ConditionalOnReflectRefreshType
+	public ConfigurationPropertiesRebinder affectedConfigurationPropertiesRebinder(
 			ConfigurationPropertiesBeans beans) {
-		// If using default behavior, not use SmartConfigurationPropertiesRebinder.
-		// Minimize te possibility of making mistakes.
-		return new SmartConfigurationPropertiesRebinder(beans);
+		return new AffectedConfigurationPropertiesRebinder(beans);
 	}
 }
