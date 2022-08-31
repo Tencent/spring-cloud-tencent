@@ -39,11 +39,11 @@ import org.springframework.cloud.context.refresh.ContextRefresher;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link ConditionalOnConfigReflectEnabled}.
+ * Test for {@link ConditionalOnReflectRefreshType}.
  *
  * @author lingxiao.wlx
  */
-public class ConditionalOnConfigReflectEnabledTest {
+public class ConditionalOnReflectRefreshTypeTest {
 
 	@Test
 	public void testReflectEnabled() {

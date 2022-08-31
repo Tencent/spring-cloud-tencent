@@ -22,3 +22,4 @@
 - [Fix issue: report the labels in request when report the result of invocation by Feign](https://github.com/Tencent/spring-cloud-tencent/pull/546)
 - [optimize：add switch for report call result and default false](https://github.com/Tencent/spring-cloud-tencent/pull/547)
 - [Optimize: refresh @Value by reflect and only refresh affected ConfigurationProperties beans](https://github.com/Tencent/spring-cloud-tencent/pull/548)
+- [feature:remove ConditionalOnConfigReflectEnabled annotation.](https://github.com/Tencent/spring-cloud-tencent/pull/551)
