@@ -214,8 +214,6 @@ public class StaticMetadataManager {
 		mergedMetadataResult.putAll(configMetadata);
 		mergedMetadataResult.putAll(envMetadata);
 		mergedMetadataResult.putAll(customSPIMetadata);
-		// set location info as metadata
-		mergedMetadataResult.putAll(getLocationMetadata());
 		this.mergedStaticMetadata = Collections.unmodifiableMap(mergedMetadataResult);
 
 		Map<String, String> mergedTransitiveMetadataResult = new HashMap<>();
