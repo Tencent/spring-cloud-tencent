@@ -17,10 +17,13 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.config;
 
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +34,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisCircuitBreakerAutoConfigurationTest {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisCircuitBreakerAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(
+					PolarisContextAutoConfiguration.class,
+					RpcEnhancementAutoConfiguration.class,
+					LoadBalancerAutoConfiguration.class,
+					RpcEnhancementAutoConfiguration.class,
+					PolarisCircuitBreakerAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test

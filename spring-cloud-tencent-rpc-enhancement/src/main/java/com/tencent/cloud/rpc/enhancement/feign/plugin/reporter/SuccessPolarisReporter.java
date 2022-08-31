@@ -61,6 +61,10 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 	@Override
 	public void run(EnhancedFeignContext context) {
+		if (!properties.isEnabled()) {
+			return;
+		}
+
 		if (consumerAPI != null) {
 			Request request = context.getRequest();
 			Response response = context.getResponse();
