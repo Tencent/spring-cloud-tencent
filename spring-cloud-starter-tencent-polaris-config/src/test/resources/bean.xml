@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder location="classpath:application-test.properties"/>
+
+	<!--Person-->
+	<bean class="com.tencent.cloud.polaris.config.spring.property.Person">
+		<property name="name" value="${name:test}"/>
+		<property name="age" value="${age:10}"/>
+	</bean>
+
+	<!--SpringValueDefinitionProcessor to process xml config placeholders	-->
+	<bean class="com.tencent.cloud.polaris.config.spring.property.SpringValueDefinitionProcessor">
+		<constructor-arg index="0" ref="helper"/>
+		<constructor-arg index="1" ref="polarisConfigProperties"/>
+	</bean>
+
+	<!--Placeholder helper functions	-->
+	<bean id="helper" class="com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper"/>
+
+	<!--PolarisConfigProperties	-->
+	<bean id="polarisConfigProperties" class="com.tencent.cloud.polaris.config.config.PolarisConfigProperties">
+		<property name="autoRefresh" value="true"/>
+	</bean>
+
+	<!--springValueRegistry	-->
+	<bean id="springValueRegistry" class="com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry"/>
+
+	<!--Spring value processor of method	-->
+	<bean class="com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor">
+		<constructor-arg index="0" ref="helper"/>
+		<constructor-arg index="1" ref="springValueRegistry"/>
+		<constructor-arg index="2" ref="polarisConfigProperties"/>
+	</bean>
+</beans>
