@@ -28,3 +28,4 @@
 - [add feature-env plugin & add spring cloud gateway staining plugin](https://github.com/Tencent/spring-cloud-tencent/pull/533)
 - [feature:add @ConditionalOnConfigReflectEnabled annotation](https://github.com/Tencent/spring-cloud-tencent/pull/539)
 - [fix:set error handler named EnhancedRestTemplateReporter for RestTemplate](https://github.com/Tencent/spring-cloud-tencent/pull/545)
+- [Optimize: add switch for report call result and default false](https://github.com/Tencent/spring-cloud-tencent/pull/550)

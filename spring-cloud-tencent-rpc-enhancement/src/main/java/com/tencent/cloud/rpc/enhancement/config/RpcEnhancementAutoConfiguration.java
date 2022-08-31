@@ -86,8 +86,8 @@ public class RpcEnhancementAutoConfiguration {
 			}
 
 			@Bean
-			public ExceptionPolarisReporter exceptionPolarisReporter() {
-				return new ExceptionPolarisReporter();
+			public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties) {
+				return new ExceptionPolarisReporter(properties);
 			}
 		}
 	}
