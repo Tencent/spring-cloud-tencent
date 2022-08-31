@@ -33,6 +33,11 @@ import org.springframework.http.HttpStatus;
 public class RpcEnhancementReporterProperties {
 
 	/**
+	 * Whether report call result to polaris.
+	 */
+	private boolean enabled;
+
+	/**
 	 * Specify the Http status code(s) that needs to be reported as FAILED.
 	 */
 	private List<HttpStatus> statuses = new ArrayList<>();
@@ -58,6 +63,14 @@ public class RpcEnhancementReporterProperties {
 	@SafeVarargs
 	private static <T> List<T> toList(T... items) {
 		return new ArrayList<>(Arrays.asList(items));
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public List<HttpStatus> getStatuses() {
