@@ -16,7 +16,7 @@
  *
  */
 
-package com.tencent.cloud.polaris.router;
+package com.tencent.cloud.common.constant;
 
 /**
  * Router constants.
