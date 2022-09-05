@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -35,6 +38,8 @@ import org.springframework.util.StringUtils;
  * @author lepdou 2022-03-29
  */
 public final class AddressUtils {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AddressUtils.class);
 
 	private static final String ADDRESS_SEPARATOR = ",";
 
@@ -67,7 +72,7 @@ public final class AddressUtils {
 				socket.close();
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.error("Close socket connection failed.", e);
 			}
 		}
 		return true;
