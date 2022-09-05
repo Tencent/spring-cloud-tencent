@@ -98,11 +98,11 @@ public class PolarisDiscoveryProperties {
 	private Boolean heartbeatEnabled = true;
 
 	/**
-	 * Heart beat interval (The time interval must be greater than zero).
-	 * Time unit: millisecond. Default: 5000.
+	 * Heartbeat interval ( 0 < interval <= 60).
+	 * Time unit: second. Default: 5.
 	 * @see ContextConstant#DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL
 	 */
-	private Integer heartbeatInterval = 5000;
+	private Integer heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
 
 	/**
 	 * Custom health check url to override default.
@@ -213,8 +213,8 @@ public class PolarisDiscoveryProperties {
 	}
 
 	public Integer getHeartbeatInterval() {
-		if (this.heartbeatEnabled && this.heartbeatInterval <= 0) {
-			return DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
+		if (this.heartbeatEnabled && (this.heartbeatInterval <= 0 || this.heartbeatInterval > 60)) {
+			heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
 		}
 		return heartbeatInterval;
 	}

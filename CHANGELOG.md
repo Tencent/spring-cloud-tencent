@@ -30,3 +30,5 @@
 - [fix:set error handler named EnhancedRestTemplateReporter for RestTemplate](https://github.com/Tencent/spring-cloud-tencent/pull/545)
 - [Optimize: add switch for report call result and default false](https://github.com/Tencent/spring-cloud-tencent/pull/550)
 - [Optimize: shutdown server when connect to config server failed](https://github.com/Tencent/spring-cloud-tencent/pull/554)
+- [Report the labels in request when report the result of invocation by Feign](https://github.com/Tencent/spring-cloud-tencent/pull/556)
+- [fix:fix heartbeat interval different configuration from polaris-java SDK.](https://github.com/Tencent/spring-cloud-tencent/pull/559)
