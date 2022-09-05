@@ -41,7 +41,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
 /**
@@ -70,7 +70,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
 			this.heartbeatExecutor = Executors
-					.newSingleThreadScheduledExecutor(new NamedThreadFactory("spring-cloud-heartbeat"));
+					.newSingleThreadScheduledExecutor(new NamedThreadFactory("polaris-heartbeat"));
 		}
 		else {
 			this.heartbeatExecutor = null;
@@ -209,13 +209,14 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 				}
 
 				polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
+				log.trace("Polaris heartbeat is sent");
 			}
 			catch (PolarisException e) {
-				log.error("polaris heartbeat[{}]", e.getCode(), e);
+				log.error("polaris heartbeat error with code [{}]", e.getCode(), e);
 			}
 			catch (Exception e) {
 				log.error("polaris heartbeat runtime error", e);
 			}
-		}, polarisDiscoveryProperties.getHeartbeatInterval(), polarisDiscoveryProperties.getHeartbeatInterval(), MILLISECONDS);
+		}, polarisDiscoveryProperties.getHeartbeatInterval(), polarisDiscoveryProperties.getHeartbeatInterval(), SECONDS);
 	}
 }
