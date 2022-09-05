@@ -42,8 +42,12 @@ public class PolarisDiscoveryPropertiesTest {
 		assertThat(polarisDiscoveryProperties.isHeartbeatEnabled()).isTrue();
 
 		// HeartbeatEnabled
-		polarisDiscoveryProperties.setHeartbeatInterval(2000);
-		assertThat(polarisDiscoveryProperties.getHeartbeatInterval()).isEqualTo(2000);
+		polarisDiscoveryProperties.setHeartbeatInterval(200);
+		assertThat(polarisDiscoveryProperties.getHeartbeatInterval()).isEqualTo(5);
+		polarisDiscoveryProperties.setHeartbeatInterval(0);
+		assertThat(polarisDiscoveryProperties.getHeartbeatInterval()).isEqualTo(5);
+		polarisDiscoveryProperties.setHeartbeatInterval(20);
+		assertThat(polarisDiscoveryProperties.getHeartbeatInterval()).isEqualTo(20);
 
 		// Namespace
 		polarisDiscoveryProperties.setNamespace(NAMESPACE_TEST);
@@ -100,7 +104,7 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", enabled=true"
 						+ ", registerEnabled=true"
 						+ ", heartbeatEnabled=true"
-						+ ", heartbeatInterval=2000"
+						+ ", heartbeatInterval=20"
 						+ ", healthCheckUrl='/health'"
 						+ ", serviceListRefreshInterval=1000}");
 	}

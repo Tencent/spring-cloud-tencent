@@ -37,9 +37,9 @@ public final class ContextConstant {
 	public static final String UTF_8 = StandardCharsets.UTF_8.name();
 
 	/**
-	 * Default registry heartbeat time interval, default: 5000 (ms).
+	 * Default registry heartbeat time interval: 5 (s).
 	 */
-	public static final Integer DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL = 5000;
+	public static final Integer DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL = 5;
 
 	private ContextConstant() {
 	}
