@@ -27,8 +27,8 @@ import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignPluginRunner;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
+import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisResponseErrorHandler;
 import com.tencent.polaris.api.core.ConsumerAPI;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -107,10 +108,9 @@ public class RpcEnhancementAutoConfiguration {
 		private List<RestTemplate> restTemplates = Collections.emptyList();
 
 		@Bean
-		public EnhancedRestTemplateReporter polarisRestTemplateResponseErrorHandler(
-				RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI,
-				@Autowired(required = false) PolarisResponseErrorHandler polarisResponseErrorHandler) {
-			return new EnhancedRestTemplateReporter(properties, consumerAPI, polarisResponseErrorHandler);
+		public EnhancedRestTemplateReporter enhancedRestTemplateReporter(
+				RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI) {
+			return new EnhancedRestTemplateReporter(properties, consumerAPI);
 		}
 
 		@Bean
@@ -120,6 +120,13 @@ public class RpcEnhancementAutoConfiguration {
 					restTemplate.setErrorHandler(reporter);
 				}
 			};
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnClass(name = {"org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient"})
+		public BlockingLoadBalancerClientAspect blockingLoadBalancerClientAspect() {
+			return new BlockingLoadBalancerClientAspect();
 		}
 	}
 }
