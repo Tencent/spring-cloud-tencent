@@ -18,10 +18,17 @@
 
 package com.tencent.cloud.common.util;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.StringUtils;
 
@@ -31,6 +38,8 @@ import org.springframework.util.StringUtils;
  * @author lepdou 2022-03-29
  */
 public final class AddressUtils {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AddressUtils.class);
 
 	private static final String ADDRESS_SEPARATOR = ",";
 
@@ -48,5 +57,24 @@ public final class AddressUtils {
 			addressList.add(uri.getAuthority());
 		}
 		return addressList;
+	}
+
+	public static boolean accessible(String ip, int port, int timeout) {
+		Socket socket = new Socket();
+		try {
+			socket.connect(new InetSocketAddress(InetAddress.getByName(ip), port), timeout);
+		}
+		catch (IOException e) {
+			return false;
+		}
+		finally {
+			try {
+				socket.close();
+			}
+			catch (IOException e) {
+				LOGGER.error("Close socket connection failed.", e);
+			}
+		}
+		return true;
 	}
 }

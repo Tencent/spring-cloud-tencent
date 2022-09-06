@@ -52,6 +52,8 @@ public class PolarisConfigProperties {
 	 */
 	private boolean autoRefresh = true;
 
+	private boolean shutdownIfConnectToConfigServerFailed = true;
+
 	/**
 	 * Attribute refresh type.
 	 */
@@ -92,6 +94,14 @@ public class PolarisConfigProperties {
 
 	public void setAutoRefresh(boolean autoRefresh) {
 		this.autoRefresh = autoRefresh;
+	}
+
+	public boolean isShutdownIfConnectToConfigServerFailed() {
+		return shutdownIfConnectToConfigServerFailed;
+	}
+
+	public void setShutdownIfConnectToConfigServerFailed(boolean shutdownIfConnectToConfigServerFailed) {
+		this.shutdownIfConnectToConfigServerFailed = shutdownIfConnectToConfigServerFailed;
 	}
 
 	public RefreshType getRefreshType() {

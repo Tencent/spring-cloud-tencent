@@ -18,7 +18,9 @@
 
 package com.tencent.cloud.polaris.config.spring.annotation;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.ServerSocket;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,7 +30,9 @@ import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.polaris.api.utils.CollectionUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -47,6 +51,26 @@ import org.springframework.stereotype.Component;
  * @author lingxiao.wlx
  */
 public class SpringValueProcessorTest {
+
+	private static ServerSocket serverSocket;
+
+	@BeforeClass
+	public static void before() {
+		new Thread(() -> {
+			try {
+				serverSocket = new ServerSocket(8093);
+				serverSocket.accept();
+			}
+			catch (IOException e) {
+				//ignore
+			}
+		}).start();
+	}
+
+	@AfterClass
+	public static void after() throws IOException {
+		serverSocket.close();
+	}
 
 	@Test
 	public void springValueFiledProcessorTest() {
