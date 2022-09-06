@@ -47,6 +47,11 @@ public class MetadataContext {
 	public static final String FRAGMENT_DISPOSABLE = "disposable";
 
 	/**
+	 * load balancer context.
+	 */
+	public static final String FRAGMENT_LOAD_BALANCER = "loadbalancer";
+
+	/**
 	 * upstream disposable Context.
 	 */
 	public static final String FRAGMENT_UPSTREAM_DISPOSABLE = "upstream-disposable";
