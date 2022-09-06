@@ -53,15 +53,15 @@ public abstract class AbstractPolarisReporterAdapter {
 	private static final List<HttpStatus> HTTP_STATUSES = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
 			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
 			INSUFFICIENT_STORAGE, LOOP_DETECTED, BANDWIDTH_LIMIT_EXCEEDED, NOT_EXTENDED, NETWORK_AUTHENTICATION_REQUIRED);
-	protected final RpcEnhancementReporterProperties properties;
+	protected final RpcEnhancementReporterProperties reportProperties;
 
 	/**
 	 * Constructor With {@link RpcEnhancementReporterProperties} .
 	 *
-	 * @param properties instance of {@link RpcEnhancementReporterProperties}.
+	 * @param reportProperties instance of {@link RpcEnhancementReporterProperties}.
 	 */
-	protected AbstractPolarisReporterAdapter(RpcEnhancementReporterProperties properties) {
-		this.properties = properties;
+	protected AbstractPolarisReporterAdapter(RpcEnhancementReporterProperties reportProperties) {
+		this.reportProperties = reportProperties;
 	}
 
 	/**
@@ -88,12 +88,12 @@ public abstract class AbstractPolarisReporterAdapter {
 		}
 		else {
 			// statuses > series
-			List<HttpStatus> status = properties.getStatuses();
+			List<HttpStatus> status = reportProperties.getStatuses();
 
 			if (status.isEmpty()) {
-				List<HttpStatus.Series> series = properties.getSeries();
+				List<HttpStatus.Series> series = reportProperties.getSeries();
 				// Check INTERNAL_SERVER_ERROR (500) status.
-				if (properties.isIgnoreInternalServerError() && Objects.equals(httpStatus, INTERNAL_SERVER_ERROR)) {
+				if (reportProperties.isIgnoreInternalServerError() && Objects.equals(httpStatus, INTERNAL_SERVER_ERROR)) {
 					return false;
 				}
 				if (series.isEmpty()) {

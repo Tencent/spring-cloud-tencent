@@ -61,7 +61,7 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 	@Override
 	public void run(EnhancedFeignContext context) {
-		if (!properties.isEnabled()) {
+		if (!reportProperties.isEnabled()) {
 			return;
 		}
 
