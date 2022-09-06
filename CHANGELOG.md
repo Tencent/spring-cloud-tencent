@@ -25,3 +25,4 @@
 - [feature:remove ConditionalOnConfigReflectEnabled annotation.](https://github.com/Tencent/spring-cloud-tencent/pull/551)
 - [Optimize:shutdown server when connect to config server failed.](https://github.com/Tencent/spring-cloud-tencent/pull/552)
 - [fix:fix heartbeat interval different configuration from polaris-java SDK.](https://github.com/Tencent/spring-cloud-tencent/pull/560)
+- [Optimize: optimize report call result for restTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/562)
