@@ -50,13 +50,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConditionalOnReflectRefreshTypeTest {
 
+	private static final int PORT = 18093;
+
 	private static ServerSocket serverSocket;
 
 	@BeforeClass
 	public static void before() {
 		new Thread(() -> {
 			try {
-				serverSocket = new ServerSocket(18093);
+				serverSocket = new ServerSocket(PORT);
 				serverSocket.accept();
 			}
 			catch (IOException e) {
@@ -81,7 +83,8 @@ public class ConditionalOnReflectRefreshTypeTest {
 				.withPropertyValues("server.port=" + 8080)
 				.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 				.withPropertyValues("spring.cloud.polaris.config.refresh-type=" + RefreshType.REFLECT)
-				.withPropertyValues("spring.cloud.polaris.config.enabled=true");
+				.withPropertyValues("spring.cloud.polaris.config.enabled=true")
+				.withPropertyValues("spring.cloud.polaris.config.port=" + PORT);
 		contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(PlaceholderHelper.class);
 			assertThat(context).hasSingleBean(SpringValueRegistry.class);
