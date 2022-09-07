@@ -30,7 +30,9 @@ public final class RouterConstants {
 	 */
 	public static final String ROUTER_LABEL_HEADER = "internal-router-label";
 
-
+	/**
+	 * Default Private Constructor.
+	 */
 	private RouterConstants() {
 	}
 }

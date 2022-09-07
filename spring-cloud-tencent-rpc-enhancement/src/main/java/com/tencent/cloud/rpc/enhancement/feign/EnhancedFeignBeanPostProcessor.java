@@ -37,7 +37,7 @@ import org.springframework.lang.NonNull;
  */
 public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
-	private EnhancedFeignPluginRunner pluginRunner;
+	private final EnhancedFeignPluginRunner pluginRunner;
 
 	private BeanFactory factory;
 

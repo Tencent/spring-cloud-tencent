@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LABEL_METHOD;
@@ -58,13 +59,11 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
 @Order(RateLimitConstant.FILTER_ORDER)
 public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
-
 	/**
 	 * Default Filter Registration Bean Name Defined .
 	 */
 	public static final String QUOTA_FILTER_BEAN_NAME = "quotaFilterRegistrationBean";
-
+	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
 	private final LimitAPI limitAPI;
 
 	private final PolarisRateLimiterLabelServletResolver labelResolver;
@@ -91,7 +90,8 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+			@NonNull FilterChain filterChain)
 			throws ServletException, IOException {
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
