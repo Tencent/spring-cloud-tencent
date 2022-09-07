@@ -121,7 +121,7 @@ public class EnhancedRestTemplateReporterTest {
 		URI uri = mock(URI.class);
 		enhancedRestTemplateReporter.handleError(uri, HttpMethod.GET, response);
 
-		verify(consumerAPI).updateServiceCallResult(any());
+		verify(consumerAPI, times(2)).updateServiceCallResult(any());
 		verify(delegate).handleError(uri, HttpMethod.GET, response);
 	}
 
@@ -136,7 +136,7 @@ public class EnhancedRestTemplateReporterTest {
 		URI uri = mock(URI.class);
 		enhancedRestTemplateReporter.handleError(uri, HttpMethod.GET, response);
 
-		verify(consumerAPI).updateServiceCallResult(any());
+		verify(consumerAPI, times(2)).updateServiceCallResult(any());
 		verify(delegate, times(0)).handleError(uri, HttpMethod.GET, response);
 	}
 

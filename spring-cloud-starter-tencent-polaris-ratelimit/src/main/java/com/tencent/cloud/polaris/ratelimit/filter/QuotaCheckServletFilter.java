@@ -114,14 +114,14 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				Thread.sleep(quotaResponse.getWaitMs());
 			}
 
-			filterChain.doFilter(request, response);
 		}
 		catch (Throwable t) {
 			// An exception occurs in the rate limiting API call,
 			// which should not affect the call of the business process.
 			LOG.error("fail to invoke getQuota, service is " + localService, t);
-			filterChain.doFilter(request, response);
 		}
+
+		filterChain.doFilter(request, response);
 	}
 
 	private Map<String, String> getRequestLabels(HttpServletRequest request, String localNamespace, String localService) {

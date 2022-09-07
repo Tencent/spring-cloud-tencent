@@ -11,7 +11,7 @@ spring:
       ratelimit:
         enabled: true
         rejectRequestTipsFilePath: reject-tips.html
-        maxQueuingTime: 1000
+        maxQueuingTime: 500
 
 management:
   endpoints:
