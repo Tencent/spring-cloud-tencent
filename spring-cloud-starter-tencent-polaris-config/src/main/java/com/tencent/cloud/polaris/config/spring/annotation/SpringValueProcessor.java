@@ -1,3 +1,20 @@
+/*
+ * Tencent is pleased to support the open source community by making Spring Cloud Tencent available.
+ *
+ * Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+ *
+ * Licensed under the BSD 3-Clause License (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://opensource.org/licenses/BSD-3-Clause
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
+
 package com.tencent.cloud.polaris.config.spring.annotation;
 
 import java.beans.PropertyDescriptor;
@@ -60,7 +77,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 	}
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+	public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
 		if (polarisConfigProperties.isAutoRefresh() && beanFactory instanceof BeanDefinitionRegistry) {
 			beanName2SpringValueDefinitions = SpringValueDefinitionProcessor
@@ -120,11 +137,11 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 			SpringValue springValue;
 			if (member instanceof Field) {
 				Field field = (Field) member;
-				springValue = new SpringValue(key, value.value(), bean, beanName, field, false);
+				springValue = new SpringValue(key, value.value(), bean, beanName, field);
 			}
 			else if (member instanceof Method) {
 				Method method = (Method) member;
-				springValue = new SpringValue(key, value.value(), bean, beanName, method, false);
+				springValue = new SpringValue(key, value.value(), bean, beanName, method);
 			}
 			else {
 				LOGGER.error("Polaris @Value annotation currently only support to be used on methods and fields, "
@@ -137,24 +154,24 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 	}
 
 	private void processBeanPropertyValues(Object bean, String beanName) {
-		Collection<SpringValueDefinition> propertySpringValues = beanName2SpringValueDefinitions
-				.get(beanName);
-		if (propertySpringValues == null || propertySpringValues.isEmpty()) {
+		Collection<SpringValueDefinition> propertySpringValues = beanName2SpringValueDefinitions.get(beanName);
+		if (propertySpringValues.isEmpty()) {
 			return;
 		}
 
 		for (SpringValueDefinition definition : propertySpringValues) {
 			try {
-				PropertyDescriptor pd = BeanUtils
-						.getPropertyDescriptor(bean.getClass(), definition.getPropertyName());
-				Method method = pd.getWriteMethod();
-				if (method == null) {
-					continue;
+				PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(bean.getClass(), definition.getPropertyName());
+				if (pd != null) {
+					Method method = pd.getWriteMethod();
+					if (method == null) {
+						continue;
+					}
+					SpringValue springValue = new SpringValue(definition.getKey(), definition.getPlaceholder(),
+							bean, beanName, method);
+					springValueRegistry.register(beanFactory, definition.getKey(), springValue);
+					LOGGER.debug("Monitoring {}", springValue);
 				}
-				SpringValue springValue = new SpringValue(definition.getKey(), definition.getPlaceholder(),
-						bean, beanName, method, false);
-				springValueRegistry.register(beanFactory, definition.getKey(), springValue);
-				LOGGER.debug("Monitoring {}", springValue);
 			}
 			catch (Throwable ex) {
 				LOGGER.error("Failed to enable auto update feature for {}.{}", bean.getClass(),
@@ -167,7 +184,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 	}
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 }

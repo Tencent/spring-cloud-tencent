@@ -76,7 +76,7 @@ public class PolarisRateLimitRuleEndpoint {
 		}
 
 		for (RateLimitProto.Rule rule : rateLimit.getRulesList()) {
-			String ruleJson = "";
+			String ruleJson;
 			try {
 				ruleJson = JsonFormat.printer().print(rule);
 			}

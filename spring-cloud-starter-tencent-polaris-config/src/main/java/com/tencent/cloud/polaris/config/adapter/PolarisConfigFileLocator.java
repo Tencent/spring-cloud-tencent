@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,35 +122,49 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 		// priority: application-${profile} > application > boostrap-${profile} > boostrap
 		String[] activeProfiles = environment.getActiveProfiles();
-
-		for (String activeProfile : activeProfiles) {
-			if (!StringUtils.hasText(activeProfile)) {
-				continue;
-			}
-
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + activeProfile + ".properties"));
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + activeProfile + ".yml"));
+		String[] defaultProfiles = environment.getDefaultProfiles();
+		List<String> profileList = new ArrayList<>();
+		if (ArrayUtils.isNotEmpty(activeProfiles)) {
+			profileList.addAll(Arrays.asList(activeProfiles));
 		}
-
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.properties"));
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yml"));
-
-		for (String activeProfile : activeProfiles) {
-			if (!StringUtils.hasText(activeProfile)) {
-				continue;
-			}
-
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + activeProfile + ".properties"));
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + activeProfile + ".yml"));
+		else if (ArrayUtils.isNotEmpty(defaultProfiles)) {
+			profileList.addAll(Arrays.asList(defaultProfiles));
 		}
-
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.properties"));
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yml"));
-
+		// build application config files
+		buildInternalApplicationConfigFiles(internalConfigFiles, namespace, serviceName, profileList);
+		// build bootstrap config files
+		buildInternalBootstrapConfigFiles(internalConfigFiles, namespace, serviceName, profileList);
 
 		return internalConfigFiles;
 	}
 
+	private void buildInternalApplicationConfigFiles(
+			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
+		for (String profile : profileList) {
+			if (!StringUtils.hasText(profile)) {
+				continue;
+			}
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + profile + ".properties"));
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + profile + ".yml"));
+		}
+		// build default config properties files.
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.properties"));
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yml"));
+	}
+
+	private void buildInternalBootstrapConfigFiles(
+			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
+		for (String profile : profileList) {
+			if (!StringUtils.hasText(profile)) {
+				continue;
+			}
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + profile + ".properties"));
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + profile + ".yml"));
+		}
+		// build default config properties files.
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.properties"));
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yml"));
+	}
 
 	private void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource,
 			List<ConfigFileGroup> configFileGroups) {

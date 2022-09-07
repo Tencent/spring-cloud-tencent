@@ -36,7 +36,7 @@ public final class OkHttpUtil {
 	/**
 	 * Logger.
 	 */
-	public final static Logger logger = LoggerFactory.getLogger(OkHttpUtil.class);
+	public final static Logger LOGGER = LoggerFactory.getLogger(OkHttpUtil.class);
 
 	/**
 	 * client.
@@ -62,12 +62,12 @@ public final class OkHttpUtil {
 
 			if (response.isSuccessful() && Objects.nonNull(response.body())) {
 				String result = response.body().string();
-				logger.debug("exec get request, url: {} success，response data: {}", url, result);
+				LOGGER.debug("exec get request, url: {} success，response data: {}", url, result);
 				return true;
 			}
 		}
 		catch (Exception e) {
-			logger.error("exec get request，url: {} failed!", url, e);
+			LOGGER.error("exec get request，url: {} failed!", url, e);
 		}
 		return false;
 	}
