@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,14 +59,33 @@ public final class PolarisConfigFilePuller {
 	}
 
 	/**
+	 * Factory method to create PolarisConfigFilePuller for
+	 * {@link PolarisConfigDataLoader},{@link PolarisConfigFileLocator}.
+	 *
+	 * @param polarisContextProperties     polarisContextProperties
+	 * @param configFileService            configFileService
+	 * @param polarisPropertySourceManager polarisPropertySourceManager
+	 * @return PolarisConfigFilePuller instance
+	 */
+	public static PolarisConfigFilePuller get(PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
+			PolarisPropertySourceManager polarisPropertySourceManager) {
+		PolarisConfigFilePuller puller = new PolarisConfigFilePuller();
+		puller.polarisContextProperties = polarisContextProperties;
+		puller.configFileService = configFileService;
+		puller.polarisPropertySourceManager = polarisPropertySourceManager;
+		return puller;
+	}
+
+	/**
 	 * InitInternalConfigFiles for {@link PolarisConfigDataLoader}.
 	 *
 	 * @param compositePropertySource compositePropertySource
 	 * @param activeProfiles          activeProfiles
 	 * @param serviceName             serviceName
 	 */
-	public void initInternalConfigFiles(CompositePropertySource compositePropertySource, String[] activeProfiles, String serviceName) {
-		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles(activeProfiles, serviceName);
+	public void initInternalConfigFiles(CompositePropertySource compositePropertySource, String[] activeProfiles,
+			String[] defaultProfiles, String serviceName) {
+		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles(activeProfiles, defaultProfiles, serviceName);
 		for (ConfigFileMetadata configFile : internalConfigFiles) {
 			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(
 					configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
@@ -137,59 +159,60 @@ public final class PolarisConfigFilePuller {
 		return new PolarisPropertySource(namespace, group, fileName, configKVFile, map);
 	}
 
-
-	private List<ConfigFileMetadata> getInternalConfigFiles(String[] activeProfiles, String serviceName) {
+	private List<ConfigFileMetadata> getInternalConfigFiles(
+			String[] activeProfiles, String[] defaultProfiles, String serviceName) {
 		String namespace = polarisContextProperties.getNamespace();
 		if (StringUtils.hasText(polarisContextProperties.getService())) {
 			serviceName = polarisContextProperties.getService();
 		}
 		// priority: application-${profile} > application > boostrap-${profile} > boostrap
-		return getInternalConfigFiles(activeProfiles, namespace, serviceName);
+		return getInternalConfigFiles(activeProfiles, defaultProfiles, namespace, serviceName);
 	}
 
-	private List<ConfigFileMetadata> getInternalConfigFiles(String[] activeProfiles, String namespace, String serviceName) {
+	private List<ConfigFileMetadata> getInternalConfigFiles(
+			String[] activeProfiles, String[] defaultProfiles, String namespace, String serviceName) {
+		List<String> profileList = new ArrayList<>();
+		if (ArrayUtils.isNotEmpty(activeProfiles)) {
+			profileList.addAll(Arrays.asList(activeProfiles));
+		}
+		else if (ArrayUtils.isNotEmpty(defaultProfiles)) {
+			profileList.addAll(Arrays.asList(defaultProfiles));
+		}
+
 		List<ConfigFileMetadata> internalConfigFiles = new LinkedList<>();
-		for (String activeProfile : activeProfiles) {
-			if (!StringUtils.hasText(activeProfile)) {
-				continue;
-			}
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + activeProfile + ".properties"));
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + activeProfile + ".yml"));
-		}
-
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.properties"));
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yml"));
-
-		for (String activeProfile : activeProfiles) {
-			if (!StringUtils.hasText(activeProfile)) {
-				continue;
-			}
-
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + activeProfile + ".properties"));
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + activeProfile + ".yml"));
-		}
-
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.properties"));
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yml"));
+		// build application config files
+		buildInternalApplicationConfigFiles(internalConfigFiles, namespace, serviceName, profileList);
+		// build bootstrap config files
+		buildInternalBootstrapConfigFiles(internalConfigFiles, namespace, serviceName, profileList);
 
 		return internalConfigFiles;
 	}
 
-	/**
-	 * Factory method to create PolarisConfigFilePuller for
-	 * {@link PolarisConfigDataLoader},{@link PolarisConfigFileLocator}.
-	 *
-	 * @param polarisContextProperties     polarisContextProperties
-	 * @param configFileService            configFileService
-	 * @param polarisPropertySourceManager polarisPropertySourceManager
-	 * @return PolarisConfigFilePuller instance
-	 */
-	public static PolarisConfigFilePuller get(PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
-			PolarisPropertySourceManager polarisPropertySourceManager) {
-		PolarisConfigFilePuller puller = new PolarisConfigFilePuller();
-		puller.polarisContextProperties = polarisContextProperties;
-		puller.configFileService = configFileService;
-		puller.polarisPropertySourceManager = polarisPropertySourceManager;
-		return puller;
+	private void buildInternalApplicationConfigFiles(
+			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profiles) {
+		for (String profile : profiles) {
+			if (!StringUtils.hasText(profile)) {
+				continue;
+			}
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + profile + ".properties"));
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + profile + ".yml"));
+		}
+		// build default config properties files.
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.properties"));
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yml"));
+	}
+
+	private void buildInternalBootstrapConfigFiles(
+			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profiles) {
+		for (String profile : profiles) {
+			if (!StringUtils.hasText(profile)) {
+				continue;
+			}
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + profile + ".properties"));
+			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + profile + ".yml"));
+		}
+		// build default config properties files.
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.properties"));
+		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yml"));
 	}
 }

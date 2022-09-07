@@ -47,7 +47,6 @@ public class ReflectRefreshTypeCondition extends SpringBootCondition {
 		if (refreshType == DEFAULT_REFRESH_TYPE) {
 			return ConditionOutcome.noMatch("no matched");
 		}
-
 		return ConditionOutcome.match("matched");
 	}
 }

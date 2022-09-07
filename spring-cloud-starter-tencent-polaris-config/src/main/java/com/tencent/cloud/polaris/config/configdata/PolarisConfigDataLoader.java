@@ -56,17 +56,12 @@ import static org.springframework.boot.context.config.ConfigData.Option.PROFILE_
  */
 public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDataResource> {
 
-	private static final String POLARIS_CONFIG_PROPERTY_SOURCE_NAME = "polaris-config";
-
-	private final Log log;
-
-	private ConfigFileService configFileService;
-
-	private PolarisConfigFilePuller puller;
-
 	static final AtomicBoolean INTERNAL_CONFIG_FILES_LOADED = new AtomicBoolean(false);
-
 	static final AtomicBoolean CUSTOM_POLARIS_CONFIG_FILE_LOADED = new AtomicBoolean(false);
+	private static final String POLARIS_CONFIG_PROPERTY_SOURCE_NAME = "polaris-config";
+	private final Log log;
+	private ConfigFileService configFileService;
+	private PolarisConfigFilePuller puller;
 
 	public PolarisConfigDataLoader(DeferredLogFactory logFactory) {
 		this.log = logFactory.getLog(getClass());
@@ -107,9 +102,10 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 		Profiles profiles = resource.getProfiles();
 		if (INTERNAL_CONFIG_FILES_LOADED.compareAndSet(false, true)) {
 			log.info("loading internal config files");
-			List<String> profilesActive = profiles.getActive();
-			String[] activeProfiles = profilesActive.toArray(new String[]{});
-			this.puller.initInternalConfigFiles(compositePropertySource, activeProfiles, resource.getServiceName());
+			String[] activeProfiles = profiles.getActive().toArray(new String[] {});
+			String[] defaultProfiles = profiles.getDefault().toArray(new String[] {});
+			this.puller.initInternalConfigFiles(
+					compositePropertySource, activeProfiles, defaultProfiles, resource.getServiceName());
 		}
 
 		PolarisConfigProperties polarisConfigProperties = resource.getPolarisConfigProperties();
@@ -136,7 +132,7 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 			// mark it as 'PROFILE_SPECIFIC' config, it has higher priority
 			options.add(PROFILE_SPECIFIC);
 		}
-		return options.toArray(new ConfigData.Option[]{});
+		return options.toArray(new ConfigData.Option[] {});
 	}
 
 	private ConfigFileGroup configFileGroup(PolarisConfigDataResource polarisConfigDataResource) {

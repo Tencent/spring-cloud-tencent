@@ -123,7 +123,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	@Override
 	public void deregister(Registration registration) {
-
 		LOGGER.info("De-registering from Polaris Server now...");
 
 		if (StringUtils.isEmpty(registration.getServiceId())) {
@@ -155,10 +154,12 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 
 	@Override
 	public void close() {
+
 	}
 
 	@Override
 	public void setStatus(Registration registration, String status) {
+
 	}
 
 	@Override

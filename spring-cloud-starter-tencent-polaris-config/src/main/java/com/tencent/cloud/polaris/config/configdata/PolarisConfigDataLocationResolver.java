@@ -144,7 +144,8 @@ public class PolarisConfigDataLocationResolver implements
 					// destroy earlier Polaris sdkContext
 					event.getBootstrapContext().get(SDKContext.class).destroy();
 					// register PolarisPropertySourceManager to context
-					PolarisPropertySourceManager polarisPropertySourceManager = event.getBootstrapContext().get(PolarisPropertySourceManager.class);
+					PolarisPropertySourceManager polarisPropertySourceManager = event.getBootstrapContext()
+							.get(PolarisPropertySourceManager.class);
 					event.getApplicationContext().getBeanFactory().registerSingleton(
 							"polarisPropertySourceManager", polarisPropertySourceManager);
 				}
@@ -185,10 +186,10 @@ public class PolarisConfigDataLocationResolver implements
 	}
 
 	private List<PolarisConfigDataResource> loadConfigDataResources(ConfigDataLocationResolverContext resolverContext,
-																	ConfigDataLocation location,
-																	Profiles profiles,
-																	PolarisConfigProperties polarisConfigProperties,
-																	PolarisContextProperties polarisContextProperties) {
+			ConfigDataLocation location,
+			Profiles profiles,
+			PolarisConfigProperties polarisConfigProperties,
+			PolarisContextProperties polarisContextProperties) {
 		List<PolarisConfigDataResource> result = new ArrayList<>();
 		boolean optional = location.isOptional();
 		String groupFileName = getRealGroupFileName(location);
@@ -245,8 +246,8 @@ public class PolarisConfigDataLocationResolver implements
 	}
 
 	private void prepareAndInitEarlierPolarisSdkContext(ConfigDataLocationResolverContext resolverContext,
-														PolarisConfigProperties polarisConfigProperties,
-														PolarisContextProperties polarisContextProperties) {
+			PolarisConfigProperties polarisConfigProperties,
+			PolarisContextProperties polarisContextProperties) {
 		ConfigurableBootstrapContext bootstrapContext = resolverContext.getBootstrapContext();
 		if (!bootstrapContext.isRegistered(SDKContext.class)) {
 			SDKContext sdkContext = sdkContext(resolverContext,
@@ -270,8 +271,7 @@ public class PolarisConfigDataLocationResolver implements
 			PolarisContextProperties polarisContextProperties) {
 		// add ModifyAddress and ConfigurationModifier to load SDKContext
 		List<PolarisConfigModifier> modifierList = new ArrayList<>();
-		ModifyAddress modifyAddress = new ModifyAddress();
-		modifyAddress.setProperties(polarisContextProperties);
+		ModifyAddress modifyAddress = new ModifyAddress(polarisContextProperties);
 
 		ConfigurationModifier configurationModifier = new ConfigurationModifier(polarisConfigProperties,
 				polarisContextProperties);

@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: polaris-config-example
+  profiles:
+    active: abc
   cloud:
     polaris:
       address: grpc://183.47.111.80:8091
