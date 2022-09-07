@@ -11,6 +11,9 @@ spring:
       discovery:
         enabled: true
         register: true
+      rpc-enhancement:
+        reporter:
+          enabled: true
       stat:
         enabled: true
         port: 28082

@@ -58,11 +58,11 @@ public class SpringValueProcessorTest {
 	public static void before() {
 		new Thread(() -> {
 			try {
-				serverSocket = new ServerSocket(8093);
+				serverSocket = new ServerSocket(18093);
 				serverSocket.accept();
 			}
 			catch (IOException e) {
-				//ignore
+				e.printStackTrace();
 			}
 		}).start();
 	}
@@ -156,10 +156,9 @@ public class SpringValueProcessorTest {
 
 	@Component
 	private static class ValueTest {
+		private static String name;
 		@Value("${timeout:1000}")
 		private int timeout;
-
-		private static String name;
 
 		public int getTimeout() {
 			return timeout;

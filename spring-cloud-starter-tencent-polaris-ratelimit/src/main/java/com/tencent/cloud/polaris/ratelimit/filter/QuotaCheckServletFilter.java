@@ -59,13 +59,11 @@ import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LAB
 @Order(RateLimitConstant.FILTER_ORDER)
 public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
-
 	/**
 	 * Default Filter Registration Bean Name Defined .
 	 */
 	public static final String QUOTA_FILTER_BEAN_NAME = "quotaFilterRegistrationBean";
-
+	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
 	private final LimitAPI limitAPI;
 
 	private final PolarisRateLimiterLabelServletResolver labelResolver;
@@ -116,14 +114,14 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				Thread.sleep(quotaResponse.getWaitMs());
 			}
 
-			filterChain.doFilter(request, response);
 		}
 		catch (Throwable t) {
 			// An exception occurs in the rate limiting API call,
 			// which should not affect the call of the business process.
 			LOG.error("fail to invoke getQuota, service is " + localService, t);
-			filterChain.doFilter(request, response);
 		}
+
+		filterChain.doFilter(request, response);
 	}
 
 	private Map<String, String> getRequestLabels(HttpServletRequest request, String localNamespace, String localService) {

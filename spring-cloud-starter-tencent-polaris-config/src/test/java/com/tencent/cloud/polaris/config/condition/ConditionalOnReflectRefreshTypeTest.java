@@ -56,11 +56,11 @@ public class ConditionalOnReflectRefreshTypeTest {
 	public static void before() {
 		new Thread(() -> {
 			try {
-				serverSocket = new ServerSocket(8093);
+				serverSocket = new ServerSocket(18093);
 				serverSocket.accept();
 			}
 			catch (IOException e) {
-				//ignore
+				e.printStackTrace();
 			}
 		}).start();
 	}
