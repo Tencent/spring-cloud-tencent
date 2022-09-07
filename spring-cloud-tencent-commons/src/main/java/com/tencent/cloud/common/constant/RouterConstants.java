@@ -24,11 +24,15 @@ package com.tencent.cloud.common.constant;
  * @author lepdou 2022-05-17
  */
 public final class RouterConstants {
+
 	/**
 	 * the header of router label.
 	 */
 	public static final String ROUTER_LABEL_HEADER = "internal-router-label";
 
+	/**
+	 * Default Private Constructor.
+	 */
 	private RouterConstants() {
 	}
 }

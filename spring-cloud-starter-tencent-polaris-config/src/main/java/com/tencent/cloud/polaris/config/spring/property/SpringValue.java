@@ -21,7 +21,6 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 import org.springframework.core.MethodParameter;
 
@@ -37,30 +36,24 @@ import org.springframework.core.MethodParameter;
  */
 public class SpringValue {
 
-	private MethodParameter methodParameter;
-	private Field field;
 	private final WeakReference<Object> beanRef;
 	private final String beanName;
 	private final String key;
 	private final String placeholder;
 	private final Class<?> targetType;
-	private Type genericType;
-	private final boolean isJson;
+	private MethodParameter methodParameter;
+	private Field field;
 
-	public SpringValue(String key, String placeholder, Object bean, String beanName, Field field, boolean isJson) {
+	public SpringValue(String key, String placeholder, Object bean, String beanName, Field field) {
 		this.beanRef = new WeakReference<>(bean);
 		this.beanName = beanName;
 		this.field = field;
 		this.key = key;
 		this.placeholder = placeholder;
 		this.targetType = field.getType();
-		this.isJson = isJson;
-		if (isJson) {
-			this.genericType = field.getGenericType();
-		}
 	}
 
-	public SpringValue(String key, String placeholder, Object bean, String beanName, Method method, boolean isJson) {
+	public SpringValue(String key, String placeholder, Object bean, String beanName, Method method) {
 		this.beanRef = new WeakReference<>(bean);
 		this.beanName = beanName;
 		this.methodParameter = new MethodParameter(method, 0);
@@ -68,10 +61,6 @@ public class SpringValue {
 		this.placeholder = placeholder;
 		Class<?>[] paramTps = method.getParameterTypes();
 		this.targetType = paramTps[0];
-		this.isJson = isJson;
-		if (isJson) {
-			this.genericType = method.getGenericParameterTypes()[0];
-		}
 	}
 
 	public void update(Object newVal) throws IllegalAccessException, InvocationTargetException {
@@ -125,14 +114,6 @@ public class SpringValue {
 
 	public Field getField() {
 		return field;
-	}
-
-	public Type getGenericType() {
-		return genericType;
-	}
-
-	public boolean isJson() {
-		return isJson;
 	}
 
 	boolean isTargetBeanValid() {

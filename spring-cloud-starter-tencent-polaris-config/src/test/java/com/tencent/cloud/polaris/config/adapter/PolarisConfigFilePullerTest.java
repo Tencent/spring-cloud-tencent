@@ -45,16 +45,15 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisConfigFilePullerTest {
 
+	private final String testNamespace = "testNamespace";
+	private final String testServiceName = "testServiceName";
+	private final String polarisConfigPropertySourceName = "polaris-config";
 	@Mock
 	private PolarisContextProperties polarisContextProperties;
 	@Mock
 	private ConfigFileService configFileService;
 	@Mock
 	private PolarisPropertySourceManager polarisPropertySourceManager;
-
-	private final String testNamespace = "testNamespace";
-	private final String testServiceName = "testServiceName";
-	private final String polarisConfigPropertySourceName = "polaris-config";
 
 	@Test
 	public void testPullInternalConfigFiles() {
@@ -80,7 +79,7 @@ public class PolarisConfigFilePullerTest {
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
 		CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
 
-		puller.initInternalConfigFiles(compositePropertySource, new String[]{}, testServiceName);
+		puller.initInternalConfigFiles(compositePropertySource, new String[] {}, new String[] {}, testServiceName);
 
 		Assert.assertEquals("v1", compositePropertySource.getProperty("k1"));
 		Assert.assertEquals("v2", compositePropertySource.getProperty("k2"));
@@ -121,9 +120,9 @@ public class PolarisConfigFilePullerTest {
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yml")).thenReturn(emptyConfigFile);
 		List<String> active = new ArrayList<>();
 		active.add("dev");
-		String[] activeProfiles = active.toArray(new String[]{});
+		String[] activeProfiles = active.toArray(new String[] {});
 		CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
-		puller.initInternalConfigFiles(compositePropertySource, activeProfiles, testServiceName);
+		puller.initInternalConfigFiles(compositePropertySource, activeProfiles, new String[] {}, testServiceName);
 
 		Assert.assertEquals("v11", compositePropertySource.getProperty("k1"));
 		Assert.assertEquals("v2", compositePropertySource.getProperty("k2"));

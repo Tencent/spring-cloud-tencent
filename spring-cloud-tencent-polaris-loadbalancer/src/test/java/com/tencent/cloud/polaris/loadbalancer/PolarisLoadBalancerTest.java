@@ -52,7 +52,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 /**
  * Test for {@link PolarisLoadBalancer}.
  *
@@ -61,15 +60,14 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisLoadBalancerTest {
 
+	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
+	private static Instance testInstance;
 	@Mock
 	private RouterAPI routerAPI;
 	@Mock
 	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 	@Mock
 	private PolarisLoadBalancerProperties loadBalancerProperties;
-
-	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	private static Instance testInstance;
 
 	@BeforeClass
 	public static void beforeClass() {

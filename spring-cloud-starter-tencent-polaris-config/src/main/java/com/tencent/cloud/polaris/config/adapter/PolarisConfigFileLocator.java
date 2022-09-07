@@ -62,8 +62,10 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 		// load spring boot default config files
 		String[] activeProfiles = environment.getActiveProfiles();
+		String[] defaultProfiles = environment.getDefaultProfiles();
 		String serviceName = environment.getProperty("spring.application.name");
-		polarisConfigFilePuller.initInternalConfigFiles(compositePropertySource, activeProfiles, serviceName);
+		polarisConfigFilePuller.initInternalConfigFiles(
+				compositePropertySource, activeProfiles, defaultProfiles, serviceName);
 
 		// load custom config files
 		List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();

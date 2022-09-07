@@ -35,7 +35,7 @@ import org.springframework.cloud.openfeign.loadbalancer.RetryableFeignBlockingLo
  */
 public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
-	private EnhancedFeignPluginRunner pluginRunner;
+	private final EnhancedFeignPluginRunner pluginRunner;
 
 	private BeanFactory factory;
 

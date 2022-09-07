@@ -24,6 +24,7 @@ import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
+import org.springframework.lang.NonNull;
 
 /**
  * Reload of Polaris logging configuration.
@@ -50,7 +51,7 @@ public class PolarisLoggingApplicationListener implements GenericApplicationList
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationEvent applicationEvent) {
+	public void onApplicationEvent(@NonNull ApplicationEvent applicationEvent) {
 		PolarisLogging.getInstance().loadConfiguration();
 	}
 }
