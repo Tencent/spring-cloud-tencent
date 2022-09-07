@@ -52,15 +52,13 @@ import org.springframework.stereotype.Component;
  */
 public class SpringValueProcessorTest {
 
-	private static final int PORT = 18093;
-
 	private static ServerSocket serverSocket;
 
 	@BeforeClass
 	public static void before() {
 		new Thread(() -> {
 			try {
-				serverSocket = new ServerSocket(PORT);
+				serverSocket = new ServerSocket(8093);
 				serverSocket.accept();
 			}
 			catch (IOException e) {
@@ -85,7 +83,6 @@ public class SpringValueProcessorTest {
 				.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 				.withPropertyValues("spring.cloud.polaris.config.refresh-type=" + RefreshType.REFLECT)
 				.withPropertyValues("spring.cloud.polaris.config.enabled=true")
-				.withPropertyValues("spring.cloud.polaris.config.port=" + PORT)
 				.withPropertyValues("timeout=10000");
 		contextRunner.run(context -> {
 			SpringValueRegistry springValueRegistry = context.getBean(SpringValueRegistry.class);
