@@ -98,7 +98,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		String localService = MetadataContext.LOCAL_SERVICE;
 
 		Map<String, String> labels = getRequestLabels(exchange, localNamespace, localService);
-
+		long waitMs = -1;
 		try {
 			String path = exchange.getRequest().getURI().getPath();
 			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI,
@@ -115,7 +115,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			// Unirate
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
 				LOGGER.debug("The request of [{}] will waiting for {}ms.", path, quotaResponse.getWaitMs());
-				return Mono.delay(Duration.ofMillis(quotaResponse.getWaitMs())).flatMap(e -> chain.filter(exchange));
+				waitMs = quotaResponse.getWaitMs();
 			}
 		}
 		catch (Throwable t) {
@@ -124,7 +124,12 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			LOGGER.error("fail to invoke getQuota, service is " + localService, t);
 		}
 
-		return chain.filter(exchange);
+		if (waitMs > 0) {
+			return Mono.delay(Duration.ofMillis(waitMs)).flatMap(e -> chain.filter(exchange));
+		}
+		else {
+			return chain.filter(exchange);
+		}
 	}
 
 	private Map<String, String> getRequestLabels(ServerWebExchange exchange, String localNamespace, String localService) {

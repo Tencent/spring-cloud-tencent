@@ -34,6 +34,7 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -43,6 +44,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Role;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -66,6 +69,7 @@ public class RpcEnhancementAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.cloud.openfeign.FeignAutoConfiguration")
 	@AutoConfigureBefore(name = "org.springframework.cloud.openfeign.FeignAutoConfiguration")
+	@Role(RootBeanDefinition.ROLE_INFRASTRUCTURE)
 	protected static class PolarisFeignClientAutoConfiguration {
 
 		@Bean
@@ -75,7 +79,7 @@ public class RpcEnhancementAutoConfiguration {
 		}
 
 		@Bean
-		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(EnhancedFeignPluginRunner pluginRunner) {
+		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(@Lazy EnhancedFeignPluginRunner pluginRunner) {
 			return new EnhancedFeignBeanPostProcessor(pluginRunner);
 		}
 

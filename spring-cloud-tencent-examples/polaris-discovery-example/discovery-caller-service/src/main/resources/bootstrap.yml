@@ -18,6 +18,10 @@ spring:
       stat:
         enabled: true
         port: 28081
+    tencent:
+      rpc-enhancement:
+        reporter:
+          enabled: true
 #        pushgateway:
 #          enabled: true
 #          address: 127.0.0.1:9091
