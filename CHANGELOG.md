@@ -27,3 +27,4 @@
 - [fix:fix heartbeat interval different configuration from polaris-java SDK.](https://github.com/Tencent/spring-cloud-tencent/pull/560)
 - [Optimize: optimize report call result for restTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/562)
 - [feat:add spring-cloud-starter-tencent-all and quickstart examples.](https://github.com/Tencent/spring-cloud-tencent/pull/567)
+- [fix:fix wrong internal config file load order.](https://github.com/Tencent/spring-cloud-tencent/pull/572)
