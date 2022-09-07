@@ -122,22 +122,24 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 		// priority: application-${profile} > application > boostrap-${profile} > boostrap
 		String[] activeProfiles = environment.getActiveProfiles();
+		String[] defaultProfiles = environment.getDefaultProfiles();
+		List<String> profileList = new ArrayList<>();
+		if (ArrayUtils.isNotEmpty(activeProfiles)) {
+			profileList.addAll(Arrays.asList(activeProfiles));
+		}
+		else if (ArrayUtils.isNotEmpty(defaultProfiles)) {
+			profileList.addAll(Arrays.asList(defaultProfiles));
+		}
 		// build application config files
-		buildInternalApplicationConfigFiles(internalConfigFiles, namespace, serviceName, activeProfiles);
+		buildInternalApplicationConfigFiles(internalConfigFiles, namespace, serviceName, profileList);
 		// build bootstrap config files
-		buildInternalBootstrapConfigFiles(internalConfigFiles, namespace, serviceName, activeProfiles);
+		buildInternalBootstrapConfigFiles(internalConfigFiles, namespace, serviceName, profileList);
 
 		return internalConfigFiles;
 	}
 
-	private void buildInternalApplicationConfigFiles(List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, String[] profiles) {
-		List<String> profileList = new ArrayList<>();
-		if (ArrayUtils.isNotEmpty(profiles)) {
-			profileList.addAll(Arrays.asList(profiles));
-		}
-		else {
-			profileList.addAll(Arrays.asList(environment.getDefaultProfiles()));
-		}
+	private void buildInternalApplicationConfigFiles(
+			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
 		for (String profile : profileList) {
 			if (!StringUtils.hasText(profile)) {
 				continue;
@@ -150,14 +152,8 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yml"));
 	}
 
-	private void buildInternalBootstrapConfigFiles(List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, String[] profiles) {
-		List<String> profileList = new ArrayList<>();
-		if (ArrayUtils.isNotEmpty(profiles)) {
-			profileList.addAll(Arrays.asList(profiles));
-		}
-		else {
-			profileList.addAll(Arrays.asList(environment.getDefaultProfiles()));
-		}
+	private void buildInternalBootstrapConfigFiles(
+			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
 		for (String profile : profileList) {
 			if (!StringUtils.hasText(profile)) {
 				continue;
