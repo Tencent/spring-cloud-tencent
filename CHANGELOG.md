@@ -33,4 +33,5 @@
 - [Report the labels in request when report the result of invocation by Feign](https://github.com/Tencent/spring-cloud-tencent/pull/556)
 - [fix:fix heartbeat interval different configuration from polaris-java SDK.](https://github.com/Tencent/spring-cloud-tencent/pull/559)
 - [Optimize: optimize report call result for restTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/565)
+- [feat:add spring-cloud-starter-tencent-all and quickstart examples.](https://github.com/Tencent/spring-cloud-tencent/pull/569)
 - [refactor:optimize project and code.](https://github.com/Tencent/spring-cloud-tencent/pull/571)

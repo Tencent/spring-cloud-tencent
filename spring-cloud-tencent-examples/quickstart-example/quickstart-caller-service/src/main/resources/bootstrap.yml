@@ -1,0 +1,41 @@
+server:
+  port: 48082
+spring:
+  application:
+    name: QuickstartCallerService
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
+        heartbeat:
+          enabled: true
+        health-check-url: /quickstart/caller/healthCheck
+      circuitbreaker:
+        enabled: true
+      stat:
+        enabled: true
+        port: 28081
+    #        pushgateway:
+    #          enabled: true
+    #          address: 127.0.0.1:9091
+    tencent:
+      rpc-enhancement:
+        enabled: true
+        reporter:
+          enabled: true
+          ignore-internal-server-error: true
+          series: server_error
+          statuses: gateway_timeout, bad_gateway, service_unavailable
+feign:
+  hystrix:
+    enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-discovery

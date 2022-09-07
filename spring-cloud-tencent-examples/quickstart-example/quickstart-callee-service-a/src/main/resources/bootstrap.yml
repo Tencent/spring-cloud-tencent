@@ -1,0 +1,27 @@
+server:
+  port: 48083
+spring:
+  application:
+    name: QuickstartCalleeService
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
+      config:
+        address: grpc://183.47.111.80:8093
+        auto-refresh: true
+        groups:
+          - name: ${spring.application.name}
+            files: [ "config/callee.properties" ]
+        refresh-type: reflect
+      ratelimit:
+        enabled: true
+        maxQueuingTime: 500
+    tencent:
+      metadata:
+        content:
+          region: huanan

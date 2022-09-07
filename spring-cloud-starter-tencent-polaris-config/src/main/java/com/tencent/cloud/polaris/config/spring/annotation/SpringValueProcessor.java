@@ -149,7 +149,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 				return;
 			}
 			springValueRegistry.register(beanFactory, key, springValue);
-			LOGGER.info("Monitoring {}", springValue);
+			LOGGER.debug("Monitoring {}", springValue);
 		}
 	}
 
