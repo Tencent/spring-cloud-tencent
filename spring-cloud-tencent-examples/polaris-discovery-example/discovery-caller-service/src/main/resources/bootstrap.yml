@@ -9,6 +9,9 @@ spring:
       metadata:
         content:
           region: shanghai
+      rpc-enhancement:
+        reporter:
+          enabled: true
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default
@@ -22,10 +25,6 @@ spring:
       stat:
         enabled: true
         port: 28081
-    tencent:
-      rpc-enhancement:
-        reporter:
-          enabled: true
 #        pushgateway:
 #          enabled: true
 #          address: 127.0.0.1:9091
