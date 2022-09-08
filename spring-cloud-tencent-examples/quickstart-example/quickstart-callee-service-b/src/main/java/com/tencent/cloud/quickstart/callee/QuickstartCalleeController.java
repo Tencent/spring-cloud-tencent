@@ -20,6 +20,7 @@ package com.tencent.cloud.quickstart.callee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,9 @@ public class QuickstartCalleeController {
 	@Value("${appName:Callee}")
 	private String appName;
 
+	@Autowired
+	private DataSourceProperties dataSourceProperties;
+
 	/**
 	 * Get sum of two value.
 	 * @param value1 value 1
@@ -63,8 +67,8 @@ public class QuickstartCalleeController {
 	 */
 	@GetMapping("/info")
 	public String info() {
-		LOG.info("Quickstart [{}] Service [{}] is called.", appName, port);
-		return String.format("Quickstart [%s] Service [%s] is called.", appName, port);
+		LOG.info("Quickstart [{}] Service [{}] is called. datasource = {}", appName, port, dataSourceProperties);
+		return String.format("Quickstart [%s] Service [%s] is called. datasource = [%s]", appName, port, dataSourceProperties);
 	}
 
 	/**
