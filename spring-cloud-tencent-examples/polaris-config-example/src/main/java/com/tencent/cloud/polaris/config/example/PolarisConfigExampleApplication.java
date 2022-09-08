@@ -31,5 +31,4 @@ public class PolarisConfigExampleApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PolarisConfigExampleApplication.class, args);
 	}
-
 }

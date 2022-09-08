@@ -25,9 +25,10 @@ spring:
 ### Maven Dependency
 
 ```xml
+
 <dependency>
-    <groupId>com.tencent.cloud</groupId>
-    <artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
+	<groupId>com.tencent.cloud</groupId>
+	<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
 </dependency>
 ```
 
@@ -62,10 +63,10 @@ java -jar ${app.jar}
 
 Launch application, change ${app.jar} to jar's package name.
 
-
 ### Metadata Configuration
 
-- In the ```bootstrap.yml``` configuration file of the ```spring-cloud-tencent-examples/metadata-transfer-example/metadata-frontend``` project
+- In the ```bootstrap.yml``` configuration file of
+  the ```spring-cloud-tencent-examples/metadata-transfer-example/metadata-frontend``` project
 
 ```yaml
 spring:
@@ -77,7 +78,7 @@ spring:
           # Example: intransitive
           CUSTOM-METADATA-KEY-LOCAL: CUSTOM-VALUE-LOCAL
           # Example: transitive
-          CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE
+          CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE-FRONTEND
           # Example: disposable
           CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE-FRONTEND
         # Assigned which metadata key-value will be passed along the link
@@ -89,7 +90,8 @@ spring:
 
 ```
 
-- In the ```bootstrap.yml``` configuration file of the ```spring-cloud-tencent-examples/metadata-transfer-example/metadata-middle``` project
+- In the ```bootstrap.yml``` configuration file of
+  the ```spring-cloud-tencent-examples/metadata-transfer-example/metadata-middle``` project
 
 ```yaml
 spring:
@@ -110,7 +112,6 @@ spring:
         # Specify which metadata key value will be passed only once (one-step)
         disposable:
           - CUSTOM-METADATA-KEY-DISPOSABLE
-
 ```
 
 ### Verify
@@ -126,7 +127,7 @@ Expected return rate
 ```
 {
   "frontend-transitive-metadata": {
-    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE"
+    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE-FRONTEND"
   },
   "frontend-upstream-disposable-metadata": {
   },
@@ -135,7 +136,7 @@ Expected return rate
   },
   
   "middle-transitive-metadata": {
-    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE",
+    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE-FRONTEND",
     "CUSTOM-METADATA-KEY-TRANSITIVE-2": "CUSTOM-VALUE-TRANSITIVE-2"
   },
   "middle-upstream-disposable-metadata": {
@@ -146,7 +147,7 @@ Expected return rate
   },
   
   "backend-transitive-metadata": {
-    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE",
+    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE-FRONTEND",
     "CUSTOM-METADATA-KEY-TRANSITIVE-2": "CUSTOM-VALUE-TRANSITIVE-2"
   },
   "backend-upstream-disposable-metadata": {
@@ -162,41 +163,43 @@ Response value description
 > `*` (asterisk), representing `frontend`, `middle`, `backend` in the example.
 
 - Key `*-transitive-metadata` represents all the passable (fully linked) metadata configured by default in the service.
-- Key `*-upstream-disposable-metadata` indicates the one-time transmissible metadata obtained from upstream requests in the service.
-- Key `*-local-disposable-metadata` indicates the one-time metadata passed downstream as configured by the current service.
+- Key `*-upstream-disposable-metadata` indicates the one-time transmissible metadata obtained from upstream requests in
+  the service.
+- Key `*-local-disposable-metadata` indicates the one-time metadata passed downstream as configured by the current
+  service.
 
 ### How to get the passed metadata via Api
 
 - Get the metadata passed globally
 
-```java
-MetadataContext context = MetadataContextHolder.get();
-        Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+```
+MetadataContext context=MetadataContextHolder.get();
+Map<String, String> customMetadataMap=context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 
-customMetadataMap.forEach((key, value) -> {
+customMetadataMap.forEach((key,value)->{
     // ...
 });
 ```
 
 - Get disposable(one-time) metadata passed from upstream
 
-```java
-Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
-upstreamDisposableMetadatas.forEach((key, value) -> {
-    // ...
+```
+Map<String, String> upstreamDisposableMetadatas=MetadataContextHolder.getAllDisposableMetadata(true);
+upstreamDisposableMetadatas.forEach((key,value)->{
+	// ...
 });
 ```
 
 - Get disposable(one-time) metadata for local configuration
 
-```java
-Map<String, String> localDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(false);
-localDisposableMetadatas.forEach((key, value) -> {
-    // ...
+```
+Map<String, String> localDisposableMetadatas=MetadataContextHolder.getAllDisposableMetadata(false);
+localDisposableMetadatas.forEach((key,value)->{
+	// ...
 });
 ```
 
-
 ### Wiki Reference
 
-See [Spring Cloud Tencent Metadata Transfer Usage Document](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-Usage-Document) for more reference .
+See [Spring Cloud Tencent Metadata Transfer Usage Document](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-Usage-Document)
+for more reference.

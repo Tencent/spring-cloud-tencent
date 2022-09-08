@@ -48,5 +48,4 @@ public class CustomSpringWebRouterLabelResolver implements SpringWebRouterLabelR
 		labels.put("user", user.getName());
 		return labels;
 	}
-
 }

@@ -45,5 +45,4 @@ public final class PersonConfigChangeListener {
 			System.out.printf("%s = %s \n", changedKey, event.getChange(changedKey));
 		}
 	}
-
 }

@@ -51,5 +51,4 @@ public class ConfigController {
 	public String person() {
 		return person.toString();
 	}
-
 }
