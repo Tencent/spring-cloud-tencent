@@ -11,9 +11,6 @@ spring:
       discovery:
         enabled: true
         register: true
-      rpc-enhancement:
-        reporter:
-          enabled: true
       stat:
         enabled: true
         port: 28082
@@ -24,6 +21,9 @@ spring:
       metadata:
         content:
           region: shanghai
+      rpc-enhancement:
+        reporter:
+          enabled: true
 #    consul:
 #      port: 8500
 #      host: 127.0.0.1

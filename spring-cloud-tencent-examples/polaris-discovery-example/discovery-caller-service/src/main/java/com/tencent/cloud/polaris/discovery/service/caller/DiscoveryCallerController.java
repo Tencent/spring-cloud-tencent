@@ -69,5 +69,4 @@ public class DiscoveryCallerController {
 	public String healthCheck() {
 		return "pk ok";
 	}
-
 }
