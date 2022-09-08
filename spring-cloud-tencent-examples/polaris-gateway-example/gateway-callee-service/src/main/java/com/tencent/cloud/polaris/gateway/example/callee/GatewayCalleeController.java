@@ -75,5 +75,4 @@ public class GatewayCalleeController {
 		str = ESAPI.encoder().encodeForHTML(str);
 		return str;
 	}
-
 }

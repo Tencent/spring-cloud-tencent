@@ -44,5 +44,4 @@ public class DiscoveryCallerService {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

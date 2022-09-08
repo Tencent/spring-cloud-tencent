@@ -26,10 +26,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Haotian Zhang
  */
 @SpringBootApplication
-public class GatewayCalleeApplication {
+public class GatewayCalleeApplication2 {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GatewayCalleeApplication.class, args);
+		SpringApplication.run(GatewayCalleeApplication2.class, args);
 	}
-
 }

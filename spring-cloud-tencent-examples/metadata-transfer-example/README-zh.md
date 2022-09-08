@@ -24,9 +24,10 @@ spring:
 ### Maven依赖
 
 ```xml
+
 <dependency>
-    <groupId>com.tencent.cloud</groupId>
-    <artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
+	<groupId>com.tencent.cloud</groupId>
+	<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
 </dependency>
 ```
 
@@ -41,10 +42,10 @@ spring:
 ##### IDEA启动
 
 分别启动
+
 - ```spring-cloud-tencent-examples/metadata-transfer-example/metadata-frontend```的```MetadataFrontendService```
 - ```spring-cloud-tencent-examples/metadata-transfer-example/metadata-middle```的```MetadataMiddleService```
 - ```spring-cloud-tencent-examples/metadata-transfer-example/metadata-backend```的```MetadataBackendService```
-
 
 ##### Maven打包启动
 
@@ -76,7 +77,7 @@ spring:
           # 示例：本地元数据，默认不在链路中传递
           CUSTOM-METADATA-KEY-LOCAL: CUSTOM-VALUE-LOCAL
           # 示例：可传递元数据
-          CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE
+          CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE-FRONTEND
           # 示例：一次性元数据
           CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE-FRONTEND
         # 指定哪个元数据的键值将沿着链接传递
@@ -123,16 +124,15 @@ curl -L -X GET 'http://127.0.0.1:48080/metadata/service/frontend/feign/info'
 ```json
 {
   "frontend-transitive-metadata": {
-    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE"
+    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE-FRONTEND"
   },
   "frontend-upstream-disposable-metadata": {
   },
   "frontend-local-disposable-metadata": {
     "CUSTOM-METADATA-KEY-DISPOSABLE": "CUSTOM-VALUE-DISPOSABLE-FRONTEND"
   },
-  
   "middle-transitive-metadata": {
-    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE",
+    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE-FRONTEND",
     "CUSTOM-METADATA-KEY-TRANSITIVE-2": "CUSTOM-VALUE-TRANSITIVE-2"
   },
   "middle-upstream-disposable-metadata": {
@@ -141,9 +141,8 @@ curl -L -X GET 'http://127.0.0.1:48080/metadata/service/frontend/feign/info'
   "middle-local-disposable-metadata": {
     "CUSTOM-METADATA-KEY-DISPOSABLE": "CUSTOM-VALUE-DISPOSABLE-MIDDLE"
   },
-  
   "backend-transitive-metadata": {
-    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE",
+    "CUSTOM-METADATA-KEY-TRANSITIVE": "CUSTOM-VALUE-TRANSITIVE-FRONTEND",
     "CUSTOM-METADATA-KEY-TRANSITIVE-2": "CUSTOM-VALUE-TRANSITIVE-2"
   },
   "backend-upstream-disposable-metadata": {
@@ -166,35 +165,32 @@ curl -L -X GET 'http://127.0.0.1:48080/metadata/service/frontend/feign/info'
 
 - 获取全局传递的元数据
 
-```java
-MetadataContext context = MetadataContextHolder.get();
-        Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-
-customMetadataMap.forEach((key, value) -> {
-    // ...
+```
+MetadataContext context=MetadataContextHolder.get();
+Map<String, String> customMetadataMap=context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+customMetadataMap.forEach((key,value)->{
+	// ...
 });
-
 ```
 
 - 获取上游传递过来的一次性元数据
 
-```java
-Map<String, String> upstreamDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(true);
-upstreamDisposableMetadatas.forEach((key, value) -> {
-    // ...
+```
+Map<String, String> upstreamDisposableMetadatas=MetadataContextHolder.getAllDisposableMetadata(true);
+upstreamDisposableMetadatas.forEach((key,value)->{
+	// ...
 });
 ```
 
 - 获取本地配置的一次性元数据
 
-```java
-Map<String, String> localDisposableMetadatas = MetadataContextHolder.getAllDisposableMetadata(false);
-localDisposableMetadatas.forEach((key, value) -> {
-    // ...
+```
+Map<String, String> localDisposableMetadatas=MetadataContextHolder.getAllDisposableMetadata(false);
+localDisposableMetadatas.forEach((key,value)->{
+	// ...
 });
 ```
 
-
 ### Wiki参考
 
-查看 [Spring Cloud Tencent Metadata Transfer 使用指南](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97) .
+查看 [Spring Cloud Tencent Metadata Transfer 使用指南](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)。

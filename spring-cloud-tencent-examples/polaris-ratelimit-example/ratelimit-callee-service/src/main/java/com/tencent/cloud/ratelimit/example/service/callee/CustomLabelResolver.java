@@ -44,5 +44,4 @@ public class CustomLabelResolver implements PolarisRateLimiterLabelServletResolv
 
 		return labels;
 	}
-
 }
