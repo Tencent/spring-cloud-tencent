@@ -100,6 +100,7 @@ public class ConditionalOnReflectRefreshTypeTest {
 				.withPropertyValues("spring.application.name=" + "conditionalOnConfigReflectEnabledTest")
 				.withPropertyValues("server.port=" + 8080)
 				.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
+				.withPropertyValues("spring.cloud.polaris.config.refresh-type=" + RefreshType.REFRESH_CONTEXT)
 				.withPropertyValues("spring.cloud.polaris.config.enabled=true");
 		contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(PolarisConfigProperties.class);
