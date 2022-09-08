@@ -17,7 +17,6 @@ spring:
         groups:
           - name: ${spring.application.name}
             files: [ "config/callee.properties" ]
-        refresh-type: reflect
       ratelimit:
         enabled: true
         maxQueuingTime: 500

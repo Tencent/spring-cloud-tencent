@@ -35,4 +35,5 @@
 - [Optimize: optimize report call result for restTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/565)
 - [feat:add spring-cloud-starter-tencent-all and quickstart examples.](https://github.com/Tencent/spring-cloud-tencent/pull/569)
 - [refactor:optimize project and code.](https://github.com/Tencent/spring-cloud-tencent/pull/571)
+- [Optimize:change default dynamic config refresh type to reflect.](https://github.com/Tencent/spring-cloud-tencent/pull/575)
 - [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/578)
