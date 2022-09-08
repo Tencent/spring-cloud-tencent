@@ -28,3 +28,4 @@
 - [Optimize: optimize report call result for restTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/562)
 - [feat:add spring-cloud-starter-tencent-all and quickstart examples.](https://github.com/Tencent/spring-cloud-tencent/pull/567)
 - [fix:fix wrong internal config file load order.](https://github.com/Tencent/spring-cloud-tencent/pull/572)
+- [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/576)

@@ -35,6 +35,7 @@ public class ServiceBController {
 
 	/**
 	 * Get service information.
+	 *
 	 * @return service information
 	 */
 	@GetMapping("/info")

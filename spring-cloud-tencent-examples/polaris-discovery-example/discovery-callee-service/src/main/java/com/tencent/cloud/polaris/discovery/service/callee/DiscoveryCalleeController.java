@@ -61,5 +61,4 @@ public class DiscoveryCalleeController {
 		LOG.info("Discovery Service Callee is called and sum is {}.", value1 + value2);
 		return value1 + value2;
 	}
-
 }

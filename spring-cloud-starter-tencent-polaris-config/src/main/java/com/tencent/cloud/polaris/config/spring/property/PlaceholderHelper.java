@@ -31,8 +31,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Placeholder helper functions.
- * <br/>
- * <br/>
+ * <p>
  * This source file was originally from:
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/PlaceholderHelper.java>
  *     PlaceholderHelper</a></code>

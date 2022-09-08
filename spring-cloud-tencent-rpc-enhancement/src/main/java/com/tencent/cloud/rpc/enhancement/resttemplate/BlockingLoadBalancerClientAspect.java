@@ -23,7 +23,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
 /**
- * Intercept for BlockingLoadBalancerClient, put host&port to thread local.
+ * Intercept for BlockingLoadBalancerClient, put host and port to thread local.
+ *
  * @author lepdou 2022-09-05
  */
 @Aspect

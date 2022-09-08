@@ -33,5 +33,4 @@ public interface RouterCalleeService {
 
 	@PostMapping("/router/service/callee/info")
 	String info(@RequestParam("name") String name, @RequestBody User user);
-
 }
