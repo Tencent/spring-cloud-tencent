@@ -31,5 +31,4 @@ public class ProviderBFallback implements ProviderB {
 	public String info() {
 		return "trigger the refuse for service b";
 	}
-
 }

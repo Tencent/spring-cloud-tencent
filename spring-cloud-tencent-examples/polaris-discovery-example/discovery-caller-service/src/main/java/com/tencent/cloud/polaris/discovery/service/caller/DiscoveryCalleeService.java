@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author Haotian Zhang
  */
-@FeignClient(value = "DiscoveryCalleeService",
-		fallback = DiscoveryCalleeServiceFallback.class)
+@FeignClient(value = "DiscoveryCalleeService", fallback = DiscoveryCalleeServiceFallback.class)
 public interface DiscoveryCalleeService {
 
 	/**
@@ -38,5 +37,4 @@ public interface DiscoveryCalleeService {
 	 */
 	@GetMapping("/discovery/service/callee/sum")
 	int sum(@RequestParam("value1") int value1, @RequestParam("value2") int value2);
-
 }

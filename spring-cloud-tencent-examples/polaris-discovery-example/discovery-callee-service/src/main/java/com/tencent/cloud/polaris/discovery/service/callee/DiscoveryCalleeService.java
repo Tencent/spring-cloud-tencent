@@ -31,5 +31,4 @@ public class DiscoveryCalleeService {
 	public static void main(String[] args) {
 		SpringApplication.run(DiscoveryCalleeService.class, args);
 	}
-
 }

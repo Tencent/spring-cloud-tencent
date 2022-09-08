@@ -40,5 +40,4 @@ public class RateLimitCalleeService {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

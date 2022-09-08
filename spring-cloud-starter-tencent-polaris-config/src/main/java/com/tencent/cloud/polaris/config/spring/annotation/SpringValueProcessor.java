@@ -49,8 +49,7 @@ import org.springframework.lang.NonNull;
 
 /**
  * Spring value processor of field or method which has @Value and xml config placeholders.
- * <br/>
- * <br/>
+ * <p>
  * This source file was originally from:
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/annotation/SpringValueProcessor.java>
  *     SpringValueProcessor</a></code>

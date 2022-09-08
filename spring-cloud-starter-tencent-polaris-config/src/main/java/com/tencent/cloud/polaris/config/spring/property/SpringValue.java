@@ -26,8 +26,7 @@ import org.springframework.core.MethodParameter;
 
 /**
  * Spring @Value method info.
- * <br/>
- * <br/>
+ * <p>
  * This source file was originally from:
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/spring/property/SpringValue.java>
  *     SpringValue</a></code>
@@ -36,13 +35,13 @@ import org.springframework.core.MethodParameter;
  */
 public class SpringValue {
 
-	private MethodParameter methodParameter;
-	private Field field;
 	private final WeakReference<Object> beanRef;
 	private final String beanName;
 	private final String key;
 	private final String placeholder;
 	private final Class<?> targetType;
+	private MethodParameter methodParameter;
+	private Field field;
 
 	public SpringValue(String key, String placeholder, Object bean, String beanName, Field field) {
 		this.beanRef = new WeakReference<>(bean);

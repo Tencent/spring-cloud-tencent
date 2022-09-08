@@ -20,7 +20,7 @@ spring:
           # Example: intransitive
           CUSTOM-METADATA-KEY-LOCAL: CUSTOM-VALUE-LOCAL
           # Example: disposable
-          CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE
+          CUSTOM-METADATA-KEY-DISPOSABLE: CUSTOM-VALUE-DISPOSABLE-FRONTEND
           # Example: transitive
           CUSTOM-METADATA-KEY-TRANSITIVE: CUSTOM-VALUE-TRANSITIVE-FRONTEND
         # Assigned which metadata key-value will be passed along the link
