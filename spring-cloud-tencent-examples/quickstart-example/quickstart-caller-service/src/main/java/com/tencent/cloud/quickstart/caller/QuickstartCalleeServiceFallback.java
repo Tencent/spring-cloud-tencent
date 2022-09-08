@@ -34,6 +34,6 @@ public class QuickstartCalleeServiceFallback implements QuickstartCalleeService 
 
 	@Override
 	public String circuitBreak() {
-		return "CircuitBreak is triggered.";
+		return "An exception occurred in the service call and fallback";
 	}
 }

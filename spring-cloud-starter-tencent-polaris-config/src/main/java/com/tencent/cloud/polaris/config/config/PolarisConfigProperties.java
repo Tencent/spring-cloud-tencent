@@ -63,7 +63,7 @@ public class PolarisConfigProperties {
 	/**
 	 * Attribute refresh type.
 	 */
-	private RefreshType refreshType = RefreshType.REFRESH_CONTEXT;
+	private RefreshType refreshType = RefreshType.REFLECT;
 
 	/**
 	 * List of injected configuration files.
