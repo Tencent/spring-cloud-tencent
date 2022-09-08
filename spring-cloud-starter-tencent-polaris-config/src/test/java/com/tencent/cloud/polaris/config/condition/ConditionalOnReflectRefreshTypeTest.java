@@ -60,7 +60,7 @@ public class ConditionalOnReflectRefreshTypeTest {
 				serverSocket.accept();
 			}
 			catch (IOException e) {
-				//ignore
+				e.printStackTrace();
 			}
 		}).start();
 	}

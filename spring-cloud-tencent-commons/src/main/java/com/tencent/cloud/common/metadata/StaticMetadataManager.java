@@ -70,8 +70,8 @@ public class StaticMetadataManager {
 	private Map<String, String> mergedStaticMetadata;
 	private Map<String, String> mergedStaticTransitiveMetadata;
 	private Map<String, String> mergedStaticDisposableMetadata;
-	private String zone;
 	private String region;
+	private String zone;
 	private String campus;
 
 	public StaticMetadataManager(MetadataLocalProperties metadataLocalProperties,
@@ -231,17 +231,6 @@ public class StaticMetadataManager {
 
 	private void parseLocationMetadata(MetadataLocalProperties metadataLocalProperties,
 			InstanceMetadataProvider instanceMetadataProvider) {
-		// resolve zone info
-		if (instanceMetadataProvider != null) {
-			zone = instanceMetadataProvider.getZone();
-		}
-		if (StringUtils.isBlank(zone)) {
-			zone = System.getenv(ENV_METADATA_ZONE);
-		}
-		if (StringUtils.isBlank(zone)) {
-			zone = metadataLocalProperties.getContent().get(LOCATION_KEY_ZONE);
-		}
-
 		// resolve region info
 		if (instanceMetadataProvider != null) {
 			region = instanceMetadataProvider.getRegion();
@@ -251,6 +240,17 @@ public class StaticMetadataManager {
 		}
 		if (StringUtils.isBlank(region)) {
 			region = metadataLocalProperties.getContent().get(LOCATION_KEY_REGION);
+		}
+
+		// resolve zone info
+		if (instanceMetadataProvider != null) {
+			zone = instanceMetadataProvider.getZone();
+		}
+		if (StringUtils.isBlank(zone)) {
+			zone = System.getenv(ENV_METADATA_ZONE);
+		}
+		if (StringUtils.isBlank(zone)) {
+			zone = metadataLocalProperties.getContent().get(LOCATION_KEY_ZONE);
 		}
 
 		// resolve campus info

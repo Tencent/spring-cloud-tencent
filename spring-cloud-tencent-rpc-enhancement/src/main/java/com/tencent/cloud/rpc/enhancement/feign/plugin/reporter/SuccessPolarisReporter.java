@@ -75,6 +75,9 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 			LOG.debug("Will report result of {}. Request=[{}]. Response=[{}].", retStatus.name(), request, response);
 			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, retStatus);
 			consumerAPI.updateServiceCallResult(resultRequest);
+			// update result without method for service circuit break.
+			resultRequest.setMethod("");
+			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}
 

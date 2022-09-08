@@ -1,0 +1,28 @@
+server:
+  port: 48081
+spring:
+  application:
+    name: QuickStartGatewayService
+  cloud:
+    tencent:
+      plugin:
+        scg:
+          staining:
+            enabled: true
+            rule-staining:
+              enabled: true
+        router:
+          feature-env:
+            enabled: true
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+    gateway:
+      routes:
+        - id: QuickstartCallerService
+          uri: lb://QuickstartCallerService
+          predicates:
+            - Path=/QuickstartCallerService/**
+          filters:
+            - StripPrefix=1
