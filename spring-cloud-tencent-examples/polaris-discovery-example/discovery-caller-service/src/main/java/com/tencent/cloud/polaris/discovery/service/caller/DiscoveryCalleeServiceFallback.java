@@ -31,5 +31,4 @@ public class DiscoveryCalleeServiceFallback implements DiscoveryCalleeService {
 	public int sum(int value1, int value2) {
 		return 0;
 	}
-
 }

@@ -45,5 +45,4 @@ public class RouterCallerApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

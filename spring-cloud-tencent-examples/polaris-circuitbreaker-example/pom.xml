@@ -19,12 +19,4 @@
 		<module>polaris-circuitbreaker-example-b</module>
 		<module>polaris-circuitbreaker-example-b2</module>
 	</modules>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
-		</dependency>
-	</dependencies>
-
 </project>
