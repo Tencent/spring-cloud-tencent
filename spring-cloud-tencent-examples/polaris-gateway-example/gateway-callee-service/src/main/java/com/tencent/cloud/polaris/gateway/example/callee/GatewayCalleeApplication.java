@@ -31,5 +31,4 @@ public class GatewayCalleeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GatewayCalleeApplication.class, args);
 	}
-
 }

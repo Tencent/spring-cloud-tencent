@@ -37,5 +37,4 @@ public interface DiscoveryCalleeService {
 	 */
 	@GetMapping("/discovery/service/callee/sum")
 	int sum(@RequestParam("value1") int value1, @RequestParam("value2") int value2);
-
 }

@@ -15,6 +15,11 @@ spring:
         router:
           feature-env:
             enabled: true
+      metadata:
+        content:
+          a: 1
+        transitive:
+          - a
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default
@@ -54,15 +59,10 @@ spring:
                 maxBackoff: '''500ms'''
                 factor: 2
                 basedOnPreviousValue: false
-#      routes:
-#        - id: GatewayCalleeService
-#          uri: lb://GatewayCalleeService
-#          predicates:
-#            - Path=/GatewayCalleeService/**
-#          filters:
-#            - StripPrefix=1
-
-logging:
-  level:
-    org.springframework.cloud.gateway: info
-    com.tencent.cloud.polaris: debug
+      routes:
+        - id: GatewayCalleeService
+          uri: lb://GatewayCalleeService
+          predicates:
+            - Path=/GatewayCalleeService/**
+          filters:
+            - StripPrefix=1

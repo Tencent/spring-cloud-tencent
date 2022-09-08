@@ -20,4 +20,11 @@
 		<module>quickstart-callee-service-a</module>
 		<module>quickstart-callee-service-b</module>
 	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+		</dependency>
+	</dependencies>
 </project>

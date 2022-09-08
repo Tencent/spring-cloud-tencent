@@ -32,5 +32,4 @@ public class RouterCalleeApplication1 {
 	public static void main(String[] args) {
 		SpringApplication.run(RouterCalleeApplication1.class, args);
 	}
-
 }
