@@ -42,11 +42,9 @@ import org.springframework.core.Ordered;
 public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExceptionPolarisReporter.class);
-
+	private final RpcEnhancementReporterProperties reporterProperties;
 	@Autowired(required = false)
 	private ConsumerAPI consumerAPI;
-
-	private RpcEnhancementReporterProperties reporterProperties;
 
 	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reporterProperties) {
 		this.reporterProperties = reporterProperties;
@@ -78,6 +76,9 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 			}
 			LOG.debug("Will report result of {}. Request=[{}]. Response=[{}].", retStatus.name(), request, response);
 			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, retStatus);
+			consumerAPI.updateServiceCallResult(resultRequest);
+			// update result without method for service circuit break.
+			resultRequest.setMethod("");
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}
