@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @author lepdou 2022-03-10
  */
 @RestController
-@RefreshScope
 public class ConfigController {
 
 	@Value("${timeout:1000}")
