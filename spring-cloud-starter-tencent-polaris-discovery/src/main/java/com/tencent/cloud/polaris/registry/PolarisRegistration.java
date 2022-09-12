@@ -19,7 +19,6 @@
 package com.tencent.cloud.polaris.registry;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * Registration object of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng, Palmer.Xu
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, Palmer.Xu, changjin wei(魏昌进)
  */
 public class PolarisRegistration implements Registration {
 
@@ -55,7 +54,7 @@ public class PolarisRegistration implements Registration {
 
 	private Map<String, String> metadata;
 
-	private final String host;
+	private String host;
 
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
@@ -77,6 +76,10 @@ public class PolarisRegistration implements Registration {
 	@Override
 	public String getHost() {
 		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 	@Override
@@ -109,7 +112,7 @@ public class PolarisRegistration implements Registration {
 
 			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
 
-			this.metadata = Collections.unmodifiableMap(instanceMetadata);
+			this.metadata = instanceMetadata;
 		}
 		return metadata;
 	}
