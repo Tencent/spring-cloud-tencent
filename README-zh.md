@@ -70,7 +70,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.6.0-2021.0.3</version>
+            <version>1.7.0-2021.0.3</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
