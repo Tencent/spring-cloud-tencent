@@ -37,3 +37,4 @@
 - [refactor:optimize project and code.](https://github.com/Tencent/spring-cloud-tencent/pull/571)
 - [Optimize:change default dynamic config refresh type to reflect.](https://github.com/Tencent/spring-cloud-tencent/pull/575)
 - [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/578)
+- [fix:fix NullPointerException error when using RestTemplate with no label.](https://github.com/Tencent/spring-cloud-tencent/pull/586)

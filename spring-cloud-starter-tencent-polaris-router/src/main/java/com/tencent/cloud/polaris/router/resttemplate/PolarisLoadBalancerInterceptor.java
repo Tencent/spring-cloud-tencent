@@ -50,11 +50,13 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+
 /**
  * PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor capabilities.
  * Parses the label from the request and puts it into the RouterContext for routing.
  *
- *@author lepdou 2022-05-18
+ * @author lepdou, cheese8
  */
 public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisLoadBalancerInterceptor.class);
@@ -132,18 +134,14 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		labels.putAll(transitiveLabels);
 
 		// pass label by header
-		if (labels.size() == 0) {
-			request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, null);
-			return;
-		}
+		String encodedLabelsContent;
 		try {
-			String headerMetadataStr = URLEncoder.encode(JacksonUtils.serialize2Json(labels), "UTF-8");
-			request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, headerMetadataStr);
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), UTF_8);
 		}
 		catch (UnsupportedEncodingException e) {
-			LOGGER.error("Set header failed.", e);
-			throw new RuntimeException(e);
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
+		request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
 	private Map<String, String> getExpressionLabels(HttpRequest request, Set<String> labelKeys) {
