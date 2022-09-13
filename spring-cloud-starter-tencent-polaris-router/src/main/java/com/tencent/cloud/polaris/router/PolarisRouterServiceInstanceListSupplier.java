@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tencent.cloud.common.constant.RouterConstants;
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -121,8 +122,12 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
 		try {
-			String labelHeaderValuesContent = labelHeaderValues.stream().findFirst().get();
-			labelHeaderValuesMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, UTF_8)));
+			Optional<String> labelHeaderValuesOptional = labelHeaderValues.stream().findFirst();
+			if (labelHeaderValuesOptional.isPresent()) {
+				String labelHeaderValuesContent = labelHeaderValuesOptional.get();
+				labelHeaderValuesMap.putAll(
+						JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, UTF_8)));
+			}
 		}
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);

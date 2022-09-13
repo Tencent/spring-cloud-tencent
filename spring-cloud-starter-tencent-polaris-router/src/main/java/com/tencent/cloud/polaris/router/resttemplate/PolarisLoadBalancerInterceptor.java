@@ -134,10 +134,6 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		labels.putAll(transitiveLabels);
 
 		// pass label by header
-		if (labels.size() == 0) {
-			request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, null);
-			return;
-		}
 		String encodedLabelsContent;
 		try {
 			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), UTF_8);
