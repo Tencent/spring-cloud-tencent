@@ -1,4 +1,5 @@
 ## PR Type
+
 <!--
 Bugfix.
 Feature.
@@ -10,16 +11,18 @@ Other... Please describe:
 
 ## Describe what this PR does for and how you did.
 
-
-## Does this PR be associated with issue? If so, please adding the issue link below.
-
+## Adding the issue link (#xxx) if possible.
 
 ## Note
 
+## Checklist
 
-### Checklist
-- [ ] Code compiles correctly
-- [ ] Create at least one junit test if possible
-- [ ] All tests passing
-- [ ] Extend documentation if necessary
-- [ ] Add myself / the copyright holder to the AUTHORS file
+- [ ] Add copyright holder at the beginning of .class file if it is new.
+- [ ] Add information of this PR to CHANGELOG.md in root of project.
+- [ ] All junit tests passing.
+- [ ] Coverage from `Codecov Report` should not decrease.
+
+## Checklist (Optional)
+
+- [ ] Will Pull Request to branch of 2020.0 and hoxton.
+- [ ] Add documentation in javadoc in code or comment below the PR if necessary.
