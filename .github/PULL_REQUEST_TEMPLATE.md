@@ -1,4 +1,5 @@
 ## PR Type
+
 <!--
 Bugfix.
 Feature.
@@ -23,6 +24,5 @@ Other... Please describe:
 
 ## Checklist (Optional)
 
-- [ ] Will Pull Request to branch of 2020.0 and 2021.0.
+- [ ] Will Pull Request to branch of 2020.0 and hoxton.
 - [ ] Add documentation in javadoc in code or comment below the PR if necessary.
-- [ ] Add your name as @author to the beginning of .class file.
