@@ -16,7 +16,7 @@
 	<packaging>pom</packaging>
 	<name>Spring Cloud Tencent Dependencies</name>
 	<description>Spring Cloud Tencent Dependencies</description>
-	<url>https://github.com/Tencent/spring-cloud-tencent/tree/main</url>
+	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2021.0</url>
 
 	<organization>
 		<name>Tencent</name>
@@ -26,7 +26,7 @@
 	<licenses>
 		<license>
 			<name>The BSD 3-Clause License (BSD3)</name>
-			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/main/LICENSE</url>
+			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2021.0/LICENSE</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
