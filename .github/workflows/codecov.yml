@@ -3,13 +3,13 @@ name: Codecov
 on:
   push:
     branches:
-      - main
+      - hoxton
       - 2021.0
       - 2020.0
       - greenwich
   pull_request:
     branches:
-      - main
+      - hoxton
       - 2021.0
       - 2020.0
       - greenwich
