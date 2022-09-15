@@ -29,12 +29,12 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import com.netflix.zuul.context.RequestContext;
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
 import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
-import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import org.slf4j.Logger;

@@ -28,11 +28,11 @@ import java.util.Optional;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.cloud.common.constant.RouterConstants;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.polaris.router.PolarisRouterContext;
 
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;

@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.router.spi;
 
-import com.tencent.cloud.polaris.router.PolarisRouterContext;
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
 
 /**

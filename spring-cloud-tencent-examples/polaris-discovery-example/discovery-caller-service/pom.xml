@@ -27,6 +27,11 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-pushgateway-plugin</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-router</artifactId>
+		</dependency>
 		<!--        <dependency>-->
 		<!--            <groupId>org.springframework.cloud</groupId>-->
 		<!--            <artifactId>spring-cloud-starter-consul-discovery</artifactId>-->

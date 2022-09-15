@@ -18,9 +18,13 @@
 package com.tencent.cloud.rpc.enhancement.resttemplate;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.util.List;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
@@ -29,6 +33,7 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +45,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.web.client.ResponseErrorHandler;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Extend ResponseErrorHandler to get request information.
@@ -129,6 +136,18 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 
+			List<String> labels = response.getHeaders().get(PolarisRouterContext.ROUTER_LABELS);
+			if (CollectionUtils.isNotEmpty(labels) && labels.size() > 0) {
+				String label = labels.get(0);
+				try {
+					label = URLDecoder.decode(label, UTF_8);
+				}
+				catch (UnsupportedEncodingException e) {
+					LOGGER.error("unsupported charset exception " + UTF_8, e);
+				}
+				resultRequest.setLabels(convertLabel(label));
+			}
+
 			// processing report with consumerAPI .
 			LOGGER.debug("Will report result of {}. URL=[{}]. Response=[{}].", resultRequest.getRetStatus().name(),
 					url, response);
@@ -140,6 +159,12 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		catch (Exception e) {
 			LOGGER.error("RestTemplate response reporter execute failed of {} url {}", response, url, e);
 		}
+	}
+
+	private String convertLabel(String label) {
+		label = label.replaceAll("\"|\\{|\\}", "")
+				.replaceAll(",", "|");
+		return label;
 	}
 
 	private void invokeDelegateHandler(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {

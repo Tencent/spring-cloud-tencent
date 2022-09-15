@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
-import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.slf4j.Logger;
