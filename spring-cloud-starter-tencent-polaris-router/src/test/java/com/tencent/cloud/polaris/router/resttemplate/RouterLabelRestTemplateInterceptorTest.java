@@ -35,6 +35,7 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
+import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -131,11 +132,11 @@ public class RouterLabelRestTemplateInterceptorTest {
 
 		Map<String, String> headers = JacksonUtils.deserialize2Map(URLDecoder.decode(request.getHeaders()
 				.get(RouterConstants.ROUTER_LABEL_HEADER).get(0), "UTF-8"));
-		Assert.assertEquals("v1", headers.get("k1"));
-		Assert.assertEquals("v22", headers.get("k2"));
-		Assert.assertEquals("v4", headers.get("k4"));
-		Assert.assertEquals("GET", headers.get("${http.method}"));
-		Assert.assertEquals("/user/get", headers.get("${http.uri}"));
+		Assertions.assertThat("v1").isEqualTo(headers.get("k1"));
+		Assertions.assertThat("v22").isEqualTo(headers.get("k2"));
+		Assertions.assertThat("v4").isEqualTo(headers.get("k4"));
+		Assertions.assertThat("GET").isEqualTo(headers.get("${http.method}"));
+		Assertions.assertThat("/user/get").isEqualTo(headers.get("${http.uri}"));
 	}
 
 	static class MockedHttpRequest implements HttpRequest {
