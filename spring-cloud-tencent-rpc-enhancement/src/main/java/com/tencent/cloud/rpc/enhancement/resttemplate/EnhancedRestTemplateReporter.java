@@ -137,7 +137,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 			}
 
 			List<String> labels = response.getHeaders().get(PolarisRouterContext.ROUTER_LABELS);
-			if (CollectionUtils.isNotEmpty(labels) && labels.size() > 0) {
+			if (CollectionUtils.isNotEmpty(labels)) {
 				String label = labels.get(0);
 				try {
 					label = URLDecoder.decode(label, UTF_8);

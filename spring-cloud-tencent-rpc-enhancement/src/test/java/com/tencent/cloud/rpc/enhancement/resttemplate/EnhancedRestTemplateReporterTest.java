@@ -31,6 +31,7 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -133,7 +134,7 @@ public class EnhancedRestTemplateReporterTest {
 
 		verify(consumerAPI, times(2)).updateServiceCallResult((ServiceCallResult) captor.capture());
 		ServiceCallResult value = (ServiceCallResult) captor.getValue();
-		Assert.assertEquals(value.getLabels(), "k1:v1|k2:v2");
+		Assertions.assertThat(value.getLabels()).isEqualTo("k1:v1|k2:v2");
 		verify(delegate).handleError(uri, HttpMethod.GET, response);
 	}
 

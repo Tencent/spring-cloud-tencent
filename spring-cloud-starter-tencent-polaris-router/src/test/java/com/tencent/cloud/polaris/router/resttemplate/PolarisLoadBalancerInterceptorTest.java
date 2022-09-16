@@ -37,6 +37,7 @@ import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -149,7 +150,7 @@ public class PolarisLoadBalancerInterceptorTest {
 				catch (UnsupportedEncodingException e) {
 					throw new RuntimeException("unsupported charset exception " + UTF_8);
 				}
-				Assert.assertEquals(mockedResponse.getHeaders().get(PolarisRouterContext.ROUTER_LABELS).get(0), encodedLabelsContent);
+				Assertions.assertThat(mockedResponse.getHeaders().get(PolarisRouterContext.ROUTER_LABELS).get(0)).isEqualTo(encodedLabelsContent);
 			}
 		}
 	}
