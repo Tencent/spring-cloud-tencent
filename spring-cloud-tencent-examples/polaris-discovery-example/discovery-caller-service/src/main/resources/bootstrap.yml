@@ -22,11 +22,6 @@ spring:
       rpc-enhancement:
         reporter:
           enabled: true
-          series: successful, informational, client_error, server_error, redirection
-      metadata:
-        content:
-          k1: v1
-          k2: v2
 #        pushgateway:
 #          enabled: true
 #          address: 127.0.0.1:9091
