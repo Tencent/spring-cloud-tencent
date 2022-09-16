@@ -19,7 +19,9 @@
 package com.tencent.cloud.polaris.router.resttemplate;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,11 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
-import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.slf4j.Logger;
@@ -47,6 +50,8 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor capabilities.
@@ -96,9 +101,20 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 
 		if (isRibbonLoadBalanceClient) {
 			PolarisRouterContext routerContext = genRouterContext(request, body, peerServiceName);
-
-			return ((RibbonLoadBalancerClient) loadBalancer).execute(peerServiceName,
+			ClientHttpResponse response = ((RibbonLoadBalancerClient) loadBalancer).execute(peerServiceName,
 					this.requestFactory.createRequest(request, body, execution), routerContext);
+			Map<String, String> labels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
+
+			// put labels in header
+			String encodedLabelsContent;
+			try {
+				encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), UTF_8);
+			}
+			catch (UnsupportedEncodingException e) {
+				throw new RuntimeException("unsupported charset exception " + UTF_8);
+			}
+			response.getHeaders().add(PolarisRouterContext.ROUTER_LABELS, encodedLabelsContent);
+			return response;
 		}
 
 		return this.loadBalancer.execute(peerServiceName,

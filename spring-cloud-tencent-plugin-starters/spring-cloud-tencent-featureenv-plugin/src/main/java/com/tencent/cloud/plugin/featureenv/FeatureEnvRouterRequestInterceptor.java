@@ -21,7 +21,7 @@ package com.tencent.cloud.plugin.featureenv;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.polaris.router.PolarisRouterContext;
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.polaris.api.rpc.MetadataFailoverType;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;

@@ -19,20 +19,25 @@
 package com.tencent.cloud.polaris.router.resttemplate;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.polaris.router.PolarisRouterContext;
+import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +58,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -82,23 +90,27 @@ public class PolarisLoadBalancerInterceptorTest {
 		String calleeService = "calleeService";
 		HttpRequest request = new MockedHttpRequest("http://" + calleeService + "/user/get");
 
+		Map<String, String> routerLabels = new HashMap<>();
 		// mock local metadata
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("k1", "v1");
 		localMetadata.put("k2", "v2");
 		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
+		routerLabels.putAll(localMetadata);
 
 		// mock expression rule labels
 		Set<String> expressionKeys = new HashSet<>();
 		expressionKeys.add("${http.method}");
 		expressionKeys.add("${http.uri}");
 		when(routerRuleLabelResolver.getExpressionLabelKeys(callerService, callerService, calleeService)).thenReturn(expressionKeys);
+		routerLabels.putAll(SpringWebExpressionLabelUtils.resolve(request, expressionKeys));
 
 		// mock custom resolved from request
 		Map<String, String> customResolvedLabels = new HashMap<>();
 		customResolvedLabels.put("k3", "v3");
 		customResolvedLabels.put("k4", "v4");
 		when(routerLabelResolver.resolve(request, null, expressionKeys)).thenReturn(customResolvedLabels);
+		routerLabels.putAll(customResolvedLabels);
 
 
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
@@ -112,6 +124,7 @@ public class PolarisLoadBalancerInterceptorTest {
 			transitiveLabels.put("k1", "v1");
 			transitiveLabels.put("k2", "v22");
 			when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE)).thenReturn(transitiveLabels);
+			routerLabels.putAll(transitiveLabels);
 
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
@@ -122,11 +135,22 @@ public class PolarisLoadBalancerInterceptorTest {
 				PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor = new PolarisLoadBalancerInterceptor(loadBalancerClient,
 						loadBalancerRequestFactory, Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver);
 
+				ClientHttpResponse mockedResponse = new MockClientHttpResponse(new byte[] {}, HttpStatus.OK);
+				when(loadBalancerClient.execute(eq(calleeService), eq(loadBalancerRequest), any(PolarisRouterContext.class))).thenReturn(mockedResponse);
+
 				polarisLoadBalancerInterceptor.intercept(request, null, null);
 
 				verify(staticMetadataManager).getMergedStaticMetadata();
 				verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
 				verify(routerLabelResolver).resolve(request, null, expressionKeys);
+				String encodedLabelsContent;
+				try {
+					encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), UTF_8);
+				}
+				catch (UnsupportedEncodingException e) {
+					throw new RuntimeException("unsupported charset exception " + UTF_8);
+				}
+				Assertions.assertThat(mockedResponse.getHeaders().get(PolarisRouterContext.ROUTER_LABELS).get(0)).isEqualTo(encodedLabelsContent);
 			}
 		}
 	}

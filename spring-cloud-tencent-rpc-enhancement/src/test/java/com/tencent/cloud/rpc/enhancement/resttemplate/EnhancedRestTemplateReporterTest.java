@@ -20,20 +20,26 @@ package com.tencent.cloud.rpc.enhancement.resttemplate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.PolarisRouterContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.rpc.ServiceCallResult;
+import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -46,6 +52,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -70,6 +77,8 @@ public class EnhancedRestTemplateReporterTest {
 	private ResponseErrorHandler delegate;
 	@InjectMocks
 	private EnhancedRestTemplateReporter enhancedRestTemplateReporter;
+	@Captor
+	private ArgumentCaptor captor;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -119,9 +128,13 @@ public class EnhancedRestTemplateReporterTest {
 		enhancedRestTemplateReporter.hasError(response);
 
 		URI uri = mock(URI.class);
+		String labels = URLEncoder.encode("{\"k1\":\"v1\",\"k2\":\"v2\"}", UTF_8);
+		response.getHeaders().set(PolarisRouterContext.ROUTER_LABELS, labels);
 		enhancedRestTemplateReporter.handleError(uri, HttpMethod.GET, response);
 
-		verify(consumerAPI, times(2)).updateServiceCallResult(any());
+		verify(consumerAPI, times(2)).updateServiceCallResult((ServiceCallResult) captor.capture());
+		ServiceCallResult value = (ServiceCallResult) captor.getValue();
+		Assertions.assertThat(value.getLabels()).isEqualTo("k1:v1|k2:v2");
 		verify(delegate).handleError(uri, HttpMethod.GET, response);
 	}
 
