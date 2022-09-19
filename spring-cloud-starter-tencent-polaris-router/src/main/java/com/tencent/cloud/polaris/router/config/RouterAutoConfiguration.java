@@ -25,7 +25,6 @@ import java.util.List;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
 import com.tencent.cloud.polaris.router.beanprocessor.ReactiveLoadBalancerClientFilterBeanPostProcessor;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
@@ -59,13 +58,6 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @LoadBalancerClients(defaultConfiguration = LoadBalancerConfiguration.class)
 @Import({PolarisNearByRouterProperties.class, PolarisMetadataRouterProperties.class, PolarisRuleBasedRouterProperties.class})
 public class RouterAutoConfiguration {
-
-	@Bean
-	@Order(HIGHEST_PRECEDENCE)
-	@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
-	public LoadBalancerInterceptorBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
-		return new LoadBalancerInterceptorBeanPostProcessor();
-	}
 
 	@Bean
 	@Order(HIGHEST_PRECEDENCE)
