@@ -28,6 +28,7 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_DISPOSABLE;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_RAW_TRANSHEADERS;
 import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_TRANSITIVE;
 import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_UPSTREAM_DISPOSABLE;
 
@@ -67,6 +68,7 @@ public final class MetadataContextHolder {
 		MetadataContext metadataContext = new MetadataContext();
 		metadataContext.putFragmentContext(FRAGMENT_TRANSITIVE, staticMetadataManager.getMergedStaticTransitiveMetadata());
 		metadataContext.putFragmentContext(FRAGMENT_DISPOSABLE, staticMetadataManager.getMergedStaticDisposableMetadata());
+		metadataContext.putContext(FRAGMENT_RAW_TRANSHEADERS, staticMetadataManager.getEnvTransHeaderMetadata(), "");
 
 		METADATA_CONTEXT.set(metadataContext);
 

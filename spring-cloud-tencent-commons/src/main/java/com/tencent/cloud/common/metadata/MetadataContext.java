@@ -56,6 +56,16 @@ public class MetadataContext {
 	 */
 	public static final String FRAGMENT_UPSTREAM_DISPOSABLE = "upstream-disposable";
 
+	/**
+	 * the key of the header(key) list needed to be transmitted from upstream to downstream.
+	 */
+	public static final String FRAGMENT_RAW_TRANSHEADERS = "trans-headers";
+
+	/**
+	 * the key of the header(key-value) list needed to be transmitted from upstream to downstream.
+	 */
+	public static final String FRAGMENT_RAW_TRANSHEADERS_KV = "trans-headers-kv";
+
 	private static final Logger LOG = LoggerFactory.getLogger(MetadataContext.class);
 	/**
 	 * Namespace of local instance.

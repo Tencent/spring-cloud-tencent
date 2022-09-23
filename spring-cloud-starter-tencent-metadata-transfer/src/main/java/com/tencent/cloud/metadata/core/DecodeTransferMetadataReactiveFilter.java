@@ -20,8 +20,13 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -33,6 +38,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -41,6 +47,8 @@ import org.springframework.web.server.WebFilterChain;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_RAW_TRANSHEADERS;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV;
 
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
@@ -79,10 +87,39 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				MetadataConstant.HeaderName.METADATA_CONTEXT,
 				MetadataContextHolder.get());
 
+		setCompleteTransHeaderIntoMC(serverHttpRequest);
 		return webFilterChain.filter(serverWebExchange)
 				.doOnError(throwable -> LOG.error("handle metadata[{}] error.",
 						MetadataContextHolder.get(), throwable))
 				.doFinally((type) -> MetadataContextHolder.remove());
+	}
+
+	/**
+	 * According to ServerHttpRequest and trans-headers(key list in string type) in metadata, build
+	 * the complete headers(key-value list in map type) into metadata.
+	 */
+	private void setCompleteTransHeaderIntoMC(ServerHttpRequest serverHttpRequest) {
+		// transHeaderMetadata: for example, {"trans-headers" : {"header1;header2;header3":""}}
+		Map<String, String> transHeaderMetadata =  MetadataContextHolder.get()
+				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
+		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
+			Optional<String> transHeaders = transHeaderMetadata.keySet().stream().findFirst();
+			String[] transHeaderArray = transHeaders.get().split(";");
+			HttpHeaders headers = serverHttpRequest.getHeaders();
+			Set<String> headerKeys = headers.keySet();
+			Iterator<String> iterator = headerKeys.iterator();
+			while (iterator.hasNext()) {
+				String httpHeader = iterator.next();
+				Arrays.stream(transHeaderArray).forEach(transHeader -> {
+					if (transHeader.equals(httpHeader)) {
+						List<String> list = headers.get(httpHeader);
+						String httpHeaderValue = JacksonUtils.serialize2Json(list);
+						MetadataContextHolder.get().putContext(FRAGMENT_RAW_TRANSHEADERS_KV,	httpHeader, httpHeaderValue);
+						return;
+					}
+				});
+			}
+		}
 	}
 
 	private Map<String, String> getIntervalMetadata(ServerHttpRequest serverHttpRequest, String headerName) {
