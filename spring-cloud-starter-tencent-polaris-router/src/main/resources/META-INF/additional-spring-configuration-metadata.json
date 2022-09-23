@@ -17,6 +17,12 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "the switch for rule based router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the switch for router module."
     }
   ]
 }

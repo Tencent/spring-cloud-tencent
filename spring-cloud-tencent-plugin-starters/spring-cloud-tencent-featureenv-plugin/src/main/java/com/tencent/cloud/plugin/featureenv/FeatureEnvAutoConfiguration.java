@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.plugin.featureenv;
 
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
  * @author lepdou 2022-07-06
  */
 @Configuration
+@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.tencent.plugin.router.feature-env.enabled", matchIfMissing = true)
 public class FeatureEnvAutoConfiguration {
 
