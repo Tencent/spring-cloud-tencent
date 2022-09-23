@@ -30,11 +30,9 @@ import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListene
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.cloud.context.properties.ConfigurationPropertiesBeans;
 import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
@@ -48,8 +46,7 @@ import org.springframework.context.annotation.Configuration;
  * @author lepdou 2022-03-28
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisEnabled
-@ConditionalOnProperty(value = "spring.cloud.polaris.config.enabled", matchIfMissing = true)
+@ConditionalOnPolarisConfigEnabled
 public class PolarisConfigAutoConfiguration {
 
 	@Bean

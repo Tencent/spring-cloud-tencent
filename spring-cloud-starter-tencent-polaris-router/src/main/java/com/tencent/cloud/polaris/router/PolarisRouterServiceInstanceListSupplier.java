@@ -96,7 +96,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 
 		// 2. filter by router
 		DefaultRequestContext requestContext = (DefaultRequestContext) request.getContext();
-		PolarisRouterContext key = null;
+		PolarisRouterContext key;
 		if (requestContext instanceof RequestDataContext) {
 			key = buildRouterContext(((RequestDataContext) requestContext).getClientRequest().getHeaders());
 		}
@@ -104,6 +104,11 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 			key = buildRouterContext(((PolarisLoadBalancerRequest<?>) requestContext.getClientRequest()).getRequest()
 					.getHeaders());
 		}
+		else {
+			// return all servers if router context is null.
+			return allServers;
+		}
+
 		return doRouter(allServers, key);
 	}
 

@@ -13,30 +13,26 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.context.config;
+package com.tencent.cloud.polaris.circuitbreaker.config;
 
-import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.cloud.polaris.context.PostInitPolarisSDKContext;
-import com.tencent.polaris.client.api.SDKContext;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
- * Post-initialization operations after the application initialization phase is completed.
- *
- * @author lepdou 2022-06-28
+ * Condition if Polaris circuit breaker is enabled.
+ * @author lepdou 2022-09-23
  */
-@Configuration(proxyBeanMethods = false)
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @ConditionalOnPolarisEnabled
-public class PolarisContextPostConfiguration {
-
-	@Bean
-	public PostInitPolarisSDKContext postInitPolarisSDKContext(SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
-		return new PostInitPolarisSDKContext(sdkContext, staticMetadataManager);
-	}
+@ConditionalOnProperty(name = "spring.cloud.polaris.circuitbreaker.enabled", matchIfMissing = true)
+public @interface ConditionalOnPolarisCircuitBreakerEnabled {
 }

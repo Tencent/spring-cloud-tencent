@@ -43,6 +43,7 @@ import org.springframework.core.annotation.Order;
  * @author lepdou 2022-05-17
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisRouterEnabled
 @ConditionalOnDiscoveryEnabled
 public class LoadBalancerConfiguration {
 

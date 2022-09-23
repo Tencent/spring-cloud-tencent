@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
@@ -33,7 +32,6 @@ import com.tencent.polaris.ratelimit.factory.LimitAPIFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -53,9 +51,8 @@ import static javax.servlet.DispatcherType.REQUEST;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisEnabled
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
-@ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled", matchIfMissing = true)
+@ConditionalOnPolarisRateLimitEnabled
 public class PolarisRateLimitAutoConfiguration {
 
 	@Bean

@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisRouterEnabled
 @ConditionalOnClass(name = {"feign.RequestInterceptor"})
 public class FeignAutoConfiguration {
 
