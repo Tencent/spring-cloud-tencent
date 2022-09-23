@@ -20,6 +20,7 @@ package com.tencent.cloud.rpc.enhancement.config;
 import java.util.Collections;
 import java.util.List;
 
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.feign.DefaultEnhancedFeignPluginRunner;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
@@ -55,6 +56,7 @@ import org.springframework.web.client.RestTemplate;
  * @author <a href="mailto:iskp.me@gmail.com">Palmer.Xu</a> 2022-06-29
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(RpcEnhancementReporterProperties.class)
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
