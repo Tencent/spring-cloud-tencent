@@ -27,6 +27,8 @@ import com.tencent.cloud.plugin.gateway.staining.rule.RuleStainingExecutor;
 import com.tencent.cloud.plugin.gateway.staining.rule.RuleStainingProperties;
 import com.tencent.cloud.plugin.gateway.staining.rule.RuleTrafficStainer;
 import com.tencent.cloud.plugin.gateway.staining.rule.StainingRuleManager;
+import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -38,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
  * @author lepdou 2022-07-06
  */
 @Configuration
+@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.enabled", matchIfMissing = true)
 public class SCGPluginsAutoConfiguration {
 
@@ -52,6 +55,7 @@ public class SCGPluginsAutoConfiguration {
 
 		@Configuration
 		@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled", matchIfMissing = true)
+		@ConditionalOnPolarisConfigEnabled
 		public static class RuleStainingPluginConfiguration {
 
 			@Bean
