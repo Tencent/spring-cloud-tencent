@@ -54,7 +54,7 @@ public class PolarisRegistration implements Registration {
 
 	private Map<String, String> metadata;
 
-	private final String host;
+	private String host;
 
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
@@ -76,6 +76,10 @@ public class PolarisRegistration implements Registration {
 	@Override
 	public String getHost() {
 		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 	@Override
@@ -108,7 +112,7 @@ public class PolarisRegistration implements Registration {
 
 			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
 
-			this.metadata = Collections.unmodifiableMap(instanceMetadata);
+			this.metadata = instanceMetadata;
 		}
 		return metadata;
 	}
