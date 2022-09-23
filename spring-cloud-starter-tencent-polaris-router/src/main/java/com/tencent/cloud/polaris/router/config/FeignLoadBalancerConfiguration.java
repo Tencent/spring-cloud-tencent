@@ -23,8 +23,10 @@ import com.netflix.loadbalancer.ILoadBalancer;
 import com.tencent.cloud.polaris.router.feign.PolarisFeignLoadBalancer;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * configuration for feign load balance components. PolarisFeignLoadBalancer is not singleton bean,
@@ -32,6 +34,9 @@ import org.springframework.context.annotation.Bean;
  *
  * @author lepdou 2022-05-16
  */
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisRouterEnabled
+@ConditionalOnDiscoveryEnabled
 public class FeignLoadBalancerConfiguration {
 
 	@Bean

@@ -40,6 +40,7 @@ import org.springframework.lang.Nullable;
  * @author lepdou 2022-06-10
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisRouterEnabled
 @ConditionalOnClass(name = {"org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer"})
 @RibbonClients(defaultConfiguration = {FeignLoadBalancerConfiguration.class})
 public class FeignAutoConfiguration {
