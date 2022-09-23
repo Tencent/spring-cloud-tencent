@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBlockingDiscoveryEnabled
+@ConditionalOnPolarisDiscoveryEnabled
 @AutoConfigureBefore({ SimpleDiscoveryClientAutoConfiguration.class, CommonsClientAutoConfiguration.class })
 @AutoConfigureAfter(PolarisDiscoveryAutoConfiguration.class)
 public class PolarisDiscoveryClientConfiguration {

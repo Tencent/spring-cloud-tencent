@@ -27,9 +27,10 @@ public class PolarisImportExceptionFailureAnalyzer extends
 		else {
 			description = "No spring.config.import property has been defined";
 		}
-		String action = "Add a spring.config.import=polaris property to your configuration.\n"
-				+ "\tIf configuration is not required add spring.config.import=optional:polaris instead.\n"
-				+ "\tTo disable this check, set spring.cloud.polaris.config.import-check.enabled=false.";
+		String action = "\t1. Add a spring.config.import=polaris property to your configuration.\n"
+				+ "\t2. If configuration is not required add spring.config.import=optional:polaris instead.\n"
+				+ "\t3. If you still want use bootstrap.yml, "
+				+ "you can add <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-bootstrap</artifactId> dependency for compatible upgrade.";
 		return new FailureAnalysis(description, action, cause);
 	}
 }

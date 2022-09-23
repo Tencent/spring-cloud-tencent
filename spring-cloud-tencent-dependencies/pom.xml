@@ -73,7 +73,7 @@
 		<revision>1.8.0-2021.0.3-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.8.0-SNAPSHOT</polaris.version>
+		<polaris.version>1.8.0</polaris.version>
 		<guava.version>31.0.1-jre</guava.version>
 		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
