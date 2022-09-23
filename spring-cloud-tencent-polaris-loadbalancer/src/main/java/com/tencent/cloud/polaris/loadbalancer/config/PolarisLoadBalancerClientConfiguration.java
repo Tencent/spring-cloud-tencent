@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.loadbalancer.config;
 
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.loadbalancer.PolarisServiceInstanceListSupplier;
 import com.tencent.polaris.router.api.core.RouterAPI;
@@ -45,6 +46,7 @@ import org.springframework.core.env.Environment;
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisEnabled
 @ConditionalOnDiscoveryEnabled
 public class PolarisLoadBalancerClientConfiguration {
 

@@ -18,7 +18,6 @@
 package com.tencent.cloud.polaris.circuitbreaker.config;
 
 import com.tencent.cloud.common.constant.ContextConstant;
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
@@ -27,7 +26,6 @@ import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,8 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @author lepdou 2022-03-29
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisEnabled
-@ConditionalOnProperty(value = "spring.cloud.polaris.circuitbreaker.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnPolarisCircuitBreakerEnabled
 @AutoConfigureAfter(RpcEnhancementAutoConfiguration.class)
 public class PolarisCircuitBreakerAutoConfiguration {
 
