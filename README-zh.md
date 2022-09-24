@@ -113,7 +113,7 @@ You can build this project with command:
     - [Actuator Endpoint Extension](https://github.com/Tencent/spring-cloud-tencent/wiki/Actuator-Endpoint-%E6%89%A9%E5%B1%95)
 
 - 最佳实践
-    - [Multi-feature environment](https://github.com/Tencent/spring-cloud-tencent/wiki/多特性环境)
+    - [Multi-feature environment](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%A4%9A%E7%89%B9%E6%80%A7%E7%8E%AF%E5%A2%83)
     - [Multi-registration and multi-discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Multi-registration-and-multi-discovery)
 
 - 开发文档

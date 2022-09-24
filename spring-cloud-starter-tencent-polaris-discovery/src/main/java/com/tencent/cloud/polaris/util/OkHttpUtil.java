@@ -62,12 +62,12 @@ public final class OkHttpUtil {
 
 			if (response.isSuccessful() && Objects.nonNull(response.body())) {
 				String result = response.body().string();
-				LOGGER.debug("exec get request, url: {} success，response data: {}", url, result);
+				LOGGER.debug("exec get request, url: {} success, response data: {}", url, result);
 				return true;
 			}
 		}
 		catch (Exception e) {
-			LOGGER.error("exec get request，url: {} failed!", url, e);
+			LOGGER.error("exec get request, url: {} failed!", url, e);
 		}
 		return false;
 	}
