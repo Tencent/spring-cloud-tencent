@@ -119,11 +119,11 @@ public class QuotaCheckServletFilterTest {
 		});
 
 		PolarisRateLimitProperties polarisRateLimitProperties = new PolarisRateLimitProperties();
-		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips prompt message");
+		polarisRateLimitProperties.setRejectRequestTips("RejectRequestTips提示消息");
 		polarisRateLimitProperties.setRejectHttpCode(419);
 
 		PolarisRateLimitProperties polarisRateLimitWithHtmlRejectTipsProperties = new PolarisRateLimitProperties();
-		polarisRateLimitWithHtmlRejectTipsProperties.setRejectRequestTips("<h1>RejectRequestTips prompt message</h1>");
+		polarisRateLimitWithHtmlRejectTipsProperties.setRejectRequestTips("<h1>RejectRequestTips提示消息</h1>");
 		polarisRateLimitWithHtmlRejectTipsProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
@@ -140,7 +140,7 @@ public class QuotaCheckServletFilterTest {
 		try {
 			Field rejectTips = QuotaCheckServletFilter.class.getDeclaredField("rejectTips");
 			rejectTips.setAccessible(true);
-			assertThat(rejectTips.get(quotaCheckServletFilter)).isEqualTo("RejectRequestTips prompt message");
+			assertThat(rejectTips.get(quotaCheckServletFilter)).isEqualTo("RejectRequestTips提示消息");
 		}
 		catch (NoSuchFieldException | IllegalAccessException e) {
 			fail("Exception encountered.", e);
@@ -149,7 +149,7 @@ public class QuotaCheckServletFilterTest {
 		try {
 			Field rejectTips = QuotaCheckServletFilter.class.getDeclaredField("rejectTips");
 			rejectTips.setAccessible(true);
-			assertThat(rejectTips.get(quotaCheckWithHtmlRejectTipsServletFilter)).isEqualTo("<h1>RejectRequestTips prompt message</h1>");
+			assertThat(rejectTips.get(quotaCheckWithHtmlRejectTipsServletFilter)).isEqualTo("<h1>RejectRequestTips提示消息</h1>");
 		}
 		catch (NoSuchFieldException | IllegalAccessException e) {
 			fail("Exception encountered.", e);
@@ -217,11 +217,11 @@ public class QuotaCheckServletFilterTest {
 			MetadataContext.LOCAL_SERVICE = "TestApp3";
 			quotaCheckServletFilter.doFilterInternal(request, response, filterChain);
 			assertThat(response.getStatus()).isEqualTo(419);
-			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips prompt message");
+			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
 
 			quotaCheckWithHtmlRejectTipsServletFilter.doFilterInternal(request, response, filterChain);
 			assertThat(response.getStatus()).isEqualTo(419);
-			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips prompt message");
+			assertThat(response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
 
 			// Exception
 			MetadataContext.LOCAL_SERVICE = "TestApp4";
