@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author wlx
- * @date 2022/7/6 9:15 下午
+ * @date 2022/7/6 9:15 PM
  */
 @SpringBootApplication
 public class PolarisConfigDataExampleApplication {
