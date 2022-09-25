@@ -5,3 +5,4 @@
 - [Optimize: remove discovery module useless code](https://github.com/Tencent/spring-cloud-tencent/pull/595)
 - [Optimize: remove useless code for rest template router](https://github.com/Tencent/spring-cloud-tencent/pull/601)
 - [Optimize: optimize configuration conditional & optimize config data tips](https://github.com/Tencent/spring-cloud-tencent/pull/603)
+- [Optimize: Maybe remove Chinese characters](https://github.com/Tencent/spring-cloud-tencent/pull/607)
