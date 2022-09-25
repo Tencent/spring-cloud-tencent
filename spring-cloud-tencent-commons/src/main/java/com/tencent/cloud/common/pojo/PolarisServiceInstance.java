@@ -29,7 +29,7 @@ import org.springframework.cloud.client.ServiceInstance;
 /**
  * Polaris's implementation of {@link ServiceInstance}.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, changjin wei(魏昌进)
  */
 public class PolarisServiceInstance implements ServiceInstance {
 
@@ -56,7 +56,7 @@ public class PolarisServiceInstance implements ServiceInstance {
 
 	@Override
 	public String getInstanceId() {
-		return ServiceInstance.super.getInstanceId();
+		return instance.getId();
 	}
 
 	@Override
