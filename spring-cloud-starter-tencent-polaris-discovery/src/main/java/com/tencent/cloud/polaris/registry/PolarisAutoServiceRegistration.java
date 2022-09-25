@@ -22,22 +22,21 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
-import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.util.StringUtils;
 
 /**
  * Auto service registration of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, changjin wei(魏昌进)
  */
-public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistration<Registration> {
+public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistration<PolarisRegistration> {
 
 	private static final Logger log = LoggerFactory.getLogger(PolarisAutoServiceRegistration.class);
 
 	private final PolarisRegistration registration;
 
-	public PolarisAutoServiceRegistration(ServiceRegistry<Registration> serviceRegistry,
+	public PolarisAutoServiceRegistration(ServiceRegistry<PolarisRegistration> serviceRegistry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties, PolarisRegistration registration) {
 		super(serviceRegistry, autoServiceRegistrationProperties);
 		this.registration = registration;

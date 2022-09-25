@@ -31,6 +31,7 @@ import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.rpc.InstanceDeregisterRequest;
 import com.tencent.polaris.api.rpc.InstanceHeartbeatRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterRequest;
+import com.tencent.polaris.api.rpc.InstanceRegisterResponse;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.util.NamedThreadFactory;
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -47,9 +47,9 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 /**
  * Service registry of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, changjin wei(魏昌进)
  */
-public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
+public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistration> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
@@ -78,7 +78,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	}
 
 	@Override
-	public void register(Registration registration) {
+	public void register(PolarisRegistration registration) {
 
 		if (StringUtils.isBlank(registration.getServiceId())) {
 			LOGGER.warn("No service to register for polaris client...");
@@ -103,7 +103,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
-			providerClient.register(instanceRegisterRequest);
+			InstanceRegisterResponse instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
+			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
 			LOGGER.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
 					registration.getServiceId(), registration.getHost(), registration.getPort(),
 					staticMetadataManager.getMergedStaticMetadata());
@@ -122,7 +123,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	}
 
 	@Override
-	public void deregister(Registration registration) {
+	public void deregister(PolarisRegistration registration) {
 		LOGGER.info("De-registering from Polaris Server now...");
 
 		if (StringUtils.isEmpty(registration.getServiceId())) {
@@ -158,12 +159,12 @@ public class PolarisServiceRegistry implements ServiceRegistry<Registration> {
 	}
 
 	@Override
-	public void setStatus(Registration registration, String status) {
+	public void setStatus(PolarisRegistration registration, String status) {
 
 	}
 
 	@Override
-	public Object getStatus(Registration registration) {
+	public Object getStatus(PolarisRegistration registration) {
 		String serviceName = registration.getServiceId();
 		InstancesResponse instancesResponse = polarisDiscoveryHandler.getInstances(serviceName);
 		Instance[] instances = instancesResponse.getInstances();
