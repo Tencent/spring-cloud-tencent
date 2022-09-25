@@ -5,7 +5,7 @@
 This example shows how to use ```spring-cloud-starter-tencent-metadata-transfer``` in Spring Cloud project for its
 features.
 
-This example contains ```metadata-frontend```、```metadata-middle```、```metadata-backend```.
+This example contains ```metadata-frontend```, ```metadata-middle```, ```metadata-backend```.
 
 ## Instruction
 
@@ -55,7 +55,7 @@ Execute under ```spring-cloud-tencent-examples/metadata-transfer-example```
 mvn clean package
 ```
 
-Then find the jars under ```metadata-frontend```、```metadata-middle```、```metadata-backend```, and run it:
+Then find the jars under ```metadata-frontend```, ```metadata-middle```, ```metadata-backend```, and run it:
 
 ```
 java -jar ${app.jar}
