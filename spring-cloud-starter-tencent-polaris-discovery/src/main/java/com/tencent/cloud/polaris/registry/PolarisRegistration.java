@@ -56,6 +56,8 @@ public class PolarisRegistration implements Registration {
 
 	private String host;
 
+	private String instanceId;
+
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Nullable ConsulContextProperties consulContextProperties,
@@ -121,6 +123,15 @@ public class PolarisRegistration implements Registration {
 		return polarisDiscoveryProperties;
 	}
 
+	@Override
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	protected void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
+	}
+
 	public boolean isRegisterEnabled() {
 
 		boolean registerEnabled = false;
@@ -142,6 +153,8 @@ public class PolarisRegistration implements Registration {
 				", polarisContext=" + polarisContext +
 				", staticMetadataManager=" + staticMetadataManager +
 				", metadata=" + metadata +
+				", host='" + host + '\'' +
+				", instanceId='" + instanceId + '\'' +
 				'}';
 	}
 }
