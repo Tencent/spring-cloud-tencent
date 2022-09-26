@@ -30,7 +30,7 @@ import org.springframework.boot.context.config.Profiles;
  * A polaris configData resource from which {@link ConfigData} can be loaded.
  *
  * @author wlx
- * @date 2022/7/5 11:13 下午
+ * @date 2022/7/5 11:13 PM
  */
 public class PolarisConfigDataResource extends ConfigDataResource {
 
