@@ -20,8 +20,13 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -32,6 +37,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
@@ -39,6 +45,8 @@ import org.springframework.web.server.ServerWebExchange;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_RAW_TRANSHEADERS;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV;
 import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 
 /**
@@ -80,7 +88,37 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 		this.buildMetadataHeader(builder, newestCustomMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
+		setCompleteTransHeaderIntoMC(exchange.getRequest());
 		return chain.filter(exchange.mutate().request(builder.build()).build());
+	}
+
+	/**
+	 * According to ServerHttpRequest and trans-headers(key list in string type) in metadata, build
+	 * the complete headers(key-value list in map type) into metadata.
+	 */
+	private void setCompleteTransHeaderIntoMC(ServerHttpRequest serverHttpRequest) {
+		// transHeaderMetadata: for example, {"trans-headers" : {"header1;header2;header3":""}}
+		Map<String, String> transHeaderMetadata =  MetadataContextHolder.get()
+				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
+		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
+			Optional<String> transHeaders = transHeaderMetadata.keySet().stream().findFirst();
+			String[] transHeaderArray = transHeaders.get().split(";");
+			HttpHeaders headers = serverHttpRequest.getHeaders();
+			Set<String> headerKeys = headers.keySet();
+			Iterator<String> iterator = headerKeys.iterator();
+			while (iterator.hasNext()) {
+				String httpHeader = iterator.next();
+				Arrays.stream(transHeaderArray).forEach(transHeader -> {
+					if (transHeader.equals(httpHeader)) {
+						List<String> list = headers.get(httpHeader);
+						String httpHeaderValue = JacksonUtils.serialize2Json(list);
+						// for example, {"trans-headers-kv" : {"header1":"v1","header2":"v2"...}}
+						MetadataContextHolder.get().putContext(FRAGMENT_RAW_TRANSHEADERS_KV,	httpHeader, httpHeaderValue);
+						return;
+					}
+				});
+			}
+		}
 	}
 
 	/**

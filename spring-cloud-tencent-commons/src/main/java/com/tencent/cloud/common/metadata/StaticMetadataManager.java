@@ -55,6 +55,12 @@ public class StaticMetadataManager {
 	private static final int ENV_METADATA_PREFIX_LENGTH = ENV_METADATA_PREFIX.length();
 	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
 	private static final String ENV_METADATA_CONTENT_DISPOSABLE = "SCT_METADATA_CONTENT_DISPOSABLE";
+	/**
+	 * This is the key of the header's key list needed to be transmitted. The list is a string split with ;.
+	 * The value mapped by this key was specified by user.
+	 * This is configured in environment variables.
+	 */
+	private static final String ENV_METADATA_CONTENT_RAW_TRANSHEADERS = "SCT_METADATA_CONTENT_RAW_TRANSHEADERS";
 	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
 	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
 	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
@@ -100,7 +106,13 @@ public class StaticMetadataManager {
 			String value = entry.getValue();
 			if (StringUtils.isNotBlank(key) && key.startsWith(ENV_METADATA_PREFIX)
 					&& !key.equals(ENV_METADATA_CONTENT_TRANSITIVE)) {
-				String sourceKey = StringUtils.substring(key, ENV_METADATA_PREFIX_LENGTH);
+				String sourceKey = "";
+				if (key.equals(ENV_METADATA_CONTENT_RAW_TRANSHEADERS)) {
+					sourceKey = key;
+				}
+				else {
+					sourceKey = StringUtils.substring(key, ENV_METADATA_PREFIX_LENGTH);
+				}
 				envMetadata.put(sourceKey, value);
 
 				LOGGER.info("[SCT] resolve metadata from env. key = {}, value = {}", sourceKey, value);
@@ -268,6 +280,10 @@ public class StaticMetadataManager {
 
 	public Map<String, String> getAllEnvMetadata() {
 		return envMetadata;
+	}
+
+	public String getEnvTransHeaderMetadata() {
+		return envMetadata.get(ENV_METADATA_CONTENT_RAW_TRANSHEADERS);
 	}
 
 	public Map<String, String> getEnvTransitiveMetadata() {
