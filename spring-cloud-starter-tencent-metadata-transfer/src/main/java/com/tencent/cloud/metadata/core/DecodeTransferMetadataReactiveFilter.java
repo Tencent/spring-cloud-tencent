@@ -104,7 +104,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
 		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
 			Optional<String> transHeaders = transHeaderMetadata.keySet().stream().findFirst();
-			String[] transHeaderArray = transHeaders.get().split(";");
+			String[] transHeaderArray = transHeaders.get().split(",");
 			HttpHeaders headers = serverHttpRequest.getHeaders();
 			Set<String> headerKeys = headers.keySet();
 			Iterator<String> iterator = headerKeys.iterator();
