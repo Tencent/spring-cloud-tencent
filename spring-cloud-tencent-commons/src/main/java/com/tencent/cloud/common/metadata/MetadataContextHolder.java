@@ -69,7 +69,6 @@ public final class MetadataContextHolder {
 		MetadataContext metadataContext = new MetadataContext();
 		metadataContext.putFragmentContext(FRAGMENT_TRANSITIVE, staticMetadataManager.getMergedStaticTransitiveMetadata());
 		metadataContext.putFragmentContext(FRAGMENT_DISPOSABLE, staticMetadataManager.getMergedStaticDisposableMetadata());
-		metadataContext.putContext(FRAGMENT_RAW_TRANSHEADERS, staticMetadataManager.getEnvTransHeaderMetadata(), "");
 
 		if (StringUtils.hasText(staticMetadataManager.getTransHeaderFromEnv())) {
 			metadataContext.putContext(FRAGMENT_RAW_TRANSHEADERS, staticMetadataManager.getTransHeaderFromEnv(), "");

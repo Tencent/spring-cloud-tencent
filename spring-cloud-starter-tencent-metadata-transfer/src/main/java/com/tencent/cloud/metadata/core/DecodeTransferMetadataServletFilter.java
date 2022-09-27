@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -86,18 +85,19 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 	 * the complete headers(key-value list in map type) into metadata.
 	 */
 	private void setCompleteTransHeaderIntoMC(HttpServletRequest httpServletRequest) {
-		// transHeaderMetadata: for example, {"trans-headers" : {"header1;header2;header3":""}}
+		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
 		Map<String, String> transHeaderMetadata =  MetadataContextHolder.get()
 				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
 		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
-			Optional<String> transHeaders = transHeaderMetadata.keySet().stream().findFirst();
-			String[] transHeaderArray = transHeaders.get().split(",");
+			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
+			String[] transHeaderArray = transHeaders.split(",");
 			Enumeration<String> httpHeaders = httpServletRequest.getHeaderNames();
 			while (httpHeaders.hasMoreElements()) {
 				String httpHeader = httpHeaders.nextElement();
 				Arrays.stream(transHeaderArray).forEach(transHeader -> {
 					if (transHeader.equals(httpHeader)) {
 						String httpHeaderValue = httpServletRequest.getHeader(httpHeader);
+						// for example, {"trans-headers-kv" : {"header1":"v1","header2":"v2"...}}
 						MetadataContextHolder.get().putContext(FRAGMENT_RAW_TRANSHEADERS_KV,	httpHeader, httpHeaderValue);
 						return;
 					}
