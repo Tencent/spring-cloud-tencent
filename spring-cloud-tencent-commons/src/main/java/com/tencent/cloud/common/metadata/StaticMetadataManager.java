@@ -56,7 +56,7 @@ public class StaticMetadataManager {
 	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
 	private static final String ENV_METADATA_CONTENT_DISPOSABLE = "SCT_METADATA_CONTENT_DISPOSABLE";
 	/**
-	 * This is the key of the header's key list needed to be transmitted. The list is a string split with ;.
+	 * This is the key of the header's key list needed to be transmitted. The list is a string split with ,.
 	 * The value mapped by this key was specified by user.
 	 * This is configured in environment variables.
 	 */

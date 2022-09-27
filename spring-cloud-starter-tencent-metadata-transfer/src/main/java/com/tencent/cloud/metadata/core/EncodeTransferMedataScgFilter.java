@@ -97,12 +97,12 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 	 * the complete headers(key-value list in map type) into metadata.
 	 */
 	private void setCompleteTransHeaderIntoMC(ServerHttpRequest serverHttpRequest) {
-		// transHeaderMetadata: for example, {"trans-headers" : {"header1;header2;header3":""}}
+		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
 		Map<String, String> transHeaderMetadata =  MetadataContextHolder.get()
 				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
 		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
-			Optional<String> transHeaders = transHeaderMetadata.keySet().stream().findFirst();
-			String[] transHeaderArray = transHeaders.get().split(",");
+			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
+			String[] transHeaderArray = transHeaders.split(",");
 			HttpHeaders headers = serverHttpRequest.getHeaders();
 			Set<String> headerKeys = headers.keySet();
 			Iterator<String> iterator = headerKeys.iterator();
