@@ -91,7 +91,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
 		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
 			Optional<String> transHeaders = transHeaderMetadata.keySet().stream().findFirst();
-			String[] transHeaderArray = transHeaders.get().split(";");
+			String[] transHeaderArray = transHeaders.get().split(",");
 			Enumeration<String> httpHeaders = httpServletRequest.getHeaderNames();
 			while (httpHeaders.hasMoreElements()) {
 				String httpHeader = httpHeaders.nextElement();
