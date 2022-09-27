@@ -1,6 +1,6 @@
 # Contributing
 ---
-If you have good comments or suggestions, welcome to create [Issues](https://github.com/Tencent/spring-cloud-tencent/issues) or [Pull Requests](https://github.com/Tencent/spring-cloud-tencent/pulls)，contribute to the Spring Cloud Tencent open source community. Spring Cloud Tencent continues to recruit contributors, even if it is answering questions in the issue, or doing some simple bugfixes, it will be of great help to Spring Cloud Tencent.
+If you have good comments or suggestions, welcome to create [Issues](https://github.com/Tencent/spring-cloud-tencent/issues) or [Pull Requests](https://github.com/Tencent/spring-cloud-tencent/pulls), contribute to the Spring Cloud Tencent open source community. Spring Cloud Tencent continues to recruit contributors, even if it is answering questions in the issue, or doing some simple bugfixes, it will be of great help to Spring Cloud Tencent.
 
 [Tencent Open Source Incentive Program](https://opensource.tencent.com/contribution) Encourage developers to participate and contribute, and look forward to your joining.
 

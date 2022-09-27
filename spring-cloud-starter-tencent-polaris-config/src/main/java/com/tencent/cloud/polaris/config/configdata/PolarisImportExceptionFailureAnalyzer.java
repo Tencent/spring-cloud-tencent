@@ -7,7 +7,7 @@ import org.springframework.cloud.commons.ConfigDataMissingEnvironmentPostProcess
 /**
  * Class for most {@code FailureAnalyzer} implementations, to analyze ImportException when
  * miss Polaris configData config.
- * <p>Refer to the Nacos project implementation：
+ * <p>Refer to the Nacos project implementation:
  * <code><a href=https://github.com/alibaba/spring-cloud-alibaba/blob/2021.x/spring-cloud-alibaba-starters/spring-cloud-starter-alibaba-nacos-config/src/main/java/com/alibaba/cloud/nacos/configdata/NacosConfigDataMissingEnvironmentPostProcessor.java>
  * ImportExceptionFailureAnalyzer</a></code>
  *
