@@ -36,7 +36,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * Registration object of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, changjin wei(魏昌进)
  */
 public class PolarisRegistration implements Registration {
 
@@ -54,6 +54,8 @@ public class PolarisRegistration implements Registration {
 	private Map<String, String> metadata;
 
 	private String host;
+
+	private String instanceId;
 
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
@@ -120,6 +122,15 @@ public class PolarisRegistration implements Registration {
 		return polarisDiscoveryProperties;
 	}
 
+	@Override
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	protected void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
+	}
+
 	public boolean isRegisterEnabled() {
 
 		boolean registerEnabled = false;
@@ -141,6 +152,8 @@ public class PolarisRegistration implements Registration {
 				", polarisContext=" + polarisContext +
 				", staticMetadataManager=" + staticMetadataManager +
 				", metadata=" + metadata +
+				", host='" + host + '\'' +
+				", instanceId='" + instanceId + '\'' +
 				'}';
 	}
 }

@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
-import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
@@ -48,7 +47,7 @@ import static org.mockito.Mockito.doReturn;
 public class PolarisAutoServiceRegistrationTest {
 
 	@Mock
-	private ServiceRegistry<Registration> serviceRegistry;
+	private ServiceRegistry<PolarisRegistration> serviceRegistry;
 
 	@Mock
 	private AutoServiceRegistrationProperties autoServiceRegistrationProperties;
@@ -71,7 +70,7 @@ public class PolarisAutoServiceRegistrationTest {
 	public void setUp() {
 		doReturn(polarisDiscoveryProperties).when(registration).getPolarisProperties();
 
-		doNothing().when(serviceRegistry).register(nullable(Registration.class));
+		doNothing().when(serviceRegistry).register(nullable(PolarisRegistration.class));
 
 		polarisAutoServiceRegistration =
 				new PolarisAutoServiceRegistration(serviceRegistry, autoServiceRegistrationProperties, registration);
