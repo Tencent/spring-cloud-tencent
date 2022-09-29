@@ -104,7 +104,8 @@ public class StaticMetadataManager {
 		for (Map.Entry<String, String> entry : allEnvs.entrySet()) {
 			String key = entry.getKey();
 			String value = entry.getValue();
-			if (StringUtils.isNotBlank(key) && key.startsWith(ENV_METADATA_PREFIX)
+			if (StringUtils.isNotBlank(key)
+					&& (key.startsWith(ENV_METADATA_PREFIX) || key.equals(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS))
 					&& !key.equals(ENV_METADATA_CONTENT_TRANSITIVE)) {
 				String sourceKey = "";
 				if (key.equals(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS)) {
