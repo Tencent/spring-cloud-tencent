@@ -8,4 +8,5 @@
 - [Automatically transmit some headers specified by a environment varaible that directly defines header keys.](https://github.com/Tencent/spring-cloud-tencent/pull/606)
 - [Optimize: Maybe remove Chinese characters](https://github.com/Tencent/spring-cloud-tencent/pull/607)
 - [ fix pr #606 cause ci fail](https://github.com/Tencent/spring-cloud-tencent/pull/613)
+- [fix pr 606: modify a part of changes requested by review.](https://github.com/Tencent/spring-cloud-tencent/pull/620)
 - [fix pr 613: modify a judgment logic](https://github.com/Tencent/spring-cloud-tencent/pull/618)
