@@ -188,11 +188,4 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 			}
 		}
 	}
-
-	private Map<String, String> getRouterLabels(PolarisRouterContext key, String type) {
-		if (key != null) {
-			return key.getLabels(type);
-		}
-		return Collections.emptyMap();
-	}
 }
