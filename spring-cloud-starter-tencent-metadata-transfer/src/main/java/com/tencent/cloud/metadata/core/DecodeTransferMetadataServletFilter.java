@@ -86,7 +86,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 	 */
 	private void setCompleteTransHeaderIntoMC(HttpServletRequest httpServletRequest) {
 		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
-		Map<String, String> transHeaderMetadata =  MetadataContextHolder.get()
+		Map<String, String> transHeaderMetadata = MetadataContextHolder.get()
 				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
 		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
 			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
@@ -98,8 +98,8 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 					if (transHeader.equals(httpHeader)) {
 						String httpHeaderValue = httpServletRequest.getHeader(httpHeader);
 						// for example, {"trans-headers-kv" : {"header1":"v1","header2":"v2"...}}
-						MetadataContextHolder.get().putContext(FRAGMENT_RAW_TRANSHEADERS_KV,	httpHeader, httpHeaderValue);
-						return;
+						MetadataContextHolder.get()
+								.putContext(FRAGMENT_RAW_TRANSHEADERS_KV, httpHeader, httpHeaderValue);
 					}
 				});
 			}

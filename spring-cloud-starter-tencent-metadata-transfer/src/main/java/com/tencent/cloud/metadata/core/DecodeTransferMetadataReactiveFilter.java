@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -99,22 +98,20 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 	 */
 	private void setCompleteTransHeaderIntoMC(ServerHttpRequest serverHttpRequest) {
 		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
-		Map<String, String> transHeaderMetadata =  MetadataContextHolder.get()
+		Map<String, String> transHeaderMetadata = MetadataContextHolder.get()
 				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
 		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
 			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
 			String[] transHeaderArray = transHeaders.split(",");
 			HttpHeaders headers = serverHttpRequest.getHeaders();
 			Set<String> headerKeys = headers.keySet();
-			Iterator<String> iterator = headerKeys.iterator();
-			while (iterator.hasNext()) {
-				String httpHeader = iterator.next();
+			for (String httpHeader : headerKeys) {
 				Arrays.stream(transHeaderArray).forEach(transHeader -> {
 					if (transHeader.equals(httpHeader)) {
 						List<String> list = headers.get(httpHeader);
 						String httpHeaderValue = JacksonUtils.serialize2Json(list);
-						MetadataContextHolder.get().putContext(FRAGMENT_RAW_TRANSHEADERS_KV,	httpHeader, httpHeaderValue);
-						return;
+						MetadataContextHolder.get()
+								.putContext(FRAGMENT_RAW_TRANSHEADERS_KV, httpHeader, httpHeaderValue);
 					}
 				});
 			}
