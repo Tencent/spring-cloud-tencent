@@ -75,7 +75,8 @@ public final class ReporterUtils {
 			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
 		}
 		resultRequest.setHost(uri.getHost());
-		resultRequest.setPort(uri.getPort());
+		// -1 means access directly by url, and use http default port number 80
+		resultRequest.setPort(uri.getPort() == -1 ? 80 : uri.getPort());
 
 		return resultRequest;
 	}
