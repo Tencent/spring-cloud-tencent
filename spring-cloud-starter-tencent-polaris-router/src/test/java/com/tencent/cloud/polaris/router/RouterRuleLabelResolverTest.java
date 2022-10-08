@@ -84,12 +84,12 @@ public class RouterRuleLabelResolverTest {
 		Set<String> resolvedExpressionLabelKeys = resolver.getExpressionLabelKeys(testNamespace, testSourceService, testDstService);
 
 		Assert.assertNotNull(resolvedExpressionLabelKeys);
-		Assert.assertEquals(5, resolvedExpressionLabelKeys.size());
+		Assert.assertEquals(6, resolvedExpressionLabelKeys.size());
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey1));
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey2));
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey3));
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey4));
 		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey5));
-		Assert.assertFalse(resolvedExpressionLabelKeys.contains(invalidKey));
+		Assert.assertTrue(resolvedExpressionLabelKeys.contains(invalidKey));
 	}
 }

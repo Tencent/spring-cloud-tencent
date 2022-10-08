@@ -33,6 +33,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 import feign.RequestTemplate;
@@ -61,12 +62,14 @@ public class RouterLabelFeignInterceptorTest {
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 	@Mock
 	private FeignRouterLabelResolver routerLabelResolver;
+	@Mock
+	private PolarisContextProperties polarisContextProperties;
 
 	@Test
 	public void testResolveRouterLabel() throws UnsupportedEncodingException {
 		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor(
 				Collections.singletonList(routerLabelResolver),
-				staticMetadataManager, routerRuleLabelResolver);
+				staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
 
 		// mock request template
 		RequestTemplate requestTemplate = new RequestTemplate();

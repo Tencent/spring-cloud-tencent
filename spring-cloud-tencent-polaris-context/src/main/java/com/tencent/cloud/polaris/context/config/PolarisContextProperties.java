@@ -76,6 +76,7 @@ public class PolarisContextProperties {
 		String defaultHost = this.localIpAddress;
 		if (StringUtils.isBlank(localIpAddress)) {
 			defaultHost = ipAddressSupplier.get();
+			this.localIpAddress = defaultHost;
 		}
 
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);

@@ -32,7 +32,9 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
@@ -87,13 +89,15 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
+	private final PolarisContextProperties polarisContextProperties;
 
 	public PolarisReactiveLoadBalancerClientFilter(LoadBalancerClientFactory clientFactory,
 			GatewayLoadBalancerProperties gatewayLoadBalancerProperties,
 			LoadBalancerProperties loadBalancerProperties,
 			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver,
-			List<SpringWebRouterLabelResolver> routerLabelResolvers) {
+			List<SpringWebRouterLabelResolver> routerLabelResolvers,
+			PolarisContextProperties polarisContextProperties) {
 		super(clientFactory, gatewayLoadBalancerProperties, loadBalancerProperties);
 
 		this.clientFactory = clientFactory;
@@ -102,6 +106,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 		this.routerLabelResolvers = routerLabelResolvers;
+		this.polarisContextProperties = polarisContextProperties;
 	}
 
 	/**
@@ -262,6 +267,16 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 			return Collections.emptyMap();
 		}
 
-		return SpringWebExpressionLabelUtils.resolve(exchange, labelKeys);
+		//enrich labels from request
+		Map<String, String> labels = SpringWebExpressionLabelUtils.resolve(exchange, labelKeys);
+
+		//enrich caller ip label
+		for (String labelKey : labelKeys) {
+			if (ExpressionLabelUtils.isCallerIPLabel(labelKey)) {
+				labels.put(labelKey, polarisContextProperties.getLocalIpAddress());
+			}
+		}
+
+		return labels;
 	}
 }
