@@ -13,101 +13,127 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import com.netflix.client.config.IClientConfig;
+import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
+import com.netflix.loadbalancer.IPing;
+import com.netflix.loadbalancer.IRule;
+import com.netflix.loadbalancer.PollingServerListUpdater;
+import com.netflix.loadbalancer.Server;
+import com.netflix.loadbalancer.ServerList;
+import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.pojo.PolarisServiceInstance;
+import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
-import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
+import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
-import com.tencent.polaris.api.rpc.Criteria;
-import com.tencent.polaris.router.api.core.RouterAPI;
-import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
-import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
+import com.tencent.polaris.api.rpc.GetHealthyInstancesRequest;
+import com.tencent.polaris.api.rpc.InstancesResponse;
+import org.apache.commons.lang.StringUtils;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.DefaultResponse;
-import org.springframework.cloud.client.loadbalancer.EmptyResponse;
-import org.springframework.cloud.client.loadbalancer.Request;
-import org.springframework.cloud.client.loadbalancer.Response;
-import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
-import org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer;
-import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
+import org.springframework.util.CollectionUtils;
 
 /**
- * Loadbalancer of Polaris.
+ * Routing load balancer of polaris.
  *
- * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ * @author Haotian Zhang
  */
-public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
+public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisLoadBalancer.class);
+	private final ConsumerAPI consumerAPI;
 
-	private final String serviceId;
+	private final PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 
-	private final PolarisLoadBalancerProperties loadBalancerProperties;
-
-	private final RouterAPI routerAPI;
-
-	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
-
-	public PolarisLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
-			PolarisLoadBalancerProperties loadBalancerProperties, RouterAPI routerAPI) {
-		super(supplierObjectProvider, serviceId);
-		this.serviceId = serviceId;
-		this.supplierObjectProvider = supplierObjectProvider;
-		this.loadBalancerProperties = loadBalancerProperties;
-		this.routerAPI = routerAPI;
-	}
-
-	private static ServiceInstances convertToPolarisServiceInstances(List<ServiceInstance> serviceInstances) {
-		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceInstances.get(0).getServiceId());
-		List<Instance> polarisInstances = serviceInstances.stream()
-				.map(serviceInstance -> ((PolarisServiceInstance) serviceInstance).getPolarisInstance())
-				.collect(Collectors.toList());
-		return new DefaultServiceInstances(serviceKey, polarisInstances);
+	public PolarisLoadBalancer(IClientConfig config, IRule rule, IPing ping, ServerList<Server> serverList,
+			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties properties) {
+		super(config, rule, ping, serverList, null, new PollingServerListUpdater());
+		this.consumerAPI = consumerAPI;
+		this.polarisLoadBalancerProperties = properties;
 	}
 
 	@Override
-	public Mono<Response<ServiceInstance>> choose(Request request) {
-		if (!loadBalancerProperties.getEnabled()) {
-			return super.choose(request);
+	public List<Server> getReachableServers() {
+		ServiceInstances serviceInstances;
+		if (polarisLoadBalancerProperties.getDiscoveryType().equals(ContextConstant.POLARIS)) {
+			serviceInstances = getPolarisDiscoveryServiceInstances();
 		}
-		ServiceInstanceListSupplier supplier = supplierObjectProvider
-				.getIfAvailable(NoopServiceInstanceListSupplier::new);
-		return supplier.get(request).next().map(this::getInstanceResponse);
+		else {
+			serviceInstances = getExtendDiscoveryServiceInstances();
+		}
+
+		if (serviceInstances == null || CollectionUtils.isEmpty(serviceInstances.getInstances())) {
+			return Collections.emptyList();
+		}
+
+		List<Server> servers = new LinkedList<>();
+		for (Instance instance : serviceInstances.getInstances()) {
+			servers.add(new PolarisServer(serviceInstances, instance));
+		}
+
+		return servers;
 	}
 
-	private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> serviceInstances) {
-		if (serviceInstances.isEmpty()) {
-			log.warn("No servers available for service: " + this.serviceId);
-			return new EmptyResponse();
-		}
+	private ServiceInstances getPolarisDiscoveryServiceInstances() {
+		return getAllInstances(MetadataContext.LOCAL_NAMESPACE, name).toServiceInstances();
+	}
 
-		ProcessLoadBalanceRequest request = new ProcessLoadBalanceRequest();
-		request.setDstInstances(convertToPolarisServiceInstances(serviceInstances));
-		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_RANDOM);
-		request.setCriteria(new Criteria());
+	private ServiceInstances getExtendDiscoveryServiceInstances() {
+		List<Server> allServers = super.getAllServers();
+		if (CollectionUtils.isEmpty(allServers)) {
+			return null;
+		}
+		ServiceInstances serviceInstances;
+		if (StringUtils.isBlank(name)) {
+			throw new IllegalStateException(
+					"PolarisLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
+		}
+		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, name);
+		List<Instance> instances = new ArrayList<>(8);
+		for (Server server : allServers) {
+			DefaultInstance instance = new DefaultInstance();
+			instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+			instance.setService(name);
+			instance.setHealthy(server.isAlive());
+			instance.setProtocol(server.getScheme());
+			instance.setId(server.getId());
+			instance.setHost(server.getHost());
+			instance.setPort(server.getPort());
+			instance.setZone(server.getZone());
+			instance.setWeight(100);
+			instances.add(instance);
+		}
+		serviceInstances = new DefaultServiceInstances(serviceKey, instances);
+		return serviceInstances;
+	}
 
-		try {
-			ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(request);
-			return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
-		}
-		catch (Exception e) {
-			log.warn("PolarisRoutingLoadbalancer error", e);
-			return new EmptyResponse();
-		}
+	@Override
+	public List<Server> getAllServers() {
+		return getReachableServers();
+	}
+
+	/**
+	 * Get a list of instances.
+	 * @param namespace namespace
+	 * @param serviceName service name
+	 * @return list of instances
+	 */
+	public InstancesResponse getAllInstances(String namespace, String serviceName) {
+		GetHealthyInstancesRequest request = new GetHealthyInstancesRequest();
+		request.setNamespace(namespace);
+		request.setService(serviceName);
+		return consumerAPI.getHealthyInstances(request);
 	}
 }

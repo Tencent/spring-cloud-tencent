@@ -70,7 +70,7 @@ public class PolarisLoadBalancerProperties {
 
 	@Override
 	public String toString() {
-		return "PolarisLoadBalancerProperties{" + "loadbalancerEnabled=" + enabled + ", strategy='" + strategy + '\''
-				+ '}';
+		return "PolarisLoadBalancerProperties{" + "loadbalancerEnabled=" + enabled
+				+ ", strategy='" + strategy + '\'' + '}';
 	}
 }

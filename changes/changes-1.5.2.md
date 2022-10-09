@@ -1,7 +1,5 @@
 # Change Log
 ---
 
-- [Add metadata transfer example.](https://github.com/Tencent/spring-cloud-tencent/pull/210)
-- [feat:merge features from 1.5.2-Hoxton.SR9 except router.](https://github.com/Tencent/spring-cloud-tencent/pull/226)
-- [feat:merge router features from 1.5.2-Hoxton.SR9.](https://github.com/Tencent/spring-cloud-tencent/pull/232)
-  and [#234](https://github.com/Tencent/spring-cloud-tencent/pull/234) 
+- [fix:use 1.6.1 version of polaris-java.](https://github.com/Tencent/spring-cloud-tencent/pull/221)
+- [fix:use 1.6.1 version of polaris-java and fix some bug.](https://github.com/Tencent/spring-cloud-tencent/pull/222)

@@ -11,7 +11,6 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>gateway-callee-service2</artifactId>
-	<name>Spring Cloud Starter Tencent Polaris Gateway Callee Example</name>
 
 	<dependencies>
 		<dependency>
@@ -34,5 +33,4 @@
 			<artifactId>esapi</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>

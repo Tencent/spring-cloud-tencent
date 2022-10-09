@@ -45,7 +45,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml" })
+		properties = { "spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = servlet",
+				"spring.cloud.gateway.enabled = false" })
 public class DecodeTransferMetadataServletFilterTest {
 
 	@Autowired
@@ -66,10 +68,8 @@ public class DecodeTransferMetadataServletFilterTest {
 		request.addHeader(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"c\": \"3\"}");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		metadataServletFilter.doFilter(request, response, filterChain);
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
 		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
 

@@ -54,8 +54,8 @@ public class SCGPluginsAutoConfiguration {
 		}
 
 		@Configuration
-		@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled", matchIfMissing = true)
 		@ConditionalOnPolarisConfigEnabled
+		@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled", matchIfMissing = true)
 		public static class RuleStainingPluginConfiguration {
 
 			@Bean

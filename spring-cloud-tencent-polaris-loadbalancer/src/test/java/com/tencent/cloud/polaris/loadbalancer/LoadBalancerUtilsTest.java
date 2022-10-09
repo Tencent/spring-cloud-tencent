@@ -18,89 +18,78 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.netflix.loadbalancer.Server;
+import com.tencent.cloud.common.pojo.PolarisServer;
+import com.tencent.polaris.api.pojo.DefaultInstance;
+import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
+import com.tencent.polaris.api.pojo.ServiceKey;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import reactor.core.publisher.Flux;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
-import org.springframework.cloud.client.ServiceInstance;
-
-import static org.mockito.ArgumentMatchers.anyString;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Test for ${@link LoadBalancerUtils}.
+ * Test for {@link LoadBalancerUtilsTest} .
  *
- * @author lepdou 2022-07-04
+ * @author <a href="mailto:iskp.me@gmail.com">Palmer Xu</a> 2022-06-21
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = LoadBalancerUtilsTest.TestApplication.class,
+		properties = {"spring.cloud.polaris.namespace = testNamespace",
+				"spring.cloud.polaris.loadbalancer.enabled = false",
+				"spring.application.name = testApp",
+				"spring.main.web-application-type = none"})
 public class LoadBalancerUtilsTest {
 
-	private static final String testNamespaceAndService = "testNamespaceAndService";
-	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
-
-	@BeforeClass
-	public static void beforeClass() {
-		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
-		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
-				.thenReturn(testNamespaceAndService);
-
-		MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
-		mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class);
-		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		mockedApplicationContextAwareUtils.close();
-		mockedMetadataContextHolder.close();
-	}
+	private static final String TEST_NAMESPACE = "testNamespace";
+	private static final String TEST_SERVICE = "testService";
 
 	@Test
-	public void testTransferEmptyInstances() {
-		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(Flux.empty());
-		Assert.assertNotNull(serviceInstances.getInstances());
-		Assert.assertEquals(0, serviceInstances.getInstances().size());
+	public void testTransferServersToServiceInstances() {
+		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(assembleServers());
+		Assertions.assertThat(serviceInstances).isInstanceOf(DefaultServiceInstances.class);
+		Assertions.assertThat(serviceInstances.getInstances().size()).isEqualTo(4);
+		ServiceKey actual = serviceInstances.getServiceKey();
+		Assertions.assertThat(actual.getNamespace()).isEqualTo(TEST_NAMESPACE);
+		Assertions.assertThat(actual.getService()).isEqualTo(TEST_SERVICE);
 	}
 
-	@Test
-	public void testTransferNotEmptyInstances() {
-		int instanceSize = 100;
+	private ServiceInstances assembleServiceInstances() {
+		ServiceKey serviceKey = new ServiceKey(TEST_NAMESPACE, TEST_SERVICE);
+		List<Instance> instances = new LinkedList<>();
+		DefaultInstance instance = new DefaultInstance();
+		instance.setService(TEST_SERVICE);
+		instances.add(instance);
+		instances.add(new DefaultInstance());
+		instances.add(new DefaultInstance());
+		instances.add(new DefaultInstance());
+		instances.add(new DefaultInstance());
 
-		List<ServiceInstance> instances = new ArrayList<>();
-		for (int i = 0; i < instanceSize; i++) {
-			instances.add(new DefaultServiceInstance("ins" + i, testNamespaceAndService, "127.0.0." + i,
-					8080, false));
-		}
+		return new DefaultServiceInstances(serviceKey, instances);
+	}
 
-		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(Flux.just(instances));
+	private List<Server> assembleServers() {
+		ServiceInstances serviceInstances = assembleServiceInstances();
+		List<Server> servers = new LinkedList<>();
+		DefaultInstance instance = new DefaultInstance();
+		instance.setService(TEST_SERVICE);
+		servers.add(new PolarisServer(serviceInstances, instance));
+		servers.add(new PolarisServer(serviceInstances, new DefaultInstance()));
+		servers.add(new PolarisServer(serviceInstances, new DefaultInstance()));
+		servers.add(new PolarisServer(serviceInstances, new DefaultInstance()));
+		return servers;
+	}
 
-		Assert.assertNotNull(serviceInstances.getInstances());
-		Assert.assertEquals(instanceSize, serviceInstances.getInstances().size());
+	@SpringBootApplication
+	protected static class TestApplication {
 
-		List<Instance> polarisInstances = serviceInstances.getInstances();
-		for (int i = 0; i < instanceSize; i++) {
-			Instance instance = polarisInstances.get(i);
-			Assert.assertEquals(testNamespaceAndService, instance.getNamespace());
-			Assert.assertEquals(testNamespaceAndService, instance.getService());
-			Assert.assertEquals("ins" + i, instance.getId());
-			Assert.assertEquals("127.0.0." + i, instance.getHost());
-			Assert.assertEquals(8080, instance.getPort());
-			Assert.assertEquals(100, instance.getWeight());
-		}
 	}
 }

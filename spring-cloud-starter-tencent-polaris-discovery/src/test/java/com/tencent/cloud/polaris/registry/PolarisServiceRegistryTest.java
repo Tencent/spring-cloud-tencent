@@ -111,8 +111,7 @@ public class PolarisServiceRegistryTest {
 	@Test
 	public void testDeRegister() {
 		this.contextRunner.run(context -> {
-			PolarisServiceRegistry registry = context
-					.getBean(PolarisServiceRegistry.class);
+			PolarisServiceRegistry registry = context.getBean(PolarisServiceRegistry.class);
 			PolarisRegistration registration = Mockito.mock(PolarisRegistration.class);
 			doReturn(null).when(registration).getServiceId();
 			try {

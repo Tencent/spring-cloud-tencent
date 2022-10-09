@@ -14,9 +14,21 @@
       "defaultValue": false
     },
     {
+      "name": "spring.cloud.polaris.stat.pushgateway.namespace",
+      "type": "java.lang.String",
+      "description": "Namespace for pushGateway.",
+      "sourceType": "com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayProperties"
+    },
+    {
       "name": "spring.cloud.polaris.stat.pushgateway.push-interval",
       "type": "java.lang.Long",
       "description": "Push metrics interval. unit: milliseconds default 30s.",
+      "sourceType": "com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.stat.pushgateway.service",
+      "type": "java.lang.String",
+      "description": "Service for pushGateway.",
       "sourceType": "com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayProperties"
     }
   ]

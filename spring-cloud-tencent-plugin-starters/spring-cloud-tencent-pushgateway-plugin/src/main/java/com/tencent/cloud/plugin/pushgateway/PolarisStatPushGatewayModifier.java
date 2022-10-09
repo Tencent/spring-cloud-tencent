@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.plugin.pushgateway;
@@ -38,7 +39,7 @@ public class PolarisStatPushGatewayModifier implements PolarisConfigModifier {
 	private final Environment environment;
 
 	public PolarisStatPushGatewayModifier(PolarisStatPushGatewayProperties polarisStatPushGatewayProperties,
-			Environment environment) {
+				Environment environment) {
 		this.polarisStatPushGatewayProperties = polarisStatPushGatewayProperties;
 		this.environment = environment;
 	}
@@ -56,6 +57,8 @@ public class PolarisStatPushGatewayModifier implements PolarisConfigModifier {
 			PrometheusPushHandlerConfig prometheusHandlerConfig = configuration.getGlobal().getStatReporter()
 					.getPluginConfig(PROMETHEUS_PUSH_GATEWAY_PLUGIN_NAME, PrometheusPushHandlerConfig.class);
 			prometheusHandlerConfig.setPushgatewayAddress(polarisStatPushGatewayProperties.getAddress());
+			prometheusHandlerConfig.setPushgatewayNamespace(polarisStatPushGatewayProperties.getNamespace());
+			prometheusHandlerConfig.setPushgatewayService(polarisStatPushGatewayProperties.getService());
 			prometheusHandlerConfig.setPushInterval(polarisStatPushGatewayProperties.getPushInterval());
 			configuration.getGlobal().getStatReporter()
 					.setPluginConfig(PROMETHEUS_PUSH_GATEWAY_PLUGIN_NAME, prometheusHandlerConfig);

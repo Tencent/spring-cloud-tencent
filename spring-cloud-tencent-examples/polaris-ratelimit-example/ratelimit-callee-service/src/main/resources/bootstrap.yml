@@ -19,6 +19,3 @@ management:
       exposure:
         include:
           - polaris-ratelimit
-logging:
-  level:
-    com.tencent.cloud.polaris: debug

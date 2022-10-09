@@ -1,7 +1,9 @@
 # Change Log
 ---
 
-- [Optimize: remove discovery module useless code](https://github.com/Tencent/spring-cloud-tencent/pull/596)
-- [Optimize: optimize configuration conditional & optimize config data tips"](https://github.com/Tencent/spring-cloud-tencent/pull/604)
-- [Optimize: Maybe remove Chinese characters](https://github.com/Tencent/spring-cloud-tencent/pull/608)
-- [Bugfix: fix feign report call result error when using feign direct call](https://github.com/Tencent/spring-cloud-tencent/pull/622)
+- [Optimize: remove discovery module useless code](https://github.com/Tencent/spring-cloud-tencent/pull/597)
+- [Fix issue 579:Report the labels in request when report the result of invocation by RestTemplate](https://github.com/Tencent/spring-cloud-tencent/pull/600)
+- [Optimize: optimize configuration conditional & optimize config data tips"](https://github.com/Tencent/spring-cloud-tencent/pull/605)
+- [Optimize: Maybe remove Chinese characters](https://github.com/Tencent/spring-cloud-tencent/pull/609)
+- [Bugfix: fix feign report call result error when using feign direct call](https://github.com/Tencent/spring-cloud-tencent/pull/623)
+- [optimize:optimize PolarisRouterContext and constants.](https://github.com/Tencent/spring-cloud-tencent/pull/628)

@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
 /**
  * Utils for Jackson.
  *
- * @author Haotian Zhang, cheese8
+ * @author Haotian Zhang
  */
 public final class JacksonUtils {
 
@@ -93,6 +93,7 @@ public final class JacksonUtils {
 	 * @param jsonStr Json String
 	 * @return Map
 	 */
+	@SuppressWarnings("unchecked")
 	public static Map<String, String> deserialize2Map(String jsonStr) {
 		try {
 			if (StringUtils.hasText(jsonStr)) {
@@ -106,8 +107,7 @@ public final class JacksonUtils {
 			return new HashMap<>();
 		}
 		catch (JsonProcessingException e) {
-			LOG.error(
-					"Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
+			LOG.error("Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
 			throw new RuntimeException("Json to map failed.", e);
 		}
 	}

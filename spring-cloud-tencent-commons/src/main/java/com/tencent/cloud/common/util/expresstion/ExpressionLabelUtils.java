@@ -34,6 +34,10 @@ import org.springframework.util.CollectionUtils;
 public final class ExpressionLabelUtils {
 
 	/**
+	 * the prefix of expression.
+	 */
+	public static final String LABEL_PREFIX = "${";
+	/**
 	 * the expression prefix of header label.
 	 */
 	public static final String LABEL_HEADER_PREFIX = "${http.header.";
@@ -65,12 +69,6 @@ public final class ExpressionLabelUtils {
 	 * the expression of uri.
 	 */
 	public static final String LABEL_URI = "${http.uri}";
-
-	/**
-	 * the prefix of expression.
-	 */
-	public static final String LABEL_PREFIX = "${";
-
 	/**
 	 * the suffix of expression.
 	 */

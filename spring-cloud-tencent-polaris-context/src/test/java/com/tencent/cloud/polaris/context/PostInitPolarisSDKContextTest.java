@@ -29,24 +29,22 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.when;
 
+
 /**
  * Test for {@link PostInitPolarisSDKContext}.
  *
  * @author wh
  */
 @RunWith(MockitoJUnitRunner.class)
-public final class PostInitPolarisSDKContextTest {
+public class PostInitPolarisSDKContextTest {
 
+	private static final String REGION = "region";
+	private static final String ZONE = "zone";
+	private static final String CAMPUS = "campus";
 	@Mock
 	private SDKContext sdkContext;
 	@Mock
 	private StaticMetadataManager staticMetadataManager;
-
-	private static final String REGION = "region";
-
-	private static final String ZONE = "zone";
-
-	private static final String CAMPUS = "campus";
 
 	@Test
 	public void testConstructor() {
@@ -67,4 +65,3 @@ public final class PostInitPolarisSDKContextTest {
 		Assertions.assertThat(campusName).isEqualTo(CAMPUS);
 	}
 }
-

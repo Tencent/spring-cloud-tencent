@@ -30,7 +30,7 @@ public class EnhancedFeignBlockingLoadBalancerClientTest {
 	@Test
 	public void testConstructor() {
 		try {
-			new EnhancedFeignBlockingLoadBalancerClient(null, null, null, null);
+			new EnhancedFeignBlockingLoadBalancerClient(null, null);
 		}
 		catch (Exception e) {
 			Assertions.fail("Exception encountered.", e);

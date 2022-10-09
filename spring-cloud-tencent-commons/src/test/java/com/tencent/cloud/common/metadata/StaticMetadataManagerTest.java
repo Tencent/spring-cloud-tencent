@@ -39,8 +39,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * test for {@link StaticMetadataManager}.
- *
- * @author lepdou 2022-06-27
+ *@author lepdou 2022-06-27
  */
 @RunWith(MockitoJUnitRunner.class)
 public class StaticMetadataManagerTest {

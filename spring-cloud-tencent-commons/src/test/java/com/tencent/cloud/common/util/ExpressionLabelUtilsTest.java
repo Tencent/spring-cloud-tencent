@@ -42,7 +42,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 /**
  * test for {@link ExpressionLabelUtils}.
  *
- * @author lepdou, cheese8
+ * @author lepdou 2022-05-27, cheese8
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ExpressionLabelUtilsTest {

@@ -64,7 +64,8 @@ public class GatewayCalleeController {
 	 * @throws UnsupportedEncodingException encoding exception
 	 */
 	@RequestMapping("/echo")
-	public String echoHeader(@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String metadataStr)
+	public String echoHeader(
+			@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String metadataStr)
 			throws UnsupportedEncodingException {
 		LOG.info(URLDecoder.decode(metadataStr, UTF_8));
 		metadataStr = URLDecoder.decode(metadataStr, UTF_8);

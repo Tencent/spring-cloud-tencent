@@ -21,11 +21,6 @@
 		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
 
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-bootstrap</artifactId>
-		</dependency>
-
 		<!-- Polaris dependencies start -->
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
@@ -50,6 +45,14 @@
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>
 					<artifactId>router-set</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-isolated</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-healthy</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -87,6 +90,17 @@
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>flow-cache-expired</artifactId>
+		</dependency>
+
+		<!-- Discovery depended on base routers -->
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>router-isolated</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>router-healthy</artifactId>
 		</dependency>
 
 		<dependency>

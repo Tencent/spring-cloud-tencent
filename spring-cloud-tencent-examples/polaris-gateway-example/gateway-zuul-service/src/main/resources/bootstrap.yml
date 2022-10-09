@@ -1,0 +1,21 @@
+server:
+  session-timeout: 1800
+  port: 48084
+spring:
+  application:
+    name: GatewayZuulService
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+    tencent:
+      metadata:
+        content:
+          a: 1
+        transitive:
+          - a
+zuul:
+  routes:
+    GatewayCalleeService:
+      serviceId: GatewayCalleeService
+      path: /GatewayCalleeService/**

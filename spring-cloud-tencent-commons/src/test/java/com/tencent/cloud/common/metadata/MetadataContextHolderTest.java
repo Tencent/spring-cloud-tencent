@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.common.metadata;
@@ -36,7 +37,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = MetadataContextHolderTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml"})
+		properties = {"spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = reactive"})
 public class MetadataContextHolderTest {
 
 	@Test

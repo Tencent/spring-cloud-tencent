@@ -13,7 +13,6 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.router;
@@ -25,10 +24,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.tencent.cloud.common.constant.RouterConstant;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedCaseInsensitiveMap;
 
 /**
  * the context for router.
@@ -36,15 +35,6 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
  * @author lepdou 2022-05-17
  */
 public class PolarisRouterContext {
-
-	/**
-	 * the labels for rule router, contain transitive metadata.
-	 */
-	public static final String ROUTER_LABELS = "allMetadata";
-	/**
-	 * transitive labels.
-	 */
-	public static final String TRANSITIVE_LABELS = "transitiveMetadata";
 
 	private Map<String, Map<String, String>> labels;
 
@@ -80,7 +70,7 @@ public class PolarisRouterContext {
 	}
 
 	public String getLabel(String labelKey) {
-		Map<String, String> routerLabels = labels.get(ROUTER_LABELS);
+		Map<String, String> routerLabels = labels.get(RouterConstant.ROUTER_LABELS);
 		if (CollectionUtils.isEmpty(routerLabels)) {
 			return StringUtils.EMPTY;
 		}
@@ -88,7 +78,7 @@ public class PolarisRouterContext {
 	}
 
 	public Set<String> getLabelAsSet(String labelKey) {
-		Map<String, String> routerLabels = labels.get(ROUTER_LABELS);
+		Map<String, String> routerLabels = labels.get(RouterConstant.ROUTER_LABELS);
 		if (CollectionUtils.isEmpty(routerLabels)) {
 			return Collections.emptySet();
 		}
@@ -110,11 +100,14 @@ public class PolarisRouterContext {
 		if (this.labels == null) {
 			this.labels = new HashMap<>();
 		}
+		labels.put(labelType, subLabels);
+	}
 
-		Map<String, String> subLabelMap = new LinkedCaseInsensitiveMap<>();
-		if (!CollectionUtils.isEmpty(subLabels)) {
-			subLabelMap.putAll(subLabels);
-		}
-		labels.put(labelType, subLabelMap);
+	public Map<String, Map<String, String>> getLabels() {
+		return labels;
+	}
+
+	public void setLabels(Map<String, Map<String, String>> labels) {
+		this.labels = labels;
 	}
 }

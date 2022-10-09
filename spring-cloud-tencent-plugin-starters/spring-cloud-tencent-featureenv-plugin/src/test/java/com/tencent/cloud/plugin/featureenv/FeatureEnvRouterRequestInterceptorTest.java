@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceInstances;
@@ -46,7 +47,7 @@ public class FeatureEnvRouterRequestInterceptorTest {
 		Map<String, String> labels = new HashMap<>();
 		labels.put("featureenv", "blue");
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
 
 		ProcessRoutersRequest request = new ProcessRoutersRequest();
 		ServiceInstances serviceInstances = new DefaultServiceInstances(Mockito.mock(ServiceKey.class), new ArrayList<>());
@@ -67,7 +68,7 @@ public class FeatureEnvRouterRequestInterceptorTest {
 		labels.put("system-feature-env-router-label", "specify-env");
 		labels.put("specify-env", "blue");
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
 
 		ProcessRoutersRequest request = new ProcessRoutersRequest();
 		ServiceInstances serviceInstances = new DefaultServiceInstances(Mockito.mock(ServiceKey.class), new ArrayList<>());
@@ -87,7 +88,7 @@ public class FeatureEnvRouterRequestInterceptorTest {
 		Map<String, String> labels = new HashMap<>();
 		labels.put("system-feature-env-router-label", "specify-env");
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
 
 		ProcessRoutersRequest request = new ProcessRoutersRequest();
 		ServiceInstances serviceInstances = new DefaultServiceInstances(Mockito.mock(ServiceKey.class), new ArrayList<>());

@@ -130,8 +130,8 @@ public class ConsulContextProperties {
 				}
 				ServerConnectorConfigImpl serverConnectorConfig = new ServerConnectorConfigImpl();
 				serverConnectorConfig.setId(ID);
-				serverConnectorConfig.setAddresses(
-						Collections.singletonList(consulContextProperties.host + ":" + consulContextProperties.port));
+				serverConnectorConfig.setAddresses(Collections.singletonList(consulContextProperties.host + ":"
+						+ consulContextProperties.port));
 				serverConnectorConfig.setProtocol(DefaultPlugins.SERVER_CONNECTOR_CONSUL);
 				Map<String, String> metadata = serverConnectorConfig.getMetadata();
 				if (StringUtils.isNotBlank(consulContextProperties.serviceName)) {
@@ -164,6 +164,5 @@ public class ConsulContextProperties {
 		public int getOrder() {
 			return ModifierOrder.LAST;
 		}
-
 	}
 }

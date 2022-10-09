@@ -39,8 +39,8 @@ public class PolarisPropertySource extends MapPropertySource {
 
 	private final ConfigKVFile configKVFile;
 
-	public PolarisPropertySource(String namespace, String group, String fileName, ConfigKVFile configKVFile,
-			Map<String, Object> source) {
+	public PolarisPropertySource(String namespace, String group, String fileName,
+			ConfigKVFile configKVFile, Map<String, Object> source) {
 		super(namespace + "-" + group + "-" + fileName, source);
 
 		this.namespace = namespace;
@@ -71,7 +71,7 @@ public class PolarisPropertySource extends MapPropertySource {
 
 	@Override
 	public String toString() {
-		return "PolarisPropertySource{" + "namespace='" + namespace + '\'' + ", group='" + group + '\'' + ", fileName='"
-				+ fileName + '\'' + '}';
+		return "PolarisPropertySource{" + "namespace='" + namespace + '\'' + ", group='"
+				+ group + '\'' + ", fileName='" + fileName + '\'' + '}';
 	}
 }

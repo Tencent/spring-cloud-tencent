@@ -81,8 +81,10 @@ public class PolarisServiceStatusChangeListener extends AbstractResourceEventLis
 				LOG.debug("receive service instances={} change event", svcEventKey);
 				ServiceInstancesByProto oldIns = (ServiceInstancesByProto) oldValue;
 				ServiceInstancesByProto newIns = (ServiceInstancesByProto) newValue;
-				if ((CollectionUtils.isEmpty(oldIns.getInstances()) && !CollectionUtils.isEmpty(newIns.getInstances())) ||
-						(!CollectionUtils.isEmpty(oldIns.getInstances()) && CollectionUtils.isEmpty(newIns.getInstances()))) {
+				if ((CollectionUtils.isEmpty(oldIns.getInstances())
+						&& !CollectionUtils.isEmpty(newIns.getInstances())) ||
+						(!CollectionUtils.isEmpty(oldIns.getInstances())
+								&& CollectionUtils.isEmpty(newIns.getInstances()))) {
 					LOG.info("Service status of {} is update.", newIns.getService());
 
 					// Trigger reload of gateway route cache.

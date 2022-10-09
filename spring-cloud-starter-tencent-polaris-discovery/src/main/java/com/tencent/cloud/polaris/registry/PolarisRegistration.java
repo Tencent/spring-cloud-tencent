@@ -36,12 +36,13 @@ import org.springframework.util.CollectionUtils;
 /**
  * Registration object of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng, changjin wei(魏昌进)
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, Palmer.Xu, changjin wei(魏昌进)
  */
 public class PolarisRegistration implements Registration {
 
-	private static final String METADATA_KEY_IP = "internal-ip";
-	private static final String METADATA_KEY_ADDRESS = "internal-address";
+	private final static String METADATA_KEY_IP = "internal-ip";
+
+	private final static String METADATA_KEY_ADDRESS = "internal-address";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 

@@ -32,12 +32,13 @@ import org.springframework.util.StringUtils;
  */
 public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistration<PolarisRegistration> {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisAutoServiceRegistration.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisAutoServiceRegistration.class);
 
 	private final PolarisRegistration registration;
 
 	public PolarisAutoServiceRegistration(ServiceRegistry<PolarisRegistration> serviceRegistry,
-			AutoServiceRegistrationProperties autoServiceRegistrationProperties, PolarisRegistration registration) {
+			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
+			PolarisRegistration registration) {
 		super(serviceRegistry, autoServiceRegistrationProperties);
 		this.registration = registration;
 	}
@@ -58,7 +59,7 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 	@Override
 	protected void register() {
 		if (!this.registration.isRegisterEnabled()) {
-			log.debug("Registration disabled.");
+			LOG.debug("Registration disabled.");
 			return;
 		}
 		if (this.registration.getPort() <= 0) {

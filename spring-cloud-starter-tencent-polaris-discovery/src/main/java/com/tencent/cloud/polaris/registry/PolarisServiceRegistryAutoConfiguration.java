@@ -45,7 +45,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 @ConditionalOnPolarisRegisterEnabled
 @ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
-@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class, AutoServiceRegistrationAutoConfiguration.class,
+@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class,
+		AutoServiceRegistrationAutoConfiguration.class,
 		PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
@@ -67,8 +68,10 @@ public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(PolarisServiceRegistry registry,
-			AutoServiceRegistrationProperties autoServiceRegistrationProperties, PolarisRegistration registration) {
+	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
+			PolarisServiceRegistry registry,
+			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
+			PolarisRegistration registration) {
 		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
 	}
 }

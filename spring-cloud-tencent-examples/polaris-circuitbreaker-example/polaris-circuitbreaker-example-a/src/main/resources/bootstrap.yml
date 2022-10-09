@@ -13,8 +13,6 @@ spring:
       stat:
         enabled: true
         port: 28081
-    loadbalancer:
-      configurations: polaris
     tencent:
       rpc-enhancement:
         enabled: true
@@ -24,7 +22,7 @@ spring:
           statuses: gateway_timeout, bad_gateway, service_unavailable
 
 feign:
-  circuitbreaker:
+  hystrix:
     enabled: true
   compression:
     request:
@@ -33,6 +31,16 @@ feign:
       min-request-size: 2048
     response:
       enabled: false
+ribbon:
+  polaris:
+    enabled: true
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 2
+  OkToRetryOnAllOperations: false
+  ConnectionTimeout: 1000
+  ReadTimeout: 1000
+  eager-load:
+    enabled: on
 
 serivceB:
   url: http://localhost:48081

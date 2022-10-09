@@ -47,7 +47,7 @@ public final class AddressUtils {
 	}
 
 	public static List<String> parseAddressList(String addressInfo) {
-		if (!StringUtils.hasText(addressInfo)) {
+		if (StringUtils.isEmpty(addressInfo)) {
 			return Collections.emptyList();
 		}
 		List<String> addressList = new ArrayList<>();

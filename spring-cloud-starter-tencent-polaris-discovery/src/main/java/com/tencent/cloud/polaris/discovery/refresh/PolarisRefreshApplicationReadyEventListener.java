@@ -32,7 +32,6 @@ import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
-import org.springframework.lang.NonNull;
 
 import static com.tencent.cloud.polaris.discovery.refresh.PolarisServiceStatusChangeListener.INDEX;
 
@@ -51,7 +50,8 @@ public class PolarisRefreshApplicationReadyEventListener
 	private final ScheduledExecutorService refreshExecutor;
 	private ApplicationEventPublisher publisher;
 
-	public PolarisRefreshApplicationReadyEventListener(PolarisDiscoveryHandler polarisDiscoveryHandler, PolarisServiceStatusChangeListener polarisServiceStatusChangeListener) {
+	public PolarisRefreshApplicationReadyEventListener(PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisServiceStatusChangeListener polarisServiceStatusChangeListener) {
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.polarisServiceStatusChangeListener = polarisServiceStatusChangeListener;
 		this.refreshExecutor = Executors.newSingleThreadScheduledExecutor(
@@ -84,12 +84,12 @@ public class PolarisRefreshApplicationReadyEventListener
 	}
 
 	@Override
-	public void setApplicationEventPublisher(@NonNull ApplicationEventPublisher applicationEventPublisher) {
+	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
 		this.publisher = applicationEventPublisher;
 	}
 
 	@Override
-	public void destroy() throws Exception {
+	public void destroy() {
 		refreshExecutor.shutdown();
 	}
 }

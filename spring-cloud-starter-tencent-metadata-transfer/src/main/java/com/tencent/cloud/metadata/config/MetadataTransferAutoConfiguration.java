@@ -22,12 +22,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.netflix.zuul.ZuulFilter;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgFilter;
+import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulFilter;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,12 +66,10 @@ public class MetadataTransferAutoConfiguration {
 		@Bean
 		public FilterRegistrationBean<DecodeTransferMetadataServletFilter> metadataServletFilterRegistrationBean(
 				DecodeTransferMetadataServletFilter decodeTransferMetadataServletFilter) {
-			FilterRegistrationBean<DecodeTransferMetadataServletFilter> filterRegistrationBean = new FilterRegistrationBean<>(
-					decodeTransferMetadataServletFilter);
-			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE,
-					REQUEST);
-			filterRegistrationBean
-					.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
+			FilterRegistrationBean<DecodeTransferMetadataServletFilter> filterRegistrationBean =
+					new FilterRegistrationBean<>(decodeTransferMetadataServletFilter);
+			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
+			filterRegistrationBean.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
 			return filterRegistrationBean;
 		}
 
@@ -77,6 +77,7 @@ public class MetadataTransferAutoConfiguration {
 		public DecodeTransferMetadataServletFilter metadataServletFilter() {
 			return new DecodeTransferMetadataServletFilter();
 		}
+
 	}
 
 	/**
@@ -90,6 +91,21 @@ public class MetadataTransferAutoConfiguration {
 		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter() {
 			return new DecodeTransferMetadataReactiveFilter();
 		}
+
+	}
+
+	/**
+	 * Create when gateway application is Zuul.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "com.netflix.zuul.http.ZuulServlet")
+	protected static class MetadataTransferZuulFilterConfig {
+
+		@Bean
+		public ZuulFilter encodeTransferMetadataZuulFilter() {
+			return new EncodeTransferMetadataZuulFilter();
+		}
+
 	}
 
 	/**
@@ -117,6 +133,7 @@ public class MetadataTransferAutoConfiguration {
 		public EncodeTransferMedataFeignInterceptor encodeTransferMedataFeignInterceptor() {
 			return new EncodeTransferMedataFeignInterceptor();
 		}
+
 	}
 
 	/**

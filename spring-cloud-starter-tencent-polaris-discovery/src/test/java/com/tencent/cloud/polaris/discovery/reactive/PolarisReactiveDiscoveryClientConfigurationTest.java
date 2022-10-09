@@ -45,7 +45,8 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
-					PolarisReactiveDiscoveryClientConfiguration.class, PolarisDiscoveryClientConfiguration.class,
+					PolarisReactiveDiscoveryClientConfiguration.class,
+					PolarisDiscoveryClientConfiguration.class,
 					PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
@@ -65,7 +66,8 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 
 	@Test
 	public void testDefaultInitialization() {
-		this.contextRunner.run(context -> assertThat(context).hasSingleBean(PolarisReactiveDiscoveryClient.class));
+		this.contextRunner.run(context -> assertThat(context)
+				.hasSingleBean(PolarisReactiveDiscoveryClient.class));
 	}
 
 	@Configuration

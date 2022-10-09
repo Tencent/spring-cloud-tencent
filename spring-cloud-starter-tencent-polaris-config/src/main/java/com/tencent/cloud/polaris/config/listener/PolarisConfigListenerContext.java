@@ -52,9 +52,11 @@ import static com.tencent.polaris.configuration.api.core.ChangeType.MODIFIED;
  * <p>This source file was reference from:
  * <code><a href=https://github.com/apolloconfig/apollo/blob/master/apollo-client/src/main/java/com/ctrip/framework/apollo/internals/AbstractConfig.java>
  *     AbstractConfig</a></code>
+ *
  * @author Palmer Xu 2022-06-06
  */
 public final class PolarisConfigListenerContext {
+
 	/**
 	 * Logger instance.
 	 */

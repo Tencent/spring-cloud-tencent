@@ -22,7 +22,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Collection;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -54,8 +54,7 @@ public final class ReporterUtils {
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		RequestTemplate requestTemplate = request.requestTemplate();
 		String serviceName = requestTemplate.feignTarget().name();
-		resultRequest.setService(serviceName);
-		Collection<String> labels = requestTemplate.headers().get(RouterConstants.ROUTER_LABEL_HEADER);
+		Collection<String> labels = requestTemplate.headers().get(RouterConstant.ROUTER_LABEL_HEADER);
 		if (CollectionUtils.isNotEmpty(labels) && labels.iterator().hasNext()) {
 			String label = labels.iterator().next();
 			try {
@@ -66,6 +65,7 @@ public final class ReporterUtils {
 			}
 			resultRequest.setLabels(convertLabel(label));
 		}
+		resultRequest.setService(serviceName);
 		URI uri = URI.create(request.url());
 		resultRequest.setMethod(uri.getPath());
 		resultRequest.setRetStatus(retStatus);
@@ -77,7 +77,6 @@ public final class ReporterUtils {
 		resultRequest.setHost(uri.getHost());
 		// -1 means access directly by url, and use http default port number 80
 		resultRequest.setPort(uri.getPort() == -1 ? 80 : uri.getPort());
-
 		return resultRequest;
 	}
 

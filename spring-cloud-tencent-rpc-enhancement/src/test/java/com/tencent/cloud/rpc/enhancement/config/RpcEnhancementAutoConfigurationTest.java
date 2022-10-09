@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.openfeign.loadbalancer.FeignLoadBalancerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -48,8 +47,7 @@ public class RpcEnhancementAutoConfigurationTest {
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
 					RpcEnhancementAutoConfiguration.class,
-					PolarisRestTemplateAutoConfigurationTester.class,
-					FeignLoadBalancerAutoConfiguration.class))
+					PolarisRestTemplateAutoConfigurationTester.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test

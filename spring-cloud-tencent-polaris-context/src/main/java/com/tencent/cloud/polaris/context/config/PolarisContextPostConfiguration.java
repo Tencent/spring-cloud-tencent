@@ -31,12 +31,13 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author lepdou 2022-06-28
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @ConditionalOnPolarisEnabled
 public class PolarisContextPostConfiguration {
 
 	@Bean
-	public PostInitPolarisSDKContext postInitPolarisSDKContext(SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
+	public PostInitPolarisSDKContext postInitPolarisSDKContext(
+			SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
 		return new PostInitPolarisSDKContext(sdkContext, staticMetadataManager);
 	}
 }

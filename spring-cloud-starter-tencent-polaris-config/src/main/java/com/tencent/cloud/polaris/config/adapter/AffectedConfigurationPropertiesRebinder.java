@@ -34,8 +34,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * Optimize {@link ConfigurationPropertiesRebinder}, only rebuild affected beans.
- *
- * @author weihubeats
+ * @author weihubeats 2022-7-10
  */
 public class AffectedConfigurationPropertiesRebinder extends ConfigurationPropertiesRebinder {
 

@@ -34,7 +34,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * resolve labels from rate limit rule.
  *
- *@author lepdou 2022-05-13
+ * @author lepdou 2022-05-13
  */
 public class RateLimitRuleLabelResolver {
 

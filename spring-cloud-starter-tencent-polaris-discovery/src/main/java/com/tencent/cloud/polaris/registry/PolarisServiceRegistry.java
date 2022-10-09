@@ -79,8 +79,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 
 	@Override
 	public void register(PolarisRegistration registration) {
-
-		if (StringUtils.isBlank(registration.getServiceId())) {
+		if (StringUtils.isEmpty(registration.getServiceId())) {
 			LOGGER.warn("No service to register for polaris client...");
 			return;
 		}
@@ -105,9 +104,10 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
-			LOGGER.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
-					registration.getServiceId(), registration.getHost(), registration.getPort(),
-					staticMetadataManager.getMergedStaticMetadata());
+			LOGGER.info("polaris registry, {} {} {}:{} {} register finished",
+					polarisDiscoveryProperties.getNamespace(),
+					registration.getServiceId(), registration.getHost(),
+					registration.getPort(), staticMetadataManager.getMergedStaticMetadata());
 
 			if (null != heartbeatExecutor) {
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
@@ -198,12 +198,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 						healthCheckEndpoint = "/" + healthCheckEndpoint;
 					}
 
-					String healthCheckUrl = String.format("http://%s:%s%s", heartbeatRequest.getHost(),
-							heartbeatRequest.getPort(), healthCheckEndpoint);
+					String healthCheckUrl = String.format("http://%s:%s%s",
+							heartbeatRequest.getHost(), heartbeatRequest.getPort(), healthCheckEndpoint);
 
 					if (!OkHttpUtil.get(healthCheckUrl, null)) {
-						LOGGER.error("backend service health check failed. health check endpoint = {}",
-								healthCheckEndpoint);
+						LOGGER.error("backend service health check failed. health check endpoint = {}", healthCheckEndpoint);
 						return;
 					}
 				}

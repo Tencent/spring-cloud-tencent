@@ -13,17 +13,13 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.router.beanprocessor;
 
-import java.util.List;
-
-import com.tencent.cloud.common.metadata.StaticMetadataManager;
-import com.tencent.cloud.common.util.BeanFactoryUtils;
-import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerInterceptor;
-import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
+import com.tencent.cloud.polaris.router.resttemplate.RouterContextFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -32,33 +28,33 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
+import org.springframework.lang.NonNull;
 
 /**
- * Replace LoadBalancerInterceptor with PolarisLoadBalancerInterceptor.
+ * Replace {@link LoadBalancerInterceptor} with {@link PolarisLoadBalancerInterceptor}.
  * PolarisLoadBalancerInterceptor can pass routing context information.
  *
- *@author lepdou 2022-05-18
+ * @author lepdou 2022-05-18
  */
 public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
 	private BeanFactory factory;
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
 		this.factory = beanFactory;
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 		if (bean instanceof LoadBalancerInterceptor) {
+			// Support rest template router.
+			// Replaces the default LoadBalancerInterceptor implementation and returns a custom PolarisLoadBalancerInterceptor
 			LoadBalancerRequestFactory requestFactory = this.factory.getBean(LoadBalancerRequestFactory.class);
 			LoadBalancerClient loadBalancerClient = this.factory.getBean(LoadBalancerClient.class);
-			List<SpringWebRouterLabelResolver> routerLabelResolvers = BeanFactoryUtils.getBeans(factory, SpringWebRouterLabelResolver.class);
-			StaticMetadataManager staticMetadataManager = this.factory.getBean(StaticMetadataManager.class);
-			RouterRuleLabelResolver routerRuleLabelResolver = this.factory.getBean(RouterRuleLabelResolver.class);
+			RouterContextFactory routerContextFactory = this.factory.getBean(RouterContextFactory.class);
 
-			return new PolarisLoadBalancerInterceptor(loadBalancerClient, requestFactory,
-					routerLabelResolvers, staticMetadataManager, routerRuleLabelResolver);
+			return new PolarisLoadBalancerInterceptor(loadBalancerClient, requestFactory, routerContextFactory);
 		}
 		return bean;
 	}

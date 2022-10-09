@@ -56,7 +56,6 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- spring cloud gateway dependencies start -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-gateway-server</artifactId>
@@ -64,11 +63,22 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- spring cloud gateway dependencies end -->
+		
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-netflix-zuul</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.netflix.zuul</groupId>
+			<artifactId>zuul-core</artifactId>
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -101,10 +111,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 </project>

@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
+import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulFilter;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -52,16 +53,24 @@ public class MetadataTransferAutoConfigurationTest {
 	 */
 	@Test
 	public void test1() {
-		this.applicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
+		this.applicationContextRunner
+				.withConfiguration(
+						AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(
 							MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
-					Assertions.assertThat(context).hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
-					Assertions.assertThat(context).hasSingleBean(EncodeTransferMedataRestTemplateInterceptor.class);
+							.hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
+					Assertions.assertThat(context).hasSingleBean(
+							EncodeTransferMedataRestTemplateInterceptor.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataTransferAutoConfiguration.MetadataTransferZuulFilterConfig.class);
 					Assertions.assertThat(context)
-							.hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
+							.hasSingleBean(EncodeTransferMetadataZuulFilter.class);
+					Assertions.assertThat(context).hasSingleBean(
+							MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
 					Assertions.assertThat(context).hasSingleBean(GlobalFilter.class);
 				});
 	}

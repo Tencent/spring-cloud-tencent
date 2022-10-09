@@ -14,8 +14,8 @@
 	<name>Spring Cloud Tencent Commons</name>
 
 	<properties>
-		<commons.lang.version>2.6</commons.lang.version>
-		<commons.io.version>2.11.0</commons.io.version>
+		<commons.lang.version>2.5</commons.lang.version>
+		<commons.io.version>2.7</commons.io.version>
 	</properties>
 
 	<dependencies>
@@ -56,6 +56,12 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>${commons.io.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

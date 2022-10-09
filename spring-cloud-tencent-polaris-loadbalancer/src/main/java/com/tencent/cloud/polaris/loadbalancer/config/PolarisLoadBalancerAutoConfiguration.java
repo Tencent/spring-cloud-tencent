@@ -26,24 +26,22 @@ import com.tencent.polaris.router.api.core.RouterAPI;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
-import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
-import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
+import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
+import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto-configuration of loadbalancer for Polaris.
+ * Auto-configuration Ribbon for Polaris.
  *
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
-@ConditionalOnDiscoveryEnabled
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
-@AutoConfigureAfter(LoadBalancerAutoConfiguration.class)
-@LoadBalancerClients(defaultConfiguration = PolarisLoadBalancerClientConfiguration.class)
+@AutoConfigureAfter(RibbonAutoConfiguration.class)
+@RibbonClients(defaultConfiguration = PolarisRibbonClientConfiguration.class)
 public class PolarisLoadBalancerAutoConfiguration {
 
 	@Bean
@@ -52,7 +50,7 @@ public class PolarisLoadBalancerAutoConfiguration {
 	}
 
 	@Bean
-	public RouterAPI polarisRouter(SDKContext polarisContext) throws PolarisException {
+	public RouterAPI routerAPI(SDKContext polarisContext) throws PolarisException {
 		return RouterAPIFactory.createRouterAPIByContext(polarisContext);
 	}
 }

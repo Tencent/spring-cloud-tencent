@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
@@ -67,8 +67,7 @@ public class RouterLabelFeignInterceptorTest {
 	@Test
 	public void testResolveRouterLabel() {
 		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor(
-				Collections.singletonList(routerLabelResolver),
-				staticMetadataManager, routerRuleLabelResolver);
+				Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver);
 
 		// mock request template
 		RequestTemplate requestTemplate = new RequestTemplate();
@@ -110,6 +109,7 @@ public class RouterLabelFeignInterceptorTest {
 				customResolvedLabels.put("k3", "v3");
 				when(routerLabelResolver.resolve(requestTemplate, expressionKeys)).thenReturn(customResolvedLabels);
 
+				// mock local metadata
 				Map<String, String> localMetadata = new HashMap<>();
 				localMetadata.put("k3", "v31");
 				localMetadata.put("k4", "v4");
@@ -117,24 +117,25 @@ public class RouterLabelFeignInterceptorTest {
 
 				routerLabelFeignInterceptor.apply(requestTemplate);
 
-				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstants.ROUTER_LABEL_HEADER);
-
+				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstant.ROUTER_LABEL_HEADER);
 				Map<String, String> routerLabelsMap = new HashMap<>();
 				try {
 					String routerLabelContent = routerLabels.stream().findFirst().get();
-					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(routerLabelContent, UTF_8)));
+					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(
+							URLDecoder.decode(routerLabelContent, UTF_8)));
 				}
 				catch (UnsupportedEncodingException e) {
 					throw new RuntimeException("unsupported charset exception " + UTF_8);
 				}
-
-				Assert.assertNotNull(routerLabels);
-				Assert.assertEquals("v1", routerLabelsMap.get("k1"));
-				Assert.assertEquals("v22", routerLabelsMap.get("k2"));
-				Assert.assertEquals("v3", routerLabelsMap.get("k3"));
-				Assert.assertEquals("v4", routerLabelsMap.get("k4"));
-				Assert.assertEquals(headerUidValue, routerLabelsMap.get("${http.header.uid}"));
-				Assert.assertEquals("", routerLabelsMap.get("${http.header.name}"));
+				Assert.assertNotNull(routerLabelsMap);
+				for (String value : routerLabelsMap.values()) {
+					Assert.assertEquals("v1", routerLabelsMap.get("k1"));
+					Assert.assertEquals("v22", routerLabelsMap.get("k2"));
+					Assert.assertEquals("v3", routerLabelsMap.get("k3"));
+					Assert.assertEquals("v4", routerLabelsMap.get("k4"));
+					Assert.assertEquals(headerUidValue, routerLabelsMap.get("${http.header.uid}"));
+					Assert.assertEquals("", routerLabelsMap.get("${http.header.name}"));
+				}
 			}
 		}
 	}

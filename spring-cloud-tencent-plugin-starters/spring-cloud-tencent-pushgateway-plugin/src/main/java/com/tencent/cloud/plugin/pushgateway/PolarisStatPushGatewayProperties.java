@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.plugin.pushgateway;
@@ -38,6 +39,16 @@ public class PolarisStatPushGatewayProperties {
 	private String address;
 
 	/**
+	 * Service for pushGateway.
+	 */
+	private String service;
+
+	/**
+	 * Namespace for pushGateway.
+	 */
+	private String namespace;
+
+	/**
 	 * Push metrics interval.
 	 * unit: milliseconds default 30s.
 	 */
@@ -57,6 +68,22 @@ public class PolarisStatPushGatewayProperties {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getService() {
+		return service;
+	}
+
+	public void setService(String service) {
+		this.service = service;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
 	}
 
 	public Long getPushInterval() {

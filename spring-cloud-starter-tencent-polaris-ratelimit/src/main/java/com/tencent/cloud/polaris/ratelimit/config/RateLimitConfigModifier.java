@@ -37,13 +37,11 @@ public class RateLimitConfigModifier implements PolarisConfigModifier {
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		// Update MaxQueuingTime.
-		configuration.getProvider().getRateLimit()
-				.setMaxQueuingTime(polarisRateLimitProperties.getMaxQueuingTime());
+		configuration.getProvider().getRateLimit().setMaxQueuingTime(polarisRateLimitProperties.getMaxQueuingTime());
 	}
 
 	@Override
 	public int getOrder() {
 		return ContextConstant.ModifierOrder.CIRCUIT_BREAKER_ORDER;
 	}
-
 }

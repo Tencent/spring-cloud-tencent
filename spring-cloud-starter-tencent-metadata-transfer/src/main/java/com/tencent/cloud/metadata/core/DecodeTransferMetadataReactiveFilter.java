@@ -58,7 +58,8 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 	}
 
 	@Override
-	public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
+	public Mono<Void> filter(ServerWebExchange serverWebExchange,
+			WebFilterChain webFilterChain) {
 		// Get metadata string from http header.
 		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
 

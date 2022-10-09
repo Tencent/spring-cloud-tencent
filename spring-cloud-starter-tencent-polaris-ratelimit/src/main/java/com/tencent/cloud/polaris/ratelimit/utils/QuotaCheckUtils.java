@@ -38,8 +38,8 @@ public final class QuotaCheckUtils {
 	private QuotaCheckUtils() {
 	}
 
-	public static QuotaResponse getQuota(LimitAPI limitAPI, String namespace, String service, int count,
-			Map<String, String> labels, String method) {
+	public static QuotaResponse getQuota(LimitAPI limitAPI, String namespace,
+			String service, int count, Map<String, String> labels, String method) {
 		// build quota request
 		QuotaRequest quotaRequest = new QuotaRequest();
 		quotaRequest.setNamespace(namespace);
@@ -52,8 +52,10 @@ public final class QuotaCheckUtils {
 			return limitAPI.getQuota(quotaRequest);
 		}
 		catch (Throwable throwable) {
-			LOG.error("fail to invoke getQuota of LimitAPI with QuotaRequest[{}].", quotaRequest, throwable);
-			return new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultOk, 0, "get quota failed"));
+			LOG.error("fail to invoke getQuota of LimitAPI with QuotaRequest[{}].",
+					quotaRequest, throwable);
+			return new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultOk, 0,
+					"get quota failed"));
 		}
 	}
 }

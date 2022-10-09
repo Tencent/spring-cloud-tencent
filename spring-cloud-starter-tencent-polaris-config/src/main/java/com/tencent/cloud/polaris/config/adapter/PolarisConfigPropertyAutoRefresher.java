@@ -37,7 +37,7 @@ import org.springframework.util.CollectionUtils;
  * 1. Listen to the Polaris server configuration publishing event 2. Write the changed
  * configuration content to propertySource 3. Refresh the context through contextRefresher
  *
- * @author lepdou
+ * @author lepdou 2022-03-28
  */
 public abstract class PolarisConfigPropertyAutoRefresher
 		implements ApplicationListener<ApplicationReadyEvent>, PolarisConfigPropertyRefresher {

@@ -41,7 +41,7 @@
 
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-loadbalancer</artifactId>
+			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
 		</dependency>
 
 		<dependency>
@@ -55,18 +55,12 @@
 			<artifactId>mockito-inline</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>com.tencent.polaris</groupId>
+            <artifactId>polaris-discovery-client</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>net.bytebuddy</groupId>
-			<artifactId>byte-buddy</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    </dependencies>
 
 </project>

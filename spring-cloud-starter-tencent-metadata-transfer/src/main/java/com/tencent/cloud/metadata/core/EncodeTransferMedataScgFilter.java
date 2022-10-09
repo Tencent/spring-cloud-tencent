@@ -39,7 +39,7 @@ import org.springframework.web.server.ServerWebExchange;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
-import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
+import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 
 /**
  * Scg filter used for writing metadata in HTTP request header.

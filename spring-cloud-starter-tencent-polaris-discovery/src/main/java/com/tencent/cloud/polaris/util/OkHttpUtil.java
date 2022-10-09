@@ -77,7 +77,8 @@ public final class OkHttpUtil {
 	 * @param builder builder
 	 * @param headers headers
 	 */
-	private static void buildHeader(Request.Builder builder, Map<String, String> headers) {
+	private static void buildHeader(Request.Builder builder,
+			Map<String, String> headers) {
 		if (Objects.nonNull(headers) && headers.size() > 0) {
 			headers.forEach((k, v) -> {
 				if (Objects.nonNull(k) && Objects.nonNull(v)) {

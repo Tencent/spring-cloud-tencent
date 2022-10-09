@@ -54,6 +54,7 @@ public class StaticMetadataManager {
 	private static final String ENV_METADATA_PREFIX = "SCT_METADATA_CONTENT_";
 	private static final int ENV_METADATA_PREFIX_LENGTH = ENV_METADATA_PREFIX.length();
 	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
+
 	private static final String ENV_METADATA_CONTENT_DISPOSABLE = "SCT_METADATA_CONTENT_DISPOSABLE";
 	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
 	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
@@ -84,7 +84,6 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		String peerServiceName = requestTemplate.feignTarget().name();
 		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
 				MetadataContext.LOCAL_SERVICE, peerServiceName);
-
 		Map<String, String> ruleExpressionLabels = getRuleExpressionLabels(requestTemplate, expressionLabelKeys);
 		labels.putAll(ruleExpressionLabels);
 
@@ -116,10 +115,11 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
-		requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
+		requestTemplate.header(RouterConstant.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
 	private Map<String, String> getRuleExpressionLabels(RequestTemplate requestTemplate, Set<String> labelKeys) {
+
 		if (CollectionUtils.isEmpty(labelKeys)) {
 			return Collections.emptyMap();
 		}

@@ -22,10 +22,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
-import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
+import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
+import org.springframework.cloud.openfeign.ribbon.CachingSpringLoadBalancerFactory;
+import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,11 +56,11 @@ public class EnhancedFeignBeanPostProcessorTest {
 			if (clazz.equals(BlockingLoadBalancerClient.class)) {
 				return mock(BlockingLoadBalancerClient.class);
 			}
-			if (clazz.equals(LoadBalancerProperties.class)) {
-				return mock(LoadBalancerProperties.class);
+			if (clazz.equals(CachingSpringLoadBalancerFactory.class)) {
+				return mock(CachingSpringLoadBalancerFactory.class);
 			}
-			if (clazz.equals(LoadBalancerClientFactory.class)) {
-				return mock(LoadBalancerClientFactory.class);
+			if (clazz.equals(SpringClientFactory.class)) {
+				return mock(SpringClientFactory.class);
 			}
 			return null;
 		}).when(beanFactory).getBean(any(Class.class));
@@ -70,12 +71,19 @@ public class EnhancedFeignBeanPostProcessorTest {
 		Object bean = enhancedFeignBeanPostProcessor.postProcessBeforeInitialization(bean1, "bean1");
 		assertThat(bean).isNotInstanceOfAny(
 				EnhancedFeignClient.class,
+				EnhancedLoadBalancerFeignClient.class,
 				EnhancedFeignBlockingLoadBalancerClient.class);
 
 		// bean instanceOf Client.class
 		Client bean2 = mock(Client.class);
 		bean = enhancedFeignBeanPostProcessor.postProcessBeforeInitialization(bean2, "bean2");
 		assertThat(bean).isInstanceOf(EnhancedFeignClient.class);
+
+		// bean instanceOf LoadBalancerFeignClient.class
+		LoadBalancerFeignClient bean3 = mock(LoadBalancerFeignClient.class);
+		doReturn(mock(Client.class)).when(bean3).getDelegate();
+		bean = enhancedFeignBeanPostProcessor.postProcessBeforeInitialization(bean3, "bean3");
+		assertThat(bean).isInstanceOf(EnhancedLoadBalancerFeignClient.class);
 
 		// bean instanceOf FeignBlockingLoadBalancerClient.class
 		FeignBlockingLoadBalancerClient bean4 = mock(FeignBlockingLoadBalancerClient.class);

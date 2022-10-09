@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
 
-
 /**
  * Read configuration from spring cloud's configuration file and override polaris.yaml.
  *

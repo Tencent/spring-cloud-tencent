@@ -67,15 +67,6 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
 		this.placeholderHelper = placeholderHelper;
 	}
 
-	public static Multimap<String, SpringValueDefinition> getBeanName2SpringValueDefinitions(BeanDefinitionRegistry registry) {
-		Multimap<String, SpringValueDefinition> springValueDefinitions = beanName2SpringValueDefinitions.get(registry);
-		if (springValueDefinitions == null) {
-			springValueDefinitions = LinkedListMultimap.create();
-		}
-
-		return springValueDefinitions;
-	}
-
 	@Override
 	public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
 		if (polarisConfigProperties.isAutoRefresh()) {
@@ -86,6 +77,15 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
 	@Override
 	public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
+	}
+
+	public static Multimap<String, SpringValueDefinition> getBeanName2SpringValueDefinitions(BeanDefinitionRegistry registry) {
+		Multimap<String, SpringValueDefinition> springValueDefinitions = beanName2SpringValueDefinitions.get(registry);
+		if (springValueDefinitions == null) {
+			springValueDefinitions = LinkedListMultimap.create();
+		}
+
+		return springValueDefinitions;
 	}
 
 	private void processPropertyValues(BeanDefinitionRegistry beanRegistry) {

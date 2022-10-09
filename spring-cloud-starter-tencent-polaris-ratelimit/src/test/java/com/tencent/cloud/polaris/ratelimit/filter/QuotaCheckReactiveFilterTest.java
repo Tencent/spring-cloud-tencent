@@ -123,9 +123,10 @@ public class QuotaCheckReactiveFilterTest {
 		polarisRateLimitProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
-		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.emptySet());
+		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.EMPTY_SET);
 
-		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(
+				limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
 	}
 
 	@Test
@@ -203,9 +204,7 @@ public class QuotaCheckReactiveFilterTest {
 		MetadataContext.LOCAL_SERVICE = "TestApp2";
 		long startTimestamp = System.currentTimeMillis();
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> {
-		}, t -> {
-		}, countDownLatch::countDown);
+		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> { }, t -> { }, countDownLatch::countDown);
 		try {
 			countDownLatch.await();
 		}

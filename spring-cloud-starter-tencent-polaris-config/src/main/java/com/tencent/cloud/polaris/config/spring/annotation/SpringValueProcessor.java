@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.config.spring.annotation;
@@ -154,13 +155,16 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 
 	private void processBeanPropertyValues(Object bean, String beanName) {
 		Collection<SpringValueDefinition> propertySpringValues = beanName2SpringValueDefinitions.get(beanName);
+
 		if (propertySpringValues.isEmpty()) {
 			return;
 		}
 
 		for (SpringValueDefinition definition : propertySpringValues) {
 			try {
-				PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(bean.getClass(), definition.getPropertyName());
+				PropertyDescriptor pd = BeanUtils
+						.getPropertyDescriptor(bean.getClass(), definition.getPropertyName());
+
 				if (pd != null) {
 					Method method = pd.getWriteMethod();
 					if (method == null) {

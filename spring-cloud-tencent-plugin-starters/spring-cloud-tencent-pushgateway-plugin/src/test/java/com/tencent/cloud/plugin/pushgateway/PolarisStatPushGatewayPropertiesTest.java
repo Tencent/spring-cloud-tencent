@@ -36,7 +36,9 @@ public class PolarisStatPushGatewayPropertiesTest {
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091")
-			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000");
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.namespace=default")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.service=grpc://183.47.111.80:8091");
 
 	@Test
 	public void polarisStatPushGatewayPropertiesTest() {
@@ -44,7 +46,9 @@ public class PolarisStatPushGatewayPropertiesTest {
 			PolarisStatPushGatewayProperties polarisStatPushGatewayProperties = context.getBean(PolarisStatPushGatewayProperties.class);
 			Assert.assertTrue(polarisStatPushGatewayProperties.isEnabled());
 			Assert.assertEquals("127.0.0.1:9091", polarisStatPushGatewayProperties.getAddress());
+			Assert.assertEquals("default", polarisStatPushGatewayProperties.getNamespace());
 			Assert.assertEquals("1000", polarisStatPushGatewayProperties.getPushInterval().toString());
+			Assert.assertEquals("grpc://183.47.111.80:8091", polarisStatPushGatewayProperties.getService());
 		});
 	}
 }

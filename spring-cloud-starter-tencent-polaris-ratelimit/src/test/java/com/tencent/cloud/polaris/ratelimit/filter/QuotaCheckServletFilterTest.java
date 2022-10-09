@@ -75,7 +75,7 @@ public class QuotaCheckServletFilterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<SpringWebExpressionLabelUtils> expressionLabelUtilsMockedStatic;
-	private final PolarisRateLimiterLabelServletResolver labelResolver =
+	private PolarisRateLimiterLabelServletResolver labelResolver =
 			exchange -> Collections.singletonMap("ServletResolver", "ServletResolver");
 	private QuotaCheckServletFilter quotaCheckServletFilter;
 	private QuotaCheckServletFilter quotaCheckWithHtmlRejectTipsServletFilter;

@@ -22,17 +22,27 @@ import java.util.List;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
+import com.tencent.cloud.polaris.router.feign.PolarisCachingSpringLoadBalanceFactory;
 import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
 import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.cloud.netflix.ribbon.RibbonClients;
+import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 
+/**
+ * configuration for feign singleton components.
+ * Feign-related components need to be loaded only in the feign environment.
+ *
+ * @author lepdou 2022-06-10
+ */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisRouterEnabled
-@ConditionalOnClass(name = {"feign.RequestInterceptor"})
+@ConditionalOnClass(name = {"org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer"})
+@RibbonClients(defaultConfiguration = {FeignLoadBalancerConfiguration.class})
 public class FeignAutoConfiguration {
 
 	@Bean
@@ -40,5 +50,10 @@ public class FeignAutoConfiguration {
 			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver) {
 		return new RouterLabelFeignInterceptor(routerLabelResolvers, staticMetadataManager, routerRuleLabelResolver);
+	}
+
+	@Bean
+	public PolarisCachingSpringLoadBalanceFactory polarisCachingSpringLoadBalanceFactory(SpringClientFactory factory) {
+		return new PolarisCachingSpringLoadBalanceFactory(factory);
 	}
 }

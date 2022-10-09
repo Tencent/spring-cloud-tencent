@@ -35,6 +35,12 @@
 
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-loadbalancer</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -42,6 +48,12 @@
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-test-common</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
 			<scope>test</scope>
 		</dependency>
 

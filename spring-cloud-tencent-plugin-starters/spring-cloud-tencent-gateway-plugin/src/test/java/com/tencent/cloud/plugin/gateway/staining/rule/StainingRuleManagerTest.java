@@ -37,12 +37,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class StainingRuleManagerTest {
 
-	@Mock
-	private ConfigFileService configFileService;
-
 	private final String testNamespace = "testNamespace";
 	private final String testGroup = "testGroup";
 	private final String testFileName = "rule.json";
+	@Mock
+	private ConfigFileService configFileService;
 
 	@Test
 	public void testNormalRule() {
@@ -59,7 +58,7 @@ public class StainingRuleManagerTest {
 				+ "                {\n"
 				+ "                    \"key\":\"${http.query.uid}\",\n"
 				+ "                    \"values\":[\"1000\"],\n"
-				+ "                    \"operation\":\"EQUAL\"\n"
+				+ "                    \"operation\":\"EQUALS\"\n"
 				+ "                }\n"
 				+ "            ],\n"
 				+ "            \"labels\":[\n"
@@ -99,7 +98,7 @@ public class StainingRuleManagerTest {
 				+ "                {\n"
 				+ "                    \"key\":\"${http.query.uid}\",\n"
 				+ "                    \"values\":[\"1000\"],\n"
-				+ "                    \"operation\":\"EQUAL\"\n"
+				+ "                    \"operation\":\"EQUALS\"\n"
 				+ "                }\n"
 				+ "            ],\n"
 				+ "            \"labels\":[\n"

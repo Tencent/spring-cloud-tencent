@@ -15,5 +15,6 @@
 - [feat: optimize pom dependency and demo](https://github.com/Tencent/spring-cloud-tencent/pull/71)
 - [feat:upgrade polaris version to 1.3.0.](https://github.com/Tencent/spring-cloud-tencent/pull/72)
 - [feat:rollback init polaris-context to application phase](https://github.com/Tencent/spring-cloud-tencent/pull/73)
-- [fix:fix junit not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/96)
+- [feat:tencent-commons add spring-cloud-starter dependency](https://github.com/Tencent/spring-cloud-tencent/pull/76)
+- [fix:fix fetching wrong PEER_SERVICE in SCG filter.](https://github.com/Tencent/spring-cloud-tencent/pull/79)
 

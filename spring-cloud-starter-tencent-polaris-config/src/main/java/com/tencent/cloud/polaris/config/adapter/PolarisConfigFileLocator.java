@@ -13,6 +13,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.config.adapter;
@@ -69,8 +70,10 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	private final Environment environment;
 
 	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
-			PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
-			PolarisPropertySourceManager polarisPropertySourceManager, Environment environment) {
+			PolarisContextProperties polarisContextProperties,
+			ConfigFileService configFileService,
+			PolarisPropertySourceManager polarisPropertySourceManager,
+			Environment environment) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisContextProperties = polarisContextProperties;
 		this.configFileService = configFileService;
@@ -189,26 +192,25 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 				polarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
-				LOGGER.info(
-						"[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}",
-						namespace, group, fileName);
+				LOGGER.info("[SCT Config] Load and inject polaris config file success."
+						+ " namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
 			}
 		}
 	}
 
-	private PolarisPropertySource loadPolarisPropertySource(String namespace, String group, String fileName) {
+	private PolarisPropertySource loadPolarisPropertySource(String namespace,
+			String group, String fileName) {
 		ConfigKVFile configKVFile;
 		// unknown extension is resolved as properties file
-		if (ConfigFileFormat.isPropertyFile(fileName)
-				|| ConfigFileFormat.isUnknownFile(fileName)) {
+		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
 			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
 		}
 		else if (ConfigFileFormat.isYamlFile(fileName)) {
 			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
 		}
 		else {
-			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace,
-					group, fileName);
+			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}",
+					namespace, group, fileName);
 
 			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml"
 					+ " can be injected into the spring context");
