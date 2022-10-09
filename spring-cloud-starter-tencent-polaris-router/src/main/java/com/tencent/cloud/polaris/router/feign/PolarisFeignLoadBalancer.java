@@ -28,11 +28,11 @@ import java.util.Optional;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
-import com.tencent.cloud.common.constant.PolarisRouterContext;
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.polaris.router.PolarisRouterContext;
 
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;
@@ -63,7 +63,7 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 
 	//set method to public for unit test
 	PolarisRouterContext buildRouterContext(Map<String, Collection<String>> headers) {
-		Collection<String> labelHeaderValues = headers.get(RouterConstants.ROUTER_LABEL_HEADER);
+		Collection<String> labelHeaderValues = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
 
 		if (CollectionUtils.isEmpty(labelHeaderValues)) {
 			return null;
@@ -71,7 +71,7 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
 
-		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get()
+		routerContext.putLabels(RouterConstant.TRANSITIVE_LABELS, MetadataContextHolder.get()
 				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE));
 
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
@@ -86,7 +86,7 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labelHeaderValuesMap);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labelHeaderValuesMap);
 
 		return routerContext;
 	}

@@ -28,13 +28,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.tencent.cloud.common.constant.PolarisRouterContext;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
+import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.assertj.core.api.Assertions;
@@ -150,7 +151,8 @@ public class PolarisLoadBalancerInterceptorTest {
 				catch (UnsupportedEncodingException e) {
 					throw new RuntimeException("unsupported charset exception " + UTF_8);
 				}
-				Assertions.assertThat(mockedResponse.getHeaders().get(PolarisRouterContext.ROUTER_LABELS).get(0)).isEqualTo(encodedLabelsContent);
+				Assertions.assertThat(mockedResponse.getHeaders().get(RouterConstant.ROUTER_LABELS).get(0))
+						.isEqualTo(encodedLabelsContent);
 			}
 		}
 	}
@@ -230,14 +232,14 @@ public class PolarisLoadBalancerInterceptorTest {
 				verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
 				verify(routerLabelResolver).resolve(request, null, expressionKeys);
 
-				Assert.assertEquals("v1", routerContext.getLabels(PolarisRouterContext.TRANSITIVE_LABELS).get("k1"));
-				Assert.assertEquals("v22", routerContext.getLabels(PolarisRouterContext.TRANSITIVE_LABELS).get("k2"));
-				Assert.assertEquals("v1", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k1"));
-				Assert.assertEquals("v22", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k2"));
-				Assert.assertEquals("v4", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k4"));
-				Assert.assertEquals("GET", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS)
+				Assert.assertEquals("v1", routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k1"));
+				Assert.assertEquals("v22", routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k2"));
+				Assert.assertEquals("v1", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k1"));
+				Assert.assertEquals("v22", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k2"));
+				Assert.assertEquals("v4", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k4"));
+				Assert.assertEquals("GET", routerContext.getLabels(RouterConstant.ROUTER_LABELS)
 						.get("${http.method}"));
-				Assert.assertEquals("/user/get", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS)
+				Assert.assertEquals("/user/get", routerContext.getLabels(RouterConstant.ROUTER_LABELS)
 						.get("${http.uri}"));
 			}
 		}

@@ -13,10 +13,9 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.common.constant;
+package com.tencent.cloud.polaris.router;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.tencent.cloud.common.constant.RouterConstant;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
@@ -35,14 +35,6 @@ import org.springframework.util.CollectionUtils;
  * @author lepdou 2022-05-17
  */
 public class PolarisRouterContext {
-	/**
-	 * the labels for rule router, contain transitive metadata.
-	 */
-	public static final String ROUTER_LABELS = "allMetadata";
-	/**
-	 * transitive labels.
-	 */
-	public static final String TRANSITIVE_LABELS = "transitiveMetadata";
 
 	private Map<String, Map<String, String>> labels;
 
@@ -78,7 +70,7 @@ public class PolarisRouterContext {
 	}
 
 	public String getLabel(String labelKey) {
-		Map<String, String> routerLabels = labels.get(ROUTER_LABELS);
+		Map<String, String> routerLabels = labels.get(RouterConstant.ROUTER_LABELS);
 		if (CollectionUtils.isEmpty(routerLabels)) {
 			return StringUtils.EMPTY;
 		}
@@ -86,7 +78,7 @@ public class PolarisRouterContext {
 	}
 
 	public Set<String> getLabelAsSet(String labelKey) {
-		Map<String, String> routerLabels = labels.get(ROUTER_LABELS);
+		Map<String, String> routerLabels = labels.get(RouterConstant.ROUTER_LABELS);
 		if (CollectionUtils.isEmpty(routerLabels)) {
 			return Collections.emptySet();
 		}

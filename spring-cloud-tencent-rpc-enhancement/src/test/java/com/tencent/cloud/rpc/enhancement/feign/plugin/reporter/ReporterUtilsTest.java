@@ -20,7 +20,7 @@ package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.api.pojo.RetStatus;
@@ -83,7 +83,7 @@ public class ReporterUtilsTest {
 		RequestTemplate requestTemplate = new RequestTemplate();
 		requestTemplate.feignTarget(target);
 		try {
-			requestTemplate.header(RouterConstants.ROUTER_LABEL_HEADER, URLEncoder.encode("{\"k1\":\"v1\",\"k2\":\"v2\"}", UTF_8));
+			requestTemplate.header(RouterConstant.ROUTER_LABEL_HEADER, URLEncoder.encode("{\"k1\":\"v1\",\"k2\":\"v2\"}", UTF_8));
 		}
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);

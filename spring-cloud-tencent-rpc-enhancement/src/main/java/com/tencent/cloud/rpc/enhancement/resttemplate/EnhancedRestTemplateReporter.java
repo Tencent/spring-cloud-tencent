@@ -24,7 +24,7 @@ import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.PolarisRouterContext;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
@@ -55,10 +55,8 @@ import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
  */
 public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter implements ResponseErrorHandler, ApplicationContextAware {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedRestTemplateReporter.class);
-
 	static final String HEADER_HAS_ERROR = "X-SCT-Has-Error";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedRestTemplateReporter.class);
 	private final ConsumerAPI consumerAPI;
 	private ResponseErrorHandler delegateHandler;
 
@@ -136,7 +134,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 
-			List<String> labels = response.getHeaders().get(PolarisRouterContext.ROUTER_LABELS);
+			List<String> labels = response.getHeaders().get(RouterConstant.ROUTER_LABELS);
 			if (CollectionUtils.isNotEmpty(labels)) {
 				String label = labels.get(0);
 				try {

@@ -21,7 +21,7 @@ package com.tencent.cloud.polaris.router.interceptor;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.PolarisRouterContext;
+import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouter;

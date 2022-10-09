@@ -22,7 +22,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Collection;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -54,7 +54,7 @@ public final class ReporterUtils {
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		RequestTemplate requestTemplate = request.requestTemplate();
 		String serviceName = requestTemplate.feignTarget().name();
-		Collection<String> labels = requestTemplate.headers().get(RouterConstants.ROUTER_LABEL_HEADER);
+		Collection<String> labels = requestTemplate.headers().get(RouterConstant.ROUTER_LABEL_HEADER);
 		if (CollectionUtils.isNotEmpty(labels) && labels.iterator().hasNext()) {
 			String label = labels.iterator().next();
 			try {

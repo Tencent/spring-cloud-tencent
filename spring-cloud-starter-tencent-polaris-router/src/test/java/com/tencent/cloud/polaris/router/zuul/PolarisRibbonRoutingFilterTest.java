@@ -29,12 +29,13 @@ import com.netflix.client.config.IClientConfig;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.niws.client.http.RestClient;
 import com.netflix.zuul.context.RequestContext;
-import com.tencent.cloud.common.constant.PolarisRouterContext;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
+import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import okhttp3.OkHttpClient;
@@ -144,7 +145,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		PolarisRouterContext routerContext = polarisRibbonRoutingFilter.genRouterContext(request, calleeService);
 
-		Map<String, String> routerLabels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
+		Map<String, String> routerLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
 		Assert.assertEquals("v1", routerLabels.get("${http.header.k1}"));
 		Assert.assertEquals("zhangsan", routerLabels.get("${http.query.userid}"));
 		Assert.assertEquals("blue", routerLabels.get("env"));
