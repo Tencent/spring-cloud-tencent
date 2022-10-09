@@ -19,21 +19,25 @@
 package com.tencent.cloud.polaris.router.resttemplate;
 
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.assertj.core.api.Assertions;
@@ -49,14 +53,22 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.mock.http.client.MockClientHttpResponse;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link RouterLabelRestTemplateInterceptor}
- * @author liuye 2022-09-16
+ * Test for {@link RouterLabelRestTemplateInterceptor}.
+ *
+ * @author liuye, Haotian Zhang
  */
 @RunWith(MockitoJUnitRunner.class)
 public class RouterLabelRestTemplateInterceptorTest {
@@ -71,6 +83,9 @@ public class RouterLabelRestTemplateInterceptorTest {
 	private RouterRuleLabelResolver routerRuleLabelResolver;
 	@Mock
 	private PolarisContextProperties polarisContextProperties;
+
+	@Mock
+	private ClientHttpRequestExecution clientHttpRequestExecution;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -98,19 +113,21 @@ public class RouterLabelRestTemplateInterceptorTest {
 		localMetadata.put("k1", "v1");
 		localMetadata.put("k2", "v2");
 		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
+		Map<String, String> routerLabels = new HashMap<>(localMetadata);
 
 		// mock expression rule labels
-
 		Set<String> expressionKeys = new HashSet<>();
 		expressionKeys.add("${http.method}");
 		expressionKeys.add("${http.uri}");
 		when(routerRuleLabelResolver.getExpressionLabelKeys(callerService, callerService, calleeService)).thenReturn(expressionKeys);
+		routerLabels.putAll(SpringWebExpressionLabelUtils.resolve(request, expressionKeys));
 
 		// mock custom resolved from request
 		Map<String, String> customResolvedLabels = new HashMap<>();
 		customResolvedLabels.put("k2", "v22");
 		customResolvedLabels.put("k4", "v4");
 		when(routerLabelResolver.resolve(request, null, expressionKeys)).thenReturn(customResolvedLabels);
+		routerLabels.putAll(customResolvedLabels);
 
 		MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 
@@ -119,26 +136,40 @@ public class RouterLabelRestTemplateInterceptorTest {
 		transitiveLabels.put("k1", "v1");
 		transitiveLabels.put("k2", "v22");
 		when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE)).thenReturn(transitiveLabels);
+		routerLabels.putAll(transitiveLabels);
 
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
 		RouterLabelRestTemplateInterceptor routerLabelRestTemplateInterceptor = new RouterLabelRestTemplateInterceptor(
 				Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
 
-		routerLabelRestTemplateInterceptor.setLabelsToHeaders(request, null, calleeService);
+		ClientHttpResponse mockedResponse = new MockClientHttpResponse(new byte[] {}, HttpStatus.OK);
+		when(clientHttpRequestExecution.execute(eq(request), any())).thenReturn(mockedResponse);
+
+		routerLabelRestTemplateInterceptor.intercept(request, null, clientHttpRequestExecution);
 
 		verify(staticMetadataManager).getMergedStaticMetadata();
 		verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
 		verify(routerLabelResolver).resolve(request, null, expressionKeys);
 
 
-		Map<String, String> headers = JacksonUtils.deserialize2Map(URLDecoder.decode(request.getHeaders()
-				.get(RouterConstants.ROUTER_LABEL_HEADER).get(0), "UTF-8"));
+		Map<String, String> headers = JacksonUtils.deserialize2Map(URLDecoder.decode(Objects.requireNonNull(request.getHeaders()
+				.get(RouterConstant.ROUTER_LABEL_HEADER)).get(0), "UTF-8"));
 		Assertions.assertThat("v1").isEqualTo(headers.get("k1"));
 		Assertions.assertThat("v22").isEqualTo(headers.get("k2"));
 		Assertions.assertThat("v4").isEqualTo(headers.get("k4"));
 		Assertions.assertThat("GET").isEqualTo(headers.get("${http.method}"));
 		Assertions.assertThat("/user/get").isEqualTo(headers.get("${http.uri}"));
+		String encodedLabelsContent;
+		try {
+			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), UTF_8);
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("unsupported charset exception " + UTF_8);
+		}
+		Assertions.assertThat(mockedResponse.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER).get(0))
+				.isEqualTo(encodedLabelsContent);
+
 	}
 
 	static class MockedHttpRequest implements HttpRequest {

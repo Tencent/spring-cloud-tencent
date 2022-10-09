@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
@@ -59,11 +59,11 @@ import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Service routing entrance.
- *
+ * <p>
  * Rule routing needs to rely on request parameters for server filtering.
  * The interface cannot obtain the context object of the request granularity,
  * so the routing capability cannot be achieved through ServerListFilter.
- *
+ * <p>
  * And {@link PolarisRouterServiceInstanceListSupplier#get(Request)} provides the ability to pass in http headers,
  * so routing capabilities are implemented through IRule.
  *
@@ -114,7 +114,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 
 	//set method to public for unit test
 	PolarisRouterContext buildRouterContext(HttpHeaders headers) {
-		Collection<String> labelHeaderValues = headers.get(RouterConstants.ROUTER_LABEL_HEADER);
+		Collection<String> labelHeaderValues = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
 
 		if (CollectionUtils.isEmpty(labelHeaderValues)) {
 			return null;
@@ -122,7 +122,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
 
-		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get()
+		routerContext.putLabels(RouterConstant.TRANSITIVE_LABELS, MetadataContextHolder.get()
 				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE));
 
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
@@ -137,7 +137,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labelHeaderValuesMap);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labelHeaderValuesMap);
 		return routerContext;
 	}
 

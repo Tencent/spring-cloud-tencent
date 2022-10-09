@@ -12,3 +12,4 @@
 - [fix pr 606: modify a part of changes requested by review.](https://github.com/Tencent/spring-cloud-tencent/pull/620)
 - [fix pr 613: modify a judgment logic](https://github.com/Tencent/spring-cloud-tencent/pull/618)
 - [Feature: support new label expression](https://github.com/Tencent/spring-cloud-tencent/pull/627)
+- [feat:report the labels when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/629)

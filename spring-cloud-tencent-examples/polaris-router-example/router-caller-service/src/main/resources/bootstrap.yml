@@ -8,12 +8,18 @@ spring:
       metadata:
         content:
           k1: v1
+      rpc-enhancement:
+        reporter:
+          enabled: true
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default
       enabled: true
       loadbalancer:
         enabled: true
+      stat:
+        enabled: true
+        port: 28081
 management:
   endpoints:
     web:
