@@ -24,7 +24,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.PolarisRouterContext;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
@@ -129,7 +129,7 @@ public class EnhancedRestTemplateReporterTest {
 
 		URI uri = mock(URI.class);
 		String labels = URLEncoder.encode("{\"k1\":\"v1\",\"k2\":\"v2\"}", UTF_8);
-		response.getHeaders().set(PolarisRouterContext.ROUTER_LABELS, labels);
+		response.getHeaders().set(RouterConstant.ROUTER_LABELS, labels);
 		enhancedRestTemplateReporter.handleError(uri, HttpMethod.GET, response);
 
 		verify(consumerAPI, times(2)).updateServiceCallResult((ServiceCallResult) captor.capture());

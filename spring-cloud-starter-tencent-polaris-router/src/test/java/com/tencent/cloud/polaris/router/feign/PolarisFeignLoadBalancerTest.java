@@ -26,12 +26,12 @@ import java.util.Map;
 
 import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.loadbalancer.ILoadBalancer;
-import com.tencent.cloud.common.constant.PolarisRouterContext;
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.SimpleLoadBalancer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public class PolarisFeignLoadBalancerTest {
 		headerValues.add(JacksonUtils.serialize2Json(labels));
 
 		Map<String, Collection<String>> headers = new HashMap<>();
-		headers.put(RouterConstants.ROUTER_LABEL_HEADER, headerValues);
+		headers.put(RouterConstant.ROUTER_LABEL_HEADER, headerValues);
 
 		// mock ApplicationContextAwareUtils#getProperties
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
@@ -85,7 +85,7 @@ public class PolarisFeignLoadBalancerTest {
 				PolarisRouterContext routerContext = polarisFeignLoadBalancer.buildRouterContext(headers);
 
 				Assert.assertNotNull(routerContext);
-				Map<String, String> routerLabels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
+				Map<String, String> routerLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
 				Assert.assertNotNull(routerLabels);
 				Assert.assertEquals("v1", routerLabels.get("k1"));
 				Assert.assertEquals("v2", routerLabels.get("k2"));

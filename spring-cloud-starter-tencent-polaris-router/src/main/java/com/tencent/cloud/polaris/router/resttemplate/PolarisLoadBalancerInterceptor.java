@@ -29,12 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.tencent.cloud.common.constant.PolarisRouterContext;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
+import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.slf4j.Logger;
@@ -103,7 +104,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 			PolarisRouterContext routerContext = genRouterContext(request, body, peerServiceName);
 			ClientHttpResponse response = ((RibbonLoadBalancerClient) loadBalancer).execute(peerServiceName,
 					this.requestFactory.createRequest(request, body, execution), routerContext);
-			Map<String, String> labels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
+			Map<String, String> labels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
 
 			// put labels in header
 			String encodedLabelsContent;
@@ -113,7 +114,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 			catch (UnsupportedEncodingException e) {
 				throw new RuntimeException("unsupported charset exception " + UTF_8);
 			}
-			response.getHeaders().add(PolarisRouterContext.ROUTER_LABELS, encodedLabelsContent);
+			response.getHeaders().add(RouterConstant.ROUTER_LABELS, encodedLabelsContent);
 			return response;
 		}
 
@@ -155,8 +156,8 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
 
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
-		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, transitiveLabels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
+		routerContext.putLabels(RouterConstant.TRANSITIVE_LABELS, transitiveLabels);
 
 		return routerContext;
 	}
