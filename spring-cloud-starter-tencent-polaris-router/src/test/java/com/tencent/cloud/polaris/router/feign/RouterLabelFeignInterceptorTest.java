@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
@@ -118,7 +118,7 @@ public class RouterLabelFeignInterceptorTest {
 
 				routerLabelFeignInterceptor.apply(requestTemplate);
 
-				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstants.ROUTER_LABEL_HEADER);
+				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstant.ROUTER_LABEL_HEADER);
 
 				Assert.assertNotNull(routerLabels);
 				for (String value : routerLabels) {

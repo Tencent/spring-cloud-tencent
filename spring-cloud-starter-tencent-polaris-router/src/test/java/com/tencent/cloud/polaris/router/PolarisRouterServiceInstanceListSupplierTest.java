@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
@@ -115,10 +116,10 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
 
-			Map<String, String> oldRouterLabels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
+			Map<String, String> oldRouterLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
 			Map<String, String> newRouterLabels = new HashMap<>(oldRouterLabels);
 			newRouterLabels.put("system-metadata-router-keys", "k2");
-			routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, newRouterLabels);
+			routerContext.putLabels(RouterConstant.ROUTER_LABELS, newRouterLabels);
 
 			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
@@ -246,8 +247,8 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 		Map<String, String> routerLabels = new HashMap<>();
 		routerLabels.put("k2", "v2");
 		routerLabels.put("k3", "v3");
-		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, transitiveLabels);
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, routerLabels);
+		routerContext.putLabels(RouterConstant.TRANSITIVE_LABELS, transitiveLabels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, routerLabels);
 		return routerContext;
 	}
 

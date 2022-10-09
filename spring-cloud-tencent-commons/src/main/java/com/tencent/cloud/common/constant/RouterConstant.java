@@ -21,18 +21,26 @@ package com.tencent.cloud.common.constant;
 /**
  * Router constants.
  *
- * @author lepdou 2022-05-17
+ * @author lepdou, Hoatian Zhang
  */
-public final class RouterConstants {
+public final class RouterConstant {
 
 	/**
 	 * the header of router label.
 	 */
 	public static final String ROUTER_LABEL_HEADER = "internal-router-label";
+	/**
+	 * the labels for rule router, contain transitive metadata.
+	 */
+	public static final String ROUTER_LABELS = "allMetadata";
+	/**
+	 * transitive labels.
+	 */
+	public static final String TRANSITIVE_LABELS = "transitiveMetadata";
 
 	/**
 	 * Default Private Constructor.
 	 */
-	private RouterConstants() {
+	private RouterConstant() {
 	}
 }

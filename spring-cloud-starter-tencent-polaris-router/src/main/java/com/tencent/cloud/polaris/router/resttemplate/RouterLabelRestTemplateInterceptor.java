@@ -27,9 +27,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
@@ -57,7 +58,7 @@ import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
  * Interceptor used for adding the route label in http headers from context when web client
  * is RestTemplate.
  *
- * @author liuye 2022-09-14
+ * @author liuye, Hoatian Zhang
  */
 public class RouterLabelRestTemplateInterceptor implements ClientHttpRequestInterceptor, Ordered {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RouterLabelRestTemplateInterceptor.class);
@@ -99,7 +100,14 @@ public class RouterLabelRestTemplateInterceptor implements ClientHttpRequestInte
 
 		setLabelsToHeaders(request, body, peerServiceName);
 
-		return clientHttpRequestExecution.execute(request, body);
+		ClientHttpResponse response = clientHttpRequestExecution.execute(request, body);
+
+		if (!CollectionUtils.isEmpty(request.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER))) {
+			response.getHeaders().addAll(RouterConstant.ROUTER_LABEL_HEADER, Objects.requireNonNull(request.getHeaders()
+					.get(RouterConstant.ROUTER_LABEL_HEADER)));
+		}
+
+		return response;
 	}
 
 	void setLabelsToHeaders(HttpRequest request, byte[] body, String peerServiceName) {
@@ -143,7 +151,7 @@ public class RouterLabelRestTemplateInterceptor implements ClientHttpRequestInte
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
-		request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
+		request.getHeaders().set(RouterConstant.ROUTER_LABEL_HEADER, encodedLabelsContent);
 	}
 
 	private Map<String, String> getExpressionLabels(HttpRequest request, Set<String> labelKeys) {
