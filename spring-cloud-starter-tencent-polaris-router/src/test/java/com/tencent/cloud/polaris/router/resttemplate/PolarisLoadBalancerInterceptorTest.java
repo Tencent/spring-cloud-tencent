@@ -22,22 +22,15 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
-import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
@@ -79,11 +72,7 @@ public class PolarisLoadBalancerInterceptorTest {
 	@Mock
 	private LoadBalancerRequestFactory loadBalancerRequestFactory;
 	@Mock
-	private SpringWebRouterLabelResolver routerLabelResolver;
-	@Mock
-	private StaticMetadataManager staticMetadataManager;
-	@Mock
-	private RouterRuleLabelResolver routerRuleLabelResolver;
+	private RouterContextFactory routerContextFactory;
 
 	@Test
 	public void testProxyRibbonLoadBalance() throws Exception {
@@ -91,28 +80,13 @@ public class PolarisLoadBalancerInterceptorTest {
 		String calleeService = "calleeService";
 		HttpRequest request = new MockedHttpRequest("http://" + calleeService + "/user/get");
 
+		PolarisRouterContext routerContext = new PolarisRouterContext();
 		Map<String, String> routerLabels = new HashMap<>();
-		// mock local metadata
-		Map<String, String> localMetadata = new HashMap<>();
-		localMetadata.put("k1", "v1");
-		localMetadata.put("k2", "v2");
-		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
-		routerLabels.putAll(localMetadata);
+		routerLabels.put("k1", "v1");
+		routerLabels.put("k2", "v12");
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, routerLabels);
 
-		// mock expression rule labels
-		Set<String> expressionKeys = new HashSet<>();
-		expressionKeys.add("${http.method}");
-		expressionKeys.add("${http.uri}");
-		when(routerRuleLabelResolver.getExpressionLabelKeys(callerService, callerService, calleeService)).thenReturn(expressionKeys);
-		routerLabels.putAll(SpringWebExpressionLabelUtils.resolve(request, expressionKeys));
-
-		// mock custom resolved from request
-		Map<String, String> customResolvedLabels = new HashMap<>();
-		customResolvedLabels.put("k3", "v3");
-		customResolvedLabels.put("k4", "v4");
-		when(routerLabelResolver.resolve(request, null, expressionKeys)).thenReturn(customResolvedLabels);
-		routerLabels.putAll(customResolvedLabels);
-
+		when(routerContextFactory.create(request, null, calleeService)).thenReturn(routerContext);
 
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
 			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
@@ -120,30 +94,21 @@ public class PolarisLoadBalancerInterceptorTest {
 
 			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 
-			// mock transitive metadata
-			Map<String, String> transitiveLabels = new HashMap<>();
-			transitiveLabels.put("k1", "v1");
-			transitiveLabels.put("k2", "v22");
-			when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE)).thenReturn(transitiveLabels);
-			routerLabels.putAll(transitiveLabels);
-
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
+
 
 				LoadBalancerRequest<ClientHttpResponse> loadBalancerRequest = new MockedLoadBalancerRequest<>();
 				when(loadBalancerRequestFactory.createRequest(request, null, null)).thenReturn(loadBalancerRequest);
 
 				PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor = new PolarisLoadBalancerInterceptor(loadBalancerClient,
-						loadBalancerRequestFactory, Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver);
+						loadBalancerRequestFactory, routerContextFactory);
 
 				ClientHttpResponse mockedResponse = new MockClientHttpResponse(new byte[] {}, HttpStatus.OK);
 				when(loadBalancerClient.execute(eq(calleeService), eq(loadBalancerRequest), any(PolarisRouterContext.class))).thenReturn(mockedResponse);
 
 				polarisLoadBalancerInterceptor.intercept(request, null, null);
 
-				verify(staticMetadataManager).getMergedStaticMetadata();
-				verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
-				verify(routerLabelResolver).resolve(request, null, expressionKeys);
 				String encodedLabelsContent;
 				try {
 					encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), UTF_8);
@@ -170,9 +135,7 @@ public class PolarisLoadBalancerInterceptorTest {
 		when(notRibbonLoadBalancerClient.execute(calleeService, loadBalancerRequest)).thenReturn(mockedResponse);
 
 		PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor = new PolarisLoadBalancerInterceptor(
-				notRibbonLoadBalancerClient, loadBalancerRequestFactory,
-				Collections.singletonList(routerLabelResolver), staticMetadataManager,
-				routerRuleLabelResolver);
+				notRibbonLoadBalancerClient, loadBalancerRequestFactory, routerContextFactory);
 
 		ClientHttpResponse response = polarisLoadBalancerInterceptor.intercept(request, null, null);
 
@@ -180,69 +143,6 @@ public class PolarisLoadBalancerInterceptorTest {
 		verify(loadBalancerRequestFactory).createRequest(request, null, null);
 		verify(notRibbonLoadBalancerClient).execute(calleeService, loadBalancerRequest);
 
-	}
-
-	@Test
-	public void testRouterContext() {
-		String callerService = "callerService";
-		String calleeService = "calleeService";
-		HttpRequest request = new MockedHttpRequest("http://" + calleeService + "/user/get");
-
-		// mock local metadata
-		Map<String, String> localMetadata = new HashMap<>();
-		localMetadata.put("k1", "v1");
-		localMetadata.put("k2", "v2");
-		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
-
-		// mock expression rule labels
-		Set<String> expressionKeys = new HashSet<>();
-		expressionKeys.add("${http.method}");
-		expressionKeys.add("${http.uri}");
-		when(routerRuleLabelResolver.getExpressionLabelKeys(callerService, callerService, calleeService)).thenReturn(expressionKeys);
-
-		// mock custom resolved from request
-		Map<String, String> customResolvedLabels = new HashMap<>();
-		customResolvedLabels.put("k2", "v22");
-		customResolvedLabels.put("k4", "v4");
-		when(routerLabelResolver.resolve(request, null, expressionKeys)).thenReturn(customResolvedLabels);
-
-		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
-					.thenReturn(callerService);
-
-			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
-
-			// mock transitive metadata
-			Map<String, String> transitiveLabels = new HashMap<>();
-			transitiveLabels.put("k1", "v1");
-			transitiveLabels.put("k2", "v22");
-			when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE)).thenReturn(transitiveLabels);
-
-			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
-				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
-
-				PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor =
-						new PolarisLoadBalancerInterceptor(loadBalancerClient, loadBalancerRequestFactory,
-								Collections.singletonList(routerLabelResolver), staticMetadataManager,
-								routerRuleLabelResolver);
-
-				PolarisRouterContext routerContext = polarisLoadBalancerInterceptor.genRouterContext(request, null, calleeService);
-
-				verify(staticMetadataManager).getMergedStaticMetadata();
-				verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
-				verify(routerLabelResolver).resolve(request, null, expressionKeys);
-
-				Assert.assertEquals("v1", routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k1"));
-				Assert.assertEquals("v22", routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k2"));
-				Assert.assertEquals("v1", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k1"));
-				Assert.assertEquals("v22", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k2"));
-				Assert.assertEquals("v4", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k4"));
-				Assert.assertEquals("GET", routerContext.getLabels(RouterConstant.ROUTER_LABELS)
-						.get("${http.method}"));
-				Assert.assertEquals("/user/get", routerContext.getLabels(RouterConstant.ROUTER_LABELS)
-						.get("${http.uri}"));
-			}
-		}
 	}
 
 	static class MockedLoadBalancerRequest<T> implements LoadBalancerRequest<T> {
@@ -273,7 +173,7 @@ public class PolarisLoadBalancerInterceptorTest {
 
 		@Override
 		public HttpHeaders getHeaders() {
-			return null;
+			return new HttpHeaders();
 		}
 	}
 }
