@@ -6,3 +6,4 @@
 - [Optimize: optimize configuration conditional & optimize config data tips"](https://github.com/Tencent/spring-cloud-tencent/pull/605)
 - [Optimize: Maybe remove Chinese characters](https://github.com/Tencent/spring-cloud-tencent/pull/609)
 - [Bugfix: fix feign report call result error when using feign direct call](https://github.com/Tencent/spring-cloud-tencent/pull/623)
+- [optimize:optimize PolarisRouterContext and constants.](https://github.com/Tencent/spring-cloud-tencent/pull/628)
