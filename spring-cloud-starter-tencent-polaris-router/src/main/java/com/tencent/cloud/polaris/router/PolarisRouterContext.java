@@ -102,4 +102,12 @@ public class PolarisRouterContext {
 		}
 		labels.put(labelType, subLabels);
 	}
+
+	public Map<String, Map<String, String>> getLabels() {
+		return labels;
+	}
+
+	public void setLabels(Map<String, Map<String, String>> labels) {
+		this.labels = labels;
+	}
 }

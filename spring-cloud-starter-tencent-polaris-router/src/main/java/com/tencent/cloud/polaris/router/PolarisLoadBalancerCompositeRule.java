@@ -32,8 +32,10 @@ import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.WeightedResponseTimeRule;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServer;
+import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRule;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
@@ -45,19 +47,20 @@ import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
+import org.yaml.snakeyaml.util.UriEncoder;
 
+import org.springframework.http.HttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- *
  * Service routing entrance.
- *
+ * <p>
  * Rule routing needs to rely on request parameters for server filtering,
  * and {@link com.netflix.loadbalancer.ServerListFilter#getFilteredListOfServers(List)}
  * The interface cannot obtain the context object of the request granularity,
  * so the routing capability cannot be achieved through ServerListFilter.
- *
+ * <p>
  * And {@link com.netflix.loadbalancer.IRule#choose(Object)} provides the ability to pass in context parameters,
  * so routing capabilities are implemented through IRule.
  *
@@ -117,6 +120,7 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		ILoadBalancer loadBalancer = new SimpleLoadBalancer();
 		// 2. filter by router
 		if (key instanceof PolarisRouterContext) {
+			// router implement for Feign and scg
 			PolarisRouterContext routerContext = (PolarisRouterContext) key;
 			List<Server> serversAfterRouter = doRouter(allServers, routerContext);
 			// 3. filter by load balance.
@@ -124,9 +128,26 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 			// because the list of servers may be different after filtered by router
 			loadBalancer.addServers(serversAfterRouter);
 		}
+		else if (key instanceof HttpRequest) {
+			// router implement for rest template
+			HttpRequest request = (HttpRequest) key;
+
+			String routerContextStr = request.getHeaders().getFirst(RouterConstant.HEADER_ROUTER_CONTEXT);
+
+			if (StringUtils.isEmpty(routerContextStr)) {
+				loadBalancer.addServers(allServers);
+			}
+			else {
+				PolarisRouterContext routerContext = JacksonUtils.deserialize(UriEncoder.decode(routerContextStr),
+						PolarisRouterContext.class);
+				List<Server> serversAfterRouter = doRouter(allServers, routerContext);
+				loadBalancer.addServers(serversAfterRouter);
+			}
+		}
 		else {
 			loadBalancer.addServers(allServers);
 		}
+
 		delegateRule.setLoadBalancer(loadBalancer);
 
 		return delegateRule.choose(key);

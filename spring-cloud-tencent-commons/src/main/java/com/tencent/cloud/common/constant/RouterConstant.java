@@ -39,6 +39,11 @@ public final class RouterConstant {
 	public static final String ROUTER_LABEL_HEADER = "internal-router-label";
 
 	/**
+	 *
+	 */
+	public static final String HEADER_ROUTER_CONTEXT = "routerContext";
+
+	/**
 	 * Default Private Constructor.
 	 */
 	private RouterConstant() {

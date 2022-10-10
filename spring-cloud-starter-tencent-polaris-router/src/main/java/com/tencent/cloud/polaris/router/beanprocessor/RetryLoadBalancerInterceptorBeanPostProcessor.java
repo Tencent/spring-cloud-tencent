@@ -18,25 +18,27 @@
 
 package com.tencent.cloud.polaris.router.beanprocessor;
 
-import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerInterceptor;
+import com.tencent.cloud.polaris.router.resttemplate.PolarisRetryLoadBalancerInterceptor;
 import com.tencent.cloud.polaris.router.resttemplate.RouterContextFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.cloud.client.loadbalancer.LoadBalancedRetryFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerRetryProperties;
+import org.springframework.cloud.client.loadbalancer.RetryLoadBalancerInterceptor;
 import org.springframework.lang.NonNull;
 
 /**
- * Replace {@link LoadBalancerInterceptor} with {@link PolarisLoadBalancerInterceptor}.
- * PolarisLoadBalancerInterceptor can pass routing context information.
+ * Replace {@link RetryLoadBalancerInterceptor}RetryLoadBalancerInterceptor with {@link PolarisRetryLoadBalancerInterceptor}.
+ * PolarisRetryLoadBalancerInterceptor can pass routing context information.
  *
- * @author lepdou 2022-05-18
+ * @author lepdou 2022-10-09
  */
-public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
+public class RetryLoadBalancerInterceptorBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
 	private BeanFactory factory;
 
@@ -47,14 +49,19 @@ public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcess
 
 	@Override
 	public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
-		if (bean instanceof LoadBalancerInterceptor) {
+		if (bean instanceof RetryLoadBalancerInterceptor) {
 			// Support rest template router.
-			// Replaces the default LoadBalancerInterceptor implementation and returns a custom PolarisLoadBalancerInterceptor
-			LoadBalancerRequestFactory requestFactory = this.factory.getBean(LoadBalancerRequestFactory.class);
+			// Replaces the default RetryLoadBalancerInterceptor implementation
+			// and returns a custom PolarisRetryLoadBalancerInterceptor
+
 			LoadBalancerClient loadBalancerClient = this.factory.getBean(LoadBalancerClient.class);
+			LoadBalancerRetryProperties lbProperties = this.factory.getBean(LoadBalancerRetryProperties.class);
+			LoadBalancerRequestFactory requestFactory = this.factory.getBean(LoadBalancerRequestFactory.class);
+			LoadBalancedRetryFactory lbRetryFactory = this.factory.getBean(LoadBalancedRetryFactory.class);
 			RouterContextFactory routerContextFactory = this.factory.getBean(RouterContextFactory.class);
 
-			return new PolarisLoadBalancerInterceptor(loadBalancerClient, requestFactory, routerContextFactory);
+			return new PolarisRetryLoadBalancerInterceptor(loadBalancerClient, lbProperties, requestFactory, lbRetryFactory,
+					routerContextFactory);
 		}
 		return bean;
 	}
