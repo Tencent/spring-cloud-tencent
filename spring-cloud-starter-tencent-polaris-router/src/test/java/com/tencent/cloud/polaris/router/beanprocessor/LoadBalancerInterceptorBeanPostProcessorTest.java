@@ -17,9 +17,7 @@
 
 package com.tencent.cloud.polaris.router.beanprocessor;
 
-import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
-import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerInterceptor;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.junit.Assert;
@@ -50,18 +48,12 @@ public class LoadBalancerInterceptorBeanPostProcessorTest {
 	@Mock
 	private LoadBalancerRequestFactory loadBalancerRequestFactory;
 	@Mock
-	private StaticMetadataManager staticMetadataManager;
-	@Mock
-	private RouterRuleLabelResolver routerRuleLabelResolver;
-	@Mock
 	private BeanFactory beanFactory;
 
 	@Test
 	public void testWrapperLoadBalancerInterceptor() {
 		when(beanFactory.getBean(LoadBalancerRequestFactory.class)).thenReturn(loadBalancerRequestFactory);
 		when(beanFactory.getBean(LoadBalancerClient.class)).thenReturn(loadBalancerClient);
-		when(beanFactory.getBean(StaticMetadataManager.class)).thenReturn(staticMetadataManager);
-		when(beanFactory.getBean(RouterRuleLabelResolver.class)).thenReturn(routerRuleLabelResolver);
 
 		try (MockedStatic<BeanFactoryUtils> mockedBeanFactoryUtils = Mockito.mockStatic(BeanFactoryUtils.class)) {
 			mockedBeanFactoryUtils.when(() -> BeanFactoryUtils.getBeans(beanFactory, SpringWebRouterLabelResolver.class))
