@@ -19,38 +19,15 @@
 package com.tencent.cloud.polaris.router.resttemplate;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.tencent.cloud.common.constant.RouterConstants;
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.StaticMetadataManager;
-import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
-import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
-import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor capabilities.
@@ -59,32 +36,15 @@ import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
  * @author lepdou, cheese8
  */
 public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisLoadBalancerInterceptor.class);
 
 	private final LoadBalancerClient loadBalancer;
 	private final LoadBalancerRequestFactory requestFactory;
-	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
-	private final StaticMetadataManager staticMetadataManager;
-	private final RouterRuleLabelResolver routerRuleLabelResolver;
 
 	public PolarisLoadBalancerInterceptor(LoadBalancerClient loadBalancer,
-			LoadBalancerRequestFactory requestFactory,
-			List<SpringWebRouterLabelResolver> routerLabelResolvers,
-			StaticMetadataManager staticMetadataManager,
-			RouterRuleLabelResolver routerRuleLabelResolver) {
+			LoadBalancerRequestFactory requestFactory) {
 		super(loadBalancer, requestFactory);
 		this.loadBalancer = loadBalancer;
 		this.requestFactory = requestFactory;
-		this.staticMetadataManager = staticMetadataManager;
-		this.routerRuleLabelResolver = routerRuleLabelResolver;
-
-		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
-			routerLabelResolvers.sort(Comparator.comparingInt(Ordered::getOrder));
-			this.routerLabelResolvers = routerLabelResolvers;
-		}
-		else {
-			this.routerLabelResolvers = null;
-		}
 	}
 
 	@Override
@@ -94,61 +54,7 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 		Assert.state(peerServiceName != null,
 				"Request URI does not contain a valid hostname: " + originalUri);
 
-		setLabelsToHeaders(request, body, peerServiceName);
-
 		return this.loadBalancer.execute(peerServiceName,
 				new PolarisLoadBalancerRequest<>(request, this.requestFactory.createRequest(request, body, execution)));
-	}
-
-	void setLabelsToHeaders(HttpRequest request, byte[] body, String peerServiceName) {
-		// local service labels
-		Map<String, String> labels = new HashMap<>(staticMetadataManager.getMergedStaticMetadata());
-
-		// labels from rule expression
-		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
-				MetadataContext.LOCAL_SERVICE, peerServiceName);
-
-		Map<String, String> ruleExpressionLabels = getExpressionLabels(request, expressionLabelKeys);
-		if (!CollectionUtils.isEmpty(ruleExpressionLabels)) {
-			labels.putAll(ruleExpressionLabels);
-		}
-
-		// labels from request
-		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
-			routerLabelResolvers.forEach(resolver -> {
-				try {
-					Map<String, String> customResolvedLabels = resolver.resolve(request, body, expressionLabelKeys);
-					if (!CollectionUtils.isEmpty(customResolvedLabels)) {
-						labels.putAll(customResolvedLabels);
-					}
-				}
-				catch (Throwable t) {
-					LOGGER.error("[SCT][Router] revoke RouterLabelResolver occur some exception. ", t);
-				}
-			});
-		}
-
-		// labels from downstream
-		Map<String, String> transitiveLabels = MetadataContextHolder.get()
-				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		labels.putAll(transitiveLabels);
-
-		// pass label by header
-		String encodedLabelsContent;
-		try {
-			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(labels), UTF_8);
-		}
-		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + UTF_8);
-		}
-		request.getHeaders().set(RouterConstants.ROUTER_LABEL_HEADER, encodedLabelsContent);
-	}
-
-	private Map<String, String> getExpressionLabels(HttpRequest request, Set<String> labelKeys) {
-		if (CollectionUtils.isEmpty(labelKeys)) {
-			return Collections.emptyMap();
-		}
-
-		return SpringWebExpressionLabelUtils.resolve(request, labelKeys);
 	}
 }
