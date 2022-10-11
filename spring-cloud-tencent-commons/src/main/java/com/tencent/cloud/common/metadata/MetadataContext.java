@@ -144,6 +144,10 @@ public class MetadataContext {
 		return this.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS);
 	}
 
+	public Map<String, String> getTransHeadersKV(){
+		return this.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV);
+	}
+
 	public Map<String, String> getLoadbalancerMetadata() {
 		return this.getFragmentContext(FRAGMENT_LOAD_BALANCER);
 	}
