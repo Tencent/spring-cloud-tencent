@@ -135,7 +135,7 @@ public class RouterLabelRestTemplateInterceptorTest {
 		Map<String, String> transitiveLabels = new HashMap<>();
 		transitiveLabels.put("k1", "v1");
 		transitiveLabels.put("k2", "v22");
-		when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE)).thenReturn(transitiveLabels);
+		when(metadataContext.getTransitiveMetadata()).thenReturn(transitiveLabels);
 		routerLabels.putAll(transitiveLabels);
 
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
