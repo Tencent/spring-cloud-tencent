@@ -56,12 +56,19 @@ public class StaticMetadataManager {
 	private static final String ENV_METADATA_CONTENT_TRANSITIVE = "SCT_METADATA_CONTENT_TRANSITIVE";
 
 	private static final String ENV_METADATA_CONTENT_DISPOSABLE = "SCT_METADATA_CONTENT_DISPOSABLE";
+	/**
+	 * This is the key of the header's key list needed to be transmitted. The list is a string split with ,.
+	 * The value mapped by this key was specified by user.
+	 * This is configured in environment variables.
+	 */
+	private static final String ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS = "SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS";
 	private static final String ENV_METADATA_ZONE = "SCT_METADATA_ZONE";
 	private static final String ENV_METADATA_REGION = "SCT_METADATA_REGION";
 	private static final String ENV_METADATA_CAMPUS = "SCT_METADATA_CAMPUS";
 	private Map<String, String> envMetadata;
 	private Map<String, String> envTransitiveMetadata;
 	private Map<String, String> envDisposableMetadata;
+	private Map<String, String> envNotReportMetadata;
 	private Map<String, String> configMetadata;
 	private Map<String, String> configTransitiveMetadata;
 	private Map<String, String> configDisposableMetadata;
@@ -95,14 +102,23 @@ public class StaticMetadataManager {
 		Map<String, String> allEnvs = System.getenv();
 
 		envMetadata = new HashMap<>();
+		envNotReportMetadata = new HashMap<>();
 		// parse all metadata
 		for (Map.Entry<String, String> entry : allEnvs.entrySet()) {
 			String key = entry.getKey();
 			String value = entry.getValue();
-			if (StringUtils.isNotBlank(key) && key.startsWith(ENV_METADATA_PREFIX)
+			if (StringUtils.isNotBlank(key)
+					&& (key.startsWith(ENV_METADATA_PREFIX) || key.equals(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS))
 					&& !key.equals(ENV_METADATA_CONTENT_TRANSITIVE)) {
-				String sourceKey = StringUtils.substring(key, ENV_METADATA_PREFIX_LENGTH);
-				envMetadata.put(sourceKey, value);
+				String sourceKey;
+				if (key.equals(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS)) {
+					sourceKey = key;
+					envNotReportMetadata.put(sourceKey, value);
+				}
+				else {
+					sourceKey = StringUtils.substring(key, ENV_METADATA_PREFIX_LENGTH);
+					envMetadata.put(sourceKey, value);
+				}
 
 				LOGGER.info("[SCT] resolve metadata from env. key = {}, value = {}", sourceKey, value);
 			}
@@ -268,6 +284,10 @@ public class StaticMetadataManager {
 
 	public Map<String, String> getAllEnvMetadata() {
 		return envMetadata;
+	}
+
+	public String getTransHeaderFromEnv() {
+		return envNotReportMetadata.get(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS);
 	}
 
 	public Map<String, String> getEnvTransitiveMetadata() {

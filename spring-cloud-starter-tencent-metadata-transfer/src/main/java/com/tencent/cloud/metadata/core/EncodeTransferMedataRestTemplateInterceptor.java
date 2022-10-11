@@ -61,6 +61,7 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
+		Map<String, String> transHeaders = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV);
 
 		Map<String, String> newestCustomMetadata = new HashMap<>();
 		customMetadata.forEach((key, value) -> {
@@ -74,7 +75,18 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		// build custom metadata request header
 		this.buildMetadataHeader(httpRequest, newestCustomMetadata, CUSTOM_METADATA);
 
+		// set headers that need to be transmitted from the upstream
+		this.buildTransmittedHeader(httpRequest, transHeaders);
+
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
+	}
+
+	private void buildTransmittedHeader(HttpRequest request, Map<String, String> transHeaders) {
+		if (!CollectionUtils.isEmpty(transHeaders)) {
+			transHeaders.entrySet().stream().forEach(entry -> {
+				request.getHeaders().set(entry.getKey(), entry.getValue());
+			});
+		}
 	}
 
 	/**
