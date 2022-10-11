@@ -13,7 +13,6 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.common.metadata;
@@ -35,7 +34,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * manage metadata from env/config file/custom spi.
  *
- * @author lepdou 2022-05-20
+ * @author lepdou, Haotian Zhang
  */
 public class StaticMetadataManager {
 	/**
@@ -67,6 +66,7 @@ public class StaticMetadataManager {
 	private Map<String, String> envMetadata;
 	private Map<String, String> envTransitiveMetadata;
 	private Map<String, String> envDisposableMetadata;
+	private Map<String, String> envNotReportMetadata;
 	private Map<String, String> configMetadata;
 	private Map<String, String> configTransitiveMetadata;
 	private Map<String, String> configDisposableMetadata;
@@ -100,6 +100,7 @@ public class StaticMetadataManager {
 		Map<String, String> allEnvs = System.getenv();
 
 		envMetadata = new HashMap<>();
+		envNotReportMetadata = new HashMap<>();
 		// parse all metadata
 		for (Map.Entry<String, String> entry : allEnvs.entrySet()) {
 			String key = entry.getKey();
@@ -110,11 +111,12 @@ public class StaticMetadataManager {
 				String sourceKey = "";
 				if (key.equals(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS)) {
 					sourceKey = key;
+					envNotReportMetadata.put(sourceKey, value);
 				}
 				else {
 					sourceKey = StringUtils.substring(key, ENV_METADATA_PREFIX_LENGTH);
+					envMetadata.put(sourceKey, value);
 				}
-				envMetadata.put(sourceKey, value);
 
 				LOGGER.info("[SCT] resolve metadata from env. key = {}, value = {}", sourceKey, value);
 			}
@@ -284,7 +286,7 @@ public class StaticMetadataManager {
 	}
 
 	public String getTransHeaderFromEnv() {
-		return envMetadata.get(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS);
+		return envNotReportMetadata.get(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS);
 	}
 
 	public Map<String, String> getEnvTransitiveMetadata() {

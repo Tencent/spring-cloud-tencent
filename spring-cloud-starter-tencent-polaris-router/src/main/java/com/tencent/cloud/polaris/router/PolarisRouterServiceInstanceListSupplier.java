@@ -95,21 +95,23 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		Flux<List<ServiceInstance>> allServers = getDelegate().get();
 
 		// 2. filter by router
+		PolarisRouterContext routerContext = null;
+
 		DefaultRequestContext requestContext = (DefaultRequestContext) request.getContext();
-		PolarisRouterContext key;
 		if (requestContext instanceof RequestDataContext) {
-			key = buildRouterContext(((RequestDataContext) requestContext).getClientRequest().getHeaders());
+			routerContext = buildRouterContext(((RequestDataContext) requestContext).getClientRequest().getHeaders());
 		}
 		else if (requestContext.getClientRequest() instanceof PolarisLoadBalancerRequest) {
-			key = buildRouterContext(((PolarisLoadBalancerRequest<?>) requestContext.getClientRequest()).getRequest()
+			routerContext = buildRouterContext(((PolarisLoadBalancerRequest<?>) requestContext.getClientRequest()).getRequest()
 					.getHeaders());
 		}
-		else {
+
+		if (routerContext == null) {
 			// return all servers if router context is null.
 			return allServers;
 		}
 
-		return doRouter(allServers, key);
+		return doRouter(allServers, routerContext);
 	}
 
 	//set method to public for unit test
