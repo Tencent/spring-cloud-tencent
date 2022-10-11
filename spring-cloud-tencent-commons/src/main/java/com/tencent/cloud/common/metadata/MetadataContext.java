@@ -144,7 +144,7 @@ public class MetadataContext {
 		return this.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS);
 	}
 
-	public Map<String, String> getTransHeadersKV(){
+	public Map<String, String> getTransHeadersKV() {
 		return this.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV);
 	}
 
