@@ -61,6 +61,7 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
+		Map<String, String> transHeaders = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV);
 
 		// Clean up one-time metadata coming from upstream .
 		Map<String, String> newestCustomMetadata = new HashMap<>();
@@ -71,8 +72,20 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 		});
 		this.buildMetadataHeader(requestTemplate, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
-		// process custom metadata finally
+		// process custom metadata
 		this.buildMetadataHeader(requestTemplate, newestCustomMetadata, CUSTOM_METADATA);
+
+		// set headers that need to be transmitted from the upstream
+		this.buildTransmittedHeader(requestTemplate, transHeaders);
+	}
+
+	private void buildTransmittedHeader(RequestTemplate requestTemplate, Map<String, String> transHeaders) {
+		if (!CollectionUtils.isEmpty(transHeaders)) {
+			transHeaders.entrySet().stream().forEach(entry -> {
+				requestTemplate.removeHeader(entry.getKey());
+				requestTemplate.header(entry.getKey(), entry.getValue());
+			});
+		}
 	}
 
 	/**
