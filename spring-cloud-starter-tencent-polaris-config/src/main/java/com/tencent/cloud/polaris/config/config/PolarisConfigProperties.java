@@ -70,6 +70,20 @@ public class PolarisConfigProperties {
 	 */
 	private List<ConfigFileGroup> groups;
 
+	/**
+	 * Where to load config file. default is polaris.
+	 * <br>
+	 * polaris: load from polaris server.
+	 * <br>
+	 * local: load from local file system.
+	 */
+	private String dataSource = "polaris";
+
+	/**
+	 * The root path of config files, only used in local mode.
+	 */
+	private String localFileRootPath = "./polaris/backup/config";
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -132,5 +146,21 @@ public class PolarisConfigProperties {
 
 	public void setPreference(boolean preference) {
 		this.preference = preference;
+	}
+
+	public String getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(String dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	public String getLocalFileRootPath() {
+		return localFileRootPath;
+	}
+
+	public void setLocalFileRootPath(String localFileRootPath) {
+		this.localFileRootPath = localFileRootPath;
 	}
 }

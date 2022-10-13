@@ -16,5 +16,6 @@
 - [Feature: support new label expression](https://github.com/Tencent/spring-cloud-tencent/pull/627)
 - [feat:report the labels when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/629)
 - [Bugfix: fix throw npe when router context is null](https://github.com/Tencent/spring-cloud-tencent/pull/635)
-- [fix:cancel reporting useless metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/639)
 - [Optimize:optimize transfer](https://github.com/Tencent/spring-cloud-tencent/pull/636)
+- [fix:cancel reporting useless metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/639)
+- [Feature: support read config file from local file system](https://github.com/Tencent/spring-cloud-tencent/pull/640)
