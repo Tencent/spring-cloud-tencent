@@ -92,7 +92,7 @@ public class MetadataMiddleController {
 
 		// Get Custom Metadata From Context
 		MetadataContext context = MetadataContextHolder.get();
-		Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		Map<String, String> customMetadataMap = context.getTransitiveMetadata();
 
 		customMetadataMap.forEach((key, value) -> {
 			LOG.info("Metadata Middle Custom Metadata (Key-Value): {} : {}", key, value);

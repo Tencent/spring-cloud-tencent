@@ -50,7 +50,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link RouterLabelFeignInterceptor}
+ * test for {@link RouterLabelFeignInterceptor}.
  * @author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -92,7 +92,7 @@ public class RouterLabelFeignInterceptorTest {
 			Map<String, String> transitiveLabels = new HashMap<>();
 			transitiveLabels.put("k1", "v1");
 			transitiveLabels.put("k2", "v22");
-			when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE)).thenReturn(transitiveLabels);
+			when(metadataContext.getTransitiveMetadata()).thenReturn(transitiveLabels);
 
 			// mock MetadataContextHolder#get
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
