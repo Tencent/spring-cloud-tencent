@@ -37,7 +37,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.mockito.Mockito.when;
 
 /**
- * test for {@link RouterRuleLabelResolver}
+ * test for {@link RouterRuleLabelResolver}.
  *@author lepdou 2022-05-26
  */
 @RunWith(MockitoJUnitRunner.class)
