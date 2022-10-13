@@ -42,6 +42,9 @@ import org.springframework.util.CollectionUtils;
 public class ConfigurationModifier implements PolarisConfigModifier {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationModifier.class);
 
+	private static final String DATA_SOURCE_POLARIS = "polaris";
+	private static final String DATA_SOURCE_LOCAL = "local";
+
 	private final PolarisConfigProperties polarisConfigProperties;
 
 	private final PolarisContextProperties polarisContextProperties;
@@ -54,6 +57,27 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
+		if (StringUtils.equalsIgnoreCase(polarisConfigProperties.getDataSource(), DATA_SOURCE_POLARIS)) {
+			initByPolarisDataSource(configuration);
+		}
+		else if (StringUtils.equalsIgnoreCase(polarisConfigProperties.getDataSource(), DATA_SOURCE_LOCAL)) {
+			initByLocalDataSource(configuration);
+		}
+		else {
+			throw new RuntimeException("Unsupported config data source");
+		}
+	}
+
+	private void initByLocalDataSource(ConfigurationImpl configuration) {
+		configuration.getConfigFile().getServerConnector().setConnectorType("localFile");
+
+		String localFileRootPath = polarisConfigProperties.getLocalFileRootPath();
+		configuration.getConfigFile().getServerConnector().setPersistDir(localFileRootPath);
+
+		LOGGER.info("[SCT] Run spring cloud tencent config with local data source. localFileRootPath = {}", localFileRootPath);
+	}
+
+	private void initByPolarisDataSource(ConfigurationImpl configuration) {
 		// set connector type
 		configuration.getConfigFile().getServerConnector().setConnectorType("polaris");
 
@@ -76,6 +100,8 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 		checkAddressAccessible(configAddresses);
 
 		configuration.getConfigFile().getServerConnector().setAddresses(configAddresses);
+
+		LOGGER.info("[SCT] Run spring cloud tencent config in polaris data source.");
 	}
 
 	@Override
