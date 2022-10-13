@@ -110,8 +110,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 	private void reportResult(URI url, ClientHttpResponse response) {
 		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
-			Map<String, String> loadBalancerContext = MetadataContextHolder.get()
-					.getFragmentContext(MetadataContext.FRAGMENT_LOAD_BALANCER);
+			Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
 
 			String targetHost = loadBalancerContext.get("host");
 			String targetPort = loadBalancerContext.get("port");

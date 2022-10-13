@@ -130,8 +130,7 @@ public class RouterLabelRestTemplateInterceptor implements ClientHttpRequestInte
 		}
 
 		// labels from downstream
-		Map<String, String> transitiveLabels = MetadataContextHolder.get()
-				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		Map<String, String> transitiveLabels = MetadataContextHolder.get().getTransitiveMetadata();
 		labels.putAll(transitiveLabels);
 
 		// pass label by header

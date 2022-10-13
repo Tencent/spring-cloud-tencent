@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.rpc.enhancement.resttemplate;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import org.aspectj.lang.ProceedingJoinPoint;
 
@@ -37,9 +36,8 @@ public final class LoadBalancerClientAspectUtils {
 		Object server = joinPoint.getArgs()[0];
 		if (server instanceof ServiceInstance) {
 			ServiceInstance instance = (ServiceInstance) server;
-			MetadataContextHolder.get().putContext(MetadataContext.FRAGMENT_LOAD_BALANCER, "host", instance.getHost());
-			MetadataContextHolder.get()
-					.putContext(MetadataContext.FRAGMENT_LOAD_BALANCER, "port", String.valueOf(instance.getPort()));
+			MetadataContextHolder.get().setLoadbalancer("host", instance.getHost());
+			MetadataContextHolder.get().setLoadbalancer("port", String.valueOf(instance.getPort()));
 		}
 	}
 }

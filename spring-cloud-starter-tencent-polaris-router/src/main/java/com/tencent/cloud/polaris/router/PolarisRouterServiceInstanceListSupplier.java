@@ -124,8 +124,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
 
-		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get()
-				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE));
+		routerContext.putLabels(PolarisRouterContext.TRANSITIVE_LABELS, MetadataContextHolder.get().getTransitiveMetadata());
 
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
 		try {

@@ -98,7 +98,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 		Map<String, String> transitiveLabels = new HashMap<>();
 		transitiveLabels.put("t1", "v1");
 		transitiveLabels.put("t2", "v2");
-		when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE)).thenReturn(transitiveLabels);
+		when(metadataContext.getTransitiveMetadata()).thenReturn(transitiveLabels);
 
 		mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class);
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
