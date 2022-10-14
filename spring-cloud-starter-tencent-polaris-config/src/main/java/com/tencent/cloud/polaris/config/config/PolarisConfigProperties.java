@@ -55,6 +55,12 @@ public class PolarisConfigProperties {
 	private boolean shutdownIfConnectToConfigServerFailed = true;
 
 	/**
+	 * When the local configuration is consistent with the remote configuration, whether to
+	 * preferentially load the remote configuration.
+	 */
+	private boolean preference = true;
+
+	/**
 	 * Attribute refresh type.
 	 */
 	private RefreshType refreshType = RefreshType.REFLECT;
@@ -63,6 +69,20 @@ public class PolarisConfigProperties {
 	 * List of injected configuration files.
 	 */
 	private List<ConfigFileGroup> groups;
+
+	/**
+	 * Where to load config file. default is polaris.
+	 * <br>
+	 * polaris: load from polaris server.
+	 * <br>
+	 * local: load from local file system.
+	 */
+	private String dataSource = "polaris";
+
+	/**
+	 * The root path of config files, only used in local mode.
+	 */
+	private String localFileRootPath = "./polaris/backup/config";
 
 	public boolean isEnabled() {
 		return enabled;
@@ -118,5 +138,29 @@ public class PolarisConfigProperties {
 
 	public void setGroups(List<ConfigFileGroup> groups) {
 		this.groups = groups;
+	}
+
+	public boolean isPreference() {
+		return preference;
+	}
+
+	public void setPreference(boolean preference) {
+		this.preference = preference;
+	}
+
+	public String getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(String dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	public String getLocalFileRootPath() {
+		return localFileRootPath;
+	}
+
+	public void setLocalFileRootPath(String localFileRootPath) {
+		this.localFileRootPath = localFileRootPath;
 	}
 }
