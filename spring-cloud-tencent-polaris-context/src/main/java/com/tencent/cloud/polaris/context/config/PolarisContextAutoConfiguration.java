@@ -18,8 +18,11 @@
 
 package com.tencent.cloud.polaris.context.config;
 
+import java.util.List;
+
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.ModifyAddress;
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
@@ -31,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * Autoconfiguration for Polaris {@link SDKContext}.
@@ -44,9 +48,11 @@ public class PolarisContextAutoConfiguration {
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean
-	public SDKContext polarisContext(PolarisContextProperties properties)
+	public SDKContext polarisContext(PolarisContextProperties properties, Environment environment,
+			List<PolarisConfigModifier> modifierList)
 			throws PolarisException {
-		return SDKContext.initContextByConfig(properties.configuration());
+		return SDKContext.initContextByConfig(properties.configuration(modifierList,
+				() -> environment.getProperty("spring.cloud.client.ip-address")));
 	}
 
 	@Bean

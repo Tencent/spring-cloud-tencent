@@ -33,6 +33,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.junit.AfterClass;
@@ -82,6 +83,8 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	private GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
 	@Mock
 	private LoadBalancerProperties loadBalancerProperties;
+	@Mock
+	private PolarisContextProperties polarisContextProperties;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -111,7 +114,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	public void testGenRouterHttpHeaders() throws UnsupportedEncodingException {
 		PolarisReactiveLoadBalancerClientFilter filter = new PolarisReactiveLoadBalancerClientFilter(loadBalancerClientFactory,
 				gatewayLoadBalancerProperties, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
-				Lists.newArrayList(routerLabelResolver));
+				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");

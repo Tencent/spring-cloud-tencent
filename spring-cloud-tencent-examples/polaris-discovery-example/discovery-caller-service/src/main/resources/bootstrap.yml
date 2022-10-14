@@ -11,7 +11,7 @@ spring:
           region: shanghai
       rpc-enhancement:
         reporter:
-          enabled: true
+          enabled: false
     polaris:
       address: grpc://183.47.111.80:8091
       namespace: default

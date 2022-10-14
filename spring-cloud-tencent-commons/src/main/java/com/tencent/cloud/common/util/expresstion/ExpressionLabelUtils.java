@@ -13,12 +13,13 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.common.util.expresstion;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,69 +34,105 @@ import org.springframework.util.CollectionUtils;
  */
 public final class ExpressionLabelUtils {
 
-	/**
-	 * the expression prefix of header label.
-	 */
-	public static final String LABEL_HEADER_PREFIX = "${http.header.";
-	/**
-	 * the length of expression header label prefix.
-	 */
-	public static final int LABEL_HEADER_PREFIX_LEN = LABEL_HEADER_PREFIX.length();
-	/**
-	 * the expression prefix of query.
-	 */
-	public static final String LABEL_QUERY_PREFIX = "${http.query.";
-	/**
-	 * the length of expression query label prefix.
-	 */
-	public static final int LABEL_QUERY_PREFIX_LEN = LABEL_QUERY_PREFIX.length();
-	/**
-	 * the expression prefix of cookie.
-	 */
-	public static final String LABEL_COOKIE_PREFIX = "${http.cookie.";
-	/**
-	 * the length of expression cookie label prefix.
-	 */
-	public static final int LABEL_COOKIE_PREFIX_LEN = LABEL_COOKIE_PREFIX.length();
-	/**
-	 * the expression of method.
-	 */
-	public static final String LABEL_METHOD = "${http.method}";
-	/**
-	 * the expression of uri.
-	 */
-	public static final String LABEL_URI = "${http.uri}";
+	private static final List<ExpressionParser> EXPRESSION_PARSERS;
 
-	/**
-	 * the prefix of expression.
-	 */
-	public static final String LABEL_PREFIX = "${";
-
-	/**
-	 * the suffix of expression.
-	 */
-	public static final String LABEL_SUFFIX = "}";
+	static {
+		EXPRESSION_PARSERS = new ArrayList<>(2);
+		EXPRESSION_PARSERS.add(new ExpressionParserV1());
+		EXPRESSION_PARSERS.add(new ExpressionParserV2());
+	}
 
 	private ExpressionLabelUtils() {
 	}
 
-	public static boolean isExpressionLabel(String labelKey) {
-		if (StringUtils.isEmpty(labelKey)) {
-			return false;
+	public static boolean isExpressionLabel(String expression) {
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isExpressionLabel(expression)) {
+				return true;
+			}
 		}
-		return StringUtils.startsWith(labelKey, LABEL_PREFIX) && StringUtils.endsWith(labelKey, LABEL_SUFFIX);
+		return false;
+	}
+
+	public static boolean isHeaderLabel(String expression) {
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isHeaderLabel(expression)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static String parseHeaderKey(String expression) {
-		return expression.substring(LABEL_HEADER_PREFIX_LEN, expression.length() - 1);
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isHeaderLabel(expression)) {
+				return parser.parseHeaderKey(expression);
+			}
+		}
+		return "";
+	}
+
+	public static boolean isQueryLabel(String expression) {
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isQueryLabel(expression)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static String parseQueryKey(String expression) {
-		return expression.substring(LABEL_QUERY_PREFIX_LEN, expression.length() - 1);
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isQueryLabel(expression)) {
+				return parser.parseQueryKey(expression);
+			}
+		}
+		return "";
+	}
+
+	public static boolean isCookieLabel(String expression) {
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isCookieLabel(expression)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static String parseCookieKey(String expression) {
-		return expression.substring(LABEL_COOKIE_PREFIX_LEN, expression.length() - 1);
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isCookieLabel(expression)) {
+				return parser.parseCookieKey(expression);
+			}
+		}
+		return "";
+	}
+
+	public static boolean isMethodLabel(String expression) {
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isMethodLabel(expression)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isUriLabel(String expression) {
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isUriLabel(expression)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isCallerIPLabel(String expression) {
+		for (ExpressionParser parser : EXPRESSION_PARSERS) {
+			if (parser.isCallerIPLabel(expression)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static String getQueryValue(String queryString, String queryKey) {
