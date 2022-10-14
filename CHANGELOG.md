@@ -11,3 +11,4 @@
 - [Bugfix: fix throw npe when router context is null](https://github.com/Tencent/spring-cloud-tencent/pull/634)
 - [feat:Transfer http headers specified by environment variables](https://github.com/Tencent/spring-cloud-tencent/pull/637)
 - [feat:support new label expression](https://github.com/Tencent/spring-cloud-tencent/pull/641)
+- [feat:support read config file from local file system.](https://github.com/Tencent/spring-cloud-tencent/pull/643)
