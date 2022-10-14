@@ -32,6 +32,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.assertj.core.api.Assertions;
@@ -67,6 +68,8 @@ public class RouterLabelRestTemplateInterceptorTest {
 	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
+	@Mock
+	private PolarisContextProperties polarisContextProperties;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -119,7 +122,7 @@ public class RouterLabelRestTemplateInterceptorTest {
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
 		RouterLabelRestTemplateInterceptor routerLabelRestTemplateInterceptor = new RouterLabelRestTemplateInterceptor(
-				Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver);
+				Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
 
 		routerLabelRestTemplateInterceptor.setLabelsToHeaders(request, null, calleeService);
 

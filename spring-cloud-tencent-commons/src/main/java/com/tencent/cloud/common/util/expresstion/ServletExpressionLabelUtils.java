@@ -50,31 +50,31 @@ public final class ServletExpressionLabelUtils {
 			if (!ExpressionLabelUtils.isExpressionLabel(labelKey)) {
 				continue;
 			}
-			if (StringUtils.startsWithIgnoreCase(labelKey, ExpressionLabelUtils.LABEL_HEADER_PREFIX)) {
+			if (ExpressionLabelUtils.isHeaderLabel(labelKey)) {
 				String headerKey = ExpressionLabelUtils.parseHeaderKey(labelKey);
 				if (StringUtils.isBlank(headerKey)) {
 					continue;
 				}
 				labels.put(labelKey, request.getHeader(headerKey));
 			}
-			else if (StringUtils.startsWithIgnoreCase(labelKey, ExpressionLabelUtils.LABEL_QUERY_PREFIX)) {
+			else if (ExpressionLabelUtils.isQueryLabel(labelKey)) {
 				String queryKey = ExpressionLabelUtils.parseQueryKey(labelKey);
 				if (StringUtils.isBlank(queryKey)) {
 					continue;
 				}
 				labels.put(labelKey, ExpressionLabelUtils.getQueryValue(request.getQueryString(), queryKey));
 			}
-			else if (StringUtils.startsWithIgnoreCase(labelKey, ExpressionLabelUtils.LABEL_COOKIE_PREFIX)) {
+			else if (ExpressionLabelUtils.isCookieLabel(labelKey)) {
 				String cookieKey = ExpressionLabelUtils.parseCookieKey(labelKey);
 				if (StringUtils.isBlank(cookieKey)) {
 					continue;
 				}
 				labels.put(labelKey, getCookieValue(request.getCookies(), cookieKey));
 			}
-			else if (StringUtils.equalsIgnoreCase(ExpressionLabelUtils.LABEL_METHOD, labelKey)) {
+			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
 				labels.put(labelKey, request.getMethod());
 			}
-			else if (StringUtils.equalsIgnoreCase(ExpressionLabelUtils.LABEL_URI, labelKey)) {
+			else if (ExpressionLabelUtils.isUriLabel(labelKey)) {
 				labels.put(labelKey, request.getRequestURI());
 			}
 		}
