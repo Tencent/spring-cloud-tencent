@@ -11,3 +11,4 @@
 - [optimize:optimize PolarisRouterContext and constants.](https://github.com/Tencent/spring-cloud-tencent/pull/628)
 - [support spring-retry router](https://github.com/Tencent/spring-cloud-tencent/pull/631)
 - [feat:Transfer http headers specified by environment variables](https://github.com/Tencent/spring-cloud-tencent/pull/638)
+- [feat:support read config file from local file system.](https://github.com/Tencent/spring-cloud-tencent/pull/649)

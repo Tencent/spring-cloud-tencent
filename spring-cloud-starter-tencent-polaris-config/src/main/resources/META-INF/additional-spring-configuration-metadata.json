@@ -53,6 +53,18 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Whether shutdown server if connect to config server failed."
+    },
+    {
+      "name": "spring.cloud.polaris.config.data-source",
+      "type": "java.lang.String",
+      "defaultValue": "polaris",
+      "description": "Where to load config file, polaris or local."
+    },
+    {
+      "name": "spring.cloud.polaris.config.local-file-root-path",
+      "type": "java.lang.String",
+      "defaultValue": "./polaris/backup/config",
+      "description": "Where to load config file, polaris or local."
     }
   ]
 }
