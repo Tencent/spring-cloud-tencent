@@ -53,7 +53,7 @@ public class ExpressionParserV1 implements ExpressionParser {
 
 	@Override
 	public String parseHeaderKey(String expression) {
-		return expression.substring(LABEL_HEADER_PREFIX_LEN, expression.length() - 1);
+		return StringUtils.substring(expression, LABEL_HEADER_PREFIX_LEN, expression.length() - 1);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class ExpressionParserV1 implements ExpressionParser {
 
 	@Override
 	public String parseQueryKey(String expression) {
-		return expression.substring(LABEL_QUERY_PREFIX_LEN, expression.length() - 1);
+		return StringUtils.substring(expression, LABEL_QUERY_PREFIX_LEN, expression.length() - 1);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class ExpressionParserV1 implements ExpressionParser {
 
 	@Override
 	public String parseCookieKey(String expression) {
-		return expression.substring(LABEL_COOKIE_PREFIX_LEN, expression.length() - 1);
+		return StringUtils.substring(expression, LABEL_COOKIE_PREFIX_LEN, expression.length() - 1);
 	}
 
 	@Override
