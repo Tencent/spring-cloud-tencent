@@ -33,7 +33,9 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.slf4j.Logger;
@@ -62,12 +64,15 @@ public class RouterLabelRestTemplateInterceptor implements ClientHttpRequestInte
 	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
 	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
+	private final PolarisContextProperties polarisContextProperties;
 
 	public RouterLabelRestTemplateInterceptor(List<SpringWebRouterLabelResolver> routerLabelResolvers,
 			StaticMetadataManager staticMetadataManager,
-			RouterRuleLabelResolver routerRuleLabelResolver) {
+			RouterRuleLabelResolver routerRuleLabelResolver,
+			PolarisContextProperties polarisContextProperties) {
 		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
+		this.polarisContextProperties = polarisContextProperties;
 
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
 			routerLabelResolvers.sort(Comparator.comparingInt(Ordered::getOrder));
@@ -145,6 +150,16 @@ public class RouterLabelRestTemplateInterceptor implements ClientHttpRequestInte
 			return Collections.emptyMap();
 		}
 
-		return SpringWebExpressionLabelUtils.resolve(request, labelKeys);
+		//enrich labels from request
+		Map<String, String> labels = SpringWebExpressionLabelUtils.resolve(request, labelKeys);
+
+		//enrich caller ip label
+		for (String labelKey : labelKeys) {
+			if (ExpressionLabelUtils.isCallerIPLabel(labelKey)) {
+				labels.put(labelKey, polarisContextProperties.getLocalIpAddress());
+			}
+		}
+
+		return labels;
 	}
 }
