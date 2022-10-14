@@ -118,7 +118,6 @@ public class RouterLabelRestTemplateInterceptorTest {
 		transitiveLabels.put("k1", "v1");
 		transitiveLabels.put("k2", "v22");
 		when(metadataContext.getTransitiveMetadata()).thenReturn(transitiveLabels);
-		routerLabels.putAll(transitiveLabels);
 
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
