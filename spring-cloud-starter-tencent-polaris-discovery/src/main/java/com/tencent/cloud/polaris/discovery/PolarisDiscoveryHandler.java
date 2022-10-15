@@ -36,20 +36,23 @@ import org.springframework.stereotype.Component;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-@Component
 public class PolarisDiscoveryHandler {
 
-	@Autowired
-	private PolarisDiscoveryProperties polarisDiscoveryProperties;
+	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
-	@Autowired
-	private ProviderAPI providerAPI;
+	private final ProviderAPI providerAPI;
 
-	@Autowired
-	private SDKContext sdkContext;
+	private final SDKContext sdkContext;
 
-	@Autowired
-	private ConsumerAPI polarisConsumer;
+	private final ConsumerAPI polarisConsumer;
+
+	public PolarisDiscoveryHandler(PolarisDiscoveryProperties polarisDiscoveryProperties,
+								   ProviderAPI providerAPI, SDKContext sdkContext, ConsumerAPI polarisConsumer) {
+		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
+		this.providerAPI = providerAPI;
+		this.sdkContext = sdkContext;
+		this.polarisConsumer = polarisConsumer;
+	}
 
 	/**
 	 * Get a list of healthy instances.

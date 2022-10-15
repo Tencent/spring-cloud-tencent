@@ -21,6 +21,9 @@ import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 
+import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.core.ProviderAPI;
+import com.tencent.polaris.client.api.SDKContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,8 +41,10 @@ public class DiscoveryPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisDiscoveryHandler polarisDiscoveryHandler() {
-		return new PolarisDiscoveryHandler();
+	public PolarisDiscoveryHandler polarisDiscoveryHandler(PolarisDiscoveryProperties polarisDiscoveryProperties,
+														   ProviderAPI providerAPI, SDKContext sdkContext,
+														   ConsumerAPI polarisConsumer) {
+		return new PolarisDiscoveryHandler(polarisDiscoveryProperties,providerAPI,sdkContext,polarisConsumer);
 	}
 
 	@Bean
