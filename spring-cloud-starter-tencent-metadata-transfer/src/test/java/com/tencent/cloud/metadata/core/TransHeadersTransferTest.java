@@ -18,108 +18,69 @@
 
 package com.tencent.cloud.metadata.core;
 
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.support.DynamicEnvironmentVariable;
-import com.tencent.cloud.metadata.support.DynamicEnvironmentVariablesSpringJUnit4ClassRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.reactive.server.FluxExchangeResult;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.server.WebHandler;
-import reactor.core.publisher.Flux;
-
 import java.util.Map;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.JacksonUtils;
+import org.junit.AfterClass;
+import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.runner.RunWith;
+
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
  * Test for {@link TransHeadersTransfer}.
  *
  * @author lingxiao.wlx
  */
-@RunWith(DynamicEnvironmentVariablesSpringJUnit4ClassRunner.class)
-@DynamicEnvironmentVariable(name = "SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS", value = "header1,header2,header3")
-@SpringBootTest(webEnvironment = DEFINED_PORT,
-		classes = TransHeadersTransferTest.TestApplication.class,
-		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT,
+		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
+		properties = {"spring.config.location = classpath:application-test.yml"})
 public class TransHeadersTransferTest {
-
-	@Autowired
-	private WebApplicationContext webContext;
-
-	@Autowired
-	private DecodeTransferMetadataServletFilter metadataServletFilter;
-
-	private MockMvc mockMvc;
-
-	private WebTestClient webTestClient;
-
-	@Before
-	public void setupMockMvc() throws Exception {
-		mockMvc = MockMvcBuilders.webAppContextSetup(webContext).addFilter(metadataServletFilter).build();
-		webTestClient = WebTestClient.bindToApplicationContext(webContext).build();
+	@AfterClass
+	public static void afterClass() {
+		MetadataContextHolder.remove();
 	}
 
 	@Test
-	public void transferTest() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/transHeaders")
-				.header("header1", "1")
-				.header("header2", "2")
-				.header("header3", "3")
-				.characterEncoding("UTF-8"))
-				.andExpect(status().isOk())
-				.andDo(MockMvcResultHandlers.print(System.err))
-				.andReturn();
-
-		MockHttpServletResponse response = mvcResult.getResponse();
-		String contentAsString = response.getContentAsString();
-		Map<String, String> map = JacksonUtils.deserialize2Map(contentAsString);
-		System.out.println(contentAsString);
+	public void transferServletTest() {
+		MetadataContext metadataContext = MetadataContextHolder.get();
+		metadataContext.setTransHeaders("header1,header2,header3", "");
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addHeader("header1", "1");
+		request.addHeader("header2", "2");
+		request.addHeader("header3", "3");
+		TransHeadersTransfer.transfer(request);
+		Map<String, String> transHeadersKV = MetadataContextHolder.get().getTransHeadersKV();
+		Assertions.assertEquals(transHeadersKV.get("header1"), "1");
+		Assertions.assertEquals(transHeadersKV.get("header2"), "2");
+		Assertions.assertEquals(transHeadersKV.get("header3"), "3");
 	}
 
 	@Test
-	public void transferReactiveTest(){
-		FluxExchangeResult<Map<String, String>> result = webTestClient.get().uri("/transHeaders")
-				.header("header1", "1")
-				.header("header2", "2")
-				.header("header3", "3")
-				.accept(MediaType.APPLICATION_JSON)
-				.exchange()
-				.expectStatus().isOk()
-				.returnResult(new ParameterizedTypeReference<Map<String, String>>() {
-				});
-
-		Flux<Map<String, String>> responseBody = result.getResponseBody();
-
-
-	}
-
-	@SpringBootApplication
-	@EnableFeignClients
-	@RestController
-	protected static class TestApplication {
-		@GetMapping("/transHeaders")
-		public Map<String, String> test() {
-			return MetadataContextHolder.get().getTransHeadersKV();
-		}
+	public void transferReactiveTest() {
+		MetadataContext metadataContext = MetadataContextHolder.get();
+		metadataContext.setTransHeaders("header1,header2,header3", "");
+		MockServerHttpRequest.BaseBuilder<?> builder = MockServerHttpRequest.get("");
+		String[] header1 = {"1"};
+		String[] header2 = {"2"};
+		String[] header3 = {"3"};
+		builder.header("header1", header1);
+		builder.header("header2", header2);
+		builder.header("header3", header3);
+		MockServerHttpRequest request = builder.build();
+		TransHeadersTransfer.transfer(request);
+		Map<String, String> transHeadersKV = MetadataContextHolder.get().getTransHeadersKV();
+		Assertions.assertEquals(transHeadersKV.get("header1"), JacksonUtils.serialize2Json(header1));
+		Assertions.assertEquals(transHeadersKV.get("header2"), JacksonUtils.serialize2Json(header2));
+		Assertions.assertEquals(transHeadersKV.get("header3"), JacksonUtils.serialize2Json(header3));
 	}
 }

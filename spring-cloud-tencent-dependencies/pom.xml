@@ -80,7 +80,6 @@
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<protobuf-java.version>3.16.1</protobuf-java.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
-		<system-rules.version>1.16.1</system-rules.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -247,13 +246,6 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mocktio.version}</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.github.stefanbirkner</groupId>
-				<artifactId>system-rules</artifactId>
-				<version>${system-rules.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
