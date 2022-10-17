@@ -23,11 +23,14 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.collect.Maps;
+import com.tencent.cloud.polaris.config.spring.event.ConfigChangeSpringEvent;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -44,9 +47,11 @@ import static com.tencent.cloud.polaris.config.listener.PolarisConfigListenerCon
  *
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022-06-08
  */
-public final class PolarisConfigChangeEventListener implements ApplicationListener<ApplicationEvent> {
+public final class PolarisConfigChangeEventListener implements ApplicationListener<ApplicationEvent>, ApplicationEventPublisherAware {
 
 	private static final AtomicBoolean started = new AtomicBoolean();
+
+	private ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * Handle an application event.
@@ -73,6 +78,8 @@ public final class PolarisConfigChangeEventListener implements ApplicationListen
 			ConfigurableEnvironment environment = context.getEnvironment();
 			Map<String, Object> ret = loadEnvironmentProperties(environment);
 			Map<String, ConfigPropertyChangeInfo> changes = merge(ret);
+			ConfigChangeSpringEvent configChangeSpringEvent = new ConfigChangeSpringEvent(Maps.newHashMap(changes));
+			eventPublisher.publishEvent(configChangeSpringEvent);
 			fireConfigChange(changes.keySet(), Maps.newHashMap(changes));
 			changes.clear();
 		}
@@ -106,5 +113,10 @@ public final class PolarisConfigChangeEventListener implements ApplicationListen
 			}
 		});
 		return ret;
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
 	}
 }
