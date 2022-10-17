@@ -12,3 +12,4 @@
 - [support spring-retry router](https://github.com/Tencent/spring-cloud-tencent/pull/631)
 - [feat:Transfer http headers specified by environment variables](https://github.com/Tencent/spring-cloud-tencent/pull/638)
 - [feat:support read config file from local file system.](https://github.com/Tencent/spring-cloud-tencent/pull/649)
+- [feat: publish spring event named ConfigChangeSpringEvent when the configuration is changed](https://github.com/Tencent/spring-cloud-tencent/pull/651)
