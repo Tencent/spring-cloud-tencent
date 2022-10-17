@@ -14,3 +14,4 @@
 - [feat:support read config file from local file system.](https://github.com/Tencent/spring-cloud-tencent/pull/643)
 - [feat:report the labels when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/644)
 - [Optimize: optimize transfer metadata code](https://github.com/Tencent/spring-cloud-tencent/pull/650)
+- [feat: publish spring event named ConfigChangeSpringEvent when the configuration is changed](https://github.com/Tencent/spring-cloud-tencent/pull/652)
