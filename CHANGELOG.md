@@ -20,4 +20,5 @@
 - [fix:cancel reporting useless metadata.](https://github.com/Tencent/spring-cloud-tencent/pull/639)
 - [Feature: support read config file from local file system](https://github.com/Tencent/spring-cloud-tencent/pull/640)
 - [fix:optimize expression parser V1.](https://github.com/Tencent/spring-cloud-tencent/pull/642)
+- [Optimize: add transfer metadata unit test.](https://github.com/Tencent/spring-cloud-tencent/pull/646)
 - [feat: publish spring event named ConfigChangeSpringEvent when the configuration is changed](https://github.com/Tencent/spring-cloud-tencent/pull/647)
