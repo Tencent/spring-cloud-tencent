@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.tencent.cloud.common.constant.RouterConstant;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,28 +41,28 @@ public class PolarisRouterContextTest {
 		labels.put("k2", "v2");
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
 
-		Assert.assertEquals(0, routerContext.getLabels(PolarisRouterContext.TRANSITIVE_LABELS).size());
-		Assert.assertEquals(2, routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).size());
-		Assert.assertEquals("v1", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k1"));
-		Assert.assertEquals("v2", routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k2"));
-		Assert.assertNull(routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).get("k3"));
+		Assert.assertEquals(0, routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).size());
+		Assert.assertEquals(2, routerContext.getLabels(RouterConstant.ROUTER_LABELS).size());
+		Assert.assertEquals("v1", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k1"));
+		Assert.assertEquals("v2", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k2"));
+		Assert.assertNull(routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k3"));
 	}
 
 	@Test
 	public void testSetNull() {
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, null);
-		Assert.assertEquals(0, routerContext.getLabels(PolarisRouterContext.TRANSITIVE_LABELS).size());
-		Assert.assertEquals(0, routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).size());
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, null);
+		Assert.assertEquals(0, routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).size());
+		Assert.assertEquals(0, routerContext.getLabels(RouterConstant.ROUTER_LABELS).size());
 	}
 
 	@Test
 	public void testGetEmptyRouterContext() {
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		Assert.assertEquals(0, routerContext.getLabels(PolarisRouterContext.TRANSITIVE_LABELS).size());
-		Assert.assertEquals(0, routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS).size());
+		Assert.assertEquals(0, routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).size());
+		Assert.assertEquals(0, routerContext.getLabels(RouterConstant.ROUTER_LABELS).size());
 	}
 
 	@Test
@@ -72,9 +73,9 @@ public class PolarisRouterContextTest {
 		labels.put("k3", "v3");
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
 
-		Map<String, String> resolvedLabels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS,
+		Map<String, String> resolvedLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS,
 				Sets.newHashSet("k1", "k2", "k4"));
 
 		Assert.assertEquals(2, resolvedLabels.size());
@@ -90,7 +91,7 @@ public class PolarisRouterContextTest {
 		labels.put("k3", "v3");
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
 
 		String resolvedLabel = routerContext.getLabel("k1");
 
@@ -103,7 +104,7 @@ public class PolarisRouterContextTest {
 		labels.put("k1", "v1,v2,v3");
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labels);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
 
 		Set<String> resolvedLabels = routerContext.getLabelAsSet("k1");
 

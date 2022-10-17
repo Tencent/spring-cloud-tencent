@@ -27,7 +27,7 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
@@ -136,7 +136,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 		HttpHeaders headers = filter.genRouterHttpHeaders(webExchange, calleeService);
 
 		Assert.assertNotNull(headers);
-		List<String> routerHeaders = headers.get(RouterConstants.ROUTER_LABEL_HEADER);
+		List<String> routerHeaders = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
 		Assert.assertFalse(CollectionUtils.isEmpty(routerHeaders));
 
 		Map<String, String> routerLabels = JacksonUtils.deserialize2Map(URLDecoder.decode(routerHeaders.get(0), UTF_8));
