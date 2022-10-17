@@ -13,7 +13,6 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.router.interceptor;
@@ -21,6 +20,7 @@ package com.tencent.cloud.polaris.router.interceptor;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
@@ -29,7 +29,7 @@ import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 
 /**
  * Router request interceptor for rule based router.
- * @author lepdou 2022-07-06
+ * @author lepdou, Hoatian Zhang
  */
 public class RuleBasedRouterRequestInterceptor implements RouterRequestInterceptor {
 
@@ -52,7 +52,7 @@ public class RuleBasedRouterRequestInterceptor implements RouterRequestIntercept
 		// is placed in the metadata of the source service for transmission.
 		// Later, can consider putting it in routerMetadata like other routers.
 		if (ruleBasedRouterEnabled) {
-			Map<String, String> ruleRouterLabels = routerContext.getLabels(PolarisRouterContext.ROUTER_LABELS);
+			Map<String, String> ruleRouterLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
 			request.getSourceService().setMetadata(ruleRouterLabels);
 		}
 	}

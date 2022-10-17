@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.tencent.cloud.common.constant.RouterConstants;
+import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
@@ -116,7 +116,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 
 	//set method to public for unit test
 	PolarisRouterContext buildRouterContext(HttpHeaders headers) {
-		Collection<String> labelHeaderValues = headers.get(RouterConstants.ROUTER_LABEL_HEADER);
+		Collection<String> labelHeaderValues = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
 
 		if (CollectionUtils.isEmpty(labelHeaderValues)) {
 			return null;
@@ -138,7 +138,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
-		routerContext.putLabels(PolarisRouterContext.ROUTER_LABELS, labelHeaderValuesMap);
+		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labelHeaderValuesMap);
 		return routerContext;
 	}
 
