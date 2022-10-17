@@ -82,7 +82,7 @@ public class EnhancedRestTemplateReporterTest {
 		Map<String, String> loadBalancerContext = new HashMap<>();
 		loadBalancerContext.put("host", "1.1.1.1");
 		loadBalancerContext.put("port", "8080");
-		when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_LOAD_BALANCER)).thenReturn(loadBalancerContext);
+		when(metadataContext.getLoadbalancerMetadata()).thenReturn(loadBalancerContext);
 
 		mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class);
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);

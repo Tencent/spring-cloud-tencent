@@ -22,7 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Test for {@link ExpressionParserV1}
+ * Test for {@link ExpressionParserV1}.
  * @author lepdou 2022-10-08
  */
 public class ExpressionParserV1Test {
