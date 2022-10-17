@@ -64,7 +64,7 @@
       "name": "spring.cloud.polaris.config.local-file-root-path",
       "type": "java.lang.String",
       "defaultValue": "./polaris/backup/config",
-      "description": "Where to load config file, polaris or local."
+      "description": "The root path of config files, only used in local mode."
     }
   ]
 }
