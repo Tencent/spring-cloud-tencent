@@ -9,6 +9,8 @@ spring:
       namespace: default
       config:
         auto-refresh: true # auto refresh when config file changed
+        #        data-source: local # config data source default is polaris.
+        #        local-file-root-path: # set root path for reading config file, when in local data source
         groups:
           - name: ${spring.application.name} # group name
             files: [ "config/application.properties", "config/bootstrap.yml" ] # config/application.properties takes precedence over config/bootstrap.yml
