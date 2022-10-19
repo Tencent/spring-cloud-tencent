@@ -141,7 +141,7 @@ public class SpringValueProcessorTest {
 	}
 
 	@Test
-	public void xmlBeamDefinitionTest(){
+	public void xmlBeamDefinitionTest() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(PolarisConfigBootstrapAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(RefreshAutoConfiguration.class))
