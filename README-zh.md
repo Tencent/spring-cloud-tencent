@@ -53,7 +53,7 @@ Tencent，可直接一键运行任何 example。
 
 ## 管控台
 
-<img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">
+<img width="1727" alt="sc" src="https://user-images.githubusercontent.com/4991116/197529819-78b20ba8-0e60-450c-a8e3-0c2bf04caa15.png">
 
 ## 使用指南
 
