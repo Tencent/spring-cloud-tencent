@@ -100,7 +100,8 @@ public class PolarisContextProperties {
 		if (StringUtils.isNotBlank(localIpAddress)) {
 			return localIpAddress;
 		}
-		return environment.getProperty("spring.cloud.client.ip-address");
+		this.localIpAddress = environment.getProperty("spring.cloud.client.ip-address");
+		return this.localIpAddress;
 	}
 
 	public String getAddress() {
@@ -111,11 +112,11 @@ public class PolarisContextProperties {
 		this.address = address;
 	}
 
-	String getLocalIpAddress() {
+	public String getLocalIpAddress() {
 		return localIpAddress;
 	}
 
-	void setLocalIpAddress(String localIpAddress) {
+	public void setLocalIpAddress(String localIpAddress) {
 		this.localIpAddress = localIpAddress;
 	}
 

@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerClientFilterBeanPostProcessor;
 import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
@@ -113,8 +114,10 @@ public class RouterAutoConfiguration {
 		@Order(HIGHEST_PRECEDENCE)
 		public RouterContextFactory routerContextFactory(List<SpringWebRouterLabelResolver> routerLabelResolvers,
 				StaticMetadataManager staticMetadataManager,
-				RouterRuleLabelResolver routerRuleLabelResolver) {
-			return new RouterContextFactory(routerLabelResolvers, staticMetadataManager, routerRuleLabelResolver);
+				RouterRuleLabelResolver routerRuleLabelResolver,
+				PolarisContextProperties polarisContextProperties) {
+			return new RouterContextFactory(routerLabelResolvers, staticMetadataManager,
+					routerRuleLabelResolver, polarisContextProperties);
 		}
 	}
 

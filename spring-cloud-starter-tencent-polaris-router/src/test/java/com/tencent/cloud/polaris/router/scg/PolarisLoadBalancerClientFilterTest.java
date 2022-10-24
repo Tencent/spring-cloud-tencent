@@ -30,6 +30,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
@@ -78,6 +79,8 @@ public class PolarisLoadBalancerClientFilterTest {
 	private LoadBalancerClient loadBalancerClient;
 	@Mock
 	private LoadBalancerProperties loadBalancerProperties;
+	@Mock
+	private PolarisContextProperties polarisContextProperties;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -107,7 +110,7 @@ public class PolarisLoadBalancerClientFilterTest {
 	public void testGenRouterContext() {
 		PolarisLoadBalancerClientFilter polarisLoadBalancerClientFilter = new PolarisLoadBalancerClientFilter(
 				loadBalancerClient, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
-				Lists.newArrayList(routerLabelResolver));
+				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");
@@ -140,7 +143,7 @@ public class PolarisLoadBalancerClientFilterTest {
 	public void testChooseInstanceWithoutRibbon() {
 		PolarisLoadBalancerClientFilter polarisLoadBalancerClientFilter = new PolarisLoadBalancerClientFilter(
 				loadBalancerClient, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
-				Lists.newArrayList(routerLabelResolver));
+				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
 
 		String url = "/" + calleeService + "/users";
 		MockServerHttpRequest request = MockServerHttpRequest.get(url)
@@ -162,7 +165,7 @@ public class PolarisLoadBalancerClientFilterTest {
 
 		PolarisLoadBalancerClientFilter polarisLoadBalancerClientFilter = new PolarisLoadBalancerClientFilter(
 				ribbonLoadBalancerClient, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
-				Lists.newArrayList(routerLabelResolver));
+				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");

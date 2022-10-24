@@ -32,6 +32,8 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 import feign.RequestInterceptor;
@@ -55,10 +57,12 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 	private final List<FeignRouterLabelResolver> routerLabelResolvers;
 	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
+	private final PolarisContextProperties polarisContextProperties;
 
 	public RouterLabelFeignInterceptor(List<FeignRouterLabelResolver> routerLabelResolvers,
 			StaticMetadataManager staticMetadataManager,
-			RouterRuleLabelResolver routerRuleLabelResolver) {
+			RouterRuleLabelResolver routerRuleLabelResolver,
+			PolarisContextProperties polarisContextProperties) {
 		if (!CollectionUtils.isEmpty(routerLabelResolvers)) {
 			routerLabelResolvers.sort(Comparator.comparingInt(Ordered::getOrder));
 			this.routerLabelResolvers = routerLabelResolvers;
@@ -68,6 +72,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		}
 		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
+		this.polarisContextProperties = polarisContextProperties;
 	}
 
 	@Override
@@ -124,6 +129,16 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 			return Collections.emptyMap();
 		}
 
-		return FeignExpressionLabelUtils.resolve(requestTemplate, labelKeys);
+		//enrich labels from request
+		Map<String, String> labels = FeignExpressionLabelUtils.resolve(requestTemplate, labelKeys);
+
+		//enrich caller ip label
+		for (String labelKey : labelKeys) {
+			if (ExpressionLabelUtils.isCallerIPLabel(labelKey)) {
+				labels.put(labelKey, polarisContextProperties.getLocalIpAddress());
+			}
+		}
+
+		return labels;
 	}
 }
