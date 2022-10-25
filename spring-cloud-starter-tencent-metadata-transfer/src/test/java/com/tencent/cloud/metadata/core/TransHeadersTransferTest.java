@@ -43,7 +43,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml","spring.main.web-application-type=reactive"})
+		properties = {"spring.config.location = classpath:application-test.yml", "spring.main.web-application-type=reactive"})
 public class TransHeadersTransferTest {
 	@AfterClass
 	public static void afterClass() {
