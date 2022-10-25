@@ -19,6 +19,7 @@
 package com.tencent.cloud.common.metadata;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -110,6 +111,64 @@ public class MetadataContext {
 
 	public MetadataContext() {
 		this.fragmentContexts = new ConcurrentHashMap<>();
+	}
+
+
+	public Map<String, String> getDisposableMetadata() {
+		return this.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
+	}
+
+	public Map<String, String> getTransitiveMetadata() {
+		return this.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+	}
+
+	public Map<String, String> getCustomMetadata() {
+		Map<String, String> transitiveMetadata = this.getTransitiveMetadata();
+		Map<String, String> disposableMetadata = this.getDisposableMetadata();
+		Map<String, String> customMetadata = new HashMap<>();
+		// Clean up one-time metadata coming from upstream .
+		transitiveMetadata.forEach((key, value) -> {
+			if (!disposableMetadata.containsKey(key)) {
+				customMetadata.put(key, value);
+			}
+		});
+		return Collections.unmodifiableMap(customMetadata);
+	}
+
+	public Map<String, String> getTransHeaders() {
+		return this.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS);
+	}
+
+	public Map<String, String> getTransHeadersKV() {
+		return this.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV);
+	}
+
+	public Map<String, String> getLoadbalancerMetadata() {
+		return this.getFragmentContext(FRAGMENT_LOAD_BALANCER);
+	}
+
+	public void setTransitiveMetadata(Map<String, String> transitiveMetadata) {
+		this.putFragmentContext(FRAGMENT_TRANSITIVE, Collections.unmodifiableMap(transitiveMetadata));
+	}
+
+	public void setDisposableMetadata(Map<String, String> disposableMetadata) {
+		this.putFragmentContext(FRAGMENT_DISPOSABLE, Collections.unmodifiableMap(disposableMetadata));
+	}
+
+	public void setUpstreamDisposableMetadata(Map<String, String> upstreamDisposableMetadata) {
+		this.putFragmentContext(FRAGMENT_UPSTREAM_DISPOSABLE, Collections.unmodifiableMap(upstreamDisposableMetadata));
+	}
+
+	public void setTransHeadersKV(String key, String value) {
+		this.putContext(FRAGMENT_RAW_TRANSHEADERS_KV, key, value);
+	}
+
+	public void setTransHeaders(String key, String value) {
+		this.putContext(FRAGMENT_RAW_TRANSHEADERS, key, value);
+	}
+
+	public void setLoadbalancer(String key, String value) {
+		this.putContext(FRAGMENT_LOAD_BALANCER, key, value);
 	}
 
 	public Map<String, String> getFragmentContext(String fragment) {

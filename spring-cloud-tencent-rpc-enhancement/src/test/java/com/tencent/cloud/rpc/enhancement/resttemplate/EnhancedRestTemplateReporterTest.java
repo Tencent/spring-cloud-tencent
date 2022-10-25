@@ -61,7 +61,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link EnhancedRestTemplateReporter}
+ * Test for {@link EnhancedRestTemplateReporter}.
  * @author lepdou 2022-09-06
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -91,7 +91,7 @@ public class EnhancedRestTemplateReporterTest {
 		Map<String, String> loadBalancerContext = new HashMap<>();
 		loadBalancerContext.put("host", "1.1.1.1");
 		loadBalancerContext.put("port", "8080");
-		when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_LOAD_BALANCER)).thenReturn(loadBalancerContext);
+		when(metadataContext.getLoadbalancerMetadata()).thenReturn(loadBalancerContext);
 
 		mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class);
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);

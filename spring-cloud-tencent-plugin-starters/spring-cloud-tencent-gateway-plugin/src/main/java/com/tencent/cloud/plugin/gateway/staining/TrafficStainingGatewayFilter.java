@@ -77,13 +77,13 @@ public class TrafficStainingGatewayFilter implements GlobalFilter, Ordered {
 				metadataContext = MetadataContextHolder.get();
 			}
 
-			Map<String, String> oldTransitiveMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+			Map<String, String> oldTransitiveMetadata = metadataContext.getTransitiveMetadata();
 
 			// append new transitive metadata
 			Map<String, String> newTransitiveMetadata = new HashMap<>(oldTransitiveMetadata);
 			newTransitiveMetadata.putAll(stainedLabels);
 
-			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE, newTransitiveMetadata);
+			metadataContext.setTransitiveMetadata(newTransitiveMetadata);
 		}).build();
 
 		return chain.filter(exchange.mutate().request(request).build());

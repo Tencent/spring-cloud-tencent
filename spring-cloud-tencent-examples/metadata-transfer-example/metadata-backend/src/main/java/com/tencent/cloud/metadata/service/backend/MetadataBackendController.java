@@ -55,7 +55,7 @@ public class MetadataBackendController {
 
 		// Get Custom Metadata From Context
 		MetadataContext context = MetadataContextHolder.get();
-		Map<String, String> customMetadataMap = context.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		Map<String, String> customMetadataMap = context.getTransitiveMetadata();
 
 		customMetadataMap.forEach((key, value) -> {
 			LOG.info("Metadata Backend Custom Metadata (Key-Value): {} : {}", key, value);

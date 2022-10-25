@@ -115,8 +115,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 	private void reportResult(URI url, ClientHttpResponse response) {
 		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
-			Map<String, String> loadBalancerContext = MetadataContextHolder.get()
-					.getFragmentContext(MetadataContext.FRAGMENT_LOAD_BALANCER);
+			Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
 
 			String targetHost = loadBalancerContext.get("host");
 			String targetPort = loadBalancerContext.get("port");
@@ -134,7 +133,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 
-			List<String> labels = response.getHeaders().get(RouterConstant.ROUTER_LABELS);
+			List<String> labels = response.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER);
 			if (CollectionUtils.isNotEmpty(labels)) {
 				String label = labels.get(0);
 				try {
