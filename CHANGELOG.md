@@ -14,3 +14,4 @@
 - [feat:support read config file from local file system.](https://github.com/Tencent/spring-cloud-tencent/pull/649)
 - [feat: publish spring event named ConfigChangeSpringEvent when the configuration is changed](https://github.com/Tencent/spring-cloud-tencent/pull/651)
 - [Feature: support new expression](https://github.com/Tencent/spring-cloud-tencent/pull/661)
+- [Optimize:optimize TransHeadersTransfer.](https://github.com/Tencent/spring-cloud-tencent/pull/662)
