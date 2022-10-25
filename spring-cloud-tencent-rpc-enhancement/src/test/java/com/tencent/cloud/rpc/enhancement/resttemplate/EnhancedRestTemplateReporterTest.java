@@ -129,7 +129,7 @@ public class EnhancedRestTemplateReporterTest {
 
 		URI uri = mock(URI.class);
 		String labels = URLEncoder.encode("{\"k1\":\"v1\",\"k2\":\"v2\"}", UTF_8);
-		response.getHeaders().set(RouterConstant.ROUTER_LABELS, labels);
+		response.getHeaders().set(RouterConstant.ROUTER_LABEL_HEADER, labels);
 		enhancedRestTemplateReporter.handleError(uri, HttpMethod.GET, response);
 
 		verify(consumerAPI, times(2)).updateServiceCallResult((ServiceCallResult) captor.capture());
