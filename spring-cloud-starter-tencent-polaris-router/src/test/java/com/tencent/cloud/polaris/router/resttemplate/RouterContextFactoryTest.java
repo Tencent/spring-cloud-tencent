@@ -29,6 +29,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
@@ -62,6 +63,8 @@ public class RouterContextFactoryTest {
 	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
+	@Mock
+	private PolarisContextProperties polarisContextProperties;
 
 	@Test
 	public void testRouterContext() {
@@ -103,7 +106,7 @@ public class RouterContextFactoryTest {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
 				RouterContextFactory routerContextFactory = new RouterContextFactory(Arrays.asList(springWebRouterLabelResolver),
-						staticMetadataManager, routerRuleLabelResolver);
+						staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
 
 				PolarisRouterContext routerContext = routerContextFactory.create(request, null, calleeService);
 
