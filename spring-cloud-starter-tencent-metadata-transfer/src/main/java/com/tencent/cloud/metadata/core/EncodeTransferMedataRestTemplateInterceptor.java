@@ -60,7 +60,7 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
-		Map<String, String> transHeaders = metadataContext.getTransHeaders();
+		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
 
 		// build custom disposable metadata request header
 		this.buildMetadataHeader(httpRequest, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
