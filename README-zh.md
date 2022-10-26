@@ -17,9 +17,11 @@
 
 Spring Cloud Tencent 是腾讯开源的一站式微服务解决方案。
 
-Spring Cloud Tencent 实现了Spring Cloud 标准微服务 SPI，开发者可以基于 Spring Cloud Tencent 快速开发 Spring Cloud 云原生分布式应用。
+Spring Cloud Tencent 实现了Spring Cloud 标准微服务 SPI，开发者可以基于 Spring Cloud Tencent 快速开发 Spring Cloud
+云原生分布式应用。
 
-Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治理平台 [Polaris](https://github.com/polarismesh/polaris)，实现各种分布式微服务场景。
+Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治理平台 [Polaris](https://github.com/polarismesh/polaris)
+，实现各种分布式微服务场景。
 
 - [Polaris Github home page](https://github.com/polarismesh/polaris)
 - [Polaris official website](https://polarismesh.cn/)
@@ -45,7 +47,8 @@ Spring Cloud Tencent提供的能力包括但不限于：
 - 控制面地址： `grpc://183.47.111.80:8091`
 -
 
-`spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（`grpc://183.47.111.80:8091`），如果您只是体验 Spring Cloud
+`spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（`grpc://183.47.111.80:8091`），如果您只是体验
+Spring Cloud
 Tencent，可直接一键运行任何 example。
 
 ## 管控台
@@ -58,7 +61,9 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 
 > 注意：
 >
-> Spring Cloud Tencent 的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86) 。
+> Spring Cloud Tencent
+> 的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+> 。
 
 例如：
 
@@ -70,7 +75,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.8.0-2020.0.5</version>
+            <version>1.8.1-2020.0.5</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
