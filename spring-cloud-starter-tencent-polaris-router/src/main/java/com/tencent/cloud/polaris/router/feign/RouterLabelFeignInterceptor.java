@@ -89,6 +89,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		String peerServiceName = requestTemplate.feignTarget().name();
 		Set<String> expressionLabelKeys = routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
 				MetadataContext.LOCAL_SERVICE, peerServiceName);
+
 		Map<String, String> ruleExpressionLabels = getRuleExpressionLabels(requestTemplate, expressionLabelKeys);
 		labels.putAll(ruleExpressionLabels);
 
@@ -108,8 +109,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 		}
 
 		// labels from downstream
-		Map<String, String> transitiveLabels = MetadataContextHolder.get()
-				.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		Map<String, String> transitiveLabels = MetadataContextHolder.get().getTransitiveMetadata();
 		labels.putAll(transitiveLabels);
 
 		// pass label by header
@@ -124,7 +124,6 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 	}
 
 	private Map<String, String> getRuleExpressionLabels(RequestTemplate requestTemplate, Set<String> labelKeys) {
-
 		if (CollectionUtils.isEmpty(labelKeys)) {
 			return Collections.emptyMap();
 		}

@@ -20,9 +20,6 @@ package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.netflix.zuul.ZuulFilter;
@@ -36,8 +33,6 @@ import org.springframework.util.CollectionUtils;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
-import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_RAW_TRANSHEADERS;
-import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
@@ -71,50 +66,15 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
-		// add new metadata and cover old
-		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
-
-		// Clean upstream disposable metadata.
-		Map<String, String> newestCustomMetadata = new HashMap<>();
-		customMetadata.forEach((key, value) -> {
-			if (!disposableMetadata.containsKey(key)) {
-				newestCustomMetadata.put(key, value);
-			}
-		});
+		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
+		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 
 		// Rebuild Metadata Header
-		this.buildMetadataHeader(requestContext, newestCustomMetadata, CUSTOM_METADATA);
+		this.buildMetadataHeader(requestContext, customMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(requestContext, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
-		setCompleteTransHeaderIntoMC(requestContext);
+		TransHeadersTransfer.transfer(requestContext.getRequest());
 		return null;
-	}
-
-	/**
-	 * According to ServerHttpRequest and trans-headers(key list in string type) in metadata, build
-	 * the complete headers(key-value list in map type) into metadata.
-	 */
-	private void setCompleteTransHeaderIntoMC(RequestContext requestContext) {
-		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
-		Map<String, String> transHeaderMetadata = MetadataContextHolder.get()
-				.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
-		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
-			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
-			String[] transHeaderArray = transHeaders.split(",");
-			Enumeration<String> httpHeaders = requestContext.getRequest().getHeaderNames();
-			while (httpHeaders.hasMoreElements()) {
-				String httpHeader = httpHeaders.nextElement();
-				Arrays.stream(transHeaderArray).forEach(transHeader -> {
-					if (transHeader.equals(httpHeader)) {
-						String httpHeaderValue = requestContext.getRequest().getHeader(httpHeader);
-						// for example, {"trans-headers-kv" : {"header1":"v1","header2":"v2"...}}
-						MetadataContextHolder.get()
-								.putContext(FRAGMENT_RAW_TRANSHEADERS_KV, httpHeader, httpHeaderValue);
-					}
-				});
-			}
-		}
 	}
 
 	/**

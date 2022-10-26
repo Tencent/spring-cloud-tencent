@@ -46,7 +46,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -68,10 +67,10 @@ public class RouterLabelFeignInterceptorTest {
 	private PolarisContextProperties polarisContextProperties;
 
 	@Test
-	public void testResolveRouterLabel() {
+	public void testResolveRouterLabel() throws UnsupportedEncodingException {
 		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor(
-				Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver,
-				polarisContextProperties);
+				Collections.singletonList(routerLabelResolver),
+				staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
 
 		// mock request template
 		RequestTemplate requestTemplate = new RequestTemplate();
@@ -94,7 +93,7 @@ public class RouterLabelFeignInterceptorTest {
 			Map<String, String> transitiveLabels = new HashMap<>();
 			transitiveLabels.put("k1", "v1");
 			transitiveLabels.put("k2", "v22");
-			when(metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE)).thenReturn(transitiveLabels);
+			when(metadataContext.getTransitiveMetadata()).thenReturn(transitiveLabels);
 
 			// mock MetadataContextHolder#get
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
@@ -113,7 +112,6 @@ public class RouterLabelFeignInterceptorTest {
 				customResolvedLabels.put("k3", "v3");
 				when(routerLabelResolver.resolve(requestTemplate, expressionKeys)).thenReturn(customResolvedLabels);
 
-				// mock local metadata
 				Map<String, String> localMetadata = new HashMap<>();
 				localMetadata.put("k3", "v31");
 				localMetadata.put("k4", "v4");
@@ -122,23 +120,17 @@ public class RouterLabelFeignInterceptorTest {
 				routerLabelFeignInterceptor.apply(requestTemplate);
 
 				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstant.ROUTER_LABEL_HEADER);
-				Map<String, String> routerLabelsMap = new HashMap<>();
-				try {
-					String routerLabelContent = routerLabels.stream().findFirst().get();
-					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(
-							URLDecoder.decode(routerLabelContent, UTF_8)));
-				}
-				catch (UnsupportedEncodingException e) {
-					throw new RuntimeException("unsupported charset exception " + UTF_8);
-				}
-				Assert.assertNotNull(routerLabelsMap);
-				for (String value : routerLabelsMap.values()) {
-					Assert.assertEquals("v1", routerLabelsMap.get("k1"));
-					Assert.assertEquals("v22", routerLabelsMap.get("k2"));
-					Assert.assertEquals("v3", routerLabelsMap.get("k3"));
-					Assert.assertEquals("v4", routerLabelsMap.get("k4"));
-					Assert.assertEquals(headerUidValue, routerLabelsMap.get("${http.header.uid}"));
-					Assert.assertEquals("", routerLabelsMap.get("${http.header.name}"));
+
+				Assert.assertNotNull(routerLabels);
+				for (String value : routerLabels) {
+					Map<String, String> labels = JacksonUtils.deserialize2Map(URLDecoder.decode(value, "UTF-8"));
+
+					Assert.assertEquals("v1", labels.get("k1"));
+					Assert.assertEquals("v22", labels.get("k2"));
+					Assert.assertEquals("v3", labels.get("k3"));
+					Assert.assertEquals("v4", labels.get("k4"));
+					Assert.assertEquals(headerUidValue, labels.get("${http.header.uid}"));
+					Assert.assertEquals("", labels.get("${http.header.name}"));
 				}
 			}
 		}
