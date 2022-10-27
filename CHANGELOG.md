@@ -16,3 +16,4 @@
 - [Feature: support new expression](https://github.com/Tencent/spring-cloud-tencent/pull/661)
 - [Optimize:optimize TransHeadersTransfer.](https://github.com/Tencent/spring-cloud-tencent/pull/662)
 - [fix:fix transfer http headers not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/663)
+- [Optimize:optimize spring value processor](https://github.com/Tencent/spring-cloud-tencent/pull/669)
