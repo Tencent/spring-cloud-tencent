@@ -53,7 +53,7 @@ Tencent，可直接一键运行任何 example。
 
 ## 管控台
 
-<img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">
+<img width="1727" alt="sc" src="https://user-images.githubusercontent.com/4991116/197529819-78b20ba8-0e60-450c-a8e3-0c2bf04caa15.png">
 
 ## 使用指南
 
@@ -62,7 +62,8 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 > 注意：
 >
 > Spring Cloud Tencent
-> 的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+>
+的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
 > 。
 
 例如：
@@ -75,7 +76,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.8.0-2021.0.3</version>
+            <version>1.8.1-2021.0.3</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
