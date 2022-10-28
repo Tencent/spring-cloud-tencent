@@ -22,27 +22,34 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueDefinition;
-import com.tencent.cloud.polaris.config.spring.property.SpringValueDefinitionProcessor;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.NonNull;
 
@@ -55,10 +62,13 @@ import org.springframework.lang.NonNull;
  *
  * @author weihubeats 2022-7-10
  */
-public class SpringValueProcessor extends PolarisProcessor implements BeanFactoryPostProcessor, BeanFactoryAware {
+public class SpringValueProcessor extends PolarisProcessor implements BeanDefinitionRegistryPostProcessor, BeanFactoryAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpringValueProcessor.class);
 
+	private static final Set<BeanDefinitionRegistry> PROPERTY_VALUES_PROCESSED_BEAN_FACTORIES = Sets.newConcurrentHashSet();
+	private static final Map<BeanDefinitionRegistry, Multimap<String, SpringValueDefinition>> BEAN_DEFINITION_REGISTRY_MULTIMAP_CONCURRENT_MAP =
+			Maps.newConcurrentMap();
 	private final PolarisConfigProperties polarisConfigProperties;
 	private final PlaceholderHelper placeholderHelper;
 	private final SpringValueRegistry springValueRegistry;
@@ -79,8 +89,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 	public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
 		if (polarisConfigProperties.isAutoRefresh() && beanFactory instanceof BeanDefinitionRegistry) {
-			beanName2SpringValueDefinitions = SpringValueDefinitionProcessor
-					.getBeanName2SpringValueDefinitions((BeanDefinitionRegistry) beanFactory);
+			beanName2SpringValueDefinitions = this.getBeanName2SpringValueDefinitions((BeanDefinitionRegistry) beanFactory);
 		}
 	}
 
@@ -124,6 +133,18 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 		}
 
 		doRegister(bean, beanName, method, value);
+	}
+
+	@Override
+	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
+
+	@Override
+	public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
+		if (polarisConfigProperties.isAutoRefresh()) {
+			processPropertyValues(beanDefinitionRegistry);
+		}
 	}
 
 	private void doRegister(Object bean, String beanName, Member member, Value value) {
@@ -182,8 +203,47 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanFactor
 		beanName2SpringValueDefinitions.removeAll(beanName);
 	}
 
-	@Override
-	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
+	private Multimap<String, SpringValueDefinition> getBeanName2SpringValueDefinitions(BeanDefinitionRegistry registry) {
+		Multimap<String, SpringValueDefinition> springValueDefinitions = BEAN_DEFINITION_REGISTRY_MULTIMAP_CONCURRENT_MAP.remove(registry);
+		if (springValueDefinitions == null) {
+			springValueDefinitions = LinkedListMultimap.create();
+		}
+		return springValueDefinitions;
+	}
+
+	private void processPropertyValues(BeanDefinitionRegistry beanRegistry) {
+		if (!PROPERTY_VALUES_PROCESSED_BEAN_FACTORIES.add(beanRegistry)) {
+			// already initialized
+			return;
+		}
+
+		if (!BEAN_DEFINITION_REGISTRY_MULTIMAP_CONCURRENT_MAP.containsKey(beanRegistry)) {
+			BEAN_DEFINITION_REGISTRY_MULTIMAP_CONCURRENT_MAP.put(beanRegistry, LinkedListMultimap.create());
+		}
+
+		Multimap<String, SpringValueDefinition> springValueDefinitions = BEAN_DEFINITION_REGISTRY_MULTIMAP_CONCURRENT_MAP.get(beanRegistry);
+
+		String[] beanNames = beanRegistry.getBeanDefinitionNames();
+		for (String beanName : beanNames) {
+			BeanDefinition beanDefinition = beanRegistry.getBeanDefinition(beanName);
+			MutablePropertyValues mutablePropertyValues = beanDefinition.getPropertyValues();
+			List<PropertyValue> propertyValues = mutablePropertyValues.getPropertyValueList();
+			for (PropertyValue propertyValue : propertyValues) {
+				Object value = propertyValue.getValue();
+				if (!(value instanceof TypedStringValue)) {
+					continue;
+				}
+				String placeholder = ((TypedStringValue) value).getValue();
+				Set<String> keys = placeholderHelper.extractPlaceholderKeys(placeholder);
+
+				if (keys.isEmpty()) {
+					continue;
+				}
+
+				for (String key : keys) {
+					springValueDefinitions.put(beanName, new SpringValueDefinition(key, placeholder, propertyValue.getName()));
+				}
+			}
+		}
 	}
 }

@@ -51,7 +51,7 @@ directly with one click.
 
 ## Screenshots
 
-<img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">
+<img width="1727" alt="sc" src="https://user-images.githubusercontent.com/4991116/197529819-78b20ba8-0e60-450c-a8e3-0c2bf04caa15.png">
 
 ## Use Guide
 
@@ -60,7 +60,10 @@ dependencies.
 
 > Notice:
 >
-> The version list of Spring Cloud Tencent can be found in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86).
+> The version list of Spring Cloud Tencent can be found
+>
+in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+> .
 
 For example:
 
@@ -72,7 +75,7 @@ For example:
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.7.0-2021.0.3</version>
+            <version>1.8.1-2021.0.3</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
