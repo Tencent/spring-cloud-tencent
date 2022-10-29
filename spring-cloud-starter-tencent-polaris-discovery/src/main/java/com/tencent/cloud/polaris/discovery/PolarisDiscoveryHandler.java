@@ -28,9 +28,6 @@ import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.api.rpc.ServicesResponse;
 import com.tencent.polaris.client.api.SDKContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 /**
  * Discovery Handler for Polaris.
  *
@@ -47,7 +44,7 @@ public class PolarisDiscoveryHandler {
 	private final ConsumerAPI polarisConsumer;
 
 	public PolarisDiscoveryHandler(PolarisDiscoveryProperties polarisDiscoveryProperties,
-								   ProviderAPI providerAPI, SDKContext sdkContext, ConsumerAPI polarisConsumer) {
+				ProviderAPI providerAPI, SDKContext sdkContext, ConsumerAPI polarisConsumer) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.providerAPI = providerAPI;
 		this.sdkContext = sdkContext;
