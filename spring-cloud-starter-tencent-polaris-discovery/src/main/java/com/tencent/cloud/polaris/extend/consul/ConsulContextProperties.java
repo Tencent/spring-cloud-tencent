@@ -17,26 +17,8 @@
 
 package com.tencent.cloud.polaris.extend.consul;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-
-import com.tencent.cloud.common.constant.ContextConstant.ModifierOrder;
-import com.tencent.cloud.polaris.context.PolarisConfigModifier;
-import com.tencent.polaris.api.config.plugin.DefaultPlugins;
-import com.tencent.polaris.factory.config.ConfigurationImpl;
-import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
-import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
-import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
-import com.tencent.polaris.plugins.connector.common.constant.ConsulConstant.MetadataMapKey;
-import org.apache.commons.lang.StringUtils;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Discovery configuration of Consul.
@@ -105,64 +87,43 @@ public class ConsulContextProperties {
 		return discoveryEnabled;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public ConsulConfigModifier consulConfigModifier() {
-		return new ConsulConfigModifier();
+	public void setRegister(boolean register) {
+		this.register = register;
 	}
 
-	private static class ConsulConfigModifier implements PolarisConfigModifier {
+	public void setDiscoveryEnabled(boolean discoveryEnabled) {
+		this.discoveryEnabled = discoveryEnabled;
+	}
 
-		private static final String ID = "consul";
+	public String getInstanceId() {
+		return instanceId;
+	}
 
-		@Autowired(required = false)
-		private ConsulContextProperties consulContextProperties;
+	public void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
+	}
 
-		@Override
-		public void modify(ConfigurationImpl configuration) {
-			if (consulContextProperties != null && consulContextProperties.enabled) {
-				if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
-					configuration.getGlobal().setServerConnectors(new ArrayList<>());
-				}
-				if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())
-						&& null != configuration.getGlobal().getServerConnector()) {
-					configuration.getGlobal().getServerConnectors().add(configuration.getGlobal().getServerConnector());
-				}
-				ServerConnectorConfigImpl serverConnectorConfig = new ServerConnectorConfigImpl();
-				serverConnectorConfig.setId(ID);
-				serverConnectorConfig.setAddresses(
-						Collections.singletonList(consulContextProperties.host + ":" + consulContextProperties.port));
-				serverConnectorConfig.setProtocol(DefaultPlugins.SERVER_CONNECTOR_CONSUL);
-				Map<String, String> metadata = serverConnectorConfig.getMetadata();
-				if (StringUtils.isNotBlank(consulContextProperties.serviceName)) {
-					metadata.put(MetadataMapKey.SERVICE_NAME_KEY, consulContextProperties.serviceName);
-				}
-				if (StringUtils.isNotBlank(consulContextProperties.instanceId)) {
-					metadata.put(MetadataMapKey.INSTANCE_ID_KEY, consulContextProperties.instanceId);
-				}
-				if (consulContextProperties.preferIpAddress
-						&& StringUtils.isNotBlank(consulContextProperties.ipAddress)) {
-					metadata.put(MetadataMapKey.PREFER_IP_ADDRESS_KEY,
-							String.valueOf(consulContextProperties.preferIpAddress));
-					metadata.put(MetadataMapKey.IP_ADDRESS_KEY, consulContextProperties.ipAddress);
-				}
-				configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
+	public String getServiceName() {
+		return serviceName;
+	}
 
-				DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
-				discoveryConfig.setServerConnectorId(ID);
-				discoveryConfig.setEnable(consulContextProperties.discoveryEnabled);
-				configuration.getConsumer().getDiscoveries().add(discoveryConfig);
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
 
-				RegisterConfigImpl registerConfig = new RegisterConfigImpl();
-				registerConfig.setServerConnectorId(ID);
-				registerConfig.setEnable(consulContextProperties.register);
-				configuration.getProvider().getRegisters().add(registerConfig);
-			}
-		}
+	public String getIpAddress() {
+		return ipAddress;
+	}
 
-		@Override
-		public int getOrder() {
-			return ModifierOrder.LAST;
-		}
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	public boolean isPreferIpAddress() {
+		return preferIpAddress;
+	}
+
+	public void setPreferIpAddress(boolean preferIpAddress) {
+		this.preferIpAddress = preferIpAddress;
 	}
 }

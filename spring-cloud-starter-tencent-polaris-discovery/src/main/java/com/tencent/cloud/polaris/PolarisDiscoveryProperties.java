@@ -19,16 +19,9 @@
 package com.tencent.cloud.polaris;
 
 import com.tencent.cloud.common.constant.ContextConstant;
-import com.tencent.cloud.polaris.context.PolarisConfigModifier;
-import com.tencent.polaris.factory.config.ConfigurationImpl;
-import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
-import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 
 import static com.tencent.cloud.common.constant.ContextConstant.DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
 
@@ -223,6 +216,22 @@ public class PolarisDiscoveryProperties {
 		this.heartbeatInterval = heartbeatInterval;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public Boolean getRegisterEnabled() {
+		return registerEnabled;
+	}
+
+	public void setRegisterEnabled(Boolean registerEnabled) {
+		this.registerEnabled = registerEnabled;
+	}
+
+	public Boolean getHeartbeatEnabled() {
+		return heartbeatEnabled;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisDiscoveryProperties{" +
@@ -240,39 +249,5 @@ public class PolarisDiscoveryProperties {
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
 				'}';
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public PolarisDiscoveryConfigModifier polarisDiscoveryConfigModifier() {
-		return new PolarisDiscoveryConfigModifier();
-	}
-
-	private static class PolarisDiscoveryConfigModifier implements PolarisConfigModifier {
-
-		private static final String ID = "polaris";
-
-		@Autowired(required = false)
-		private PolarisDiscoveryProperties polarisDiscoveryProperties;
-
-		@Override
-		public void modify(ConfigurationImpl configuration) {
-			if (polarisDiscoveryProperties != null) {
-				DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
-				discoveryConfig.setServerConnectorId(ID);
-				discoveryConfig.setEnable(polarisDiscoveryProperties.enabled);
-				configuration.getConsumer().getDiscoveries().add(discoveryConfig);
-
-				RegisterConfigImpl registerConfig = new RegisterConfigImpl();
-				registerConfig.setServerConnectorId(ID);
-				registerConfig.setEnable(polarisDiscoveryProperties.registerEnabled);
-				configuration.getProvider().getRegisters().add(registerConfig);
-			}
-		}
-
-		@Override
-		public int getOrder() {
-			return ContextConstant.ModifierOrder.LAST;
-		}
 	}
 }
