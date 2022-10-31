@@ -103,7 +103,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
-			InstanceRegisterResponse instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
+			InstanceRegisterResponse instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
 			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
 			LOGGER.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
 					registration.getServiceId(), registration.getHost(), registration.getPort(),
