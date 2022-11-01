@@ -52,6 +52,7 @@ import org.springframework.util.CollectionUtils;
  * @author Haotian Zhang
  */
 public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
+	private static final ThreadLocal<List<Server>> THREAD_CACHE_SERVERS = new ThreadLocal<>();
 
 	private final ConsumerAPI consumerAPI;
 
@@ -65,7 +66,20 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 	}
 
 	@Override
+	public void addServers(List<Server> servers) {
+		THREAD_CACHE_SERVERS.set(servers);
+	}
+
+	@Override
 	public List<Server> getReachableServers() {
+		// Get servers first from the thread context
+		if (!CollectionUtils.isEmpty(THREAD_CACHE_SERVERS.get())) {
+			return THREAD_CACHE_SERVERS.get();
+		}
+		return getReachableServersWithoutCache();
+	}
+
+	public List<Server> getReachableServersWithoutCache() {
 		ServiceInstances serviceInstances;
 		if (polarisLoadBalancerProperties.getDiscoveryType().equals(ContextConstant.POLARIS)) {
 			serviceInstances = getPolarisDiscoveryServiceInstances();
