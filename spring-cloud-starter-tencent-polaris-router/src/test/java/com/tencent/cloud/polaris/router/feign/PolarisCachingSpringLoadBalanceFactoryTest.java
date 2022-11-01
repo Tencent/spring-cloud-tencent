@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router.feign;
 
 import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.loadbalancer.ILoadBalancer;
-import com.tencent.cloud.polaris.router.SimpleLoadBalancer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
