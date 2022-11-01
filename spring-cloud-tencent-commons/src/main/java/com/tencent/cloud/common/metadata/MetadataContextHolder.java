@@ -13,7 +13,6 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.common.metadata;
@@ -44,6 +43,7 @@ public final class MetadataContextHolder {
 	private static final ThreadLocal<MetadataContext> METADATA_CONTEXT = new InheritableThreadLocal<>();
 
 	private static MetadataLocalProperties metadataLocalProperties;
+
 	private static StaticMetadataManager staticMetadataManager;
 
 	private MetadataContextHolder() {

@@ -19,7 +19,6 @@
 package com.tencent.cloud.metadata.core;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -59,21 +58,14 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 	public void apply(RequestTemplate requestTemplate) {
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
-		Map<String, String> customMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
-		Map<String, String> disposableMetadata = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
-		Map<String, String> transHeaders = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_RAW_TRANSHEADERS_KV);
+		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
+		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
+		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
 
-		// Clean up one-time metadata coming from upstream .
-		Map<String, String> newestCustomMetadata = new HashMap<>();
-		customMetadata.forEach((key, value) -> {
-			if (!disposableMetadata.containsKey(key)) {
-				newestCustomMetadata.put(key, value);
-			}
-		});
 		this.buildMetadataHeader(requestTemplate, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
 		// process custom metadata
-		this.buildMetadataHeader(requestTemplate, newestCustomMetadata, CUSTOM_METADATA);
+		this.buildMetadataHeader(requestTemplate, customMetadata, CUSTOM_METADATA);
 
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(requestTemplate, transHeaders);

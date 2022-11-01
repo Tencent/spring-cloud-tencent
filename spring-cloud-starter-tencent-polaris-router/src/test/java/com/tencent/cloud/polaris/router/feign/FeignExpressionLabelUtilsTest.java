@@ -31,8 +31,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Test for {@link FeignExpressionLabelUtils}.
- *
- * @author lepdou 2022-05-26
+ *@author lepdou 2022-05-26
  */
 public class FeignExpressionLabelUtilsTest {
 

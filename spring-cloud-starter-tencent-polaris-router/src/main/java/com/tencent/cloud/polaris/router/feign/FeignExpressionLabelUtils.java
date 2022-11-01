@@ -49,24 +49,24 @@ public final class FeignExpressionLabelUtils {
 		Map<String, String> labels = new HashMap<>();
 
 		for (String labelKey : labelKeys) {
-			if (StringUtils.startsWithIgnoreCase(labelKey, ExpressionLabelUtils.LABEL_HEADER_PREFIX)) {
+			if (ExpressionLabelUtils.isHeaderLabel(labelKey)) {
 				String headerKey = ExpressionLabelUtils.parseHeaderKey(labelKey);
 				if (StringUtils.isBlank(headerKey)) {
 					continue;
 				}
 				labels.put(labelKey, getHeaderValue(request, headerKey));
 			}
-			else if (StringUtils.startsWithIgnoreCase(labelKey, ExpressionLabelUtils.LABEL_QUERY_PREFIX)) {
+			else if (ExpressionLabelUtils.isQueryLabel(labelKey)) {
 				String queryKey = ExpressionLabelUtils.parseQueryKey(labelKey);
 				if (StringUtils.isBlank(queryKey)) {
 					continue;
 				}
 				labels.put(labelKey, getQueryValue(request, queryKey));
 			}
-			else if (StringUtils.equalsIgnoreCase(ExpressionLabelUtils.LABEL_METHOD, labelKey)) {
+			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
 				labels.put(labelKey, request.method());
 			}
-			else if (StringUtils.equalsIgnoreCase(ExpressionLabelUtils.LABEL_URI, labelKey)) {
+			else if (ExpressionLabelUtils.isUriLabel(labelKey)) {
 				URI uri = URI.create(request.request().url());
 				labels.put(labelKey, uri.getPath());
 			}
