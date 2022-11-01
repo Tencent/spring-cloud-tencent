@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.router;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
@@ -37,6 +38,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
+import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRule;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
@@ -84,6 +86,8 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 
 	private final AbstractLoadBalancerRule delegateRule;
 
+	private final AtomicBoolean initializedLoadBalancerToDelegateRule = new AtomicBoolean(false);
+
 	public PolarisLoadBalancerCompositeRule(RouterAPI routerAPI,
 			PolarisLoadBalancerProperties polarisLoadBalancerProperties,
 			IClientConfig iClientConfig,
@@ -111,22 +115,31 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 
 	@Override
 	public Server choose(Object key) {
-		// 1. get all servers
-		List<Server> allServers = getLoadBalancer().getReachableServers();
+		ILoadBalancer loadBalancer = getLoadBalancer();
+
+		if (!(loadBalancer instanceof PolarisLoadBalancer)) {
+			return loadBalancer.chooseServer(key);
+		}
+
+		// set load balancer to delegate rule
+		if (!initializedLoadBalancerToDelegateRule.compareAndSet(false, true)) {
+			delegateRule.setLoadBalancer(loadBalancer);
+		}
+
+		PolarisLoadBalancer polarisLoadBalancer = (PolarisLoadBalancer) loadBalancer;
+
+		// 1. get all servers from polaris client
+		List<Server> allServers = polarisLoadBalancer.getReachableServersWithoutCache();
 		if (CollectionUtils.isEmpty(allServers)) {
 			return null;
 		}
 
-		ILoadBalancer loadBalancer = new SimpleLoadBalancer();
 		// 2. filter by router
+		List<Server> serversAfterRouter;
 		if (key instanceof PolarisRouterContext) {
 			// router implement for Feign and scg
 			PolarisRouterContext routerContext = (PolarisRouterContext) key;
-			List<Server> serversAfterRouter = doRouter(allServers, routerContext);
-			// 3. filter by load balance.
-			// A LoadBalancer needs to be regenerated for each request,
-			// because the list of servers may be different after filtered by router
-			loadBalancer.addServers(serversAfterRouter);
+			serversAfterRouter = doRouter(allServers, routerContext);
 		}
 		else if (key instanceof HttpRequest) {
 			// router implement for rest template
@@ -135,20 +148,20 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 			String routerContextStr = request.getHeaders().getFirst(RouterConstant.HEADER_ROUTER_CONTEXT);
 
 			if (StringUtils.isEmpty(routerContextStr)) {
-				loadBalancer.addServers(allServers);
+				serversAfterRouter = allServers;
 			}
 			else {
 				PolarisRouterContext routerContext = JacksonUtils.deserialize(UriEncoder.decode(routerContextStr),
 						PolarisRouterContext.class);
-				List<Server> serversAfterRouter = doRouter(allServers, routerContext);
-				loadBalancer.addServers(serversAfterRouter);
+				serversAfterRouter = doRouter(allServers, routerContext);
 			}
 		}
 		else {
-			loadBalancer.addServers(allServers);
+			serversAfterRouter = allServers;
 		}
 
-		delegateRule.setLoadBalancer(loadBalancer);
+		// 3. put filtered servers to thread local, so delegate rule choose servers from filtered servers.
+		polarisLoadBalancer.addServers(serversAfterRouter);
 
 		return delegateRule.choose(key);
 	}
