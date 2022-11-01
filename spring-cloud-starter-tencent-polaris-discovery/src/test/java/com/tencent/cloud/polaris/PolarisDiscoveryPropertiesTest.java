@@ -38,10 +38,6 @@ public class PolarisDiscoveryPropertiesTest {
 		PolarisDiscoveryProperties polarisDiscoveryProperties = new PolarisDiscoveryProperties();
 
 		// HeartbeatEnabled
-		polarisDiscoveryProperties.setHeartbeatEnabled(true);
-		assertThat(polarisDiscoveryProperties.isHeartbeatEnabled()).isTrue();
-
-		// HeartbeatEnabled
 		polarisDiscoveryProperties.setHeartbeatInterval(200);
 		assertThat(polarisDiscoveryProperties.getHeartbeatInterval()).isEqualTo(5);
 		polarisDiscoveryProperties.setHeartbeatInterval(0);
@@ -103,7 +99,6 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", port=9091"
 						+ ", enabled=true"
 						+ ", registerEnabled=true"
-						+ ", heartbeatEnabled=true"
 						+ ", heartbeatInterval=20"
 						+ ", healthCheckUrl='/health'"
 						+ ", serviceListRefreshInterval=1000}");
