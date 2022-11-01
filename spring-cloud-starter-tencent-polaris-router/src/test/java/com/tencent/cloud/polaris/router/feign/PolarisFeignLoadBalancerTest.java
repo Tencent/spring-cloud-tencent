@@ -32,7 +32,6 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
-import com.tencent.cloud.polaris.router.SimpleLoadBalancer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
