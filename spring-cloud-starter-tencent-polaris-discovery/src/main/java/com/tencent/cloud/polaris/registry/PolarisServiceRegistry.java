@@ -68,7 +68,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.staticMetadataManager = staticMetadataManager;
 
-		if (polarisDiscoveryProperties.isHeartbeatEnabled()) {
+		if (StringUtils.isNotBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
 			this.heartbeatExecutor = Executors
 					.newSingleThreadScheduledExecutor(new NamedThreadFactory("polaris-heartbeat"));
 		}
@@ -94,27 +94,27 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		instanceRegisterRequest.setRegion(staticMetadataManager.getRegion());
 		instanceRegisterRequest.setZone(staticMetadataManager.getZone());
 		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
-		if (null != heartbeatExecutor) {
-			instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
-		}
+		instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 		instanceRegisterRequest.setMetadata(registration.getMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
-			InstanceRegisterResponse instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
-			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
-			LOGGER.info("polaris registry, {} {} {}:{} {} register finished",
-					polarisDiscoveryProperties.getNamespace(),
-					registration.getServiceId(), registration.getHost(),
-					registration.getPort(), staticMetadataManager.getMergedStaticMetadata());
-
-			if (null != heartbeatExecutor) {
+			InstanceRegisterResponse instanceRegisterResponse;
+			if (StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
+				instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
+			}
+			else {
+				instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
 				BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
 				// Start the heartbeat thread after the registration is successful.
 				heartbeat(heartbeatRequest);
 			}
+			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
+			LOGGER.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
+					registration.getServiceId(), registration.getHost(), registration.getPort(),
+					staticMetadataManager.getMergedStaticMetadata());
 		}
 		catch (Exception e) {
 			LOGGER.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
@@ -188,23 +188,19 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		heartbeatExecutor.scheduleWithFixedDelay(() -> {
 			try {
 				String healthCheckEndpoint = polarisDiscoveryProperties.getHealthCheckUrl();
-				// First determine whether health-check-url is configured.
-				// If configured, the service instance health check needs to be executed
-				// first.
 				// If the health check passes, the heartbeat will be reported.
 				// If it does not pass, the heartbeat will not be reported.
-				if (StringUtils.isNotBlank(healthCheckEndpoint)) {
-					if (!healthCheckEndpoint.startsWith("/")) {
-						healthCheckEndpoint = "/" + healthCheckEndpoint;
-					}
+				if (!healthCheckEndpoint.startsWith("/")) {
+					healthCheckEndpoint = "/" + healthCheckEndpoint;
+				}
 
-					String healthCheckUrl = String.format("http://%s:%s%s",
-							heartbeatRequest.getHost(), heartbeatRequest.getPort(), healthCheckEndpoint);
+				String healthCheckUrl = String.format("http://%s:%s%s", heartbeatRequest.getHost(),
+						heartbeatRequest.getPort(), healthCheckEndpoint);
 
-					if (!OkHttpUtil.get(healthCheckUrl, null)) {
-						LOGGER.error("backend service health check failed. health check endpoint = {}", healthCheckEndpoint);
-						return;
-					}
+				if (!OkHttpUtil.get(healthCheckUrl, null)) {
+					LOGGER.error("backend service health check failed. health check endpoint = {}",
+							healthCheckEndpoint);
+					return;
 				}
 
 				polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);

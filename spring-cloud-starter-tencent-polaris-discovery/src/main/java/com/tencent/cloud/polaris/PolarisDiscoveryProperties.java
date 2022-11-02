@@ -85,12 +85,6 @@ public class PolarisDiscoveryProperties {
 	private Boolean registerEnabled;
 
 	/**
-	 * If heartbeat enabled.
-	 */
-	@Value("${spring.cloud.polaris.discovery.heartbeat.enabled:#{true}}")
-	private Boolean heartbeatEnabled = true;
-
-	/**
 	 * Heartbeat interval ( 0 < interval <= 60).
 	 * Time unit: second. Default: 5.
 	 * @see ContextConstant#DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL
@@ -107,15 +101,6 @@ public class PolarisDiscoveryProperties {
 	 * Millis interval of refresh of service info list. Default: 60000.
 	 */
 	private Long serviceListRefreshInterval = 60000L;
-
-
-	public boolean isHeartbeatEnabled() {
-		return heartbeatEnabled;
-	}
-
-	public void setHeartbeatEnabled(Boolean heartbeatEnabled) {
-		this.heartbeatEnabled = heartbeatEnabled;
-	}
 
 	public String getNamespace() {
 		return namespace;
@@ -206,7 +191,7 @@ public class PolarisDiscoveryProperties {
 	}
 
 	public Integer getHeartbeatInterval() {
-		if (this.heartbeatEnabled && (this.heartbeatInterval <= 0 || this.heartbeatInterval > 60)) {
+		if (this.heartbeatInterval <= 0 || this.heartbeatInterval > 60) {
 			heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
 		}
 		return heartbeatInterval;
@@ -228,10 +213,6 @@ public class PolarisDiscoveryProperties {
 		this.registerEnabled = registerEnabled;
 	}
 
-	public Boolean getHeartbeatEnabled() {
-		return heartbeatEnabled;
-	}
-
 	@Override
 	public String toString() {
 		return "PolarisDiscoveryProperties{" +
@@ -244,7 +225,6 @@ public class PolarisDiscoveryProperties {
 				", port=" + port +
 				", enabled=" + enabled +
 				", registerEnabled=" + registerEnabled +
-				", heartbeatEnabled=" + heartbeatEnabled +
 				", heartbeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
