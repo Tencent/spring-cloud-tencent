@@ -88,13 +88,15 @@ public class RpcEnhancementAutoConfiguration {
 		static class PolarisReporterConfig {
 
 			@Bean
-			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties) {
-				return new SuccessPolarisReporter(properties);
+			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties,
+																@Autowired(required = false) ConsumerAPI consumerAPI) {
+				return new SuccessPolarisReporter(properties, consumerAPI);
 			}
 
 			@Bean
-			public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties) {
-				return new ExceptionPolarisReporter(properties);
+			public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
+																	@Autowired(required = false) ConsumerAPI consumerAPI) {
+				return new ExceptionPolarisReporter(properties, consumerAPI);
 			}
 		}
 	}

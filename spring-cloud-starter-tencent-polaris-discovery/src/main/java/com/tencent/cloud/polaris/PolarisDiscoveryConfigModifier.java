@@ -20,41 +20,40 @@ package com.tencent.cloud.polaris;
 
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
-import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
-import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
+import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
+import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
 
 /**
- * Spring Cloud Tencent config Override polaris config.
- *
- * @author lepdou 2022-04-24
+ * @author lingxiao.wlx
  */
-public class DiscoveryConfigModifier implements PolarisConfigModifier {
+public class PolarisDiscoveryConfigModifier implements PolarisConfigModifier {
+
+	private static final String ID = "polaris";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
-	public DiscoveryConfigModifier(PolarisDiscoveryProperties polarisDiscoveryProperties) {
+	public PolarisDiscoveryConfigModifier(PolarisDiscoveryProperties polarisDiscoveryProperties) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 	}
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
-		// Set excludeCircuitBreakInstances to false
-		RecoverRouterConfig recoverRouterConfig = configuration.getConsumer().getServiceRouter()
-				.getPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, RecoverRouterConfig.class);
-		recoverRouterConfig.setExcludeCircuitBreakInstances(false);
+		if (polarisDiscoveryProperties != null) {
+			DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
+			discoveryConfig.setServerConnectorId(ID);
+			discoveryConfig.setEnable(polarisDiscoveryProperties.isEnabled());
+			configuration.getConsumer().getDiscoveries().add(discoveryConfig);
 
-		// Update modified config to source properties
-		configuration.getConsumer().getServiceRouter()
-				.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
-
-		// Set ServiceRefreshInterval
-		configuration.getConsumer().getLocalCache()
-				.setServiceListRefreshInterval(polarisDiscoveryProperties.getServiceListRefreshInterval());
+			RegisterConfigImpl registerConfig = new RegisterConfigImpl();
+			registerConfig.setServerConnectorId(ID);
+			registerConfig.setEnable(polarisDiscoveryProperties.isRegisterEnabled());
+			configuration.getProvider().getRegisters().add(registerConfig);
+		}
 	}
 
 	@Override
 	public int getOrder() {
-		return ContextConstant.ModifierOrder.DISCOVERY_ORDER;
+		return ContextConstant.ModifierOrder.LAST;
 	}
 }
