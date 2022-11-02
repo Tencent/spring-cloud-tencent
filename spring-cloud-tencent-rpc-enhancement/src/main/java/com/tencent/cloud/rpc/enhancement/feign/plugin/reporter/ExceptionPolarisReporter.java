@@ -31,7 +31,6 @@ import feign.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 
 /**
@@ -43,11 +42,13 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExceptionPolarisReporter.class);
 	private final RpcEnhancementReporterProperties reporterProperties;
-	@Autowired(required = false)
-	private ConsumerAPI consumerAPI;
 
-	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reporterProperties) {
+	private final ConsumerAPI consumerAPI;
+
+	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reporterProperties,
+									ConsumerAPI consumerAPI) {
 		this.reporterProperties = reporterProperties;
+		this.consumerAPI = consumerAPI;
 	}
 
 	@Override
