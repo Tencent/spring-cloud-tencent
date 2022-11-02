@@ -28,32 +28,31 @@ import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.api.rpc.ServicesResponse;
 import com.tencent.polaris.client.api.SDKContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 /**
  * Discovery Handler for Polaris.
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng
  */
-@Component
 public class PolarisDiscoveryHandler {
 
-	@Autowired
-	private PolarisDiscoveryProperties polarisDiscoveryProperties;
+	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
-	@Autowired
-	private ProviderAPI providerAPI;
+	private final ProviderAPI providerAPI;
 
-	@Autowired
-	private SDKContext sdkContext;
+	private final SDKContext sdkContext;
 
-	@Autowired
-	private ConsumerAPI polarisConsumer;
+	private final ConsumerAPI polarisConsumer;
+
+	public PolarisDiscoveryHandler(PolarisDiscoveryProperties polarisDiscoveryProperties,
+				ProviderAPI providerAPI, SDKContext sdkContext, ConsumerAPI polarisConsumer) {
+		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
+		this.providerAPI = providerAPI;
+		this.sdkContext = sdkContext;
+		this.polarisConsumer = polarisConsumer;
+	}
 
 	/**
 	 * Get a list of healthy instances.
-	 *
 	 * @param service service name
 	 * @return list of healthy instances
 	 */
@@ -67,7 +66,6 @@ public class PolarisDiscoveryHandler {
 
 	/**
 	 * Return all instances for the given service.
-	 *
 	 * @param service serviceName
 	 * @return list of instances
 	 */
@@ -89,7 +87,6 @@ public class PolarisDiscoveryHandler {
 
 	/**
 	 * Return all service for given namespace.
-	 *
 	 * @return service list
 	 */
 	public ServicesResponse getServices() {

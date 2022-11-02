@@ -15,13 +15,17 @@
  * specific language governing permissions and limitations under the License.
  *
  */
-
 package com.tencent.cloud.polaris;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.cloud.polaris.extend.consul.ConsulConfigModifier;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.core.ProviderAPI;
+import com.tencent.polaris.client.api.SDKContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,12 +43,27 @@ public class DiscoveryPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisDiscoveryHandler polarisDiscoveryHandler() {
-		return new PolarisDiscoveryHandler();
+	public PolarisDiscoveryHandler polarisDiscoveryHandler(PolarisDiscoveryProperties polarisDiscoveryProperties,
+															ProviderAPI providerAPI, SDKContext sdkContext,
+															ConsumerAPI polarisConsumer) {
+		return new PolarisDiscoveryHandler(polarisDiscoveryProperties, providerAPI, sdkContext, polarisConsumer);
 	}
 
 	@Bean
-	public DiscoveryConfigModifier discoveryConfigModifier() {
-		return new DiscoveryConfigModifier();
+	@ConditionalOnMissingBean
+	public DiscoveryConfigModifier discoveryConfigModifier(PolarisDiscoveryProperties polarisDiscoveryProperties) {
+		return new DiscoveryConfigModifier(polarisDiscoveryProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ConsulConfigModifier consulConfigModifier(@Autowired(required = false) ConsulContextProperties consulContextProperties) {
+		return new ConsulConfigModifier(consulContextProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisDiscoveryConfigModifier polarisDiscoveryConfigModifier(PolarisDiscoveryProperties polarisDiscoveryProperties) {
+		return new PolarisDiscoveryConfigModifier(polarisDiscoveryProperties);
 	}
 }

@@ -30,7 +30,6 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisR
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.RibbonLoadBalancerClientAspect;
 import com.tencent.polaris.api.core.ConsumerAPI;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -89,13 +88,15 @@ public class RpcEnhancementAutoConfiguration {
 		static class PolarisReporterConfig {
 
 			@Bean
-			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties) {
-				return new SuccessPolarisReporter(properties);
+			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties,
+																@Autowired(required = false) ConsumerAPI consumerAPI) {
+				return new SuccessPolarisReporter(properties, consumerAPI);
 			}
 
 			@Bean
-			public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties) {
-				return new ExceptionPolarisReporter(properties);
+			public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
+																	@Autowired(required = false) ConsumerAPI consumerAPI) {
+				return new ExceptionPolarisReporter(properties, consumerAPI);
 			}
 		}
 	}
@@ -127,13 +128,6 @@ public class RpcEnhancementAutoConfiguration {
 					restTemplate.setErrorHandler(reporter);
 				}
 			};
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnClass(name = {"org.springframework.cloud.netflix.ribbon.RibbonLoadBalancerClient"})
-		public RibbonLoadBalancerClientAspect ribbonLoadBalancerClientAspect() {
-			return new RibbonLoadBalancerClientAspect();
 		}
 
 		@Bean
