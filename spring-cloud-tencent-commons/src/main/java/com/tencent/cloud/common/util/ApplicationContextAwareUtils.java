@@ -21,14 +21,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 
 /**
  * Spring Context Util.
  *
  * @author Hongwei Zhu
  */
-@Component
 public class ApplicationContextAwareUtils implements ApplicationContextAware {
 
 	private static ApplicationContext applicationContext;
