@@ -23,6 +23,7 @@ import java.util.Map;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.config.global.APIConfig;
 import com.tencent.polaris.api.config.global.GlobalConfig;
@@ -60,6 +61,7 @@ public class PolarisRegistrationTest {
 
 		// mock
 		ConsulContextProperties consulContextProperties = mock(ConsulContextProperties.class);
+		NacosContextProperties nacosContextProperties = mock(NacosContextProperties.class);
 
 		// mock SDKContext
 		APIConfig apiConfig = mock(APIConfig.class);
@@ -76,7 +78,7 @@ public class PolarisRegistrationTest {
 		doReturn(Collections.singletonMap("key1", "value1")).when(staticMetadataManager).getMergedStaticMetadata();
 
 		polarisRegistration = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
-				polarisContext, staticMetadataManager);
+				polarisContext, staticMetadataManager, nacosContextProperties);
 	}
 
 	@Test

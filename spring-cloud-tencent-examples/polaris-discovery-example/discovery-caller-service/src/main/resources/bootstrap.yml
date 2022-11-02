@@ -41,6 +41,15 @@ spring:
 #        service-name: ${spring.application.name}
 #        ip-address: localhost
 #        prefer-ip-address: true
+#    nacos:
+#      enabled: true
+#      discovery:
+#        enabled: true
+#        registerEnabled: true
+#        group: polaris
+#        serverAddr: 127.0.0.1:8848
+#        username: nacos
+#        password: nacos
 #eureka:
 #  client:
 #    serviceUrl:

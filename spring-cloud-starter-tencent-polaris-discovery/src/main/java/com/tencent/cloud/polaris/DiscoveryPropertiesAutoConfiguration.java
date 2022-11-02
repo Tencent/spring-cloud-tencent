@@ -21,6 +21,8 @@ import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulConfigModifier;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.nacos.NacosConfigModifier;
+import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.client.api.SDKContext;
@@ -38,7 +40,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
-@Import({PolarisDiscoveryProperties.class, ConsulContextProperties.class})
+@Import({PolarisDiscoveryProperties.class, ConsulContextProperties.class, NacosContextProperties.class})
 public class DiscoveryPropertiesAutoConfiguration {
 
 	@Bean
@@ -65,5 +67,11 @@ public class DiscoveryPropertiesAutoConfiguration {
 	@ConditionalOnMissingBean
 	public PolarisDiscoveryConfigModifier polarisDiscoveryConfigModifier(PolarisDiscoveryProperties polarisDiscoveryProperties) {
 		return new PolarisDiscoveryConfigModifier(polarisDiscoveryProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public NacosConfigModifier nacosConfigModifier(@Autowired(required = false) NacosContextProperties nacosContextProperties){
+		return new NacosConfigModifier(nacosContextProperties);
 	}
 }

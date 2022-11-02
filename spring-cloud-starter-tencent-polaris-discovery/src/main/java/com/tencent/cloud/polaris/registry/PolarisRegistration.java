@@ -21,10 +21,12 @@ package com.tencent.cloud.polaris.registry;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
@@ -32,6 +34,8 @@ import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_GROUP;
 
 /**
  * Registration object of Polaris.
@@ -51,6 +55,8 @@ public class PolarisRegistration implements Registration {
 
 	private final StaticMetadataManager staticMetadataManager;
 
+	private final NacosContextProperties nacosContextProperties;
+
 	private Map<String, String> metadata;
 
 	private String host;
@@ -60,18 +66,30 @@ public class PolarisRegistration implements Registration {
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Nullable ConsulContextProperties consulContextProperties,
-			SDKContext context, StaticMetadataManager staticMetadataManager) {
+			SDKContext context, StaticMetadataManager staticMetadataManager,
+			@Nullable NacosContextProperties nacosContextProperties) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.consulContextProperties = consulContextProperties;
 		this.polarisContext = context;
 		this.staticMetadataManager = staticMetadataManager;
-
+		this.nacosContextProperties = nacosContextProperties;
 		host = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 	}
 
 	@Override
 	public String getServiceId() {
-		return polarisDiscoveryProperties.getService();
+		if (Objects.isNull(nacosContextProperties)) {
+			return polarisDiscoveryProperties.getService();
+		}
+		else {
+			String group = nacosContextProperties.getGroup();
+			if (StringUtils.isNotBlank(group) && !DEFAULT_GROUP.equals(group)) {
+				return group + "_" + polarisDiscoveryProperties.getService();
+			}
+			else {
+				return polarisDiscoveryProperties.getService();
+			}
+		}
 	}
 
 	@Override
