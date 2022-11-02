@@ -213,10 +213,6 @@ public class PolarisDiscoveryProperties {
 		this.registerEnabled = registerEnabled;
 	}
 
-	public Boolean getHeartbeatEnabled() {
-		return heartbeatEnabled;
-	}
-
 	@Override
 	public String toString() {
 		return "PolarisDiscoveryProperties{" +
