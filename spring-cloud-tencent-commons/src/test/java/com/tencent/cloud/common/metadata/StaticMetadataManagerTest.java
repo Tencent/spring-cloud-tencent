@@ -23,9 +23,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
+import com.tencent.cloud.common.support.EnvironmentVariable;
+import com.tencent.cloud.common.support.EnvironmentVariableInjectedRunner;
+import com.tencent.cloud.common.support.EnvironmentVariables;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +46,14 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-06-27
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(EnvironmentVariableInjectedRunner.class)
+@EnvironmentVariables(
+		value = {
+				@EnvironmentVariable(name = "SCT_METADATA_CONTENT_TRANSITIVE", value = "tkey1,tkey2,tkey3"),
+				@EnvironmentVariable(name = "SCT_METADATA_CONTENT_DISPOSABLE", value = "dkey1,dkey2,dkey3"),
+				@EnvironmentVariable(name = "SCT_METADATA_CONTENT_KEY", value = "key")
+		}
+)
 public class StaticMetadataManagerTest {
 
 	@Mock
