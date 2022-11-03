@@ -99,36 +99,6 @@
 									</excludes>
 								</filter>
 							</filters>
-							<relocations>
-								<relocation>
-									<pattern>com.google</pattern>
-									<shadedPattern>shade.polaris.com.google</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>com.fasterxml</pattern>
-									<shadedPattern>shade.polaris.com.fasterxml</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>google</pattern>
-									<shadedPattern>shade.polaris.google</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>io.grpc.protobuf</pattern>
-									<shadedPattern>shade.polaris.io.grpc.protobuf</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>org.yaml</pattern>
-									<shadedPattern>shade.polaris.org.yaml</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>io.grpc</pattern>
-									<shadedPattern>shade.polaris.io.grpc</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>io.netty</pattern>
-									<shadedPattern>shade.polaris.io.netty</shadedPattern>
-								</relocation>
-							</relocations>
 						</configuration>
 					</execution>
 				</executions>
