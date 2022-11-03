@@ -21,7 +21,7 @@ fixes #
 
 ## Checklist
 
-- [ ] Add junit tests for adding or updating code.
+- [ ] Coverage from `Codecov Report` should not decrease (which means adding junit tests for adding or updating code).
 - [ ] All junit tests passing.
 - [ ] Add copyright holder at the beginning of .java file if it is new.
 - [ ] Add information of this PR to CHANGELOG.md in root of project.
