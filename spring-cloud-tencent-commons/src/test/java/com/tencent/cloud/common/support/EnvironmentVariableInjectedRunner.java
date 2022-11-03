@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import org.junit.Rule;
 import org.junit.runners.model.InitializationError;
+
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

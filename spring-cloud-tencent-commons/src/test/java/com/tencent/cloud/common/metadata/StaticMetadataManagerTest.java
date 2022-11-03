@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
@@ -34,9 +33,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import org.springframework.util.CollectionUtils;
 
 import static org.mockito.Mockito.when;
 
@@ -47,13 +43,12 @@ import static org.mockito.Mockito.when;
  * @author lepdou 2022-06-27
  */
 @RunWith(EnvironmentVariableInjectedRunner.class)
-@EnvironmentVariables(
-		value = {
-				@EnvironmentVariable(name = "SCT_METADATA_CONTENT_TRANSITIVE", value = "tkey1,tkey2,tkey3"),
-				@EnvironmentVariable(name = "SCT_METADATA_CONTENT_DISPOSABLE", value = "dkey1,dkey2,dkey3"),
-				@EnvironmentVariable(name = "SCT_METADATA_CONTENT_KEY", value = "key")
-		}
-)
+@EnvironmentVariables({
+		@EnvironmentVariable(name = "SCT_METADATA_CONTENT_TRANSITIVE", value = "transitiveKey"),
+		@EnvironmentVariable(name = "SCT_METADATA_CONTENT_DISPOSABLE", value = "disposableKey"),
+		@EnvironmentVariable(name = "SCT_METADATA_CONTENT_transitiveKey", value = "transitiveValue"),
+		@EnvironmentVariable(name = "SCT_METADATA_CONTENT_disposableKey", value = "disposableValue"),
+		@EnvironmentVariable(name = "SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS", value = "header1,header2,header3")})
 public class StaticMetadataManagerTest {
 
 	@Mock
@@ -135,27 +130,43 @@ public class StaticMetadataManagerTest {
 				new MockedMetadataProvider());
 
 		Map<String, String> metadata = metadataManager.getMergedStaticMetadata();
-		Assert.assertEquals(6, metadata.size());
+		Assert.assertEquals(8, metadata.size());
 		Assert.assertEquals("v1", metadata.get("k1"));
 		Assert.assertEquals("v22", metadata.get("k2"));
 		Assert.assertEquals("v33", metadata.get("k3"));
 
 		Map<String, String> transitiveMetadata = metadataManager.getMergedStaticTransitiveMetadata();
-		Assert.assertEquals(2, transitiveMetadata.size());
+		Assert.assertEquals(3, transitiveMetadata.size());
 		Assert.assertEquals("v1", metadata.get("k1"));
 		Assert.assertEquals("v22", metadata.get("k2"));
 
 		Assert.assertEquals("zone2", metadataManager.getZone());
 		Assert.assertEquals("region1", metadataManager.getRegion());
 
-		Assert.assertTrue(CollectionUtils.isEmpty(metadataManager.getAllEnvMetadata()));
-		Assert.assertTrue(CollectionUtils.isEmpty(metadataManager.getEnvTransitiveMetadata()));
-
 		Map<String, String> locationInfo = metadataManager.getLocationMetadata();
 		Assert.assertEquals("zone2", locationInfo.get("zone"));
 		Assert.assertEquals("region1", locationInfo.get("region"));
 		Assert.assertEquals("campus1", locationInfo.get("campus"));
 
+	}
+
+	@Test
+	public void testEnvMetadata() {
+		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties, null);
+		Map<String, String> allEnvMetadata = metadataManager.getAllEnvMetadata();
+		Assert.assertTrue(allEnvMetadata.containsKey("transitiveKey"));
+		Assert.assertTrue(allEnvMetadata.containsKey("disposableKey"));
+
+		Map<String, String> envDisposableMetadata = metadataManager.getEnvDisposableMetadata();
+		Assert.assertTrue(envDisposableMetadata.containsKey("disposableKey"));
+		Assert.assertEquals(envDisposableMetadata.get("disposableKey"), "disposableValue");
+
+		Map<String, String> envTransitiveMetadata = metadataManager.getEnvTransitiveMetadata();
+		Assert.assertTrue(envTransitiveMetadata.containsKey("transitiveKey"));
+		Assert.assertEquals(envTransitiveMetadata.get("transitiveKey"), "transitiveValue");
+
+		String transHeaderFromEnv = metadataManager.getTransHeaderFromEnv();
+		Assert.assertEquals(transHeaderFromEnv, "header1,header2,header3");
 	}
 
 	static class MockedMetadataProvider implements InstanceMetadataProvider {
