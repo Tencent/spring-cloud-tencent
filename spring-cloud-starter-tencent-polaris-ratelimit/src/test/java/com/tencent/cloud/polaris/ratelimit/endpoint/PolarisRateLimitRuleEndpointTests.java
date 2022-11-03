@@ -83,7 +83,7 @@ public class PolarisRateLimitRuleEndpointTests {
 			}
 			else {
 				ModelProto.MatchString matchString = ModelProto.MatchString.newBuilder()
-						.setType(ModelProto.MatchString.MatchStringType.EXACT)
+						.setType(ModelProto.Operation.EXACT)
 						.setValue(StringValue.of("value"))
 						.setValueType(ModelProto.MatchString.ValueType.TEXT).build();
 				RateLimitProto.Rule rule = RateLimitProto.Rule.newBuilder()
