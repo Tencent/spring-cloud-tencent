@@ -34,6 +34,11 @@ public class NacosContextProperties {
 	 */
 	public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
 
+	/**
+	 * Nacos default cluster name.
+	 */
+	public static final String DEFAULT_CLUSTER = "DEFAULT";
+
 	private boolean enabled = false;
 
 	@Value("${spring.cloud.nacos.discovery.enabled:#{'true'}}")
@@ -67,8 +72,8 @@ public class NacosContextProperties {
 	/**
 	 * cluster name for nacos .
 	 */
-	@Value("${spring.cloud.nacos.discovery.cluster-name:}")
-	private String clusterName;
+	@Value("${spring.cloud.nacos.discovery.cluster-name:DEFAULT}")
+	private String clusterName = DEFAULT_CLUSTER;
 
 	/**
 	 * group name for nacos.

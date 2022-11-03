@@ -35,6 +35,7 @@ import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_CLUSTER;
 import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_GROUP;
 
 /**
@@ -46,7 +47,8 @@ public class PolarisRegistration implements Registration {
 
 	private static final String METADATA_KEY_IP = "internal-ip";
 	private static final String METADATA_KEY_ADDRESS = "internal-address";
-	private static final String GROUP_SERVER_ID_FORMAT = "%s_%s";
+	private static final String GROUP_SERVER_ID_FORMAT = "%s__%s";
+	private static final String INTERNAL_NACOS_CLUSTER = "internal-nacos-cluster";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
@@ -130,6 +132,12 @@ public class PolarisRegistration implements Registration {
 			instanceMetadata.put(METADATA_KEY_IP, host);
 			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + polarisDiscoveryProperties.getPort());
 
+			// put internal-nacos-cluster if necessary
+			String clusterName = nacosContextProperties.getClusterName();
+			if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER.equals(clusterName)) {
+				instanceMetadata.put(INTERNAL_NACOS_CLUSTER, clusterName);
+			}
+
 			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
 
 			this.metadata = instanceMetadata;
@@ -155,12 +163,14 @@ public class PolarisRegistration implements Registration {
 		boolean registerEnabled = false;
 
 		if (null != polarisDiscoveryProperties) {
-			registerEnabled |= polarisDiscoveryProperties.isRegisterEnabled();
+			registerEnabled = polarisDiscoveryProperties.isRegisterEnabled();
 		}
 		if (null != consulContextProperties && consulContextProperties.isEnabled()) {
 			registerEnabled |= consulContextProperties.isRegister();
 		}
-
+		if (null != nacosContextProperties && nacosContextProperties.isEnabled()) {
+			registerEnabled |= nacosContextProperties.isRegisterEnabled();
+		}
 		return registerEnabled;
 	}
 

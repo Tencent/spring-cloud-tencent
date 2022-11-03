@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.extend.nacos;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 
 import com.tencent.cloud.common.constant.ContextConstant;
@@ -30,7 +29,6 @@ import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
 
@@ -42,7 +40,6 @@ import org.springframework.util.CollectionUtils;
 public class NacosConfigModifier implements PolarisConfigModifier {
 	private static final String ID = "nacos";
 	private static final String ADDRESS_FORMAT = "%s:%s@%s";
-	private static final String INTERNAL_NACOS_CLUSTER = "internal-nacos-cluster";
 
 	private final NacosContextProperties nacosContextProperties;
 
@@ -55,7 +52,6 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 		if (Objects.isNull(nacosContextProperties) || !nacosContextProperties.isEnabled()) {
 			return;
 		}
-
 		if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
 			configuration.getGlobal().setServerConnectors(new ArrayList<>());
 		}
@@ -70,12 +66,6 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 		serverConnectorConfig.setAddresses(
 				Collections.singletonList(address));
 		serverConnectorConfig.setProtocol(DefaultPlugins.SERVER_CONNECTOR_NACOS);
-		Map<String, String> metadata = serverConnectorConfig.getMetadata();
-		// set internal-nacos-cluster if necessary
-		String clusterName = nacosContextProperties.getClusterName();
-		if (StringUtils.isNotBlank(clusterName)) {
-			metadata.put(INTERNAL_NACOS_CLUSTER, clusterName);
-		}
 		configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
 		DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
 		discoveryConfig.setServerConnectorId(ID);

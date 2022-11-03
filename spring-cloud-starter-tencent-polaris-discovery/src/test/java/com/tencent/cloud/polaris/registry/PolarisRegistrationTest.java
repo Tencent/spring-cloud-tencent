@@ -135,9 +135,20 @@ public class PolarisRegistrationTest {
 	@Test
 	public void testGetNacosServiceId() {
 		String groupName = "group";
-		String format = "%s_%s";
-		when(nacosContextProperties.getGroup()).thenReturn("group");
+		String format = "%s__%s";
+		when(nacosContextProperties.getGroup()).thenReturn(groupName);
 		String serviceId = polarisRegistration.getServiceId();
 		assertThat(String.format(format, groupName, SERVICE_PROVIDER).equals(serviceId));
+	}
+
+	@Test
+	public void testGetNacosMetadata() {
+		String clusterName = "cluster";
+		when(nacosContextProperties.getClusterName()).thenReturn(clusterName);
+		Map<String, String> metadata = polarisRegistration.getMetadata();
+		assertThat(metadata).isNotNull();
+		assertThat(metadata).isNotEmpty();
+		assertThat(metadata.size()).isEqualTo(4);
+		assertThat(metadata.get("internal-nacos-cluster")).isEqualTo(clusterName);
 	}
 }

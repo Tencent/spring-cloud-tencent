@@ -19,8 +19,9 @@
 package com.tencent.cloud.polaris.extend.nacos;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
+import com.tencent.polaris.api.config.plugin.DefaultPlugins;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.CollectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,15 +68,16 @@ public class NacosContextPropertiesTest {
 		assertThat(sdkContext).isNotNull();
 		com.tencent.polaris.api.config.Configuration configuration = sdkContext.getConfig();
 		List<ServerConnectorConfigImpl> serverConnectorConfigs = configuration.getGlobal().getServerConnectors();
-		Map<String, String> metadata = null;
-		for (ServerConnectorConfigImpl serverConnectorConfig : serverConnectorConfigs) {
-			if (serverConnectorConfig.getId().equals("nacos")) {
-				metadata = serverConnectorConfig.getMetadata();
-			}
+		Optional<ServerConnectorConfigImpl> optionalServerConnectorConfig = serverConnectorConfigs.stream().filter(
+				item -> "nacos".equals(item.getId())
+		).findAny();
+		assertThat(optionalServerConnectorConfig.isPresent()).isTrue();
+		ServerConnectorConfigImpl serverConnectorConfig = optionalServerConnectorConfig.get();
+		String address = String.format("%s:%s@%s", nacosContextProperties.getUsername(), nacosContextProperties.getPassword(), nacosContextProperties.getServerAddr());
+		if (!CollectionUtils.isEmpty(serverConnectorConfig.getAddresses())) {
+			assertThat(address.equals(serverConnectorConfig.getAddresses().get(0))).isTrue();
 		}
-		assertThat(metadata).isNotNull();
-		assertThat(metadata.get("internal-nacos-cluster")).isEqualTo("polaris");
-
+		assertThat(DefaultPlugins.SERVER_CONNECTOR_NACOS.equals(serverConnectorConfig.getProtocol())).isTrue();
 	}
 
 	@SpringBootApplication
