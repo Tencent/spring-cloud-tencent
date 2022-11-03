@@ -12,7 +12,6 @@
 
 	<artifactId>spring-cloud-starter-tencent-all</artifactId>
 	<name>Spring Cloud Starter Tencent ALL In One</name>
-	<packaging>pom</packaging>
 
 	<dependencies>
 		<!-- Spring Cloud Tencent -->
@@ -63,4 +62,78 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<createSourcesJar>true</createSourcesJar>
+							<promoteTransitiveDependencies>false</promoteTransitiveDependencies>
+							<transformers>
+								<transformer
+										implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+							</transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.MF</exclude>
+										<exclude>META-INF/NOTICE</exclude>
+										<exclude>META-INF/DEPENDENCIES</exclude>
+										<exclude>META-INF/LICENSE</exclude>
+										<exclude>META-INF/NOTICE.txt</exclude>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+										<exclude>META-INF/io.netty.versions.properties</exclude>
+										<exclude>module-info.java</exclude>
+										<exclude>module-info.class</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<relocations>
+								<relocation>
+									<pattern>com.google</pattern>
+									<shadedPattern>shade.polaris.com.google</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.fasterxml</pattern>
+									<shadedPattern>shade.polaris.com.fasterxml</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>google</pattern>
+									<shadedPattern>shade.polaris.google</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>io.grpc.protobuf</pattern>
+									<shadedPattern>shade.polaris.io.grpc.protobuf</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.yaml</pattern>
+									<shadedPattern>shade.polaris.org.yaml</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>io.grpc</pattern>
+									<shadedPattern>shade.polaris.io.grpc</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>io.netty</pattern>
+									<shadedPattern>shade.polaris.io.netty</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
 </project>

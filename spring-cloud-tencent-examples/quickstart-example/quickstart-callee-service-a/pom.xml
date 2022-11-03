@@ -17,7 +17,6 @@
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-all</artifactId>
-			<type>pom</type>
 		</dependency>
 
 		<dependency>

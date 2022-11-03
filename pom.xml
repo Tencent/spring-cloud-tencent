@@ -111,6 +111,7 @@
 		<maven-checkstyle-plugin.failsOnViolation>true</maven-checkstyle-plugin.failsOnViolation>
 		<maven-checkstyle-plugin.includeTestSourceDirectory>true
 		</maven-checkstyle-plugin.includeTestSourceDirectory>
+		<maven.shaded.plugin.version>3.2.4</maven.shaded.plugin.version>
 	</properties>
 
 	<dependencyManagement>
