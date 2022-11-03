@@ -13,16 +13,20 @@ Other... Please describe:
 
 ## Adding the issue link (#xxx) if possible.
 
+<!--
+fixes #
+ -->
+
 ## Note
 
 ## Checklist
 
-- [ ] Add copyright holder at the beginning of .class file if it is new.
-- [ ] Add information of this PR to CHANGELOG.md in root of project.
+- [ ] Coverage from `Codecov Report` should not decrease (which means adding junit tests for adding or updating code).
 - [ ] All junit tests passing.
-- [ ] Coverage from `Codecov Report` should not decrease.
+- [ ] Add copyright holder at the beginning of .java file if it is new.
+- [ ] Add information of this PR to CHANGELOG.md in root of project.
 
 ## Checklist (Optional)
 
 - [ ] Will Pull Request to branch of 2020.0 and hoxton.
-- [ ] Add documentation in javadoc in code or comment below the PR if necessary.
+- [ ] Add documentation in javadoc or comment below the PR if necessary.
