@@ -22,11 +22,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
+ * Discovery configuration of Nacos.
+ *
  * @author lingxiao.wlx
  */
 @ConfigurationProperties("spring.cloud.nacos")
 public class NacosContextProperties {
 
+	/**
+	 * Nacos default group name.
+	 */
 	public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
 
 	private boolean enabled = false;
@@ -38,13 +43,13 @@ public class NacosContextProperties {
 	 * if you just want to subscribe on nacos , but don't want to register your service, set it to
 	 * false.
 	 */
-	@Value("${spring.cloud.nacos.discovery.registerEnabled:#{'true'}}")
+	@Value("${spring.cloud.nacos.discovery.register-enabled:#{'true'}}")
 	private boolean registerEnabled;
 
 	/**
 	 * nacos discovery server address.
 	 */
-	@Value("${spring.cloud.nacos.discovery.serverAddr:}")
+	@Value("${spring.cloud.nacos.discovery.server-addr:}")
 	private String serverAddr;
 
 	/**

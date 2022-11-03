@@ -46,6 +46,7 @@ public class PolarisRegistration implements Registration {
 
 	private static final String METADATA_KEY_IP = "internal-ip";
 	private static final String METADATA_KEY_ADDRESS = "internal-address";
+	private static final String GROUP_SERVER_ID_FORMAT = "%s_%s";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
@@ -84,7 +85,7 @@ public class PolarisRegistration implements Registration {
 		else {
 			String group = nacosContextProperties.getGroup();
 			if (StringUtils.isNotBlank(group) && !DEFAULT_GROUP.equals(group)) {
-				return group + "_" + polarisDiscoveryProperties.getService();
+				return String.format(GROUP_SERVER_ID_FORMAT, group, polarisDiscoveryProperties.getService());
 			}
 			else {
 				return polarisDiscoveryProperties.getService();

@@ -22,3 +22,13 @@ spring:
         service-name: ${spring.application.name}
         ip-address: 127.0.0.1
         prefer-ip-address: true
+    nacos:
+      enabled: true
+      discovery:
+        enabled: true
+        register-enabled: true
+        group: polaris
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
+        cluster-name: polaris

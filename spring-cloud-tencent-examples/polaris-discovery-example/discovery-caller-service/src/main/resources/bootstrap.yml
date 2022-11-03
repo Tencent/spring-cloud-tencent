@@ -45,9 +45,9 @@ spring:
 #      enabled: true
 #      discovery:
 #        enabled: true
-#        registerEnabled: true
+#        register-enabled: true
 #        group: polaris
-#        serverAddr: 127.0.0.1:8848
+#        server-addr: 127.0.0.1:8848
 #        username: nacos
 #        password: nacos
 #eureka:

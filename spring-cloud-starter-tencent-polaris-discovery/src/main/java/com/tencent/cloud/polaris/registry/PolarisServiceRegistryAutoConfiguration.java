@@ -63,7 +63,7 @@ public class PolarisServiceRegistryAutoConfiguration {
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Autowired(required = false) ConsulContextProperties consulContextProperties,
 			SDKContext context, StaticMetadataManager staticMetadataManager, NacosContextProperties nacosContextProperties) {
-		return new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties, context, staticMetadataManager,nacosContextProperties);
+		return new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties, context, staticMetadataManager, nacosContextProperties);
 	}
 
 	@Bean

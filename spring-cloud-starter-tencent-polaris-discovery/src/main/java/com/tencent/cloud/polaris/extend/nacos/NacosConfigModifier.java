@@ -18,6 +18,11 @@
 
 package com.tencent.cloud.polaris.extend.nacos;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
@@ -29,12 +34,9 @@ import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-
 /**
+ * {@link PolarisConfigModifier} impl of Nacos.
+ *
  * @author lingxiao.wlx
  */
 public class NacosConfigModifier implements PolarisConfigModifier {

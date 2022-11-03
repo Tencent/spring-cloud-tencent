@@ -65,6 +65,50 @@
       "type": "java.lang.Long",
       "defaultValue": 60000,
       "description": "Millis interval of refresh of service info list. Default: 60000."
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.group",
+      "type": "java.lang.String",
+      "description": "group name for nacos.",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
+      "defaultValue": "DEFAULT_GROUP"
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.password",
+      "type": "java.lang.String",
+      "description": "the nacos authentication password.",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties"
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.register-enabled",
+      "type": "java.lang.Boolean",
+      "description": "if you just want to subscribe on nacos , but don't want to register your service, set it to false.",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.server-addr",
+      "type": "java.lang.String",
+      "description": "nacos discovery server address.",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties"
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.username",
+      "type": "java.lang.String",
+      "description": "the nacos authentication username.",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties"
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.cluster-name",
+      "type": "java.lang.String",
+      "description": "the nacos authentication cluster-name.",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties"
     }
   ]
 }

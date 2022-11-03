@@ -39,6 +39,7 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link PolarisRegistration}.
@@ -49,6 +50,8 @@ import static org.mockito.Mockito.mock;
 public class PolarisRegistrationTest {
 
 	private PolarisRegistration polarisRegistration;
+
+	NacosContextProperties nacosContextProperties = mock(NacosContextProperties.class);
 
 	@Before
 	public void setUp() {
@@ -61,7 +64,6 @@ public class PolarisRegistrationTest {
 
 		// mock
 		ConsulContextProperties consulContextProperties = mock(ConsulContextProperties.class);
-		NacosContextProperties nacosContextProperties = mock(NacosContextProperties.class);
 
 		// mock SDKContext
 		APIConfig apiConfig = mock(APIConfig.class);
@@ -128,5 +130,14 @@ public class PolarisRegistrationTest {
 	@Test
 	public void testToString() {
 		System.out.println(polarisRegistration);
+	}
+
+	@Test
+	public void testGetNacosServiceId() {
+		String groupName = "group";
+		String format = "%s_%s";
+		when(nacosContextProperties.getGroup()).thenReturn("group");
+		String serviceId = polarisRegistration.getServiceId();
+		assertThat(String.format(format, groupName, SERVICE_PROVIDER).equals(serviceId));
 	}
 }
