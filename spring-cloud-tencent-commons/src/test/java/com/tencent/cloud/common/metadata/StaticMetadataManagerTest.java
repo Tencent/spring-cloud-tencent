@@ -31,8 +31,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
+
+import org.springframework.util.CollectionUtils;
 
 import static org.mockito.Mockito.when;
 
@@ -42,12 +44,15 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-06-27
  */
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class StaticMetadataManagerTest {
 
 	@Mock
 	private MetadataLocalProperties metadataLocalProperties;
 
+	/**
+	 * EnvironmentVariablesRule.
+	 */
 	@Rule
 	public EnvironmentVariablesRule rule = new EnvironmentVariablesRule();
 
@@ -136,6 +141,9 @@ public class StaticMetadataManagerTest {
 		Assert.assertEquals(2, transitiveMetadata.size());
 		Assert.assertEquals("v1", metadata.get("k1"));
 		Assert.assertEquals("v22", metadata.get("k2"));
+
+		Assert.assertTrue(CollectionUtils.isEmpty(metadataManager.getAllEnvMetadata()));
+		Assert.assertTrue(CollectionUtils.isEmpty(metadataManager.getEnvTransitiveMetadata()));
 
 		Assert.assertEquals("zone2", metadataManager.getZone());
 		Assert.assertEquals("region1", metadataManager.getRegion());
