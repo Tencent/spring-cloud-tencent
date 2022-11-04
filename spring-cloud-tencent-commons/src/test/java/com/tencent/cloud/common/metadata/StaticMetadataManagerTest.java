@@ -157,11 +157,13 @@ public class StaticMetadataManagerTest {
 
 	@Test
 	public void testEnvMetadata() {
+		// set env
 		rule.set("SCT_METADATA_CONTENT_TRANSITIVE", "transitiveKey");
 		rule.set("SCT_METADATA_CONTENT_DISPOSABLE", "disposableKey");
 		rule.set("SCT_METADATA_CONTENT_transitiveKey", "transitiveValue");
 		rule.set("SCT_METADATA_CONTENT_disposableKey", "disposableValue");
 		rule.set("SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS", "header1,header2,header3");
+
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties, null);
 		Map<String, String> allEnvMetadata = metadataManager.getAllEnvMetadata();
 		Assert.assertTrue(allEnvMetadata.containsKey("transitiveKey"));
