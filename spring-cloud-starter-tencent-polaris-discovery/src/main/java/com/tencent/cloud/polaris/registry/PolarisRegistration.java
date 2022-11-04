@@ -48,7 +48,7 @@ public class PolarisRegistration implements Registration {
 	private static final String METADATA_KEY_IP = "internal-ip";
 	private static final String METADATA_KEY_ADDRESS = "internal-address";
 	private static final String GROUP_SERVER_ID_FORMAT = "%s__%s";
-	private static final String INTERNAL_NACOS_CLUSTER = "internal-nacos-cluster";
+	private static final String NACOS_CLUSTER = "nacos.cluster";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
@@ -135,7 +135,7 @@ public class PolarisRegistration implements Registration {
 			// put internal-nacos-cluster if necessary
 			String clusterName = nacosContextProperties.getClusterName();
 			if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER.equals(clusterName)) {
-				instanceMetadata.put(INTERNAL_NACOS_CLUSTER, clusterName);
+				instanceMetadata.put(NACOS_CLUSTER, clusterName);
 			}
 
 			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());

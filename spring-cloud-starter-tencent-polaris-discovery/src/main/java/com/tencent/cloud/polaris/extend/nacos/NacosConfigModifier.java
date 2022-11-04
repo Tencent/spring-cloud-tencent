@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.extend.nacos;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 import com.tencent.cloud.common.constant.ContextConstant;
@@ -29,6 +30,7 @@ import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
+import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
 
@@ -39,7 +41,18 @@ import org.springframework.util.CollectionUtils;
  */
 public class NacosConfigModifier implements PolarisConfigModifier {
 	private static final String ID = "nacos";
-	private static final String ADDRESS_FORMAT = "%s:%s@%s";
+	/**
+	 * nacos username.
+	 */
+	public static final String USERNAME = "username";
+	/**
+	 * nacos password.
+	 */
+	public static final String PASSWORD = "password";
+	/**
+	 * nacos contextPath.
+	 */
+	public static final String CONTEXT_PATH = "contextPath";
 
 	private final NacosContextProperties nacosContextProperties;
 
@@ -61,11 +74,27 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 		}
 		ServerConnectorConfigImpl serverConnectorConfig = new ServerConnectorConfigImpl();
 		serverConnectorConfig.setId(ID);
-		// Nacos Address URI: nacos:nacos@127.0.0.1:8848
-		String address = String.format(ADDRESS_FORMAT, nacosContextProperties.getUsername(), nacosContextProperties.getPassword(), nacosContextProperties.getServerAddr());
+		if (StringUtils.isBlank(nacosContextProperties.getServerAddr())) {
+			throw new IllegalArgumentException("nacos server addr must not be empty, please set it by" +
+					"spring.cloud.nacos.discovery.server-addr");
+		}
 		serverConnectorConfig.setAddresses(
-				Collections.singletonList(address));
+				Collections.singletonList(nacosContextProperties.getServerAddr()));
 		serverConnectorConfig.setProtocol(DefaultPlugins.SERVER_CONNECTOR_NACOS);
+
+		Map<String, String> metadata = serverConnectorConfig.getMetadata();
+		if (StringUtils.isNotBlank(nacosContextProperties.getUsername())) {
+			metadata.put(USERNAME, nacosContextProperties.getUsername());
+		}
+
+		if (StringUtils.isNotBlank(nacosContextProperties.getPassword())) {
+			metadata.put(PASSWORD, nacosContextProperties.getPassword());
+		}
+
+		if (StringUtils.isNotBlank(nacosContextProperties.getContextPath())) {
+			metadata.put(CONTEXT_PATH, nacosContextProperties.getContextPath());
+		}
+
 		configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
 		DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
 		discoveryConfig.setServerConnectorId(ID);

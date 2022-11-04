@@ -24,6 +24,7 @@ spring:
         prefer-ip-address: true
     nacos:
       enabled: true
+      context-path: /nacos
       discovery:
         enabled: true
         register-enabled: true

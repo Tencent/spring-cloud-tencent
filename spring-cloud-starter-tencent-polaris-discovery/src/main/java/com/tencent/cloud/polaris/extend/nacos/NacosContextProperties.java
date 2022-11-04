@@ -81,6 +81,8 @@ public class NacosContextProperties {
 	@Value("${spring.cloud.nacos.discovery.group:DEFAULT_GROUP}")
 	private String group = DEFAULT_GROUP;
 
+	private String contextPath;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -145,6 +147,14 @@ public class NacosContextProperties {
 		this.group = group;
 	}
 
+	public String getContextPath() {
+		return contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
+	}
+
 	@Override
 	public String toString() {
 		return "NacosContextProperties{" +
@@ -156,6 +166,7 @@ public class NacosContextProperties {
 				", password='" + password + '\'' +
 				", clusterName='" + clusterName + '\'' +
 				", group='" + group + '\'' +
+				", contextPath='" + contextPath + '\'' +
 				'}';
 	}
 }

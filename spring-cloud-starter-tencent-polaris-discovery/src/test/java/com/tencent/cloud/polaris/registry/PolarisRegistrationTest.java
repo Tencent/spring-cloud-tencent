@@ -149,6 +149,6 @@ public class PolarisRegistrationTest {
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
 		assertThat(metadata.size()).isEqualTo(4);
-		assertThat(metadata.get("internal-nacos-cluster")).isEqualTo(clusterName);
+		assertThat(metadata.get("nacos.cluster")).isEqualTo(clusterName);
 	}
 }

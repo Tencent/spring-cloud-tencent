@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.extend.nacos;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
@@ -73,11 +74,15 @@ public class NacosContextPropertiesTest {
 		).findAny();
 		assertThat(optionalServerConnectorConfig.isPresent()).isTrue();
 		ServerConnectorConfigImpl serverConnectorConfig = optionalServerConnectorConfig.get();
-		String address = String.format("%s:%s@%s", nacosContextProperties.getUsername(), nacosContextProperties.getPassword(), nacosContextProperties.getServerAddr());
 		if (!CollectionUtils.isEmpty(serverConnectorConfig.getAddresses())) {
-			assertThat(address.equals(serverConnectorConfig.getAddresses().get(0))).isTrue();
+			assertThat(nacosContextProperties.getServerAddr().equals(serverConnectorConfig.getAddresses().get(0))).isTrue();
 		}
 		assertThat(DefaultPlugins.SERVER_CONNECTOR_NACOS.equals(serverConnectorConfig.getProtocol())).isTrue();
+
+		Map<String, String> metadata = serverConnectorConfig.getMetadata();
+		assertThat(metadata.get(NacosConfigModifier.USERNAME)).isEqualTo(nacosContextProperties.getUsername());
+		assertThat(metadata.get(NacosConfigModifier.PASSWORD)).isEqualTo(nacosContextProperties.getPassword());
+		assertThat(metadata.get(NacosConfigModifier.CONTEXT_PATH)).isEqualTo(nacosContextProperties.getContextPath());
 	}
 
 	@SpringBootApplication

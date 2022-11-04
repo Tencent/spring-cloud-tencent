@@ -43,6 +43,7 @@ spring:
 #        prefer-ip-address: true
 #    nacos:
 #      enabled: true
+#      context-path: /nacos
 #      discovery:
 #        enabled: true
 #        register-enabled: true
@@ -50,6 +51,7 @@ spring:
 #        server-addr: 127.0.0.1:8848
 #        username: nacos
 #        password: nacos
+#        cluster-name: polaris
 #eureka:
 #  client:
 #    serviceUrl:
