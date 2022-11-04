@@ -26,13 +26,13 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
-import com.tencent.cloud.common.support.EnvironmentVariable;
-import com.tencent.cloud.common.support.EnvironmentVariableInjectedRunner;
-import com.tencent.cloud.common.support.EnvironmentVariables;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.springframework.test.context.junit4.SpringRunner;
+import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
 
 import static org.mockito.Mockito.when;
 
@@ -42,17 +42,14 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-06-27
  */
-@RunWith(EnvironmentVariableInjectedRunner.class)
-@EnvironmentVariables({
-		@EnvironmentVariable(name = "SCT_METADATA_CONTENT_TRANSITIVE", value = "transitiveKey"),
-		@EnvironmentVariable(name = "SCT_METADATA_CONTENT_DISPOSABLE", value = "disposableKey"),
-		@EnvironmentVariable(name = "SCT_METADATA_CONTENT_transitiveKey", value = "transitiveValue"),
-		@EnvironmentVariable(name = "SCT_METADATA_CONTENT_disposableKey", value = "disposableValue"),
-		@EnvironmentVariable(name = "SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS", value = "header1,header2,header3")})
+@RunWith(SpringRunner.class)
 public class StaticMetadataManagerTest {
 
 	@Mock
 	private MetadataLocalProperties metadataLocalProperties;
+
+	@Rule
+	public EnvironmentVariablesRule rule = new EnvironmentVariablesRule();
 
 	@Test
 	public void testParseConfigMetadata() {
@@ -130,13 +127,13 @@ public class StaticMetadataManagerTest {
 				new MockedMetadataProvider());
 
 		Map<String, String> metadata = metadataManager.getMergedStaticMetadata();
-		Assert.assertEquals(8, metadata.size());
+		Assert.assertEquals(6, metadata.size());
 		Assert.assertEquals("v1", metadata.get("k1"));
 		Assert.assertEquals("v22", metadata.get("k2"));
 		Assert.assertEquals("v33", metadata.get("k3"));
 
 		Map<String, String> transitiveMetadata = metadataManager.getMergedStaticTransitiveMetadata();
-		Assert.assertEquals(3, transitiveMetadata.size());
+		Assert.assertEquals(2, transitiveMetadata.size());
 		Assert.assertEquals("v1", metadata.get("k1"));
 		Assert.assertEquals("v22", metadata.get("k2"));
 
@@ -152,6 +149,11 @@ public class StaticMetadataManagerTest {
 
 	@Test
 	public void testEnvMetadata() {
+		rule.set("SCT_METADATA_CONTENT_TRANSITIVE", "transitiveKey");
+		rule.set("SCT_METADATA_CONTENT_DISPOSABLE", "disposableKey");
+		rule.set("SCT_METADATA_CONTENT_transitiveKey", "transitiveValue");
+		rule.set("SCT_METADATA_CONTENT_disposableKey", "disposableValue");
+		rule.set("SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS", "header1,header2,header3");
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties, null);
 		Map<String, String> allEnvMetadata = metadataManager.getAllEnvMetadata();
 		Assert.assertTrue(allEnvMetadata.containsKey("transitiveKey"));

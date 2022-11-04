@@ -101,10 +101,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.stefanbirkner</groupId>
-			<artifactId>system-rules</artifactId>
-			<optional>true</optional>
+			<groupId>uk.org.webcompere</groupId>
+			<artifactId>system-stubs-junit4</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 </project>
