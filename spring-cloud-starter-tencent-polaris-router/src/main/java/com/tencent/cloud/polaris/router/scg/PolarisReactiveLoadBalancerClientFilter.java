@@ -92,7 +92,6 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 
 	public PolarisReactiveLoadBalancerClientFilter(LoadBalancerClientFactory clientFactory,
 			GatewayLoadBalancerProperties gatewayLoadBalancerProperties,
-			LoadBalancerProperties loadBalancerProperties,
 			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver,
 			List<SpringWebRouterLabelResolver> routerLabelResolvers,
