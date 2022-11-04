@@ -60,13 +60,13 @@ public class NacosContextProperties {
 	/**
 	 * the nacos authentication username.
 	 */
-	@Value("${spring.cloud.nacos.discovery.username:nacos}")
+	@Value("${spring.cloud.nacos.discovery.username:}")
 	private String username;
 
 	/**
 	 * the nacos authentication password.
 	 */
-	@Value("${spring.cloud.nacos.discovery.username:nacos}")
+	@Value("${spring.cloud.nacos.discovery.password:}")
 	private String password;
 
 	/**
