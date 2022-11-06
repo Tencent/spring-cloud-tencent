@@ -5,3 +5,4 @@
 - [Optimize: Register the service with the ProviderAPI#registerInstance method.](https://github.com/Tencent/spring-cloud-tencent/pull/685)
 - [Optimize:optimize spring annotation.](https://github.com/Tencent/spring-cloud-tencent/pull/688)
 - [docs:update PR template.](https://github.com/Tencent/spring-cloud-tencent/pull/691)
+- [Code optimize & add junit tests.](https://github.com/Tencent/spring-cloud-tencent/pull/703)
