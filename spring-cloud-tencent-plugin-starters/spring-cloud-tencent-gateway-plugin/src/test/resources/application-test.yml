@@ -9,6 +9,6 @@ spring:
         connect-remote-server: false
         shutdown-if-connect-to-config-server-failed: false
   #        auto-refresh: true
-#  config:
-#    import:
-#      - optional:polaris
+  config:
+    import:
+      - optional:polaris
