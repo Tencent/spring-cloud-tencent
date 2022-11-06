@@ -20,7 +20,6 @@ package com.tencent.cloud.plugin.gateway;
 
 import java.util.List;
 
-import com.tencent.cloud.plugin.gateway.staining.StainingProperties;
 import com.tencent.cloud.plugin.gateway.staining.TrafficStainer;
 import com.tencent.cloud.plugin.gateway.staining.TrafficStainingGatewayFilter;
 import com.tencent.cloud.plugin.gateway.staining.rule.RuleStainingExecutor;
@@ -45,17 +44,12 @@ import org.springframework.context.annotation.Configuration;
 public class SCGPluginsAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnProperty("spring.cloud.tencent.plugin.scg.staining.enabled")
+	@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.staining.enabled", matchIfMissing = true)
 	public static class StainingPluginConfiguration {
 
-		@Bean
-		public StainingProperties stainingProperties() {
-			return new StainingProperties();
-		}
-
 		@Configuration
-		@ConditionalOnPolarisConfigEnabled
 		@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled", matchIfMissing = true)
+		@ConditionalOnPolarisConfigEnabled
 		public static class RuleStainingPluginConfiguration {
 
 			@Bean
