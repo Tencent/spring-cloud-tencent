@@ -36,8 +36,7 @@ import org.springframework.util.CollectionUtils;
 import static org.mockito.Mockito.when;
 
 /**
- * * Test for {@link RuleTrafficStainer}.
- *
+ * Test for {@link RuleTrafficStainer}.
  * @author derek.yi 2022-11-03
  */
 @RunWith(MockitoJUnitRunner.class)

@@ -7,8 +7,3 @@ spring:
       namespace: default
       config:
         connect-remote-server: false
-        shutdown-if-connect-to-config-server-failed: false
-  #        auto-refresh: true
-  config:
-    import:
-      - optional:polaris

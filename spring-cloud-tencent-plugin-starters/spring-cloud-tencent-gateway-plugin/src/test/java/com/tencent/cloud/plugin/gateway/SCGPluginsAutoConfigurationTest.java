@@ -40,6 +40,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
+ * Test for {@link SCGPluginsAutoConfigurationTest}.
  * @author derek.yi 2022-11-03
  */
 @RunWith(SpringRunner.class)
