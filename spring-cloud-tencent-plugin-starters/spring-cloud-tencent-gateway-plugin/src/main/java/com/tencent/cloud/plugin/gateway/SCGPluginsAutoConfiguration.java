@@ -44,39 +44,33 @@ import org.springframework.context.annotation.Configuration;
 public class SCGPluginsAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.staining.enabled", matchIfMissing = true)
-	public static class StainingPluginConfiguration {
+	@ConditionalOnProperty("spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled")
+	@ConditionalOnPolarisConfigEnabled
+	public static class RuleStainingPluginConfiguration {
 
-		@Configuration
-		@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled", matchIfMissing = true)
-		@ConditionalOnPolarisConfigEnabled
-		public static class RuleStainingPluginConfiguration {
+		@Bean
+		public RuleStainingProperties ruleStainingProperties() {
+			return new RuleStainingProperties();
+		}
 
-			@Bean
-			public RuleStainingProperties ruleStainingProperties() {
-				return new RuleStainingProperties();
-			}
+		@Bean
+		public StainingRuleManager stainingRuleManager(RuleStainingProperties stainingProperties, ConfigFileService configFileService) {
+			return new StainingRuleManager(stainingProperties, configFileService);
+		}
 
-			@Bean
-			public StainingRuleManager stainingRuleManager(RuleStainingProperties stainingProperties, ConfigFileService configFileService) {
-				return new StainingRuleManager(stainingProperties, configFileService);
-			}
+		@Bean
+		public TrafficStainingGatewayFilter trafficStainingGatewayFilter(List<TrafficStainer> trafficStainer) {
+			return new TrafficStainingGatewayFilter(trafficStainer);
+		}
 
-			@Bean
-			public TrafficStainingGatewayFilter trafficStainingGatewayFilter(List<TrafficStainer> trafficStainer) {
-				return new TrafficStainingGatewayFilter(trafficStainer);
-			}
+		@Bean
+		public RuleStainingExecutor ruleStainingExecutor() {
+			return new RuleStainingExecutor();
+		}
 
-			@Bean
-			public RuleStainingExecutor ruleStainingExecutor() {
-				return new RuleStainingExecutor();
-			}
-
-			@Bean
-			public RuleTrafficStainer ruleTrafficStainer(StainingRuleManager stainingRuleManager,
-					RuleStainingExecutor ruleStainingExecutor) {
-				return new RuleTrafficStainer(stainingRuleManager, ruleStainingExecutor);
-			}
+		@Bean
+		public RuleTrafficStainer ruleTrafficStainer(StainingRuleManager stainingRuleManager, RuleStainingExecutor ruleStainingExecutor) {
+			return new RuleTrafficStainer(stainingRuleManager, ruleStainingExecutor);
 		}
 	}
 }

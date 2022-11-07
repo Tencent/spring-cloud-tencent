@@ -40,12 +40,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
- * Test for {@link SCGPluginsAutoConfigurationTest}.
+ * Test for {@link SCGPluginsAutoConfiguration}.
  * @author derek.yi 2022-11-03
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = SCGPluginsAutoConfigurationTest.TestApplication.class,
-		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
+		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml",
+				"spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled = true"})
 public class SCGPluginsAutoConfigurationTest {
 
 	@Autowired
