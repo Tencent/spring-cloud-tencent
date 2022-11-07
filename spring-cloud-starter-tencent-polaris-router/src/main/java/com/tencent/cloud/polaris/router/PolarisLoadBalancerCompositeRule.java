@@ -122,7 +122,7 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		}
 
 		// set load balancer to delegate rule
-		if (!initializedLoadBalancerToDelegateRule.compareAndSet(false, true)) {
+		if (initializedLoadBalancerToDelegateRule.compareAndSet(false, true)) {
 			delegateRule.setLoadBalancer(loadBalancer);
 		}
 
