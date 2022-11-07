@@ -85,7 +85,6 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 
 	private final LoadBalancerClientFactory clientFactory;
 	private final GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
-	private final LoadBalancerProperties loadBalancerProperties;
 	private final StaticMetadataManager staticMetadataManager;
 	private final RouterRuleLabelResolver routerRuleLabelResolver;
 	private final List<SpringWebRouterLabelResolver> routerLabelResolvers;
@@ -93,16 +92,14 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 
 	public PolarisReactiveLoadBalancerClientFilter(LoadBalancerClientFactory clientFactory,
 			GatewayLoadBalancerProperties gatewayLoadBalancerProperties,
-			LoadBalancerProperties loadBalancerProperties,
 			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver,
 			List<SpringWebRouterLabelResolver> routerLabelResolvers,
 			PolarisContextProperties polarisContextProperties) {
-		super(clientFactory, gatewayLoadBalancerProperties, loadBalancerProperties);
+		super(clientFactory, gatewayLoadBalancerProperties);
 
 		this.clientFactory = clientFactory;
 		this.gatewayLoadBalancerProperties = gatewayLoadBalancerProperties;
-		this.loadBalancerProperties = loadBalancerProperties;
 		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
 		this.routerLabelResolvers = routerLabelResolvers;
@@ -139,7 +136,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 		RequestData requestData = new RequestData(request.getMethod(), request.getURI(), routerHttpHeaders,
 				new HttpHeaders(), new HashMap<>());
 		DefaultRequest<RequestDataContext> lbRequest = new DefaultRequest<>(new RequestDataContext(
-				requestData, getHint(serviceId, loadBalancerProperties.getHint())));
+				requestData, getHint(serviceId)));
 
 		return choose(lbRequest, serviceId, supportedLifecycleProcessors).doOnNext(response -> {
 
@@ -200,7 +197,9 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 	}
 
 	// no actual used
-	private String getHint(String serviceId, Map<String, String> hints) {
+	private String getHint(String serviceId) {
+		LoadBalancerProperties loadBalancerProperties = clientFactory.getProperties(serviceId);
+		Map<String, String> hints = loadBalancerProperties.getHint();
 		String defaultHint = hints.getOrDefault("default", "default");
 		String hintPropertyValue = hints.get(serviceId);
 		return hintPropertyValue != null ? hintPropertyValue : defaultHint;
