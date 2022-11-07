@@ -7,3 +7,4 @@
 - [docs:update PR template.](https://github.com/Tencent/spring-cloud-tencent/pull/690)
 - [Optimize: remote deprecated method](https://github.com/Tencent/spring-cloud-tencent/pull/697)
 - [Test:support environment variable metadata test](https://github.com/Tencent/spring-cloud-tencent/pull/698)
+- [Test: remote deprecated method in test](https://github.com/Tencent/spring-cloud-tencent/pull/706)
