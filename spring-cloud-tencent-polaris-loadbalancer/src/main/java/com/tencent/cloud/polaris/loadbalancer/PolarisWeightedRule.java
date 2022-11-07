@@ -21,7 +21,10 @@ package com.tencent.cloud.polaris.loadbalancer;
 import java.util.List;
 
 import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.AbstractLoadBalancerRule;
+import com.netflix.loadbalancer.AbstractServerPredicate;
+import com.netflix.loadbalancer.AvailabilityPredicate;
+import com.netflix.loadbalancer.CompositePredicate;
+import com.netflix.loadbalancer.PredicateBasedRule;
 import com.netflix.loadbalancer.Server;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
@@ -38,9 +41,10 @@ import org.springframework.util.CollectionUtils;
  *
  * @author lepdou 2022-05-17
  */
-public class PolarisWeightedRule extends AbstractLoadBalancerRule {
+public class PolarisWeightedRule extends PredicateBasedRule {
 
 	private final RouterAPI routerAPI;
+	private CompositePredicate compositePredicate;
 
 	public PolarisWeightedRule(RouterAPI routerAPI) {
 		this.routerAPI = routerAPI;
@@ -48,6 +52,13 @@ public class PolarisWeightedRule extends AbstractLoadBalancerRule {
 
 	@Override
 	public void initWithNiwsConfig(IClientConfig clientConfig) {
+		AvailabilityPredicate availabilityPredicate = new AvailabilityPredicate(this, clientConfig);
+		compositePredicate = CompositePredicate.withPredicates(availabilityPredicate).build();
+	}
+
+	@Override
+	public AbstractServerPredicate getPredicate() {
+		return compositePredicate;
 	}
 
 	@Override
@@ -56,6 +67,9 @@ public class PolarisWeightedRule extends AbstractLoadBalancerRule {
 		if (CollectionUtils.isEmpty(servers)) {
 			return null;
 		}
+
+		// filter circuit breaker servers by ribbon
+		servers = compositePredicate.getEligibleServers(servers);
 
 		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(servers);
 
