@@ -80,6 +80,7 @@ public class PolarisLoadBalancerTest {
 		//mock routerAPI for rule
 		when(routerAPI.processLoadBalance(any())).thenReturn(assembleProcessLoadBalanceResp());
 		PolarisWeightedRule rule = new PolarisWeightedRule(routerAPI);
+		rule.initWithNiwsConfig(new DefaultClientConfigImpl());
 
 		// clientConfig
 		IClientConfig config = new DefaultClientConfigImpl();
@@ -111,6 +112,7 @@ public class PolarisLoadBalancerTest {
 		//mock routerAPI for rule
 		when(routerAPI.processLoadBalance(any())).thenReturn(assembleProcessLoadBalanceResp());
 		PolarisWeightedRule rule = new PolarisWeightedRule(routerAPI);
+		rule.initWithNiwsConfig(new DefaultClientConfigImpl());
 
 		// clientConfig
 		IClientConfig config = new DefaultClientConfigImpl();
