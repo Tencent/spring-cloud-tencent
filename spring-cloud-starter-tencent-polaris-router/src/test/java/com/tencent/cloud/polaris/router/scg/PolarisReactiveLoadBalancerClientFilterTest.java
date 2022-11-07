@@ -112,7 +112,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	@Test
 	public void testGenRouterHttpHeaders() throws UnsupportedEncodingException {
 		PolarisReactiveLoadBalancerClientFilter filter = new PolarisReactiveLoadBalancerClientFilter(loadBalancerClientFactory,
-				gatewayLoadBalancerProperties, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
+				gatewayLoadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
 				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
 
 		Map<String, String> localMetadata = new HashMap<>();

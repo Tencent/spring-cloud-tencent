@@ -64,7 +64,6 @@ public class ReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 	public void testWrapReactiveLoadBalancerClientFilter() {
 		when(beanFactory.getBean(LoadBalancerClientFactory.class)).thenReturn(loadBalancerClientFactory);
 		when(beanFactory.getBean(GatewayLoadBalancerProperties.class)).thenReturn(gatewayLoadBalancerProperties);
-		when(beanFactory.getBean(LoadBalancerProperties.class)).thenReturn(loadBalancerProperties);
 		when(beanFactory.getBean(StaticMetadataManager.class)).thenReturn(staticMetadataManager);
 		when(beanFactory.getBean(RouterRuleLabelResolver.class)).thenReturn(routerRuleLabelResolver);
 
