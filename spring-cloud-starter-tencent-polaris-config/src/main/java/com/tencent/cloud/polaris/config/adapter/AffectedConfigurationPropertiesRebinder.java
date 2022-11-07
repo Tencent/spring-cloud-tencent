@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.tencent.polaris.api.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
@@ -94,14 +95,14 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 		});
 	}
 
-	private void rebindDefaultValue(String beanName, String key){
+	private void rebindDefaultValue(String beanName, String key) {
 		String changeValue = applicationContext.getEnvironment().getProperty(key);
-		if (StringUtils.hasLength(changeValue)){
+		if (StringUtils.hasLength(changeValue)) {
 			return;
 		}
 
 		Map<String, Object> defaultValues = propertiesBeanDefaultValues.get(beanName);
-		if (MapUtils.isEmpty(defaultValues)){
+		if (MapUtils.isEmpty(defaultValues)) {
 			return;
 		}
 		try {
@@ -112,17 +113,18 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 			assert field != null;
 			field.setAccessible(true);
 			field.set(bean, defaultValues.get(fieldName));
-		} catch (Exception e){
+		}
+		catch (Exception e) {
 			LOGGER.error("[SCT Config] rebind default value error, bean = {}, key = {}", beanName, key);
 		}
 	}
 
-	private void initPropertiesBeanDefaultValues(Map<String, ConfigurationPropertiesBean> propertiesBeans){
-		if (MapUtils.isEmpty(propertiesBeans)){
+	private void initPropertiesBeanDefaultValues(Map<String, ConfigurationPropertiesBean> propertiesBeans) {
+		if (MapUtils.isEmpty(propertiesBeans)) {
 			return;
 		}
 
-		for (ConfigurationPropertiesBean propertiesBean : propertiesBeans.values()){
+		for (ConfigurationPropertiesBean propertiesBean : propertiesBeans.values()) {
 			Map<String, Object> defaultValues = new HashMap<>();
 			try {
 				Object instance = propertiesBean.getInstance().getClass().getDeclaredConstructor((Class<?>[]) null).newInstance();
@@ -130,12 +132,16 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 					try {
 						field.setAccessible(true);
 						defaultValues.put(field.getName(), field.get(instance));
-					} catch (Exception ignored){}
+					}
+					catch (Exception ignored) {
+					}
 				}, field -> {
 					int modifiers = field.getModifiers();
 					return !Modifier.isFinal(modifiers) && !Modifier.isStatic(modifiers);
 				});
-			}catch (Exception ignored){}
+			}
+			catch (Exception ignored) {
+			}
 
 			propertiesBeanDefaultValues.put(propertiesBean.getName(), defaultValues);
 		}
