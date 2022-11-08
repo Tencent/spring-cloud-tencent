@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.plugin.gateway.staining.rule;
 
+import java.util.Map;
+
 import com.tencent.polaris.configuration.api.core.ConfigFile;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import org.junit.Assert;
@@ -27,15 +29,18 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.util.CollectionUtils;
+
 import static org.mockito.Mockito.when;
 
-
 /**
- * Test for {@link StainingRuleManager}.
- * @author lepdou 2022-07-12
+ * Test for {@link RuleTrafficStainer}.
+ * @author derek.yi 2022-11-03
  */
 @RunWith(MockitoJUnitRunner.class)
-public class StainingRuleManagerTest {
+public class RuleTrafficStainerTest {
 
 	@Mock
 	private ConfigFileService configFileService;
@@ -45,7 +50,25 @@ public class StainingRuleManagerTest {
 	private final String testFileName = "rule.json";
 
 	@Test
-	public void testNormalRule() {
+	public void testNoStainingRule() {
+		RuleStainingProperties ruleStainingProperties = new RuleStainingProperties();
+		ruleStainingProperties.setNamespace(testNamespace);
+		ruleStainingProperties.setGroup(testGroup);
+		ruleStainingProperties.setFileName(testFileName);
+
+		ConfigFile configFile = Mockito.mock(ConfigFile.class);
+		when(configFile.getContent()).thenReturn("");
+		when(configFileService.getConfigFile(testNamespace, testGroup, testFileName)).thenReturn(configFile);
+
+		StainingRuleManager stainingRuleManager = new StainingRuleManager(ruleStainingProperties, configFileService);
+		RuleStainingExecutor ruleStainingExecutor = new RuleStainingExecutor();
+		RuleTrafficStainer ruleTrafficStainer = new RuleTrafficStainer(stainingRuleManager, ruleStainingExecutor);
+		Map<String, String> map = ruleTrafficStainer.apply(null);
+		Assert.assertTrue(CollectionUtils.isEmpty(map));
+	}
+
+	@Test
+	public void testWithStainingRule() {
 		RuleStainingProperties ruleStainingProperties = new RuleStainingProperties();
 		ruleStainingProperties.setNamespace(testNamespace);
 		ruleStainingProperties.setGroup(testGroup);
@@ -74,60 +97,16 @@ public class StainingRuleManagerTest {
 		when(configFileService.getConfigFile(testNamespace, testGroup, testFileName)).thenReturn(configFile);
 
 		StainingRuleManager stainingRuleManager = new StainingRuleManager(ruleStainingProperties, configFileService);
+		RuleStainingExecutor ruleStainingExecutor = new RuleStainingExecutor();
+		RuleTrafficStainer ruleTrafficStainer = new RuleTrafficStainer(stainingRuleManager, ruleStainingExecutor);
 
-		StainingRule stainingRule = stainingRuleManager.getStainingRule();
+		MockServerHttpRequest request = MockServerHttpRequest.get("/users")
+				.queryParam("uid", "1000").build();
+		MockServerWebExchange exchange = new MockServerWebExchange.Builder(request).build();
 
-		Assert.assertNotNull(stainingRule);
-		Assert.assertEquals(1, stainingRule.getRules().size());
-		StainingRule.Rule rule = stainingRule.getRules().get(0);
-		Assert.assertEquals(1, rule.getConditions().size());
-		Assert.assertEquals(1, rule.getLabels().size());
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void testWrongRule() {
-		RuleStainingProperties ruleStainingProperties = new RuleStainingProperties();
-		ruleStainingProperties.setNamespace(testNamespace);
-		ruleStainingProperties.setGroup(testGroup);
-		ruleStainingProperties.setFileName(testFileName);
-
-		ConfigFile configFile = Mockito.mock(ConfigFile.class);
-		when(configFile.getContent()).thenReturn("{\n"
-				+ "    \"rules\":[\n"
-				+ "        {\n"
-				+ "            \"conditionsxxxx\":[\n"
-				+ "                {\n"
-				+ "                    \"key\":\"${http.query.uid}\",\n"
-				+ "                    \"values\":[\"1000\"],\n"
-				+ "                    \"operation\":\"EQUALS\"\n"
-				+ "                }\n"
-				+ "            ],\n"
-				+ "            \"labels\":[\n"
-				+ "                {\n"
-				+ "                    \"key\":\"env\",\n"
-				+ "                    \"value\":\"blue\"\n"
-				+ "                }\n"
-				+ "            ]\n"
-				+ "        }\n"
-				+ "    ]\n"
-				+ "}");
-		when(configFileService.getConfigFile(testNamespace, testGroup, testFileName)).thenReturn(configFile);
-
-		new StainingRuleManager(ruleStainingProperties, configFileService);
-	}
-
-	@Test
-	public void testEmptyRule() {
-		RuleStainingProperties ruleStainingProperties = new RuleStainingProperties();
-		ruleStainingProperties.setNamespace(testNamespace);
-		ruleStainingProperties.setGroup(testGroup);
-		ruleStainingProperties.setFileName(testFileName);
-
-		ConfigFile configFile = Mockito.mock(ConfigFile.class);
-		when(configFile.getContent()).thenReturn(null);
-		when(configFileService.getConfigFile(testNamespace, testGroup, testFileName)).thenReturn(configFile);
-
-		StainingRuleManager stainingRuleManager = new StainingRuleManager(ruleStainingProperties, configFileService);
-		Assert.assertNull(stainingRuleManager.getStainingRule());
+		Map<String, String> map = ruleTrafficStainer.apply(exchange);
+		Assert.assertNotNull(map);
+		Assert.assertEquals(1, map.size());
+		Assert.assertEquals("blue", map.get("env"));
 	}
 }

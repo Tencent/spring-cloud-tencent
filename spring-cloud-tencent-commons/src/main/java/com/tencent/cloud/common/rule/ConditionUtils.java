@@ -31,7 +31,6 @@ public final class ConditionUtils {
 	}
 
 	public static boolean match(Map<String, String> actualValues, List<Condition> conditions) {
-		boolean allMatched = true;
 		for (Condition condition : conditions) {
 			List<String> expectedValues = condition.getValues();
 			String operation = condition.getOperation();
@@ -39,10 +38,9 @@ public final class ConditionUtils {
 			String actualValue = actualValues.get(key);
 
 			if (!Operation.match(expectedValues, actualValue, operation)) {
-				allMatched = false;
-				break;
+				return false;
 			}
 		}
-		return allMatched;
+		return true;
 	}
 }

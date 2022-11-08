@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Test for {@link RuleStainingExecutor}.
@@ -177,5 +178,12 @@ public class RuleStainingExecutorTest {
 		Assert.assertEquals("blue", stainedLabels.get("env"));
 		Assert.assertEquals("value1", stainedLabels.get("label1"));
 		Assert.assertEquals("value2", stainedLabels.get("label2"));
+	}
+
+	@Test
+	public void testNoStainingRule() {
+		RuleStainingExecutor executor = new RuleStainingExecutor();
+		Assert.assertTrue(CollectionUtils.isEmpty(executor.execute(null, null)));
+		Assert.assertTrue(CollectionUtils.isEmpty(executor.execute(null, new StainingRule())));
 	}
 }
