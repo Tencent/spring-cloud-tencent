@@ -46,7 +46,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.http.HttpHeaders;
@@ -80,8 +79,6 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	private LoadBalancerClientFactory loadBalancerClientFactory;
 	@Mock
 	private GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
-	@Mock
-	private LoadBalancerProperties loadBalancerProperties;
 	@Mock
 	private PolarisContextProperties polarisContextProperties;
 
