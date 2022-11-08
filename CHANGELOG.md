@@ -8,3 +8,4 @@
 - [Code optimize & add junit tests.](https://github.com/Tencent/spring-cloud-tencent/pull/701)
 - [Optimize: remote deprecated method](https://github.com/Tencent/spring-cloud-tencent/pull/697)
 - [Test:support environment variable metadata test](https://github.com/Tencent/spring-cloud-tencent/pull/698)
+- [Test: remote deprecated method in test](https://github.com/Tencent/spring-cloud-tencent/pull/706)
