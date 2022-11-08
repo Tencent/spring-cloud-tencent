@@ -46,7 +46,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.http.HttpHeaders;
@@ -82,8 +81,6 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	@Mock
 	private GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
 	@Mock
-	private LoadBalancerProperties loadBalancerProperties;
-	@Mock
 	private PolarisContextProperties polarisContextProperties;
 
 	@BeforeClass
@@ -113,7 +110,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	@Test
 	public void testGenRouterHttpHeaders() throws UnsupportedEncodingException {
 		PolarisReactiveLoadBalancerClientFilter filter = new PolarisReactiveLoadBalancerClientFilter(loadBalancerClientFactory,
-				gatewayLoadBalancerProperties, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
+				gatewayLoadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
 				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
 
 		Map<String, String> localMetadata = new HashMap<>();

@@ -31,7 +31,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
 import org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
@@ -54,8 +53,6 @@ public class ReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 	@Mock
 	private GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
 	@Mock
-	private LoadBalancerProperties loadBalancerProperties;
-	@Mock
 	private StaticMetadataManager staticMetadataManager;
 	@Mock
 	private RouterRuleLabelResolver routerRuleLabelResolver;
@@ -64,7 +61,6 @@ public class ReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 	public void testWrapReactiveLoadBalancerClientFilter() {
 		when(beanFactory.getBean(LoadBalancerClientFactory.class)).thenReturn(loadBalancerClientFactory);
 		when(beanFactory.getBean(GatewayLoadBalancerProperties.class)).thenReturn(gatewayLoadBalancerProperties);
-		when(beanFactory.getBean(LoadBalancerProperties.class)).thenReturn(loadBalancerProperties);
 		when(beanFactory.getBean(StaticMetadataManager.class)).thenReturn(staticMetadataManager);
 		when(beanFactory.getBean(RouterRuleLabelResolver.class)).thenReturn(routerRuleLabelResolver);
 
@@ -73,7 +69,7 @@ public class ReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 					.thenReturn(null);
 
 			ReactiveLoadBalancerClientFilter reactiveLoadBalancerClientFilter = new ReactiveLoadBalancerClientFilter(
-					loadBalancerClientFactory, gatewayLoadBalancerProperties, loadBalancerProperties);
+					loadBalancerClientFactory, gatewayLoadBalancerProperties);
 
 			ReactiveLoadBalancerClientFilterBeanPostProcessor processor = new ReactiveLoadBalancerClientFilterBeanPostProcessor();
 			processor.setBeanFactory(beanFactory);

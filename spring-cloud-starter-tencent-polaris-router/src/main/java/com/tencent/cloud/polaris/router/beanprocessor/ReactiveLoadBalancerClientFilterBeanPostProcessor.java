@@ -30,7 +30,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
 import org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
@@ -57,14 +56,13 @@ public class ReactiveLoadBalancerClientFilterBeanPostProcessor implements BeanPo
 		if (bean instanceof ReactiveLoadBalancerClientFilter) {
 			LoadBalancerClientFactory loadBalancerClientFactory = this.factory.getBean(LoadBalancerClientFactory.class);
 			GatewayLoadBalancerProperties gatewayLoadBalancerProperties = this.factory.getBean(GatewayLoadBalancerProperties.class);
-			LoadBalancerProperties loadBalancerProperties = this.factory.getBean(LoadBalancerProperties.class);
 			List<SpringWebRouterLabelResolver> routerLabelResolvers = BeanFactoryUtils.getBeans(factory, SpringWebRouterLabelResolver.class);
 			StaticMetadataManager staticMetadataManager = this.factory.getBean(StaticMetadataManager.class);
 			RouterRuleLabelResolver routerRuleLabelResolver = this.factory.getBean(RouterRuleLabelResolver.class);
 			PolarisContextProperties polarisContextProperties = this.factory.getBean(PolarisContextProperties.class);
 
 			return new PolarisReactiveLoadBalancerClientFilter(
-					loadBalancerClientFactory, gatewayLoadBalancerProperties, loadBalancerProperties,
+					loadBalancerClientFactory, gatewayLoadBalancerProperties,
 					staticMetadataManager, routerRuleLabelResolver, routerLabelResolvers, polarisContextProperties);
 		}
 		return bean;
