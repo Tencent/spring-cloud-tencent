@@ -58,7 +58,7 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 
 	private final Map<String, Map<String, Object>> propertiesBeanDefaultValues = new ConcurrentHashMap<>();
 
-	static final String SET_PREFIX = "set";
+	private final String SET_PREFIX = "set";
 
 	public AffectedConfigurationPropertiesRebinder(ConfigurationPropertiesBeans beans) {
 		super(beans);
@@ -153,7 +153,7 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 		}
 	}
 
-	public static String capitalize(String name) {
+	private String capitalize(String name) {
 		if (name == null || name.length() == 0) {
 			return name;
 		}
