@@ -14,6 +14,12 @@ spring:
       enabled: true
       loadbalancer:
         enabled: true
+    loadbalancer:
+      retry:
+        retry-on-all-operations: true
+        max-retries-on-same-service-instance: 0
+        max-retries-on-next-service-instance: 3
+#        strategy: polarisWeighted
 management:
   endpoints:
     web:
