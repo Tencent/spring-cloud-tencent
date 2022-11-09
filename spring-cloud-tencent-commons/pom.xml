@@ -105,6 +105,12 @@
 			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+		<dependency>
+			<groupId>uk.org.webcompere</groupId>
+			<artifactId>system-stubs-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>
