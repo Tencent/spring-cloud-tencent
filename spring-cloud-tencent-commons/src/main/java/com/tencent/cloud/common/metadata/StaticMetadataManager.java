@@ -107,7 +107,8 @@ public class StaticMetadataManager {
 			String value = entry.getValue();
 			if (StringUtils.isNotBlank(key)
 					&& (key.startsWith(ENV_METADATA_PREFIX) || key.equals(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS))
-					&& !key.equals(ENV_METADATA_CONTENT_TRANSITIVE)) {
+					&& !key.equals(ENV_METADATA_CONTENT_TRANSITIVE)
+					&& !key.equals(ENV_METADATA_CONTENT_DISPOSABLE)) {
 				String sourceKey = "";
 				if (key.equals(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS)) {
 					sourceKey = key;
@@ -229,6 +230,7 @@ public class StaticMetadataManager {
 		mergedMetadataResult.putAll(configMetadata);
 		mergedMetadataResult.putAll(envMetadata);
 		mergedMetadataResult.putAll(customSPIMetadata);
+
 		this.mergedStaticMetadata = Collections.unmodifiableMap(mergedMetadataResult);
 
 		Map<String, String> mergedTransitiveMetadataResult = new HashMap<>();
