@@ -76,7 +76,7 @@
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<jackson.version>2.12.7</jackson.version>
-		<protobuf-java.version>3.16.1</protobuf-java.version>
+		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 		<guava.version>31.0.1-jre</guava.version>
 		<system-stubs-junit4.version>2.0.1</system-stubs-junit4.version>
