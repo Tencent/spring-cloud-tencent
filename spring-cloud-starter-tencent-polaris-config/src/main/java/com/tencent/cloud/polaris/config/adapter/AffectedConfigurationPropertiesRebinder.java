@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.tencent.cloud.common.util.ReflectionUtils;
 import com.tencent.polaris.api.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +38,8 @@ import org.springframework.cloud.context.properties.ConfigurationPropertiesBeans
 import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
-
-import static java.util.Locale.ENGLISH;
 
 /**
  * Optimize {@link ConfigurationPropertiesRebinder}, only rebuild affected beans.
@@ -57,8 +54,6 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 	private Map<String, ConfigurationPropertiesBean> propertiesBeans = new HashMap<>();
 
 	private final Map<String, Map<String, Object>> propertiesBeanDefaultValues = new ConcurrentHashMap<>();
-
-	private final String SET_PREFIX = "set";
 
 	public AffectedConfigurationPropertiesRebinder(ConfigurationPropertiesBeans beans) {
 		super(beans);
@@ -115,9 +110,10 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 
 			Object bean = applicationContext.getBean(beanName);
 			Field field = ReflectionUtils.findField(bean.getClass(), fieldName);
-			assert field != null;
-			field.setAccessible(true);
-			field.set(bean, defaultValues.get(fieldName));
+			if (field != null) {
+				field.setAccessible(true);
+				field.set(bean, defaultValues.get(fieldName));
+			}
 		}
 		catch (Exception e) {
 			LOGGER.error("[SCT Config] rebind default value error, bean = {}, key = {}", beanName, key);
@@ -142,8 +138,7 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 					}
 				}, field -> {
 					int modifiers = field.getModifiers();
-					String setMethodName = SET_PREFIX + capitalize(field.getName());
-					return !Modifier.isFinal(modifiers) && !Modifier.isStatic(modifiers) && ClassUtils.hasMethod(field.getDeclaringClass(), setMethodName, field.getType());
+					return !Modifier.isFinal(modifiers) && !Modifier.isStatic(modifiers) && ReflectionUtils.writableBeanField(field);
 				});
 			}
 			catch (Exception ignored) {
@@ -151,12 +146,5 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 
 			propertiesBeanDefaultValues.put(propertiesBean.getName(), defaultValues);
 		}
-	}
-
-	private String capitalize(String name) {
-		if (name == null || name.length() == 0) {
-			return name;
-		}
-		return name.substring(0, 1).toUpperCase(ENGLISH) + name.substring(1);
 	}
 }
