@@ -21,10 +21,12 @@ package com.tencent.cloud.polaris.registry;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
@@ -32,6 +34,9 @@ import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
+
+import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_CLUSTER;
+import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_GROUP;
 
 /**
  * Registration object of Polaris.
@@ -42,6 +47,8 @@ public class PolarisRegistration implements Registration {
 
 	private static final String METADATA_KEY_IP = "internal-ip";
 	private static final String METADATA_KEY_ADDRESS = "internal-address";
+	private static final String GROUP_SERVER_ID_FORMAT = "%s__%s";
+	private static final String NACOS_CLUSTER = "nacos.cluster";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
@@ -50,6 +57,8 @@ public class PolarisRegistration implements Registration {
 	private final SDKContext polarisContext;
 
 	private final StaticMetadataManager staticMetadataManager;
+
+	private final NacosContextProperties nacosContextProperties;
 
 	private Map<String, String> metadata;
 
@@ -60,18 +69,30 @@ public class PolarisRegistration implements Registration {
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Nullable ConsulContextProperties consulContextProperties,
-			SDKContext context, StaticMetadataManager staticMetadataManager) {
+			SDKContext context, StaticMetadataManager staticMetadataManager,
+			@Nullable NacosContextProperties nacosContextProperties) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.consulContextProperties = consulContextProperties;
 		this.polarisContext = context;
 		this.staticMetadataManager = staticMetadataManager;
-
+		this.nacosContextProperties = nacosContextProperties;
 		host = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 	}
 
 	@Override
 	public String getServiceId() {
-		return polarisDiscoveryProperties.getService();
+		if (Objects.isNull(nacosContextProperties)) {
+			return polarisDiscoveryProperties.getService();
+		}
+		else {
+			String group = nacosContextProperties.getGroup();
+			if (StringUtils.isNotBlank(group) && !DEFAULT_GROUP.equals(group)) {
+				return String.format(GROUP_SERVER_ID_FORMAT, group, polarisDiscoveryProperties.getService());
+			}
+			else {
+				return polarisDiscoveryProperties.getService();
+			}
+		}
 	}
 
 	@Override
@@ -111,6 +132,12 @@ public class PolarisRegistration implements Registration {
 			instanceMetadata.put(METADATA_KEY_IP, host);
 			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + polarisDiscoveryProperties.getPort());
 
+			// put internal-nacos-cluster if necessary
+			String clusterName = nacosContextProperties.getClusterName();
+			if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER.equals(clusterName)) {
+				instanceMetadata.put(NACOS_CLUSTER, clusterName);
+			}
+
 			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
 
 			this.metadata = instanceMetadata;
@@ -136,12 +163,14 @@ public class PolarisRegistration implements Registration {
 		boolean registerEnabled = false;
 
 		if (null != polarisDiscoveryProperties) {
-			registerEnabled |= polarisDiscoveryProperties.isRegisterEnabled();
+			registerEnabled = polarisDiscoveryProperties.isRegisterEnabled();
 		}
 		if (null != consulContextProperties && consulContextProperties.isEnabled()) {
 			registerEnabled |= consulContextProperties.isRegister();
 		}
-
+		if (null != nacosContextProperties && nacosContextProperties.isEnabled()) {
+			registerEnabled |= nacosContextProperties.isRegisterEnabled();
+		}
 		return registerEnabled;
 	}
 
