@@ -17,9 +17,11 @@
 
 Spring Cloud Tencent 是腾讯开源的一站式微服务解决方案。
 
-Spring Cloud Tencent 实现了Spring Cloud 标准微服务 SPI，开发者可以基于 Spring Cloud Tencent 快速开发 Spring Cloud 云原生分布式应用。
+Spring Cloud Tencent 实现了Spring Cloud 标准微服务 SPI，开发者可以基于 Spring Cloud Tencent 快速开发 Spring Cloud
+云原生分布式应用。
 
-Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治理平台 [Polaris](https://github.com/polarismesh/polaris)，实现各种分布式微服务场景。
+Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治理平台 [Polaris](https://github.com/polarismesh/polaris)
+，实现各种分布式微服务场景。
 
 - [Polaris Github home page](https://github.com/polarismesh/polaris)
 - [Polaris official website](https://polarismesh.cn/)
@@ -45,12 +47,13 @@ Spring Cloud Tencent提供的能力包括但不限于：
 - 控制面地址： `grpc://183.47.111.80:8091`
 -
 
-`spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（`grpc://183.47.111.80:8091`），如果您只是体验 Spring Cloud
+`spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（`grpc://183.47.111.80:8091`），如果您只是体验
+Spring Cloud
 Tencent，可直接一键运行任何 example。
 
 ## 管控台
 
-<img width="1792" alt="image" src="https://user-images.githubusercontent.com/4991116/163402268-48493802-4555-4b93-8e31-011410f2166b.png">
+<img width="1727" alt="sc" src="https://user-images.githubusercontent.com/4991116/197529819-78b20ba8-0e60-450c-a8e3-0c2bf04caa15.png">
 
 ## 使用指南
 
@@ -58,7 +61,9 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 
 > 注意：
 >
-> Spring Cloud Tencent 的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86) 。
+> Spring Cloud Tencent
+> 的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+> 。
 
 例如：
 
@@ -102,23 +107,26 @@ You can build this project with command:
 ## 文档
 
 - 使用文档
-    - [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
-    - [Spring Cloud Tencent Discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Config](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Rate Limit](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent CircuitBreaker](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Router](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Starter Tencent RPC Enhancement](https://github.com/Tencent/spring-cloud-tencent/wiki/RPC%E5%A2%9E%E5%BC%BA)
-    - [Spring Cloud Tencent Metadata Transfer](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)
-    - [Actuator Endpoint Extension](https://github.com/Tencent/spring-cloud-tencent/wiki/Actuator-Endpoint-%E6%89%A9%E5%B1%95)
+    - [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+    - [服务注册与发现](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [配置中心](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [服务限流](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [服务熔断](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [服务路由](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
+    - [RPC增强](https://github.com/Tencent/spring-cloud-tencent/wiki/RPC%E5%A2%9E%E5%BC%BA)
+    - [元数据传递](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)
+    - [场景化插件](https://github.com/Tencent/spring-cloud-tencent/wiki/场景化插件)
+    - [Actuator Endpoint 扩展](https://github.com/Tencent/spring-cloud-tencent/wiki/Actuator-Endpoint-%E6%89%A9%E5%B1%95)
 
 - 最佳实践
-    - [Multi-feature environment](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%A4%9A%E7%89%B9%E6%80%A7%E7%8E%AF%E5%A2%83)
-    - [Multi-registration and multi-discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Multi-registration-and-multi-discovery)
+    - [可观测性实践](https://github.com/Tencent/spring-cloud-tencent/wiki/可观测性实践)
+    - [测试环境路由](https://github.com/Tencent/spring-cloud-tencent/wiki/%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E8%B7%AF%E7%94%B1)
+    - [Spring Cloud Gateway 流量染色](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Gateway-%E6%B5%81%E9%87%8F%E6%9F%93%E8%89%B2)
+    - [多注册与多发现](https://github.com/Tencent/spring-cloud-tencent/wiki/Multi-registration-and-multi-discovery)
 
 - 开发文档
-    - [Project Structure Overview](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
-    - [Participate in co-construction](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%8F%82%E4%B8%8E%E5%85%B1%E5%BB%BA)
+    - [项目概览](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
+    - [参与共建](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%8F%82%E4%B8%8E%E5%85%B1%E5%BB%BA)
 
 ## 交流群
 
