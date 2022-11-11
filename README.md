@@ -8,7 +8,6 @@
 
 [![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
 [![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2021.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2021.0)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/Tencent/spring-cloud-tencent.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Tencent/spring-cloud-tencent/context:java)
 
 English | [简体中文](./README-zh.md)
 
@@ -61,7 +60,8 @@ dependencies.
 > Notice:
 >
 > The version list of Spring Cloud Tencent can be found
-> in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+>
+in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
 > .
 
 For example:
