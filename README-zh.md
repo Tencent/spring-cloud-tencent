@@ -7,7 +7,6 @@
 
 [![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
 [![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2020.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2020.0)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/Tencent/spring-cloud-tencent.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Tencent/spring-cloud-tencent/context:java)
 
 [English](./README.md) | 简体中文
 
@@ -62,7 +61,8 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 > 注意：
 >
 > Spring Cloud Tencent
-> 的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+>
+的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
 > 。
 
 例如：
