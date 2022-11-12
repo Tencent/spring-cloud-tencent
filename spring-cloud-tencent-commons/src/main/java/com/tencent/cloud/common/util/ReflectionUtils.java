@@ -19,14 +19,32 @@ package com.tencent.cloud.common.util;
 
 import java.lang.reflect.Field;
 
+import org.springframework.util.ClassUtils;
+
+import static java.util.Locale.ENGLISH;
+
 /**
  * Reflection Utils.
  *
  * @author Haotian Zhang
  */
-public final class ReflectionUtils {
+public final class ReflectionUtils extends org.springframework.util.ReflectionUtils {
 
+	private final static String SET_PREFIX = "set";
 	private ReflectionUtils() {
+	}
+
+	public static boolean writableBeanField(Field field) {
+		String fieldName = field.getName();
+		String setMethodName = SET_PREFIX + capitalize(fieldName);
+		return ClassUtils.hasMethod(field.getDeclaringClass(), setMethodName, field.getType());
+	}
+
+	public static String capitalize(String name) {
+		if (name == null || name.length() == 0) {
+			return name;
+		}
+		return name.substring(0, 1).toUpperCase(ENGLISH) + name.substring(1);
 	}
 
 	public static Object getFieldValue(Object instance, String fieldName) {

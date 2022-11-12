@@ -18,10 +18,18 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.tencent.cloud.common.util.ReflectionUtils;
+import com.tencent.polaris.api.utils.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
@@ -31,6 +39,7 @@ import org.springframework.cloud.context.properties.ConfigurationPropertiesRebin
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Optimize {@link ConfigurationPropertiesRebinder}, only rebuild affected beans.
@@ -39,8 +48,12 @@ import org.springframework.util.CollectionUtils;
  */
 public class AffectedConfigurationPropertiesRebinder extends ConfigurationPropertiesRebinder {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AffectedConfigurationPropertiesRebinder.class);
+
 	private ApplicationContext applicationContext;
 	private Map<String, ConfigurationPropertiesBean> propertiesBeans = new HashMap<>();
+
+	private final Map<String, Map<String, Object>> propertiesBeanDefaultValues = new ConcurrentHashMap<>();
 
 	public AffectedConfigurationPropertiesRebinder(ConfigurationPropertiesBeans beans) {
 		super(beans);
@@ -53,6 +66,7 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 		this.applicationContext = applicationContext;
 
 		propertiesBeans = ConfigurationPropertiesBean.getAll(applicationContext);
+		initPropertiesBeanDefaultValues(propertiesBeans);
 	}
 
 	@Override
@@ -75,8 +89,62 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 						.toString();
 				if (key.startsWith(propertiesPrefix)) {
 					rebind(name);
+					rebindDefaultValue(name, key);
 				}
 			});
 		});
+	}
+
+	private void rebindDefaultValue(String beanName, String key) {
+		String changeValue = applicationContext.getEnvironment().getProperty(key);
+		if (StringUtils.hasLength(changeValue)) {
+			return;
+		}
+
+		Map<String, Object> defaultValues = propertiesBeanDefaultValues.get(beanName);
+		if (MapUtils.isEmpty(defaultValues)) {
+			return;
+		}
+		try {
+			String fieldName = key.substring(key.lastIndexOf(".") + 1);
+
+			Object bean = applicationContext.getBean(beanName);
+			Field field = ReflectionUtils.findField(bean.getClass(), fieldName);
+			if (field != null) {
+				field.setAccessible(true);
+				field.set(bean, defaultValues.get(fieldName));
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("[SCT Config] rebind default value error, bean = {}, key = {}", beanName, key);
+		}
+	}
+
+	private void initPropertiesBeanDefaultValues(Map<String, ConfigurationPropertiesBean> propertiesBeans) {
+		if (MapUtils.isEmpty(propertiesBeans)) {
+			return;
+		}
+
+		for (ConfigurationPropertiesBean propertiesBean : propertiesBeans.values()) {
+			Map<String, Object> defaultValues = new HashMap<>();
+			try {
+				Object instance = propertiesBean.getInstance().getClass().getDeclaredConstructor((Class<?>[]) null).newInstance();
+				ReflectionUtils.doWithFields(instance.getClass(), field -> {
+					try {
+						field.setAccessible(true);
+						defaultValues.put(field.getName(), field.get(instance));
+					}
+					catch (Exception ignored) {
+					}
+				}, field -> {
+					int modifiers = field.getModifiers();
+					return !Modifier.isFinal(modifiers) && !Modifier.isStatic(modifiers) && ReflectionUtils.writableBeanField(field);
+				});
+			}
+			catch (Exception ignored) {
+			}
+
+			propertiesBeanDefaultValues.put(propertiesBean.getName(), defaultValues);
+		}
 	}
 }
