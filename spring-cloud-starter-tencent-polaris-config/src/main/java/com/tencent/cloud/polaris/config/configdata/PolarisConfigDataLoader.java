@@ -52,7 +52,6 @@ import static org.springframework.boot.context.config.ConfigData.Option.PROFILE_
  * Load {@link ConfigData} via {@link PolarisConfigDataLoader}
  *
  * @author wlx
- * @date 2022/7/5 11:14 PM
  */
 public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDataResource> {
 
