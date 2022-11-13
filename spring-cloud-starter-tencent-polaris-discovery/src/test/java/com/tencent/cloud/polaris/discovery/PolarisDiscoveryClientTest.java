@@ -63,7 +63,7 @@ public class PolarisDiscoveryClientTest {
 	public void testGetServices() {
 
 //		when(polarisServiceDiscovery.getServices()).thenReturn(singletonList(SERVICE_PROVIDER));
-		doReturn(singletonList(SERVICE_PROVIDER)).when(polarisServiceDiscovery.getServices());
+		doReturn(singletonList(SERVICE_PROVIDER)).when(polarisServiceDiscovery).getServices();
 
 		List<String> services = client.getServices();
 
