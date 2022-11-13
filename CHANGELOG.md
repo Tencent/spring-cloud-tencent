@@ -9,3 +9,4 @@
 - [Test:support environment variable metadata test](https://github.com/Tencent/spring-cloud-tencent/pull/710)
 - [upgrade protobuf-java.version to 3.21.7](https://github.com/Tencent/spring-cloud-tencent/pull/716)
 - [docs:update README.](https://github.com/Tencent/spring-cloud-tencent/pull/719)
+- [Code optimization & correct comment](https://github.com/Tencent/spring-cloud-tencent/pull/723)

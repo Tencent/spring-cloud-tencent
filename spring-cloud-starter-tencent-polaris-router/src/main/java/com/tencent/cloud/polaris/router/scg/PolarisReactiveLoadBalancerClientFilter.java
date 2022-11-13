@@ -184,6 +184,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 								new ResponseData(exchange.getResponse(), new RequestData(exchange.getRequest()))))));
 	}
 
+	@Override
 	protected URI reconstructURI(ServiceInstance serviceInstance, URI original) {
 		return LoadBalancerUriTools.reconstructURI(serviceInstance, original);
 	}
