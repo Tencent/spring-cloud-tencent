@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  * Spring value auto registry.
@@ -43,13 +45,14 @@ import org.springframework.beans.factory.BeanFactory;
  *
  * @author weihubeats 2022-7-10
  */
-public class SpringValueRegistry {
+public class SpringValueRegistry implements DisposableBean {
 	private static final Logger logger = LoggerFactory.getLogger(SpringValueRegistry.class);
 
 	private static final long CLEAN_INTERVAL_IN_SECONDS = 5;
 	private final Map<BeanFactory, Multimap<String, SpringValue>> registry = Maps.newConcurrentMap();
 	private final AtomicBoolean initialized = new AtomicBoolean(false);
 	private final Object LOCK = new Object();
+	private ScheduledExecutorService executor;
 
 	public void register(BeanFactory beanFactory, String key, SpringValue springValue) {
 		if (!registry.containsKey(beanFactory)) {
@@ -77,8 +80,9 @@ public class SpringValueRegistry {
 	}
 
 	private void initialize() {
-		Executors.newSingleThreadScheduledExecutor(
-				new NamedThreadFactory("polaris-spring-value-registry")).scheduleAtFixedRate(
+		executor = Executors.newSingleThreadScheduledExecutor(
+				new NamedThreadFactory("polaris-spring-value-registry"));
+		executor.scheduleAtFixedRate(
 				() -> {
 					try {
 						scanAndClean();
@@ -96,5 +100,10 @@ public class SpringValueRegistry {
 			// clear unused spring values
 			springValues.entries().removeIf(springValue -> !springValue.getValue().isTargetBeanValid());
 		}
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		executor.shutdown();
 	}
 }
