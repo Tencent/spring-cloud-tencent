@@ -10,3 +10,4 @@
 - [upgrade protobuf-java.version to 3.21.7.](https://github.com/Tencent/spring-cloud-tencent/pull/717)
 - [docs:update README.](https://github.com/Tencent/spring-cloud-tencent/pull/720)
 - [Code optimization & correct comment](https://github.com/Tencent/spring-cloud-tencent/pull/724)
+- [fix:fix javadoc.](https://github.com/Tencent/spring-cloud-tencent/pull/727)
