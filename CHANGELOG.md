@@ -11,6 +11,7 @@
 - [Optimize: remote deprecated method](https://github.com/Tencent/spring-cloud-tencent/pull/697)
 - [Test:support environment variable metadata test](https://github.com/Tencent/spring-cloud-tencent/pull/698)
 - [Test: remote deprecated method in test](https://github.com/Tencent/spring-cloud-tencent/pull/706)
+- [upgrade protobuf-java.version to 3.21.7](https://github.com/Tencent/spring-cloud-tencent/pull/715)
 - [docs:update README.](https://github.com/Tencent/spring-cloud-tencent/pull/718)
 - [Fix:fix javadoc.](https://github.com/Tencent/spring-cloud-tencent/pull/721)
 - [Code optimization & correct comment](https://github.com/Tencent/spring-cloud-tencent/pull/722)
