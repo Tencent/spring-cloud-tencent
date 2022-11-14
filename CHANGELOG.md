@@ -13,3 +13,4 @@
 - [Test: remote deprecated method in test](https://github.com/Tencent/spring-cloud-tencent/pull/706)
 - [docs:update README.](https://github.com/Tencent/spring-cloud-tencent/pull/718)
 - [Fix:fix javadoc.](https://github.com/Tencent/spring-cloud-tencent/pull/721)
+- [Code optimization & correct comment](https://github.com/Tencent/spring-cloud-tencent/pull/722)
