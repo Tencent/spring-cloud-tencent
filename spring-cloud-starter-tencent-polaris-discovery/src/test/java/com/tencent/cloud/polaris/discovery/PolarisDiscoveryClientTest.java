@@ -32,6 +32,7 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,7 +64,8 @@ public class PolarisDiscoveryClientTest {
 	@Test
 	public void testGetServices() {
 
-		when(polarisServiceDiscovery.getServices()).thenReturn(singletonList(SERVICE_PROVIDER));
+//		when(polarisServiceDiscovery.getServices()).thenReturn(singletonList(SERVICE_PROVIDER));
+		doReturn(singletonList(SERVICE_PROVIDER)).when(polarisServiceDiscovery).getServices();
 
 		List<String> services = client.getServices();
 
