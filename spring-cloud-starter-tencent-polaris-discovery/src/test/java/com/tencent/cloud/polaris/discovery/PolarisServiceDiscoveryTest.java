@@ -19,89 +19,67 @@ package com.tencent.cloud.polaris.discovery;
 
 import java.util.List;
 
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.exception.PolarisException;
-import com.tencent.polaris.api.pojo.ServiceKey;
-import com.tencent.polaris.test.mock.discovery.NamingServer;
-import com.tencent.polaris.test.mock.discovery.NamingService;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.tencent.polaris.api.pojo.DefaultInstance;
+import com.tencent.polaris.api.pojo.DefaultServiceInstances;
+import com.tencent.polaris.api.pojo.ServiceInfo;
+import com.tencent.polaris.api.rpc.InstancesResponse;
+import com.tencent.polaris.api.rpc.ServicesResponse;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.context.annotation.Configuration;
 
-import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
-import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link PolarisServiceDiscovery}.
  *
  * @author Haotian Zhang
  */
+@RunWith(MockitoJUnitRunner.class)
+
 public class PolarisServiceDiscoveryTest {
 
-	private static NamingServer namingServer;
-
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					PolarisContextAutoConfiguration.class,
-					PolarisServiceDiscoveryTest.PolarisPropertiesConfiguration.class,
-					PolarisDiscoveryClientConfiguration.class,
-					PolarisDiscoveryAutoConfiguration.class,
-					PolarisContextAutoConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-			.withPropertyValues("server.port=" + PORT)
-			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
-			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
-			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		namingServer = NamingServer.startNamingServer(10081);
-
-		// add service with 3 instances
-		NamingService.InstanceParameter instanceParameter = new NamingService.InstanceParameter();
-		instanceParameter.setHealthy(true);
-		instanceParameter.setIsolated(false);
-		instanceParameter.setWeight(100);
-		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER);
-		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3, instanceParameter);
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		if (null != namingServer) {
-			namingServer.terminate();
-		}
-	}
+	@Mock
+	private PolarisDiscoveryHandler polarisDiscoveryHandler;
+	@InjectMocks
+	private PolarisServiceDiscovery polarisServiceDiscovery;
 
 	@Test
 	public void testGetInstances() {
-		this.contextRunner.run(context -> {
-			PolarisServiceDiscovery polarisServiceDiscovery = context.getBean(PolarisServiceDiscovery.class);
-			List<ServiceInstance> serviceInstances = polarisServiceDiscovery.getInstances(SERVICE_PROVIDER);
-			assertThat(serviceInstances.isEmpty()).isFalse();
-			assertThat(serviceInstances).hasSize(3);
-			assertThat(serviceInstances.get(0).getPort()).isEqualTo(PORT);
-			assertThat(serviceInstances.get(1).getPort()).isEqualTo(PORT + 1);
-			assertThat(serviceInstances.get(2).getPort()).isEqualTo(PORT + 2);
-		});
+		DefaultServiceInstances mockDefaultServiceInstances = mock(DefaultServiceInstances.class);
+		when(mockDefaultServiceInstances.getInstances()).thenReturn(singletonList(mock(DefaultInstance.class)));
+		InstancesResponse mockInstancesResponse = mock(InstancesResponse.class);
+		when(mockInstancesResponse.toServiceInstances()).thenReturn(mockDefaultServiceInstances);
+		when(polarisDiscoveryHandler.getHealthyInstances(anyString())).thenReturn(mockInstancesResponse);
+
+		List<ServiceInstance> serviceInstances = polarisServiceDiscovery.getInstances(SERVICE_PROVIDER);
+
+		assertThat(serviceInstances).isNotEmpty();
 	}
 
 	@Test
 	public void testGetServices() throws PolarisException {
-		this.contextRunner.run(context -> {
-			PolarisServiceDiscovery polarisServiceDiscovery = context.getBean(PolarisServiceDiscovery.class);
-			List<String> services = polarisServiceDiscovery.getServices();
-			assertThat(services.size()).isEqualTo(1);
-		});
+		ServiceInfo mockServiceInfo = mock(ServiceInfo.class);
+		when(mockServiceInfo.getService()).thenReturn(SERVICE_PROVIDER);
+		ServicesResponse mockServicesResponse = mock(ServicesResponse.class);
+		when(mockServicesResponse.getServices()).thenReturn(singletonList(mockServiceInfo));
+		when(polarisDiscoveryHandler.getServices()).thenReturn(mockServicesResponse);
 
+		List<String> services = polarisServiceDiscovery.getServices();
+
+		assertThat(services).size().isEqualTo(1);
 	}
 
 	@Configuration
