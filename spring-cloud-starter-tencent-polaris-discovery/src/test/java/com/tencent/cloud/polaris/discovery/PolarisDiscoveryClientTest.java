@@ -66,7 +66,6 @@ public class PolarisDiscoveryClientTest {
 		List<String> services = client.getServices();
 
 		assertThat(services).contains(SERVICE_PROVIDER).size().isEqualTo(1);
-
 	}
 
 	@Test
