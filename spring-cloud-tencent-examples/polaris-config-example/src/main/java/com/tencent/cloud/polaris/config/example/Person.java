@@ -34,6 +34,8 @@ public class Person {
 
 	private int age;
 
+	private boolean isDirector;
+
 	public String getName() {
 		return name;
 	}
@@ -50,8 +52,17 @@ public class Person {
 		this.age = age;
 	}
 
+
+	public boolean isDirector() {
+		return isDirector;
+	}
+
+	public void setIsDirector(boolean isDirector) {
+		this.isDirector = isDirector;
+	}
+
 	@Override
 	public String toString() {
-		return "User{" + "name='" + name + '\'' + ", age=" + age + '}';
+		return "User{" + "name='" + name + '\'' + ", age=" + age  + ", isDirector=" + isDirector +  '\'' + '}';
 	}
 }

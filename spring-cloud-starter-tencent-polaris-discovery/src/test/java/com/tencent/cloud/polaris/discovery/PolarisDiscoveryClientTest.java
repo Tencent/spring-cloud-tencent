@@ -62,13 +62,12 @@ public class PolarisDiscoveryClientTest {
 
 	@Test
 	public void testGetServices() {
-
 		when(polarisServiceDiscovery.getServices()).thenReturn(singletonList(SERVICE_PROVIDER));
 
 		List<String> services = client.getServices();
 
-		assertThat(services).contains(SERVICE_PROVIDER).size().isEqualTo(1);
-
+		assertThat(services).size().isEqualTo(1);
+		assertThat(services.contains(SERVICE_PROVIDER)).isTrue();
 	}
 
 	@Test

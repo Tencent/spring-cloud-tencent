@@ -81,6 +81,7 @@ public final class PolarisConfigFilePuller {
 	 *
 	 * @param compositePropertySource compositePropertySource
 	 * @param activeProfiles          activeProfiles
+	 * @param defaultProfiles         defaultProfiles
 	 * @param serviceName             serviceName
 	 */
 	public void initInternalConfigFiles(CompositePropertySource compositePropertySource, String[] activeProfiles,
