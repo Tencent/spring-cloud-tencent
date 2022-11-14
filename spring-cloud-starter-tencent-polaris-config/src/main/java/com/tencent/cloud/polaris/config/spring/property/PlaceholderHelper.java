@@ -52,7 +52,7 @@ public class PlaceholderHelper {
 	 * @param beanFactory beanFactory
 	 * @param beanName beanName
 	 * @param placeholder placeholder
-	 * @return "${somePropertyValue}" -> "the actual property value"
+	 * @return "${somePropertyValue}" -&gt; "the actual property value"
 	 */
 	public Object resolvePropertyValue(ConfigurableBeanFactory beanFactory, String beanName, String placeholder) {
 		// resolve string value
@@ -77,16 +77,16 @@ public class PlaceholderHelper {
 	}
 
 	/**
-	 *
 	 * @param propertyString propertyString
-	 * @return
-	 * Extract keys from placeholder, e.g.
-	 * <li>${some.key} => "some.key"</li>
-	 * <li>${some.key:${some.other.key:100}} => "some.key", "some.other.key"</li>
-	 * <li>${${some.key}} => "some.key"</li>
-	 * <li>${${some.key:other.key}} => "some.key"</li>
-	 * <li>${${some.key}:${another.key}} => "some.key", "another.key"</li>
-	 * <li>#{new java.text.SimpleDateFormat('${some.key}').parse('${another.key}')} => "some.key", "another.key"</li>
+	 * @return Extract keys from placeholder, e.g.
+	 * <ul>
+	 *   <li>${some.key} =&gt; "some.key"</li>
+	 * 	 <li>${some.key:${some.other.key:100}} =&gt; "some.key", "some.other.key"</li>
+	 * 	 <li>${${some.key}} =&gt; "some.key"</li>
+	 * 	 <li>${${some.key:other.key}} =&gt; "some.key"</li>
+	 * 	 <li>${${some.key}:${another.key}} =&gt; "some.key", "another.key"</li>
+	 * 	 <li>#{new java.text.SimpleDateFormat('${some.key}').parse('${another.key}')} =&gt; "some.key", "another.key"</li>
+	 * </ul>
 	 */
 	public Set<String> extractPlaceholderKeys(String propertyString) {
 		Set<String> placeholderKeys = Sets.newHashSet();
