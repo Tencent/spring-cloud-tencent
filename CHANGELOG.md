@@ -11,3 +11,4 @@
 - [docs:update README.](https://github.com/Tencent/spring-cloud-tencent/pull/720)
 - [Code optimization & correct comment](https://github.com/Tencent/spring-cloud-tencent/pull/724)
 - [fix:fix javadoc.](https://github.com/Tencent/spring-cloud-tencent/pull/727)
+- [fix:fix discovery junit.](https://github.com/Tencent/spring-cloud-tencent/pull/729)
