@@ -19,10 +19,10 @@ Spring Cloud Tencent implements the Spring Cloud standard microservice SPI, so d
 Cloud cloud-native distributed applications based on Spring Cloud Tencent.
 
 The core of Spring Cloud Tencent relies on Tencent's open-source one-stop service discovery and governance
-platform [Polaris](https://github.com/polarismesh/polaris) to realize various distributed microservice scenarios.
+platform [PolarisMesh](https://polarismesh.cn) to realize various distributed microservice scenarios.
 
-- [Polaris Github home page](https://github.com/polarismesh/polaris)
-- [Polaris official website](https://polarismesh.cn/)
+- [PolarisMesh Github home page](https://github.com/polarismesh/polaris)
+- [PolarisMesh official website](https://polarismesh.cn/)
 
 The capabilities provided by Spring Cloud Tencent include but are not limited to:
 
