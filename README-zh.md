@@ -19,7 +19,7 @@ Spring Cloud Tencent 是腾讯开源的一站式微服务解决方案。
 Spring Cloud Tencent 实现了Spring Cloud 标准微服务 SPI，开发者可以基于 Spring Cloud Tencent 快速开发 Spring Cloud
 云原生分布式应用。
 
-Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治理平台 [Polaris](https://github.com/polarismesh/polaris)
+Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治理平台 [PolarisMesh](https://polarismesh.cn/)
 ，实现各种分布式微服务场景。
 
 - [Polaris Github home page](https://github.com/polarismesh/polaris)
