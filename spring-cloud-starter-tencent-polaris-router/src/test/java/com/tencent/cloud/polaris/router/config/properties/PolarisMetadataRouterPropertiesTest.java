@@ -18,31 +18,36 @@
 
 package com.tencent.cloud.polaris.router.config.properties;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * test for {@link PolarisMetadataRouterProperties}.
  */
-public class PolarisMetadataRouterPropertiesTests {
+public class PolarisMetadataRouterPropertiesTest {
 
 	PolarisMetadataRouterProperties properties;
 
-	@BeforeEach
-	void setUp() {
+	@Before
+	public void setUp() {
 		properties = new PolarisMetadataRouterProperties();
 	}
 
 	@Test
-	void isEnabled() {
+	public void isEnabled() {
 		assertThat(properties.isEnabled()).isEqualTo(true);
 	}
 
 	@Test
-	void setEnabled() {
+	public void setEnabled() {
 		properties.setEnabled(false);
 		assertThat(properties.isEnabled()).isEqualTo(false);
+	}
+
+	@Test
+	public void testToString() {
+		System.out.println(properties);
 	}
 }

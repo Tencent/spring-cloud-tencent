@@ -13,30 +13,53 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.router.endpoint;
 
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.polaris.client.api.SDKContext;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * test for {@link PolarisRouterEndpointAutoConfiguration}.
  * @author dongyinuo
  */
-@RunWith(MockitoJUnitRunner.class)
 public class PolarisRouterEndpointAutoConfigurationTests {
 
-	@Mock
-	private ServiceRuleManager manager;
+	private ServiceRuleManager serviceRuleManager;
+
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(
+					TestServiceRuleManagerConfiguration.class,
+					PolarisRouterEndpointAutoConfiguration.class))
+			.withPropertyValues("endpoints.polaris-router.enabled=true");
 
 	@Test
 	public void polarisRouterEndpoint() {
-		PolarisRouterEndpoint endpoint = new PolarisRouterEndpoint(manager);
-		System.out.println(endpoint.router("test"));
+		contextRunner.run(context -> {
+			assertThat(context).hasSingleBean(PolarisRouterEndpointAutoConfiguration.class);
+		});
+	}
+
+	@Configuration
+	static class TestServiceRuleManagerConfiguration {
+
+		@Bean
+		public ServiceRuleManager serviceRuleManager(SDKContext sdkContext) {
+			return new ServiceRuleManager(sdkContext);
+		}
+
+		@Bean
+		public SDKContext sdkContext() {
+			return SDKContext.initContext();
+		}
 	}
 }

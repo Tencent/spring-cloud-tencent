@@ -21,7 +21,7 @@ package com.tencent.cloud.polaris.router.config;
 import com.tencent.cloud.common.metadata.config.MetadataAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * test for {@link FeignAutoConfiguration}.
  * @author dongyinuo
  */
-public class FeignAutoConfigurationTests {
+public class FeignAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(

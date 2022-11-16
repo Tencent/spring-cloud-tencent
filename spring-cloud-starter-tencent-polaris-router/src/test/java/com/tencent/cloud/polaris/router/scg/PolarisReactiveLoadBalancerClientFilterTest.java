@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.router.scg;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
@@ -45,18 +46,27 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
+import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
+import org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
+import org.springframework.cloud.loadbalancer.support.SimpleObjectProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.server.ServerWebExchange;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_SCHEME_PREFIX_ATTR;
 
 /**
  * Test for ${@link PolarisReactiveLoadBalancerClientFilter}.
@@ -145,4 +155,40 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 		Assert.assertEquals("v1", routerLabels.get("t1"));
 		Assert.assertEquals("v2", routerLabels.get("t2"));
 	}
+
+	@Test
+	public void testFilter01() throws Exception {
+		PolarisReactiveLoadBalancerClientFilter filter = new PolarisReactiveLoadBalancerClientFilter(loadBalancerClientFactory,
+				gatewayLoadBalancerProperties, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
+				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
+
+		MockServerHttpRequest request = MockServerHttpRequest.get("/" + calleeService + "/users").build();
+		MockServerWebExchange exchange = new MockServerWebExchange.Builder(request).build();
+
+		// mock no lb
+		EmptyGatewayFilterChain chain = new EmptyGatewayFilterChain();
+		Mono<Void> ret = filter.filter(exchange, chain);
+		Assert.assertEquals(ret, Mono.empty());
+
+		// mock with lb
+		exchange = new MockServerWebExchange.Builder(request).build();
+		exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, new URI("https://" + calleeService + ":8091"));
+		exchange.getAttributes().put(GATEWAY_SCHEME_PREFIX_ATTR, "lb");
+
+		NoopServiceInstanceListSupplier serviceInstanceListSupplier = new NoopServiceInstanceListSupplier();
+		RoundRobinLoadBalancer roundRobinLoadBalancer = new RoundRobinLoadBalancer(new SimpleObjectProvider<>(serviceInstanceListSupplier), calleeService);
+
+		when(loadBalancerClientFactory.getInstance(calleeService, ReactorServiceInstanceLoadBalancer.class)).thenReturn(roundRobinLoadBalancer);
+		filter.filter(exchange, chain);
+
+	}
+
+	static class EmptyGatewayFilterChain implements GatewayFilterChain {
+
+		@Override
+		public Mono<Void> filter(ServerWebExchange exchange) {
+			return Mono.empty();
+		}
+	}
+
 }

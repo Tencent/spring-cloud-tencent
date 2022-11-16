@@ -114,7 +114,6 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		return doRouter(allServers, routerContext);
 	}
 
-	//set method to public for unit test
 	PolarisRouterContext buildRouterContext(HttpHeaders headers) {
 		Collection<String> labelHeaderValues = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
 
