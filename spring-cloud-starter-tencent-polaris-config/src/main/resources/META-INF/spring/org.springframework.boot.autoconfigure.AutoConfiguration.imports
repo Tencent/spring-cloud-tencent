@@ -1,0 +1,3 @@
+com.tencent.cloud.polaris.config.PolarisConfigAutoConfiguration
+com.tencent.cloud.polaris.config.endpoint.PolarisConfigEndpointAutoConfiguration
+com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration
