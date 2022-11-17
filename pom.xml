@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>3.1.3</version>
+		<version>4.0.0-RC1</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
 	<version>${revision}</version>
 	<name>Spring Cloud Tencent</name>
 	<description>Spring Cloud Tencent</description>
-	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2021.0</url>
+	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2022.0</url>
 
 	<organization>
 		<name>Tencent</name>
@@ -26,7 +26,7 @@
 	<licenses>
 		<license>
 			<name>The BSD 3-Clause License (BSD3)</name>
-			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2021.0/LICENSE</url>
+			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2022.0/LICENSE</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -89,16 +89,16 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.8.1-2021.0.3</revision>
+		<revision>1.8.1-2022.0.0-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2021.0.3</spring.cloud.version>
+		<spring.cloud.version>2022.0.0-RC1</spring.cloud.version>
 
 		<!-- Spring Boot -->
-		<spring.boot.version>2.6.10</spring.boot.version>
+		<spring.boot.version>3.0.0-RC2</spring.boot.version>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>5.3.22</spring.framework.version>
+		<spring.framework.version>6.0.0-RC4</spring.framework.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
@@ -321,6 +321,25 @@
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
