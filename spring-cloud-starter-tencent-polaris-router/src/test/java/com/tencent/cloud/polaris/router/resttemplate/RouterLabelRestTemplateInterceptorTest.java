@@ -183,6 +183,11 @@ public class RouterLabelRestTemplateInterceptorTest {
 		}
 
 		@Override
+		public HttpMethod getMethod() {
+			return HttpMethod.GET;
+		}
+
+		@Override
 		public String getMethodValue() {
 			return HttpMethod.GET.name();
 		}

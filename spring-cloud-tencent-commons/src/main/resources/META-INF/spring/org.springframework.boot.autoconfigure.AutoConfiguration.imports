@@ -1,0 +1,3 @@
+com.tencent.cloud.common.util.ApplicationContextAwareUtils
+com.tencent.cloud.common.metadata.config.MetadataAutoConfiguration
+com.tencent.cloud.common.metadata.endpoint.PolarisMetadataEndpointAutoConfiguration

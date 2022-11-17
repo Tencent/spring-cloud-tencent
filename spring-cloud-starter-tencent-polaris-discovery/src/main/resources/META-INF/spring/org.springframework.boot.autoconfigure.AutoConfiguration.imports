@@ -1,0 +1,4 @@
+com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration
+com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration
+com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration
+com.tencent.cloud.polaris.endpoint.PolarisDiscoveryEndpointAutoConfiguration
