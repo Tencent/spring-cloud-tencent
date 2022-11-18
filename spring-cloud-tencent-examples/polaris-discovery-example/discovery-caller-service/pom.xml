@@ -13,10 +13,6 @@
 	<artifactId>discovery-caller-service</artifactId>
 	<name>Polaris Discovery Caller Service</name>
 
-	<properties>
-		<java.version>1.8</java.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>

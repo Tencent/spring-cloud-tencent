@@ -74,16 +74,10 @@
 
 		<!-- Dependencies -->
 		<polaris.version>1.9.1</polaris.version>
-		<guava.version>31.0.1-jre</guava.version>
-		<logback.version>1.4.4</logback.version>
-		<mocktio.version>4.5.1</mocktio.version>
-		<byte-buddy.version>1.12.10</byte-buddy.version>
+		<guava.version>31.1-jre</guava.version>
+		<mocktio.version>4.9.0</mocktio.version>
+		<byte-buddy.version>1.12.19</byte-buddy.version>
 		<protobuf-java.version>3.16.1</protobuf-java.version>
-		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
-
-		<!-- Maven Plugin Versions -->
-		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
-		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -205,27 +199,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-core</artifactId>
-				<version>${logback.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback.version}</version>
-			</dependency>
-
-			<dependency>
 				<groupId>com.google.protobuf</groupId>
 				<artifactId>protobuf-java</artifactId>
 				<version>${protobuf-java.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk15on</artifactId>
-				<version>${bcprov-jdk15on.version}</version>
 			</dependency>
 
 			<dependency>
@@ -300,7 +276,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>${maven-source-plugin.version}</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -314,7 +289,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>${maven-gpg-plugin.version}</version>
 						<executions>
 							<execution>
 								<phase>verify</phase>

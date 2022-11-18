@@ -101,7 +101,7 @@ public class PolarisRouterEndpointTest {
 		Map<String, Object> actuator = polarisRouterEndpoint.router(testDestService);
 
 		Assert.assertNotNull(actuator.get("routerRules"));
-		Assert.assertEquals(1, ((List) actuator.get("routerRules")).size());
+		Assert.assertEquals(1, ((List<?>) actuator.get("routerRules")).size());
 	}
 
 	@Test

@@ -102,9 +102,6 @@
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
-		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
-		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
-		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
 
 		<!--  Checkstyle      -->
 		<maven-checkstyle-plugin.failsOnError>true</maven-checkstyle-plugin.failsOnError>
@@ -163,24 +160,16 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
-<!--			<plugin>-->
-<!--				<groupId>org.apache.maven.plugins</groupId>-->
-<!--				<artifactId>maven-checkstyle-plugin</artifactId>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>checkstyle-validation</id>-->
-<!--						<phase>none</phase>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
+			<!--			<plugin>-->
+			<!--				<groupId>org.apache.maven.plugins</groupId>-->
+			<!--				<artifactId>maven-checkstyle-plugin</artifactId>-->
+			<!--			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<inherited>true</inherited>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<parameters>true</parameters>
+					<release>17</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -188,12 +177,12 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco.version}</version>
 				<executions>
-					<execution>
-						<id>jacoco-initialize</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
+					<!--					<execution>-->
+					<!--						<id>jacoco-initialize</id>-->
+					<!--						<goals>-->
+					<!--							<goal>prepare-agent</goal>-->
+					<!--						</goals>-->
+					<!--					</execution>-->
 					<execution>
 						<id>jacoco-site</id>
 						<phase>test</phase>
@@ -222,7 +211,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>${flatten-maven-plugin.version}</version>
 				<configuration>
 					<updatePomFile>true</updatePomFile>
 					<flattenMode>resolveCiFriendliesOnly</flattenMode>
@@ -277,7 +265,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>${maven-source-plugin.version}</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -291,7 +278,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>${maven-gpg-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>

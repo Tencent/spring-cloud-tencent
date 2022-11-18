@@ -1,4 +1,4 @@
-name: Codecov
+name: Codecov 2022.0
 
 on:
   push:
