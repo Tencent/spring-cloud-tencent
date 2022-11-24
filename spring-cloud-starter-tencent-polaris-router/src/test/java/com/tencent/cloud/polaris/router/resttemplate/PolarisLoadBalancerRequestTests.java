@@ -52,7 +52,6 @@ public class PolarisLoadBalancerRequestTests {
 
 		@Override
 		public Object apply(ServiceInstance instance) throws Exception {
-			System.out.println("Mock LoadBalancerRequest");
 			return instance;
 		}
 	}

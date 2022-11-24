@@ -50,6 +50,7 @@ public class PolarisNearByRouterPropertiesTest {
 
 	@Test
 	public void testToString() {
-		System.out.println(properties);
+		assertThat(properties.toString())
+				.isEqualTo("PolarisNearByRouterProperties{enabled=true}");
 	}
 }

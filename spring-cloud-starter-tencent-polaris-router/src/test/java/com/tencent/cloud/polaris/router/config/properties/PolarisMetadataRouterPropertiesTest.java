@@ -48,6 +48,7 @@ public class PolarisMetadataRouterPropertiesTest {
 
 	@Test
 	public void testToString() {
-		System.out.println(properties);
+		assertThat(properties.toString())
+				.isEqualTo("PolarisMetadataRouterProperties{enabled=true}");
 	}
 }
