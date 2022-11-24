@@ -8,7 +8,6 @@
 
 [![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
 [![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2021.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2021.0)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/Tencent/spring-cloud-tencent.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Tencent/spring-cloud-tencent/context:java)
 
 English | [简体中文](./README-zh.md)
 
@@ -20,10 +19,10 @@ Spring Cloud Tencent implements the Spring Cloud standard microservice SPI, so d
 Cloud cloud-native distributed applications based on Spring Cloud Tencent.
 
 The core of Spring Cloud Tencent relies on Tencent's open-source one-stop service discovery and governance
-platform [Polaris](https://github.com/polarismesh/polaris) to realize various distributed microservice scenarios.
+platform [PolarisMesh](https://polarismesh.cn) to realize various distributed microservice scenarios.
 
-- [Polaris Github home page](https://github.com/polarismesh/polaris)
-- [Polaris official website](https://polarismesh.cn/)
+- [PolarisMesh Github home page](https://github.com/polarismesh/polaris)
+- [PolarisMesh official website](https://polarismesh.cn/)
 
 The capabilities provided by Spring Cloud Tencent include but are not limited to:
 
@@ -115,10 +114,13 @@ You can build this project with command:
     - [Spring Cloud Tencent Router](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
     - [Spring Cloud Starter Tencent RPC Enhancement](https://github.com/Tencent/spring-cloud-tencent/wiki/RPC%E5%A2%9E%E5%BC%BA)
     - [Spring Cloud Tencent Metadata Transfer](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)
+    - [Spring Cloud Tencent Plugins](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%9C%BA%E6%99%AF%E5%8C%96%E6%8F%92%E4%BB%B6)
     - [Actuator Endpoint Extension](https://github.com/Tencent/spring-cloud-tencent/wiki/Actuator-Endpoint-%E6%89%A9%E5%B1%95)
 
 - Best Practices
+    - [Observability Practice](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%E5%AE%9E%E8%B7%B5)
     - [Multi-feature environment](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%A4%9A%E7%89%B9%E6%80%A7%E7%8E%AF%E5%A2%83)
+    - [Spring Cloud Gateway Traffic Staining](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Gateway-%E6%B5%81%E9%87%8F%E6%9F%93%E8%89%B2)
     - [Multi-registration and multi-discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Multi-registration-and-multi-discovery)
 
 - Development documentation
