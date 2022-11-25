@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerAutoConfiguration
