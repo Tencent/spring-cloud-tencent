@@ -95,10 +95,10 @@
 		<spring.cloud.version>2022.0.0-RC2</spring.cloud.version>
 
 		<!-- Spring Boot -->
-		<spring.boot.version>3.0.0-RC2</spring.boot.version>
+		<spring.boot.version>3.0.0</spring.boot.version>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>6.0.0</spring.framework.version>
+		<spring.framework.version>6.0.1</spring.framework.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
@@ -121,15 +121,16 @@
 				<scope>import</scope>
 			</dependency>
 
-			<!-- Spring Cloud Dependencies -->
+			<!-- Spring Framework Dependencies -->
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring.cloud.version}</version>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.framework.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 
+			<!-- Spring Boot Dependencies -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
@@ -138,11 +139,11 @@
 				<scope>import</scope>
 			</dependency>
 
-			<!-- Spring Framework Dependencies -->
+			<!-- Spring Cloud Dependencies -->
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-framework-bom</artifactId>
-				<version>${spring.framework.version}</version>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring.cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -177,12 +178,12 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco.version}</version>
 				<executions>
-					<!--					<execution>-->
-					<!--						<id>jacoco-initialize</id>-->
-					<!--						<goals>-->
-					<!--							<goal>prepare-agent</goal>-->
-					<!--						</goals>-->
-					<!--					</execution>-->
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>jacoco-site</id>
 						<phase>test</phase>
