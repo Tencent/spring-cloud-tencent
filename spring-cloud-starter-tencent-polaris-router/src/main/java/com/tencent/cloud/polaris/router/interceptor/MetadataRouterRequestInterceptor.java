@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,8 +26,11 @@ import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
+import com.tencent.polaris.api.pojo.RouteArgument;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
+
+import org.springframework.util.CollectionUtils;
 
 /**
  * Router request interceptor for metadata router.
@@ -53,6 +57,12 @@ public class MetadataRouterRequestInterceptor implements RouterRequestIntercepto
 		Map<String, String> metadataRouterLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS,
 				metadataRouterKeys);
 		// 3. set metadata router labels to request
-		request.addRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA, metadataRouterLabels);
+		Set<RouteArgument> routeArguments = new HashSet<>();
+		if (!CollectionUtils.isEmpty(metadataRouterKeys)) {
+			for (Map.Entry<String, String> entry : metadataRouterLabels.entrySet()) {
+				routeArguments.add(RouteArgument.buildCustom(entry.getKey(), entry.getValue()));
+			}
+		}
+		request.putRouterArgument(MetadataRouter.ROUTER_TYPE_METADATA, routeArguments);
 	}
 }
