@@ -207,6 +207,7 @@
 				<configuration>
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
+					<argLine>${argLine}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
