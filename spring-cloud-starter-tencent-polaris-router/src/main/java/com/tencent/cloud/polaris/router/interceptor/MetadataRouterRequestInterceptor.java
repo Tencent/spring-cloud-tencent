@@ -60,7 +60,7 @@ public class MetadataRouterRequestInterceptor implements RouterRequestIntercepto
 		Set<RouteArgument> routeArguments = new HashSet<>();
 		if (!CollectionUtils.isEmpty(metadataRouterKeys)) {
 			for (Map.Entry<String, String> entry : metadataRouterLabels.entrySet()) {
-				routeArguments.add(RouteArgument.buildCustom(entry.getKey(), entry.getValue()));
+				routeArguments.add(RouteArgument.fromLabel(entry.getKey(), entry.getValue()));
 			}
 		}
 		request.putRouterArgument(MetadataRouter.ROUTER_TYPE_METADATA, routeArguments);

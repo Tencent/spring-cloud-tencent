@@ -59,7 +59,7 @@ public class RuleBasedRouterRequestInterceptor implements RouterRequestIntercept
 			Map<String, String> ruleRouterLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
 			if (!CollectionUtils.isEmpty(ruleRouterLabels)) {
 				for (Map.Entry<String, String> label : ruleRouterLabels.entrySet()) {
-					routeArguments.add(RouteArgument.buildCustom(label.getKey(), label.getValue()));
+					routeArguments.add(RouteArgument.fromLabel(label.getKey(), label.getValue()));
 				}
 			}
 		}
