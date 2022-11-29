@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.constant.RouterConstant;
@@ -43,6 +44,7 @@ import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
+import com.tencent.polaris.api.pojo.RouteArgument;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
@@ -132,13 +134,16 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
-			Map<String, String> routerMetadata = request.getRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA);
+			Set<RouteArgument> routerMetadata = request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA);
 
 			Assert.assertEquals(1, routerMetadata.size());
-			Assert.assertEquals(0, request.getRouterMetadata(NearbyRouter.ROUTER_TYPE_NEAR_BY).size());
-			Assert.assertEquals(1, request.getRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size());
-			Assert.assertEquals("false", request.getRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)
-					.get(RuleBasedRouter.ROUTER_ENABLED));
+			Assert.assertEquals(0, request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size());
+			Assert.assertEquals(1, request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size());
+
+			for (RouteArgument routeArgument : request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)) {
+				Assert.assertEquals(RuleBasedRouter.ROUTER_ENABLED, routeArgument.getKey());
+				Assert.assertEquals("false", routeArgument.getValue());
+			}
 		}
 	}
 
@@ -161,14 +166,22 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
-			Map<String, String> routerMetadata = request.getRouterMetadata(NearbyRouter.ROUTER_TYPE_NEAR_BY);
+			Set<RouteArgument> routerMetadata = request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY);
 
-			Assert.assertEquals(0, request.getRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA).size());
+			Assert.assertEquals(0, request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size());
 			Assert.assertEquals(1, routerMetadata.size());
-			Assert.assertEquals("true", routerMetadata.get(NearbyRouter.ROUTER_ENABLED));
-			Assert.assertEquals(1, request.getRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size());
-			Assert.assertEquals("false", request.getRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)
-					.get(RuleBasedRouter.ROUTER_ENABLED));
+
+			for (RouteArgument routeArgument : routerMetadata) {
+				Assert.assertEquals(NearbyRouter.ROUTER_ENABLED, routeArgument.getKey());
+				Assert.assertEquals("true", routeArgument.getValue());
+			}
+
+			Assert.assertEquals(1, request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size());
+
+			for (RouteArgument routeArgument : request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)) {
+				Assert.assertEquals(RuleBasedRouter.ROUTER_ENABLED, routeArgument.getKey());
+				Assert.assertEquals("false", routeArgument.getValue());
+			}
 		}
 	}
 
@@ -191,14 +204,11 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
-			Map<String, String> routerMetadata = request.getRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED);
+			Set<RouteArgument> routerMetadata = request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED);
 
-			Assert.assertEquals(1, routerMetadata.size());
-			Assert.assertEquals(0, request.getRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA).size());
-			Assert.assertEquals(0, request.getRouterMetadata(NearbyRouter.ROUTER_TYPE_NEAR_BY).size());
-			Assert.assertEquals(1, request.getRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size());
-			Assert.assertEquals("true", request.getRouterMetadata(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)
-					.get(RuleBasedRouter.ROUTER_ENABLED));
+			Assert.assertEquals(3, routerMetadata.size());
+			Assert.assertEquals(0, request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size());
+			Assert.assertEquals(0, request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size());
 		}
 	}
 

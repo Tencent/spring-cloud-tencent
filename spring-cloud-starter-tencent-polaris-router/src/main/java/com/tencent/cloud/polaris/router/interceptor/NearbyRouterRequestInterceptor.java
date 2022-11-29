@@ -18,12 +18,13 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
+import com.tencent.polaris.api.pojo.RouteArgument;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouter;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 
@@ -45,9 +46,9 @@ public class NearbyRouterRequestInterceptor implements RouterRequestInterceptor 
 			return;
 		}
 
-		Map<String, String> nearbyRouterMetadata = new HashMap<>();
-		nearbyRouterMetadata.put(NearbyRouter.ROUTER_ENABLED, "true");
+		Set<RouteArgument> routeArguments = new HashSet<>(1);
+		routeArguments.add(RouteArgument.buildCustom(NearbyRouter.ROUTER_ENABLED, "true"));
 
-		request.addRouterMetadata(NearbyRouter.ROUTER_TYPE_NEAR_BY, nearbyRouterMetadata);
+		request.putRouterArgument(NearbyRouter.ROUTER_TYPE_NEAR_BY, routeArguments);
 	}
 }
