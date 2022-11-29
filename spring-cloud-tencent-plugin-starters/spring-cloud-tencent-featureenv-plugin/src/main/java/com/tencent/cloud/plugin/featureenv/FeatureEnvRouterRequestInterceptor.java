@@ -18,11 +18,12 @@
 
 package com.tencent.cloud.plugin.featureenv;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
+import com.tencent.polaris.api.pojo.RouteArgument;
 import com.tencent.polaris.api.rpc.MetadataFailoverType;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
@@ -54,10 +55,11 @@ public class FeatureEnvRouterRequestInterceptor implements RouterRequestIntercep
 		}
 
 		//3. set env metadata to router request
-		Map<String, String> envMetadata = new HashMap<>();
-		envMetadata.put(envLabelKey, envLabelValue);
+		Set<RouteArgument> routeArguments = new HashSet<>(1);
+		routeArguments.add(RouteArgument.buildCustom(envLabelKey, envLabelValue));
 
-		request.addRouterMetadata(MetadataRouter.ROUTER_TYPE_METADATA, envMetadata);
+		request.putRouterArgument(MetadataRouter.ROUTER_TYPE_METADATA, routeArguments);
+
 
 		//4. set failover type to others
 		request.setMetadataFailoverType(MetadataFailoverType.METADATAFAILOVERNOTKEY);
