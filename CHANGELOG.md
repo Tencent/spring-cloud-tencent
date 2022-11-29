@@ -16,3 +16,4 @@
 - [Fix:fix javadoc.](https://github.com/Tencent/spring-cloud-tencent/pull/721)
 - [Code optimization & correct comment](https://github.com/Tencent/spring-cloud-tencent/pull/722)
 - [fix:fix discovery junit.](https://github.com/Tencent/spring-cloud-tencent/pull/730)
+- [adapt polaris-java 1.10.1 version](https://github.com/Tencent/spring-cloud-tencent/pull/746)
