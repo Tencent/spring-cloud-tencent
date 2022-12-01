@@ -23,6 +23,7 @@ import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +62,9 @@ public class PolarisServiceRegistryAutoConfiguration {
 	public PolarisRegistration polarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Autowired(required = false) ConsulContextProperties consulContextProperties,
-			SDKContext context, StaticMetadataManager staticMetadataManager) {
-		return new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties, context, staticMetadataManager);
+			SDKContext context, StaticMetadataManager staticMetadataManager, NacosContextProperties nacosContextProperties) {
+		return new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties, nacosContextProperties, context,
+				staticMetadataManager);
 	}
 
 	@Bean
