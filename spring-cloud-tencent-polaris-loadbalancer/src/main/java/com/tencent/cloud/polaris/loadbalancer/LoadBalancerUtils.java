@@ -18,10 +18,8 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
@@ -42,44 +40,60 @@ import org.springframework.util.CollectionUtils;
  */
 public final class LoadBalancerUtils {
 
+	private static final int DEFAULT_WEIGHT = 100;
+
 	private LoadBalancerUtils() {
 	}
 
+	/**
+	 * transfer servers to ServiceInstances.
+	 *
+	 * @param servers servers
+	 * @return ServiceInstances
+	 */
 	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers) {
-		AtomicReference<List<Instance>> instances = new AtomicReference<>();
-		servers.subscribe(serviceInstances -> {
-			instances.set(serviceInstances.stream().map(serviceInstance -> {
-				DefaultInstance instance = new DefaultInstance();
-				instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-				instance.setService(serviceInstance.getServiceId());
-				instance.setProtocol(serviceInstance.getScheme());
-				instance.setId(serviceInstance.getInstanceId());
-				instance.setHost(serviceInstance.getHost());
-				instance.setPort(serviceInstance.getPort());
-				instance.setWeight(100);
-				instance.setMetadata(serviceInstance.getMetadata());
+		List<ServiceInstance> serviceInstances = servers.blockLast();
 
-				if (serviceInstance instanceof PolarisServiceInstance) {
-					PolarisServiceInstance polarisServiceInstance = (PolarisServiceInstance) serviceInstance;
-					instance.setRegion(polarisServiceInstance.getPolarisInstance().getRegion());
-					instance.setZone(polarisServiceInstance.getPolarisInstance().getZone());
-					instance.setCampus(polarisServiceInstance.getPolarisInstance().getCampus());
-				}
-
-				return instance;
-			}).collect(Collectors.toList()));
-		});
+		List<Instance> instances = new ArrayList<>();
+		if (!CollectionUtils.isEmpty(serviceInstances)) {
+			for (ServiceInstance serviceInstance : serviceInstances) {
+				instances.add(transferServerToServiceInstance(serviceInstance));
+			}
+		}
 
 		String serviceName = null;
-		if (CollectionUtils.isEmpty(instances.get())) {
-			instances.set(Collections.emptyList());
-		}
-		else {
-			serviceName = instances.get().get(0).getService();
+		if (!CollectionUtils.isEmpty(instances)) {
+			serviceName = instances.get(0).getService();
 		}
 
 		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
+		return new DefaultServiceInstances(serviceKey, instances);
+	}
 
-		return new DefaultServiceInstances(serviceKey, instances.get());
+	/**
+	 * transfer ServiceInstance to DefaultInstance.
+	 *
+	 * @param serviceInstance serviceInstance
+	 * @return defaultInstance
+	 */
+	public static DefaultInstance transferServerToServiceInstance(ServiceInstance serviceInstance) {
+		DefaultInstance instance = new DefaultInstance();
+		instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
+		instance.setService(serviceInstance.getServiceId());
+		instance.setProtocol(serviceInstance.getScheme());
+		instance.setId(serviceInstance.getInstanceId());
+		instance.setHost(serviceInstance.getHost());
+		instance.setPort(serviceInstance.getPort());
+		instance.setWeight(DEFAULT_WEIGHT);
+		instance.setMetadata(serviceInstance.getMetadata());
+
+		if (serviceInstance instanceof PolarisServiceInstance) {
+			PolarisServiceInstance polarisServiceInstance = (PolarisServiceInstance) serviceInstance;
+			instance.setRegion(polarisServiceInstance.getPolarisInstance().getRegion());
+			instance.setZone(polarisServiceInstance.getPolarisInstance().getZone());
+			instance.setCampus(polarisServiceInstance.getPolarisInstance().getCampus());
+		}
+
+		return instance;
 	}
 }
