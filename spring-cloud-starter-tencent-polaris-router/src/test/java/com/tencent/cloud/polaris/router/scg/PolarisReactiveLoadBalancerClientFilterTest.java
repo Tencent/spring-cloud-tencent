@@ -156,7 +156,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 	@Test
 	public void testFilter01() throws Exception {
 		PolarisReactiveLoadBalancerClientFilter filter = new PolarisReactiveLoadBalancerClientFilter(loadBalancerClientFactory,
-				gatewayLoadBalancerProperties, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
+				gatewayLoadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
 				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
 
 		MockServerHttpRequest request = MockServerHttpRequest.get("/" + calleeService + "/users").build();
