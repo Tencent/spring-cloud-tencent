@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.polaris.config.example;
 
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +35,10 @@ public class Person {
 	private String name;
 
 	private int age;
+
+	private boolean director;
+
+	private List<String> students;
 
 	public String getName() {
 		return name;
@@ -50,8 +56,29 @@ public class Person {
 		this.age = age;
 	}
 
+	public boolean isDirector() {
+		return director;
+	}
+
+	public void setDirector(boolean director) {
+		this.director = director;
+	}
+
+	public List<String> getStudents() {
+		return students;
+	}
+
+	public void setStudents(List<String> students) {
+		this.students = students;
+	}
+
 	@Override
 	public String toString() {
-		return "User{" + "name='" + name + '\'' + ", age=" + age + '}';
+		return "Person{" +
+				"name='" + name + '\'' +
+				", age=" + age +
+				", director=" + director +
+				", students=" + students +
+				'}';
 	}
 }
