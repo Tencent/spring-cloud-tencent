@@ -52,6 +52,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -88,7 +89,7 @@ public class PolarisLoadBalancerClientFilterTest {
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn(callerService);
 
-		MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
+		MetadataContext metadataContext = mock(MetadataContext.class);
 
 		// mock transitive metadata
 		Map<String, String> transitiveLabels = new HashMap<>();
