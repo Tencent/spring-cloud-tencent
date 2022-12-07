@@ -40,7 +40,6 @@ import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
-import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,6 +49,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
@@ -59,6 +59,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -146,6 +147,8 @@ public class RouterLabelRestTemplateInterceptorTest {
 		ClientHttpResponse mockedResponse = new MockClientHttpResponse(new byte[] {}, HttpStatus.OK);
 		when(clientHttpRequestExecution.execute(eq(request), any())).thenReturn(mockedResponse);
 
+		assertThat(routerLabelRestTemplateInterceptor.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE);
+
 		routerLabelRestTemplateInterceptor.intercept(request, null, clientHttpRequestExecution);
 
 		verify(staticMetadataManager).getMergedStaticMetadata();
@@ -155,11 +158,11 @@ public class RouterLabelRestTemplateInterceptorTest {
 
 		Map<String, String> headers = JacksonUtils.deserialize2Map(URLDecoder.decode(Objects.requireNonNull(request.getHeaders()
 				.get(RouterConstant.ROUTER_LABEL_HEADER)).get(0), "UTF-8"));
-		Assertions.assertThat("v1").isEqualTo(headers.get("k1"));
-		Assertions.assertThat("v22").isEqualTo(headers.get("k2"));
-		Assertions.assertThat("v4").isEqualTo(headers.get("k4"));
-		Assertions.assertThat("GET").isEqualTo(headers.get("${http.method}"));
-		Assertions.assertThat("/user/get").isEqualTo(headers.get("${http.uri}"));
+		assertThat("v1").isEqualTo(headers.get("k1"));
+		assertThat("v22").isEqualTo(headers.get("k2"));
+		assertThat("v4").isEqualTo(headers.get("k4"));
+		assertThat("GET").isEqualTo(headers.get("${http.method}"));
+		assertThat("/user/get").isEqualTo(headers.get("${http.uri}"));
 		String encodedLabelsContent;
 		try {
 			encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), UTF_8);
@@ -167,7 +170,7 @@ public class RouterLabelRestTemplateInterceptorTest {
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("unsupported charset exception " + UTF_8);
 		}
-		Assertions.assertThat(mockedResponse.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER).get(0))
+		assertThat(mockedResponse.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER).get(0))
 				.isEqualTo(encodedLabelsContent);
 
 	}
