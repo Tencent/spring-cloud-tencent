@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>4.0.0-RC2</version>
+		<version>4.0.0-RC3</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -89,16 +89,16 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.8.2-2022.0.0-RC2</revision>
+		<revision>1.8.2-2022.0.0-RC3-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2022.0.0-RC2</spring.cloud.version>
+		<spring.cloud.version>2022.0.0-RC3</spring.cloud.version>
 
 		<!-- Spring Boot -->
 		<spring.boot.version>3.0.0</spring.boot.version>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>6.0.1</spring.framework.version>
+		<spring.framework.version>6.0.2</spring.framework.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
@@ -161,10 +161,10 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
-			<!--			<plugin>-->
-			<!--				<groupId>org.apache.maven.plugins</groupId>-->
-			<!--				<artifactId>maven-checkstyle-plugin</artifactId>-->
-			<!--			</plugin>-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
