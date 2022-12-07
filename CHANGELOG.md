@@ -14,4 +14,5 @@
 - [fix:fix discovery junit.](https://github.com/Tencent/spring-cloud-tencent/pull/728)
 - [adapt polaris-java 1.10.1 version](https://github.com/Tencent/spring-cloud-tencent/pull/748)
 - [Optimize: change RouteArgument.buildCustom to RouteArgument.fromLabel](https://github.com/Tencent/spring-cloud-tencent/pull/750)
+- [Optimize: support delete config for ConfigurationProperties bean](https://github.com/Tencent/spring-cloud-tencent/pull/755)
 - [Bugfix: get service instances by Flux.blockLast() to resolve concurrent problem](https://github.com/Tencent/spring-cloud-tencent/pull/763)
