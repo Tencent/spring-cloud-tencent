@@ -48,6 +48,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import reactor.core.publisher.Mono;
 
+import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
@@ -63,6 +64,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_SCHEME_PREFIX_ATTR;
@@ -98,7 +100,7 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn(callerService);
 
-		MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
+		MetadataContext metadataContext = mock(MetadataContext.class);
 
 		// mock transitive metadata
 		Map<String, String> transitiveLabels = new HashMap<>();
@@ -176,6 +178,9 @@ public class PolarisReactiveLoadBalancerClientFilterTest {
 		RoundRobinLoadBalancer roundRobinLoadBalancer = new RoundRobinLoadBalancer(new SimpleObjectProvider<>(serviceInstanceListSupplier), calleeService);
 
 		when(loadBalancerClientFactory.getInstance(calleeService, ReactorServiceInstanceLoadBalancer.class)).thenReturn(roundRobinLoadBalancer);
+		LoadBalancerProperties loadBalancerProperties = mock(LoadBalancerProperties.class);
+		when(loadBalancerProperties.getHint()).thenReturn(new HashMap<>());
+		when(loadBalancerClientFactory.getProperties(calleeService)).thenReturn(loadBalancerProperties);
 		filter.filter(exchange, chain);
 
 	}
