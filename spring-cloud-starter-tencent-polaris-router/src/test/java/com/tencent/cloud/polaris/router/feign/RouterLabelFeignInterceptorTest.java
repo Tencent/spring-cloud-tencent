@@ -46,6 +46,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +72,8 @@ public class RouterLabelFeignInterceptorTest {
 		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor(
 				Collections.singletonList(routerLabelResolver),
 				staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
+
+		assertThat(routerLabelFeignInterceptor.getOrder()).isEqualTo(0);
 
 		// mock request template
 		RequestTemplate requestTemplate = new RequestTemplate();
