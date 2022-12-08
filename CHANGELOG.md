@@ -15,3 +15,5 @@
 - [adapt polaris-java 1.10.1 version](https://github.com/Tencent/spring-cloud-tencent/pull/747)
 - [Optimize: change RouteArgument.buildCustom to RouteArgument.fromLabel](https://github.com/Tencent/spring-cloud-tencent/pull/751)
 - [Feature: support nacos registry](https://github.com/Tencent/spring-cloud-tencent/pull/758)
+- [Optimize: support delete config for ConfigurationProperties bean  ](https://github.com/Tencent/spring-cloud-tencent/pull/756)
+- [Test:add sct-stater-polaris-router junit.](https://github.com/Tencent/spring-cloud-tencent/pull/768)

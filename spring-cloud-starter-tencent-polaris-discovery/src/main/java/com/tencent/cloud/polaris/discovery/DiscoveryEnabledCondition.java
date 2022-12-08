@@ -39,7 +39,9 @@ public class DiscoveryEnabledCondition implements Condition {
 				&& Boolean.parseBoolean(conditionContext.getEnvironment()
 				.getProperty("spring.cloud.consul.discovery.enabled", "true"));
 
-		isDiscoveryEnabled |= isConsulDiscoveryEnabled;
-		return isDiscoveryEnabled;
+		boolean isNacosEnabled = Boolean.parseBoolean(
+				conditionContext.getEnvironment().getProperty("spring.cloud.nacos.discovery.enabled", "false"));
+
+		return isDiscoveryEnabled || isConsulDiscoveryEnabled || isNacosEnabled;
 	}
 }
