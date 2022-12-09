@@ -23,6 +23,7 @@ import java.util.Map;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.config.global.APIConfig;
 import com.tencent.polaris.api.config.global.GlobalConfig;
@@ -38,6 +39,7 @@ import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link PolarisRegistration}.
@@ -48,6 +50,8 @@ import static org.mockito.Mockito.mock;
 public class PolarisRegistrationTest {
 
 	private PolarisRegistration polarisRegistration;
+
+	NacosContextProperties nacosContextProperties = mock(NacosContextProperties.class);
 
 	@Before
 	public void setUp() {
@@ -76,7 +80,7 @@ public class PolarisRegistrationTest {
 		doReturn(Collections.singletonMap("key1", "value1")).when(staticMetadataManager).getMergedStaticMetadata();
 
 		polarisRegistration = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
-				polarisContext, staticMetadataManager);
+				nacosContextProperties, polarisContext, staticMetadataManager);
 	}
 
 	@Test
@@ -126,5 +130,25 @@ public class PolarisRegistrationTest {
 	@Test
 	public void testToString() {
 		System.out.println(polarisRegistration);
+	}
+
+	@Test
+	public void testGetNacosServiceId() {
+		String groupName = "group";
+		String format = "%s__%s";
+		when(nacosContextProperties.getGroup()).thenReturn(groupName);
+		String serviceId = polarisRegistration.getServiceId();
+		assertThat(String.format(format, groupName, SERVICE_PROVIDER).equals(serviceId));
+	}
+
+	@Test
+	public void testGetNacosMetadata() {
+		String clusterName = "cluster";
+		when(nacosContextProperties.getClusterName()).thenReturn(clusterName);
+		Map<String, String> metadata = polarisRegistration.getMetadata();
+		assertThat(metadata).isNotNull();
+		assertThat(metadata).isNotEmpty();
+		assertThat(metadata.size()).isEqualTo(4);
+		assertThat(metadata.get("nacos.cluster")).isEqualTo(clusterName);
 	}
 }

@@ -76,6 +76,11 @@
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
+			<artifactId>connector-nacos</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
 			<artifactId>connector-composite</artifactId>
 		</dependency>
 
