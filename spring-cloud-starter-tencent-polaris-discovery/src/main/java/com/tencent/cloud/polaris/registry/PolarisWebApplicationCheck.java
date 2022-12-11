@@ -39,7 +39,7 @@ public class PolarisWebApplicationCheck implements ApplicationListener<Applicati
 		SpringApplication springApplication = event.getSpringApplication();
 		WebApplicationType webApplicationType = springApplication.getWebApplicationType();
 		if (webApplicationType.equals(WebApplicationType.NONE)) {
-			LOGGER.info("This service instance will not be registered, because it is not a servlet-based or reactive web application.");
+			LOGGER.warn("This service instance will not be registered, because it is not a servlet-based or reactive web application.");
 		}
 	}
 }
