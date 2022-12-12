@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +85,9 @@ public final class LoadBalancerUtils {
 		}
 
 		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
-		return new DefaultServiceInstances(serviceKey, instancesRef.get());
+		List<Instance> instances = instancesRef.get() == null ? Collections.emptyList() : instancesRef.get();
+
+		return new DefaultServiceInstances(serviceKey, instances);
 	}
 
 	/**
