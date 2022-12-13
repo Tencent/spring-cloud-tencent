@@ -21,3 +21,4 @@
 - [Optimize: change RouteArgument.buildCustom to RouteArgument.fromLabel](https://github.com/Tencent/spring-cloud-tencent/pull/749)
 - [Optimize: get service instances by Flux.blockLast() to resolve concurrent problem](https://github.com/Tencent/spring-cloud-tencent/pull/764)
 - [Fix issue: prompt no registration if web dependence was not imported.](https://github.com/Tencent/spring-cloud-tencent/pull/772)
+- [Standardize the name of method to create bean.](https://github.com/Tencent/spring-cloud-tencent/pull/779)
