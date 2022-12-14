@@ -18,4 +18,5 @@
 - [Bugfix: get service instances by Flux.blockLast() to resolve concurrent problem](https://github.com/Tencent/spring-cloud-tencent/pull/763)
 - [Test:add sct-stater-polaris-router juint.](https://github.com/Tencent/spring-cloud-tencent/pull/767)
 - [Feature: support nacos registry](https://github.com/Tencent/spring-cloud-tencent/pull/757)
+- [Bugfix: fix reactor concurrent bug when get instances & fix spring-retry fuse not working bug](https://github.com/Tencent/spring-cloud-tencent/pull/775)
 - [Fix issue: prompt no registration if web dependence was not imported.](https://github.com/Tencent/spring-cloud-tencent/pull/777)
