@@ -22,3 +22,4 @@
 - [Optimize: get service instances by Flux.blockLast() to resolve concurrent problem](https://github.com/Tencent/spring-cloud-tencent/pull/764)
 - [Fix issue: prompt no registration if web dependence was not imported.](https://github.com/Tencent/spring-cloud-tencent/pull/772)
 - [Bugfix: fix reactor concurrent bug when get instances & fix spring-retry fuse not working bug](https://github.com/Tencent/spring-cloud-tencent/pull/774)
+- [Standardize the name of method to create bean.](https://github.com/Tencent/spring-cloud-tencent/pull/779)
