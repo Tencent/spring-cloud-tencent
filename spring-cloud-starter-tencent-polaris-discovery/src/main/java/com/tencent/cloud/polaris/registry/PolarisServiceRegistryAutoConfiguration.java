@@ -76,4 +76,9 @@ public class PolarisServiceRegistryAutoConfiguration {
 			PolarisRegistration registration) {
 		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
 	}
+
+	@Bean
+	public PolarisWebApplicationCheck polarisWebApplicationCheck() {
+		return new PolarisWebApplicationCheck();
+	}
 }
