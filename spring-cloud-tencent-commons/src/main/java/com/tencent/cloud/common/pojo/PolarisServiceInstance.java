@@ -19,6 +19,7 @@ package com.tencent.cloud.common.pojo;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 
 import com.tencent.polaris.api.pojo.Instance;
 import org.apache.commons.lang.StringUtils;
@@ -88,5 +89,22 @@ public class PolarisServiceInstance implements ServiceInstance {
 	@Override
 	public String getScheme() {
 		return this.scheme;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		PolarisServiceInstance that = (PolarisServiceInstance) o;
+		return Objects.equals(instance, that.instance) && Objects.equals(scheme, that.scheme);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(instance, scheme);
 	}
 }
