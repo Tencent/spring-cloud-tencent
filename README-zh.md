@@ -14,6 +14,8 @@
 
 ## 介绍
 
+> 欢迎各位同学点击右上角 Star 按钮，持续关注我们的项目，给予我们最大的支持~
+
 Spring Cloud Tencent 是腾讯开源的一站式微服务解决方案。
 
 Spring Cloud Tencent 实现了Spring Cloud 标准微服务 SPI，开发者可以基于 Spring Cloud Tencent 快速开发 Spring Cloud
