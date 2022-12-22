@@ -59,7 +59,11 @@ dependencies.
 
 > Notice:
 >
-> The version list of Spring Cloud Tencent can be found in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86).
+> Support Spring Cloud 2022.0, 2021.0, 2020.0, Hoxton.
+>
+> The version list of Spring Cloud Tencent can be found
+> in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+> .
 
 For example:
 
