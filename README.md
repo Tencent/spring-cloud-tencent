@@ -59,9 +59,10 @@ dependencies.
 
 > Notice:
 >
-> The version list of Spring Cloud Tencent can be found
+> Support Spring Cloud 2022.0, 2021.0, 2020.0, Hoxton.
 >
-in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+> The version list of Spring Cloud Tencent can be found
+> in [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
 > .
 
 For example:
@@ -105,27 +106,7 @@ You can build this project with command:
 
 ## Documents
 
-- Usage Doc
-    - [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
-    - [Spring Cloud Tencent Discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Config](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Rate Limit](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent CircuitBreaker](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Router](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Starter Tencent RPC Enhancement](https://github.com/Tencent/spring-cloud-tencent/wiki/RPC%E5%A2%9E%E5%BC%BA)
-    - [Spring Cloud Tencent Metadata Transfer](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)
-    - [Spring Cloud Tencent Plugins](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%9C%BA%E6%99%AF%E5%8C%96%E6%8F%92%E4%BB%B6)
-    - [Actuator Endpoint Extension](https://github.com/Tencent/spring-cloud-tencent/wiki/Actuator-Endpoint-%E6%89%A9%E5%B1%95)
-
-- Best Practices
-    - [Observability Practice](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%E5%AE%9E%E8%B7%B5)
-    - [Multi-feature environment](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%A4%9A%E7%89%B9%E6%80%A7%E7%8E%AF%E5%A2%83)
-    - [Spring Cloud Gateway Traffic Staining](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Gateway-%E6%B5%81%E9%87%8F%E6%9F%93%E8%89%B2)
-    - [Multi-registration and multi-discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Multi-registration-and-multi-discovery)
-
-- Development documentation
-    - [Project Structure Overview](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
-    - [Participate in co-construction](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%8F%82%E4%B8%8E%E5%85%B1%E5%BB%BA)
+Pelease refer to [Wiki](https://github.com/Tencent/spring-cloud-tencent/wiki)
 
 ## Chat Group
 
