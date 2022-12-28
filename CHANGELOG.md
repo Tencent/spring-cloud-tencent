@@ -19,3 +19,4 @@
 - [Test:add sct-stater-polaris-router junit.](https://github.com/Tencent/spring-cloud-tencent/pull/768)
 - [Optimize: add equals&hasCode for PolarisServiceInstance](https://github.com/Tencent/spring-cloud-tencent/pull/773)
 - [Fix issue: prompt no registration if web dependence was not imported.](https://github.com/Tencent/spring-cloud-tencent/pull/778)
+- [set reporter.enabled default to true](https://github.com/Tencent/spring-cloud-tencent/pull/785)
