@@ -104,7 +104,6 @@ public final class LoadBalancerUtils {
 		instance.setId(serviceInstance.getInstanceId());
 		instance.setHost(serviceInstance.getHost());
 		instance.setPort(serviceInstance.getPort());
-		instance.setWeight(DEFAULT_WEIGHT);
 		instance.setMetadata(serviceInstance.getMetadata());
 
 		if (serviceInstance instanceof PolarisServiceInstance) {
@@ -112,6 +111,7 @@ public final class LoadBalancerUtils {
 			instance.setRegion(polarisServiceInstance.getPolarisInstance().getRegion());
 			instance.setZone(polarisServiceInstance.getPolarisInstance().getZone());
 			instance.setCampus(polarisServiceInstance.getPolarisInstance().getCampus());
+			instance.setWeight(polarisServiceInstance.getPolarisInstance().getWeight());
 		}
 
 		return instance;
