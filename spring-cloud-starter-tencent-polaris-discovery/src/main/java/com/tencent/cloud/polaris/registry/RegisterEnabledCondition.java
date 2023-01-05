@@ -39,6 +39,15 @@ public class RegisterEnabledCondition implements Condition {
 				.getProperty("spring.cloud.consul.discovery.register", "true"));
 
 		isRegisterEnabled |= isConsulRegisterEnabled;
+
+		boolean isNacosRegisterEnabled = Boolean
+				.parseBoolean(conditionContext.getEnvironment()
+						.getProperty("spring.cloud.nacos.enabled", "false"))
+				&& Boolean.parseBoolean(conditionContext.getEnvironment()
+				.getProperty("spring.cloud.nacos.discovery.register-enabled", "true"));
+
+		isRegisterEnabled |= isNacosRegisterEnabled;
+
 		return isRegisterEnabled;
 	}
 }
