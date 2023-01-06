@@ -68,12 +68,6 @@ public class PolarisDiscoveryProperties {
 	private String protocol;
 
 	/**
-	 * Port of instance.
-	 */
-	@Value("${server.port:8080}")
-	private int port;
-
-	/**
 	 * Enable polaris discovery or not.
 	 */
 	private Boolean enabled = true;
@@ -130,16 +124,8 @@ public class PolarisDiscoveryProperties {
 		return enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
 	public boolean isRegisterEnabled() {
 		return registerEnabled;
-	}
-
-	public void setRegisterEnabled(boolean registerEnabled) {
-		this.registerEnabled = registerEnabled;
 	}
 
 	public String getToken() {
@@ -164,14 +150,6 @@ public class PolarisDiscoveryProperties {
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getHealthCheckUrl() {
@@ -205,8 +183,16 @@ public class PolarisDiscoveryProperties {
 		return enabled;
 	}
 
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public Boolean getRegisterEnabled() {
 		return registerEnabled;
+	}
+
+	public void setRegisterEnabled(boolean registerEnabled) {
+		this.registerEnabled = registerEnabled;
 	}
 
 	public void setRegisterEnabled(Boolean registerEnabled) {
@@ -222,7 +208,6 @@ public class PolarisDiscoveryProperties {
 				", weight=" + weight +
 				", version='" + version + '\'' +
 				", protocol='" + protocol + '\'' +
-				", port=" + port +
 				", enabled=" + enabled +
 				", registerEnabled=" + registerEnabled +
 				", heartbeatInterval=" + heartbeatInterval +
