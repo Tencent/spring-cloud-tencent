@@ -31,6 +31,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationConfiguration;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
@@ -62,9 +64,12 @@ public class PolarisServiceRegistryAutoConfiguration {
 	public PolarisRegistration polarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Autowired(required = false) ConsulContextProperties consulContextProperties,
-			SDKContext context, StaticMetadataManager staticMetadataManager, NacosContextProperties nacosContextProperties) {
-		return new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties, nacosContextProperties, context,
-				staticMetadataManager);
+			SDKContext context, StaticMetadataManager staticMetadataManager, NacosContextProperties nacosContextProperties,
+			@Autowired(required = false) ServletWebServerApplicationContext servletWebServerApplicationContext,
+			@Autowired(required = false) ReactiveWebServerApplicationContext reactiveWebServerApplicationContext) {
+		return new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties, context,
+				staticMetadataManager, nacosContextProperties,
+				servletWebServerApplicationContext, reactiveWebServerApplicationContext);
 	}
 
 	@Bean

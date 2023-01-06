@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris;
 import org.junit.Test;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
-import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.PROVIDER_TOKEN;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,10 +76,6 @@ public class PolarisDiscoveryPropertiesTest {
 		polarisDiscoveryProperties.setProtocol("HTTP");
 		assertThat(polarisDiscoveryProperties.getProtocol()).isEqualTo("HTTP");
 
-		// Port
-		polarisDiscoveryProperties.setPort(PORT);
-		assertThat(polarisDiscoveryProperties.getPort()).isEqualTo(PORT);
-
 		// HealthCheckUrl
 		polarisDiscoveryProperties.setHealthCheckUrl("/health");
 		assertThat(polarisDiscoveryProperties.getHealthCheckUrl()).isEqualTo("/health");
@@ -96,7 +91,6 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", token='19485a7674294e3c88dba293373c1534'"
 						+ ", weight=10, version='1.0.0'"
 						+ ", protocol='HTTP'"
-						+ ", port=9091"
 						+ ", enabled=true"
 						+ ", registerEnabled=true"
 						+ ", heartbeatInterval=20"
