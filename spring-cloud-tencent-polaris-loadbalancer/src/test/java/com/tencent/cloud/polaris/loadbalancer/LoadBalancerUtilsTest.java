@@ -23,7 +23,9 @@ import java.util.List;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import org.junit.AfterClass;
@@ -36,7 +38,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import reactor.core.publisher.Flux;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,7 +50,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 @RunWith(MockitoJUnitRunner.class)
 public class LoadBalancerUtilsTest {
 
-	private static final String TEST_NAMESPACE_AND_SERVICE = "testNamespaceAndService";
+	private static final String testNamespaceAndService = "testNamespaceAndService";
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
 
@@ -57,7 +58,7 @@ public class LoadBalancerUtilsTest {
 	public static void beforeClass() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
-				.thenReturn(TEST_NAMESPACE_AND_SERVICE);
+				.thenReturn(testNamespaceAndService);
 
 		MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 		mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class);
@@ -80,11 +81,17 @@ public class LoadBalancerUtilsTest {
 	@Test
 	public void testTransferNotEmptyInstances() {
 		int instanceSize = 100;
+		int weight = 50;
 
 		List<ServiceInstance> instances = new ArrayList<>();
 		for (int i = 0; i < instanceSize; i++) {
-			instances.add(new DefaultServiceInstance("ins" + i, TEST_NAMESPACE_AND_SERVICE, "127.0.0." + i,
-					8080, false));
+			DefaultInstance instance = new DefaultInstance();
+			instance.setService(testNamespaceAndService);
+			instance.setId("ins" + i);
+			instance.setPort(8080);
+			instance.setHost("127.0.0." + i);
+			instance.setWeight(weight);
+			instances.add(new PolarisServiceInstance(instance));
 		}
 
 		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(Flux.just(instances));
@@ -95,12 +102,12 @@ public class LoadBalancerUtilsTest {
 		List<Instance> polarisInstances = serviceInstances.getInstances();
 		for (int i = 0; i < instanceSize; i++) {
 			Instance instance = polarisInstances.get(i);
-			Assert.assertEquals(TEST_NAMESPACE_AND_SERVICE, instance.getNamespace());
-			Assert.assertEquals(TEST_NAMESPACE_AND_SERVICE, instance.getService());
+			Assert.assertEquals(testNamespaceAndService, instance.getNamespace());
+			Assert.assertEquals(testNamespaceAndService, instance.getService());
 			Assert.assertEquals("ins" + i, instance.getId());
 			Assert.assertEquals("127.0.0." + i, instance.getHost());
 			Assert.assertEquals(8080, instance.getPort());
-			Assert.assertEquals(100, instance.getWeight());
+			Assert.assertEquals(weight, instance.getWeight());
 		}
 	}
 }
