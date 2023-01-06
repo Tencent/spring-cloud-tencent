@@ -45,9 +45,6 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 
 	@Override
 	protected PolarisRegistration getRegistration() {
-		if (this.registration.getPort() <= 0) {
-			this.registration.setPort(this.getPort().get());
-		}
 		return this.registration;
 	}
 
@@ -61,9 +58,6 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 		if (!this.registration.isRegisterEnabled()) {
 			LOG.debug("Registration disabled.");
 			return;
-		}
-		if (this.registration.getPort() <= 0) {
-			this.registration.setPort(getPort().get());
 		}
 		super.register();
 	}

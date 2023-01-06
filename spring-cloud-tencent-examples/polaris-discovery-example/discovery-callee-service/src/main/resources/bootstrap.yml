@@ -1,5 +1,5 @@
 server:
-  port: 48084
+  port: ${random.int(7003,7005)}
 spring:
   application:
     name: DiscoveryCalleeService
