@@ -26,3 +26,4 @@
 - [set reporter.enabled default to true](https://github.com/Tencent/spring-cloud-tencent/pull/784)
 - [fix:fix nacos enabled condition bugs.](https://github.com/Tencent/spring-cloud-tencent/pull/793)
 - [fix:fix instance's weight hard code to 100 bug.](https://github.com/Tencent/spring-cloud-tencent/pull/802)
+- [feat:update getPort method of PolarisRegistration.](https://github.com/Tencent/spring-cloud-tencent/pull/803)

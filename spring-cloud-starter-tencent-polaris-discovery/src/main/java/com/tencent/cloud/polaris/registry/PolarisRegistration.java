@@ -30,6 +30,8 @@ import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.lang.Nullable;
@@ -60,9 +62,15 @@ public class PolarisRegistration implements Registration {
 
 	private final NacosContextProperties nacosContextProperties;
 
+	private final ServletWebServerApplicationContext servletWebServerApplicationContext;
+
+	private final ReactiveWebServerApplicationContext reactiveWebServerApplicationContext;
+
 	private Map<String, String> metadata;
 
 	private String host;
+
+	private int port;
 
 	private String instanceId;
 
@@ -70,12 +78,16 @@ public class PolarisRegistration implements Registration {
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Nullable ConsulContextProperties consulContextProperties,
 			SDKContext context, StaticMetadataManager staticMetadataManager,
-			@Nullable NacosContextProperties nacosContextProperties) {
+			@Nullable NacosContextProperties nacosContextProperties,
+			@Nullable ServletWebServerApplicationContext servletWebServerApplicationContext,
+			@Nullable ReactiveWebServerApplicationContext reactiveWebServerApplicationContext) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.consulContextProperties = consulContextProperties;
 		this.polarisContext = context;
 		this.staticMetadataManager = staticMetadataManager;
 		this.nacosContextProperties = nacosContextProperties;
+		this.servletWebServerApplicationContext = servletWebServerApplicationContext;
+		this.reactiveWebServerApplicationContext = reactiveWebServerApplicationContext;
 		host = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 	}
 
@@ -100,17 +112,24 @@ public class PolarisRegistration implements Registration {
 		return host;
 	}
 
-	public void setHost(String host) {
-		this.host = host;
-	}
-
 	@Override
 	public int getPort() {
-		return polarisDiscoveryProperties.getPort();
+		if (port <= 0) {
+			if (servletWebServerApplicationContext != null) {
+				port = servletWebServerApplicationContext.getWebServer().getPort();
+			}
+			else if (reactiveWebServerApplicationContext != null) {
+				port = reactiveWebServerApplicationContext.getWebServer().getPort();
+			}
+			else {
+				throw new RuntimeException("Unsupported web type.");
+			}
+		}
+		return port;
 	}
 
-	public void setPort(int port) {
-		this.polarisDiscoveryProperties.setPort(port);
+	protected void setPort(int port) {
+		this.port = port;
 	}
 
 	@Override
@@ -130,7 +149,7 @@ public class PolarisRegistration implements Registration {
 
 			// put internal metadata
 			instanceMetadata.put(METADATA_KEY_IP, host);
-			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + polarisDiscoveryProperties.getPort());
+			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + port);
 
 			// put internal-nacos-cluster if necessary
 			String clusterName = nacosContextProperties.getClusterName();
