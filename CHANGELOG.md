@@ -20,3 +20,4 @@
 - [Optimize: add equals&hasCode for PolarisServiceInstance](https://github.com/Tencent/spring-cloud-tencent/pull/773)
 - [Fix issue: prompt no registration if web dependence was not imported.](https://github.com/Tencent/spring-cloud-tencent/pull/778)
 - [fix:fix nacos enabled condition bugs.](https://github.com/Tencent/spring-cloud-tencent/pull/795)
+- [feat:update getPort method of PolarisRegistration.](https://github.com/Tencent/spring-cloud-tencent/pull/805)
