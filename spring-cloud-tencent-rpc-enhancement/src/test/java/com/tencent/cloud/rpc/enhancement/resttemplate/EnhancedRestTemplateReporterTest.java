@@ -54,7 +54,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link EnhancedRestTemplateReporter}
+ * Test for {@link EnhancedRestTemplateReporter}.
+ *
  * @author lepdou 2022-09-06
  */
 @RunWith(MockitoJUnitRunner.class)

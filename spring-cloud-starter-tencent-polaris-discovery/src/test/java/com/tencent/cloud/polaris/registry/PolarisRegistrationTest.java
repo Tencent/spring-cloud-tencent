@@ -33,6 +33,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+
 import static com.tencent.polaris.test.common.Consts.HOST;
 import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
@@ -49,21 +53,29 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PolarisRegistrationTest {
 
-	private PolarisRegistration polarisRegistration;
+	private NacosContextProperties nacosContextProperties;
+	private PolarisRegistration polarisRegistration1;
+	private PolarisRegistration polarisRegistration2;
 
-	NacosContextProperties nacosContextProperties = mock(NacosContextProperties.class);
+	private PolarisRegistration polarisRegistration3;
 
 	@Before
 	public void setUp() {
 		// mock PolarisDiscoveryProperties
 		PolarisDiscoveryProperties polarisDiscoveryProperties = mock(PolarisDiscoveryProperties.class);
 		doReturn(SERVICE_PROVIDER).when(polarisDiscoveryProperties).getService();
-		doReturn(PORT).when(polarisDiscoveryProperties).getPort();
 		doReturn("http").when(polarisDiscoveryProperties).getProtocol();
 		doReturn(true).when(polarisDiscoveryProperties).isRegisterEnabled();
 
-		// mock
+		// mock ConsulContextProperties
 		ConsulContextProperties consulContextProperties = mock(ConsulContextProperties.class);
+		doReturn(true).when(consulContextProperties).isEnabled();
+		doReturn(true).when(consulContextProperties).isRegister();
+
+		// mock NacosContextProperties
+		nacosContextProperties = mock(NacosContextProperties.class);
+		doReturn(true).when(nacosContextProperties).isEnabled();
+		doReturn(true).when(nacosContextProperties).isRegisterEnabled();
 
 		// mock SDKContext
 		APIConfig apiConfig = mock(APIConfig.class);
@@ -79,38 +91,72 @@ public class PolarisRegistrationTest {
 		StaticMetadataManager staticMetadataManager = mock(StaticMetadataManager.class);
 		doReturn(Collections.singletonMap("key1", "value1")).when(staticMetadataManager).getMergedStaticMetadata();
 
-		polarisRegistration = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
-				nacosContextProperties, polarisContext, staticMetadataManager);
+		// mock ServletWebServerApplicationContext
+		WebServer servletwebServer = mock(WebServer.class);
+		doReturn(PORT).when(servletwebServer).getPort();
+		ServletWebServerApplicationContext servletWebServerApplicationContext = mock(ServletWebServerApplicationContext.class);
+		doReturn(servletwebServer).when(servletWebServerApplicationContext).getWebServer();
+
+		// mock ReactiveWebServerApplicationContext
+		WebServer reactiveWebServer = mock(WebServer.class);
+		doReturn(PORT + 1).when(reactiveWebServer).getPort();
+		ReactiveWebServerApplicationContext reactiveWebServerApplicationContext = mock(ReactiveWebServerApplicationContext.class);
+		doReturn(reactiveWebServer).when(reactiveWebServerApplicationContext).getWebServer();
+
+		polarisRegistration1 = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
+				polarisContext, staticMetadataManager, nacosContextProperties,
+				servletWebServerApplicationContext, null);
+
+		polarisRegistration2 = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
+				polarisContext, staticMetadataManager, nacosContextProperties,
+				null, reactiveWebServerApplicationContext);
+
+		polarisRegistration3 = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
+				polarisContext, staticMetadataManager, nacosContextProperties,
+				null, null);
 	}
 
 	@Test
 	public void testGetServiceId() {
-		assertThat(polarisRegistration.getServiceId()).isEqualTo(SERVICE_PROVIDER);
+		assertThat(polarisRegistration1.getServiceId()).isEqualTo(SERVICE_PROVIDER);
 	}
 
 	@Test
 	public void testGetHost() {
-		assertThat(polarisRegistration.getHost()).isEqualTo(HOST);
+		assertThat(polarisRegistration1.getHost()).isEqualTo(HOST);
 	}
 
 	@Test
 	public void testGetPort() {
-		assertThat(polarisRegistration.getPort()).isEqualTo(PORT);
+		assertThat(polarisRegistration1.getPort()).isEqualTo(PORT);
+		assertThat(polarisRegistration2.getPort()).isEqualTo(PORT + 1);
+		try {
+			polarisRegistration3.getPort();
+		}
+		catch (RuntimeException e) {
+			assertThat(e.getMessage()).isEqualTo("Unsupported web type.");
+		}
 	}
 
 	@Test
 	public void testIsSecure() {
-		assertThat(polarisRegistration.isSecure()).isFalse();
+		assertThat(polarisRegistration1.isSecure()).isFalse();
 	}
 
 	@Test
 	public void testGetUri() {
-		assertThat(polarisRegistration.getUri().toString()).isEqualTo("http://" + HOST + ":" + PORT);
+		assertThat(polarisRegistration1.getUri().toString()).isEqualTo("http://" + HOST + ":" + PORT);
+	}
+
+	@Test
+	public void testInstanceId() {
+		polarisRegistration1.setInstanceId("TEST");
+		assertThat(polarisRegistration1.getInstanceId()).isEqualTo("TEST");
 	}
 
 	@Test
 	public void testGetMetadata() {
-		Map<String, String> metadata = polarisRegistration.getMetadata();
+		Map<String, String> metadata = polarisRegistration1.getMetadata();
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
 		assertThat(metadata.size()).isEqualTo(3);
@@ -119,17 +165,17 @@ public class PolarisRegistrationTest {
 
 	@Test
 	public void testGetPolarisProperties() {
-		assertThat(polarisRegistration.getPolarisProperties()).isNotNull();
+		assertThat(polarisRegistration1.getPolarisProperties()).isNotNull();
 	}
 
 	@Test
 	public void testIsRegisterEnabled() {
-		assertThat(polarisRegistration.isRegisterEnabled()).isTrue();
+		assertThat(polarisRegistration1.isRegisterEnabled()).isTrue();
 	}
 
 	@Test
 	public void testToString() {
-		System.out.println(polarisRegistration);
+		System.out.println(polarisRegistration1);
 	}
 
 	@Test
@@ -137,7 +183,7 @@ public class PolarisRegistrationTest {
 		String groupName = "group";
 		String format = "%s__%s";
 		when(nacosContextProperties.getGroup()).thenReturn(groupName);
-		String serviceId = polarisRegistration.getServiceId();
+		String serviceId = polarisRegistration1.getServiceId();
 		assertThat(String.format(format, groupName, SERVICE_PROVIDER).equals(serviceId));
 	}
 
@@ -145,7 +191,7 @@ public class PolarisRegistrationTest {
 	public void testGetNacosMetadata() {
 		String clusterName = "cluster";
 		when(nacosContextProperties.getClusterName()).thenReturn(clusterName);
-		Map<String, String> metadata = polarisRegistration.getMetadata();
+		Map<String, String> metadata = polarisRegistration1.getMetadata();
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
 		assertThat(metadata.size()).isEqualTo(4);
