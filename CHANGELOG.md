@@ -1,5 +1,4 @@
 # Change Log
 ---
 
-- [feat:update to Spring Cloud 2022 RC3.](https://github.com/Tencent/spring-cloud-tencent/pull/769)
-- [feat:update to Spring Cloud 2022 Release.](https://github.com/Tencent/spring-cloud-tencent/pull/782)
+- [fix:fix the bug that the long connection timing switching function fails.](https://github.com/Tencent/spring-cloud-tencent/pull/808)
