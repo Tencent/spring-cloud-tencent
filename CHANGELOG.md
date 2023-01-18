@@ -20,4 +20,8 @@
 - [Feature: support nacos registry](https://github.com/Tencent/spring-cloud-tencent/pull/757)
 - [Bugfix: fix reactor concurrent bug when get instances & fix spring-retry fuse not working bug](https://github.com/Tencent/spring-cloud-tencent/pull/775)
 - [Fix issue: prompt no registration if web dependence was not imported.](https://github.com/Tencent/spring-cloud-tencent/pull/777)
+- [set reporter.enabled default to true](https://github.com/Tencent/spring-cloud-tencent/pull/786)
+- [fix:fix nacos enabled condition bugs.](https://github.com/Tencent/spring-cloud-tencent/pull/794)
+- [fix:fix instance's weight hard code to 100 bug.](https://github.com/Tencent/spring-cloud-tencent/pull/801)
+- [feat:update getPort method of PolarisRegistration.](https://github.com/Tencent/spring-cloud-tencent/pull/804)
 - [fix:fix some compile output issues.](https://github.com/Tencent/spring-cloud-tencent/pull/813)

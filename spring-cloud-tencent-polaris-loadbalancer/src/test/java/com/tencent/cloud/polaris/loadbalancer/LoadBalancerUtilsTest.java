@@ -23,7 +23,9 @@ import java.util.List;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import org.junit.AfterClass;
@@ -36,7 +38,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import reactor.core.publisher.Flux;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -80,11 +81,17 @@ public class LoadBalancerUtilsTest {
 	@Test
 	public void testTransferNotEmptyInstances() {
 		int instanceSize = 100;
+		int weight = 50;
 
 		List<ServiceInstance> instances = new ArrayList<>();
 		for (int i = 0; i < instanceSize; i++) {
-			instances.add(new DefaultServiceInstance("ins" + i, testNamespaceAndService, "127.0.0." + i,
-					8080, false));
+			DefaultInstance instance = new DefaultInstance();
+			instance.setService(testNamespaceAndService);
+			instance.setId("ins" + i);
+			instance.setPort(8080);
+			instance.setHost("127.0.0." + i);
+			instance.setWeight(weight);
+			instances.add(new PolarisServiceInstance(instance));
 		}
 
 		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(Flux.just(instances));
@@ -100,7 +107,7 @@ public class LoadBalancerUtilsTest {
 			Assert.assertEquals("ins" + i, instance.getId());
 			Assert.assertEquals("127.0.0." + i, instance.getHost());
 			Assert.assertEquals(8080, instance.getPort());
-			Assert.assertEquals(100, instance.getWeight());
+			Assert.assertEquals(weight, instance.getWeight());
 		}
 	}
 }
