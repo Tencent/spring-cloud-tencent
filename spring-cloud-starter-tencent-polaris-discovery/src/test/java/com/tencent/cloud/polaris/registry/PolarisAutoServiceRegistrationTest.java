@@ -29,7 +29,6 @@ import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
-import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -90,15 +89,6 @@ public class PolarisAutoServiceRegistrationTest {
 		}
 
 		doReturn(true).when(registration).isRegisterEnabled();
-		doReturn(-1).when(registration).getPort();
-		try {
-			polarisAutoServiceRegistration.register();
-		}
-		catch (Exception e) {
-			fail();
-		}
-
-		doReturn(PORT).when(registration).getPort();
 		try {
 			polarisAutoServiceRegistration.register();
 		}

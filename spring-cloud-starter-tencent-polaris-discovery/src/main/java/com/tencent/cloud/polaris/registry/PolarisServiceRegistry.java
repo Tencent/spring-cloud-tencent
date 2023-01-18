@@ -173,7 +173,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		}
 		for (Instance instance : instances) {
 			if (instance.getHost().equalsIgnoreCase(registration.getHost())
-					&& instance.getPort() == polarisDiscoveryProperties.getPort()) {
+					&& instance.getPort() == registration.getPort()) {
 				return instance.isHealthy() ? "UP" : "DOWN";
 			}
 		}
