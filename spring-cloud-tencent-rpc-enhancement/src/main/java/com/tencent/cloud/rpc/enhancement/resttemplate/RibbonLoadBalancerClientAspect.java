@@ -23,7 +23,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
 /**
- * Intercept for RibbonLoadBalancerClient, put host and &port to thread local.
+ * Intercept for RibbonLoadBalancerClient, put host and port to thread local.
  *
  * @author lepdou 2022-09-05
  */

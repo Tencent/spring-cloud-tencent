@@ -71,7 +71,7 @@
 
 	<properties>
 		<revision>1.9.0-Hoxton.SR12-SNAPSHOT</revision>
-		<polaris.version>1.10.1-SNAPSHOT</polaris.version>
+		<polaris.version>1.10.1</polaris.version>
 		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
@@ -82,6 +82,7 @@
 		<system-stubs-junit4.version>2.0.1</system-stubs-junit4.version>
 
 		<!-- Maven Plugin Versions -->
+		<maven-javadoc-plugin.verison>3.3.0</maven-javadoc-plugin.verison>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
 		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
@@ -248,6 +249,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>${byte-buddy.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-inline</artifactId>
 				<version>${mocktio.version}</version>
@@ -259,12 +266,6 @@
 				<artifactId>mockito-core</artifactId>
 				<version>${mocktio.version}</version>
 				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>net.bytebuddy</groupId>
-				<artifactId>byte-buddy</artifactId>
-				<version>${byte-buddy.version}</version>
 			</dependency>
 
 			<dependency>
@@ -314,6 +315,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>${maven-javadoc-plugin.verison}</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
