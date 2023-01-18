@@ -65,7 +65,8 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 > 支持Spring Cloud 版本：2022.0、2021.0、2020.0、Hoxton。
 >
 > Spring Cloud Tencent
-> 的版本列表可以查看 [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+> 的版本列表可以查看
+> [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
 > 。
 
 例如：
@@ -78,7 +79,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.8.1-2020.0.5</version>
+            <version>1.8.5-2020.0.5</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>

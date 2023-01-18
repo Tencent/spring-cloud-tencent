@@ -20,3 +20,4 @@
 - [Feature: support nacos registry](https://github.com/Tencent/spring-cloud-tencent/pull/757)
 - [Bugfix: fix reactor concurrent bug when get instances & fix spring-retry fuse not working bug](https://github.com/Tencent/spring-cloud-tencent/pull/775)
 - [Fix issue: prompt no registration if web dependence was not imported.](https://github.com/Tencent/spring-cloud-tencent/pull/777)
+- [fix:fix some compile output issues.](https://github.com/Tencent/spring-cloud-tencent/pull/813)
