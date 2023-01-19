@@ -83,6 +83,7 @@
 		<system-stubs-junit4.version>2.0.1</system-stubs-junit4.version>
 
 		<!-- Maven Plugin Versions -->
+		<maven-javadoc-plugin.verison>3.3.0</maven-javadoc-plugin.verison>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
 		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
@@ -297,6 +298,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>${maven-javadoc-plugin.verison}</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
