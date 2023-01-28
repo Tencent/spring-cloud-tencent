@@ -19,6 +19,10 @@ package com.tencent.cloud.common.util;
 
 public class DiscoveryUtil {
 
+	private DiscoveryUtil() {
+
+	}
+
 	/**
 	 * rewrite serviceId when open double registry and discovery by nacos and polaris
 	 *
