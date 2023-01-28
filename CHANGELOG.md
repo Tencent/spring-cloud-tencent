@@ -28,3 +28,4 @@
 - [fix:fix instance's weight hard code to 100 bug.](https://github.com/Tencent/spring-cloud-tencent/pull/802)
 - [feat:update getPort method of PolarisRegistration.](https://github.com/Tencent/spring-cloud-tencent/pull/803)
 - [fix:fix some compile output issues.](https://github.com/Tencent/spring-cloud-tencent/pull/814)
+- [Feature: upgrade framework version.](https://github.com/Tencent/spring-cloud-tencent/pull/815)
