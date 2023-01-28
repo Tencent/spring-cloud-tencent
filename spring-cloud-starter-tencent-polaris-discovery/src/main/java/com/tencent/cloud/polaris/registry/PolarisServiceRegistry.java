@@ -24,6 +24,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
@@ -84,10 +85,12 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			LOGGER.warn("No service to register for polaris client...");
 			return;
 		}
+		String serviceId = registration.getServiceId();
+
 		// Register instance.
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
 		instanceRegisterRequest.setNamespace(polarisDiscoveryProperties.getNamespace());
-		instanceRegisterRequest.setService(registration.getServiceId());
+		instanceRegisterRequest.setService(serviceId);
 		instanceRegisterRequest.setHost(registration.getHost());
 		instanceRegisterRequest.setPort(registration.getPort());
 		instanceRegisterRequest.setWeight(polarisDiscoveryProperties.getWeight());
