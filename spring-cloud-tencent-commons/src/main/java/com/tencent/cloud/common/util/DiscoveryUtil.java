@@ -23,7 +23,6 @@ package com.tencent.cloud.common.util;
 public final class DiscoveryUtil {
 
 	private DiscoveryUtil() {
-
 	}
 
 	/**
