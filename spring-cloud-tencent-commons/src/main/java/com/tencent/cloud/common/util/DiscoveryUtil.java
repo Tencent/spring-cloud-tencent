@@ -26,7 +26,7 @@ public final class DiscoveryUtil {
 	}
 
 	/**
-	 * rewrite serviceId when open double registry and discovery by nacos and polaris
+	 * rewrite serviceId when open double registry and discovery by nacos and polaris.
 	 *
 	 * @param serviceId service id
 	 * @return new service id

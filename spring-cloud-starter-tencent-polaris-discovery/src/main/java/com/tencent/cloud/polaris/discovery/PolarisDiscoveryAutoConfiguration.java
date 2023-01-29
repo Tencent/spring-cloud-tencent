@@ -21,8 +21,8 @@ package com.tencent.cloud.polaris.discovery;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClientConfiguration;
 import com.tencent.cloud.polaris.discovery.refresh.PolarisRefreshConfiguration;
-
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

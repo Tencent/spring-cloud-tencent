@@ -24,7 +24,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;

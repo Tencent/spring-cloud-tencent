@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
+import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
-import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
@@ -49,7 +49,7 @@ public class PolarisServiceDiscovery {
 	public PolarisServiceDiscovery(
 			NacosContextProperties nacosContextProperties,
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
-								   PolarisDiscoveryHandler polarisDiscoveryHandler) {
+			PolarisDiscoveryHandler polarisDiscoveryHandler) {
 		this.nacosContextProperties = nacosContextProperties;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
