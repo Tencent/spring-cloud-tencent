@@ -17,7 +17,10 @@
 
 package com.tencent.cloud.common.util;
 
-public class DiscoveryUtil {
+/**
+ * Utils for Discovery.
+ */
+public final class DiscoveryUtil {
 
 	private DiscoveryUtil() {
 
