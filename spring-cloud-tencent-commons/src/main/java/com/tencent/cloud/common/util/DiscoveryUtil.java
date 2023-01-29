@@ -22,6 +22,20 @@ package com.tencent.cloud.common.util;
  */
 public final class DiscoveryUtil {
 
+	private static String ENABLE_NACOS;
+
+	private static String ENABLE_NACOS_DISCOVERY;
+
+	private static String ENABLE_NACOS_REGISTRY;
+
+	private static String ENABLE_POLARIS_DISCOVERY;
+
+	private static String NACOS_GROUP;
+
+	private static final Object MUTEX = new Object();
+
+	private static boolean INITIALIZE = false;
+
 	private DiscoveryUtil() {
 	}
 
@@ -32,25 +46,37 @@ public final class DiscoveryUtil {
 	 * @return new service id
 	 */
 	public static String rewriteServiceId(String serviceId) {
-		String enableNacos = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.enabled");
-		String enableNacosDiscovery = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.enabled");
-		String enableNacosRegistry = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.register-enabled");
-		String enablePolarisDiscovery = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.enabled");
-		if (Boolean.parseBoolean(enableNacos)) {
+		init();
+		if (Boolean.parseBoolean(ENABLE_NACOS)) {
 			boolean rewrite = false;
-			if (Boolean.parseBoolean(enableNacosRegistry) && Boolean.parseBoolean(enablePolarisDiscovery)) {
+			if (Boolean.parseBoolean(ENABLE_NACOS_REGISTRY) && Boolean.parseBoolean(ENABLE_POLARIS_DISCOVERY)) {
 				rewrite = true;
 			}
-			if (Boolean.parseBoolean(enableNacosDiscovery) || Boolean.parseBoolean(enablePolarisDiscovery)) {
+			if (Boolean.parseBoolean(ENABLE_NACOS_DISCOVERY) || Boolean.parseBoolean(ENABLE_POLARIS_DISCOVERY)) {
 				rewrite = true;
 			}
 			if (rewrite) {
-				String group = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.group",
-						"DEFAULT_GROUP");
-				serviceId = group + "__" + serviceId;
+				serviceId = NACOS_GROUP + "__" + serviceId;
 			}
 		}
 		return serviceId;
+	}
+
+	private static void init() {
+		if (INITIALIZE) {
+			return;
+		}
+		synchronized (MUTEX) {
+			if (INITIALIZE) {
+				return;
+			}
+			ENABLE_NACOS = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.enabled");
+			ENABLE_NACOS_DISCOVERY = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.enabled");
+			ENABLE_NACOS_REGISTRY = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.register-enabled");
+			ENABLE_POLARIS_DISCOVERY = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.enabled");
+			NACOS_GROUP = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.group", "DEFAULT_GROUP");
+			INITIALIZE = true;
+		}
 	}
 
 }
