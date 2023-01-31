@@ -32,3 +32,4 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           file: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
