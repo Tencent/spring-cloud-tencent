@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.cloud.common.util.JacksonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,13 +103,13 @@ public class MetadataContext {
 					"spring.cloud.polaris.discovery.service", ApplicationContextAwareUtils
 							.getProperties("spring.application.name", null));
 		}
-
 		if (!StringUtils.hasText(serviceName)) {
 			LOG.error("service name should not be blank. please configure spring.cloud.polaris.service or "
 					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 			throw new RuntimeException("service name should not be blank. please configure spring.cloud.polaris.service or "
 					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 		}
+		serviceName = DiscoveryUtil.rewriteServiceId(serviceName);
 		LOCAL_SERVICE = serviceName;
 	}
 

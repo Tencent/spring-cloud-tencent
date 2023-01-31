@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
+import com.tencent.cloud.common.util.DiscoveryUtil;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
@@ -39,9 +42,18 @@ import org.springframework.util.CollectionUtils;
  */
 public class PolarisServiceDiscovery {
 
+	private final NacosContextProperties nacosContextProperties;
+
+	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
+
 	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
-	public PolarisServiceDiscovery(PolarisDiscoveryHandler polarisDiscoveryHandler) {
+	public PolarisServiceDiscovery(
+			NacosContextProperties nacosContextProperties,
+			PolarisDiscoveryProperties polarisDiscoveryProperties,
+			PolarisDiscoveryHandler polarisDiscoveryHandler) {
+		this.nacosContextProperties = nacosContextProperties;
+		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 	}
 
@@ -52,6 +64,7 @@ public class PolarisServiceDiscovery {
 	 * @throws PolarisException polarisException
 	 */
 	public List<ServiceInstance> getInstances(String serviceId) throws PolarisException {
+		serviceId = DiscoveryUtil.rewriteServiceId(serviceId);
 		List<ServiceInstance> instances = new ArrayList<>();
 		InstancesResponse filteredInstances = polarisDiscoveryHandler.getHealthyInstances(serviceId);
 		ServiceInstances serviceInstances = filteredInstances.toServiceInstances();
@@ -73,4 +86,5 @@ public class PolarisServiceDiscovery {
 		return polarisDiscoveryHandler.getServices().getServices().stream()
 				.map(ServiceInfo::getService).collect(Collectors.toList());
 	}
+
 }

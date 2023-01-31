@@ -39,6 +39,7 @@ import org.springframework.util.CollectionUtils;
  * @author lingxiao.wlx
  */
 public class NacosConfigModifier implements PolarisConfigModifier {
+
 	private static final String ID = "nacos";
 	/**
 	 * nacos username.
