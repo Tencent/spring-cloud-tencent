@@ -84,10 +84,12 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			LOGGER.warn("No service to register for polaris client...");
 			return;
 		}
+		String serviceId = registration.getServiceId();
+
 		// Register instance.
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
 		instanceRegisterRequest.setNamespace(polarisDiscoveryProperties.getNamespace());
-		instanceRegisterRequest.setService(registration.getServiceId());
+		instanceRegisterRequest.setService(serviceId);
 		instanceRegisterRequest.setHost(registration.getHost());
 		instanceRegisterRequest.setPort(registration.getPort());
 		instanceRegisterRequest.setWeight(polarisDiscoveryProperties.getWeight());
