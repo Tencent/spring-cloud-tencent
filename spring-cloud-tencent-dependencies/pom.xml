@@ -71,14 +71,16 @@
 
 	<properties>
 		<revision>1.9.0-Hoxton.SR12-SNAPSHOT</revision>
-		<polaris.version>1.10.1</polaris.version>
+
+		<!-- Dependencies -->
+		<polaris.version>1.10.2</polaris.version>
+		<guava.version>31.0.1-jre</guava.version>
 		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<jackson.version>2.12.7</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
-		<guava.version>31.0.1-jre</guava.version>
 		<system-stubs-junit4.version>2.0.1</system-stubs-junit4.version>
 
 		<!-- Maven Plugin Versions -->

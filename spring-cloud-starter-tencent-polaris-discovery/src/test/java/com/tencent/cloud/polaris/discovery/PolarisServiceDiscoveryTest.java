@@ -19,12 +19,14 @@ package com.tencent.cloud.polaris.discovery;
 
 import java.util.List;
 
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.api.rpc.ServicesResponse;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.StaticApplicationContext;
 
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static java.util.Collections.singletonList;
@@ -55,6 +58,11 @@ public class PolarisServiceDiscoveryTest {
 	private PolarisDiscoveryHandler polarisDiscoveryHandler;
 	@InjectMocks
 	private PolarisServiceDiscovery polarisServiceDiscovery;
+
+	@Before
+	public void before() {
+		new ApplicationContextAwareUtils().setApplicationContext(new StaticApplicationContext());
+	}
 
 	@Test
 	public void testGetInstances() {
