@@ -145,23 +145,26 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 	Flux<List<ServiceInstance>> doRouter(Flux<List<ServiceInstance>> allServers, PolarisRouterContext routerContext) {
 		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(allServers);
 
-		// filter instance by routers
-		ProcessRoutersRequest processRoutersRequest = buildProcessRoutersRequest(serviceInstances, routerContext);
-
-		// process request interceptors
-		processRouterRequestInterceptors(processRoutersRequest, routerContext);
-
-		// process router chain
-		ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
-
-		// process response interceptors
-		processRouterResponseInterceptors(routerContext, processRoutersResponse);
-
-		// transfer polaris server to ServiceInstance
 		List<ServiceInstance> filteredInstances = new ArrayList<>();
-		ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
-		for (Instance instance : filteredServiceInstances.getInstances()) {
-			filteredInstances.add(new PolarisServiceInstance(instance));
+		if (serviceInstances.getInstances().size() > 0) {
+			// filter instance by routers
+			ProcessRoutersRequest processRoutersRequest = buildProcessRoutersRequest(serviceInstances, routerContext);
+
+			// process request interceptors
+			processRouterRequestInterceptors(processRoutersRequest, routerContext);
+
+			// process router chain
+			ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
+
+			// process response interceptors
+			processRouterResponseInterceptors(routerContext, processRoutersResponse);
+
+			// transfer polaris server to ServiceInstance
+			ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
+			for (Instance instance : filteredServiceInstances.getInstances()) {
+				filteredInstances.add(new PolarisServiceInstance(instance));
+			}
+			return Flux.fromIterable(Collections.singletonList(filteredInstances));
 		}
 		return Flux.fromIterable(Collections.singletonList(filteredInstances));
 	}
