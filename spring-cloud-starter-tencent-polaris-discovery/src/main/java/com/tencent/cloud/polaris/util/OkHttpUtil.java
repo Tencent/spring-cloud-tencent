@@ -17,14 +17,17 @@
 
 package com.tencent.cloud.polaris.util;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.util.StringUtils;
 
 /**
  * okhttp util.
@@ -38,53 +41,46 @@ public final class OkHttpUtil {
 	 */
 	public final static Logger LOGGER = LoggerFactory.getLogger(OkHttpUtil.class);
 
-	/**
-	 * client.
-	 */
-	private final static OkHttpClient HTTP_CLIENT = new OkHttpClient();
-
 	private OkHttpUtil() {
 
 	}
 
 	/**
 	 * get request.
-	 * @param url url
+	 * @param path path
 	 * @param headers headers
 	 * @return response
 	 */
-	public static boolean get(String url, Map<String, String> headers) {
+	public static boolean get(String path, Map<String, String> headers) {
+		HttpURLConnection conn = null;
 		try {
-			Request.Builder builder = new Request.Builder();
-			buildHeader(builder, headers);
-			Request request = builder.url(url).build();
-			Response response = HTTP_CLIENT.newCall(request).execute();
+			URL url = new java.net.URL(path);
+			conn = (HttpURLConnection) url.openConnection();
 
-			if (response.isSuccessful() && Objects.nonNull(response.body())) {
-				String result = response.body().string();
-				LOGGER.debug("exec get request, url: {} success, response data: {}", url, result);
+			conn.setRequestMethod("GET");
+			conn.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(2));
+			conn.setReadTimeout((int) TimeUnit.SECONDS.toMillis(2));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			StringBuffer buffer = new StringBuffer();
+			String str;
+			while ((str = reader.readLine()) != null) {
+				buffer.append(str);
+			}
+			String responseBody = buffer.toString();
+			if (conn.getResponseCode() == 200 && StringUtils.hasText(responseBody)) {
+				LOGGER.debug("exec get request, url: {} success, response data: {}", url, responseBody);
 				return true;
 			}
 		}
 		catch (Exception e) {
-			LOGGER.error("exec get request, url: {} failed!", url, e);
+			LOGGER.error("exec get request, url: {} failed!", path, e);
+			return false;
+		}
+		finally {
+			if (null != conn) {
+				conn.disconnect();
+			}
 		}
 		return false;
-	}
-
-	/**
-	 * build header.
-	 * @param builder builder
-	 * @param headers headers
-	 */
-	private static void buildHeader(Request.Builder builder,
-			Map<String, String> headers) {
-		if (Objects.nonNull(headers) && headers.size() > 0) {
-			headers.forEach((k, v) -> {
-				if (Objects.nonNull(k) && Objects.nonNull(v)) {
-					builder.addHeader(k, v);
-				}
-			});
-		}
 	}
 }
