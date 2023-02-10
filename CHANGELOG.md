@@ -26,3 +26,4 @@
 - [feat:update getPort method of PolarisRegistration.](https://github.com/Tencent/spring-cloud-tencent/pull/804)
 - [fix:fix some compile output issues.](https://github.com/Tencent/spring-cloud-tencent/pull/813)
 - [fix:nacos & polaris discovery](https://github.com/Tencent/spring-cloud-tencent/pull/819)
+- [fix:fix router parameter not checking bug.](https://github.com/Tencent/spring-cloud-tencent/pull/827)
