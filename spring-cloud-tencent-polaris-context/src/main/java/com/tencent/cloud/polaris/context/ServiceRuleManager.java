@@ -34,6 +34,8 @@ import com.tencent.polaris.client.flow.FlowControlParam;
 import com.tencent.polaris.client.flow.ResourcesResponse;
 import com.tencent.polaris.client.pb.RateLimitProto;
 import com.tencent.polaris.client.pb.RoutingProto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * the manager of service governance rules. for example: rate limit rule, router rules.
@@ -42,8 +44,8 @@ import com.tencent.polaris.client.pb.RoutingProto;
  */
 public class ServiceRuleManager {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ServiceRuleManager.class);
 	private final SDKContext sdkContext;
-
 	private final FlowControlParam controlParam;
 
 	public ServiceRuleManager(SDKContext sdkContext) {
@@ -55,6 +57,7 @@ public class ServiceRuleManager {
 	}
 
 	public RateLimitProto.RateLimit getServiceRateLimitRule(String namespace, String service) {
+		LOG.debug("Get service rate limit rules with namespace:{} and service:{}.", namespace, service);
 		ServiceEventKey serviceEventKey = new ServiceEventKey(new ServiceKey(namespace, service),
 				ServiceEventKey.EventType.RATE_LIMITING);
 
@@ -76,6 +79,8 @@ public class ServiceRuleManager {
 	}
 
 	public List<RoutingProto.Route> getServiceRouterRule(String namespace, String sourceService, String dstService) {
+		LOG.debug("Get service router rules with namespace:{} and sourceService:{} and dstService:{}.",
+				namespace, sourceService, dstService);
 		Set<ServiceEventKey> routerKeys = new HashSet<>();
 
 		ServiceEventKey dstSvcEventKey = new ServiceEventKey(new ServiceKey(namespace, dstService),
