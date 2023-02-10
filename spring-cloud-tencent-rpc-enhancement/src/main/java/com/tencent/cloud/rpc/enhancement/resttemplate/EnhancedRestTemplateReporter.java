@@ -42,6 +42,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -129,7 +131,9 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 			resultRequest.setPort(Integer.parseInt(targetPort));
 
 			// checking response http status code
-			if (apply(response.getStatusCode())) {
+			HttpStatusCode httpStatusCode = response.getStatusCode();
+			HttpStatus httpStatus = HttpStatus.valueOf(httpStatusCode.value());
+			if (apply(httpStatus)) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
 

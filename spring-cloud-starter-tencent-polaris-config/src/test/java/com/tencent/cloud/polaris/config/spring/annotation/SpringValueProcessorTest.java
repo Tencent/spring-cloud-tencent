@@ -81,6 +81,7 @@ public class SpringValueProcessorTest {
 				.withConfiguration(AutoConfigurations.of(RefreshAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(ValueTest.class))
 				.withConfiguration(AutoConfigurations.of(PolarisConfigAutoConfiguration.class))
+				.withAllowBeanDefinitionOverriding(true)
 				.withPropertyValues("spring.application.name=" + "conditionalOnConfigReflectEnabledTest")
 				.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 				.withPropertyValues("spring.cloud.polaris.config.refresh-type=" + RefreshType.REFLECT)
@@ -118,6 +119,7 @@ public class SpringValueProcessorTest {
 				.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 				.withPropertyValues("spring.cloud.polaris.config.refresh-type=" + RefreshType.REFLECT)
 				.withPropertyValues("spring.cloud.polaris.config.enabled=true")
+				.withAllowBeanDefinitionOverriding(true)
 				.withPropertyValues("name=test");
 		contextRunner.run(context -> {
 			SpringValueRegistry springValueRegistry = context.getBean(SpringValueRegistry.class);
@@ -151,6 +153,7 @@ public class SpringValueProcessorTest {
 				.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 				.withPropertyValues("spring.cloud.polaris.config.refresh-type=" + RefreshType.REFLECT)
 				.withPropertyValues("spring.cloud.polaris.config.enabled=true")
+				.withAllowBeanDefinitionOverriding(true)
 				.withPropertyValues("name=test");
 		contextRunner.run(context -> {
 			Person person = context.getBean(Person.class);

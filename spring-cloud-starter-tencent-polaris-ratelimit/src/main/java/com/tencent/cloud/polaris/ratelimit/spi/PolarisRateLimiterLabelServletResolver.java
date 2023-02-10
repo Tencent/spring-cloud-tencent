@@ -20,7 +20,7 @@ package com.tencent.cloud.polaris.ratelimit.spi;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Resolve custom label from request. The label used for rate limit params.

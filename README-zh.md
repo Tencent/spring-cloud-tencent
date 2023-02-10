@@ -1,4 +1,4 @@
-<img src="https://github.com/Tencent/spring-cloud-tencent/raw/2021.0/doc/logo/rectangle-white.png" width="60%" height="60%"  alt="Spring-Cloud-Tencent-Logo"/>
+<img src="https://github.com/Tencent/spring-cloud-tencent/raw/2022.0/doc/logo/rectangle-white.png" width="60%" height="60%"  alt="Spring-Cloud-Tencent-Logo"/>
 
 [![Wiki](https://badgen.net/badge/icon/wiki?icon=wiki&label)](https://github.com/Tencent/spring-cloud-tencent/wiki)
 [![Maven Central](https://img.shields.io/maven-central/v/com.tencent.cloud/spring-cloud-tencent?label=Maven%20Central)](https://search.maven.org/search?q=g:com.tencent.cloud%20AND%20a:spring-cloud-tencent)
@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 [![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
-[![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2021.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2021.0)
+[![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2022.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2022.0)
 
 [English](./README.md) | 简体中文
 
@@ -79,7 +79,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.8.3-2021.0.3</version>
+            <version>1.8.5-2022.0.1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -128,4 +128,3 @@ the file [LICENSE](LICENSE)
 如果您对 Spring Cloud Tencent 有兴趣，请关注我们的项目~
 
 [![Stargazers over time](https://starchart.cc/Tencent/spring-cloud-tencent.svg)](https://starchart.cc/Tencent/spring-cloud-tencent)
-

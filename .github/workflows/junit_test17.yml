@@ -1,0 +1,39 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Test with Junit 2022.0
+
+on:
+  push:
+    branches:
+      - 2022.0
+  pull_request:
+    branches:
+      - 2022.0
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [ 17 ]
+        os: [ 'windows-latest', 'ubuntu-latest' ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v3
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Test with Maven
+        run: mvn -B test --file pom.xml
