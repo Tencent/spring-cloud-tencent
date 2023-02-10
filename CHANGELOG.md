@@ -30,3 +30,4 @@
 - [fix:fix some compile output issues.](https://github.com/Tencent/spring-cloud-tencent/pull/814)
 - [Feature: upgrade framework version.](https://github.com/Tencent/spring-cloud-tencent/pull/815)
 - [fix:nacos & polaris discovery](https://github.com/Tencent/spring-cloud-tencent/pull/816)
+- [fix:fix router parameter not checking bug.](https://github.com/Tencent/spring-cloud-tencent/pull/826)
