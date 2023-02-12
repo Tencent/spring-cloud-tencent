@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.collect.Maps;
@@ -31,6 +32,7 @@ import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.cloud.polaris.ratelimit.utils.RateLimitUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
@@ -46,6 +48,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.lang.Nullable;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -69,16 +72,21 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 	private final RateLimitRuleLabelResolver rateLimitRuleLabelResolver;
 
+	private final PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback;
+
+
 	private String rejectTips;
 
 	public QuotaCheckReactiveFilter(LimitAPI limitAPI,
-			PolarisRateLimiterLabelReactiveResolver labelResolver,
-			PolarisRateLimitProperties polarisRateLimitProperties,
-			RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
+									PolarisRateLimiterLabelReactiveResolver labelResolver,
+									PolarisRateLimitProperties polarisRateLimitProperties,
+									RateLimitRuleLabelResolver rateLimitRuleLabelResolver,
+									@Nullable PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
 		this.limitAPI = limitAPI;
 		this.labelResolver = labelResolver;
 		this.polarisRateLimitProperties = polarisRateLimitProperties;
 		this.rateLimitRuleLabelResolver = rateLimitRuleLabelResolver;
+		this.polarisRateLimiterLimitedFallback = polarisRateLimiterLimitedFallback;
 	}
 
 	@PostConstruct
@@ -105,10 +113,19 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
-				response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
-				response.getHeaders().setContentType(MediaType.TEXT_HTML);
-				DataBuffer dataBuffer = response.bufferFactory().allocateBuffer()
-						.write(rejectTips.getBytes(StandardCharsets.UTF_8));
+				DataBuffer dataBuffer;
+				if (!Objects.isNull(polarisRateLimiterLimitedFallback)) {
+					response.setRawStatusCode(polarisRateLimiterLimitedFallback.rejectHttpCode());
+					response.getHeaders().setContentType(polarisRateLimiterLimitedFallback.mediaType());
+					dataBuffer = response.bufferFactory().allocateBuffer()
+							.write(polarisRateLimiterLimitedFallback.rejectTips().getBytes(polarisRateLimiterLimitedFallback.charset()));
+				}
+				else {
+					response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
+					response.getHeaders().setContentType(MediaType.TEXT_HTML);
+					dataBuffer = response.bufferFactory().allocateBuffer()
+							.write(rejectTips.getBytes(StandardCharsets.UTF_8));
+				}
 				return response.writeWith(Mono.just(dataBuffer));
 			}
 			// Unirate
