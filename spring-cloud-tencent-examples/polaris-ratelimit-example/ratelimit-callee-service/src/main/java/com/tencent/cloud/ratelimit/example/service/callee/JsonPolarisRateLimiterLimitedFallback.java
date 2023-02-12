@@ -18,6 +18,7 @@
 package com.tencent.cloud.ratelimit.example.service.callee;
 
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
