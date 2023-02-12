@@ -31,3 +31,4 @@
 - [Feature: upgrade framework version.](https://github.com/Tencent/spring-cloud-tencent/pull/815)
 - [fix:nacos & polaris discovery](https://github.com/Tencent/spring-cloud-tencent/pull/816)
 - [fix:fix router parameter not checking bug.](https://github.com/Tencent/spring-cloud-tencent/pull/826)
+- [feature:add PolarisRateLimiterLimitedFallback spi.](https://github.com/Tencent/spring-cloud-tencent/pull/830)
