@@ -46,6 +46,7 @@ public class PolarisContextAutoConfigurationTest {
 			Assert.assertNotNull(sdkContext);
 			Assert.assertNotNull(sdkContext);
 			Assert.assertNotNull(sdkContext);
+			Assert.assertNotNull(sdkContext);
 		});
 	}
 }
