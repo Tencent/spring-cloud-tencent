@@ -124,15 +124,16 @@
 				<scope>import</scope>
 			</dependency>
 
-			<!-- Spring Cloud Dependencies -->
+			<!-- Spring Framework Dependencies -->
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring.cloud.version}</version>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.framework.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 
+			<!-- Spring Boot Dependencies -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
@@ -141,11 +142,11 @@
 				<scope>import</scope>
 			</dependency>
 
-			<!-- Spring Framework Dependencies -->
+			<!-- Spring Cloud Dependencies -->
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-framework-bom</artifactId>
-				<version>${spring.framework.version}</version>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring.cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
