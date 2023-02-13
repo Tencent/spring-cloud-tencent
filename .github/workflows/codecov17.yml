@@ -21,7 +21,7 @@ jobs:
           distribution: 'temurin'
           java-version: 17
       - name: Test with Maven
-        run: mvn -B test --file pom.xml
+        run: mvn clean test -f pom.xml -B -P sonatype -U
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:

@@ -28,5 +28,6 @@ fixes #
 
 ## Checklist (Optional)
 
-- [ ] Will Pull Request to branch of 2020.0 and hoxton.
+- [ ] Will pull request to branch of 2020.0.
+- [ ] Will pull request to branch of 2022.0.
 - [ ] Add documentation in javadoc or comment below the PR if necessary.

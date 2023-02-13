@@ -36,4 +36,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Test with Maven
-        run: mvn -B test --file pom.xml
+        run: mvn clean test -f pom.xml -B -P sonatype -U

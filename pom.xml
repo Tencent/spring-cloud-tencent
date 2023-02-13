@@ -89,7 +89,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.9.0-2022.0.1</revision>
+		<revision>1.10.0-2022.0.1-SNAPSHOT</revision>
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2022.0.1</spring.cloud.version>
@@ -306,18 +306,32 @@
 				</repository>
 			</distributionManagement>
 		</profile>
+		<profile>
+			<id>sonatype</id>
+			<repositories>
+				<repository>
+					<id>nexus-snapshots</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+						<updatePolicy>always</updatePolicy>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>nexus-releases</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+		</profile>
 	</profiles>
 
-	<repositories>
-		<repository>
-			<id>nexus-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>
