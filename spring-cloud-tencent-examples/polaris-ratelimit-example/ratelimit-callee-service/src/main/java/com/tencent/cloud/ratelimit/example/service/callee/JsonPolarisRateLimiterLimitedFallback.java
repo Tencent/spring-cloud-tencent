@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
  * JsonPolarisRateLimiterLimitedFallback.
  *
  * @author Lingxiao.Wu
- * Date: 2023-02-11 22:57:25
  */
 @Component
 public class JsonPolarisRateLimiterLimitedFallback implements PolarisRateLimiterLimitedFallback {
