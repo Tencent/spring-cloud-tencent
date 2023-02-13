@@ -91,11 +91,14 @@
 		<!-- Project revision -->
 		<revision>1.10.0-2020.0.5-SNAPSHOT</revision>
 
-		<!-- Spring Cloud -->
-		<spring.cloud.version>2020.0.5</spring.cloud.version>
-
 		<!-- Spring Framework -->
 		<spring.framework.version>5.3.21</spring.framework.version>
+
+		<!-- Spring Boot -->
+		<spring.boot.version>2.4.13</spring.boot.version>
+
+		<!-- Spring Cloud -->
+		<spring.cloud.version>2020.0.5</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
@@ -121,20 +124,29 @@
 				<scope>import</scope>
 			</dependency>
 
-			<!-- Spring Cloud Dependencies -->
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring.cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
 			<!-- Spring Framework Dependencies -->
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
 				<version>${spring.framework.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Spring Boot Dependencies -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Spring Cloud Dependencies -->
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring.cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
