@@ -21,7 +21,6 @@ fixes #
 
 ## Checklist
 
-- [ ] Add copyright holder at the beginning of .java file if it is new.
 - [ ] Add information of this PR to CHANGELOG.md in root of project.
 - [ ] Add documentation in javadoc or comment below the PR if necessary.
 
