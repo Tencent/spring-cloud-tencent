@@ -27,7 +27,6 @@ import org.springframework.http.MediaType;
  * PolarisRateLimiterLimitedFallback.
  *
  * @author Lingxiao.Wu
- * Date: 2023-02-08 22:59:27
  */
 public interface PolarisRateLimiterLimitedFallback {
 
@@ -61,7 +60,7 @@ public interface PolarisRateLimiterLimitedFallback {
 	/**
 	 * Customized rejectTips when polaris rateLimiter limited.
 	 *
-	 * @return Customized rejectHttpCode
+	 * @return Customized rejectTips
 	 */
 	String rejectTips();
 }
