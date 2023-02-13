@@ -7,12 +7,14 @@ on:
       - 2021.0
       - 2020.0
       - greenwich
+      - 2021/add_coverage_block
   pull_request:
     branches:
       - hoxton
       - 2021.0
       - 2020.0
       - greenwich
+      - 2021/add_coverage_block
 
 jobs:
   build:
