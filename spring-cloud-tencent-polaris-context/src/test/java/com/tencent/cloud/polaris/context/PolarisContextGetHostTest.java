@@ -53,6 +53,10 @@ public class PolarisContextGetHostTest {
 		String bindIP = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
 		assertThat(StringUtils.isBlank(bindIP)).isFalse();
 		assertThat(bindIP).isEqualTo("192.168.1.1");
+		assertThat(polarisContextProperties.getAddress()).isEqualTo("grpc://127.0.0.1:8091");
+		assertThat(polarisContextProperties.getLocalIpAddress()).isEqualTo("192.168.1.1");
+		assertThat(polarisContextProperties.getEnabled()).isTrue();
 		assertThat(polarisContextProperties.getNamespace()).isEqualTo("dev");
+		assertThat(polarisContextProperties.getService()).isEqualTo("TestApp");
 	}
 }
