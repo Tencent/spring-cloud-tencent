@@ -15,9 +15,8 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context;
+package com.tencent.cloud.polaris.context.config;
 
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.Assert;
 import org.junit.Test;
