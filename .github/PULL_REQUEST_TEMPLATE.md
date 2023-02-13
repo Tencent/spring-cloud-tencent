@@ -21,12 +21,11 @@ fixes #
 
 ## Checklist
 
-- [ ] Coverage from `Codecov Report` should not decrease (which means adding junit tests for adding or updating code).
-- [ ] All junit tests passing.
 - [ ] Add copyright holder at the beginning of .java file if it is new.
 - [ ] Add information of this PR to CHANGELOG.md in root of project.
+- [ ] Add documentation in javadoc or comment below the PR if necessary.
 
 ## Checklist (Optional)
 
-- [ ] Will Pull Request to branch of 2022.0 and 2020.0.
-- [ ] Add documentation in javadoc or comment below the PR if necessary.
+- [ ] Will pull request to branch of 2020.0.
+- [ ] Will pull request to branch of 2022.0.
