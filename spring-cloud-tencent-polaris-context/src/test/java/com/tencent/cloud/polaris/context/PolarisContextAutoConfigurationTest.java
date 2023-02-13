@@ -44,6 +44,7 @@ public class PolarisContextAutoConfigurationTest {
 		contextRunner.run(context -> {
 			final SDKContext sdkContext = context.getBean(SDKContext.class);
 			Assert.assertNotNull(sdkContext);
+			Assert.assertNotNull(sdkContext);
 		});
 	}
 }
