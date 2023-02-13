@@ -25,7 +25,6 @@ import org.springframework.http.MediaType;
  * JsonPolarisRateLimiterLimitedFallback.
  *
  * @author Lingxiao.Wu
- * Date: 2023-02-11 22:57:25
  */
 public class JsonPolarisRateLimiterLimitedFallback implements PolarisRateLimiterLimitedFallback {
 	@Override
