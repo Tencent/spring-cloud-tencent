@@ -91,14 +91,14 @@
 		<!-- Project revision -->
 		<revision>1.10.0-2021.0.5-SNAPSHOT</revision>
 
-		<!-- Spring Cloud -->
-		<spring.cloud.version>2021.0.5</spring.cloud.version>
+		<!-- Spring Framework -->
+		<spring.framework.version>5.3.25</spring.framework.version>
 
 		<!-- Spring Boot -->
 		<spring.boot.version>2.6.14</spring.boot.version>
 
-		<!-- Spring Framework -->
-		<spring.framework.version>5.3.25</spring.framework.version>
+		<!-- Spring Cloud -->
+		<spring.cloud.version>2021.0.5</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
