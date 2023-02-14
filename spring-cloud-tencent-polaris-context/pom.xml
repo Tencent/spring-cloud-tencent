@@ -96,6 +96,11 @@
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-router-factory</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
 			<artifactId>loadbalancer-random</artifactId>
 		</dependency>
 

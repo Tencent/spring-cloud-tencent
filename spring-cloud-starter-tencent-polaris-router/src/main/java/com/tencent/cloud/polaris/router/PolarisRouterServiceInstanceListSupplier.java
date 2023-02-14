@@ -32,7 +32,6 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerRequest;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
@@ -142,7 +141,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 	}
 
 	Flux<List<ServiceInstance>> doRouter(Flux<List<ServiceInstance>> allServers, PolarisRouterContext routerContext) {
-		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(allServers);
+		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(allServers);
 
 		List<ServiceInstance> filteredInstances = new ArrayList<>();
 		if (serviceInstances.getInstances().size() > 0) {

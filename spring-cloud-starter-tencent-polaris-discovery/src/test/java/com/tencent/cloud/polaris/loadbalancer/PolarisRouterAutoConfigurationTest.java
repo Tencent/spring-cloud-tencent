@@ -15,10 +15,9 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.loadbalancer.config;
+package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.polaris.loadbalancer.PolarisServiceInstanceListSupplier;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.Test;
 
@@ -37,15 +36,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolarisRouterAutoConfigurationTest {
 
 	private final ApplicationContextRunner blockingContextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisLoadBalancerTest.class,
-					PolarisContextAutoConfiguration.class, PolarisLoadBalancerAutoConfiguration.class,
-					PolarisLoadBalancerClientConfiguration.PolarisBlockingSupportConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(
+					PolarisLoadBalancerTest.class,
+					PolarisContextAutoConfiguration.class,
+					PolarisLoadBalancerAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.loadbalancer.configurations=polaris");
 
 	private final ApplicationContextRunner noPolarisContextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisLoadBalancerTest.class,
-					PolarisContextAutoConfiguration.class, PolarisLoadBalancerAutoConfiguration.class,
-					PolarisLoadBalancerClientConfiguration.PolarisBlockingSupportConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(
+					PolarisLoadBalancerTest.class,
+					PolarisContextAutoConfiguration.class,
+					PolarisLoadBalancerAutoConfiguration.class));
 
 	/**
 	 * Test for BlockingDiscovery.
@@ -54,12 +55,6 @@ public class PolarisRouterAutoConfigurationTest {
 	public void test1() {
 		this.blockingContextRunner.run(context -> {
 			assertThat(context).hasSingleBean(RouterAPI.class);
-			assertThat(context).hasSingleBean(PolarisLoadBalancerProperties.class);
-			assertThat(context)
-					.doesNotHaveBean(PolarisLoadBalancerClientConfiguration.PolarisReactiveSupportConfiguration.class);
-			assertThat(context)
-					.hasSingleBean(PolarisLoadBalancerClientConfiguration.PolarisBlockingSupportConfiguration.class);
-			assertThat(context).doesNotHaveBean(PolarisServiceInstanceListSupplier.class);
 		});
 	}
 
@@ -70,12 +65,6 @@ public class PolarisRouterAutoConfigurationTest {
 	public void test2() {
 		this.noPolarisContextRunner.run(context -> {
 			assertThat(context).hasSingleBean(RouterAPI.class);
-			assertThat(context).hasSingleBean(PolarisLoadBalancerProperties.class);
-			assertThat(context)
-					.doesNotHaveBean(PolarisLoadBalancerClientConfiguration.PolarisReactiveSupportConfiguration.class);
-			assertThat(context)
-					.hasSingleBean(PolarisLoadBalancerClientConfiguration.PolarisBlockingSupportConfiguration.class);
-			assertThat(context).doesNotHaveBean(PolarisServiceInstanceListSupplier.class);
 		});
 	}
 
