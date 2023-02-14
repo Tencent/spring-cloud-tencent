@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
@@ -66,8 +65,6 @@ public class PolarisLoadBalancerTest {
 	private RouterAPI routerAPI;
 	@Mock
 	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
-	@Mock
-	private PolarisLoadBalancerProperties loadBalancerProperties;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -94,19 +91,16 @@ public class PolarisLoadBalancerTest {
 		when(serviceInstanceListSupplier.get(request)).thenReturn(Flux.just(mockInstanceList));
 
 		when(supplierObjectProvider.getIfAvailable(any())).thenReturn(serviceInstanceListSupplier);
-		when(loadBalancerProperties.getEnabled()).thenReturn(true);
 
 		ProcessLoadBalanceResponse mockLbRes = new ProcessLoadBalanceResponse(testInstance);
 		when(routerAPI.processLoadBalance(any())).thenReturn(mockLbRes);
 
 		// request construct and execute invoke
-		PolarisLoadBalancer polarisLoadBalancer = new PolarisLoadBalancer(LOCAL_SERVICE, supplierObjectProvider,
-				loadBalancerProperties, routerAPI);
+		PolarisLoadBalancer polarisLoadBalancer = new PolarisLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
 		Mono<Response<ServiceInstance>> responseMono = polarisLoadBalancer.choose(request);
 		ServiceInstance serviceInstance = responseMono.block().getServer();
 
 		// verify method has invoked
-		verify(loadBalancerProperties).getEnabled();
 		verify(supplierObjectProvider).getIfAvailable(any());
 
 		//result assert
