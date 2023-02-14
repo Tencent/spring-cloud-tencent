@@ -89,13 +89,16 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.9.0-Hoxton.SR12</revision>
-
-		<!-- Spring Cloud -->
-		<spring.cloud.version>Hoxton.SR12</spring.cloud.version>
+		<revision>1.11.1-Hoxton.SR12-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
 		<spring.framework.version>5.2.22.RELEASE</spring.framework.version>
+
+		<!-- Spring Boot -->
+		<spring.boot.version>2.3.12.RELEASE</spring.boot.version>
+
+		<!-- Spring Cloud -->
+		<spring.cloud.version>Hoxton.SR12</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
@@ -126,6 +129,15 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
 				<version>${spring.framework.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Spring Boot Dependencies -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -292,18 +304,31 @@
 				</repository>
 			</distributionManagement>
 		</profile>
+		<profile>
+			<id>sonatype</id>
+			<repositories>
+				<repository>
+					<id>nexus-snapshots</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+						<updatePolicy>always</updatePolicy>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>nexus-releases</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+		</profile>
 	</profiles>
-
-	<repositories>
-		<repository>
-			<id>nexus-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>
