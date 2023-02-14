@@ -32,7 +32,6 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
@@ -92,8 +91,6 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 	private final List<RouterRequestInterceptor> requestInterceptors = new ArrayList<>();
 	@Mock
 	private ServiceInstanceListSupplier delegate;
-	@Mock
-	private PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 	@Mock
 	private PolarisNearByRouterProperties polarisNearByRouterProperties;
 	@Mock
@@ -247,7 +244,8 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 
 		// mock
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString())).thenReturn("mock-value");
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+					.thenReturn("mock-value");
 			MetadataContextHolder.set(new MetadataContext());
 
 			headers = new HttpHeaders();

@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.loadbalancer.config;
+package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.router.api.core.RouterAPI;
@@ -24,11 +24,15 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Test for {@link PolarisLoadBalancerAutoConfiguration}.
@@ -38,25 +42,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolarisLoadBalancerAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
+			.withPropertyValues("server.port=" + PORT)
+			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
+			.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisWeighted")
 			.withConfiguration(AutoConfigurations.of(
 					PolarisRibbonTest.class,
 					PolarisLoadBalancerAutoConfiguration.class,
-					PolarisContextAutoConfiguration.class))
-			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
-			.withPropertyValues("server.port=" + PORT)
-			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
+					PolarisContextAutoConfiguration.class));
 
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(RouterAPI.class);
-			assertThat(context).hasSingleBean(PolarisLoadBalancerProperties.class);
+			assertThat(context).hasSingleBean(RestTemplate.class);
+			try {
+				context.getBean(RestTemplate.class).getForEntity("http://wrong.url", String.class);
+				fail();
+			}
+			catch (Exception e) {
+				// do nothing
+			}
 		});
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
 	static class PolarisRibbonTest {
-
+		@Bean
+		@LoadBalanced
+		public RestTemplate restTemplate() {
+			return new RestTemplate();
+		}
 	}
 }

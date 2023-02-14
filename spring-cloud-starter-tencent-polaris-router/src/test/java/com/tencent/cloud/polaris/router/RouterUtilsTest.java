@@ -13,10 +13,9 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.loadbalancer;
+package com.tencent.cloud.polaris.router;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +42,12 @@ import org.springframework.cloud.client.ServiceInstance;
 import static org.mockito.ArgumentMatchers.anyString;
 
 /**
- * Test for ${@link LoadBalancerUtils}.
+ * Test for ${@link RouterUtils}.
  *
  * @author lepdou 2022-07-04
  */
 @RunWith(MockitoJUnitRunner.class)
-public class LoadBalancerUtilsTest {
+public class RouterUtilsTest {
 
 	private static final String testNamespaceAndService = "testNamespaceAndService";
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
@@ -73,7 +72,7 @@ public class LoadBalancerUtilsTest {
 
 	@Test
 	public void testTransferEmptyInstances() {
-		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(Flux.empty());
+		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.empty());
 		Assert.assertNotNull(serviceInstances.getInstances());
 		Assert.assertEquals(0, serviceInstances.getInstances().size());
 	}
@@ -94,7 +93,7 @@ public class LoadBalancerUtilsTest {
 			instances.add(new PolarisServiceInstance(instance));
 		}
 
-		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(Flux.just(instances));
+		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.just(instances));
 
 		Assert.assertNotNull(serviceInstances.getInstances());
 		Assert.assertEquals(instanceSize, serviceInstances.getInstances().size());

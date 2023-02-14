@@ -29,6 +29,8 @@ import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
+import com.tencent.polaris.factory.api.RouterAPIFactory;
+import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -64,6 +66,11 @@ public class PolarisContextAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ConsumerAPI polarisConsumer(SDKContext polarisContext) throws PolarisException {
 		return DiscoveryAPIFactory.createConsumerAPIByContext(polarisContext);
+	}
+
+	@Bean
+	public RouterAPI polarisRouter(SDKContext polarisContext) throws PolarisException {
+		return RouterAPIFactory.createRouterAPIByContext(polarisContext);
 	}
 
 	@Bean
