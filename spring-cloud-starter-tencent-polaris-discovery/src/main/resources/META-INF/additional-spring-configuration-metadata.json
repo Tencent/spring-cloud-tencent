@@ -67,6 +67,18 @@
       "description": "Millis interval of refresh of service info list. Default: 60000."
     },
     {
+      "name": "spring.cloud.polaris.loadbalancer.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "polaris loadbalancer."
+    },
+    {
+      "name": "spring.cloud.polaris.loadbalancer.strategy",
+      "type": "java.lang.String",
+      "defaultValue": "random",
+      "description": "retry,best_available,availability_filtering,round_robin,weighted_response_time,zone_avoidance,random,consistent_hash,weighted_random."
+    },
+    {
       "name": "spring.cloud.nacos.discovery.enabled",
       "type": "java.lang.Boolean",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",

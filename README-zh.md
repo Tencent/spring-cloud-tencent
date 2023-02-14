@@ -79,7 +79,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.9.0-2022.0.1</version>
+            <version>1.9.1-2022.0.1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -128,3 +128,4 @@ the file [LICENSE](LICENSE)
 如果您对 Spring Cloud Tencent 有兴趣，请关注我们的项目~
 
 [![Stargazers over time](https://starchart.cc/Tencent/spring-cloud-tencent.svg)](https://starchart.cc/Tencent/spring-cloud-tencent)
+
