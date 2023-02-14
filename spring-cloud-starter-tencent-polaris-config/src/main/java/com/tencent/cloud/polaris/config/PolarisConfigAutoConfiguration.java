@@ -39,6 +39,7 @@ import org.springframework.cloud.context.properties.ConfigurationPropertiesRebin
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 /**
  * polaris config module auto configuration at init application context phase.
@@ -60,7 +61,7 @@ public class PolarisConfigAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
+	@Primary
 	@ConditionalOnReflectRefreshType
 	public ConfigurationPropertiesRebinder affectedConfigurationPropertiesRebinder(
 			ConfigurationPropertiesBeans beans) {
