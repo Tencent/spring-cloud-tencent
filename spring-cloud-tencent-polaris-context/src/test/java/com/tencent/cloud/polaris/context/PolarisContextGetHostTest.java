@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.context;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.platform.commons.util.StringUtils;
 import org.junit.runner.RunWith;
@@ -29,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PolarisContextApplication.class,
@@ -45,8 +46,12 @@ public class PolarisContextGetHostTest {
 	@Test
 	public void testGetConfigHost() {
 		String bindIP = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
-		Assert.assertFalse(StringUtils.isBlank(bindIP));
-		Assert.assertEquals(bindIP, "192.168.1.1");
-		Assert.assertEquals(polarisContextProperties.getNamespace(), "dev");
+		assertThat(StringUtils.isBlank(bindIP)).isFalse();
+		assertThat(bindIP).isEqualTo("192.168.1.1");
+		assertThat(polarisContextProperties.getAddress()).isEqualTo("grpc://127.0.0.1:8091");
+		assertThat(polarisContextProperties.getLocalIpAddress()).isEqualTo("192.168.1.1");
+		assertThat(polarisContextProperties.getEnabled()).isTrue();
+		assertThat(polarisContextProperties.getNamespace()).isEqualTo("dev");
+		assertThat(polarisContextProperties.getService()).isEqualTo("TestApp");
 	}
 }
