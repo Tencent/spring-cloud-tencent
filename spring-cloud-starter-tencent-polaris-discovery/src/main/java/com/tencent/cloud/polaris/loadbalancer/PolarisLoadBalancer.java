@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
-import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
@@ -57,18 +56,14 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 
 	private final String serviceId;
 
-	private final PolarisLoadBalancerProperties loadBalancerProperties;
-
 	private final RouterAPI routerAPI;
 
 	private final ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
-	public PolarisLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
-			PolarisLoadBalancerProperties loadBalancerProperties, RouterAPI routerAPI) {
+	public PolarisLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
 		super(supplierObjectProvider, serviceId);
 		this.serviceId = serviceId;
 		this.supplierObjectProvider = supplierObjectProvider;
-		this.loadBalancerProperties = loadBalancerProperties;
 		this.routerAPI = routerAPI;
 	}
 
@@ -82,9 +77,6 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 
 	@Override
 	public Mono<Response<ServiceInstance>> choose(Request request) {
-		if (!loadBalancerProperties.getEnabled()) {
-			return super.choose(request);
-		}
 		ServiceInstanceListSupplier supplier = supplierObjectProvider
 				.getIfAvailable(NoopServiceInstanceListSupplier::new);
 		return supplier.get(request).next().map(this::getInstanceResponse);

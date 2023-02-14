@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router.config;
 
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerAutoConfiguration;
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.Test;
@@ -47,7 +46,6 @@ public class LoadBalancerConfigurationTest {
 	@Test
 	public void testLoadBalancerConfiguration() {
 		contextRunner.withConfiguration(AutoConfigurations.of(
-						PolarisLoadBalancerAutoConfiguration.class,
 						PolarisContextAutoConfiguration.class,
 						LoadBalancerConfiguration.class))
 				.run(context -> {
@@ -59,7 +57,6 @@ public class LoadBalancerConfigurationTest {
 	public void testPolarisReactiveSupportConfiguration() {
 		contextRunner.withConfiguration(AutoConfigurations.of(
 						LoadBalancerConfiguration.PolarisReactiveSupportConfiguration.class,
-						PolarisLoadBalancerAutoConfiguration.class,
 						PolarisContextAutoConfiguration.class))
 				.withBean(SimpleReactiveDiscoveryProperties.class)
 				.withBean(SimpleReactiveDiscoveryClient.class)
@@ -74,10 +71,9 @@ public class LoadBalancerConfigurationTest {
 	@Test
 	public void testPolarisBlockingSupportConfiguration() {
 		contextRunner.withConfiguration(AutoConfigurations.of(
-						PolarisLoadBalancerAutoConfiguration.class,
 						PolarisContextAutoConfiguration.class,
 						LoadBalancerConfiguration.PolarisBlockingSupportConfiguration.class
-						))
+				))
 				.withBean(SimpleDiscoveryProperties.class)
 				.withBean(SimpleDiscoveryClient.class)
 				.run(context -> {

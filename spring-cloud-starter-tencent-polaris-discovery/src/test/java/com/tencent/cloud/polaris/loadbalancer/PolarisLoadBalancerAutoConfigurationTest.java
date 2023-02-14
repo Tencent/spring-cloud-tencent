@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.loadbalancer.config;
+package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.router.api.core.RouterAPI;
@@ -50,7 +50,6 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(RouterAPI.class);
-			assertThat(context).hasSingleBean(PolarisLoadBalancerProperties.class);
 		});
 	}
 

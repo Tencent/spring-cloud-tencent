@@ -15,13 +15,9 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.loadbalancer.config;
+package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.polaris.api.exception.PolarisException;
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.factory.api.RouterAPIFactory;
-import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,7 +25,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -46,13 +41,4 @@ import org.springframework.context.annotation.Configuration;
 @LoadBalancerClients(defaultConfiguration = PolarisLoadBalancerClientConfiguration.class)
 public class PolarisLoadBalancerAutoConfiguration {
 
-	@Bean
-	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
-		return new PolarisLoadBalancerProperties();
-	}
-
-	@Bean
-	public RouterAPI polarisRouter(SDKContext polarisContext) throws PolarisException {
-		return RouterAPIFactory.createRouterAPIByContext(polarisContext);
-	}
 }

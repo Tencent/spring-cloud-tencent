@@ -21,7 +21,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
-import org.owasp.esapi.ESAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,11 +67,6 @@ public class GatewayCalleeController {
 			throws UnsupportedEncodingException {
 		LOG.info(URLDecoder.decode(metadataStr, UTF_8));
 		metadataStr = URLDecoder.decode(metadataStr, UTF_8);
-		return cleanXSS(metadataStr);
-	}
-
-	private String cleanXSS(String str) {
-		str = ESAPI.encoder().encodeForHTML(str);
-		return str;
+		return metadataStr;
 	}
 }

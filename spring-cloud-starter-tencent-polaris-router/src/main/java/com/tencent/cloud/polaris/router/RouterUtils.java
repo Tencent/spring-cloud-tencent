@@ -13,10 +13,9 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.loadbalancer;
+package com.tencent.cloud.polaris.router;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,12 +43,12 @@ import org.springframework.util.CollectionUtils;
  *
  * @author lepdou 2022-05-17
  */
-public final class LoadBalancerUtils {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalancerUtils.class);
+public final class RouterUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RouterUtils.class);
 
 	private static final int WAIT_TIME = 3;
 
-	private LoadBalancerUtils() {
+	private RouterUtils() {
 	}
 
 	/**
@@ -65,7 +64,7 @@ public final class LoadBalancerUtils {
 		servers.subscribe(serviceInstances -> {
 			instancesRef.set(serviceInstances
 					.stream()
-					.map(LoadBalancerUtils::transferServerToServiceInstance)
+					.map(RouterUtils::transferServerToServiceInstance)
 					.collect(Collectors.toList()));
 
 			latch.countDown();

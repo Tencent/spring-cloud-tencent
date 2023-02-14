@@ -17,7 +17,7 @@
 		<!-- Spring Cloud Tencent dependencies start -->
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
+			<artifactId>spring-cloud-tencent-polaris-context</artifactId>
 		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
 
@@ -31,6 +31,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-loadbalancer</artifactId>
 		</dependency>
 
 		<dependency>
