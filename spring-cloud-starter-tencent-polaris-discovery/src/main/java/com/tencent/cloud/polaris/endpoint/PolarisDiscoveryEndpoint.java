@@ -77,6 +77,6 @@ public class PolarisDiscoveryEndpoint {
 
 	private ServiceInstances getServiceInstances(String serviceId) {
 		InstancesResponse instancesResponse = polarisDiscoveryHandler.getHealthyInstances(serviceId);
-		return instancesResponse.getServiceInstances();
+		return instancesResponse.toServiceInstances();
 	}
 }

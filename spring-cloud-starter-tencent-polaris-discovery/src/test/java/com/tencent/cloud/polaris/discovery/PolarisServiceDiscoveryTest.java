@@ -69,7 +69,7 @@ public class PolarisServiceDiscoveryTest {
 		DefaultServiceInstances mockDefaultServiceInstances = mock(DefaultServiceInstances.class);
 		when(mockDefaultServiceInstances.getInstances()).thenReturn(singletonList(mock(DefaultInstance.class)));
 		InstancesResponse mockInstancesResponse = mock(InstancesResponse.class);
-		when(mockInstancesResponse.getServiceInstances()).thenReturn(mockDefaultServiceInstances);
+		when(mockInstancesResponse.toServiceInstances()).thenReturn(mockDefaultServiceInstances);
 		when(polarisDiscoveryHandler.getHealthyInstances(anyString())).thenReturn(mockInstancesResponse);
 
 		List<ServiceInstance> serviceInstances = polarisServiceDiscovery.getInstances(SERVICE_PROVIDER);

@@ -65,7 +65,7 @@ public class PolarisServiceDiscovery {
 		serviceId = DiscoveryUtil.rewriteServiceId(serviceId);
 		List<ServiceInstance> instances = new ArrayList<>();
 		InstancesResponse filteredInstances = polarisDiscoveryHandler.getHealthyInstances(serviceId);
-		ServiceInstances serviceInstances = filteredInstances.getServiceInstances();
+		ServiceInstances serviceInstances = filteredInstances.toServiceInstances();
 		for (Instance instance : serviceInstances.getInstances()) {
 			instances.add(new PolarisServiceInstance(instance));
 		}
