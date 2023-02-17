@@ -21,8 +21,8 @@ import java.util.Set;
 
 import com.google.protobuf.StringValue;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.polaris.client.pb.ModelProto;
-import com.tencent.polaris.client.pb.RateLimitProto;
+import com.tencent.polaris.specification.api.v1.model.ModelProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,7 +61,7 @@ public class RateLimitRuleLabelResolverTest {
 			}
 			else {
 				ModelProto.MatchString matchString = ModelProto.MatchString.newBuilder()
-						.setType(ModelProto.Operation.EXACT)
+						.setType(ModelProto.MatchString.MatchStringType.EXACT)
 						.setValue(StringValue.of("value"))
 						.setValueType(ModelProto.MatchString.ValueType.TEXT).build();
 				RateLimitProto.Rule rule = RateLimitProto.Rule.newBuilder()

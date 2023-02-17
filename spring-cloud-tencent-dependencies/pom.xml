@@ -73,7 +73,8 @@
 		<revision>1.10.0-2021.0.5-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.10.5</polaris.version>
+		<polaris.version>1.11.0-SNAPSHOT</polaris.version>
+		<junit.version>4.13.2</junit.version>
 		<guava.version>31.0.1-jre</guava.version>
 		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
@@ -251,6 +252,14 @@
 				<version>${system-stubs-junit4.version}</version>
 				<scope>test</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

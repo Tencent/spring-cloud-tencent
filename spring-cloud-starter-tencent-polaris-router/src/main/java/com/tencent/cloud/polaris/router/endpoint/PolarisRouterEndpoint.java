@@ -28,7 +28,7 @@ import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.polaris.client.pb.RoutingProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

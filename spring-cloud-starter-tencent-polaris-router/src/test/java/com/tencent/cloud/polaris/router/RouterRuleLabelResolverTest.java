@@ -26,8 +26,8 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.polaris.client.pb.ModelProto;
-import com.tencent.polaris.client.pb.RoutingProto;
+import com.tencent.polaris.specification.api.v1.model.ModelProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
