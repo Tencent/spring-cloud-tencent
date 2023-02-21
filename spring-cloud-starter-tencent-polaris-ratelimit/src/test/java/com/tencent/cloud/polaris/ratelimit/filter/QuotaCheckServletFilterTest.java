@@ -34,6 +34,7 @@ import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
 import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.polaris.api.plugin.ratelimiter.QuotaResult;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaRequest;
@@ -49,6 +50,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.server.ServerWebExchange;
@@ -79,6 +81,8 @@ public class QuotaCheckServletFilterTest {
 			exchange -> Collections.singletonMap("ServletResolver", "ServletResolver");
 	private QuotaCheckServletFilter quotaCheckServletFilter;
 	private QuotaCheckServletFilter quotaCheckWithHtmlRejectTipsServletFilter;
+	private QuotaCheckServletFilter quotaCheckWithRateLimiterLimitedFallbackFilter;
+	private PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -129,9 +133,12 @@ public class QuotaCheckServletFilterTest {
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
 		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.emptySet());
 
-		this.quotaCheckServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
+		this.quotaCheckServletFilter = new QuotaCheckServletFilter(limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver, null);
 		this.quotaCheckWithHtmlRejectTipsServletFilter = new QuotaCheckServletFilter(
-				limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver);
+				limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver, null);
+		polarisRateLimiterLimitedFallback = new JsonPolarisRateLimiterLimitedFallback();
+		this.quotaCheckWithRateLimiterLimitedFallbackFilter = new QuotaCheckServletFilter(
+				limitAPI, labelResolver, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleLabelResolver, polarisRateLimiterLimitedFallback);
 	}
 
 	@Test
@@ -154,6 +161,7 @@ public class QuotaCheckServletFilterTest {
 		catch (NoSuchFieldException | IllegalAccessException e) {
 			fail("Exception encountered.", e);
 		}
+		quotaCheckWithRateLimiterLimitedFallbackFilter.init();
 	}
 
 	@Test
@@ -174,12 +182,12 @@ public class QuotaCheckServletFilterTest {
 			PolarisRateLimiterLabelServletResolver exceptionLabelResolver = request1 -> {
 				throw new RuntimeException("Mock exception.");
 			};
-			quotaCheckServletFilter = new QuotaCheckServletFilter(null, exceptionLabelResolver, null, null);
+			quotaCheckServletFilter = new QuotaCheckServletFilter(null, exceptionLabelResolver, null, null, null);
 			result = (Map<String, String>) getCustomResolvedLabels.invoke(quotaCheckServletFilter, request);
 			assertThat(result.size()).isEqualTo(0);
 
 			// labelResolver == null
-			quotaCheckServletFilter = new QuotaCheckServletFilter(null, null, null, null);
+			quotaCheckServletFilter = new QuotaCheckServletFilter(null, null, null, null, null);
 			result = (Map<String, String>) getCustomResolvedLabels.invoke(quotaCheckServletFilter, request);
 			assertThat(result.size()).isEqualTo(0);
 
@@ -231,9 +239,46 @@ public class QuotaCheckServletFilterTest {
 			fail("Exception encountered.", e);
 		}
 	}
+	@Test
+	public void polarisRateLimiterLimitedFallbackTest() {
+		// Create mock FilterChain
+		FilterChain filterChain = (servletRequest, servletResponse) -> {
+		};
+
+		// Mock request
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		quotaCheckWithRateLimiterLimitedFallbackFilter.init();
+		try {
+			// Pass
+			MetadataContext.LOCAL_SERVICE = "TestApp1";
+			quotaCheckWithRateLimiterLimitedFallbackFilter.doFilterInternal(request, response, filterChain);
+
+			// Unirate waiting 1000ms
+			MetadataContext.LOCAL_SERVICE = "TestApp2";
+			long startTimestamp = System.currentTimeMillis();
+			quotaCheckWithRateLimiterLimitedFallbackFilter.doFilterInternal(request, response, filterChain);
+			assertThat(System.currentTimeMillis() - startTimestamp).isGreaterThanOrEqualTo(1000L);
+
+			// Rate limited
+			MetadataContext.LOCAL_SERVICE = "TestApp3";
+			String contentType = new MediaType(polarisRateLimiterLimitedFallback.mediaType(), polarisRateLimiterLimitedFallback.charset()).toString();
+			quotaCheckWithRateLimiterLimitedFallbackFilter.doFilterInternal(request, response, filterChain);
+			assertThat(response.getStatus()).isEqualTo(polarisRateLimiterLimitedFallback.rejectHttpCode());
+			assertThat(response.getContentAsString()).isEqualTo(polarisRateLimiterLimitedFallback.rejectTips());
+			assertThat(response.getContentType()).isEqualTo(contentType);
+
+			// Exception
+			MetadataContext.LOCAL_SERVICE = "TestApp4";
+			quotaCheckWithRateLimiterLimitedFallbackFilter.doFilterInternal(request, response, filterChain);
+		}
+		catch (ServletException | IOException e) {
+			fail("Exception encountered.", e);
+		}
+	}
 
 	@SpringBootApplication
 	protected static class TestApplication {
-
 	}
 }
