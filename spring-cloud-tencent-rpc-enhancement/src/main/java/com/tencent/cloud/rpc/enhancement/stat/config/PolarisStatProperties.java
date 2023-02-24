@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -30,7 +33,7 @@ public class PolarisStatProperties {
 	/**
 	 * If state reporter enabled.
 	 */
-	private boolean enabled = false;
+	private boolean enabled = true;
 
 	/**
 	 * Local host for prometheus to pull.
@@ -40,7 +43,7 @@ public class PolarisStatProperties {
 	/**
 	 * Port for prometheus to pull.
 	 */
-	private int port = 28080;
+	private int port = -1;
 
 	/**
 	 * Path for prometheus to pull.
@@ -64,6 +67,9 @@ public class PolarisStatProperties {
 	}
 
 	public int getPort() {
+		if (port == -1 && enabled) {
+			port = this.getAvailableStatPort();
+		}
 		return port;
 	}
 
@@ -77,5 +83,18 @@ public class PolarisStatProperties {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	private int getAvailableStatPort() {
+		for (int i = 28080; i <= 65535; i++) {
+			try {
+				new ServerSocket(i).close();
+				return i;
+			}
+			catch (IOException e) {
+				// Stepping into here means port of i can not be used.
+			}
+		}
+		throw new RuntimeException("No port (from 28080 to 65535) can be used for stat report");
 	}
 }
