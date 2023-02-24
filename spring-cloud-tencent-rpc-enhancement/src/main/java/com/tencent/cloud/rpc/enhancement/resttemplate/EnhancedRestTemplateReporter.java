@@ -211,7 +211,11 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		return resultRequest;
 	}
 
-	public void setDelegateHandler(ResponseErrorHandler delegateHandler) {
+	protected ResponseErrorHandler getDelegateHandler() {
+		return this.delegateHandler;
+	}
+
+	protected void setDelegateHandler(ResponseErrorHandler delegateHandler) {
 		this.delegateHandler = delegateHandler;
 	}
 }
