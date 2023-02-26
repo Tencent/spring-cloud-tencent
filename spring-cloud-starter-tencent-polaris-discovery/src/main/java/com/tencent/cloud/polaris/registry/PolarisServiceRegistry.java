@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
+import org.springframework.http.HttpHeaders;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
@@ -200,7 +203,9 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 				String healthCheckUrl = String.format("http://%s:%s%s", heartbeatRequest.getHost(),
 						heartbeatRequest.getPort(), healthCheckEndpoint);
 
-				if (!OkHttpUtil.get(healthCheckUrl, null)) {
+				Map<String, String> headers = new HashMap<>(1);
+				headers.put(HttpHeaders.USER_AGENT, "polaris");
+				if (!OkHttpUtil.get(healthCheckUrl, headers)) {
 					LOGGER.error("backend service health check failed. health check endpoint = {}",
 							healthCheckEndpoint);
 					return;
