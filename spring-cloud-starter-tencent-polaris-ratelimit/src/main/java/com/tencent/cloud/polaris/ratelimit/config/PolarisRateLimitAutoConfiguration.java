@@ -26,6 +26,7 @@ import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.factory.LimitAPIFactory;
@@ -78,9 +79,10 @@ public class PolarisRateLimitAutoConfiguration {
 		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI,
 				@Nullable PolarisRateLimiterLabelServletResolver labelResolver,
 				PolarisRateLimitProperties polarisRateLimitProperties,
-				RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
+				RateLimitRuleLabelResolver rateLimitRuleLabelResolver,
+				@Nullable PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
 			return new QuotaCheckServletFilter(limitAPI, labelResolver,
-					polarisRateLimitProperties, rateLimitRuleLabelResolver);
+					polarisRateLimitProperties, rateLimitRuleLabelResolver, polarisRateLimiterLimitedFallback);
 		}
 
 		@Bean
@@ -106,9 +108,10 @@ public class PolarisRateLimitAutoConfiguration {
 		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(LimitAPI limitAPI,
 				@Nullable PolarisRateLimiterLabelReactiveResolver labelResolver,
 				PolarisRateLimitProperties polarisRateLimitProperties,
-				RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
+				RateLimitRuleLabelResolver rateLimitRuleLabelResolver,
+				@Nullable PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
 			return new QuotaCheckReactiveFilter(limitAPI, labelResolver,
-					polarisRateLimitProperties, rateLimitRuleLabelResolver);
+					polarisRateLimitProperties, rateLimitRuleLabelResolver, polarisRateLimiterLimitedFallback);
 		}
 	}
 }
