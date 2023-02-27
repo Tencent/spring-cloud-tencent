@@ -131,7 +131,12 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 				try {
 					StatReporter statReporter = (StatReporter) polarisDiscoveryHandler.getSdkContext().getPlugins()
 							.getPlugin(PluginTypes.STAT_REPORTER.getBaseType(), StatReporterConfig.DEFAULT_REPORTER_PROMETHEUS);
-					LOGGER.info("Stat server started on port: " + statReporter.metaInfo().getPort() + " (http)");
+					if (Objects.nonNull(statReporter)) {
+						LOGGER.info("Stat server started on port: " + statReporter.metaInfo().getPort() + " (http)");
+					}
+					else {
+						LOGGER.warn("Plugin StatReporter not found");
+					}
 				}
 				catch (Exception e) {
 					LOGGER.warn("Stat server started error, ", e);
