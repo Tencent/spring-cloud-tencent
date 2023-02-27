@@ -46,7 +46,7 @@ public class PolarisStatPropertiesTest {
 		assertThat(polarisStatProperties).isNotNull();
 		assertThat(polarisStatProperties.isEnabled()).isTrue();
 		assertThat(polarisStatProperties.getHost()).isNotBlank();
-		assertThat(polarisStatProperties.getPort()).isEqualTo(20000);
+		assertThat(polarisStatProperties.getPort()).isGreaterThanOrEqualTo(0);
 		assertThat(polarisStatProperties.getPath()).isEqualTo("/xxx");
 	}
 

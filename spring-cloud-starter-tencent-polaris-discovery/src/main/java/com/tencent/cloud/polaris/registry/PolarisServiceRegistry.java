@@ -25,8 +25,12 @@ import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.util.OkHttpUtil;
+import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
+import com.tencent.polaris.api.config.global.StatReporterConfig;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
+import com.tencent.polaris.api.plugin.common.PluginTypes;
+import com.tencent.polaris.api.plugin.stat.StatReporter;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.rpc.InstanceDeregisterRequest;
 import com.tencent.polaris.api.rpc.InstanceHeartbeatRequest;
@@ -61,9 +65,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 
 	private final ScheduledExecutorService heartbeatExecutor;
 
+	private final PolarisStatProperties polarisStatProperties;
+
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisDiscoveryHandler polarisDiscoveryHandler,
-			StaticMetadataManager staticMetadataManager) {
+			StaticMetadataManager staticMetadataManager, PolarisStatProperties polarisStatProperties) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.staticMetadataManager = staticMetadataManager;
@@ -75,6 +81,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		else {
 			this.heartbeatExecutor = null;
 		}
+
+		this.polarisStatProperties = polarisStatProperties;
 	}
 
 	@Override
@@ -118,6 +126,16 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			LOGGER.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
 					registration.getServiceId(), registration.getHost(), registration.getPort(),
 					staticMetadataManager.getMergedStaticMetadata());
+			if (polarisStatProperties.isEnabled()) {
+				try {
+					StatReporter statReporter = (StatReporter) polarisDiscoveryHandler.getSdkContext().getPlugins()
+							.getPlugin(PluginTypes.STAT_REPORTER.getBaseType(), StatReporterConfig.DEFAULT_REPORTER_PROMETHEUS);
+					LOGGER.info("Stat server started on port: " + statReporter.metaInfo().getPort() + " (http)");
+				}
+				catch (Exception e) {
+					LOGGER.warn("Stat server started error, ", e);
+				}
+			}
 		}
 		catch (Exception e) {
 			LOGGER.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
