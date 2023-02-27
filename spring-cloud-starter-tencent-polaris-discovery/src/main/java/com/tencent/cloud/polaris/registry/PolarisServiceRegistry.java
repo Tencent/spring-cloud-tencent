@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -126,7 +127,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			LOGGER.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
 					registration.getServiceId(), registration.getHost(), registration.getPort(),
 					staticMetadataManager.getMergedStaticMetadata());
-			if (polarisStatProperties.isEnabled()) {
+			if (Objects.nonNull(polarisStatProperties) && polarisStatProperties.isEnabled()) {
 				try {
 					StatReporter statReporter = (StatReporter) polarisDiscoveryHandler.getSdkContext().getPlugins()
 							.getPlugin(PluginTypes.STAT_REPORTER.getBaseType(), StatReporterConfig.DEFAULT_REPORTER_PROMETHEUS);
