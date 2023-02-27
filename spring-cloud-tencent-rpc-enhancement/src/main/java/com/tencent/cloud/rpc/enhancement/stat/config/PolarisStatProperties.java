@@ -30,7 +30,7 @@ public class PolarisStatProperties {
 	/**
 	 * If state reporter enabled.
 	 */
-	private boolean enabled = false;
+	private boolean enabled = true;
 
 	/**
 	 * Local host for prometheus to pull.
@@ -38,9 +38,9 @@ public class PolarisStatProperties {
 	private String host;
 
 	/**
-	 * Port for prometheus to pull.
+	 * Port for prometheus to pull. 0 for random from 20000 to 65535.
 	 */
-	private int port = 28080;
+	private int port = 0;
 
 	/**
 	 * Path for prometheus to pull.
