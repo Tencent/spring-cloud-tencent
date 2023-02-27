@@ -6,3 +6,4 @@
 - [docs:Add license checker GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/839)
 - [refactor:move loadbalancer to discovery module.](https://github.com/Tencent/spring-cloud-tencent/pull/844)
 - [fix:fix the error capture of rate limit exception.](https://github.com/Tencent/spring-cloud-tencent/pull/854)
+- [feat:enable stat reporting as default.](https://github.com/Tencent/spring-cloud-tencent/pull/862)

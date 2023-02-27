@@ -33,7 +33,7 @@
     {
       "name": "spring.cloud.polaris.stat.enabled",
       "type": "java.lang.Boolean",
-      "defaultValue": false,
+      "defaultValue": true,
       "description": "Enable polaris stat reporter or not."
     },
     {
@@ -44,8 +44,8 @@
     {
       "name": "spring.cloud.polaris.stat.port",
       "type": "java.lang.Integer",
-      "defaultValue": "28080",
-      "description": "Port for prometheus to pull."
+      "defaultValue": "0",
+      "description": "Port for prometheus to pull. 0 for random from 20000 to 65535."
     },
     {
       "name": "spring.cloud.polaris.stat.path",
