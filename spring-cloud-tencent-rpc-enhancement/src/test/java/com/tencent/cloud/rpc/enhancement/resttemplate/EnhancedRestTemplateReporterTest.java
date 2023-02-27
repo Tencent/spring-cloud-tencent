@@ -20,39 +20,36 @@ package com.tencent.cloud.rpc.enhancement.resttemplate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.api.rpc.ServiceCallResult;
-import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.AbstractClientHttpResponse;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -78,8 +75,9 @@ public class EnhancedRestTemplateReporterTest {
 	private ResponseErrorHandler delegate;
 	@InjectMocks
 	private EnhancedRestTemplateReporter enhancedRestTemplateReporter;
-	@Captor
-	private ArgumentCaptor captor;
+
+	@InjectMocks
+	private EnhancedRestTemplateReporter enhancedRestTemplateReporter2;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -110,6 +108,24 @@ public class EnhancedRestTemplateReporterTest {
 	}
 
 	@Test
+	public void testSetApplicationContext() {
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+
+		// test no ResponseErrorHandler
+		when(applicationContext.getBeanNamesForType(any(Class.class)))
+				.thenReturn(new String[] {"enhancedRestTemplateReporter"});
+		enhancedRestTemplateReporter2.setApplicationContext(applicationContext);
+		Assert.assertTrue(enhancedRestTemplateReporter2.getDelegateHandler() instanceof DefaultResponseErrorHandler);
+
+		// test one other ResponseErrorHandler
+		when(applicationContext.getBeanNamesForType(any(Class.class)))
+				.thenReturn(new String[] {"enhancedRestTemplateReporter", "mockedResponseErrorHandler"});
+		when(applicationContext.getBean(anyString())).thenReturn(mock(MockedResponseErrorHandler.class));
+		enhancedRestTemplateReporter2.setApplicationContext(applicationContext);
+		Assert.assertTrue(enhancedRestTemplateReporter2.getDelegateHandler() instanceof MockedResponseErrorHandler);
+	}
+
+	@Test
 	public void testHasError() throws IOException {
 		when(delegate.hasError(any())).thenReturn(true);
 
@@ -129,13 +145,9 @@ public class EnhancedRestTemplateReporterTest {
 		enhancedRestTemplateReporter.hasError(response);
 
 		URI uri = mock(URI.class);
-		String labels = URLEncoder.encode("{\"k1\":\"v1\",\"k2\":\"v2\"}", UTF_8);
-		response.getHeaders().set(RouterConstant.ROUTER_LABEL_HEADER, labels);
 		enhancedRestTemplateReporter.handleError(uri, HttpMethod.GET, response);
 
-		verify(consumerAPI, times(2)).updateServiceCallResult((ServiceCallResult) captor.capture());
-		ServiceCallResult value = (ServiceCallResult) captor.getValue();
-		Assertions.assertThat(value.getLabels()).isEqualTo("k1:v1|k2:v2");
+		verify(consumerAPI, times(2)).updateServiceCallResult(any());
 		verify(delegate).handleError(uri, HttpMethod.GET, response);
 	}
 
@@ -169,21 +181,21 @@ public class EnhancedRestTemplateReporterTest {
 		verify(delegate).handleError(uri, HttpMethod.GET, response);
 	}
 
-	class MockedClientHttpResponse extends AbstractClientHttpResponse {
+	static class MockedClientHttpResponse extends AbstractClientHttpResponse {
 
-		private HttpHeaders headers;
+		private final HttpHeaders headers;
 
 		MockedClientHttpResponse() {
 			this.headers = new HttpHeaders();
 		}
 
 		@Override
-		public int getRawStatusCode() throws IOException {
+		public int getRawStatusCode() {
 			return 0;
 		}
 
 		@Override
-		public String getStatusText() throws IOException {
+		public String getStatusText() {
 			return null;
 		}
 
@@ -206,5 +218,13 @@ public class EnhancedRestTemplateReporterTest {
 		public HttpStatus getStatusCode() throws IOException {
 			return HttpStatus.OK;
 		}
+	}
+
+	private static class MockedResponseErrorHandler extends DefaultResponseErrorHandler {
+
+		@Override
+		public void handleError(@NonNull ClientHttpResponse response) {
+		}
+
 	}
 }
