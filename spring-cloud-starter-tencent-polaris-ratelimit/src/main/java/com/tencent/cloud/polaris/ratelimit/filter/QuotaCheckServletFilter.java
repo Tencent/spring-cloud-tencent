@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +37,7 @@ import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.cloud.polaris.ratelimit.utils.RateLimitUtils;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
@@ -46,7 +48,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.LABEL_METHOD;
@@ -72,16 +76,20 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 	private final RateLimitRuleLabelResolver rateLimitRuleLabelResolver;
 
+	private final PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback;
+
 	private String rejectTips;
 
 	public QuotaCheckServletFilter(LimitAPI limitAPI,
 			PolarisRateLimiterLabelServletResolver labelResolver,
 			PolarisRateLimitProperties polarisRateLimitProperties,
-			RateLimitRuleLabelResolver rateLimitRuleLabelResolver) {
+			RateLimitRuleLabelResolver rateLimitRuleLabelResolver,
+			@Nullable PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
 		this.limitAPI = limitAPI;
 		this.labelResolver = labelResolver;
 		this.polarisRateLimitProperties = polarisRateLimitProperties;
 		this.rateLimitRuleLabelResolver = rateLimitRuleLabelResolver;
+		this.polarisRateLimiterLimitedFallback = polarisRateLimiterLimitedFallback;
 	}
 
 	@PostConstruct
@@ -103,9 +111,17 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 					localNamespace, localService, 1, labels, request.getRequestURI());
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
-				response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
-				response.setContentType("text/html;charset=UTF-8");
-				response.getWriter().write(rejectTips);
+				if (!Objects.isNull(polarisRateLimiterLimitedFallback)) {
+					response.setStatus(polarisRateLimiterLimitedFallback.rejectHttpCode());
+					String contentType = new MediaType(polarisRateLimiterLimitedFallback.mediaType(), polarisRateLimiterLimitedFallback.charset()).toString();
+					response.setContentType(contentType);
+					response.getWriter().write(polarisRateLimiterLimitedFallback.rejectTips());
+				}
+				else {
+					response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
+					response.setContentType("text/html;charset=UTF-8");
+					response.getWriter().write(rejectTips);
+				}
 				return;
 			}
 			// Unirate

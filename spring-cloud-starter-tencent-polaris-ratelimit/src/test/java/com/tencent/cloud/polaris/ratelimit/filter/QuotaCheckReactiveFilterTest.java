@@ -31,6 +31,7 @@ import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.polaris.api.plugin.ratelimiter.QuotaResult;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaRequest;
@@ -79,6 +80,8 @@ public class QuotaCheckReactiveFilterTest {
 	private final PolarisRateLimiterLabelReactiveResolver labelResolver =
 			exchange -> Collections.singletonMap("ReactiveResolver", "ReactiveResolver");
 	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
+	private QuotaCheckReactiveFilter quotaCheckWithRateLimiterLimitedFallbackReactiveFilter;
+	private PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -100,6 +103,7 @@ public class QuotaCheckReactiveFilterTest {
 	@Before
 	public void setUp() {
 		MetadataContext.LOCAL_NAMESPACE = "TEST";
+		polarisRateLimiterLimitedFallback = new JsonPolarisRateLimiterLimitedFallback();
 
 		LimitAPI limitAPI = mock(LimitAPI.class);
 		when(limitAPI.getQuota(any(QuotaRequest.class))).thenAnswer(invocationOnMock -> {
@@ -123,10 +127,12 @@ public class QuotaCheckReactiveFilterTest {
 		polarisRateLimitProperties.setRejectHttpCode(419);
 
 		RateLimitRuleLabelResolver rateLimitRuleLabelResolver = mock(RateLimitRuleLabelResolver.class);
-		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.EMPTY_SET);
+		when(rateLimitRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString())).thenReturn(Collections.emptySet());
 
 		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(
-				limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver);
+				limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver, null);
+		this.quotaCheckWithRateLimiterLimitedFallbackReactiveFilter = new QuotaCheckReactiveFilter(
+				limitAPI, labelResolver, polarisRateLimitProperties, rateLimitRuleLabelResolver, polarisRateLimiterLimitedFallback);
 	}
 
 	@Test
@@ -169,12 +175,12 @@ public class QuotaCheckReactiveFilterTest {
 					throw new RuntimeException("Mock exception.");
 				}
 			};
-			quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(null, exceptionLabelResolver, null, null);
+			quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(null, exceptionLabelResolver, null, null, null);
 			result = (Map<String, String>) getCustomResolvedLabels.invoke(quotaCheckReactiveFilter, exchange);
 			assertThat(result.size()).isEqualTo(0);
 
 			// labelResolver == null
-			quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(null, null, null, null);
+			quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(null, null, null, null, null);
 			result = (Map<String, String>) getCustomResolvedLabels.invoke(quotaCheckReactiveFilter, exchange);
 			assertThat(result.size()).isEqualTo(0);
 
@@ -204,7 +210,9 @@ public class QuotaCheckReactiveFilterTest {
 		MetadataContext.LOCAL_SERVICE = "TestApp2";
 		long startTimestamp = System.currentTimeMillis();
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> { }, t -> { }, countDownLatch::countDown);
+		quotaCheckReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> {
+		}, t -> {
+		}, countDownLatch::countDown);
 		try {
 			countDownLatch.await();
 		}
@@ -225,8 +233,49 @@ public class QuotaCheckReactiveFilterTest {
 		quotaCheckReactiveFilter.filter(exchange, webFilterChain);
 	}
 
+	@Test
+	public void polarisRateLimiterLimitedFallbackTest() {
+		// Create mock WebFilterChain
+		WebFilterChain webFilterChain = serverWebExchange -> Mono.empty();
+
+		// Mock request
+		MockServerHttpRequest request = MockServerHttpRequest.get("http://localhost:8080/test").build();
+		ServerWebExchange exchange = MockServerWebExchange.from(request);
+
+		quotaCheckWithRateLimiterLimitedFallbackReactiveFilter.init();
+
+		// Pass
+		MetadataContext.LOCAL_SERVICE = "TestApp1";
+		quotaCheckWithRateLimiterLimitedFallbackReactiveFilter.filter(exchange, webFilterChain);
+
+		// Unirate waiting 1000ms
+		MetadataContext.LOCAL_SERVICE = "TestApp2";
+		long startTimestamp = System.currentTimeMillis();
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		quotaCheckWithRateLimiterLimitedFallbackReactiveFilter.filter(exchange, webFilterChain).subscribe(e -> {
+		}, t -> {
+		}, countDownLatch::countDown);
+		try {
+			countDownLatch.await();
+		}
+		catch (InterruptedException e) {
+			fail("Exception encountered.", e);
+		}
+		assertThat(System.currentTimeMillis() - startTimestamp).isGreaterThanOrEqualTo(1000L);
+
+		// Rate limited
+		MetadataContext.LOCAL_SERVICE = "TestApp3";
+		quotaCheckWithRateLimiterLimitedFallbackReactiveFilter.filter(exchange, webFilterChain);
+		ServerHttpResponse response = exchange.getResponse();
+		assertThat(response.getRawStatusCode()).isEqualTo(polarisRateLimiterLimitedFallback.rejectHttpCode());
+		assertThat(response.getHeaders().getContentType()).isEqualTo(polarisRateLimiterLimitedFallback.mediaType());
+
+		// Exception
+		MetadataContext.LOCAL_SERVICE = "TestApp4";
+		quotaCheckWithRateLimiterLimitedFallbackReactiveFilter.filter(exchange, webFilterChain);
+	}
+
 	@SpringBootApplication
 	protected static class TestApplication {
-
 	}
 }
