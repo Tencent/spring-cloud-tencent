@@ -22,6 +22,7 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
+import com.tencent.polaris.api.rpc.ServiceCallResult;
 import feign.Request;
 import feign.Response;
 import org.junit.AfterClass;
@@ -36,7 +37,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link ExceptionPolarisReporter}.
@@ -58,7 +62,7 @@ public class ExceptionPolarisReporterTest {
 	public static void beforeClass() {
 		mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
 		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(Request.class), any(RetStatus.class)))
-				.thenReturn(null);
+				.thenReturn(mock(ServiceCallResult.class));
 	}
 
 	@AfterClass
@@ -83,10 +87,16 @@ public class ExceptionPolarisReporterTest {
 		// mock response
 		Response response = mock(Response.class);
 
-		EnhancedFeignContext context = new EnhancedFeignContext();
-		context.setRequest(request);
-		context.setResponse(response);
+		EnhancedFeignContext context = mock(EnhancedFeignContext.class);
+		doReturn(request).when(context).getRequest();
+		doReturn(response).when(context).getResponse();
+		// test not report
 		exceptionPolarisReporter.run(context);
+		verify(context, times(0)).getRequest();
+		// test do report
+		doReturn(true).when(reporterProperties).isEnabled();
+		exceptionPolarisReporter.run(context);
+		verify(context, times(1)).getRequest();
 	}
 
 	@Test
