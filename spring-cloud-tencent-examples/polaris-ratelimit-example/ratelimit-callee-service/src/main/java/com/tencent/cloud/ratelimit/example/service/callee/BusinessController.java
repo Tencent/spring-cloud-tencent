@@ -46,14 +46,11 @@ public class BusinessController {
 	private static final Logger LOG = LoggerFactory.getLogger(BusinessController.class);
 
 	private final AtomicInteger index = new AtomicInteger(0);
-
+	private final AtomicLong lastTimestamp = new AtomicLong(0);
 	@Autowired
 	private RestTemplate restTemplate;
-
 	@Value("${spring.application.name}")
 	private String appName;
-
-	private AtomicLong lastTimestamp = new AtomicLong(0);
 
 	/**
 	 * Get information.
@@ -87,6 +84,7 @@ public class BusinessController {
 			}).start();
 		}
 		count.await();
+		index.set(0);
 		return builder.toString();
 	}
 

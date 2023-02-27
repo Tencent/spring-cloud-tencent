@@ -6,3 +6,4 @@
 - [refactor:move loadbalancer to discovery module.](https://github.com/Tencent/spring-cloud-tencent/pull/846)
 - [feat:update spring framework version of 2022 branch.](https://github.com/Tencent/spring-cloud-tencent/pull/851)
 - [feature:add PolarisRateLimiterLimitedFallback spi.](https://github.com/Tencent/spring-cloud-tencent/pull/857)
+- [fix:fix the error capture of rate limit exception.](https://github.com/Tencent/spring-cloud-tencent/pull/860)
