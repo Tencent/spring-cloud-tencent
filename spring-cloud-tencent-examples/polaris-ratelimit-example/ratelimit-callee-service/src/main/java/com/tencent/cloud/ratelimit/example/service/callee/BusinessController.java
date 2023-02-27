@@ -91,6 +91,7 @@ public class BusinessController {
 			}).start();
 		}
 		count.await();
+		index.set(0);
 		return builder.toString();
 	}
 

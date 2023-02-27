@@ -44,6 +44,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.NonNull;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
@@ -69,6 +70,9 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		String[] handlerBeanNames = applicationContext.getBeanNamesForType(ResponseErrorHandler.class);
 		if (handlerBeanNames.length == 1) {
+			if (this.delegateHandler == null) {
+				this.delegateHandler = new DefaultResponseErrorHandler();
+			}
 			return;
 		}
 
@@ -207,7 +211,11 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		return resultRequest;
 	}
 
-	public void setDelegateHandler(ResponseErrorHandler delegateHandler) {
+	protected ResponseErrorHandler getDelegateHandler() {
+		return this.delegateHandler;
+	}
+
+	protected void setDelegateHandler(ResponseErrorHandler delegateHandler) {
 		this.delegateHandler = delegateHandler;
 	}
 }
