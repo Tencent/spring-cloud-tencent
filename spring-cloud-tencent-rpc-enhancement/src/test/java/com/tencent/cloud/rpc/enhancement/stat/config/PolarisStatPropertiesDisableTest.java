@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
-import com.tencent.polaris.client.api.SDKContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,9 +40,6 @@ public class PolarisStatPropertiesDisableTest {
 
 	@Autowired
 	private PolarisStatProperties polarisStatProperties;
-
-	@Autowired
-	private SDKContext sdkContext;
 
 	@Test
 	public void testDefaultInitialization() {
