@@ -5,3 +5,4 @@
 - [docs:Add license checker GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/841)
 - [refactor:move loadbalancer to discovery module.](https://github.com/Tencent/spring-cloud-tencent/pull/845)
 - [feature:add PolarisRateLimiterLimitedFallback spi. ](https://github.com/Tencent/spring-cloud-tencent/pull/858)
+- [fix:fix the error capture of rate limit exception.](https://github.com/Tencent/spring-cloud-tencent/pull/861)
