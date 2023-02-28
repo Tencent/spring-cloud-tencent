@@ -17,12 +17,17 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.example;
 
+import reactor.core.publisher.Mono;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Circuit breaker example caller controller.
@@ -39,6 +44,15 @@ public class ServiceAController {
 	@Autowired
 	private RestTemplate restTemplate;
 
+	@Autowired
+	private ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory;
+
+	@Autowired
+	private CircuitBreakerFactory circuitBreakerFactory;
+
+	@Autowired
+	private WebClient.Builder webClientBuilder;
+
 	/**
 	 * Get info of Service B by Feign.
 	 * @return info of Service B
@@ -48,9 +62,34 @@ public class ServiceAController {
 		return polarisServiceB.info();
 	}
 
+	@GetMapping("/getBServiceInfoByRestTemplate1")
+	public String getBServiceInfoByRestTemplate1() {
+		return restTemplate.getForObject(ProviderBFallbackConstant.API, String.class);
+	}
+
 	@GetMapping("/getBServiceInfoByRestTemplate")
 	public String getBServiceInfoByRestTemplate() {
-		return restTemplate.getForObject("http://polaris-circuitbreaker-example-b/example/service/b/info", String.class);
+		return circuitBreakerFactory
+				.create(ProviderBFallbackConstant.SERVICE_NAME)
+				.run(() ->
+						restTemplate.getForObject(ProviderBFallbackConstant.API, String.class),
+						throwable -> ProviderBFallbackConstant.FALLBACK_MESSAGE
+				);
+	}
+
+	@GetMapping("/getBServiceInfoByWebClient")
+	public Mono<String> getBServiceInfoByWebClient() {
+		return webClientBuilder
+				.build()
+				.get()
+				.uri(ProviderBFallbackConstant.API)
+				.retrieve()
+				.bodyToMono(String.class)
+				.transform(it ->
+						reactiveCircuitBreakerFactory
+								.create(ProviderBFallbackConstant.SERVICE_NAME)
+								.run(it, throwable -> Mono.just(ProviderBFallbackConstant.FALLBACK_MESSAGE))
+				);
 	}
 
 	/**
@@ -64,4 +103,5 @@ public class ServiceAController {
 				String.class);
 		return entity.getBody();
 	}
+
 }

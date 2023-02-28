@@ -24,6 +24,8 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 /**
  * Circuit breaker example caller application.
@@ -41,6 +43,16 @@ public class ServiceA {
 	@Bean
 	@LoadBalanced
 	public RestTemplate restTemplate() {
-		return new RestTemplate();
+		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + ProviderBFallbackConstant.SERVICE_NAME);
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setUriTemplateHandler(uriBuilderFactory);
+		return restTemplate;
+	}
+
+	@LoadBalanced
+	@Bean
+	WebClient.Builder webClientBuilder() {
+		return WebClient.builder()
+				.baseUrl("http://" + ProviderBFallbackConstant.SERVICE_NAME);
 	}
 }

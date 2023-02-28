@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.circuitbreaker.example;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -25,7 +26,8 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Haotian Zhang
  */
-@FeignClient(name = "polaris-circuitbreaker-example-b", fallback = ProviderBFallback.class)
+@Primary
+@FeignClient(name = ProviderBFallbackConstant.SERVICE_NAME, fallback = ProviderBFallback.class)
 public interface ProviderB {
 
 	/**
@@ -33,6 +35,6 @@ public interface ProviderB {
 	 *
 	 * @return info of service B
 	 */
-	@GetMapping("/example/service/b/info")
+	@GetMapping(ProviderBFallbackConstant.API)
 	String info();
 }
