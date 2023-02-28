@@ -20,13 +20,13 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-circuitbreaker</artifactId>
+			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 		</dependency>
 
 		<dependency>
@@ -40,8 +40,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-circuitbreaker-spring-retry</artifactId>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-circuitbreaker</artifactId>
 		</dependency>
 
 		<dependency>

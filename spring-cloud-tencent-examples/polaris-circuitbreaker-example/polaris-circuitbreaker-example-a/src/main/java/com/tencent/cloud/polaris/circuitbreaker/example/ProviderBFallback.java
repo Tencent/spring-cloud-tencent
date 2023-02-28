@@ -29,6 +29,6 @@ public class ProviderBFallback implements ProviderB {
 
 	@Override
 	public String info() {
-		return "trigger the refuse for service b";
+		return ProviderBFallbackConstant.FALLBACK_MESSAGE;
 	}
 }
