@@ -25,6 +25,7 @@ import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.feign.DefaultEnhancedFeignPluginRunner;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignPluginRunner;
+import com.tencent.cloud.rpc.enhancement.feign.PolarisCircuitBreakerNameResolver;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
@@ -72,6 +73,11 @@ public class RpcEnhancementAutoConfiguration {
 	@AutoConfigureBefore(name = "org.springframework.cloud.openfeign.FeignAutoConfiguration")
 	@Role(RootBeanDefinition.ROLE_INFRASTRUCTURE)
 	protected static class PolarisFeignClientAutoConfiguration {
+
+		@Bean
+		public PolarisCircuitBreakerNameResolver polarisCircuitBreakerNameResolver() {
+			return new PolarisCircuitBreakerNameResolver();
+		}
 
 		@Bean
 		public EnhancedFeignPluginRunner enhancedFeignPluginRunner(
@@ -137,4 +143,5 @@ public class RpcEnhancementAutoConfiguration {
 			return new BlockingLoadBalancerClientAspect();
 		}
 	}
+
 }
