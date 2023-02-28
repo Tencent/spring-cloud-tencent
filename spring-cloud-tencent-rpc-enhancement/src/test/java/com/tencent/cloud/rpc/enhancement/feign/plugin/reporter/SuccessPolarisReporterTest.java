@@ -22,6 +22,7 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
+import com.tencent.polaris.api.rpc.ServiceCallResult;
 import feign.Request;
 import feign.Response;
 import org.junit.AfterClass;
@@ -38,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link SuccessPolarisReporter}.
@@ -59,7 +62,7 @@ public class SuccessPolarisReporterTest {
 	public static void beforeClass() {
 		mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
 		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(Request.class), any(RetStatus.class)))
-				.thenReturn(null);
+				.thenReturn(mock(ServiceCallResult.class));
 	}
 
 	@AfterClass
@@ -85,10 +88,16 @@ public class SuccessPolarisReporterTest {
 		Response response = mock(Response.class);
 		doReturn(502).when(response).status();
 
-		EnhancedFeignContext context = new EnhancedFeignContext();
-		context.setRequest(request);
-		context.setResponse(response);
+		EnhancedFeignContext context = mock(EnhancedFeignContext.class);
+		doReturn(request).when(context).getRequest();
+		doReturn(response).when(context).getResponse();
+		// test not report
 		successPolarisReporter.run(context);
+		verify(context, times(0)).getRequest();
+		// test do report
+		doReturn(true).when(reporterProperties).isEnabled();
+		successPolarisReporter.run(context);
+		verify(context, times(1)).getRequest();
 	}
 
 	@Test

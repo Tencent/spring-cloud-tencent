@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.config;
+package com.tencent.cloud.rpc.enhancement.stat.config;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,34 +27,25 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.MOVED_PERMANENTLY;
-import static org.springframework.http.HttpStatus.MULTIPLE_CHOICES;
-import static org.springframework.http.HttpStatus.Series.CLIENT_ERROR;
-import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
 
 /**
- * Test For {@link RpcEnhancementReporterProperties}.
+ * Test for {@link PolarisStatProperties}.
  *
  * @author Haotian Zhang
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = RpcEnhancementReporterPropertiesTest.TestApplication.class)
+@SpringBootTest(classes = PolarisStatPropertiesDisableTest.TestApplication.class)
 @ActiveProfiles("disable")
-public class RpcEnhancementReporterPropertiesTest {
+public class PolarisStatPropertiesDisableTest {
 
 	@Autowired
-	private RpcEnhancementReporterProperties rpcEnhancementReporterProperties;
+	private PolarisStatProperties polarisStatProperties;
 
 	@Test
 	public void testDefaultInitialization() {
-		assertThat(rpcEnhancementReporterProperties).isNotNull();
-		assertThat(rpcEnhancementReporterProperties.isIgnoreInternalServerError()).isFalse();
-		assertThat(rpcEnhancementReporterProperties.getSeries()).isNotEmpty();
-		assertThat(rpcEnhancementReporterProperties.getSeries().get(0)).isEqualTo(CLIENT_ERROR);
-		assertThat(rpcEnhancementReporterProperties.getSeries().get(1)).isEqualTo(SERVER_ERROR);
-		assertThat(rpcEnhancementReporterProperties.getStatuses()).isNotEmpty();
-		assertThat(rpcEnhancementReporterProperties.getStatuses().get(0)).isEqualTo(MULTIPLE_CHOICES);
-		assertThat(rpcEnhancementReporterProperties.getStatuses().get(1)).isEqualTo(MOVED_PERMANENTLY);
+		assertThat(polarisStatProperties).isNotNull();
+		assertThat(polarisStatProperties.isEnabled()).isFalse();
+		assertThat(polarisStatProperties.getHost()).isBlank();
 	}
 
 	@SpringBootApplication
