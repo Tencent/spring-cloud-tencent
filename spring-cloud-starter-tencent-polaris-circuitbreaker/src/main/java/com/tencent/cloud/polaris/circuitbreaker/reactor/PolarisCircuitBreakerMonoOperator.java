@@ -17,9 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.reactor;
 
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.api.InvokeHandler;
-import com.tencent.polaris.circuitbreak.api.pojo.InvokeContext;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,7 @@ import reactor.core.publisher.MonoOperator;
 import reactor.core.publisher.Operators;
 
 /**
- * MonoOperator for PolarisCircuitBreaker
+ * MonoOperator for PolarisCircuitBreaker.
  *
  * @author seanyu 2023-02-27
  */

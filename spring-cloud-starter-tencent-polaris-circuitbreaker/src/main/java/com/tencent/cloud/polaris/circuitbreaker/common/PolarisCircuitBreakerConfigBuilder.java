@@ -15,14 +15,14 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.common;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 
 import org.springframework.cloud.client.circuitbreaker.ConfigBuilder;
 
 /**
- * PolarisCircuitBreakerConfigBuilder
+ * PolarisCircuitBreakerConfigBuilder.
  *
  * @author seanyu 2023-02-27
  */

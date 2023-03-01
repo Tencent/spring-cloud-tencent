@@ -19,13 +19,15 @@ package com.tencent.cloud.polaris.circuitbreaker;
 
 import java.util.function.Function;
 
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
+import com.tencent.cloud.polaris.circuitbreaker.util.PolarisCircuitBreakerUtils;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 
 /**
- * PolarisCircuitBreakerFactory
+ * PolarisCircuitBreakerFactory.
  *
  * @author seanyu 2023-02-27
  */
