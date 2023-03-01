@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.circuitbreaker.reactor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.api.InvokeHandler;
 import com.tencent.polaris.circuitbreak.api.pojo.InvokeContext;
 import org.reactivestreams.Subscription;
@@ -29,7 +28,7 @@ import reactor.core.publisher.BaseSubscriber;
 import reactor.util.context.Context;
 
 /**
- * Reactor Subscriber for PolarisCircuitBreaker
+ * Reactor Subscriber for PolarisCircuitBreaker.
  *
  * @author seanyu 2023-02-27
  */

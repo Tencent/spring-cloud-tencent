@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisResultToErrorCode;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.api.FunctionalDecorator;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 
 /**
- * PolarisCircuitBreaker
+ * PolarisCircuitBreaker.
  *
  * @author seanyu 2023-02-27
  */
@@ -44,6 +45,7 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 	public PolarisCircuitBreaker(String sourceNamespace, String sourceService, String namespace, String service, String method, CircuitBreakAPI circuitBreakAPI) {
 		FunctionalDecoratorRequest makeDecoratorRequest = new FunctionalDecoratorRequest(new ServiceKey(namespace, service), method);
 		makeDecoratorRequest.setSourceService(new ServiceKey(sourceNamespace, sourceService));
+		makeDecoratorRequest.setResultToErrorCode(new PolarisResultToErrorCode());
 		this.decorator = circuitBreakAPI.makeFunctionalDecorator(makeDecoratorRequest);
 	}
 
