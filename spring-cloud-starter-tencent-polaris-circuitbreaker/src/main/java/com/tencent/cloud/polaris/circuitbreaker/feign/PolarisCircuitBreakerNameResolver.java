@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.feign;
+package com.tencent.cloud.polaris.circuitbreaker.feign;
 
 import java.lang.reflect.Method;
 
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
 /**
- * PolarisCircuitBreakerNameResolver
+ * PolarisCircuitBreakerNameResolver.
  *
  * @author seanyu 2023-02-27
  */

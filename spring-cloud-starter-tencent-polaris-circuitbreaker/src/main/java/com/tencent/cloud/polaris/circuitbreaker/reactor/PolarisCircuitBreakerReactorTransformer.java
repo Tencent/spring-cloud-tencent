@@ -19,15 +19,13 @@ package com.tencent.cloud.polaris.circuitbreaker.reactor;
 
 import java.util.function.Function;
 
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.api.InvokeHandler;
-import com.tencent.polaris.circuitbreak.api.pojo.InvokeContext;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Reactor Transformer for PolarisCircuitBreaker
+ * Reactor Transformer for PolarisCircuitBreaker.
  *
  * @author seanyu 2023-02-27
  */

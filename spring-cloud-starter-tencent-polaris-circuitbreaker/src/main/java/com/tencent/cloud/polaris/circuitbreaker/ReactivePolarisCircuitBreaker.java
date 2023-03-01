@@ -19,20 +19,20 @@ package com.tencent.cloud.polaris.circuitbreaker;
 
 import java.util.function.Function;
 
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisResultToErrorCode;
 import com.tencent.cloud.polaris.circuitbreaker.reactor.PolarisCircuitBreakerReactorTransformer;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.api.InvokeHandler;
 import com.tencent.polaris.circuitbreak.api.pojo.FunctionalDecoratorRequest;
 import com.tencent.polaris.circuitbreak.api.pojo.InvokeContext;
-import com.tencent.polaris.circuitbreak.client.api.DefaultInvokeHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 
 /**
- * ReactivePolarisCircuitBreaker
+ * ReactivePolarisCircuitBreaker.
  *
  * @author seanyu 2023-02-27
  */
@@ -43,6 +43,7 @@ public class ReactivePolarisCircuitBreaker implements ReactiveCircuitBreaker {
 	public ReactivePolarisCircuitBreaker(String sourceNamespace, String sourceService, String namespace, String service, String method, CircuitBreakAPI circuitBreakAPI) {
 		InvokeContext.RequestContext requestContext = new FunctionalDecoratorRequest(new ServiceKey(namespace, service), method);
 		requestContext.setSourceService(new ServiceKey(sourceNamespace, sourceService));
+		requestContext.setResultToErrorCode(new PolarisResultToErrorCode());
 		this.invokeHandler = circuitBreakAPI.makeInvokeHandler(requestContext);
 	}
 
