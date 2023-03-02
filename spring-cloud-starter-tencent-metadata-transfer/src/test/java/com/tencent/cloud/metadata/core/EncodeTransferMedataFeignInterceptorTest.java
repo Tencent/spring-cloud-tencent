@@ -17,17 +17,14 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.io.UnsupportedEncodingException;
-
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,11 +32,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
@@ -47,7 +44,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  *
  * @author Haotian Zhang
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT,
 		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
 		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
@@ -62,11 +59,9 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	@Test
 	public void testTransitiveMetadataFromApplicationConfig() {
 		String metadata = testFeign.test();
-		Assertions.assertThat(metadata).isEqualTo("2");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
+		assertThat(metadata).isEqualTo("2");
+		assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
 	}
 
 	@SpringBootApplication
@@ -75,9 +70,7 @@ public class EncodeTransferMedataFeignInterceptorTest {
 	protected static class TestApplication {
 
 		@RequestMapping("/test")
-		public String test(
-				@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String customMetadataStr)
-				throws UnsupportedEncodingException {
+		public String test() {
 			return MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b");
 		}
 
@@ -86,7 +79,6 @@ public class EncodeTransferMedataFeignInterceptorTest {
 
 			@RequestMapping("/test")
 			String test();
-
 		}
 
 		@Configuration
@@ -94,8 +86,7 @@ public class EncodeTransferMedataFeignInterceptorTest {
 
 			@Override
 			public void apply(RequestTemplate template) {
-				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA,
-						"{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
+				template.header(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"a\":\"11\",\"b\":\"22\",\"c\":\"33\"}");
 			}
 		}
 	}

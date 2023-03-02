@@ -32,8 +32,8 @@ import com.tencent.polaris.client.flow.BaseFlow;
 import com.tencent.polaris.client.flow.DefaultFlowControlParam;
 import com.tencent.polaris.client.flow.FlowControlParam;
 import com.tencent.polaris.client.flow.ResourcesResponse;
-import com.tencent.polaris.client.pb.RateLimitProto;
-import com.tencent.polaris.client.pb.RoutingProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

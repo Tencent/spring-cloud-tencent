@@ -20,29 +20,28 @@ package com.tencent.cloud.plugin.gateway.staining.rule;
 
 import com.tencent.polaris.configuration.api.core.ConfigFile;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.when;
-
 
 /**
  * Test for {@link StainingRuleManager}.
  * @author lepdou 2022-07-12
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StainingRuleManagerTest {
-
-	@Mock
-	private ConfigFileService configFileService;
 
 	private final String testNamespace = "testNamespace";
 	private final String testGroup = "testGroup";
 	private final String testFileName = "rule.json";
+	@Mock
+	private ConfigFileService configFileService;
 
 	@Test
 	public void testNormalRule() {
@@ -77,43 +76,45 @@ public class StainingRuleManagerTest {
 
 		StainingRule stainingRule = stainingRuleManager.getStainingRule();
 
-		Assert.assertNotNull(stainingRule);
-		Assert.assertEquals(1, stainingRule.getRules().size());
+		assertThat(stainingRule).isNotNull();
+		assertThat(stainingRule.getRules().size()).isEqualTo(1);
 		StainingRule.Rule rule = stainingRule.getRules().get(0);
-		Assert.assertEquals(1, rule.getConditions().size());
-		Assert.assertEquals(1, rule.getLabels().size());
+		assertThat(rule.getConditions().size()).isEqualTo(1);
+		assertThat(rule.getLabels().size()).isEqualTo(1);
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void testWrongRule() {
-		RuleStainingProperties ruleStainingProperties = new RuleStainingProperties();
-		ruleStainingProperties.setNamespace(testNamespace);
-		ruleStainingProperties.setGroup(testGroup);
-		ruleStainingProperties.setFileName(testFileName);
+		assertThatCode(() -> {
+			RuleStainingProperties ruleStainingProperties = new RuleStainingProperties();
+			ruleStainingProperties.setNamespace(testNamespace);
+			ruleStainingProperties.setGroup(testGroup);
+			ruleStainingProperties.setFileName(testFileName);
 
-		ConfigFile configFile = Mockito.mock(ConfigFile.class);
-		when(configFile.getContent()).thenReturn("{\n"
-				+ "    \"rules\":[\n"
-				+ "        {\n"
-				+ "            \"conditionsxxxx\":[\n"
-				+ "                {\n"
-				+ "                    \"key\":\"${http.query.uid}\",\n"
-				+ "                    \"values\":[\"1000\"],\n"
-				+ "                    \"operation\":\"EQUALS\"\n"
-				+ "                }\n"
-				+ "            ],\n"
-				+ "            \"labels\":[\n"
-				+ "                {\n"
-				+ "                    \"key\":\"env\",\n"
-				+ "                    \"value\":\"blue\"\n"
-				+ "                }\n"
-				+ "            ]\n"
-				+ "        }\n"
-				+ "    ]\n"
-				+ "}");
-		when(configFileService.getConfigFile(testNamespace, testGroup, testFileName)).thenReturn(configFile);
+			ConfigFile configFile = Mockito.mock(ConfigFile.class);
+			when(configFile.getContent()).thenReturn("{\n"
+					+ "    \"rules\":[\n"
+					+ "        {\n"
+					+ "            \"conditionsxxxx\":[\n"
+					+ "                {\n"
+					+ "                    \"key\":\"${http.query.uid}\",\n"
+					+ "                    \"values\":[\"1000\"],\n"
+					+ "                    \"operation\":\"EQUALS\"\n"
+					+ "                }\n"
+					+ "            ],\n"
+					+ "            \"labels\":[\n"
+					+ "                {\n"
+					+ "                    \"key\":\"env\",\n"
+					+ "                    \"value\":\"blue\"\n"
+					+ "                }\n"
+					+ "            ]\n"
+					+ "        }\n"
+					+ "    ]\n"
+					+ "}");
+			when(configFileService.getConfigFile(testNamespace, testGroup, testFileName)).thenReturn(configFile);
 
-		new StainingRuleManager(ruleStainingProperties, configFileService);
+			new StainingRuleManager(ruleStainingProperties, configFileService);
+		}).isInstanceOf(RuntimeException.class);
 	}
 
 	@Test
@@ -128,6 +129,6 @@ public class StainingRuleManagerTest {
 		when(configFileService.getConfigFile(testNamespace, testGroup, testFileName)).thenReturn(configFile);
 
 		StainingRuleManager stainingRuleManager = new StainingRuleManager(ruleStainingProperties, configFileService);
-		Assert.assertNull(stainingRuleManager.getStainingRule());
+		assertThat(stainingRuleManager.getStainingRule()).isNull();
 	}
 }

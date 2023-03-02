@@ -22,10 +22,10 @@ import com.tencent.polaris.api.plugin.common.ValueContext;
 import com.tencent.polaris.api.plugin.route.LocationLevel;
 import com.tencent.polaris.client.api.SDKContext;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.when;
 
@@ -34,19 +34,16 @@ import static org.mockito.Mockito.when;
  *
  * @author wh
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class PostInitPolarisSDKContextTest {
 
+	private static final String REGION = "region";
+	private static final String ZONE = "zone";
+	private static final String CAMPUS = "campus";
 	@Mock
 	private SDKContext sdkContext;
 	@Mock
 	private StaticMetadataManager staticMetadataManager;
-
-	private static final String REGION = "region";
-
-	private static final String ZONE = "zone";
-
-	private static final String CAMPUS = "campus";
 
 	@Test
 	public void testConstructor() {

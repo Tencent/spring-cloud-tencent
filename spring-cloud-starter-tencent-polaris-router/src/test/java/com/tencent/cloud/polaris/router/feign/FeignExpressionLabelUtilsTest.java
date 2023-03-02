@@ -20,14 +20,14 @@ package com.tencent.cloud.polaris.router.feign;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
-import com.google.common.collect.Sets;
 import feign.Request;
 import feign.RequestTemplate;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.util.StringUtils;
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link FeignExpressionLabelUtils}.
@@ -53,14 +53,14 @@ public class FeignExpressionLabelUtilsTest {
 		String labelKey4 = "${http.header.}";
 		String labelKey5 = "${http.header.teacher.age}";
 		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate,
-				Sets.newHashSet(labelKey1, labelKey2, labelKey3, labelKey4, labelKey5));
+				Stream.of(labelKey1, labelKey2, labelKey3, labelKey4, labelKey5).collect(toSet()));
 
-		Assert.assertFalse(result.isEmpty());
-		Assert.assertEquals(headerValue, result.get(labelKey1));
-		Assert.assertEquals(headerValue2, result.get(labelKey5));
-		Assert.assertTrue(StringUtils.isEmpty(result.get(labelKey2)));
-		Assert.assertTrue(StringUtils.isEmpty(result.get(labelKey3)));
-		Assert.assertTrue(StringUtils.isEmpty(result.get(labelKey4)));
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(labelKey1)).isEqualTo(headerValue);
+		assertThat(result.get(labelKey5)).isEqualTo(headerValue2);
+		assertThat(result.get(labelKey2)).isBlank();
+		assertThat(result.get(labelKey3)).isBlank();
+		assertThat(result.get(labelKey4)).isBlank();
 	}
 
 	@Test
@@ -80,14 +80,14 @@ public class FeignExpressionLabelUtilsTest {
 		String labelKey4 = "${http.query.}";
 		String labelKey5 = "${http.query.teacher.age}";
 		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate,
-				Sets.newHashSet(labelKey1, labelKey2, labelKey3, labelKey4, labelKey5));
+				Stream.of(labelKey1, labelKey2, labelKey3, labelKey4, labelKey5).collect(toSet()));
 
-		Assert.assertFalse(result.isEmpty());
-		Assert.assertEquals(headerValue, result.get(labelKey1));
-		Assert.assertEquals(headerValue2, result.get(labelKey5));
-		Assert.assertTrue(StringUtils.isEmpty(result.get(labelKey2)));
-		Assert.assertTrue(StringUtils.isEmpty(result.get(labelKey3)));
-		Assert.assertTrue(StringUtils.isEmpty(result.get(labelKey4)));
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(labelKey1)).isEqualTo(headerValue);
+		assertThat(result.get(labelKey5)).isEqualTo(headerValue2);
+		assertThat(result.get(labelKey2)).isBlank();
+		assertThat(result.get(labelKey3)).isBlank();
+		assertThat(result.get(labelKey4)).isBlank();
 	}
 
 	@Test
@@ -96,11 +96,11 @@ public class FeignExpressionLabelUtilsTest {
 		requestTemplate.method(Request.HttpMethod.GET);
 
 		String labelKey1 = "${http.method}";
-		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate,
-				Sets.newHashSet(labelKey1));
+		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate, Stream.of(labelKey1)
+				.collect(toSet()));
 
-		Assert.assertFalse(result.isEmpty());
-		Assert.assertEquals("GET", result.get(labelKey1));
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(labelKey1)).isEqualTo("GET");
 	}
 
 	@Test
@@ -114,11 +114,11 @@ public class FeignExpressionLabelUtilsTest {
 		requestTemplate = requestTemplate.resolve(new HashMap<>());
 
 		String labelKey1 = "${http.uri}";
-		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate,
-				Sets.newHashSet(labelKey1));
+		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate, Stream.of(labelKey1)
+				.collect(toSet()));
 
-		Assert.assertFalse(result.isEmpty());
-		Assert.assertEquals(uri, result.get(labelKey1));
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(labelKey1)).isEqualTo(uri);
 	}
 
 	@Test
@@ -132,10 +132,10 @@ public class FeignExpressionLabelUtilsTest {
 		requestTemplate = requestTemplate.resolve(new HashMap<>());
 
 		String labelKey1 = "${http.uri}";
-		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate,
-				Sets.newHashSet(labelKey1));
+		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate, Stream.of(labelKey1)
+				.collect(toSet()));
 
-		Assert.assertFalse(result.isEmpty());
-		Assert.assertEquals(uri, result.get(labelKey1));
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(labelKey1)).isEqualTo(uri);
 	}
 }

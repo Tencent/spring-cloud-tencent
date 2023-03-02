@@ -20,19 +20,19 @@ package com.tencent.cloud.polaris.router.beanprocessor;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerInterceptor;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-05-26
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LoadBalancerInterceptorBeanPostProcessorTest {
 
 	@Mock
@@ -65,7 +65,7 @@ public class LoadBalancerInterceptorBeanPostProcessorTest {
 
 			Object bean = processor.postProcessBeforeInitialization(loadBalancerInterceptor, "");
 
-			Assert.assertTrue(bean instanceof PolarisLoadBalancerInterceptor);
+			assertThat(bean).isInstanceOf(PolarisLoadBalancerInterceptor.class);
 		}
 	}
 
@@ -76,8 +76,8 @@ public class LoadBalancerInterceptorBeanPostProcessorTest {
 
 		OtherBean otherBean = new OtherBean();
 		Object bean = processor.postProcessBeforeInitialization(otherBean, "");
-		Assert.assertFalse(bean instanceof PolarisLoadBalancerInterceptor);
-		Assert.assertTrue(bean instanceof OtherBean);
+		assertThat(bean).isNotInstanceOf(PolarisLoadBalancerInterceptor.class);
+		assertThat(bean).isInstanceOf(OtherBean.class);
 	}
 
 	static class OtherBean {
