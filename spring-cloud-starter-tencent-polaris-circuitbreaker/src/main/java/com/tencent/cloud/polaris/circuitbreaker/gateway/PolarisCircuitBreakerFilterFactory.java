@@ -85,7 +85,7 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 		super(reactiveCircuitBreakerFactory, dispatcherHandlerProvider);
 		this.reactiveCircuitBreakerFactory = reactiveCircuitBreakerFactory;
 		this.dispatcherHandlerProvider = dispatcherHandlerProvider;
-		if (discoveryClient != null && properties!= null){
+		if (discoveryClient != null && properties != null) {
 			if (StringUtils.hasText(properties.getRouteIdPrefix())) {
 				routeIdPrefix = properties.getRouteIdPrefix();
 			}
@@ -107,9 +107,9 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 		return dispatcherHandler;
 	}
 
-	private String getCircuitBreakerId(Config config){
+	private String getCircuitBreakerId(Config config) {
 		if (!StringUtils.hasText(config.getName()) && StringUtils.hasText(config.getRouteId())) {
-			if (routeIdPrefix != null && config.getRouteId().startsWith(routeIdPrefix)){
+			if (routeIdPrefix != null && config.getRouteId().startsWith(routeIdPrefix)) {
 				return config.getRouteId().replace(routeIdPrefix, "");
 			}
 			return config.getRouteId();
@@ -127,8 +127,8 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 		}
 	}
 
-	private List<HttpStatus> getSeriesStatus(String series){
-		if (!Arrays.asList("1**","2**","3**","4**","5**").contains(series)){
+	private List<HttpStatus> getSeriesStatus(String series) {
+		if (!Arrays.asList("1**", "2**", "3**", "4**", "5**").contains(series)) {
 			throw new InvalidPropertyException(Config.class, "statusCodes", "polaris circuit breaker status code can only be a numeric http status, or a http series pattern, e.g. [\"1**\",\"2**\",\"3**\",\"4**\",\"5**\"]");
 		}
 		HttpStatus[] allHttpStatus = HttpStatus.values();

@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
 import com.tencent.cloud.polaris.circuitbreaker.ReactivePolarisCircuitBreaker;
 import com.tencent.cloud.polaris.circuitbreaker.ReactivePolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
