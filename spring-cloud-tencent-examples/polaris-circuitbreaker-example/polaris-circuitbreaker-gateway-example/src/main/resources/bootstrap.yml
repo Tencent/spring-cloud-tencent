@@ -35,8 +35,7 @@ spring:
           'filters[1]':
             name: CircuitBreaker
             args:
-              name: 'serviceId'
-              statusCodes: 502
+              statusCodes: '''4**,502'''
               fallbackUri: '''forward:/polaris-fallback'''
 #      routes:
 #        - id: polaris-circuitbreaker-callee-service
@@ -47,7 +46,6 @@ spring:
 #            - StripPrefix=1
 #            - name: CircuitBreaker
 #              args:
-#                name: polaris-circuitbreaker-callee-service
 #                statusCodes: 502
 #                fallbackUri: forward:/polaris-fallback
 logging:
