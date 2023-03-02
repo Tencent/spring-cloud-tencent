@@ -137,5 +137,4 @@ public class RpcEnhancementAutoConfiguration {
 			return new BlockingLoadBalancerClientAspect();
 		}
 	}
-
 }
