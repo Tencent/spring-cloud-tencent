@@ -15,46 +15,41 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.util;
+package com.tencent.cloud.rpc.enhancement.stat.config;
 
-import org.assertj.core.util.Maps;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link OkHttpUtil}.
+ * Test for {@link PolarisStatProperties}.
  *
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = OkHttpUtilTest.TestApplication.class)
-public class OkHttpUtilTest {
+@SpringBootTest(classes = PolarisStatPropertiesDisableTest.TestApplication.class)
+@ActiveProfiles("disable")
+public class PolarisStatPropertiesDisableTest {
 
-	@LocalServerPort
-	private int port;
+	@Autowired
+	private PolarisStatProperties polarisStatProperties;
 
 	@Test
-	public void testGet() {
-		assertThat(OkHttpUtil.get("http://localhost:" + port + "/test", Maps.newHashMap("key", "value"))).isTrue();
-		assertThat(OkHttpUtil.get("http://localhost:" + port + "/error", Maps.newHashMap("key", "value"))).isFalse();
-		assertThat(OkHttpUtil.get("http://localhost:55555/error", Maps.newHashMap("key", "value"))).isFalse();
+	public void testDefaultInitialization() {
+		assertThat(polarisStatProperties).isNotNull();
+		assertThat(polarisStatProperties.isEnabled()).isFalse();
+		assertThat(polarisStatProperties.getHost()).isBlank();
 	}
 
 	@SpringBootApplication
-	@RestController
-	static class TestApplication {
-		@GetMapping("/test")
-		public String test() {
-			return "test";
-		}
+	protected static class TestApplication {
+
 	}
 }

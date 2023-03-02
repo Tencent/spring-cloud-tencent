@@ -13,36 +13,27 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.common.util;
+package com.tencent.cloud.polaris.ratelimit.filter;
 
-import java.io.IOException;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.http.MediaType;
 
 /**
- * test for {@link ResourceFileUtils}.
+ * JsonPolarisRateLimiterLimitedFallback.
  *
- * @author lepdou 2022-05-27
+ * @author Lingxiao.Wu
  */
-@ExtendWith(MockitoExtension.class)
-public class ResourceFileUtilsTest {
-
-	@Test
-	public void testReadExistedFile() throws IOException {
-		String content = ResourceFileUtils.readFile("test.txt");
-		assertThat(content).isEqualTo("just for test");
+public class JsonPolarisRateLimiterLimitedFallback implements PolarisRateLimiterLimitedFallback {
+	@Override
+	public MediaType mediaType() {
+		return MediaType.APPLICATION_JSON;
 	}
 
-	@Test
-	public void testReadNotExistedFile() throws IOException {
-		String content = ResourceFileUtils.readFile("not_existed_test.txt");
-		assertThat(content).isEqualTo("");
+	@Override
+	public String rejectTips() {
+		return "{errMsg:RejectRequestTips提示消息}";
 	}
 }

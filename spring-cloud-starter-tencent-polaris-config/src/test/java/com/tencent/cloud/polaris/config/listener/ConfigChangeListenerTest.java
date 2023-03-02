@@ -25,8 +25,8 @@ import com.google.common.collect.Sets;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +36,7 @@ import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
@@ -45,20 +45,18 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  *
  * @author lepdou 2022-06-11
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT,
-		classes = ConfigChangeListenerTest.TestApplication.class,
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = DEFINED_PORT, classes = ConfigChangeListenerTest.TestApplication.class,
 		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
 public class ConfigChangeListenerTest {
 
+	private static final CountDownLatch hits = new CountDownLatch(2);
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 	@Autowired
 	private ConfigurableApplicationContext applicationContext;
 	@Autowired
 	private TestApplication.TestConfig testConfig;
-
-	private static final CountDownLatch hits = new CountDownLatch(2);
 
 	@Test
 	public void test() throws InterruptedException {

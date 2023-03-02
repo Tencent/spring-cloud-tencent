@@ -28,14 +28,14 @@ import com.tencent.polaris.api.rpc.ServiceCallResult;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Target;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -50,25 +50,25 @@ import static org.mockito.Mockito.mock;
  *
  * @author Haotian Zhang
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ReporterUtilsTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
 	}
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		MetadataContext.LOCAL_NAMESPACE = NAMESPACE_TEST;
 		MetadataContext.LOCAL_SERVICE = SERVICE_PROVIDER;
 	}

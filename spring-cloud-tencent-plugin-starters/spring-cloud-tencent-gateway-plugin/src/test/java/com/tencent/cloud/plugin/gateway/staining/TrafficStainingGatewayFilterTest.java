@@ -32,21 +32,20 @@ import com.tencent.cloud.plugin.gateway.staining.rule.RuleTrafficStainer;
 import com.tencent.cloud.plugin.gateway.staining.rule.StainingRuleManager;
 import com.tencent.polaris.configuration.api.core.ConfigFile;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,9 +54,12 @@ import static org.mockito.Mockito.when;
  * Test for {@link TrafficStainingGatewayFilter}.
  * @author lepdou 2022-07-12
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TrafficStainingGatewayFilterTest {
 
+	private final String testNamespace = "testNamespace";
+	private final String testGroup = "testGroup";
+	private final String testFileName = "rule.json";
 	@Mock
 	private GatewayFilterChain chain;
 	@Mock
@@ -65,12 +67,8 @@ public class TrafficStainingGatewayFilterTest {
 	@Mock
 	private ConfigFileService configFileService;
 
-	private final String testNamespace = "testNamespace";
-	private final String testGroup = "testGroup";
-	private final String testFileName = "rule.json";
-
-	@BeforeClass
-	public static void before() {
+	@BeforeAll
+	static void beforeAll() {
 		Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		when(ApplicationContextAwareUtils
 				.getProperties(any())).thenReturn("fooBar");
@@ -108,10 +106,10 @@ public class TrafficStainingGatewayFilterTest {
 		TrafficStainingGatewayFilter filter = new TrafficStainingGatewayFilter(Arrays.asList(trafficStainer1, trafficStainer2));
 		Map<String, String> result = filter.getStainedLabels(exchange);
 
-		Assert.assertFalse(CollectionUtils.isEmpty(result));
-		Assert.assertEquals("v1", result.get("k1"));
-		Assert.assertEquals("v2", result.get("k2"));
-		Assert.assertEquals("v3", result.get("k3"));
+		assertThat(result).isNotEmpty();
+		assertThat(result.get("k1")).isEqualTo("v1");
+		assertThat(result.get("k2")).isEqualTo("v2");
+		assertThat(result.get("k3")).isEqualTo("v3");
 	}
 
 	@Test
@@ -122,7 +120,7 @@ public class TrafficStainingGatewayFilterTest {
 		TrafficStainingGatewayFilter filter = new TrafficStainingGatewayFilter(null);
 		filter.filter(exchange, chain);
 		Map<String, String> map = metadataContext.getTransitiveMetadata();
-		Assert.assertTrue(CollectionUtils.isEmpty(map));
+		assertThat(map).isEmpty();
 	}
 
 	@Test
@@ -169,8 +167,8 @@ public class TrafficStainingGatewayFilterTest {
 
 		filter.filter(exchange, chain);
 		Map<String, String> map = metadataContext.getTransitiveMetadata();
-		Assert.assertNotNull(map);
-		Assert.assertEquals(1, map.size());
-		Assert.assertEquals("blue", map.get("env"));
+		assertThat(map).isNotNull();
+		assertThat(map.size()).isEqualTo(1);
+		assertThat(map.get("env")).isEqualTo("blue");
 	}
 }

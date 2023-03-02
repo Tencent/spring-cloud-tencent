@@ -19,7 +19,7 @@ package com.tencent.cloud.polaris.router.endpoint;
 
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.polaris.client.api.SDKContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -34,13 +34,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisRouterEndpointAutoConfigurationTests {
 
-	private ServiceRuleManager serviceRuleManager;
-
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					TestServiceRuleManagerConfiguration.class,
 					PolarisRouterEndpointAutoConfiguration.class))
 			.withPropertyValues("endpoints.polaris-router.enabled=true");
+	private ServiceRuleManager serviceRuleManager;
 
 	@Test
 	public void polarisRouterEndpoint() {
