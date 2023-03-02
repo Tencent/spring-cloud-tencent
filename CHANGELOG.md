@@ -8,3 +8,4 @@
 - [feature:add PolarisRateLimiterLimitedFallback spi.](https://github.com/Tencent/spring-cloud-tencent/pull/857)
 - [fix:fix the error capture of rate limit exception.](https://github.com/Tencent/spring-cloud-tencent/pull/860)
 - [feat:enable stat reporting as default.](https://github.com/Tencent/spring-cloud-tencent/pull/863)
+- [refactor:update to junit 5.](https://github.com/Tencent/spring-cloud-tencent/pull/866)

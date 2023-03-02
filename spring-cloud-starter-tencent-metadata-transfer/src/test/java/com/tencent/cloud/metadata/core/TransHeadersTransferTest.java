@@ -23,16 +23,16 @@ import java.util.Map;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -40,13 +40,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  *
  * @author lingxiao.wlx
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml"})
 public class TransHeadersTransferTest {
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		MetadataContextHolder.remove();
 	}
 
@@ -60,9 +60,9 @@ public class TransHeadersTransferTest {
 		request.addHeader("header3", "3");
 		TransHeadersTransfer.transfer(request);
 		Map<String, String> transHeadersKV = MetadataContextHolder.get().getTransHeadersKV();
-		Assertions.assertEquals(transHeadersKV.get("header1"), "1");
-		Assertions.assertEquals(transHeadersKV.get("header2"), "2");
-		Assertions.assertEquals(transHeadersKV.get("header3"), "3");
+		assertThat(transHeadersKV.get("header1")).isEqualTo("1");
+		assertThat(transHeadersKV.get("header2")).isEqualTo("2");
+		assertThat(transHeadersKV.get("header3")).isEqualTo("3");
 	}
 
 	@Test
@@ -79,8 +79,8 @@ public class TransHeadersTransferTest {
 		MockServerHttpRequest request = builder.build();
 		TransHeadersTransfer.transfer(request);
 		Map<String, String> transHeadersKV = MetadataContextHolder.get().getTransHeadersKV();
-		Assertions.assertEquals(transHeadersKV.get("header1"), JacksonUtils.serialize2Json(header1));
-		Assertions.assertEquals(transHeadersKV.get("header2"), JacksonUtils.serialize2Json(header2));
-		Assertions.assertEquals(transHeadersKV.get("header3"), JacksonUtils.serialize2Json(header3));
+		assertThat(transHeadersKV.get("header1")).isEqualTo(JacksonUtils.serialize2Json(header1));
+		assertThat(transHeadersKV.get("header2")).isEqualTo(JacksonUtils.serialize2Json(header2));
+		assertThat(transHeadersKV.get("header3")).isEqualTo(JacksonUtils.serialize2Json(header3));
 	}
 }

@@ -32,6 +32,12 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-test-mock-discovery</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Polaris dependencies end -->
 

@@ -19,9 +19,8 @@ package com.tencent.cloud.metadata.core;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,11 +30,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -43,7 +43,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  *
  * @author Haotian Zhang
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = EncodeTransferMedataRestTemplateInterceptorTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml"})
@@ -62,7 +62,7 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 		String metadata = restTemplate
 				.exchange("http://localhost:" + localServerPort + "/test", HttpMethod.GET, httpEntity, String.class)
 				.getBody();
-		Assertions.assertThat(metadata).isEqualTo("2");
+		assertThat(metadata).isEqualTo("2");
 	}
 
 	@SpringBootApplication

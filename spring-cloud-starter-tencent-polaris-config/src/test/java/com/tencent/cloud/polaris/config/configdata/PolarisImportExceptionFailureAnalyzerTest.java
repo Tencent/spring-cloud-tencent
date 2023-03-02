@@ -19,7 +19,7 @@
 package com.tencent.cloud.polaris.config.configdata;
 
 import com.tencent.polaris.api.utils.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.diagnostics.FailureAnalysis;

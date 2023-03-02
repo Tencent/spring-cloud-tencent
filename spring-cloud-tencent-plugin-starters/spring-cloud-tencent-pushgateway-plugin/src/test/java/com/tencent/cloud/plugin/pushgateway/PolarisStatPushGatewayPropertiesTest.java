@@ -18,11 +18,12 @@
 
 package com.tencent.cloud.plugin.pushgateway;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link PolarisStatPushGatewayProperties}.
@@ -42,9 +43,9 @@ public class PolarisStatPushGatewayPropertiesTest {
 	public void polarisStatPushGatewayPropertiesTest() {
 		contextRunner.run(context -> {
 			PolarisStatPushGatewayProperties polarisStatPushGatewayProperties = context.getBean(PolarisStatPushGatewayProperties.class);
-			Assert.assertTrue(polarisStatPushGatewayProperties.isEnabled());
-			Assert.assertEquals("127.0.0.1:9091", polarisStatPushGatewayProperties.getAddress());
-			Assert.assertEquals("1000", polarisStatPushGatewayProperties.getPushInterval().toString());
+			assertThat(polarisStatPushGatewayProperties.isEnabled()).isTrue();
+			assertThat(polarisStatPushGatewayProperties.getAddress()).isEqualTo("127.0.0.1:9091");
+			assertThat(polarisStatPushGatewayProperties.getPushInterval().toString()).isEqualTo("1000");
 		});
 	}
 }
