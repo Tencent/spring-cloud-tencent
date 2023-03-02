@@ -1,7 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration,\
-  com.tencent.cloud.polaris.circuitbreaker.config.ReactivePolarisCircuitBreakerAutoConfiguration,\
-  com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration,\
-  com.tencent.cloud.polaris.circuitbreaker.config.GatewayPolarisCircuitBreakerAutoConfiguration
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerBootstrapConfiguration

@@ -43,6 +43,7 @@ import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreake
 import org.springframework.cloud.gateway.support.HttpStatusHolder;
 import org.springframework.cloud.gateway.support.ServiceUnavailableException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.DispatcherHandler;
@@ -173,7 +174,7 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 				ReactiveCircuitBreaker cb = reactiveCircuitBreakerFactory.create(circuitBreakerId + "#" + path);
 				return cb.run(chain.filter(exchange).doOnSuccess(v -> {
 					if (statuses.contains(exchange.getResponse().getStatusCode())) {
-						HttpStatus status = exchange.getResponse().getStatusCode();
+						HttpStatusCode status = exchange.getResponse().getStatusCode();
 						throw new CircuitBreakerStatusCodeException(status);
 					}
 				}), t -> {

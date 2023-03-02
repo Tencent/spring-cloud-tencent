@@ -1,1 +1,4 @@
 com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration
+com.tencent.cloud.polaris.circuitbreaker.config.ReactivePolarisCircuitBreakerAutoConfiguration
+com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration
+com.tencent.cloud.polaris.circuitbreaker.config.GatewayPolarisCircuitBreakerAutoConfiguration

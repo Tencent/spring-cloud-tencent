@@ -4,6 +4,9 @@ spring:
   application:
     name: polaris-circuitbreaker-feign-example
   cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
     polaris:
       address: grpc://127.0.0.1:8091
       namespace: default
@@ -22,15 +25,6 @@ spring:
 #          ignore-internal-server-error: true
 #          series: server_error
 #          statuses: gateway_timeout, bad_gateway, service_unavailable
-
-feign:
-  circuitbreaker:
-    enabled: true
-#  compression:
-#    request:
-#      enabled: false
-#      mime-types: text/xml,application/xml,application/json
-#      min-request-size: 2048
 
 logging:
   level:
