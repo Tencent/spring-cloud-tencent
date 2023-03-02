@@ -18,12 +18,13 @@
 package com.tencent.cloud.polaris.context.config;
 
 import com.tencent.polaris.client.api.SDKContext;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link PolarisContextAutoConfiguration}.
@@ -42,7 +43,7 @@ public class PolarisContextAutoConfigurationTest {
 	public void testProperties() {
 		contextRunner.run(context -> {
 			final SDKContext sdkContext = context.getBean(SDKContext.class);
-			Assert.assertNotNull(sdkContext);
+			assertThat(sdkContext).isNotNull();
 		});
 	}
 }

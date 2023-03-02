@@ -18,10 +18,10 @@
 
 package com.tencent.cloud.polaris.config.configdata;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;
@@ -37,38 +37,27 @@ import static org.mockito.Mockito.when;
  *
  * @author wlx
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisConfigDataLocationResolverTest {
 
 	private final PolarisConfigDataLocationResolver resolver = new PolarisConfigDataLocationResolver(new DeferredLogs());
-
+	private final MockEnvironment environment = new MockEnvironment();
+	private final Binder environmentBinder = Binder.get(this.environment);
 	@Mock
 	private ConfigDataLocationResolverContext context;
-
-	private final MockEnvironment environment = new MockEnvironment();
-
-	private final Binder environmentBinder = Binder.get(this.environment);
 
 	@Test
 	public void testIsResolvable() {
 		when(context.getBinder()).thenReturn(environmentBinder);
-		assertThat(
-				this.resolver.isResolvable(this.context, ConfigDataLocation.of("configserver:")))
-				.isFalse();
-		assertThat(
-				this.resolver.isResolvable(this.context, ConfigDataLocation.of("polaris:")))
-				.isTrue();
-		assertThat(
-				this.resolver.isResolvable(this.context, ConfigDataLocation.of("polaris")))
-				.isTrue();
+		assertThat(this.resolver.isResolvable(this.context, ConfigDataLocation.of("configserver:"))).isFalse();
+		assertThat(this.resolver.isResolvable(this.context, ConfigDataLocation.of("polaris:"))).isTrue();
+		assertThat(this.resolver.isResolvable(this.context, ConfigDataLocation.of("polaris"))).isTrue();
 	}
 
 	@Test
 	public void unEnabledPolarisConfigData() {
 		environment.setProperty("spring.cloud.polaris.config.enabled", "false");
 		when(context.getBinder()).thenReturn(environmentBinder);
-		assertThat(
-				this.resolver.isResolvable(this.context, ConfigDataLocation.of("polaris:")))
-				.isFalse();
+		assertThat(this.resolver.isResolvable(this.context, ConfigDataLocation.of("polaris:"))).isFalse();
 	}
 }

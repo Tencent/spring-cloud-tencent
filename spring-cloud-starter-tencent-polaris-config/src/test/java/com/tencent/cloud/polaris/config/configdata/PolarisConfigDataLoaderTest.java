@@ -32,12 +32,11 @@ import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.config.ConfigData;
@@ -49,6 +48,7 @@ import org.springframework.core.env.PropertySource;
 
 import static com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader.CUSTOM_POLARIS_CONFIG_FILE_LOADED;
 import static com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader.INTERNAL_CONFIG_FILES_LOADED;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
  *
  * @author wlx
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisConfigDataLoaderTest {
 
 	private static final SDKContext sdkContext = SDKContext.initContext();
@@ -67,6 +67,13 @@ public class PolarisConfigDataLoaderTest {
 	private final String testNamespace = "testNamespace";
 	private final String testServiceName = "testServiceName";
 	private final String polarisConfigPropertySourceName = "polaris-config";
+
+	@AfterAll
+	static void afterAll() {
+		if (sdkContext != null) {
+			sdkContext.destroy();
+		}
+	}
 
 	@Test
 	public void loadConfigDataInternalConfigFilesTest() {
@@ -121,9 +128,9 @@ public class PolarisConfigDataLoaderTest {
 			List<PropertySource<?>> propertySources = configData.getPropertySources();
 			CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
 			propertySources.forEach(compositePropertySource::addPropertySource);
-			Assert.assertEquals("v1", compositePropertySource.getProperty("k1"));
-			Assert.assertEquals("v2", compositePropertySource.getProperty("k2"));
-			Assert.assertEquals("v3", compositePropertySource.getProperty("k3"));
+			assertThat(compositePropertySource.getProperty("k1")).isEqualTo("v1");
+			assertThat(compositePropertySource.getProperty("k2")).isEqualTo("v2");
+			assertThat(compositePropertySource.getProperty("k3")).isEqualTo("v3");
 		}
 	}
 
@@ -198,10 +205,9 @@ public class PolarisConfigDataLoaderTest {
 			CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
 			propertySources.forEach(compositePropertySource::addPropertySource);
 
-			Assert.assertEquals("v11", compositePropertySource.getProperty("k1"));
-			Assert.assertEquals("v2", compositePropertySource.getProperty("k2"));
-			Assert.assertEquals("v3", compositePropertySource.getProperty("k3"));
-
+			assertThat(compositePropertySource.getProperty("k1")).isEqualTo("v11");
+			assertThat(compositePropertySource.getProperty("k2")).isEqualTo("v2");
+			assertThat(compositePropertySource.getProperty("k3")).isEqualTo("v3");
 		}
 	}
 
@@ -272,17 +278,9 @@ public class PolarisConfigDataLoaderTest {
 			CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
 			propertySources.forEach(compositePropertySource::addPropertySource);
 
-			Assert.assertEquals("v1", compositePropertySource.getProperty("k1"));
-			Assert.assertEquals("v2", compositePropertySource.getProperty("k2"));
-			Assert.assertEquals("v3", compositePropertySource.getProperty("k3"));
-
-		}
-	}
-
-	@AfterAll
-	static void afterAll() {
-		if (sdkContext != null) {
-			sdkContext.destroy();
+			assertThat(compositePropertySource.getProperty("k1")).isEqualTo("v1");
+			assertThat(compositePropertySource.getProperty("k2")).isEqualTo("v2");
+			assertThat(compositePropertySource.getProperty("k3")).isEqualTo("v3");
 		}
 	}
 }

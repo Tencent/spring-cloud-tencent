@@ -36,14 +36,16 @@ import com.tencent.polaris.api.plugin.ratelimiter.QuotaResult;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaRequest;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -69,7 +71,8 @@ import static org.mockito.Mockito.when;
  *
  * @author Haotian Zhang, kaiy
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SpringBootTest(classes = QuotaCheckReactiveFilterTest.TestApplication.class,
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class QuotaCheckReactiveFilterTest {
@@ -82,8 +85,8 @@ public class QuotaCheckReactiveFilterTest {
 	private QuotaCheckReactiveFilter quotaCheckWithRateLimiterLimitedFallbackReactiveFilter;
 	private PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		expressionLabelUtilsMockedStatic = mockStatic(SpringWebExpressionLabelUtils.class);
 		when(SpringWebExpressionLabelUtils.resolve(any(ServerWebExchange.class), anySet()))
 				.thenReturn(Collections.singletonMap("RuleLabelResolver", "RuleLabelResolver"));
@@ -93,14 +96,14 @@ public class QuotaCheckReactiveFilterTest {
 				.thenReturn("unit-test");
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
 		expressionLabelUtilsMockedStatic.close();
 	}
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		MetadataContext.LOCAL_NAMESPACE = "TEST";
 		polarisRateLimiterLimitedFallback = new JsonPolarisRateLimiterLimitedFallback();
 

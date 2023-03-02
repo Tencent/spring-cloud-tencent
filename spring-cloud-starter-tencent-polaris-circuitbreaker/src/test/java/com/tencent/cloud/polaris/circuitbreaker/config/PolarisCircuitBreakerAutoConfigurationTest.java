@@ -21,7 +21,7 @@ import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModif
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

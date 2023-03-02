@@ -21,10 +21,12 @@ import java.io.IOException;
 
 import com.tencent.cloud.common.util.ResourceFileUtils;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.QUOTA_LIMITED_INFO;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,12 +39,14 @@ import static org.mockito.Mockito.when;
  *
  * @author Haotian Zhang
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RateLimitUtilsTest {
 
-	@BeforeClass
-	public static void beforeClass() throws IOException {
-		mockStatic(ResourceFileUtils.class);
+	private static MockedStatic<ResourceFileUtils> mockedResourceFileUtils;
+
+	@BeforeAll
+	static void beforeAll() throws IOException {
+		mockedResourceFileUtils = mockStatic(ResourceFileUtils.class);
 		when(ResourceFileUtils.readFile(anyString())).thenAnswer(invocation -> {
 			String rejectFilePath = invocation.getArgument(0).toString();
 			if (rejectFilePath.equals("exception.html")) {
@@ -52,6 +56,11 @@ public class RateLimitUtilsTest {
 				return "RejectRequestTips";
 			}
 		});
+	}
+
+	@AfterAll
+	static void afterAll() {
+		mockedResourceFileUtils.close();
 	}
 
 	@Test

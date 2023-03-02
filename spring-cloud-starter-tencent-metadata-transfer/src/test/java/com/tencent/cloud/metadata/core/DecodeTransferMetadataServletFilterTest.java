@@ -24,17 +24,17 @@ import javax.servlet.ServletException;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -42,7 +42,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  *
  * @author Haotian Zhang
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml"})
@@ -66,9 +66,9 @@ public class DecodeTransferMetadataServletFilterTest {
 		request.addHeader(MetadataConstant.HeaderName.CUSTOM_METADATA, "{\"c\": \"3\"}");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		metadataServletFilter.doFilter(request, response, filterChain);
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
+		assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
+		assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
 
 	@SpringBootApplication

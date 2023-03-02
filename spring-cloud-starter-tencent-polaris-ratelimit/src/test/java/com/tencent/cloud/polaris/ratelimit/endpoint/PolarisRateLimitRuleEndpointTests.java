@@ -24,10 +24,10 @@ import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.polaris.specification.api.v1.model.ModelProto;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
  *
  * @author shuiqingliu
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisRateLimitRuleEndpointTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
@@ -66,8 +66,8 @@ public class PolarisRateLimitRuleEndpointTests {
 	private ServiceRuleManager serviceRuleManager;
 	private PolarisRateLimitProperties polarisRateLimitProperties;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		serviceRuleManager = mock(ServiceRuleManager.class);
 		when(serviceRuleManager.getServiceRateLimitRule(any(), anyString())).thenAnswer(invocationOnMock -> {
 			String serviceName = invocationOnMock.getArgument(1).toString();

@@ -31,9 +31,9 @@ import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -52,8 +52,8 @@ public class ConditionalOnReflectRefreshTypeTest {
 
 	private static ServerSocket serverSocket;
 
-	@BeforeClass
-	public static void before() {
+	@BeforeAll
+	static void beforeAll() {
 		new Thread(() -> {
 			try {
 				serverSocket = new ServerSocket(8093);
@@ -65,8 +65,8 @@ public class ConditionalOnReflectRefreshTypeTest {
 		}).start();
 	}
 
-	@AfterClass
-	public static void after() throws IOException {
+	@AfterAll
+	static void afterAll() throws IOException {
 		serverSocket.close();
 	}
 

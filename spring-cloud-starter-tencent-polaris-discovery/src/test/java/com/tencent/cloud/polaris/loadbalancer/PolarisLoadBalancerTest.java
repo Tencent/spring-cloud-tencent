@@ -27,14 +27,14 @@ import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
  *
  * @author rod.xu
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisLoadBalancerTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
@@ -66,8 +66,8 @@ public class PolarisLoadBalancerTest {
 	@Mock
 	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
@@ -76,8 +76,8 @@ public class PolarisLoadBalancerTest {
 				LOCAL_SERVICE, "host", 8090);
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
 	}
 

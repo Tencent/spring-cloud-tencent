@@ -22,7 +22,7 @@ import com.tencent.cloud.polaris.ratelimit.RateLimitRuleLabelResolver;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

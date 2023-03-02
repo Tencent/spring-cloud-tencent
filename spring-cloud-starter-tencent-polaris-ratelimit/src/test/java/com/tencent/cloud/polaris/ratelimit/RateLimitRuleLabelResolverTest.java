@@ -23,10 +23,10 @@ import com.google.protobuf.StringValue;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.polaris.specification.api.v1.model.ModelProto;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,13 +39,13 @@ import static org.mockito.Mockito.when;
  *
  * @author Haotian Zhang
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RateLimitRuleLabelResolverTest {
 
 	private RateLimitRuleLabelResolver rateLimitRuleLabelResolver;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		ServiceRuleManager serviceRuleManager = mock(ServiceRuleManager.class);
 		when(serviceRuleManager.getServiceRateLimitRule(any(), anyString())).thenAnswer(invocationOnMock -> {
 			String serviceName = invocationOnMock.getArgument(1).toString();

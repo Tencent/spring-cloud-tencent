@@ -18,11 +18,13 @@
 package com.tencent.cloud.polaris.registry;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
@@ -31,7 +33,7 @@ import org.springframework.core.env.Environment;
 
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
@@ -42,7 +44,8 @@ import static org.mockito.Mockito.doReturn;
  *
  * @author Haotian Zhang
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class PolarisAutoServiceRegistrationTest {
 
 	@Mock
@@ -65,8 +68,8 @@ public class PolarisAutoServiceRegistrationTest {
 
 	private PolarisAutoServiceRegistration polarisAutoServiceRegistration;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		doReturn(polarisDiscoveryProperties).when(registration).getPolarisProperties();
 
 		doNothing().when(serviceRegistry).register(nullable(PolarisRegistration.class));
@@ -81,20 +84,14 @@ public class PolarisAutoServiceRegistrationTest {
 	@Test
 	public void testRegister() {
 		doReturn(false).when(registration).isRegisterEnabled();
-		try {
+		assertThatCode(() -> {
 			polarisAutoServiceRegistration.register();
-		}
-		catch (Exception e) {
-			fail();
-		}
+		}).doesNotThrowAnyException();
 
 		doReturn(true).when(registration).isRegisterEnabled();
-		try {
+		assertThatCode(() -> {
 			polarisAutoServiceRegistration.register();
-		}
-		catch (Exception e) {
-			fail();
-		}
+		}).doesNotThrowAnyException();
 	}
 
 	@Test
@@ -105,20 +102,14 @@ public class PolarisAutoServiceRegistrationTest {
 	@Test
 	public void testRegisterManagement() {
 		doReturn(false).when(registration).isRegisterEnabled();
-		try {
+		assertThatCode(() -> {
 			polarisAutoServiceRegistration.registerManagement();
-		}
-		catch (Exception e) {
-			fail();
-		}
+		}).doesNotThrowAnyException();
 
 		doReturn(true).when(registration).isRegisterEnabled();
-		try {
+		assertThatCode(() -> {
 			polarisAutoServiceRegistration.registerManagement();
-		}
-		catch (Exception e) {
-			fail();
-		}
+		}).doesNotThrowAnyException();
 	}
 
 	@Test

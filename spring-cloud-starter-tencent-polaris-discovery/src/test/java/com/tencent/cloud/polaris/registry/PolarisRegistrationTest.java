@@ -28,10 +28,12 @@ import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.config.global.APIConfig;
 import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.client.api.SDKContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
@@ -50,7 +52,8 @@ import static org.mockito.Mockito.when;
  *
  * @author Haotian Zhang
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class PolarisRegistrationTest {
 
 	private NacosContextProperties nacosContextProperties;
@@ -59,8 +62,8 @@ public class PolarisRegistrationTest {
 
 	private PolarisRegistration polarisRegistration3;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		// mock PolarisDiscoveryProperties
 		PolarisDiscoveryProperties polarisDiscoveryProperties = mock(PolarisDiscoveryProperties.class);
 		doReturn(SERVICE_PROVIDER).when(polarisDiscoveryProperties).getService();

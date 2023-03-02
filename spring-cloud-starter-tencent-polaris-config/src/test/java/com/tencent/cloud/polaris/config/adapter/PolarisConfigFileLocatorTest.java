@@ -29,22 +29,22 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
  * test for {@link PolarisConfigFileLocator}.
  *@author lepdou 2022-06-11
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisConfigFileLocatorTest {
 
 	private final String testNamespace = "testNamespace";
@@ -88,9 +88,9 @@ public class PolarisConfigFileLocatorTest {
 
 		PropertySource<?> propertySource = locator.locate(environment);
 
-		Assert.assertEquals("v1", propertySource.getProperty("k1"));
-		Assert.assertEquals("v2", propertySource.getProperty("k2"));
-		Assert.assertEquals("v3", propertySource.getProperty("k3"));
+		assertThat(propertySource.getProperty("k1")).isEqualTo("v1");
+		assertThat(propertySource.getProperty("k2")).isEqualTo("v2");
+		assertThat(propertySource.getProperty("k3")).isEqualTo("v3");
 	}
 
 	@Test
@@ -131,9 +131,9 @@ public class PolarisConfigFileLocatorTest {
 
 		PropertySource<?> propertySource = locator.locate(environment);
 
-		Assert.assertEquals("v11", propertySource.getProperty("k1"));
-		Assert.assertEquals("v2", propertySource.getProperty("k2"));
-		Assert.assertEquals("v3", propertySource.getProperty("k3"));
+		assertThat(propertySource.getProperty("k1")).isEqualTo("v11");
+		assertThat(propertySource.getProperty("k2")).isEqualTo("v2");
+		assertThat(propertySource.getProperty("k3")).isEqualTo("v3");
 	}
 
 	@Test
@@ -180,8 +180,8 @@ public class PolarisConfigFileLocatorTest {
 
 		PropertySource<?> propertySource = locator.locate(environment);
 
-		Assert.assertEquals("v1", propertySource.getProperty("k1"));
-		Assert.assertEquals("v2", propertySource.getProperty("k2"));
-		Assert.assertEquals("v3", propertySource.getProperty("k3"));
+		assertThat(propertySource.getProperty("k1")).isEqualTo("v1");
+		assertThat(propertySource.getProperty("k2")).isEqualTo("v2");
+		assertThat(propertySource.getProperty("k3")).isEqualTo("v3");
 	}
 }

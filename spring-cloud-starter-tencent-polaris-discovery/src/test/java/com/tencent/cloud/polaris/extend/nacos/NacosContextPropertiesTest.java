@@ -25,14 +25,14 @@ import java.util.Optional;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.CollectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author lingxiao.wlx
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NacosContextPropertiesTest.TestApplication.class)
 @ActiveProfiles("test")
 public class NacosContextPropertiesTest {
@@ -75,7 +75,8 @@ public class NacosContextPropertiesTest {
 		assertThat(optionalServerConnectorConfig.isPresent()).isTrue();
 		ServerConnectorConfigImpl serverConnectorConfig = optionalServerConnectorConfig.get();
 		if (!CollectionUtils.isEmpty(serverConnectorConfig.getAddresses())) {
-			assertThat(nacosContextProperties.getServerAddr().equals(serverConnectorConfig.getAddresses().get(0))).isTrue();
+			assertThat(nacosContextProperties.getServerAddr()
+					.equals(serverConnectorConfig.getAddresses().get(0))).isTrue();
 		}
 		assertThat(DefaultPlugins.SERVER_CONNECTOR_NACOS.equals(serverConnectorConfig.getProtocol())).isTrue();
 
