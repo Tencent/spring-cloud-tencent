@@ -20,9 +20,9 @@ package com.tencent.cloud.polaris.config.spring.property;
 
 import java.util.Set;
 
-import com.tencent.polaris.api.utils.CollectionUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link PlaceholderHelper}.
@@ -43,31 +43,31 @@ public class PlaceholderHelperTest {
 		final String placeholderCase5 = "#{new java.text.SimpleDateFormat('${some.key}').parse('${another.key}')}";
 
 		Set<String> placeholderKeys = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase);
-		Assert.assertEquals(1, placeholderKeys.size());
-		Assert.assertTrue(placeholderKeys.contains("some.key"));
+		assertThat(placeholderKeys.size()).isEqualTo(1);
+		assertThat(placeholderKeys).contains("some.key");
 
 		Set<String> placeholderKeys1 = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase1);
-		Assert.assertEquals(2, placeholderKeys1.size());
-		Assert.assertTrue(placeholderKeys1.contains("some.key"));
-		Assert.assertTrue(placeholderKeys1.contains("some.other.key"));
+		assertThat(placeholderKeys1.size()).isEqualTo(2);
+		assertThat(placeholderKeys1).contains("some.key");
+		assertThat(placeholderKeys1).contains("some.other.key");
 
 		Set<String> placeholderKeys2 = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase2);
-		Assert.assertEquals(1, placeholderKeys2.size());
-		Assert.assertTrue(placeholderKeys2.contains("some.key"));
+		assertThat(placeholderKeys2.size()).isEqualTo(1);
+		assertThat(placeholderKeys2).contains("some.key");
 
 		Set<String> placeholderKeys3 = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase3);
-		Assert.assertEquals(1, placeholderKeys3.size());
-		Assert.assertTrue(placeholderKeys3.contains("some.key"));
+		assertThat(placeholderKeys3.size()).isEqualTo(1);
+		assertThat(placeholderKeys3).contains("some.key");
 
 		Set<String> placeholderKeys4 = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase4);
-		Assert.assertEquals(2, placeholderKeys4.size());
-		Assert.assertTrue(placeholderKeys4.contains("some.key"));
-		Assert.assertTrue(placeholderKeys4.contains("another.key"));
+		assertThat(placeholderKeys4.size()).isEqualTo(2);
+		assertThat(placeholderKeys4).contains("some.key");
+		assertThat(placeholderKeys4).contains("another.key");
 
 		Set<String> placeholderKeys5 = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase5);
-		Assert.assertEquals(2, placeholderKeys5.size());
-		Assert.assertTrue(placeholderKeys5.contains("some.key"));
-		Assert.assertTrue(placeholderKeys5.contains("another.key"));
+		assertThat(placeholderKeys5.size()).isEqualTo(2);
+		assertThat(placeholderKeys5).contains("some.key");
+		assertThat(placeholderKeys5).contains("another.key");
 	}
 
 	@Test
@@ -77,12 +77,12 @@ public class PlaceholderHelperTest {
 		final String placeholderCase2 = "some.key";
 
 		Set<String> placeholderKeys = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase);
-		Assert.assertTrue(CollectionUtils.isEmpty(placeholderKeys));
+		assertThat(placeholderKeys).isEmpty();
 
 		Set<String> placeholderKeys1 = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase1);
-		Assert.assertTrue(CollectionUtils.isEmpty(placeholderKeys1));
+		assertThat(placeholderKeys1).isEmpty();
 
 		Set<String> placeholderKeys2 = PLACEHOLDER_HELPER.extractPlaceholderKeys(placeholderCase2);
-		Assert.assertTrue(CollectionUtils.isEmpty(placeholderKeys2));
+		assertThat(placeholderKeys2).isEmpty();
 	}
 }

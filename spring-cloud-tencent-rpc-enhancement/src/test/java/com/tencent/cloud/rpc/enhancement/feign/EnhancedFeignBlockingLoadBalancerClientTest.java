@@ -17,8 +17,9 @@
 
 package com.tencent.cloud.rpc.enhancement.feign;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 /**
  * Test for {@link EnhancedFeignBlockingLoadBalancerClient}.
@@ -29,11 +30,6 @@ public class EnhancedFeignBlockingLoadBalancerClientTest {
 
 	@Test
 	public void testConstructor() {
-		try {
-			new EnhancedFeignBlockingLoadBalancerClient(null, null, null);
-		}
-		catch (Exception e) {
-			Assertions.fail("Exception encountered.", e);
-		}
+		assertThatCode(() -> new EnhancedFeignBlockingLoadBalancerClient(null, null, null)).doesNotThrowAnyException();
 	}
 }

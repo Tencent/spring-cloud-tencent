@@ -26,8 +26,8 @@ import java.util.Set;
 
 import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.polaris.client.pb.ModelProto;
-import com.tencent.polaris.client.pb.RoutingProto;
+import com.tencent.polaris.specification.api.v1.model.ModelProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 
 import org.springframework.util.CollectionUtils;
 

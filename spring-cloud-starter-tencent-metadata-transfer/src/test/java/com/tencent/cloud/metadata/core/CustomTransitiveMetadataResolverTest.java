@@ -19,12 +19,13 @@ package com.tencent.cloud.metadata.core;
 
 import java.util.Map;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link CustomTransitiveMetadataResolver}.
@@ -39,8 +40,8 @@ public class CustomTransitiveMetadataResolverTest {
 		builder.header("X-SCT-Metadata-Transitive-a", "test");
 		MockServerWebExchange exchange = MockServerWebExchange.from(builder);
 		Map<String, String> resolve = CustomTransitiveMetadataResolver.resolve(exchange);
-		Assertions.assertThat(resolve.size()).isEqualTo(1);
-		Assertions.assertThat(resolve.get("a")).isEqualTo("test");
+		assertThat(resolve.size()).isEqualTo(1);
+		assertThat(resolve.get("a")).isEqualTo("test");
 	}
 
 	@Test
@@ -49,8 +50,8 @@ public class CustomTransitiveMetadataResolverTest {
 		builder.header("X-Polaris-Metadata-Transitive-a", "test");
 		MockServerWebExchange exchange = MockServerWebExchange.from(builder);
 		Map<String, String> resolve = CustomTransitiveMetadataResolver.resolve(exchange);
-		Assertions.assertThat(resolve.size()).isEqualTo(1);
-		Assertions.assertThat(resolve.get("a")).isEqualTo("test");
+		assertThat(resolve.size()).isEqualTo(1);
+		assertThat(resolve.get("a")).isEqualTo("test");
 	}
 
 	@Test
@@ -58,8 +59,8 @@ public class CustomTransitiveMetadataResolverTest {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("X-SCT-Metadata-Transitive-a", "test");
 		Map<String, String> resolve = CustomTransitiveMetadataResolver.resolve(request);
-		Assertions.assertThat(resolve.size()).isEqualTo(1);
-		Assertions.assertThat(resolve.get("a")).isEqualTo("test");
+		assertThat(resolve.size()).isEqualTo(1);
+		assertThat(resolve.get("a")).isEqualTo("test");
 	}
 
 	@Test
@@ -67,7 +68,7 @@ public class CustomTransitiveMetadataResolverTest {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("X-Polaris-Metadata-Transitive-a", "test");
 		Map<String, String> resolve = CustomTransitiveMetadataResolver.resolve(request);
-		Assertions.assertThat(resolve.size()).isEqualTo(1);
-		Assertions.assertThat(resolve.get("a")).isEqualTo("test");
+		assertThat(resolve.size()).isEqualTo(1);
+		assertThat(resolve.get("a")).isEqualTo("test");
 	}
 }

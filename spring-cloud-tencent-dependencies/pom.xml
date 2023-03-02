@@ -70,17 +70,17 @@
 	</developers>
 
 	<properties>
-		<revision>1.10.0-2021.0.5-SNAPSHOT</revision>
+		<revision>1.10.0-2021.0.6-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.10.5</polaris.version>
+		<polaris.version>1.11.0-SNAPSHOT</polaris.version>
 		<guava.version>31.0.1-jre</guava.version>
 		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
-		<system-stubs-junit4.version>2.0.1</system-stubs-junit4.version>
+		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-javadoc-plugin.verison>3.3.0</maven-javadoc-plugin.verison>
@@ -247,8 +247,8 @@
 
 			<dependency>
 				<groupId>uk.org.webcompere</groupId>
-				<artifactId>system-stubs-junit4</artifactId>
-				<version>${system-stubs-junit4.version}</version>
+				<artifactId>system-stubs-jupiter</artifactId>
+				<version>${system-stubs-jupiter.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>

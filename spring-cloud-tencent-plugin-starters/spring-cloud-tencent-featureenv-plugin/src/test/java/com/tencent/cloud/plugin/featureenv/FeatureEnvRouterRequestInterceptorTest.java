@@ -29,18 +29,19 @@ import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link FeatureEnvRouterRequestInterceptor}.
  *
  * @author lepdou, Hoatian Zhang
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FeatureEnvRouterRequestInterceptorTest {
 
 	@Test
@@ -59,8 +60,8 @@ public class FeatureEnvRouterRequestInterceptorTest {
 		interceptor.apply(request, routerContext);
 
 		Map<String, String> metadataRouterLabels = request.getRouterMetadata().get(MetadataRouter.ROUTER_TYPE_METADATA);
-		Assert.assertEquals(1, metadataRouterLabels.size());
-		Assert.assertEquals("blue", metadataRouterLabels.get("featureenv"));
+		assertThat(metadataRouterLabels.size()).isEqualTo(1);
+		assertThat(metadataRouterLabels.get("featureenv")).isEqualTo("blue");
 	}
 
 	@Test
@@ -80,8 +81,8 @@ public class FeatureEnvRouterRequestInterceptorTest {
 		interceptor.apply(request, routerContext);
 
 		Map<String, String> metadataRouterLabels = request.getRouterMetadata().get(MetadataRouter.ROUTER_TYPE_METADATA);
-		Assert.assertEquals(1, metadataRouterLabels.size());
-		Assert.assertEquals("blue", metadataRouterLabels.get("specify-env"));
+		assertThat(metadataRouterLabels.size()).isEqualTo(1);
+		assertThat(metadataRouterLabels.get("specify-env")).isEqualTo("blue");
 	}
 
 	@Test
@@ -100,7 +101,7 @@ public class FeatureEnvRouterRequestInterceptorTest {
 		interceptor.apply(request, routerContext);
 
 		Map<String, String> metadataRouterLabels = request.getRouterMetadata().get(MetadataRouter.ROUTER_TYPE_METADATA);
-		Assert.assertEquals(1, metadataRouterLabels.size());
-		Assert.assertEquals("NOT_EXISTED_ENV", metadataRouterLabels.get("specify-env"));
+		assertThat(metadataRouterLabels.size()).isEqualTo(1);
+		assertThat(metadataRouterLabels.get("specify-env")).isEqualTo("NOT_EXISTED_ENV");
 	}
 }

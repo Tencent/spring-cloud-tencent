@@ -21,15 +21,14 @@ package com.tencent.cloud.common.util;
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
-import com.google.common.collect.Sets;
 import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpMethod;
@@ -39,12 +38,15 @@ import org.springframework.mock.web.MockCookie;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * test for {@link ExpressionLabelUtils}.
  *
  * @author lepdou 2022-05-27
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ExpressionLabelUtilsTest {
 
 	@Test
@@ -64,20 +66,20 @@ public class ExpressionLabelUtilsTest {
 		String invalidLabel8 = "$${http.uri}";
 		String invalidLabel9 = "#{http.uri}";
 
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(validLabel1));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(validLabel2));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(validLabel3));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(validLabel4));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(validLabel5));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel1));
-		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel2));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel3));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel4));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel5));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel6));
-		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel7));
-		Assert.assertTrue(ExpressionLabelUtils.isExpressionLabel(invalidLabel8));
-		Assert.assertFalse(ExpressionLabelUtils.isExpressionLabel(invalidLabel9));
+		assertThat(ExpressionLabelUtils.isExpressionLabel(validLabel1)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(validLabel2)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(validLabel3)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(validLabel4)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(validLabel5)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel1)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel2)).isFalse();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel3)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel4)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel5)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel6)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel7)).isFalse();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel8)).isTrue();
+		assertThat(ExpressionLabelUtils.isExpressionLabel(invalidLabel9)).isFalse();
 	}
 
 	@Test
@@ -97,9 +99,9 @@ public class ExpressionLabelUtilsTest {
 		String invalidLabel8 = "$${http.uri}";
 		String invalidLabel9 = "#{http.uri}";
 
-		Set<String> labelKeys = Sets.newHashSet(validLabel1, validLabel2, validLabel3, validLabel4, validLabel5,
+		Set<String> labelKeys = Stream.of(validLabel1, validLabel2, validLabel3, validLabel4, validLabel5,
 				invalidLabel1, invalidLabel2, invalidLabel3, invalidLabel4, invalidLabel5, invalidLabel6, invalidLabel7,
-				invalidLabel8, invalidLabel9);
+				invalidLabel8, invalidLabel9).collect(toSet());
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setQueryString("uid=zhangsan");
@@ -110,20 +112,20 @@ public class ExpressionLabelUtilsTest {
 
 		Map<String, String> result = ServletExpressionLabelUtils.resolve(request, labelKeys);
 
-		Assert.assertEquals("zhangsan", result.get(validLabel1));
-		Assert.assertEquals("zhangsan", result.get(validLabel2));
-		Assert.assertEquals("zhangsan", result.get(validLabel3));
-		Assert.assertEquals("GET", result.get(validLabel4));
-		Assert.assertEquals("/users", result.get(validLabel5));
-		Assert.assertNull(result.get(invalidLabel1));
-		Assert.assertNull(result.get(invalidLabel2));
-		Assert.assertNull(result.get(invalidLabel3));
-		Assert.assertNull(result.get(invalidLabel4));
-		Assert.assertNull(result.get(invalidLabel5));
-		Assert.assertNull(result.get(invalidLabel6));
-		Assert.assertNull(result.get(invalidLabel7));
-		Assert.assertNull(result.get(invalidLabel8));
-		Assert.assertNull(result.get(invalidLabel9));
+		assertThat(result.get(validLabel1)).isEqualTo("zhangsan");
+		assertThat(result.get(validLabel2)).isEqualTo("zhangsan");
+		assertThat(result.get(validLabel3)).isEqualTo("zhangsan");
+		assertThat(result.get(validLabel4)).isEqualTo("GET");
+		assertThat(result.get(validLabel5)).isEqualTo("/users");
+		assertThat(result.get(invalidLabel1)).isNull();
+		assertThat(result.get(invalidLabel2)).isNull();
+		assertThat(result.get(invalidLabel3)).isNull();
+		assertThat(result.get(invalidLabel4)).isNull();
+		assertThat(result.get(invalidLabel5)).isNull();
+		assertThat(result.get(invalidLabel6)).isNull();
+		assertThat(result.get(invalidLabel7)).isNull();
+		assertThat(result.get(invalidLabel8)).isNull();
+		assertThat(result.get(invalidLabel9)).isNull();
 	}
 
 	@Test
@@ -143,9 +145,9 @@ public class ExpressionLabelUtilsTest {
 		String invalidLabel8 = "$${http.uri}";
 		String invalidLabel9 = "#{http.uri}";
 
-		Set<String> labelKeys = Sets.newHashSet(validLabel1, validLabel2, validLabel3, validLabel4, validLabel5,
+		Set<String> labelKeys = Stream.of(validLabel1, validLabel2, validLabel3, validLabel4, validLabel5,
 				invalidLabel1, invalidLabel2, invalidLabel3, invalidLabel4, invalidLabel5, invalidLabel6, invalidLabel7,
-				invalidLabel8, invalidLabel9);
+				invalidLabel8, invalidLabel9).collect(toSet());
 
 		MockServerHttpRequest httpRequest = MockServerHttpRequest.get("http://calleeService/user/get?uid=zhangsan")
 				.header("uid", "zhangsan")
@@ -154,20 +156,20 @@ public class ExpressionLabelUtilsTest {
 
 		Map<String, String> result = SpringWebExpressionLabelUtils.resolve(exchange, labelKeys);
 
-		Assert.assertEquals("zhangsan", result.get(validLabel1));
-		Assert.assertEquals("zhangsan", result.get(validLabel2));
-		Assert.assertEquals("zhangsan", result.get(validLabel3));
-		Assert.assertEquals("GET", result.get(validLabel4));
-		Assert.assertEquals("/user/get", result.get(validLabel5));
-		Assert.assertNull(result.get(invalidLabel1));
-		Assert.assertNull(result.get(invalidLabel2));
-		Assert.assertNull(result.get(invalidLabel3));
-		Assert.assertNull(result.get(invalidLabel4));
-		Assert.assertNull(result.get(invalidLabel5));
-		Assert.assertNull(result.get(invalidLabel6));
-		Assert.assertNull(result.get(invalidLabel7));
-		Assert.assertNull(result.get(invalidLabel8));
-		Assert.assertNull(result.get(invalidLabel9));
+		assertThat(result.get(validLabel1)).isEqualTo("zhangsan");
+		assertThat(result.get(validLabel2)).isEqualTo("zhangsan");
+		assertThat(result.get(validLabel3)).isEqualTo("zhangsan");
+		assertThat(result.get(validLabel4)).isEqualTo("GET");
+		assertThat(result.get(validLabel5)).isEqualTo("/user/get");
+		assertThat(result.get(invalidLabel1)).isNull();
+		assertThat(result.get(invalidLabel2)).isNull();
+		assertThat(result.get(invalidLabel3)).isNull();
+		assertThat(result.get(invalidLabel4)).isNull();
+		assertThat(result.get(invalidLabel5)).isNull();
+		assertThat(result.get(invalidLabel6)).isNull();
+		assertThat(result.get(invalidLabel7)).isNull();
+		assertThat(result.get(invalidLabel8)).isNull();
+		assertThat(result.get(invalidLabel9)).isNull();
 	}
 
 	@Test
@@ -187,9 +189,9 @@ public class ExpressionLabelUtilsTest {
 		String invalidLabel8 = "$${http.uri}";
 		String invalidLabel9 = "#{http.uri}";
 
-		Set<String> labelKeys = Sets.newHashSet(validLabel1, validLabel2, validLabel3, validLabel4, validLabel5,
+		Set<String> labelKeys = Stream.of(validLabel1, validLabel2, validLabel3, validLabel4, validLabel5,
 				invalidLabel1, invalidLabel2, invalidLabel3, invalidLabel4, invalidLabel5, invalidLabel6, invalidLabel7,
-				invalidLabel8, invalidLabel9);
+				invalidLabel8, invalidLabel9).collect(toSet());
 
 		MockClientHttpRequest request = new MockClientHttpRequest();
 		request.setMethod(HttpMethod.GET);
@@ -198,19 +200,19 @@ public class ExpressionLabelUtilsTest {
 
 		Map<String, String> result = SpringWebExpressionLabelUtils.resolve(request, labelKeys);
 
-		Assert.assertEquals("zhangsan", result.get(validLabel1));
-		Assert.assertEquals("zhangsan", result.get(validLabel2));
-		Assert.assertNull(result.get(validLabel3));
-		Assert.assertEquals("GET", result.get(validLabel4));
-		Assert.assertEquals("/user/get", result.get(validLabel5));
-		Assert.assertNull(result.get(invalidLabel1));
-		Assert.assertNull(result.get(invalidLabel2));
-		Assert.assertNull(result.get(invalidLabel3));
-		Assert.assertNull(result.get(invalidLabel4));
-		Assert.assertNull(result.get(invalidLabel5));
-		Assert.assertNull(result.get(invalidLabel6));
-		Assert.assertNull(result.get(invalidLabel7));
-		Assert.assertNull(result.get(invalidLabel8));
-		Assert.assertNull(result.get(invalidLabel9));
+		assertThat(result.get(validLabel1)).isEqualTo("zhangsan");
+		assertThat(result.get(validLabel2)).isEqualTo("zhangsan");
+		assertThat(result.get(validLabel3)).isNull();
+		assertThat(result.get(validLabel4)).isEqualTo("GET");
+		assertThat(result.get(validLabel5)).isEqualTo("/user/get");
+		assertThat(result.get(invalidLabel1)).isNull();
+		assertThat(result.get(invalidLabel2)).isNull();
+		assertThat(result.get(invalidLabel3)).isNull();
+		assertThat(result.get(invalidLabel4)).isNull();
+		assertThat(result.get(invalidLabel5)).isNull();
+		assertThat(result.get(invalidLabel6)).isNull();
+		assertThat(result.get(invalidLabel7)).isNull();
+		assertThat(result.get(invalidLabel8)).isNull();
+		assertThat(result.get(invalidLabel9)).isNull();
 	}
 }

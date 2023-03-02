@@ -18,7 +18,8 @@
 
 package com.tencent.cloud.polaris;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.PROVIDER_TOKEN;

@@ -23,9 +23,9 @@ import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -55,13 +55,13 @@ public class PolarisDiscoveryAutoConfigurationTest {
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
+	@BeforeAll
+	static void beforeAll() throws Exception {
 		namingServer = NamingServer.startNamingServer(10081);
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}

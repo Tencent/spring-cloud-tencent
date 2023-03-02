@@ -20,28 +20,29 @@ package com.tencent.cloud.common.util;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * test for {@link ResourceFileUtils}.
  *
  * @author lepdou 2022-05-27
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ResourceFileUtilsTest {
 
 	@Test
 	public void testReadExistedFile() throws IOException {
 		String content = ResourceFileUtils.readFile("test.txt");
-		Assert.assertEquals("just for test", content);
+		assertThat(content).isEqualTo("just for test");
 	}
 
 	@Test
 	public void testReadNotExistedFile() throws IOException {
 		String content = ResourceFileUtils.readFile("not_existed_test.txt");
-		Assert.assertEquals("", content);
+		assertThat(content).isEqualTo("");
 	}
 }

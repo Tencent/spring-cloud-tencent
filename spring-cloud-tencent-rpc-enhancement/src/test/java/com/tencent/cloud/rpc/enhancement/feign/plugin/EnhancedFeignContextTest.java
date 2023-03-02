@@ -19,7 +19,7 @@ package com.tencent.cloud.rpc.enhancement.feign.plugin;
 
 import feign.Request;
 import feign.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
