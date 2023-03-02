@@ -6,7 +6,7 @@
 [![Contributors](https://img.shields.io/github/contributors/Tencent/spring-cloud-tencent)](https://github.com/Tencent/spring-cloud-tencent/graphs/contributors)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-[![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
+[![Test with Junit 2022.0](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test17.yml/badge.svg?branch=2022.0)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test17.yml)
 [![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2022.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2022.0)
 
 English | [简体中文](./README-zh.md)
