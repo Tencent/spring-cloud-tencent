@@ -27,8 +27,8 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.client.pojo.ServiceInstancesByProto;
 import com.tencent.polaris.client.pojo.ServicesByProto;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -52,8 +52,9 @@ public class PolarisServiceStatusChangeListenerTest {
 
 	private ApplicationEventPublisher publisher;
 
-	@Before
-	public void setUp() {
+
+	@BeforeEach
+	void setUp() {
 		publisher = mock(ApplicationEventPublisher.class);
 		doNothing().when(publisher).publishEvent(any(ApplicationEvent.class));
 	}

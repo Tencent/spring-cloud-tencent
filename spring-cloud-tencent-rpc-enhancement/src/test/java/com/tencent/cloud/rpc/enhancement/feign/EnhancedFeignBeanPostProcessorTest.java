@@ -18,8 +18,8 @@
 package com.tencent.cloud.rpc.enhancement.feign;
 
 import feign.Client;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
@@ -42,8 +42,8 @@ public class EnhancedFeignBeanPostProcessorTest {
 
 	private EnhancedFeignBeanPostProcessor enhancedFeignBeanPostProcessor;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		enhancedFeignBeanPostProcessor = new EnhancedFeignBeanPostProcessor(null);
 	}
 

@@ -22,9 +22,9 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -36,7 +36,7 @@ import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -61,16 +61,16 @@ public class PolarisServiceRegistryTest {
 			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
+	@BeforeAll
+	static void beforeAll() throws Exception {
 		namingServer = NamingServer.startNamingServer(10081);
 
 		// add service
 		namingServer.getNamingService().addService(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER));
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
@@ -85,26 +85,17 @@ public class PolarisServiceRegistryTest {
 			when(registration.getPort()).thenReturn(PORT);
 			when(registration.getServiceId()).thenReturn(SERVICE_PROVIDER);
 
-			try {
+			assertThatCode(() -> {
 				registry.register(registration);
-			}
-			catch (Exception e) {
-				fail();
-			}
+			}).doesNotThrowAnyException();
 
-			try {
+			assertThatCode(() -> {
 				assertThat(registry.getStatus(registration)).isEqualTo("DOWN");
-			}
-			catch (Exception e) {
-				fail();
-			}
+			}).doesNotThrowAnyException();
 
-			try {
+			assertThatCode(() -> {
 				registry.deregister(registration);
-			}
-			catch (Exception e) {
-				fail();
-			}
+			}).doesNotThrowAnyException();
 		});
 	}
 
@@ -114,12 +105,9 @@ public class PolarisServiceRegistryTest {
 			PolarisServiceRegistry registry = context.getBean(PolarisServiceRegistry.class);
 			PolarisRegistration registration = Mockito.mock(PolarisRegistration.class);
 			doReturn(null).when(registration).getServiceId();
-			try {
+			assertThatCode(() -> {
 				registry.deregister(registration);
-			}
-			catch (Throwable throwable) {
-				fail();
-			}
+			}).doesNotThrowAnyException();
 		});
 	}
 

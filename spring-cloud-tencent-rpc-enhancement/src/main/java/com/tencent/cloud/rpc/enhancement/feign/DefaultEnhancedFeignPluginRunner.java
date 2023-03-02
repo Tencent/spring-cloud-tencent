@@ -18,11 +18,12 @@
 
 package com.tencent.cloud.rpc.enhancement.feign;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
@@ -36,13 +37,18 @@ import org.springframework.util.CollectionUtils;
  */
 public class DefaultEnhancedFeignPluginRunner implements EnhancedFeignPluginRunner {
 
-	private Multimap<String, EnhancedFeignPlugin> pluginMap = ArrayListMultimap.create();
+	private Map<String, List<EnhancedFeignPlugin>> pluginMap = new HashMap<>();
 
 	public DefaultEnhancedFeignPluginRunner(List<EnhancedFeignPlugin> enhancedFeignPlugins) {
 		if (!CollectionUtils.isEmpty(enhancedFeignPlugins)) {
 			enhancedFeignPlugins.stream()
 					.sorted(Comparator.comparing(EnhancedFeignPlugin::getOrder))
-					.forEach(plugin -> pluginMap.put(plugin.getType().name(), plugin));
+					.forEach(plugin -> {
+						if (!pluginMap.containsKey(plugin.getType().name())) {
+							pluginMap.put(plugin.getType().name(), new ArrayList<>());
+						}
+						pluginMap.get(plugin.getType().name()).add(plugin);
+					});
 		}
 	}
 

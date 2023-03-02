@@ -88,7 +88,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.10.0-2021.0.5-SNAPSHOT</revision>
+		<revision>1.10.0-2021.0.6-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
 		<spring.framework.version>5.3.25</spring.framework.version>
@@ -97,7 +97,7 @@
 		<spring.boot.version>2.6.14</spring.boot.version>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2021.0.5</spring.cloud.version>
+		<spring.cloud.version>2021.0.6</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
@@ -201,16 +201,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<inherited>true</inherited>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<artifactId>surefire-junit4</artifactId>
-						<version>2.22.2</version>
-					</dependency>
-				</dependencies>
 				<configuration>
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
+					<argLine>${argLine}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -298,17 +292,6 @@
 					</plugin>
 				</plugins>
 			</build>
-
-			<distributionManagement>
-				<snapshotRepository>
-					<id>nexus-snapshots</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-				</snapshotRepository>
-				<repository>
-					<id>nexus-releases</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-				</repository>
-			</distributionManagement>
 		</profile>
 		<profile>
 			<id>sonatype</id>
@@ -338,4 +321,14 @@
 		</profile>
 	</profiles>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>nexus-releases</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 </project>

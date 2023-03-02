@@ -19,21 +19,16 @@
 package com.tencent.cloud.polaris.context;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import com.tencent.polaris.api.pojo.DefaultServiceEventKeysProvider;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceEventKey;
-import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.pojo.ServiceRule;
+import com.tencent.polaris.api.rpc.GetServiceRuleRequest;
+import com.tencent.polaris.api.rpc.ServiceRuleResponse;
 import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.client.flow.BaseFlow;
-import com.tencent.polaris.client.flow.DefaultFlowControlParam;
-import com.tencent.polaris.client.flow.FlowControlParam;
-import com.tencent.polaris.client.flow.ResourcesResponse;
-import com.tencent.polaris.client.pb.RateLimitProto;
-import com.tencent.polaris.client.pb.RoutingProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,28 +41,17 @@ public class ServiceRuleManager {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServiceRuleManager.class);
 	private final SDKContext sdkContext;
-	private final FlowControlParam controlParam;
+	private final ConsumerAPI consumerAPI;
 
-	public ServiceRuleManager(SDKContext sdkContext) {
+	public ServiceRuleManager(SDKContext sdkContext, ConsumerAPI consumerAPI) {
 		this.sdkContext = sdkContext;
-		controlParam = new DefaultFlowControlParam();
-		controlParam.setTimeoutMs(sdkContext.getConfig().getGlobal().getAPI().getTimeout());
-		controlParam.setMaxRetry(sdkContext.getConfig().getGlobal().getAPI().getMaxRetryTimes());
-		controlParam.setRetryIntervalMs(sdkContext.getConfig().getGlobal().getAPI().getRetryInterval());
+		this.consumerAPI = consumerAPI;
 	}
 
 	public RateLimitProto.RateLimit getServiceRateLimitRule(String namespace, String service) {
 		LOG.debug("Get service rate limit rules with namespace:{} and service:{}.", namespace, service);
-		ServiceEventKey serviceEventKey = new ServiceEventKey(new ServiceKey(namespace, service),
-				ServiceEventKey.EventType.RATE_LIMITING);
 
-		DefaultServiceEventKeysProvider svcKeysProvider = new DefaultServiceEventKeysProvider();
-		svcKeysProvider.setSvcEventKey(serviceEventKey);
-
-		ResourcesResponse resourcesResponse = BaseFlow
-				.syncGetResources(sdkContext.getExtensions(), true, svcKeysProvider, controlParam);
-
-		ServiceRule serviceRule = resourcesResponse.getServiceRule(serviceEventKey);
+		ServiceRule serviceRule = getServiceRule(namespace, service, ServiceEventKey.EventType.RATE_LIMITING);
 		if (serviceRule != null) {
 			Object rule = serviceRule.getRule();
 			if (rule instanceof RateLimitProto.RateLimit) {
@@ -79,29 +63,12 @@ public class ServiceRuleManager {
 	}
 
 	public List<RoutingProto.Route> getServiceRouterRule(String namespace, String sourceService, String dstService) {
-		LOG.debug("Get service router rules with namespace:{} and sourceService:{} and dstService:{}.",
-				namespace, sourceService, dstService);
-		Set<ServiceEventKey> routerKeys = new HashSet<>();
-
-		ServiceEventKey dstSvcEventKey = new ServiceEventKey(new ServiceKey(namespace, dstService),
-				ServiceEventKey.EventType.ROUTING);
-		routerKeys.add(dstSvcEventKey);
-
-		ServiceEventKey srcSvcEventKey = new ServiceEventKey(new ServiceKey(namespace, sourceService),
-				ServiceEventKey.EventType.ROUTING);
-		routerKeys.add(srcSvcEventKey);
-
-		DefaultServiceEventKeysProvider svcKeysProvider = new DefaultServiceEventKeysProvider();
-		svcKeysProvider.setSvcEventKeys(routerKeys);
-
-
-		ResourcesResponse resourcesResponse = BaseFlow
-				.syncGetResources(sdkContext.getExtensions(), true, svcKeysProvider, controlParam);
+		LOG.debug("Get service router rules with namespace:{} and sourceService:{} and dstService:{}.", namespace, sourceService, dstService);
 
 		List<RoutingProto.Route> rules = new ArrayList<>();
 
 		//get source service outbound rules.
-		ServiceRule sourceServiceRule = resourcesResponse.getServiceRule(srcSvcEventKey);
+		ServiceRule sourceServiceRule = getServiceRule(namespace, sourceService, ServiceEventKey.EventType.ROUTING);
 		if (sourceServiceRule != null) {
 			Object rule = sourceServiceRule.getRule();
 			if (rule instanceof RoutingProto.Routing) {
@@ -110,7 +77,7 @@ public class ServiceRuleManager {
 		}
 
 		//get peer service inbound rules.
-		ServiceRule dstServiceRule = resourcesResponse.getServiceRule(dstSvcEventKey);
+		ServiceRule dstServiceRule = getServiceRule(namespace, dstService, ServiceEventKey.EventType.ROUTING);
 		if (dstServiceRule != null) {
 			Object rule = dstServiceRule.getRule();
 			if (rule instanceof RoutingProto.Routing) {
@@ -120,4 +87,16 @@ public class ServiceRuleManager {
 
 		return rules;
 	}
+
+	private ServiceRule getServiceRule(String namespace, String service, ServiceEventKey.EventType eventType) {
+		GetServiceRuleRequest getServiceRuleRequest = new GetServiceRuleRequest();
+		getServiceRuleRequest.setRuleType(eventType);
+		getServiceRuleRequest.setService(service);
+		getServiceRuleRequest.setTimeoutMs(sdkContext.getConfig().getGlobal().getAPI().getTimeout());
+		getServiceRuleRequest.setNamespace(namespace);
+
+		ServiceRuleResponse res = consumerAPI.getServiceRule(getServiceRuleRequest);
+		return res.getServiceRule();
+	}
+
 }

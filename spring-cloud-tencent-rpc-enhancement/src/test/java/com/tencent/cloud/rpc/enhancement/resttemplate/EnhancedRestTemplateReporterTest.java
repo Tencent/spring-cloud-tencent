@@ -29,17 +29,16 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
@@ -50,6 +49,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -61,7 +61,7 @@ import static org.mockito.Mockito.when;
  * Test for {@link EnhancedRestTemplateReporter}.
  * @author lepdou 2022-09-06
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EnhancedRestTemplateReporterTest {
 
 	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
@@ -78,8 +78,8 @@ public class EnhancedRestTemplateReporterTest {
 	@InjectMocks
 	private EnhancedRestTemplateReporter enhancedRestTemplateReporter2;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("caller");
@@ -95,14 +95,14 @@ public class EnhancedRestTemplateReporterTest {
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
 		mockedMetadataContextHolder.close();
 	}
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void setUp() {
 		enhancedRestTemplateReporter.setDelegateHandler(delegate);
 	}
 
@@ -114,14 +114,14 @@ public class EnhancedRestTemplateReporterTest {
 		when(applicationContext.getBeanNamesForType(any(Class.class)))
 				.thenReturn(new String[] {"enhancedRestTemplateReporter"});
 		enhancedRestTemplateReporter2.setApplicationContext(applicationContext);
-		Assert.assertTrue(enhancedRestTemplateReporter2.getDelegateHandler() instanceof DefaultResponseErrorHandler);
+		assertThat(enhancedRestTemplateReporter2.getDelegateHandler()).isInstanceOf(DefaultResponseErrorHandler.class);
 
 		// test one other ResponseErrorHandler
 		when(applicationContext.getBeanNamesForType(any(Class.class)))
 				.thenReturn(new String[] {"enhancedRestTemplateReporter", "mockedResponseErrorHandler"});
 		when(applicationContext.getBean(anyString())).thenReturn(mock(MockedResponseErrorHandler.class));
 		enhancedRestTemplateReporter2.setApplicationContext(applicationContext);
-		Assert.assertTrue(enhancedRestTemplateReporter2.getDelegateHandler() instanceof MockedResponseErrorHandler);
+		assertThat(enhancedRestTemplateReporter2.getDelegateHandler()).isInstanceOf(MockedResponseErrorHandler.class);
 	}
 
 	@Test
@@ -129,10 +129,10 @@ public class EnhancedRestTemplateReporterTest {
 		when(delegate.hasError(any())).thenReturn(true);
 
 		MockedClientHttpResponse response = new MockedClientHttpResponse();
-		Assert.assertTrue(enhancedRestTemplateReporter.hasError(response));
+		assertThat(enhancedRestTemplateReporter.hasError(response)).isTrue();
 
 		String realHasError = response.getHeaders().getFirst(EnhancedRestTemplateReporter.HEADER_HAS_ERROR);
-		Assert.assertEquals("true", realHasError);
+		assertThat(realHasError).isEqualTo("true");
 	}
 
 	@Test
