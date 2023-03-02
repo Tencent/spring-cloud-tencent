@@ -6,7 +6,7 @@
 [![Contributors](https://img.shields.io/github/contributors/Tencent/spring-cloud-tencent)](https://github.com/Tencent/spring-cloud-tencent/graphs/contributors)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-[![Build Status](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
+[![Test with Junit](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml/badge.svg)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test.yml)
 [![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/hoxton/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=hoxton)
 
 English | [简体中文](./README-zh.md)
@@ -19,10 +19,10 @@ Spring Cloud Tencent implements the Spring Cloud standard microservice SPI, so d
 Cloud cloud-native distributed applications based on Spring Cloud Tencent.
 
 The core of Spring Cloud Tencent relies on Tencent's open-source one-stop service discovery and governance
-platform [Polaris](https://github.com/polarismesh/polaris) to realize various distributed microservice scenarios.
+platform [PolarisMesh](https://polarismesh.cn) to realize various distributed microservice scenarios.
 
-- [Polaris Github home page](https://github.com/polarismesh/polaris)
-- [Polaris official website](https://polarismesh.cn/)
+- [PolarisMesh Github home page](https://github.com/polarismesh/polaris)
+- [PolarisMesh official website](https://polarismesh.cn/)
 
 The capabilities provided by Spring Cloud Tencent include but are not limited to:
 
@@ -59,6 +59,8 @@ dependencies.
 
 > Notice:
 >
+> Support Spring Cloud 2022.0, 2021.0, 2020.0, Hoxton.
+>
 > The version list of Spring Cloud Tencent can be found
 > in
 > [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
@@ -74,7 +76,7 @@ For example:
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.9.0-Hoxton.SR12</version>
+            <version>1.9.1-Hoxton.SR12</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -105,27 +107,7 @@ You can build this project with command:
 
 ## Documents
 
-- Usage Doc
-    - [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
-    - [Spring Cloud Tencent Discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Discovery-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Config](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Config-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Rate Limit](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Rate-Limit-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent CircuitBreaker](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Circuitbreaker-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Tencent Router](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Router-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3)
-    - [Spring Cloud Starter Tencent RPC Enhancement](https://github.com/Tencent/spring-cloud-tencent/wiki/RPC%E5%A2%9E%E5%BC%BA)
-    - [Spring Cloud Tencent Metadata Transfer](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-Metadata-Transfer-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)
-    - [Spring Cloud Tencent Plugins](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%9C%BA%E6%99%AF%E5%8C%96%E6%8F%92%E4%BB%B6)
-    - [Actuator Endpoint Extension](https://github.com/Tencent/spring-cloud-tencent/wiki/Actuator-Endpoint-%E6%89%A9%E5%B1%95)
-
-- Best Practices
-    - [Observability Practice](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%E5%AE%9E%E8%B7%B5)
-    - [Multi-feature environment](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%A4%9A%E7%89%B9%E6%80%A7%E7%8E%AF%E5%A2%83)
-    - [Spring Cloud Gateway Traffic Staining](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Gateway-%E6%B5%81%E9%87%8F%E6%9F%93%E8%89%B2)
-    - [Multi-registration and multi-discovery](https://github.com/Tencent/spring-cloud-tencent/wiki/Multi-registration-and-multi-discovery)
-
-- Development documentation
-    - [Project Structure Overview](https://github.com/Tencent/spring-cloud-tencent/wiki/%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88)
-    - [Participate in co-construction](https://github.com/Tencent/spring-cloud-tencent/wiki/%E5%8F%82%E4%B8%8E%E5%85%B1%E5%BB%BA)
+Pelease refer to [Wiki](https://github.com/Tencent/spring-cloud-tencent/wiki)
 
 ## Chat Group
 
