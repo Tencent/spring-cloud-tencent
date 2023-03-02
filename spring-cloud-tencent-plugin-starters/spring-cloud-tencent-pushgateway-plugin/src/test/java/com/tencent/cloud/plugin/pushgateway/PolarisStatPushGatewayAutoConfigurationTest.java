@@ -17,7 +17,8 @@
 
 package com.tencent.cloud.plugin.pushgateway;
 
-import org.junit.Test;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -33,7 +34,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolarisStatPushGatewayAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PolarisStatPushGatewayAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(
+					PolarisContextAutoConfiguration.class,
+					PolarisStatPushGatewayAutoConfiguration.class));
 
 	@Test
 	public void testDefaultInitialization() {

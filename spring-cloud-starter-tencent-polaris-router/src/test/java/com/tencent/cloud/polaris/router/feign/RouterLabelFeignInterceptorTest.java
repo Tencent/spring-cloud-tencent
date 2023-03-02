@@ -38,15 +38,13 @@ import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 import feign.RequestTemplate;
 import feign.Target;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -56,7 +54,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou, cheese8
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RouterLabelFeignInterceptorTest {
 
 	@Mock
@@ -69,7 +67,7 @@ public class RouterLabelFeignInterceptorTest {
 	private PolarisContextProperties polarisContextProperties;
 
 	@Test
-	public void testResolveRouterLabel() {
+	public void testResolveRouterLabel() throws UnsupportedEncodingException {
 		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor(
 				Collections.singletonList(routerLabelResolver),
 				staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
@@ -125,22 +123,17 @@ public class RouterLabelFeignInterceptorTest {
 
 				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstant.ROUTER_LABEL_HEADER);
 
-				Map<String, String> routerLabelsMap = new HashMap<>();
-				try {
-					String routerLabelContent = routerLabels.stream().findFirst().get();
-					routerLabelsMap.putAll(JacksonUtils.deserialize2Map(URLDecoder.decode(routerLabelContent, UTF_8)));
-				}
-				catch (UnsupportedEncodingException e) {
-					throw new RuntimeException("unsupported charset exception " + UTF_8);
-				}
+				assertThat(routerLabels).isNotNull();
+				for (String value : routerLabels) {
+					Map<String, String> labels = JacksonUtils.deserialize2Map(URLDecoder.decode(value, "UTF-8"));
 
-				Assert.assertNotNull(routerLabels);
-				Assert.assertEquals("v1", routerLabelsMap.get("k1"));
-				Assert.assertEquals("v22", routerLabelsMap.get("k2"));
-				Assert.assertEquals("v3", routerLabelsMap.get("k3"));
-				Assert.assertEquals("v4", routerLabelsMap.get("k4"));
-				Assert.assertEquals(headerUidValue, routerLabelsMap.get("${http.header.uid}"));
-				Assert.assertEquals("", routerLabelsMap.get("${http.header.name}"));
+					assertThat(labels.get("k1")).isEqualTo("v1");
+					assertThat(labels.get("k2")).isEqualTo("v22");
+					assertThat(labels.get("k3")).isEqualTo("v3");
+					assertThat(labels.get("k4")).isEqualTo("v4");
+					assertThat(labels.get("${http.header.uid}")).isEqualTo(headerUidValue);
+					assertThat(labels.get("${http.header.name}")).isEqualTo("");
+				}
 			}
 		}
 	}
