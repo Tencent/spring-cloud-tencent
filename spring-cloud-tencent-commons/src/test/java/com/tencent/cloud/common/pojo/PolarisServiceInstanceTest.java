@@ -51,7 +51,13 @@ public class PolarisServiceInstanceTest {
 		assertThat(securePolarisServiceInstance.getServiceId()).isEqualTo(SERVICE_PROVIDER);
 		assertThat(securePolarisServiceInstance.getHost()).isEqualTo("1.1.1.1");
 		assertThat(securePolarisServiceInstance.getPort()).isEqualTo(8080);
-		assertThat(securePolarisServiceInstance.isSecure()).isEqualTo(true);
+		assertThat(securePolarisServiceInstance.isSecure()).isTrue();
 		assertThat(securePolarisServiceInstance.getScheme()).isEqualTo("https");
+
+		Instance insecureInstance = mock(Instance.class);
+		doReturn("http").when(insecureInstance).getProtocol();
+		PolarisServiceInstance insecurePolarisServiceInstance = new PolarisServiceInstance(insecureInstance);
+		assertThat(insecurePolarisServiceInstance.isSecure()).isFalse();
+		assertThat(insecurePolarisServiceInstance.getScheme()).isEqualTo("http");
 	}
 }
