@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,8 +54,8 @@ public class OkHttpUtilTest {
 	@RestController
 	static class TestApplication {
 		@GetMapping("/test")
-		public String test() {
-			return "test";
+		public String test(@RequestHeader("key") String key) {
+			return key;
 		}
 	}
 }
