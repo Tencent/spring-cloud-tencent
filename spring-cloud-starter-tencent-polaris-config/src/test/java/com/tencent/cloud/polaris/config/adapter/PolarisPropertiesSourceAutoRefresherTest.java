@@ -32,16 +32,16 @@ import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-06-11
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisPropertiesSourceAutoRefresherTest {
 
 	private final String testNamespace = "testNamespace";
@@ -114,9 +114,9 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 
 		file.fireChangeListener(event);
 
-		Assert.assertEquals("v11", polarisPropertySource.getProperty("k1"));
-		Assert.assertEquals("v3", polarisPropertySource.getProperty("k3"));
-		Assert.assertNull(polarisPropertySource.getProperty("k2"));
-		Assert.assertEquals("v4", polarisPropertySource.getProperty("k4"));
+		assertThat(polarisPropertySource.getProperty("k1")).isEqualTo("v11");
+		assertThat(polarisPropertySource.getProperty("k3")).isEqualTo("v3");
+		assertThat(polarisPropertySource.getProperty("k2")).isNull();
+		assertThat(polarisPropertySource.getProperty("k4")).isEqualTo("v4");
 	}
 }

@@ -38,13 +38,12 @@ import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
 import feign.RequestTemplate;
 import feign.Target;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,7 +54,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou, cheese8
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RouterLabelFeignInterceptorTest {
 
 	@Mock
@@ -124,16 +123,16 @@ public class RouterLabelFeignInterceptorTest {
 
 				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstant.ROUTER_LABEL_HEADER);
 
-				Assert.assertNotNull(routerLabels);
+				assertThat(routerLabels).isNotNull();
 				for (String value : routerLabels) {
 					Map<String, String> labels = JacksonUtils.deserialize2Map(URLDecoder.decode(value, "UTF-8"));
 
-					Assert.assertEquals("v1", labels.get("k1"));
-					Assert.assertEquals("v22", labels.get("k2"));
-					Assert.assertEquals("v3", labels.get("k3"));
-					Assert.assertEquals("v4", labels.get("k4"));
-					Assert.assertEquals(headerUidValue, labels.get("${http.header.uid}"));
-					Assert.assertEquals("", labels.get("${http.header.name}"));
+					assertThat(labels.get("k1")).isEqualTo("v1");
+					assertThat(labels.get("k2")).isEqualTo("v22");
+					assertThat(labels.get("k3")).isEqualTo("v3");
+					assertThat(labels.get("k4")).isEqualTo("v4");
+					assertThat(labels.get("${http.header.uid}")).isEqualTo(headerUidValue);
+					assertThat(labels.get("${http.header.name}")).isEqualTo("");
 				}
 			}
 		}

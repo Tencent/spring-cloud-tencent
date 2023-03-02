@@ -31,14 +31,12 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
@@ -53,6 +51,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,7 +63,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-05-26
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisLoadBalancerInterceptorTest {
 
 	@Mock
@@ -116,7 +115,7 @@ public class PolarisLoadBalancerInterceptorTest {
 				catch (UnsupportedEncodingException e) {
 					throw new RuntimeException("unsupported charset exception " + UTF_8);
 				}
-				Assertions.assertThat(mockedResponse.getHeaders().get(RouterConstant.ROUTER_LABELS).get(0))
+				assertThat(mockedResponse.getHeaders().get(RouterConstant.ROUTER_LABELS).get(0))
 						.isEqualTo(encodedLabelsContent);
 			}
 		}
@@ -139,7 +138,7 @@ public class PolarisLoadBalancerInterceptorTest {
 
 		ClientHttpResponse response = polarisLoadBalancerInterceptor.intercept(request, null, null);
 
-		Assert.assertEquals(mockedResponse, response);
+		assertThat(response).isEqualTo(mockedResponse);
 		verify(loadBalancerRequestFactory).createRequest(request, null, null);
 		verify(notRibbonLoadBalancerClient).execute(calleeService, loadBalancerRequest);
 
@@ -155,7 +154,7 @@ public class PolarisLoadBalancerInterceptorTest {
 
 	static class MockedHttpRequest implements HttpRequest {
 
-		private URI uri;
+		private final URI uri;
 
 		MockedHttpRequest(String url) {
 			this.uri = URI.create(url);

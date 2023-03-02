@@ -20,37 +20,40 @@ package com.tencent.cloud.common.util;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * test for {@link AddressUtils}.
  *
  * @author lepdou 2022-05-27
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AddressUtilsTest {
 
 	@Test
 	public void testEmptyStr() {
 		List<String> result = AddressUtils.parseAddressList("");
-		Assert.assertEquals(0, result.size());
+		assertThat(result).isNotNull();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
 	public void testNullStr() {
 		List<String> result = AddressUtils.parseAddressList(null);
-		Assert.assertEquals(0, result.size());
+		assertThat(result).isNotNull();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
 	public void testOneStr() {
 		String host1 = "http://localhost";
 		List<String> result = AddressUtils.parseAddressList(host1);
-		Assert.assertEquals(1, result.size());
-		Assert.assertTrue(result.contains("localhost"));
+		assertThat(result.size()).isEqualTo(1);
+		assertThat(result).contains("localhost");
 	}
 
 	@Test
@@ -59,9 +62,9 @@ public class AddressUtilsTest {
 		String host2 = "http://localhost2";
 		String host3 = "http://localhost3";
 		List<String> result = AddressUtils.parseAddressList(host1 + "," + host2 + "," + host3);
-		Assert.assertEquals(3, result.size());
-		Assert.assertTrue(result.contains("localhost"));
-		Assert.assertTrue(result.contains("localhost2"));
-		Assert.assertTrue(result.contains("localhost3"));
+		assertThat(result.size()).isEqualTo(3);
+		assertThat(result).contains("localhost");
+		assertThat(result).contains("localhost2");
+		assertThat(result).contains("localhost3");
 	}
 }

@@ -62,15 +62,16 @@ import com.tencent.polaris.plugins.router.rule.RuleBasedRouter;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.assertj.core.api.AssertionsForClassTypes;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -80,11 +81,14 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-05-26
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisLoadBalancerCompositeRuleTest {
 
 	private static final AtomicBoolean initTransitiveMetadata = new AtomicBoolean(false);
 	private final List<RouterRequestInterceptor> requestInterceptors = new ArrayList<>();
+	private final String testNamespace = "testNamespace";
+	private final String testCallerService = "testCallerService";
+	private final String testCalleeService = "testCalleeService";
 	@Mock
 	private PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 	@Mock
@@ -96,12 +100,9 @@ public class PolarisLoadBalancerCompositeRuleTest {
 	@Mock
 	private RouterAPI routerAPI;
 	private IClientConfig config;
-	private String testNamespace = "testNamespace";
-	private String testCallerService = "testCallerService";
-	private String testCalleeService = "testCalleeService";
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void setUp() {
 		config = new DefaultClientConfigImpl();
 		config.loadDefaultValues();
 		requestInterceptors.add(new MetadataRouterRequestInterceptor(polarisMetadataRouterProperties));
@@ -117,7 +118,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule defaultRule = compositeRule.getRule();
 
-		Assert.assertNull(defaultRule);
+		assertThat(defaultRule).isNull();
 	}
 
 	@Test
@@ -128,7 +129,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
-		Assert.assertTrue(lbRule instanceof RandomRule);
+		assertThat(lbRule).isInstanceOf(RandomRule.class);
 	}
 
 	@Test
@@ -139,7 +140,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
-		Assert.assertTrue(lbRule instanceof PolarisWeightedRule);
+		assertThat(lbRule).isInstanceOf(PolarisWeightedRule.class);
 	}
 
 	@Test
@@ -150,7 +151,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
-		Assert.assertTrue(lbRule instanceof RetryRule);
+		assertThat(lbRule).isInstanceOf(RetryRule.class);
 	}
 
 	@Test
@@ -161,7 +162,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
-		Assert.assertTrue(lbRule instanceof WeightedResponseTimeRule);
+		assertThat(lbRule).isInstanceOf(WeightedResponseTimeRule.class);
 	}
 
 	@Test
@@ -172,7 +173,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
-		Assert.assertTrue(lbRule instanceof BestAvailableRule);
+		assertThat(lbRule).isInstanceOf(BestAvailableRule.class);
 	}
 
 	@Test
@@ -183,7 +184,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
-		Assert.assertTrue(lbRule instanceof RoundRobinRule);
+		assertThat(lbRule).isInstanceOf(RoundRobinRule.class);
 	}
 
 	@Test
@@ -194,7 +195,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
-		Assert.assertTrue(lbRule instanceof AvailabilityFilteringRule);
+		assertThat(lbRule).isInstanceOf(AvailabilityFilteringRule.class);
 	}
 
 	@Test
@@ -224,13 +225,15 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 			Set<RouteArgument> routerMetadata = request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA);
 
-			Assert.assertEquals(1, routerMetadata.size());
-			Assert.assertEquals(0, request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size());
-			Assert.assertEquals(1, request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size());
+			AssertionsForClassTypes.assertThat(routerMetadata.size()).isEqualTo(1);
+			AssertionsForClassTypes.assertThat(request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size())
+					.isEqualTo(0);
+			AssertionsForClassTypes.assertThat(request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)
+					.size()).isEqualTo(1);
 
 			for (RouteArgument routeArgument : request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)) {
-				Assert.assertEquals(RuleBasedRouter.ROUTER_ENABLED, routeArgument.getKey());
-				Assert.assertEquals("false", routeArgument.getValue());
+				AssertionsForClassTypes.assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
+				AssertionsForClassTypes.assertThat(routeArgument.getValue()).isEqualTo("false");
 			}
 		}
 	}
@@ -257,19 +260,21 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 			Set<RouteArgument> routerMetadata = request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY);
 
-			Assert.assertEquals(0, request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size());
-			Assert.assertEquals(1, routerMetadata.size());
+			AssertionsForClassTypes.assertThat(request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size())
+					.isEqualTo(0);
+			AssertionsForClassTypes.assertThat(routerMetadata.size()).isEqualTo(1);
 
 			for (RouteArgument routeArgument : routerMetadata) {
-				Assert.assertEquals(NearbyRouter.ROUTER_ENABLED, routeArgument.getKey());
-				Assert.assertEquals("true", routeArgument.getValue());
+				AssertionsForClassTypes.assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
+				AssertionsForClassTypes.assertThat(routeArgument.getValue()).isEqualTo("true");
 			}
 
-			Assert.assertEquals(1, request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size());
+			AssertionsForClassTypes.assertThat(request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)
+					.size()).isEqualTo(1);
 
 			for (RouteArgument routeArgument : request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)) {
-				Assert.assertEquals(RuleBasedRouter.ROUTER_ENABLED, routeArgument.getKey());
-				Assert.assertEquals("false", routeArgument.getValue());
+				AssertionsForClassTypes.assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
+				AssertionsForClassTypes.assertThat(routeArgument.getValue()).isEqualTo("false");
 			}
 		}
 	}
@@ -296,9 +301,11 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 			Set<RouteArgument> routerMetadata = request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED);
 
-			Assert.assertEquals(3, routerMetadata.size());
-			Assert.assertEquals(0, request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size());
-			Assert.assertEquals(0, request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size());
+			AssertionsForClassTypes.assertThat(routerMetadata.size()).isEqualTo(3);
+			AssertionsForClassTypes.assertThat(request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size())
+					.isEqualTo(0);
+			AssertionsForClassTypes.assertThat(request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size())
+					.isEqualTo(0);
 		}
 	}
 
@@ -321,7 +328,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 			List<Server> servers = compositeRule.doRouter(assembleServers(), assembleRouterContext());
 
-			Assert.assertEquals(assembleResponse.getServiceInstances().getInstances().size(), servers.size());
+			assertThat(servers.size()).isEqualTo(assembleResponse.getServiceInstances().getInstances().size());
 		}
 	}
 

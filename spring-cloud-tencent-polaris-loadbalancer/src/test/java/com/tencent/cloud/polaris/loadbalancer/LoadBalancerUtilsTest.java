@@ -29,19 +29,19 @@ import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test for {@link LoadBalancerUtilsTest} .
  *
  * @author <a href="mailto:iskp.me@gmail.com">Palmer Xu</a> 2022-06-21
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = LoadBalancerUtilsTest.TestApplication.class,
 		properties = {"spring.cloud.polaris.namespace = testNamespace",
 				"spring.cloud.polaris.loadbalancer.enabled = false",

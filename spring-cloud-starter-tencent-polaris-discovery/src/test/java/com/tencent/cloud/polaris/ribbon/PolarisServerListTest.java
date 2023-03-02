@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.ribbon;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.netflix.client.config.IClientConfig;
@@ -28,10 +29,10 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import com.tencent.polaris.test.mock.discovery.NamingService;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -69,23 +70,23 @@ public class PolarisServerListTest {
 
 	private IClientConfig iClientConfig;
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
+	@BeforeAll
+	static void beforeAll() throws IOException {
 		namingServer = NamingServer.startNamingServer(10081);
 
 		// add service
 		namingServer.getNamingService().addService(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER));
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
 	}
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		// mock IClientConfig
 		iClientConfig = mock(IClientConfig.class);
 		when(iClientConfig.getClientName()).thenReturn(SERVICE_PROVIDER);

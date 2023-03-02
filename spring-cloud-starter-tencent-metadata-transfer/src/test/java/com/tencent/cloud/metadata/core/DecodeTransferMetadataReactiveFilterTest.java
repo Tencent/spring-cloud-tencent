@@ -19,20 +19,20 @@ package com.tencent.cloud.metadata.core;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
-import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 /**
@@ -40,10 +40,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  *
  * @author Haotian Zhang
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = MOCK,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
-		properties = { "spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive" })
+		properties = {"spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive"})
 public class DecodeTransferMetadataReactiveFilterTest {
 
 	@Autowired
@@ -51,14 +51,14 @@ public class DecodeTransferMetadataReactiveFilterTest {
 
 	private DecodeTransferMetadataReactiveFilter metadataReactiveFilter;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter();
 	}
 
 	@Test
 	public void test1() {
-		Assertions.assertThat(this.metadataReactiveFilter.getOrder())
+		assertThat(this.metadataReactiveFilter.getOrder())
 				.isEqualTo(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
 	}
 
@@ -74,10 +74,8 @@ public class DecodeTransferMetadataReactiveFilterTest {
 		ServerWebExchange exchange = MockServerWebExchange.from(request);
 
 		metadataReactiveFilter.filter(exchange, webFilterChain);
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a"))
-				.isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b"))
-				.isEqualTo("2");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
+		assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
+		assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
 }

@@ -25,6 +25,12 @@
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>stat-prometheus</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Polaris dependencies end -->
 

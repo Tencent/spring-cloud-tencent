@@ -26,34 +26,31 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
-import org.springframework.util.CollectionUtils;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-
 
 /**
  * test for {@link StaticMetadataManager}.
  *@author lepdou 2022-06-27
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith({MockitoExtension.class, SystemStubsExtension.class})
 public class StaticMetadataManagerTest {
-
-	@Mock
-	private MetadataLocalProperties metadataLocalProperties;
 
 	/**
 	 * EnvironmentVariablesRule.
 	 */
-	@Rule
-	public EnvironmentVariablesRule rule = new EnvironmentVariablesRule();
+	@SystemStub
+	public EnvironmentVariables environmentVariables = new EnvironmentVariables();
+	@Mock
+	private MetadataLocalProperties metadataLocalProperties;
 
 	@Test
 	public void testParseConfigMetadata() {
@@ -69,20 +66,20 @@ public class StaticMetadataManagerTest {
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties, null);
 
 		Map<String, String> metadata = metadataManager.getAllConfigMetadata();
-		Assert.assertEquals(4, metadata.size());
-		Assert.assertEquals("v1", metadata.get("k1"));
-		Assert.assertEquals("v22", metadata.get("k2"));
+		assertThat(metadata.size()).isEqualTo(4);
+		assertThat(metadata.get("k1")).isEqualTo("v1");
+		assertThat(metadata.get("k2")).isEqualTo("v22");
 
 		Map<String, String> transitiveMetadata = metadataManager.getConfigTransitiveMetadata();
-		Assert.assertEquals(1, transitiveMetadata.size());
-		Assert.assertEquals("v1", transitiveMetadata.get("k1"));
+		assertThat(transitiveMetadata.size()).isEqualTo(1);
+		assertThat(transitiveMetadata.get("k1")).isEqualTo("v1");
 
-		Assert.assertEquals("zone1", metadataManager.getZone());
-		Assert.assertEquals("region1", metadataManager.getRegion());
+		assertThat(metadataManager.getZone()).isEqualTo("zone1");
+		assertThat(metadataManager.getRegion()).isEqualTo("region1");
 
 		Map<String, String> locationInfo = metadataManager.getLocationMetadata();
-		Assert.assertEquals("zone1", locationInfo.get("zone"));
-		Assert.assertEquals("region1", locationInfo.get("region"));
+		assertThat(locationInfo.get("zone")).isEqualTo("zone1");
+		assertThat(locationInfo.get("region")).isEqualTo("region1");
 	}
 
 	@Test
@@ -98,21 +95,21 @@ public class StaticMetadataManagerTest {
 				new MockedMetadataProvider());
 
 		Map<String, String> metadata = metadataManager.getAllCustomMetadata();
-		Assert.assertEquals(3, metadata.size());
-		Assert.assertEquals("v1", metadata.get("k1"));
-		Assert.assertEquals("v22", metadata.get("k2"));
-		Assert.assertEquals("v33", metadata.get("k3"));
+		assertThat(metadata.size()).isEqualTo(3);
+		assertThat(metadata.get("k1")).isEqualTo("v1");
+		assertThat(metadata.get("k2")).isEqualTo("v22");
+		assertThat(metadata.get("k3")).isEqualTo("v33");
 
 		Map<String, String> transitiveMetadata = metadataManager.getCustomSPITransitiveMetadata();
-		Assert.assertEquals(1, transitiveMetadata.size());
-		Assert.assertEquals("v22", metadata.get("k2"));
+		assertThat(transitiveMetadata.size()).isEqualTo(1);
+		assertThat(metadata.get("k2")).isEqualTo("v22");
 
-		Assert.assertEquals("zone2", metadataManager.getZone());
-		Assert.assertEquals("region1", metadataManager.getRegion());
+		assertThat(metadataManager.getZone()).isEqualTo("zone2");
+		assertThat(metadataManager.getRegion()).isEqualTo("region1");
 
 		Map<String, String> locationInfo = metadataManager.getLocationMetadata();
-		Assert.assertEquals("zone2", locationInfo.get("zone"));
-		Assert.assertEquals("region1", locationInfo.get("region"));
+		assertThat(locationInfo.get("zone")).isEqualTo("zone2");
+		assertThat(locationInfo.get("region")).isEqualTo("region1");
 	}
 
 	@Test
@@ -131,53 +128,52 @@ public class StaticMetadataManagerTest {
 				new MockedMetadataProvider());
 
 		Map<String, String> metadata = metadataManager.getMergedStaticMetadata();
-		Assert.assertEquals(6, metadata.size());
-		Assert.assertEquals("v1", metadata.get("k1"));
-		Assert.assertEquals("v22", metadata.get("k2"));
-		Assert.assertEquals("v33", metadata.get("k3"));
+		assertThat(metadata.size()).isEqualTo(6);
+		assertThat(metadata.get("k1")).isEqualTo("v1");
+		assertThat(metadata.get("k2")).isEqualTo("v22");
+		assertThat(metadata.get("k3")).isEqualTo("v33");
 
 		Map<String, String> transitiveMetadata = metadataManager.getMergedStaticTransitiveMetadata();
-		Assert.assertEquals(2, transitiveMetadata.size());
-		Assert.assertEquals("v1", metadata.get("k1"));
-		Assert.assertEquals("v22", metadata.get("k2"));
+		assertThat(transitiveMetadata.size()).isEqualTo(2);
+		assertThat(metadata.get("k1")).isEqualTo("v1");
+		assertThat(metadata.get("k2")).isEqualTo("v22");
 
-		Assert.assertEquals("zone2", metadataManager.getZone());
-		Assert.assertEquals("region1", metadataManager.getRegion());
+		assertThat(metadataManager.getAllEnvMetadata()).isEmpty();
+		assertThat(metadataManager.getEnvTransitiveMetadata()).isEmpty();
 
-		Assert.assertTrue(CollectionUtils.isEmpty(metadataManager.getAllEnvMetadata()));
-		Assert.assertTrue(CollectionUtils.isEmpty(metadataManager.getEnvTransitiveMetadata()));
+		assertThat(metadataManager.getZone()).isEqualTo("zone2");
+		assertThat(metadataManager.getRegion()).isEqualTo("region1");
 
 		Map<String, String> locationInfo = metadataManager.getLocationMetadata();
-		Assert.assertEquals("zone2", locationInfo.get("zone"));
-		Assert.assertEquals("region1", locationInfo.get("region"));
-		Assert.assertEquals("campus1", locationInfo.get("campus"));
-
+		assertThat(locationInfo.get("zone")).isEqualTo("zone2");
+		assertThat(locationInfo.get("region")).isEqualTo("region1");
+		assertThat(locationInfo.get("campus")).isEqualTo("campus1");
 	}
 
 	@Test
 	public void testEnvMetadata() {
 		// set env
-		rule.set("SCT_METADATA_CONTENT_TRANSITIVE", "transitiveKey");
-		rule.set("SCT_METADATA_CONTENT_DISPOSABLE", "disposableKey");
-		rule.set("SCT_METADATA_CONTENT_transitiveKey", "transitiveValue");
-		rule.set("SCT_METADATA_CONTENT_disposableKey", "disposableValue");
-		rule.set("SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS", "header1,header2,header3");
+		environmentVariables.set("SCT_METADATA_CONTENT_TRANSITIVE", "transitiveKey")
+				.set("SCT_METADATA_CONTENT_DISPOSABLE", "disposableKey")
+				.set("SCT_METADATA_CONTENT_transitiveKey", "transitiveValue")
+				.set("SCT_METADATA_CONTENT_disposableKey", "disposableValue")
+				.set("SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS", "header1,header2,header3");
 
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties, null);
 		Map<String, String> allEnvMetadata = metadataManager.getAllEnvMetadata();
-		Assert.assertTrue(allEnvMetadata.containsKey("transitiveKey"));
-		Assert.assertTrue(allEnvMetadata.containsKey("disposableKey"));
+		assertThat(allEnvMetadata).containsKey("transitiveKey");
+		assertThat(allEnvMetadata).containsKey("disposableKey");
 
 		Map<String, String> envDisposableMetadata = metadataManager.getEnvDisposableMetadata();
-		Assert.assertTrue(envDisposableMetadata.containsKey("disposableKey"));
-		Assert.assertEquals(envDisposableMetadata.get("disposableKey"), "disposableValue");
+		assertThat(envDisposableMetadata).containsKey("disposableKey");
+		assertThat(envDisposableMetadata.get("disposableKey")).isEqualTo("disposableValue");
 
 		Map<String, String> envTransitiveMetadata = metadataManager.getEnvTransitiveMetadata();
-		Assert.assertTrue(envTransitiveMetadata.containsKey("transitiveKey"));
-		Assert.assertEquals(envTransitiveMetadata.get("transitiveKey"), "transitiveValue");
+		assertThat(envTransitiveMetadata).containsKey("transitiveKey");
+		assertThat(envTransitiveMetadata.get("transitiveKey")).isEqualTo("transitiveValue");
 
 		String transHeaderFromEnv = metadataManager.getTransHeaderFromEnv();
-		Assert.assertEquals(transHeaderFromEnv, "header1,header2,header3");
+		assertThat(transHeaderFromEnv).isEqualTo("header1,header2,header3");
 	}
 
 	static class MockedMetadataProvider implements InstanceMetadataProvider {

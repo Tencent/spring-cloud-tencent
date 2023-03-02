@@ -33,6 +33,12 @@
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>router-rule</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>

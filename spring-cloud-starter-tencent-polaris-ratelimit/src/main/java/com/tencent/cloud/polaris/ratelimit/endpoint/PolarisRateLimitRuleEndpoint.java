@@ -28,7 +28,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
-import com.tencent.polaris.client.pb.RateLimitProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

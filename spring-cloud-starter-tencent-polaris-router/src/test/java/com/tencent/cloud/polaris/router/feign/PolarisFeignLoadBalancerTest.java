@@ -32,16 +32,16 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.netflix.ribbon.DefaultServerIntrospector;
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.anyString;
 
 /**
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.anyString;
  *
  * @author lepdou 2022-05-26
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisFeignLoadBalancerTest {
 
 	@Test
@@ -83,12 +83,12 @@ public class PolarisFeignLoadBalancerTest {
 
 				PolarisRouterContext routerContext = polarisFeignLoadBalancer.buildRouterContext(headers);
 
-				Assert.assertNotNull(routerContext);
+				assertThat(routerContext).isNotNull();
 				Map<String, String> routerLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
-				Assert.assertNotNull(routerLabels);
-				Assert.assertEquals("v1", routerLabels.get("k1"));
-				Assert.assertEquals("v2", routerLabels.get("k2"));
-				Assert.assertNull(routerLabels.get("k3"));
+				assertThat(routerLabels).isNotNull();
+				assertThat(routerLabels.get("k1")).isEqualTo("v1");
+				assertThat(routerLabels.get("k2")).isEqualTo("v2");
+				assertThat(routerLabels.get("k3")).isNull();
 			}
 		}
 	}
@@ -114,8 +114,7 @@ public class PolarisFeignLoadBalancerTest {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
 				PolarisRouterContext routerContext = polarisFeignLoadBalancer.buildRouterContext(headers);
-
-				Assert.assertNull(routerContext);
+				assertThat(routerContext).isNull();
 			}
 		}
 	}

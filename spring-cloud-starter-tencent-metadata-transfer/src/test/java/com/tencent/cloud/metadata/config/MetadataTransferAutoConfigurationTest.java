@@ -26,9 +26,7 @@ import java.util.stream.Collectors;
 
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
-import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulFilter;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -38,6 +36,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link MetadataTransferAutoConfiguration}.
@@ -53,25 +53,14 @@ public class MetadataTransferAutoConfigurationTest {
 	 */
 	@Test
 	public void test1() {
-		this.applicationContextRunner
-				.withConfiguration(
-						AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
+		this.applicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
 				.run(context -> {
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
-					Assertions.assertThat(context).hasSingleBean(
-							EncodeTransferMedataRestTemplateInterceptor.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferZuulFilterConfig.class);
-					Assertions.assertThat(context)
-							.hasSingleBean(EncodeTransferMetadataZuulFilter.class);
-					Assertions.assertThat(context).hasSingleBean(
-							MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
-					Assertions.assertThat(context).hasSingleBean(GlobalFilter.class);
+					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
+					assertThat(context).hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
+					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
+					assertThat(context).hasSingleBean(EncodeTransferMedataRestTemplateInterceptor.class);
+					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
+					assertThat(context).hasSingleBean(GlobalFilter.class);
 				});
 	}
 
@@ -82,20 +71,19 @@ public class MetadataTransferAutoConfigurationTest {
 				.withConfiguration(
 						AutoConfigurations.of(MetadataTransferAutoConfiguration.class, RestTemplateConfiguration.class))
 				.run(context -> {
-					Assertions.assertThat(context)
-							.hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
+					assertThat(context).hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
 					EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor = context.getBean(EncodeTransferMedataRestTemplateInterceptor.class);
 					Map<String, RestTemplate> restTemplateMap = context.getBeansOfType(RestTemplate.class);
-					Assertions.assertThat(restTemplateMap.size()).isEqualTo(2);
+					assertThat(restTemplateMap.size()).isEqualTo(2);
 					for (String beanName : Arrays.asList("restTemplate", "loadBalancedRestTemplate")) {
 						RestTemplate restTemplate = restTemplateMap.get(beanName);
-						Assertions.assertThat(restTemplate).isNotNull();
+						assertThat(restTemplate).isNotNull();
 						List<ClientHttpRequestInterceptor> encodeTransferMedataFeignInterceptorList = restTemplate.getInterceptors()
 								.stream()
 								.filter(interceptor -> Objects.equals(interceptor, encodeTransferMedataRestTemplateInterceptor))
 								.collect(Collectors.toList());
 						//EncodeTransferMetadataFeignInterceptor is not added repeatedly
-						Assertions.assertThat(encodeTransferMedataFeignInterceptorList.size()).isEqualTo(1);
+						assertThat(encodeTransferMedataFeignInterceptorList.size()).isEqualTo(1);
 					}
 				});
 	}

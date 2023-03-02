@@ -21,77 +21,78 @@ package com.tencent.cloud.common.rule;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link Operation}.
  * @author lepdou 2022-07-12
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OperationTest {
 
 	@Test
 	public void testEqual() {
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "v1", Operation.EQUALS.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "v2", Operation.EQUALS.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList(""), "v2", Operation.EQUALS.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "", Operation.EQUALS.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), null, Operation.EQUALS.getValue()));
-		Assert.assertFalse(Operation.match(Collections.emptyList(), "v1", Operation.EQUALS.getValue()));
+		assertThat(Operation.match(Collections.singletonList("v1"), "v1", Operation.EQUALS.getValue())).isTrue();
+		assertThat(Operation.match(Collections.singletonList("v1"), "v2", Operation.EQUALS.getValue())).isFalse();
+		assertThat(Operation.match(Collections.singletonList(""), "v2", Operation.EQUALS.getValue())).isFalse();
+		assertThat(Operation.match(Collections.singletonList("v1"), "", Operation.EQUALS.getValue())).isFalse();
+		assertThat(Operation.match(Collections.singletonList("v1"), null, Operation.EQUALS.getValue())).isFalse();
+		assertThat(Operation.match(Collections.emptyList(), "v1", Operation.EQUALS.getValue())).isFalse();
 	}
 
 	@Test
 	public void testNotEqual() {
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "v1", Operation.NOT_EQUALS.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "v2", Operation.NOT_EQUALS.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList(""), "v2", Operation.NOT_EQUALS.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "", Operation.NOT_EQUALS.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), null, Operation.NOT_EQUALS.getValue()));
-		Assert.assertTrue(Operation.match(Collections.emptyList(), "v1", Operation.NOT_EQUALS.getValue()));
+		assertThat(Operation.match(Collections.singletonList("v1"), "v1", Operation.NOT_EQUALS.getValue())).isFalse();
+		assertThat(Operation.match(Collections.singletonList("v1"), "v2", Operation.NOT_EQUALS.getValue())).isTrue();
+		assertThat(Operation.match(Collections.singletonList(""), "v2", Operation.NOT_EQUALS.getValue())).isTrue();
+		assertThat(Operation.match(Collections.singletonList("v1"), "", Operation.NOT_EQUALS.getValue())).isTrue();
+		assertThat(Operation.match(Collections.singletonList("v1"), null, Operation.NOT_EQUALS.getValue())).isTrue();
+		assertThat(Operation.match(Collections.emptyList(), "v1", Operation.NOT_EQUALS.getValue())).isTrue();
 	}
 
 	@Test
 	public void testIn() {
-		Assert.assertTrue(Operation.match(Arrays.asList("v1", "v2", "v3"), "v1", Operation.IN.getValue()));
-		Assert.assertTrue(Operation.match(Arrays.asList("v1", "v2", "v3"), "v2", Operation.IN.getValue()));
-		Assert.assertFalse(Operation.match(Arrays.asList("v1", "v2", "v3"), "v4", Operation.IN.getValue()));
-		Assert.assertFalse(Operation.match(Arrays.asList("v1", "v2", "v3"), "", Operation.IN.getValue()));
-		Assert.assertFalse(Operation.match(Arrays.asList("v1", "v2", "v3"), null, Operation.IN.getValue()));
-		Assert.assertFalse(Operation.match(Collections.emptyList(), null, Operation.IN.getValue()));
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), "v1", Operation.IN.getValue())).isTrue();
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), "v2", Operation.IN.getValue())).isTrue();
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), "v4", Operation.IN.getValue())).isFalse();
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), "", Operation.IN.getValue())).isFalse();
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), null, Operation.IN.getValue())).isFalse();
+		assertThat(Operation.match(Collections.emptyList(), null, Operation.IN.getValue())).isFalse();
 	}
 
 	@Test
 	public void testNotIn() {
-		Assert.assertFalse(Operation.match(Arrays.asList("v1", "v2", "v3"), "v1", Operation.NOT_IN.getValue()));
-		Assert.assertFalse(Operation.match(Arrays.asList("v1", "v2", "v3"), "v2", Operation.NOT_IN.getValue()));
-		Assert.assertTrue(Operation.match(Arrays.asList("v1", "v2", "v3"), "v4", Operation.NOT_IN.getValue()));
-		Assert.assertTrue(Operation.match(Arrays.asList("v1", "v2", "v3"), "", Operation.NOT_IN.getValue()));
-		Assert.assertTrue(Operation.match(Arrays.asList("v1", "v2", "v3"), null, Operation.NOT_IN.getValue()));
-		Assert.assertTrue(Operation.match(Collections.emptyList(), null, Operation.NOT_IN.getValue()));
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), "v1", Operation.NOT_IN.getValue())).isFalse();
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), "v2", Operation.NOT_IN.getValue())).isFalse();
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), "v4", Operation.NOT_IN.getValue())).isTrue();
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), "", Operation.NOT_IN.getValue())).isTrue();
+		assertThat(Operation.match(Arrays.asList("v1", "v2", "v3"), null, Operation.NOT_IN.getValue())).isTrue();
+		assertThat(Operation.match(Collections.emptyList(), null, Operation.NOT_IN.getValue())).isTrue();
 	}
 
 	@Test
 	public void testEmpty() {
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), null, Operation.BLANK.getValue()));
-		Assert.assertTrue(Operation.match(Collections.singletonList("v1"), "", Operation.BLANK.getValue()));
-		Assert.assertTrue(Operation.match(Collections.emptyList(), null, Operation.BLANK.getValue()));
+		assertThat(Operation.match(Collections.singletonList("v1"), null, Operation.BLANK.getValue())).isTrue();
+		assertThat(Operation.match(Collections.singletonList("v1"), "", Operation.BLANK.getValue())).isTrue();
+		assertThat(Operation.match(Collections.emptyList(), null, Operation.BLANK.getValue())).isTrue();
 	}
 
 	@Test
 	public void testNotEmpty() {
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), null, Operation.NOT_BLANK.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v1"), "", Operation.NOT_BLANK.getValue()));
-		Assert.assertFalse(Operation.match(Collections.emptyList(), null, Operation.NOT_BLANK.getValue()));
-		Assert.assertTrue(Operation.match(Collections.emptyList(), "v1", Operation.NOT_BLANK.getValue()));
+		assertThat(Operation.match(Collections.singletonList("v1"), null, Operation.NOT_BLANK.getValue())).isFalse();
+		assertThat(Operation.match(Collections.singletonList("v1"), "", Operation.NOT_BLANK.getValue())).isFalse();
+		assertThat(Operation.match(Collections.emptyList(), null, Operation.NOT_BLANK.getValue())).isFalse();
+		assertThat(Operation.match(Collections.emptyList(), "v1", Operation.NOT_BLANK.getValue())).isTrue();
 	}
 
 	@Test
 	public void testRegex() {
-		Assert.assertTrue(Operation.match(Collections.singletonList("v[1~10]"), "v1", Operation.REGEX.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v[1~10]"), "v12", Operation.REGEX.getValue()));
-		Assert.assertFalse(Operation.match(Collections.singletonList("v[1~10]*"), "v12", Operation.REGEX.getValue()));
+		assertThat(Operation.match(Collections.singletonList("v[1~10]"), "v1", Operation.REGEX.getValue())).isTrue();
+		assertThat(Operation.match(Collections.singletonList("v[1~10]"), "v12", Operation.REGEX.getValue())).isFalse();
+		assertThat(Operation.match(Collections.singletonList("v[1~10]*"), "v12", Operation.REGEX.getValue())).isFalse();
 	}
 }

@@ -20,17 +20,17 @@ package com.tencent.cloud.polaris.router.feign;
 
 import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.loadbalancer.ILoadBalancer;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.netflix.ribbon.DefaultServerIntrospector;
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-05-26
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisCachingSpringLoadBalanceFactoryTest {
 
 	private final String service1 = "service1";
@@ -74,30 +74,30 @@ public class PolarisCachingSpringLoadBalanceFactoryTest {
 		// load balancer for service1
 		FeignLoadBalancer feignLoadBalancer = polarisCachingSpringLoadBalanceFactory.create(service1);
 
-		Assert.assertNotNull(feignLoadBalancer);
+		assertThat(feignLoadBalancer).isNotNull();
 		verify(factory).getClientConfig(service1);
 		verify(factory, times(0)).getClientConfig(service2);
 		verify(factory).getLoadBalancer(service1);
 		verify(factory, times(0)).getLoadBalancer(service2);
 		verify(factory).getInstance(service1, ServerIntrospector.class);
 		verify(factory, times(0)).getInstance(service2, ServerIntrospector.class);
-		Assert.assertEquals(loadBalancer, feignLoadBalancer.getLoadBalancer());
-		Assert.assertEquals(service1, feignLoadBalancer.getClientName());
+		assertThat(feignLoadBalancer.getLoadBalancer()).isEqualTo(loadBalancer);
+		assertThat(feignLoadBalancer.getClientName()).isEqualTo(service1);
 
 		// load balancer for service2
 		FeignLoadBalancer feignLoadBalancer2 = polarisCachingSpringLoadBalanceFactory.create(service2);
 		// load balancer for service1 again
 		feignLoadBalancer = polarisCachingSpringLoadBalanceFactory.create(service1);
 
-		Assert.assertNotNull(feignLoadBalancer);
+		assertThat(feignLoadBalancer2).isNotNull();
 		verify(factory).getClientConfig(service1);
 		verify(factory).getClientConfig(service2);
 		verify(factory).getLoadBalancer(service1);
 		verify(factory).getLoadBalancer(service2);
 		verify(factory).getInstance(service1, ServerIntrospector.class);
 		verify(factory).getInstance(service2, ServerIntrospector.class);
-		Assert.assertEquals(loadBalancer, feignLoadBalancer2.getLoadBalancer());
-		Assert.assertEquals(service2, feignLoadBalancer2.getClientName());
+		assertThat(feignLoadBalancer2.getLoadBalancer()).isEqualTo(loadBalancer);
+		assertThat(feignLoadBalancer2.getClientName()).isEqualTo(service2);
 
 	}
 }

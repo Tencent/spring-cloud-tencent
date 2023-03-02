@@ -32,7 +32,7 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.discovery.client.api.DefaultConsumerAPI;
 import com.tencent.polaris.router.api.core.RouterAPI;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;

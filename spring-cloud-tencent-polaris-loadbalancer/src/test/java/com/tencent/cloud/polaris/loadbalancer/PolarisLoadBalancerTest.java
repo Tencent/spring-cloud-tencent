@@ -38,12 +38,12 @@ import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.netflix.ribbon.StaticServerList;
 
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lapple.lei 2022-06-28
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisLoadBalancerTest {
 	private static final String CLIENT_NAME = "polaris-test-server";
 	private static final String NS = "testNamespace";
@@ -149,7 +149,7 @@ public class PolarisLoadBalancerTest {
 	}
 
 	private InstancesResponse assembleInstanceResp() {
-		return new InstancesResponse(assembleServiceInstances());
+		return new InstancesResponse(assembleServiceInstances(), null, null);
 	}
 
 	private ServiceInstances assembleServiceInstances() {

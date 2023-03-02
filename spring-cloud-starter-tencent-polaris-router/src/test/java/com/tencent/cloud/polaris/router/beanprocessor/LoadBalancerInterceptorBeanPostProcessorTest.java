@@ -13,27 +13,26 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.router.resttemplate;
+package com.tencent.cloud.polaris.router.beanprocessor;
 
 import com.tencent.cloud.common.util.BeanFactoryUtils;
-import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
+import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerInterceptor;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
@@ -41,8 +40,8 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-05-26
  */
-@RunWith(MockitoJUnitRunner.class)
-public class PolarisLoadBalancerBeanPostProcessorTest {
+@ExtendWith(MockitoExtension.class)
+public class LoadBalancerInterceptorBeanPostProcessorTest {
 
 	@Mock
 	private LoadBalancerClient loadBalancerClient;
@@ -66,7 +65,7 @@ public class PolarisLoadBalancerBeanPostProcessorTest {
 
 			Object bean = processor.postProcessBeforeInitialization(loadBalancerInterceptor, "");
 
-			Assert.assertTrue(bean instanceof PolarisLoadBalancerInterceptor);
+			assertThat(bean).isInstanceOf(PolarisLoadBalancerInterceptor.class);
 		}
 	}
 
@@ -77,8 +76,8 @@ public class PolarisLoadBalancerBeanPostProcessorTest {
 
 		OtherBean otherBean = new OtherBean();
 		Object bean = processor.postProcessBeforeInitialization(otherBean, "");
-		Assert.assertFalse(bean instanceof PolarisLoadBalancerInterceptor);
-		Assert.assertTrue(bean instanceof OtherBean);
+		assertThat(bean).isNotInstanceOf(PolarisLoadBalancerInterceptor.class);
+		assertThat(bean).isInstanceOf(OtherBean.class);
 	}
 
 	static class OtherBean {

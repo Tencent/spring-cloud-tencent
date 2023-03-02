@@ -39,15 +39,14 @@ import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import okhttp3.OkHttpClient;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.netflix.ribbon.apache.RibbonLoadBalancingHttpClient;
 import org.springframework.cloud.netflix.ribbon.okhttp.OkHttpLoadBalancingClient;
@@ -61,6 +60,7 @@ import org.springframework.cloud.netflix.zuul.filters.route.apache.HttpClientRib
 import org.springframework.cloud.netflix.zuul.filters.route.okhttp.OkHttpRibbonCommand;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -74,7 +74,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
  *
  * @author jarvisxiong 2022-08-09
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisRibbonRoutingFilterTest {
 
 	private static final String callerService = "callerService";
@@ -96,8 +96,8 @@ public class PolarisRibbonRoutingFilterTest {
 	@Mock
 	private PolarisLoadBalancer polarisLoadBalancer;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn(callerService);
@@ -114,8 +114,8 @@ public class PolarisRibbonRoutingFilterTest {
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
 		mockedMetadataContextHolder.close();
 	}
@@ -146,11 +146,11 @@ public class PolarisRibbonRoutingFilterTest {
 		PolarisRouterContext routerContext = polarisRibbonRoutingFilter.genRouterContext(request, calleeService);
 
 		Map<String, String> routerLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
-		Assert.assertEquals("v1", routerLabels.get("${http.header.k1}"));
-		Assert.assertEquals("zhangsan", routerLabels.get("${http.query.userid}"));
-		Assert.assertEquals("blue", routerLabels.get("env"));
-		Assert.assertEquals("v1", routerLabels.get("t1"));
-		Assert.assertEquals("v2", routerLabels.get("t2"));
+		assertThat(routerLabels.get("${http.header.k1}")).isEqualTo("v1");
+		assertThat(routerLabels.get("${http.query.userid}")).isEqualTo("zhangsan");
+		assertThat(routerLabels.get("env")).isEqualTo("blue");
+		assertThat(routerLabels.get("t1")).isEqualTo("v1");
+		assertThat(routerLabels.get("t2")).isEqualTo("v2");
 	}
 
 	@Test

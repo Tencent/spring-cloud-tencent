@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.router.resttemplate;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,18 +33,18 @@ import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-10-09
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RouterContextFactoryTest {
 
 	@Mock
@@ -105,7 +105,7 @@ public class RouterContextFactoryTest {
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
-				RouterContextFactory routerContextFactory = new RouterContextFactory(Arrays.asList(springWebRouterLabelResolver),
+				RouterContextFactory routerContextFactory = new RouterContextFactory(Collections.singletonList(springWebRouterLabelResolver),
 						staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
 
 				PolarisRouterContext routerContext = routerContextFactory.create(request, null, calleeService);
@@ -114,22 +114,22 @@ public class RouterContextFactoryTest {
 				verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
 				verify(springWebRouterLabelResolver).resolve(request, null, expressionKeys);
 
-				Assert.assertEquals("v1", routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k1"));
-				Assert.assertEquals("v22", routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k2"));
-				Assert.assertEquals("v1", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k1"));
-				Assert.assertEquals("v22", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k2"));
-				Assert.assertEquals("v4", routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k4"));
-				Assert.assertEquals("GET", routerContext.getLabels(RouterConstant.ROUTER_LABELS)
-						.get("${http.method}"));
-				Assert.assertEquals("/user/get", routerContext.getLabels(RouterConstant.ROUTER_LABELS)
-						.get("${http.uri}"));
+				assertThat(routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k1")).isEqualTo("v1");
+				assertThat(routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k2")).isEqualTo("v22");
+				assertThat(routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k1")).isEqualTo("v1");
+				assertThat(routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k2")).isEqualTo("v22");
+				assertThat(routerContext.getLabels(RouterConstant.ROUTER_LABELS).get("k4")).isEqualTo("v4");
+				assertThat(routerContext.getLabels(RouterConstant.ROUTER_LABELS)
+						.get("${http.method}")).isEqualTo("GET");
+				assertThat(routerContext.getLabels(RouterConstant.ROUTER_LABELS)
+						.get("${http.uri}")).isEqualTo("/user/get");
 			}
 		}
 	}
 
 	static class MockedHttpRequest implements HttpRequest {
 
-		private URI uri;
+		private final URI uri;
 
 		MockedHttpRequest(String url) {
 			this.uri = URI.create(url);

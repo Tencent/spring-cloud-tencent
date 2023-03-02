@@ -36,8 +36,7 @@ import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.client.api.DefaultRouterAPI;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -49,7 +48,8 @@ import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.CollectionUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link PolarisLoadBalancerCompositeRuleBeanPostProcessor}.
@@ -74,12 +74,12 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 			SpringClientFactory springClientFactory = context.getBean(SpringClientFactory.class);
 
 			IRule rule = springClientFactory.getInstance(SERVICE_1, IRule.class);
-			Assert.assertTrue(rule instanceof PolarisLoadBalancerCompositeRule);
+			assertThat(rule).isInstanceOf(PolarisLoadBalancerCompositeRule.class);
 			List<RouterRequestInterceptor> requestInterceptors = (List<RouterRequestInterceptor>) ReflectionUtils.getFieldValue(rule, "requestInterceptors");
-			Assert.assertFalse(CollectionUtils.isEmpty(requestInterceptors));
+			assertThat(requestInterceptors).isNotEmpty();
 			AbstractLoadBalancerRule delegateRule = ((PolarisLoadBalancerCompositeRule) rule).getDelegateRule();
 			//ZoneAvoidanceRule default
-			Assert.assertTrue(delegateRule instanceof ZoneAvoidanceRule);
+			assertThat(delegateRule).isInstanceOf(ZoneAvoidanceRule.class);
 		});
 	}
 
@@ -92,10 +92,10 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 			SpringClientFactory springClientFactory = context.getBean(SpringClientFactory.class);
 
 			IRule rule = springClientFactory.getInstance(SERVICE_1, IRule.class);
-			Assert.assertTrue(rule instanceof PolarisLoadBalancerCompositeRule);
+			assertThat(rule).isInstanceOf(PolarisLoadBalancerCompositeRule.class);
 			AbstractLoadBalancerRule delegateRule = ((PolarisLoadBalancerCompositeRule) rule).getDelegateRule();
 			//spring.cloud.polaris.loadbalancer.strategy = random
-			Assert.assertTrue(delegateRule instanceof RandomRule);
+			assertThat(delegateRule).isInstanceOf(RandomRule.class);
 		});
 	}
 
@@ -108,17 +108,17 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 			SpringClientFactory springClientFactory = context.getBean(SpringClientFactory.class);
 
 			IRule rule1 = springClientFactory.getInstance(SERVICE_1, IRule.class);
-			Assert.assertTrue(rule1 instanceof PolarisLoadBalancerCompositeRule);
+			assertThat(rule1).isInstanceOf(PolarisLoadBalancerCompositeRule.class);
 			AbstractLoadBalancerRule delegateRule1 = ((PolarisLoadBalancerCompositeRule) rule1).getDelegateRule();
 			//service1.ribbon.NFLoadBalancerRuleClassName=com.netflix.loadbalancer.RoundRobinRule
-			Assert.assertTrue(delegateRule1 instanceof RoundRobinRule);
+			assertThat(delegateRule1).isInstanceOf(RoundRobinRule.class);
 
 			IRule rule2 = springClientFactory.getInstance(SERVICE_2, IRule.class);
-			Assert.assertTrue(rule2 instanceof PolarisLoadBalancerCompositeRule);
+			assertThat(rule2).isInstanceOf(PolarisLoadBalancerCompositeRule.class);
 
 			AbstractLoadBalancerRule delegateRule2 = ((PolarisLoadBalancerCompositeRule) rule2).getDelegateRule();
 			//ZoneAvoidanceRule default
-			Assert.assertTrue(delegateRule2 instanceof ZoneAvoidanceRule);
+			assertThat(delegateRule2).isInstanceOf(ZoneAvoidanceRule.class);
 		});
 	}
 
@@ -130,16 +130,16 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 			SpringClientFactory springClientFactory = context.getBean(SpringClientFactory.class);
 
 			IRule rule1 = springClientFactory.getInstance(SERVICE_1, IRule.class);
-			Assert.assertTrue(rule1 instanceof PolarisLoadBalancerCompositeRule);
+			assertThat(rule1).isInstanceOf(PolarisLoadBalancerCompositeRule.class);
 			AbstractLoadBalancerRule delegateRule1 = ((PolarisLoadBalancerCompositeRule) rule1).getDelegateRule();
 			//RibbonConfigForService1#loadBalancerRule returns BestAvailableRule
-			Assert.assertTrue(delegateRule1 instanceof BestAvailableRule);
+			assertThat(delegateRule1).isInstanceOf(BestAvailableRule.class);
 
 			IRule rule2 = springClientFactory.getInstance(SERVICE_2, IRule.class);
-			Assert.assertTrue(rule2 instanceof PolarisLoadBalancerCompositeRule);
+			assertThat(rule2).isInstanceOf(PolarisLoadBalancerCompositeRule.class);
 			AbstractLoadBalancerRule delegateRule2 = ((PolarisLoadBalancerCompositeRule) rule2).getDelegateRule();
 			//ZoneAvoidanceRule default
-			Assert.assertTrue(delegateRule2 instanceof ZoneAvoidanceRule);
+			assertThat(delegateRule2).isInstanceOf(ZoneAvoidanceRule.class);
 		});
 	}
 

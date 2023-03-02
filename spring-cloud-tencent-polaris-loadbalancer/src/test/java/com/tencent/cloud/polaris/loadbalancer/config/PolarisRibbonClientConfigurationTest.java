@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.loadbalancer.config;
 
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

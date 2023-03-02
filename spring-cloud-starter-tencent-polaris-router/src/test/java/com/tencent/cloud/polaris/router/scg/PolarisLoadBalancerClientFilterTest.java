@@ -34,15 +34,14 @@ import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.gateway.config.LoadBalancerProperties;
@@ -50,6 +49,7 @@ import org.springframework.cloud.netflix.ribbon.RibbonLoadBalancerClient;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -61,9 +61,9 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 /**
  * test for ${@link PolarisLoadBalancerClientFilter}.
  *
- * @author lepdou 2022-06-13
+ * @author lepdou 2022-07-04
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisLoadBalancerClientFilterTest {
 
 	private static final String callerService = "callerService";
@@ -83,8 +83,8 @@ public class PolarisLoadBalancerClientFilterTest {
 	@Mock
 	private PolarisContextProperties polarisContextProperties;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn(callerService);
@@ -101,8 +101,8 @@ public class PolarisLoadBalancerClientFilterTest {
 		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
 		mockedMetadataContextHolder.close();
 	}
@@ -111,13 +111,13 @@ public class PolarisLoadBalancerClientFilterTest {
 	public void testGenRouterContext() {
 		PolarisLoadBalancerClientFilter polarisLoadBalancerClientFilter = new PolarisLoadBalancerClientFilter(
 				loadBalancerClient, loadBalancerProperties, staticMetadataManager, routerRuleLabelResolver,
-				Lists.newArrayList(routerLabelResolver), polarisContextProperties);
+				com.google.common.collect.Lists.newArrayList(routerLabelResolver), polarisContextProperties);
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");
 		when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
 
-		Set<String> expressionLabelKeys = Sets.newHashSet("${http.header.k1}", "${http.query.userid}");
+		Set<String> expressionLabelKeys = com.google.common.collect.Sets.newHashSet("${http.header.k1}", "${http.query.userid}");
 		when(routerRuleLabelResolver.getExpressionLabelKeys(anyString(), anyString(), anyString())).thenReturn(expressionLabelKeys);
 
 		MockServerHttpRequest request = MockServerHttpRequest.get("/" + calleeService + "/users")
@@ -133,11 +133,11 @@ public class PolarisLoadBalancerClientFilterTest {
 		PolarisRouterContext routerContext = polarisLoadBalancerClientFilter.genRouterContext(webExchange, calleeService);
 
 		Map<String, String> routerLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
-		Assert.assertEquals("v1", routerLabels.get("${http.header.k1}"));
-		Assert.assertEquals("zhangsan", routerLabels.get("${http.query.userid}"));
-		Assert.assertEquals("blue", routerLabels.get("env"));
-		Assert.assertEquals("v1", routerLabels.get("t1"));
-		Assert.assertEquals("v2", routerLabels.get("t2"));
+		assertThat(routerLabels.get("${http.header.k1}")).isEqualTo("v1");
+		assertThat(routerLabels.get("${http.query.userid}")).isEqualTo("zhangsan");
+		assertThat(routerLabels.get("env")).isEqualTo("blue");
+		assertThat(routerLabels.get("t1")).isEqualTo("v1");
+		assertThat(routerLabels.get("t2")).isEqualTo("v2");
 	}
 
 	@Test

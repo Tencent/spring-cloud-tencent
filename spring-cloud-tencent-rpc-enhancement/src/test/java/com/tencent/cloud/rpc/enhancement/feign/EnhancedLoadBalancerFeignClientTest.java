@@ -18,7 +18,7 @@
 package com.tencent.cloud.rpc.enhancement.feign;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for {@link EnhancedLoadBalancerFeignClient}.

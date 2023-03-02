@@ -25,20 +25,20 @@ import java.util.Map;
 import com.tencent.cloud.common.rule.Condition;
 import com.tencent.cloud.common.rule.KVPair;
 import com.tencent.cloud.common.rule.Operation;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.util.CollectionUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link RuleStainingExecutor}.
  * @author lepdou 2022-07-12
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RuleStainingExecutorTest {
 
 	@Test
@@ -73,9 +73,9 @@ public class RuleStainingExecutorTest {
 
 		Map<String, String> stainedLabels = executor.execute(exchange, stainingRule);
 
-		Assert.assertNotNull(stainedLabels);
-		Assert.assertEquals(1, stainedLabels.size());
-		Assert.assertEquals("blue", stainedLabels.get("env"));
+		assertThat(stainedLabels).isNotNull();
+		assertThat(stainedLabels.size()).isEqualTo(1);
+		assertThat(stainedLabels.get("env")).isEqualTo("blue");
 	}
 
 	@Test
@@ -110,8 +110,8 @@ public class RuleStainingExecutorTest {
 
 		Map<String, String> stainedLabels = executor.execute(exchange, stainingRule);
 
-		Assert.assertNotNull(stainedLabels);
-		Assert.assertEquals(0, stainedLabels.size());
+		assertThat(stainedLabels).isNotNull();
+		assertThat(stainedLabels.size()).isEqualTo(0);
 	}
 
 	@Test
@@ -173,17 +173,17 @@ public class RuleStainingExecutorTest {
 
 		Map<String, String> stainedLabels = executor.execute(exchange, stainingRule);
 
-		Assert.assertNotNull(stainedLabels);
-		Assert.assertEquals(3, stainedLabels.size());
-		Assert.assertEquals("blue", stainedLabels.get("env"));
-		Assert.assertEquals("value1", stainedLabels.get("label1"));
-		Assert.assertEquals("value2", stainedLabels.get("label2"));
+		assertThat(stainedLabels).isNotNull();
+		assertThat(stainedLabels.size()).isEqualTo(3);
+		assertThat(stainedLabels.get("env")).isEqualTo("blue");
+		assertThat(stainedLabels.get("label1")).isEqualTo("value1");
+		assertThat(stainedLabels.get("label2")).isEqualTo("value2");
 	}
 
 	@Test
 	public void testNoStainingRule() {
 		RuleStainingExecutor executor = new RuleStainingExecutor();
-		Assert.assertTrue(CollectionUtils.isEmpty(executor.execute(null, null)));
-		Assert.assertTrue(CollectionUtils.isEmpty(executor.execute(null, new StainingRule())));
+		assertThat(executor.execute(null, null)).isEmpty();
+		assertThat(executor.execute(null, new StainingRule())).isEmpty();
 	}
 }
