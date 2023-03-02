@@ -129,7 +129,7 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 
 	private List<HttpStatus> getSeriesStatus(String series){
 		if (!Arrays.asList("1**","2**","3**","4**","5**").contains(series)){
-			throw new InvalidPropertyException(Config.class, "statusCodes", "polaris circuit breaker status code can only be a numeric http status e.g. [\"404\",\"502\"], or a http series pattern, e.g. [\"1**\",\"2**\",\"3**\",\"4**\",\"5**\"]");
+			throw new InvalidPropertyException(Config.class, "statusCodes", "polaris circuit breaker status code can only be a numeric http status, or a http series pattern, e.g. [\"1**\",\"2**\",\"3**\",\"4**\",\"5**\"]");
 		}
 		HttpStatus[] allHttpStatus = HttpStatus.values();
 		if (series.startsWith("1")) {
