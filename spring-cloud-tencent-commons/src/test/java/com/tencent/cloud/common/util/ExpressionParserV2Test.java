@@ -18,8 +18,9 @@
 package com.tencent.cloud.common.util;
 
 import com.tencent.cloud.common.util.expresstion.ExpressionParserV2;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link ExpressionParserV2}.
@@ -46,29 +47,29 @@ public class ExpressionParserV2Test {
 
 		ExpressionParserV2 parser = new ExpressionParserV2();
 
-		Assert.assertTrue(parser.isExpressionLabel(validLabel1));
-		Assert.assertTrue(parser.isExpressionLabel(validLabel2));
-		Assert.assertTrue(parser.isExpressionLabel(validLabel3));
-		Assert.assertTrue(parser.isExpressionLabel(validLabel4));
-		Assert.assertTrue(parser.isExpressionLabel(validLabel5));
-		Assert.assertTrue(parser.isExpressionLabel(invalidLabel1));
-		Assert.assertFalse(parser.isExpressionLabel(invalidLabel2));
-		Assert.assertTrue(parser.isExpressionLabel(invalidLabel3));
-		Assert.assertTrue(parser.isExpressionLabel(invalidLabel4));
-		Assert.assertTrue(parser.isExpressionLabel(invalidLabel5));
-		Assert.assertTrue(parser.isExpressionLabel(invalidLabel6));
-		Assert.assertFalse(parser.isExpressionLabel(invalidLabel7));
-		Assert.assertTrue(parser.isExpressionLabel(invalidLabel8));
-		Assert.assertFalse(parser.isExpressionLabel(invalidLabel9));
+		assertThat(parser.isExpressionLabel(validLabel1)).isTrue();
+		assertThat(parser.isExpressionLabel(validLabel2)).isTrue();
+		assertThat(parser.isExpressionLabel(validLabel3)).isTrue();
+		assertThat(parser.isExpressionLabel(validLabel4)).isTrue();
+		assertThat(parser.isExpressionLabel(validLabel5)).isTrue();
+		assertThat(parser.isExpressionLabel(invalidLabel1)).isTrue();
+		assertThat(parser.isExpressionLabel(invalidLabel2)).isFalse();
+		assertThat(parser.isExpressionLabel(invalidLabel3)).isTrue();
+		assertThat(parser.isExpressionLabel(invalidLabel4)).isTrue();
+		assertThat(parser.isExpressionLabel(invalidLabel5)).isTrue();
+		assertThat(parser.isExpressionLabel(invalidLabel6)).isTrue();
+		assertThat(parser.isExpressionLabel(invalidLabel7)).isFalse();
+		assertThat(parser.isExpressionLabel(invalidLabel8)).isTrue();
+		assertThat(parser.isExpressionLabel(invalidLabel9)).isFalse();
 
-		Assert.assertFalse(parser.isQueryLabel(validLabel1));
-		Assert.assertFalse(parser.isHeaderLabel(validLabel2));
-		Assert.assertFalse(parser.isCookieLabel(validLabel3));
-		Assert.assertFalse(parser.isMethodLabel(validLabel4));
-		Assert.assertFalse(parser.isUriLabel(validLabel5));
+		assertThat(parser.isQueryLabel(validLabel1)).isFalse();
+		assertThat(parser.isHeaderLabel(validLabel2)).isFalse();
+		assertThat(parser.isCookieLabel(validLabel3)).isFalse();
+		assertThat(parser.isMethodLabel(validLabel4)).isFalse();
+		assertThat(parser.isUriLabel(validLabel5)).isFalse();
 
-		Assert.assertTrue(parser.isHeaderLabel("$header.userId"));
-		Assert.assertTrue(parser.isMethodLabel("$method"));
-		Assert.assertTrue(parser.isQueryLabel("$query.userId"));
+		assertThat(parser.isHeaderLabel("$header.userId")).isTrue();
+		assertThat(parser.isMethodLabel("$method")).isTrue();
+		assertThat(parser.isQueryLabel("$query.userId")).isTrue();
 	}
 }

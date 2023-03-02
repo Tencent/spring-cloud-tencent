@@ -23,12 +23,11 @@ import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResultCode;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import com.tencent.polaris.test.mock.discovery.NamingService;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -37,7 +36,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException.TooManyRequests;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -45,6 +44,8 @@ import org.springframework.web.client.RestTemplate;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,7 +55,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Haotian Zhang
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CalleeControllerTests.Config.class, TestController.class},
 		properties = {"spring.application.name=java_provider_test", "spring.cloud.polaris.discovery.namespace=Test",
@@ -72,8 +73,8 @@ public class CalleeControllerTests {
 	@MockBean
 	private LimitAPI limitAPI;
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
+	@BeforeAll
+	static void beforeAll() throws Exception {
 		namingServer = NamingServer.startNamingServer(10081);
 
 		// add service with 3 instances
@@ -85,15 +86,15 @@ public class CalleeControllerTests {
 		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3, instanceParameter);
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
 	}
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		QuotaResponse quotaResponse = mock(QuotaResponse.class);
 		when(quotaResponse.getCode()).thenReturn(QuotaResultCode.QuotaResultOk);
 		when(limitAPI.getQuota(any())).thenReturn(quotaResponse);
@@ -124,12 +125,12 @@ public class CalleeControllerTests {
 				}
 				else {
 					e.printStackTrace();
-					Assert.fail(e.getMessage());
+					fail(e.getMessage());
 				}
 			}
 		}
-		Assert.assertTrue(hasPassed);
-		Assert.assertTrue(hasLimited);
+		assertThat(hasPassed).isTrue();
+		assertThat(hasLimited).isTrue();
 	}
 
 	@Configuration

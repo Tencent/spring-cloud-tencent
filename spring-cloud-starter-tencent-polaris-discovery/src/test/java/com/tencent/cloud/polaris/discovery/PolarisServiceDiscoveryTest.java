@@ -26,12 +26,12 @@ import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.api.rpc.ServicesResponse;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cloud.client.ServiceInstance;
@@ -50,8 +50,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Haotian Zhang
  */
-@RunWith(MockitoJUnitRunner.class)
-
+@ExtendWith(MockitoExtension.class)
 public class PolarisServiceDiscoveryTest {
 
 	@Mock
@@ -59,8 +58,8 @@ public class PolarisServiceDiscoveryTest {
 	@InjectMocks
 	private PolarisServiceDiscovery polarisServiceDiscovery;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void setUp() {
 		new ApplicationContextAwareUtils().setApplicationContext(new StaticApplicationContext());
 	}
 

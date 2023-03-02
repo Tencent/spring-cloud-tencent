@@ -24,31 +24,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.polaris.client.pb.ModelProto;
-import com.tencent.polaris.client.pb.RoutingProto;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.tencent.polaris.specification.api.v1.model.ModelProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
+import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
  * test for {@link RouterRuleLabelResolver}.
  *@author lepdou 2022-05-26
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RouterRuleLabelResolverTest {
-
-	@Mock
-	private ServiceRuleManager serviceRuleManager;
 
 	private final String testNamespace = "testNamespace";
 	private final String testSourceService = "sourceService";
 	private final String testDstService = "dstService";
+	@Mock
+	private ServiceRuleManager serviceRuleManager;
 
 	@Test
 	public void test() {
@@ -73,7 +72,7 @@ public class RouterRuleLabelResolverTest {
 
 		List<RoutingProto.Route> routes = new LinkedList<>();
 		RoutingProto.Route route = RoutingProto.Route.newBuilder()
-				.addAllSources(Lists.newArrayList(source1, source2, source3))
+				.addAllSources(Lists.list(source1, source2, source3))
 				.build();
 		routes.add(route);
 
@@ -83,13 +82,13 @@ public class RouterRuleLabelResolverTest {
 
 		Set<String> resolvedExpressionLabelKeys = resolver.getExpressionLabelKeys(testNamespace, testSourceService, testDstService);
 
-		Assert.assertNotNull(resolvedExpressionLabelKeys);
-		Assert.assertEquals(6, resolvedExpressionLabelKeys.size());
-		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey1));
-		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey2));
-		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey3));
-		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey4));
-		Assert.assertTrue(resolvedExpressionLabelKeys.contains(validKey5));
-		Assert.assertTrue(resolvedExpressionLabelKeys.contains(invalidKey));
+		assertThat(resolvedExpressionLabelKeys).isNotNull();
+		assertThat(resolvedExpressionLabelKeys.size()).isEqualTo(6);
+		assertThat(resolvedExpressionLabelKeys).contains(validKey1);
+		assertThat(resolvedExpressionLabelKeys).contains(validKey2);
+		assertThat(resolvedExpressionLabelKeys).contains(validKey3);
+		assertThat(resolvedExpressionLabelKeys).contains(validKey4);
+		assertThat(resolvedExpressionLabelKeys).contains(validKey5);
+		assertThat(resolvedExpressionLabelKeys).contains(invalidKey);
 	}
 }

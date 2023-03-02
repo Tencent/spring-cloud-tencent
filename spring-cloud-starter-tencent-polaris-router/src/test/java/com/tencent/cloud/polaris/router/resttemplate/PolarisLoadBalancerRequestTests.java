@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.router.resttemplate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;

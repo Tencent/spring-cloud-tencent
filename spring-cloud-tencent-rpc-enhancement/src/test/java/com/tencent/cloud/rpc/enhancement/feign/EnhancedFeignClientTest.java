@@ -19,9 +19,9 @@ package com.tencent.cloud.rpc.enhancement.feign;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.Maps;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
@@ -30,12 +30,12 @@ import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
 import feign.Target;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Haotian Zhang
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EnhancedFeignClientTest.TestApplication.class,
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class EnhancedFeignClientTest {
@@ -107,18 +107,18 @@ public class EnhancedFeignClientTest {
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
-				Maps.newHashMap(), null, requestTemplate), null);
+				Collections.emptyMap(), null, requestTemplate), null);
 		assertThat(response.status()).isEqualTo(200);
 
 		// 502
 		response = polarisFeignClient.execute(Request.create(Request.HttpMethod.POST, "http://localhost:8080/test",
-				Maps.newHashMap(), null, requestTemplate), null);
+				Collections.emptyMap(), null, requestTemplate), null);
 		assertThat(response.status()).isEqualTo(502);
 
 		// Exception
 		try {
 			polarisFeignClient.execute(Request.create(Request.HttpMethod.DELETE, "http://localhost:8080/test",
-					Maps.newHashMap(), null, requestTemplate), null);
+					Collections.emptyMap(), null, requestTemplate), null);
 			fail("IOException should be thrown.");
 		}
 		catch (Throwable t) {
