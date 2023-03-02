@@ -7,4 +7,6 @@
 - [refactor:move loadbalancer to discovery module.](https://github.com/Tencent/spring-cloud-tencent/pull/844)
 - [fix:fix the error capture of rate limit exception.](https://github.com/Tencent/spring-cloud-tencent/pull/854)
 - [feat:enable stat reporting as default.](https://github.com/Tencent/spring-cloud-tencent/pull/862)
+- [optimize:optimize ServiceRuleManager.](https://github.com/Tencent/spring-cloud-tencent/pull/869)
 - [refactor:update to junit 5.](https://github.com/Tencent/spring-cloud-tencent/pull/865)
+- [docs:support auto snapshot release in GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/868)

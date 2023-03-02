@@ -3,33 +3,34 @@ name: Codecov
 on:
   push:
     branches:
-      - hoxton
+      - 2022.0
       - 2021.0
       - 2020.0
+      - hoxton
       - greenwich
   pull_request:
     branches:
-      - hoxton
+      - 2022.0
       - 2021.0
       - 2020.0
+      - hoxton
       - greenwich
 
 jobs:
-  build:
+  codecov:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout codes
         uses: actions/checkout@v3
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 17
       - name: Test with Maven
-        run: mvn clean test -f pom.xml -B -P sonatype -U
+        run: mvn clean test -B -U -Psonatype
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ github.workspace }}/target/site/jacoco/jacoco.xml

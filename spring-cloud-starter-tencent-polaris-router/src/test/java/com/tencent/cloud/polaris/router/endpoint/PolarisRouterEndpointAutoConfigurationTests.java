@@ -18,7 +18,9 @@
 package com.tencent.cloud.polaris.router.endpoint;
 
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -30,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * test for {@link PolarisRouterEndpointAutoConfiguration}.
+ *
  * @author dongyinuo
  */
 public class PolarisRouterEndpointAutoConfigurationTests {
@@ -52,8 +55,13 @@ public class PolarisRouterEndpointAutoConfigurationTests {
 	static class TestServiceRuleManagerConfiguration {
 
 		@Bean
-		public ServiceRuleManager serviceRuleManager(SDKContext sdkContext) {
-			return new ServiceRuleManager(sdkContext);
+		public ServiceRuleManager serviceRuleManager(SDKContext sdkContext, ConsumerAPI consumerAPI) {
+			return new ServiceRuleManager(sdkContext, consumerAPI);
+		}
+
+		@Bean
+		public ConsumerAPI consumerAPI(SDKContext sdkContext) {
+			return DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
 		}
 
 		@Bean
