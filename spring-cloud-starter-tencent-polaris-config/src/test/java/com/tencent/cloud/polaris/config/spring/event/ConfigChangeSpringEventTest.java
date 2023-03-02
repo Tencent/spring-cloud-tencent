@@ -26,13 +26,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -42,9 +43,9 @@ import org.springframework.context.annotation.Configuration;
  */
 public class ConfigChangeSpringEventTest {
 
-	private static CountDownLatch countDownLatch = new CountDownLatch(1);
+	private static final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-	private static AtomicInteger receiveEventTimes = new AtomicInteger();
+	private static final AtomicInteger receiveEventTimes = new AtomicInteger();
 
 	@Test
 	public void testPublishConfigChangeSpringEvent() {
@@ -55,7 +56,7 @@ public class ConfigChangeSpringEventTest {
 			changeMap.put("key", new ConfigPropertyChangeInfo("key", null, "value", ChangeType.ADDED));
 			context.publishEvent(new ConfigChangeSpringEvent(changeMap));
 			countDownLatch.await(5, TimeUnit.SECONDS);
-			Assert.assertEquals(1, receiveEventTimes.get());
+			assertThat(receiveEventTimes.get()).isEqualTo(1);
 		});
 	}
 
@@ -65,13 +66,13 @@ public class ConfigChangeSpringEventTest {
 		@Override
 		public void onApplicationEvent(ConfigChangeSpringEvent event) {
 			Set<String> changedKeys = event.changedKeys();
-			Assert.assertEquals(1, changedKeys.size());
-			Assert.assertTrue(event.isChanged("key"));
+			assertThat(changedKeys.size()).isEqualTo(1);
+			assertThat(event.isChanged("key")).isTrue();
 			ConfigPropertyChangeInfo changeInfo = event.getChange("key");
-			Assert.assertNotNull(changeInfo);
-			Assert.assertEquals("key", changeInfo.getPropertyName());
-			Assert.assertEquals("value", changeInfo.getNewValue());
-			Assert.assertEquals(ChangeType.ADDED, changeInfo.getChangeType());
+			assertThat(changeInfo).isNotNull();
+			assertThat(changeInfo.getPropertyName()).isEqualTo("key");
+			assertThat(changeInfo.getNewValue()).isEqualTo("value");
+			assertThat(changeInfo.getChangeType()).isEqualTo(ChangeType.ADDED);
 
 			receiveEventTimes.incrementAndGet();
 			countDownLatch.countDown();

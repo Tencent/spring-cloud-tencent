@@ -19,7 +19,7 @@ package com.tencent.cloud.rpc.enhancement;
 
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpStatus;
 

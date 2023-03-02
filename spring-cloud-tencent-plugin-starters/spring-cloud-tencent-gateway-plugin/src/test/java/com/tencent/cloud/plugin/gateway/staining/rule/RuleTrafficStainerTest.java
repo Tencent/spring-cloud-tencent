@@ -22,32 +22,30 @@ import java.util.Map;
 
 import com.tencent.polaris.configuration.api.core.ConfigFile;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.util.CollectionUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link RuleTrafficStainer}.
  * @author derek.yi 2022-11-03
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RuleTrafficStainerTest {
-
-	@Mock
-	private ConfigFileService configFileService;
 
 	private final String testNamespace = "testNamespace";
 	private final String testGroup = "testGroup";
 	private final String testFileName = "rule.json";
+	@Mock
+	private ConfigFileService configFileService;
 
 	@Test
 	public void testNoStainingRule() {
@@ -64,7 +62,7 @@ public class RuleTrafficStainerTest {
 		RuleStainingExecutor ruleStainingExecutor = new RuleStainingExecutor();
 		RuleTrafficStainer ruleTrafficStainer = new RuleTrafficStainer(stainingRuleManager, ruleStainingExecutor);
 		Map<String, String> map = ruleTrafficStainer.apply(null);
-		Assert.assertTrue(CollectionUtils.isEmpty(map));
+		assertThat(map).isEmpty();
 	}
 
 	@Test
@@ -105,8 +103,8 @@ public class RuleTrafficStainerTest {
 		MockServerWebExchange exchange = new MockServerWebExchange.Builder(request).build();
 
 		Map<String, String> map = ruleTrafficStainer.apply(exchange);
-		Assert.assertNotNull(map);
-		Assert.assertEquals(1, map.size());
-		Assert.assertEquals("blue", map.get("env"));
+		assertThat(map).isNotNull();
+		assertThat(map.size()).isEqualTo(1);
+		assertThat(map.get("env")).isEqualTo("blue");
 	}
 }

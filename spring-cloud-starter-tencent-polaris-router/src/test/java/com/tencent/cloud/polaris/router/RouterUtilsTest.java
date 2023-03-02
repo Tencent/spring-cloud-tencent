@@ -27,86 +27,76 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 
 import org.springframework.cloud.client.ServiceInstance;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mockStatic;
 
 /**
  * Test for ${@link RouterUtils}.
  *
  * @author lepdou 2022-07-04
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RouterUtilsTest {
 
 	private static final String testNamespaceAndService = "testNamespaceAndService";
-	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	private static MockedStatic<MetadataContextHolder> mockedMetadataContextHolder;
-
-	@BeforeClass
-	public static void beforeClass() {
-		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
-		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
-				.thenReturn(testNamespaceAndService);
-
-		MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
-		mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class);
-		mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		mockedApplicationContextAwareUtils.close();
-		mockedMetadataContextHolder.close();
-	}
 
 	@Test
 	public void testTransferEmptyInstances() {
 		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.empty());
-		Assert.assertNotNull(serviceInstances.getInstances());
-		Assert.assertEquals(0, serviceInstances.getInstances().size());
+		assertThat(serviceInstances.getInstances()).isNotNull();
+		assertThat(serviceInstances.getInstances()).isEmpty();
 	}
 
 	@Test
 	public void testTransferNotEmptyInstances() {
-		int instanceSize = 100;
-		int weight = 50;
+		try (
+				MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = mockStatic(ApplicationContextAwareUtils.class);
+				MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = mockStatic(MetadataContextHolder.class)
+		) {
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+					.thenReturn(testNamespaceAndService);
+			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
+			mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
-		List<ServiceInstance> instances = new ArrayList<>();
-		for (int i = 0; i < instanceSize; i++) {
-			DefaultInstance instance = new DefaultInstance();
-			instance.setService(testNamespaceAndService);
-			instance.setId("ins" + i);
-			instance.setPort(8080);
-			instance.setHost("127.0.0." + i);
-			instance.setWeight(weight);
-			instances.add(new PolarisServiceInstance(instance));
-		}
+			int instanceSize = 100;
+			int weight = 50;
 
-		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.just(instances));
+			List<ServiceInstance> instances = new ArrayList<>();
+			for (int i = 0; i < instanceSize; i++) {
+				DefaultInstance instance = new DefaultInstance();
+				instance.setService(testNamespaceAndService);
+				instance.setId("ins" + i);
+				instance.setPort(8080);
+				instance.setHost("127.0.0." + i);
+				instance.setWeight(weight);
+				instances.add(new PolarisServiceInstance(instance));
+			}
 
-		Assert.assertNotNull(serviceInstances.getInstances());
-		Assert.assertEquals(instanceSize, serviceInstances.getInstances().size());
+			ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.just(instances));
 
-		List<Instance> polarisInstances = serviceInstances.getInstances();
-		for (int i = 0; i < instanceSize; i++) {
-			Instance instance = polarisInstances.get(i);
-			Assert.assertEquals(testNamespaceAndService, instance.getNamespace());
-			Assert.assertEquals(testNamespaceAndService, instance.getService());
-			Assert.assertEquals("ins" + i, instance.getId());
-			Assert.assertEquals("127.0.0." + i, instance.getHost());
-			Assert.assertEquals(8080, instance.getPort());
-			Assert.assertEquals(weight, instance.getWeight());
+			assertThat(serviceInstances.getInstances()).isNotNull();
+			assertThat(serviceInstances.getInstances().size()).isEqualTo(instanceSize);
+
+			List<Instance> polarisInstances = serviceInstances.getInstances();
+			for (int i = 0; i < instanceSize; i++) {
+				Instance instance = polarisInstances.get(i);
+				assertThat(instance.getNamespace()).isEqualTo(testNamespaceAndService);
+				assertThat(instance.getService()).isEqualTo(testNamespaceAndService);
+				assertThat(instance.getId()).isEqualTo("ins" + i);
+				assertThat(instance.getHost()).isEqualTo("127.0.0." + i);
+				assertThat(instance.getPort()).isEqualTo(8080);
+				assertThat(instance.getWeight()).isEqualTo(weight);
+			}
 		}
 	}
 }

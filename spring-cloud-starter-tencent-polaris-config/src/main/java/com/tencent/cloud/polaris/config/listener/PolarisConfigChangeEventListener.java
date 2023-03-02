@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.config.listener;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -77,9 +78,9 @@ public final class PolarisConfigChangeEventListener implements ApplicationListen
 			ConfigurableEnvironment environment = context.getEnvironment();
 			Map<String, Object> ret = loadEnvironmentProperties(environment);
 			Map<String, ConfigPropertyChangeInfo> changes = merge(ret);
-			ConfigChangeSpringEvent configChangeSpringEvent = new ConfigChangeSpringEvent(Maps.newHashMap(changes));
+			ConfigChangeSpringEvent configChangeSpringEvent = new ConfigChangeSpringEvent(new HashMap<>(changes));
 			eventPublisher.publishEvent(configChangeSpringEvent);
-			fireConfigChange(changes.keySet(), Maps.newHashMap(changes));
+			fireConfigChange(changes.keySet(), new HashMap<>(changes));
 			changes.clear();
 		}
 	}
