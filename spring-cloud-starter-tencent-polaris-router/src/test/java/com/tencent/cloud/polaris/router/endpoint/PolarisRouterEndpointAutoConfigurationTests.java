@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router.endpoint;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
-
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import org.junit.jupiter.api.Test;
 
