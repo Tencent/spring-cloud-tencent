@@ -23,9 +23,8 @@ import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.JacksonUtils;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +34,10 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -45,7 +45,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  *
  * @author quan
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = EncodeTransferMedataScgFilterTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml",
 				"spring.main.web-application-type = reactive"})
@@ -66,8 +66,8 @@ public class EncodeTransferMedataScgFilterTest {
 		String metadataStr = exchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
 		String decode = URLDecoder.decode(metadataStr, UTF_8);
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
-		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
-		Assertions.assertThat(transitiveMap.get("b")).isEqualTo("2");
+		assertThat(transitiveMap.size()).isEqualTo(1);
+		assertThat(transitiveMap.get("b")).isEqualTo("2");
 	}
 
 	@SpringBootApplication

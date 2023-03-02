@@ -17,11 +17,12 @@
 
 package com.tencent.cloud.common.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link BeanFactoryUtils}.
@@ -37,10 +38,9 @@ public class BeanFactoryUtilsTest {
 
 		DefaultListableBeanFactory childBeanFactory = new DefaultListableBeanFactory(parentBeanFactory);
 
-		Assert.assertTrue(childBeanFactory.getBeansOfType(Foo.class).isEmpty());
-		Assert.assertTrue(BeanFactoryUtils.getBeans(childBeanFactory, Foo.class).size() == 1);
-
-		Assert.assertTrue(BeanFactoryUtils.getBeans(childBeanFactory, Bar.class).isEmpty());
+		assertThat(childBeanFactory.getBeansOfType(Foo.class)).isEmpty();
+		assertThat(BeanFactoryUtils.getBeans(childBeanFactory, Foo.class).size()).isEqualTo(1);
+		assertThat(BeanFactoryUtils.getBeans(childBeanFactory, Bar.class)).isEmpty();
 	}
 
 	static class Foo {

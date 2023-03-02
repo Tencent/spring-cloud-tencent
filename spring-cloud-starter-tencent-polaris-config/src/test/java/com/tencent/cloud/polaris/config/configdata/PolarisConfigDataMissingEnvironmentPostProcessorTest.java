@@ -18,7 +18,8 @@
 
 package com.tencent.cloud.polaris.config.configdata;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.mock.env.MockEnvironment;

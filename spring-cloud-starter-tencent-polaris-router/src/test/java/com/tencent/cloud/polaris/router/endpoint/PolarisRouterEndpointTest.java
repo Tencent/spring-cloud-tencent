@@ -22,22 +22,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.polaris.client.pb.ModelProto;
-import com.tencent.polaris.client.pb.RoutingProto;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.tencent.polaris.specification.api.v1.model.ModelProto;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
+import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
  *
  * @author lepdou 2022-07-25
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisRouterEndpointTest {
 
 	private static final String testDestService = "dstService";
@@ -57,15 +57,15 @@ public class PolarisRouterEndpointTest {
 	@InjectMocks
 	private PolarisRouterEndpoint polarisRouterEndpoint;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn(testDestService);
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@AfterAll
+	static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
 	}
 
@@ -92,27 +92,27 @@ public class PolarisRouterEndpointTest {
 
 		List<RoutingProto.Route> routes = new LinkedList<>();
 		RoutingProto.Route route = RoutingProto.Route.newBuilder()
-				.addAllSources(Lists.newArrayList(source1, source2, source3))
+				.addAllSources(Lists.list(source1, source2, source3))
 				.build();
 		routes.add(route);
 
-		when(serviceRuleManager.getServiceRouterRule(testDestService, testDestService, testDestService)).thenReturn(routes);
+		when(serviceRuleManager.getServiceRouterRule(anyString(), anyString(), anyString())).thenReturn(routes);
 
 		Map<String, Object> actuator = polarisRouterEndpoint.router(testDestService);
 
-		Assert.assertNotNull(actuator.get("routerRules"));
-		Assert.assertEquals(1, ((List) actuator.get("routerRules")).size());
+		assertThat(actuator.get("routerRules")).isNotNull();
+		assertThat(((List<?>) actuator.get("routerRules")).size()).isEqualTo(1);
 	}
 
 	@Test
 	public void testHasNotRouterRule() {
 		List<RoutingProto.Route> routes = new LinkedList<>();
 
-		when(serviceRuleManager.getServiceRouterRule(testDestService, testDestService, testDestService)).thenReturn(routes);
+		when(serviceRuleManager.getServiceRouterRule(anyString(), anyString(), anyString())).thenReturn(routes);
 
 		Map<String, Object> actuator = polarisRouterEndpoint.router(testDestService);
 
-		Assert.assertNotNull(actuator.get("routerRules"));
-		Assert.assertEquals(0, ((List) actuator.get("routerRules")).size());
+		assertThat(actuator.get("routerRules")).isNotNull();
+		assertThat(((List<?>) actuator.get("routerRules")).size()).isEqualTo(0);
 	}
 }

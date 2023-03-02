@@ -24,7 +24,7 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisR
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

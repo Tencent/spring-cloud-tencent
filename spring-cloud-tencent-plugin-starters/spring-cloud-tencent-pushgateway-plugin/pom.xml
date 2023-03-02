@@ -21,6 +21,7 @@
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>stat-pushgateway</artifactId>
+			<version>1.10.5</version>
 		</dependency>
 
 		<dependency>

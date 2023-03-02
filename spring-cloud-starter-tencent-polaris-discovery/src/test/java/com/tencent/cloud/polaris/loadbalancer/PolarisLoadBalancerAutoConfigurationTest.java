@@ -19,7 +19,7 @@ package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.router.api.core.RouterAPI;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -32,7 +32,7 @@ import org.springframework.web.client.RestTemplate;
 import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Test for {@link PolarisLoadBalancerAutoConfiguration}.
@@ -56,13 +56,9 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(RouterAPI.class);
 			assertThat(context).hasSingleBean(RestTemplate.class);
-			try {
+			assertThatThrownBy(() -> {
 				context.getBean(RestTemplate.class).getForEntity("http://wrong.url", String.class);
-				fail();
-			}
-			catch (Exception e) {
-				// do nothing
-			}
+			}).isInstanceOf(Exception.class);
 		});
 	}
 
