@@ -18,7 +18,7 @@ on:
       - greenwich
 
 jobs:
-  build:
+  junit:
     strategy:
       matrix:
         java: [ 8, 11, 17 ]
@@ -42,4 +42,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Test with Maven
-        run: mvn clean test -f pom.xml -B -P sonatype -U
+        run: mvn clean test -B -U -Psonatype
+
