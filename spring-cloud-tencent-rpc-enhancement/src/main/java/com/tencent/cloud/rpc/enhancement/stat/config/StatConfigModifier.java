@@ -47,28 +47,35 @@ public class StatConfigModifier implements PolarisConfigModifier {
 	public void modify(ConfigurationImpl configuration) {
 		// Turn on stat reporter configuration.
 		configuration.getGlobal().getStatReporter().setEnable(polarisStatProperties.isEnabled());
-
+		PrometheusHandlerConfig prometheusHandlerConfig = configuration.getGlobal().getStatReporter()
+				.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
 		// Set prometheus plugin.
 		if (polarisStatProperties.isEnabled()) {
-			PrometheusHandlerConfig prometheusHandlerConfig = configuration.getGlobal().getStatReporter()
-					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
-			if (!StringUtils.hasText(polarisStatProperties.getHost())) {
-				polarisStatProperties.setHost(environment.getProperty("spring.cloud.client.ip-address"));
+
+			if (polarisStatProperties.isPushGatewayEnabled()) {
+				// push gateway
+				prometheusHandlerConfig.setType("push");
+				prometheusHandlerConfig.setAddress(polarisStatProperties.getPushGatewayAddress());
+				prometheusHandlerConfig.setPushInterval(polarisStatProperties.getPushGatewayPushInterval());
 			}
-			prometheusHandlerConfig.setHost(polarisStatProperties.getHost());
-			prometheusHandlerConfig.setPort(polarisStatProperties.getPort());
-			prometheusHandlerConfig.setPath(polarisStatProperties.getPath());
-			configuration.getGlobal().getStatReporter()
-					.setPluginConfig(DEFAULT_REPORTER_PROMETHEUS, prometheusHandlerConfig);
+			else {
+				// pull metrics
+				prometheusHandlerConfig.setType("pull");
+				if (!StringUtils.hasText(polarisStatProperties.getHost())) {
+					polarisStatProperties.setHost(environment.getProperty("spring.cloud.client.ip-address"));
+				}
+				prometheusHandlerConfig.setHost(polarisStatProperties.getHost());
+				prometheusHandlerConfig.setPort(polarisStatProperties.getPort());
+				prometheusHandlerConfig.setPath(polarisStatProperties.getPath());
+			}
+
 		}
 		else {
-			PrometheusHandlerConfig prometheusHandlerConfig = configuration.getGlobal().getStatReporter()
-					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
 			// Set port to -1 to disable stat plugin.
 			prometheusHandlerConfig.setPort(-1);
-			configuration.getGlobal().getStatReporter()
-					.setPluginConfig(DEFAULT_REPORTER_PROMETHEUS, prometheusHandlerConfig);
 		}
+		configuration.getGlobal().getStatReporter()
+				.setPluginConfig(DEFAULT_REPORTER_PROMETHEUS, prometheusHandlerConfig);
 	}
 
 	@Override
