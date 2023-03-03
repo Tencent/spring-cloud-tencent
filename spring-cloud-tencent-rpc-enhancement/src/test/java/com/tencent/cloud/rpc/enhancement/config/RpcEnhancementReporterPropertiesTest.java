@@ -39,7 +39,7 @@ import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RpcEnhancementReporterPropertiesTest.TestApplication.class)
-@ActiveProfiles("disable")
+@ActiveProfiles("test")
 public class RpcEnhancementReporterPropertiesTest {
 
 	@Autowired
