@@ -23,13 +23,13 @@ import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAuto
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author sean yu
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PolarisCircuitBreakerTest {
 
 	private static ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -59,7 +59,7 @@ public class PolarisCircuitBreakerTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 
-	@BeforeClass
+	@BeforeAll
 	public static void beforeClass() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace"))
@@ -68,8 +68,8 @@ public class PolarisCircuitBreakerTest {
 				.thenReturn(SERVICE_CIRCUIT_BREAKER);
 	}
 
-	@After
-	public void after() {
+	@AfterAll
+	public static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
 	}
 
