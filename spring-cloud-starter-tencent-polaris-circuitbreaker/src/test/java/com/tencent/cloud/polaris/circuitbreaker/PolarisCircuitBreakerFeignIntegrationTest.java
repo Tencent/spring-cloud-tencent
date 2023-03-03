@@ -19,9 +19,8 @@ package com.tencent.cloud.polaris.circuitbreaker;
 
 
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,7 +32,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,7 +44,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 /**
  * @author sean yu
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = PolarisCircuitBreakerFeignIntegrationTest.TestConfig.class,
 		properties = {
@@ -68,10 +67,6 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	@Autowired
 	private BazService bazService;
-
-	@Before
-	public void setUp() {
-	}
 
 	@Test
 	public void contextLoads() throws Exception {
@@ -126,7 +121,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	@FeignClient(value = "foo-service", fallbackFactory = CustomFallbackFactory.class)
 	public interface FooService {
 
-		@GetMapping("echo/{str}")
+		@RequestMapping(value = "echo/{str}")
 		String echo(@RequestParam("str") String param);
 
 	}
