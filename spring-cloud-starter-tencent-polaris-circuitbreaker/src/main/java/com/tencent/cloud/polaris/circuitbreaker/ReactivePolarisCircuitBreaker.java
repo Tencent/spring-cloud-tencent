@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.circuitbreaker;
 
 import java.util.function.Function;
 
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisResultToErrorCode;
 import com.tencent.cloud.polaris.circuitbreaker.reactor.PolarisCircuitBreakerReactorTransformer;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -40,9 +41,9 @@ public class ReactivePolarisCircuitBreaker implements ReactiveCircuitBreaker {
 
 	private final InvokeHandler invokeHandler;
 
-	public ReactivePolarisCircuitBreaker(String sourceNamespace, String sourceService, String namespace, String service, String method, CircuitBreakAPI circuitBreakAPI) {
-		InvokeContext.RequestContext requestContext = new FunctionalDecoratorRequest(new ServiceKey(namespace, service), method);
-		requestContext.setSourceService(new ServiceKey(sourceNamespace, sourceService));
+	public ReactivePolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf, CircuitBreakAPI circuitBreakAPI) {
+		InvokeContext.RequestContext requestContext = new FunctionalDecoratorRequest(new ServiceKey(conf.getNamespace(), conf.getService()), conf.getMethod());
+		requestContext.setSourceService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
 		requestContext.setResultToErrorCode(new PolarisResultToErrorCode());
 		this.invokeHandler = circuitBreakAPI.makeInvokeHandler(requestContext);
 	}

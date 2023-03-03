@@ -55,11 +55,7 @@ public class PolarisCircuitBreakerFactory
 	public CircuitBreaker create(String id) {
 		PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf = getConfigurations()
 				.computeIfAbsent(id, defaultConfiguration);
-		return new PolarisCircuitBreaker(
-				conf.getSourceNamespace(), conf.getSourceService(),
-				conf.getNamespace(), conf.getService(), conf.getMethod(),
-				circuitBreakAPI
-		);
+		return new PolarisCircuitBreaker(conf, circuitBreakAPI);
 	}
 
 	@Override
