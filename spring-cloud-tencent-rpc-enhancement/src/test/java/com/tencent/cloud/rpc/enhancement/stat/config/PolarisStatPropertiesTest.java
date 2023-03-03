@@ -18,13 +18,9 @@
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,25 +29,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Haotian Zhang
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = PolarisStatPropertiesTest.TestApplication.class)
-@ActiveProfiles("test")
 public class PolarisStatPropertiesTest {
 
-	@Autowired
-	private PolarisStatProperties polarisStatProperties;
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(PolarisStatPropertiesAutoConfiguration.class))
+			.withPropertyValues("spring.cloud.polaris.enabled=true")
+			.withPropertyValues("spring.cloud.polaris.stat.enabled=true")
+			.withPropertyValues("spring.cloud.polaris.stat.host=127.0.0.1")
+			.withPropertyValues("spring.cloud.polaris.stat.port=20000")
+			.withPropertyValues("spring.cloud.polaris.stat.path=/xxx")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000");
 
 	@Test
 	public void testDefaultInitialization() {
-		assertThat(polarisStatProperties).isNotNull();
-		assertThat(polarisStatProperties.isEnabled()).isTrue();
-		assertThat(polarisStatProperties.getHost()).isNotBlank();
-		assertThat(polarisStatProperties.getPort()).isEqualTo(20000);
-		assertThat(polarisStatProperties.getPath()).isEqualTo("/xxx");
-	}
+		contextRunner.run(context -> {
+			PolarisStatProperties polarisStatProperties = context.getBean(PolarisStatProperties.class);
 
-	@SpringBootApplication
-	protected static class TestApplication {
-
+			assertThat(polarisStatProperties).isNotNull();
+			assertThat(polarisStatProperties.isEnabled()).isTrue();
+			assertThat(polarisStatProperties.getHost()).isNotBlank();
+			assertThat(polarisStatProperties.getPort()).isEqualTo(20000);
+			assertThat(polarisStatProperties.getPath()).isEqualTo("/xxx");
+			assertThat(polarisStatProperties.isPushGatewayEnabled()).isTrue();
+			assertThat(polarisStatProperties.getPushGatewayAddress()).isEqualTo("127.0.0.1:9091");
+			assertThat(polarisStatProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
+		});
 	}
 }
