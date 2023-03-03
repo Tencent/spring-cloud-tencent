@@ -76,7 +76,8 @@ public class PolarisCircuitBreakerMockServerTest {
 		try {
 			namingServer = NamingServer.startNamingServer(-1);
 			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_CIRCUIT_BREAKER);
@@ -107,19 +108,20 @@ public class PolarisCircuitBreakerMockServerTest {
 
 		// trigger fallback for 5 times
 		List<String> resList = new ArrayList<>();
-		for (int i = 0; i < 5; i++){
+		for (int i = 0; i < 5; i++) {
 			int finalI = i;
 			String res = cb.run(() -> {
 				if (finalI % 2 == 1) {
 					throw new IllegalArgumentException("invoke failed");
-				} else {
+				}
+				else {
 					return "invoke success";
 				}
 			}, t -> "fallback");
 			resList.add(res);
 			Utils.sleepUninterrupted(1000);
 		}
-		assertThat(resList).isEqualTo(Arrays.asList("invoke success","fallback", "fallback", "fallback","fallback"));
+		assertThat(resList).isEqualTo(Arrays.asList("invoke success", "fallback", "fallback", "fallback", "fallback"));
 
 		// always fallback
 		ReactivePolarisCircuitBreakerFactory reactivePolarisCircuitBreakerFactory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI);
