@@ -10,3 +10,4 @@
 - [refactor:update to junit 5.](https://github.com/Tencent/spring-cloud-tencent/pull/867)
 - [docs:support auto snapshot release in GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/870)
 - [feature:add User-Agent:polaris for healthyCheck api.](https://github.com/Tencent/spring-cloud-tencent/pull/873)
+- [optimize:optimize ServiceRuleManager.](https://github.com/Tencent/spring-cloud-tencent/pull/878)
