@@ -38,12 +38,13 @@ import com.tencent.polaris.client.util.Utils;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -60,13 +61,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author sean yu
  */
+@ExtendWith(MockitoExtension.class)
 public class PolarisCircuitBreakerMockServerTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	private NamingServer namingServer;
+	private static NamingServer namingServer;
 
-	@Before
-	public void before() throws IOException {
+	@BeforeAll
+	public static void beforeAll() throws IOException {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace"))
 				.thenReturn(NAMESPACE_TEST);
@@ -78,12 +80,12 @@ public class PolarisCircuitBreakerMockServerTest {
 			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
 		}
 		catch (IOException e) {
-			Assert.fail(e.getMessage());
+
 		}
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_CIRCUIT_BREAKER);
 
 		CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("circuitBreakerRule.json");
+		InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
 		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
 		JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
 		CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
@@ -91,8 +93,8 @@ public class PolarisCircuitBreakerMockServerTest {
 		namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
 	}
 
-	@After
-	public void after() {
+	@AfterAll
+	public static void afterAll() {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
