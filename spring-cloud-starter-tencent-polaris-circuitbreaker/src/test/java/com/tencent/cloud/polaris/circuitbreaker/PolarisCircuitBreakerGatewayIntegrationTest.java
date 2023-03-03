@@ -18,23 +18,38 @@
 package com.tencent.cloud.polaris.circuitbreaker;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.assertj.core.api.Assertions.assertThat;
 
+
+/**
+ * @author sean yu
+ */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -42,21 +57,36 @@ import org.springframework.web.bind.annotation.RestController;
 				"spring.cloud.gateway.enabled=true",
 				"spring.cloud.polaris.namespace=default",
 				"spring.cloud.polaris.service=Test",
-				"spring.main.web-application-type=reactive"
+				"spring.main.web-application-type=reactive",
+				"httpbin=http://localhost:${wiremock.server.port}"
 		},
 		classes = PolarisCircuitBreakerGatewayIntegrationTest.TestApplication.class
 )
+@AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test-gateway")
+@AutoConfigureWebTestClient(timeout = "10000")
 public class PolarisCircuitBreakerGatewayIntegrationTest {
 
 	@Autowired
-	private ApplicationContext context;
+	private WebTestClient webClient;
 
 	@Test
-	public void contextLoads() throws Exception {
-		WebTestClient client = WebTestClient.bindToApplicationContext(this.context)
-				.build();
-		client.get().uri("/hello/1").exchange().expectStatus().isOk();
+	public void fallback() throws Exception {
+
+		stubFor(get(urlEqualTo("/err"))
+				.willReturn(aResponse()
+						.withStatus(500)
+						.withBody("err")
+						.withFixedDelay(3000)));
+
+		webClient
+				.get().uri("/err")
+				.header("Host", "www.circuitbreaker.com")
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody()
+				.consumeWith(
+						response -> assertThat(response.getResponseBody()).isEqualTo("fallback".getBytes()));
 	}
 
 
@@ -64,14 +94,30 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 	@EnableAutoConfiguration
 	public static class TestApplication {
 
+		@Bean
+		public RouteLocator myRoutes(RouteLocatorBuilder builder) {
+			String httpUri = "http://httpbin.org:80";
+			Set<String> codeSets = new HashSet<>();
+			codeSets.add("4**");
+			codeSets.add("5**");
+			return builder.routes()
+					.route(p -> p
+							.host("*.circuitbreaker.com")
+							.filters(f -> f
+									.circuitBreaker(config -> config
+											.setStatusCodes(codeSets)
+											.setFallbackUri("forward:/fallback")
+									))
+							.uri(httpUri))
+					.build();
+		}
+
 		@RestController
 		static class Controller {
-
-			@GetMapping("/hello/{id}")
-			public Mono<String> hello(@PathVariable Integer id) {
-				return Mono.just("hello" + id);
+			@RequestMapping("/fallback")
+			public Mono<String> fallback() {
+				return Mono.just("fallback");
 			}
-
 		}
 
 	}
