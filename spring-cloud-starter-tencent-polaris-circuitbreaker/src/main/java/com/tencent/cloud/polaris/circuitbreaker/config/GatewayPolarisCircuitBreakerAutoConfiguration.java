@@ -50,10 +50,10 @@ import org.springframework.web.reactive.DispatcherHandler;
 public class GatewayPolarisCircuitBreakerAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(ReactivePolarisCircuitBreakerFactory.class)
+	@ConditionalOnBean(ReactiveCircuitBreakerFactory.class)
 	@ConditionalOnEnabledFilter
 	public PolarisCircuitBreakerFilterFactory polarisCircuitBreakerFilterFactory(
-			ReactivePolarisCircuitBreakerFactory reactiveCircuitBreakerFactory,
+			ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory,
 			ObjectProvider<DispatcherHandler> dispatcherHandler,
 			@Autowired(required = false) ReactiveDiscoveryClient discoveryClient,
 			@Autowired(required = false) DiscoveryLocatorProperties properties
