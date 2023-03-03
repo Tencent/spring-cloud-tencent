@@ -50,9 +50,7 @@ public class PolarisContextAutoConfiguration {
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean
-	public SDKContext polarisContext(PolarisContextProperties properties, Environment environment,
-			List<PolarisConfigModifier> modifierList)
-			throws PolarisException {
+	public SDKContext polarisContext(PolarisContextProperties properties, Environment environment, List<PolarisConfigModifier> modifierList) throws PolarisException {
 		return SDKContext.initContextByConfig(properties.configuration(modifierList,
 				() -> environment.getProperty("spring.cloud.client.ip-address")));
 	}
@@ -82,7 +80,7 @@ public class PolarisContextAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ServiceRuleManager serviceRuleManager(SDKContext sdkContext) {
-		return new ServiceRuleManager(sdkContext);
+	public ServiceRuleManager serviceRuleManager(SDKContext sdkContext, ConsumerAPI consumerAPI) {
+		return new ServiceRuleManager(sdkContext, consumerAPI);
 	}
 }
