@@ -57,4 +57,21 @@ public class PolarisStatPropertiesTest {
 			assertThat(polarisStatProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
 		});
 	}
+
+	@Test
+	void testGetAndSet() {
+		PolarisStatProperties polarisStatProperties = new PolarisStatProperties();
+
+		// PushGatewayEnabled
+		polarisStatProperties.setPushGatewayEnabled(true);
+		assertThat(polarisStatProperties.isPushGatewayEnabled()).isTrue();
+
+		// PushGatewayAddress
+		polarisStatProperties.setPushGatewayAddress("127.0.0.1:9091");
+		assertThat(polarisStatProperties.getPushGatewayAddress()).isEqualTo("127.0.0.1:9091");
+
+		// PushGatewayPushInterval
+		polarisStatProperties.setPushGatewayPushInterval(1000L);
+		assertThat(polarisStatProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
+	}
 }
