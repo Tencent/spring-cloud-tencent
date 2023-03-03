@@ -15,12 +15,12 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.polaris.circuitbreaker;
 
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
-import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import org.junit.After;
@@ -76,6 +76,7 @@ public class PolarisCircuitBreakerTest {
 	@Test
 	public void run() {
 		this.contextRunner.run(context -> {
+
 			PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = context.getBean(PolarisCircuitBreakerFactory.class);
 			CircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
 

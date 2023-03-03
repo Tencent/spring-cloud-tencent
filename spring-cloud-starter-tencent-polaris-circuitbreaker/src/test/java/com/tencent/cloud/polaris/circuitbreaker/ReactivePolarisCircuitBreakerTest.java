@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.polaris.circuitbreaker;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +23,7 @@ import java.util.Collections;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.circuitbreaker.ReactivePolarisCircuitBreaker;
 import com.tencent.cloud.polaris.circuitbreaker.ReactivePolarisCircuitBreakerFactory;
+import com.tencent.cloud.polaris.circuitbreaker.config.ReactivePolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import org.junit.After;
