@@ -12,3 +12,4 @@
 - [docs:support auto snapshot release in GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/871)
 - [feature:add User-Agent:polaris for healthyCheck api.](https://github.com/Tencent/spring-cloud-tencent/pull/872)
 - [optimize:optimize ServiceRuleManager.](https://github.com/Tencent/spring-cloud-tencent/pull/877)
+- [refactor:refactor stat module.](https://github.com/Tencent/spring-cloud-tencent/pull/880)
