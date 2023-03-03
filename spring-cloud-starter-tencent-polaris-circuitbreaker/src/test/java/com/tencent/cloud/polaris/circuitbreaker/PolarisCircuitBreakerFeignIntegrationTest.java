@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -121,7 +120,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	@FeignClient(value = "foo-service", fallbackFactory = CustomFallbackFactory.class)
 	public interface FooService {
 
-		@RequestMapping(value = "echo/{str}")
+		@RequestMapping("echo/{str}")
 		String echo(@RequestParam("str") String param);
 
 	}
