@@ -46,11 +46,6 @@
 			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-pushgateway-plugin</artifactId>
-		</dependency>
-
 		<!-- Spring Cloud -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
