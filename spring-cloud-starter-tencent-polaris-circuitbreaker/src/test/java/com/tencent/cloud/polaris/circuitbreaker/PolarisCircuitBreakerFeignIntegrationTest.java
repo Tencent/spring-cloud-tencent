@@ -48,7 +48,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		classes = PolarisCircuitBreakerFeignIntegrationTest.TestConfig.class,
 		properties = {
 				"spring.cloud.gateway.enabled=false",
-				"feign.circuitbreaker.enabled=true",
+				"spring.cloud.openfeign.circuitbreaker.enabled=true",
 				"spring.cloud.polaris.namespace=default",
 				"spring.cloud.polaris.service=Test"
 })
