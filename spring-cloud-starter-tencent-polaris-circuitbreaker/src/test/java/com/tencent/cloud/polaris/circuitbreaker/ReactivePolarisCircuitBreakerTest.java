@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.polaris.circuitbreaker.config.ReactivePolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
@@ -80,6 +81,11 @@ public class ReactivePolarisCircuitBreakerTest {
 		this.reactiveContextRunner.run(context -> {
 			ReactivePolarisCircuitBreakerFactory polarisCircuitBreakerFactory = context.getBean(ReactivePolarisCircuitBreakerFactory.class);
 			ReactiveCircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
+
+			PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration configuration =
+					polarisCircuitBreakerFactory.configBuilder(SERVICE_CIRCUIT_BREAKER).build();
+
+			polarisCircuitBreakerFactory.configureDefault(id -> configuration);
 
 			assertThat(Mono.just("foobar").transform(cb::run).block()).isEqualTo("foobar");
 
