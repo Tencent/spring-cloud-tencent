@@ -89,6 +89,22 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 						response -> assertThat(response.getResponseBody()).isEqualTo("fallback".getBytes()));
 	}
 
+	@Test
+	public void noFallback() throws Exception {
+
+		stubFor(get(urlEqualTo("/err-no-fallback"))
+				.willReturn(aResponse()
+						.withStatus(500)
+						.withBody("err")
+						.withFixedDelay(3000)));
+
+		webClient
+				.get().uri("/err-no-fallback")
+				.header("Host", "www.circuitbreaker-no-fallback.com")
+				.exchange()
+				.expectStatus().isEqualTo(500);
+	}
+
 
 	@Configuration
 	@EnableAutoConfiguration
@@ -107,6 +123,13 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 									.circuitBreaker(config -> config
 											.setStatusCodes(codeSets)
 											.setFallbackUri("forward:/fallback")
+									))
+							.uri(httpUri))
+					.route(p -> p
+							.host("*.circuitbreaker-no-fallback.com")
+							.filters(f -> f
+									.circuitBreaker(config -> config
+											.setStatusCodes(codeSets)
 									))
 							.uri(httpUri))
 					.build();

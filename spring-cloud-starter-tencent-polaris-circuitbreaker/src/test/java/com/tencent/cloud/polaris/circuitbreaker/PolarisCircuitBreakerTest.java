@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.circuitbreaker;
 
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
@@ -79,6 +80,11 @@ public class PolarisCircuitBreakerTest {
 
 			PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = context.getBean(PolarisCircuitBreakerFactory.class);
 			CircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
+
+			PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration configuration =
+					polarisCircuitBreakerFactory.configBuilder(SERVICE_CIRCUIT_BREAKER).build();
+
+			polarisCircuitBreakerFactory.configureDefault(id -> configuration);
 
 			assertThat(cb.run(() -> "foobar")).isEqualTo("foobar");
 
