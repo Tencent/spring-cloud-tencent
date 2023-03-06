@@ -61,6 +61,19 @@ public class PolarisServiceRegistryTest {
 			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
+	private final WebApplicationContextRunner contextRunner2 = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(
+					PolarisContextAutoConfiguration.class,
+					PolarisPropertiesConfiguration.class,
+					PolarisDiscoveryClientConfiguration.class,
+					PolarisDiscoveryAutoConfiguration.class))
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
+			.withPropertyValues("server.port=" + PORT)
+			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
+			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
+			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx")
+			.withPropertyValues("spring.cloud.polaris.discovery.health-check-url=/test");
+
 	@BeforeAll
 	static void beforeAll() throws Exception {
 		namingServer = NamingServer.startNamingServer(10081);
@@ -109,6 +122,23 @@ public class PolarisServiceRegistryTest {
 			assertThatCode(() -> {
 				registry.deregister(registration);
 			}).doesNotThrowAnyException();
+		});
+	}
+
+	@Test
+	void testHeartbeat() {
+		this.contextRunner2.run(context -> {
+			PolarisServiceRegistry registry = context.getBean(PolarisServiceRegistry.class);
+			PolarisRegistration registration = Mockito.mock(PolarisRegistration.class);
+			when(registration.getHost()).thenReturn("127.0.0.1");
+			when(registration.getPort()).thenReturn(8080);
+			when(registration.getServiceId()).thenReturn(SERVICE_PROVIDER);
+
+			assertThatCode(() -> registry.register(registration)).doesNotThrowAnyException();
+
+			Thread.sleep(6000);
+
+			assertThatCode(() -> registry.deregister(registration)).doesNotThrowAnyException();
 		});
 	}
 
