@@ -13,3 +13,4 @@
 - [optimize:optimize ServiceRuleManager.](https://github.com/Tencent/spring-cloud-tencent/pull/878)
 - [refactor:refactor stat module.](https://github.com/Tencent/spring-cloud-tencent/pull/879)
 - [feature:add polaris circuit breaker support.](https://github.com/Tencent/spring-cloud-tencent/pull/881)
+- [fix:fix NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/884)
