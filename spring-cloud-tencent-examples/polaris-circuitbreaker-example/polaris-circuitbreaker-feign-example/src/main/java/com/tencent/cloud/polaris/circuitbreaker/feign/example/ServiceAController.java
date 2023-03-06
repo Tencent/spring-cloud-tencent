@@ -15,20 +15,33 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.polaris.circuitbreaker.feign.example;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Autoconfiguration at bootstrap phase.
+ * Circuit breaker example caller controller.
  *
- * @author lepdou 2022-03-29
+ * @author sean yu
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import({PolarisCircuitBreakerAutoConfiguration.class, ReactivePolarisCircuitBreakerAutoConfiguration.class, PolarisCircuitBreakerFeignClientAutoConfiguration.class})
-public class PolarisCircuitBreakerBootstrapConfiguration {
+@RestController
+@RequestMapping("/example/service/a")
+public class ServiceAController {
+
+	@Autowired
+	private ProviderB polarisServiceB;
+
+	/**
+	 * Get info of Service B by Feign.
+	 * @return info of Service B
+	 */
+	@GetMapping("/getBServiceInfo")
+	public String getBServiceInfo() {
+		return polarisServiceB.info();
+	}
 
 }

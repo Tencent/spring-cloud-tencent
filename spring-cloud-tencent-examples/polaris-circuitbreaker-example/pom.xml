@@ -15,8 +15,11 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>polaris-circuitbreaker-example-a</module>
-		<module>polaris-circuitbreaker-example-b</module>
-		<module>polaris-circuitbreaker-example-b2</module>
+		<module>polaris-circuitbreaker-feign-example</module>
+		<module>polaris-circuitbreaker-gateway-example</module>
+		<module>polaris-circuitbreaker-resttemplate-example</module>
+		<module>polaris-circuitbreaker-webclient-example</module>
+		<module>polaris-circuitbreaker-callee-service</module>
+		<module>polaris-circuitbreaker-callee-service2</module>
 	</modules>
 </project>

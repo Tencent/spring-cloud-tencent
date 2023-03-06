@@ -1,0 +1,13 @@
+server:
+  port: 48081
+spring:
+  application:
+    name: polaris-circuitbreaker-callee-service
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+      stat:
+        enabled: true
+        port: 28082

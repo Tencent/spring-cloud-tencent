@@ -1,0 +1,57 @@
+server:
+  session-timeout: 1800
+  port: 48080
+spring:
+  application:
+    name: GatewayScgService
+  cloud:
+    tencent:
+      plugin:
+        scg:
+          staining:
+            enabled: true
+            rule-staining:
+              enabled: true
+        router:
+          feature-env:
+            enabled: true
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          'predicates[0]':
+            name: Path
+            args:
+              patterns: '''/'' + serviceId + ''/**'''
+          'filters[0]':
+            name: RewritePath
+            args:
+              regexp: '''/'' + serviceId + ''/(?<remaining>.*)'''
+              replacement: '''/$\{remaining}'''
+          'filters[1]':
+            name: CircuitBreaker
+            args:
+              statusCodes: '''4**,502'''
+              fallbackUri: '''forward:/polaris-fallback'''
+#      routes:
+#        - id: polaris-circuitbreaker-callee-service
+#          uri: lb://polaris-circuitbreaker-callee-service
+#          predicates:
+#            - Path=/polaris-circuitbreaker-callee-service/**
+#          filters:
+#            - StripPrefix=1
+#            - name: CircuitBreaker
+#              args:
+#                statusCodes: 502
+#                fallbackUri: forward:/polaris-fallback
+logging:
+  level:
+    root: info
+    com.tencent.polaris.discovery.client.flow.RegisterFlow: off
+    com.tencent.polaris.plugins.registry.memory.CacheObject: off
+    com.tencent.cloud.polaris.circuitbreaker: debug
+
