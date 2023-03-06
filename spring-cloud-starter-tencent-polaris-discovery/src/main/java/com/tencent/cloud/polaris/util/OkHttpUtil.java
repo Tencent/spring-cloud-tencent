@@ -27,6 +27,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
 /**
  * okhttp util.
  *
@@ -58,6 +61,9 @@ public final class OkHttpUtil {
 			conn.setRequestMethod("GET");
 			conn.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(2));
 			conn.setReadTimeout((int) TimeUnit.SECONDS.toMillis(2));
+			if (!CollectionUtils.isEmpty(headers)) {
+				headers.forEach(conn::setRequestProperty);
+			}
 			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			StringBuffer buffer = new StringBuffer();
 			String str;
@@ -65,7 +71,7 @@ public final class OkHttpUtil {
 				buffer.append(str);
 			}
 			String responseBody = buffer.toString();
-			if (conn.getResponseCode() == 200 && !responseBody.isBlank()) {
+			if (conn.getResponseCode() == 200 && StringUtils.hasText(responseBody)) {
 				LOGGER.debug("exec get request, url: {} success, response data: {}", url, responseBody);
 				return true;
 			}
