@@ -15,20 +15,21 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.polaris.circuitbreaker.gateway.example;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Autoconfiguration at bootstrap phase.
+ * SCG application.
  *
- * @author lepdou 2022-03-29
+ * @author sean yu
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import({PolarisCircuitBreakerAutoConfiguration.class, ReactivePolarisCircuitBreakerAutoConfiguration.class, PolarisCircuitBreakerFeignClientAutoConfiguration.class})
-public class PolarisCircuitBreakerBootstrapConfiguration {
+@SpringBootApplication
+public class GatewayScgApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(GatewayScgApplication.class, args);
+	}
 
 }

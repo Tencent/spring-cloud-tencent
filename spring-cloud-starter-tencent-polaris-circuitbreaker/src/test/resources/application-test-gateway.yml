@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: GatewayScgService
+  cloud:
+    tencent:
+      plugin:
+        scg:
+          staining:
+            enabled: true
+            rule-staining:
+              enabled: true
+        router:
+          feature-env:
+            enabled: true
+    polaris:
+      address: grpc://127.0.0.1:8091
+      namespace: default
+      enabled: true
+    gateway:
+      routes:
+        - id: cb-test
+          uri: http://localhost:${server.port}/hello/1
+          predicates:
+            - Path=/cb-test/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                statusCodes: 5**,4**,3**,2**,1**,500,400
+                fallbackUri: forward:/polaris-fallback
+logging:
+  level:
+    root: info
+    com.tencent.polaris.discovery.client.flow.RegisterFlow: off
+    com.tencent.polaris.plugins.registry.memory.CacheObject: off
+    com.tencent.cloud.polaris.circuitbreaker: debug
+

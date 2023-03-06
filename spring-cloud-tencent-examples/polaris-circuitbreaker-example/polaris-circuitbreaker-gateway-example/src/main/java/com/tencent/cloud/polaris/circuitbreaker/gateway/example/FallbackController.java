@@ -15,20 +15,23 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.polaris.circuitbreaker.gateway.example;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import reactor.core.publisher.Mono;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Autoconfiguration at bootstrap phase.
+ * FallbackController.
  *
- * @author lepdou 2022-03-29
+ * sean yu
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import({PolarisCircuitBreakerAutoConfiguration.class, ReactivePolarisCircuitBreakerAutoConfiguration.class, PolarisCircuitBreakerFeignClientAutoConfiguration.class})
-public class PolarisCircuitBreakerBootstrapConfiguration {
+@RestController
+public class FallbackController {
 
+	@GetMapping("/polaris-fallback")
+	Mono<String> getFallback() {
+		return Mono.just("fallback: trigger the refuse for service b");
+	}
 }

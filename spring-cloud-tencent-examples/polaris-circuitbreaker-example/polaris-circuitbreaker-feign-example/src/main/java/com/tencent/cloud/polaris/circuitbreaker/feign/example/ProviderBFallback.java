@@ -15,20 +15,20 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.polaris.circuitbreaker.feign.example;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Component;
 
 /**
- * Autoconfiguration at bootstrap phase.
+ * Circuit breaker example callee fallback.
  *
- * @author lepdou 2022-03-29
+ * @author sean yu
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import({PolarisCircuitBreakerAutoConfiguration.class, ReactivePolarisCircuitBreakerAutoConfiguration.class, PolarisCircuitBreakerFeignClientAutoConfiguration.class})
-public class PolarisCircuitBreakerBootstrapConfiguration {
+@Component
+public class ProviderBFallback implements ProviderB {
 
+	@Override
+	public String info() {
+		return "fallback: trigger the refuse for service b";
+	}
 }
