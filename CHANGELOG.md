@@ -13,3 +13,4 @@
 - [docs:support auto snapshot release in GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/868)
 - [feature:add polaris circuit breaker support.](https://github.com/Tencent/spring-cloud-tencent/pull/875)
 - [refactor:refactor stat module.](https://github.com/Tencent/spring-cloud-tencent/pull/876)
+- [fix:fix NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/883)
