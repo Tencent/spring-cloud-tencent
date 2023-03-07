@@ -14,3 +14,4 @@
 - [feature:add polaris circuit breaker support.](https://github.com/Tencent/spring-cloud-tencent/pull/875)
 - [refactor:refactor stat module.](https://github.com/Tencent/spring-cloud-tencent/pull/876)
 - [fix:fix NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/883)
+- [refactor:optimize sct-all.](https://github.com/Tencent/spring-cloud-tencent/pull/887)
