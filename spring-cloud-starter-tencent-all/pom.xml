@@ -12,7 +12,6 @@
 
 	<artifactId>spring-cloud-starter-tencent-all</artifactId>
 	<name>Spring Cloud Starter Tencent ALL In One</name>
-	<packaging>pom</packaging>
 
 	<dependencies>
 		<!-- Spring Cloud Tencent -->
