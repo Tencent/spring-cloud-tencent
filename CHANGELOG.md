@@ -15,3 +15,4 @@
 - [refactor:refactor stat module.](https://github.com/Tencent/spring-cloud-tencent/pull/876)
 - [fix:fix NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/883)
 - [refactor:optimize sct-all.](https://github.com/Tencent/spring-cloud-tencent/pull/887)
+- [fix:fix instance circuit breaker not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/891)
