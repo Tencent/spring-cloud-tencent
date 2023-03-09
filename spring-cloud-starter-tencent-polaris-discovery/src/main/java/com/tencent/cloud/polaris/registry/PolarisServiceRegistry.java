@@ -41,6 +41,7 @@ import com.tencent.polaris.api.rpc.InstanceRegisterRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterResponse;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.util.NamedThreadFactory;
+import com.tencent.polaris.factory.config.provider.ServiceConfigImpl;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,6 +146,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 					LOGGER.warn("Stat server started error, ", e);
 				}
 			}
+
+			ServiceConfigImpl serviceConfig = (ServiceConfigImpl) polarisDiscoveryHandler.getSdkContext().getConfig()
+					.getProvider().getService();
+			serviceConfig.setNamespace(polarisDiscoveryProperties.getNamespace());
+			serviceConfig.setName(serviceId);
 		}
 		catch (Exception e) {
 			LOGGER.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
