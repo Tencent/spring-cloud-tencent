@@ -16,3 +16,4 @@
 - [feature:add polaris circuit breaker support.](https://github.com/Tencent/spring-cloud-tencent/pull/882)
 - [fix:fix NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/886)
 - [refactor:optimize sct-all.](https://github.com/Tencent/spring-cloud-tencent/pull/888)
+- [fix:fix instance circuit breaker not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/893)
