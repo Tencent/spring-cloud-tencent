@@ -42,6 +42,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.DEFAULT_DISPOSABLE_METADATA;
 
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
@@ -65,10 +66,10 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
-		Map<String, String> internalDisposableMetadata = getInternalMetadata(httpServletRequest, CUSTOM_DISPOSABLE_METADATA);
-		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
+		Map<String, String> internalCustomDisposableMetadata = getInternalMetadata(httpServletRequest, CUSTOM_DISPOSABLE_METADATA);
+		Map<String, String> internalDefaultDisposableMetadata = getInternalMetadata(httpServletRequest, DEFAULT_DISPOSABLE_METADATA);
 
-		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata);
+		MetadataContextHolder.init(mergedTransitiveMetadata, internalCustomDisposableMetadata, internalDefaultDisposableMetadata);
 
 		TransHeadersTransfer.transfer(httpServletRequest);
 		try {

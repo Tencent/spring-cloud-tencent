@@ -36,6 +36,7 @@ import org.springframework.util.CollectionUtils;
  *
  *@author lepdou 2022-05-13
  */
+@Deprecated
 public class RateLimitRuleLabelResolver {
 
 	private final ServiceRuleManager serviceRuleManager;
