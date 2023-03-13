@@ -88,7 +88,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.10.0-2022.0.1</revision>
+		<revision>1.11.0-2022.0.1-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
 		<spring.framework.version>6.0.5</spring.framework.version>
