@@ -121,13 +121,13 @@ public final class MetadataContextHolder {
 	/**
 	 * Save metadata map to thread local.
 	 * @param dynamicTransitiveMetadata custom metadata collection
-	 * @param dynamicDisposableMetadata custom disposable metadata connection
+	 * @param dynamicCustomDisposableMetadata custom disposable metadata collection
+	 * @param dynamicDefaultDisposableMetadata default disposable metadata collection
 	 */
-	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata) {
+	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicCustomDisposableMetadata, Map<String, String> dynamicDefaultDisposableMetadata) {
 		// Init ThreadLocal.
 		MetadataContextHolder.remove();
 		MetadataContext metadataContext = MetadataContextHolder.get();
-
 		// Save transitive metadata to ThreadLocal.
 		if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
 			Map<String, String> staticTransitiveMetadata = metadataContext.getTransitiveMetadata();
@@ -135,13 +135,20 @@ public final class MetadataContextHolder {
 			mergedTransitiveMetadata.putAll(staticTransitiveMetadata);
 			mergedTransitiveMetadata.putAll(dynamicTransitiveMetadata);
 			metadataContext.setTransitiveMetadata(Collections.unmodifiableMap(mergedTransitiveMetadata));
-
-			Map<String, String> mergedDisposableMetadata = new HashMap<>(dynamicDisposableMetadata);
-			metadataContext.setUpstreamDisposableMetadata(Collections.unmodifiableMap(mergedDisposableMetadata));
-
-			Map<String, String> staticDisposableMetadata = metadataContext.getFragmentContext(FRAGMENT_DISPOSABLE);
-			metadataContext.setDisposableMetadata(Collections.unmodifiableMap(staticDisposableMetadata));
 		}
+		if (!CollectionUtils.isEmpty(dynamicCustomDisposableMetadata) || !CollectionUtils.isEmpty(dynamicDefaultDisposableMetadata)) {
+			Map<String, String> mergedUpstreamDisposableMetadata = new HashMap<>();
+			if (!CollectionUtils.isEmpty(dynamicCustomDisposableMetadata)) {
+				mergedUpstreamDisposableMetadata.putAll(dynamicCustomDisposableMetadata);
+			}
+			if (!CollectionUtils.isEmpty(dynamicDefaultDisposableMetadata)) {
+				mergedUpstreamDisposableMetadata.putAll(dynamicDefaultDisposableMetadata);
+			}
+			metadataContext.setUpstreamDisposableMetadata(Collections.unmodifiableMap(mergedUpstreamDisposableMetadata));
+		}
+
+		Map<String, String> staticDisposableMetadata = metadataContext.getFragmentContext(FRAGMENT_DISPOSABLE);
+		metadataContext.setDisposableMetadata(Collections.unmodifiableMap(staticDisposableMetadata));
 		MetadataContextHolder.set(metadataContext);
 	}
 

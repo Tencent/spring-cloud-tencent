@@ -41,6 +41,7 @@ import org.springframework.web.server.WebFilterChain;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.DEFAULT_DISPOSABLE_METADATA;
 
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
@@ -69,10 +70,10 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
-		Map<String, String> internalDisposableMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
-		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
+		Map<String, String> internalCustomDisposableMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
+		Map<String, String> internalDefaultDisposableMetadata = getIntervalMetadata(serverHttpRequest, DEFAULT_DISPOSABLE_METADATA);
 
-		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata);
+		MetadataContextHolder.init(mergedTransitiveMetadata, internalCustomDisposableMetadata, internalDefaultDisposableMetadata);
 
 		// Save to ServerWebExchange.
 		serverWebExchange.getAttributes().put(
