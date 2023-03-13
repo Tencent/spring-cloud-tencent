@@ -27,6 +27,7 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.metadata.util.DefaultTransferMedataUtils;
 
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
@@ -39,6 +40,7 @@ import org.springframework.util.CollectionUtils;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.DEFAULT_DISPOSABLE_METADATA;
 
 /**
  * Interceptor used for adding the metadata in http headers from context when web client
@@ -61,6 +63,10 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
+		Map<String, String> defaultMetadata = DefaultTransferMedataUtils.getDefaultTransferMedata();
+
+		// build default disposable metadata request header
+		this.buildMetadataHeader(httpRequest, defaultMetadata, DEFAULT_DISPOSABLE_METADATA);
 
 		// build custom disposable metadata request header
 		this.buildMetadataHeader(httpRequest, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
