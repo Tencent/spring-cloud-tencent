@@ -72,7 +72,7 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 			if (apply(HttpStatus.resolve(response.status()))) {
 				retStatus = RetStatus.RetFail;
 			}
-			LOG.debug("Will report result of {}. Request=[{}]. Response=[{}].", retStatus.name(), request, response);
+			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}].", retStatus.name(), request.httpMethod().name(), request.url(), response.status());
 			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, retStatus);
 			consumerAPI.updateServiceCallResult(resultRequest);
 			// update result without method for service circuit break.
