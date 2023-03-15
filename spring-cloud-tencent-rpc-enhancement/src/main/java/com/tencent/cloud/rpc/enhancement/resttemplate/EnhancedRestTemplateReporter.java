@@ -153,9 +153,6 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 			LOGGER.debug("Will report result of {}. URL=[{}]. Response=[{}].", resultRequest.getRetStatus().name(),
 					url, response);
 			consumerAPI.updateServiceCallResult(resultRequest);
-			// update result without method for service circuit break.
-			resultRequest.setMethod("");
-			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 		catch (Exception e) {
 			LOGGER.error("RestTemplate response reporter execute failed of {} url {}", response, url, e);
