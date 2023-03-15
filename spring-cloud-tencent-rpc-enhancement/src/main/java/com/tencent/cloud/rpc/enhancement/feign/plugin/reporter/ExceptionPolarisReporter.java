@@ -46,7 +46,7 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 	private final ConsumerAPI consumerAPI;
 
 	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reporterProperties,
-									ConsumerAPI consumerAPI) {
+			ConsumerAPI consumerAPI) {
 		this.reporterProperties = reporterProperties;
 		this.consumerAPI = consumerAPI;
 	}
@@ -75,11 +75,9 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 			if (exception instanceof SocketTimeoutException) {
 				retStatus = RetStatus.RetTimeout;
 			}
-			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}].", retStatus.name(), request.httpMethod().name(), request.url(), response.status());
+			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}].", retStatus.name(), request.httpMethod()
+					.name(), request.url(), response.status());
 			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, retStatus);
-			consumerAPI.updateServiceCallResult(resultRequest);
-			// update result without method for service circuit break.
-			resultRequest.setMethod("");
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}
