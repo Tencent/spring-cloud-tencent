@@ -76,7 +76,7 @@ For example:
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.10.0-2021.0.6</version>
+            <version>1.10.1-2021.0.6</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
