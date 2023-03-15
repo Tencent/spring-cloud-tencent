@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
+import java.util.HashMap;
+
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
@@ -83,7 +85,7 @@ public class ExceptionPolarisReporterTest {
 	@Test
 	public void testRun() {
 		// mock request
-		Request request = mock(Request.class);
+		Request request = Request.create(Request.HttpMethod.GET, "/", new HashMap<>(), null, null, null);
 		// mock response
 		Response response = mock(Response.class);
 
