@@ -28,6 +28,7 @@ import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgFilter;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientFilter;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
@@ -137,6 +139,28 @@ public class MetadataTransferAutoConfiguration {
 				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
 				list.add(interceptor);
 				restTemplate.setInterceptors(list);
+			});
+		}
+	}
+
+	/**
+	 * Create when WebClient.Builder exists.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = { "reactor.core.publisher.Mono", "reactor.core.publisher.Flux" })
+	protected static class MetadataTransferWebClientConfig {
+		@Autowired(required = false)
+		private List<WebClient.Builder> webClientBuilder = Collections.emptyList();
+
+		@Bean
+		public EncodeTransferMedataWebClientFilter encodeTransferMedataWebClientFilter() {
+			return new EncodeTransferMedataWebClientFilter();
+		}
+
+		@Bean
+		public SmartInitializingSingleton addEncodeTransferMetadataFilterForWebClient(EncodeTransferMedataWebClientFilter filter) {
+			return () -> webClientBuilder.forEach(webClient -> {
+				webClient.filter(filter);
 			});
 		}
 	}
