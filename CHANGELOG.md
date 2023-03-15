@@ -16,3 +16,4 @@
 - [fix:fix NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/885)
 - [refactor:optimize sct-all.](https://github.com/Tencent/spring-cloud-tencent/pull/889)
 - [fix:fix instance circuit breaker not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/892)
+- [fix: log feign response stream close bug.](https://github.com/Tencent/spring-cloud-tencent/pull/895)
