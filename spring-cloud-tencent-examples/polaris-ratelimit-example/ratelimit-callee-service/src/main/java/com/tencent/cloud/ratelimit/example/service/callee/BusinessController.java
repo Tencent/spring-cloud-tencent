@@ -17,15 +17,22 @@
 
 package com.tencent.cloud.ratelimit.example.service.callee;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +40,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException.TooManyRequests;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * Rate limit controller.
@@ -49,6 +58,8 @@ public class BusinessController {
 	private final AtomicLong lastTimestamp = new AtomicLong(0);
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private WebClient.Builder WebClientBuilder;
 	@Value("${spring.application.name}")
 	private String appName;
 
@@ -56,11 +67,55 @@ public class BusinessController {
 	 * Get information.
 	 * @return information
 	 */
-	@RequestMapping("/info")
+	@GetMapping("/info")
 	public String info() {
 		return "hello world for ratelimit service " + index.incrementAndGet();
 	}
 
+	@GetMapping("/info/webclient")
+	public Mono<String> infoWebClient() {
+		return Mono.just("hello world for ratelimit service " + index.incrementAndGet());
+	}
+
+	@GetMapping("/invoke/webclient")
+	public String invokeInfoWebClient() throws InterruptedException, ExecutionException {
+		StringBuffer builder = new StringBuffer();
+		WebClient webClient = WebClientBuilder.baseUrl("http://" + appName).build();
+		List<Mono<String>> monoList = new ArrayList<>();
+		for (int i = 0; i < 30; i++) {
+			Mono<String> response = webClient.get()
+					.uri(uriBuilder -> uriBuilder
+							.path("/business/info/webclient")
+							.queryParam("yyy", "yyy")
+							.build()
+					)
+					.header("xxx", "xxx")
+					.retrieve()
+					.bodyToMono(String.class)
+					.doOnSuccess(s -> builder.append(s + "\n"))
+					.doOnError(e -> {
+						if (e instanceof WebClientResponseException) {
+							if (((WebClientResponseException)e).getRawStatusCode() == 429) {
+								builder.append("TooManyRequests ").append(index.incrementAndGet() + "\n");
+							}
+						}
+					})
+					.onErrorReturn("");
+			monoList.add(response);
+		}
+		for (Mono<String> mono : monoList){
+			mono.toFuture().get();
+		}
+		index.set(0);
+		return builder.toString();
+	}
+
+	/**
+	 * Get information 30 times per 1 second.
+	 *
+	 * @return result of 30 calls.
+	 * @throws InterruptedException exception
+	 */
 	@GetMapping("/invoke")
 	public String invokeInfo() throws InterruptedException {
 		StringBuffer builder = new StringBuffer();
@@ -68,19 +123,31 @@ public class BusinessController {
 		for (int i = 0; i < 30; i++) {
 			new Thread(() -> {
 				try {
-					ResponseEntity<String> entity = restTemplate.getForEntity("http://" + appName + "/business/info",
-							String.class);
+					HttpHeaders httpHeaders = new HttpHeaders();
+					httpHeaders.add("xxx","xxx");
+					ResponseEntity<String> entity = restTemplate.exchange(
+							"http://" + appName + "/business/info?yyy={yyy}",
+							HttpMethod.GET,
+							new HttpEntity<>(httpHeaders),
+							String.class,
+							"yyy"
+					);
 					builder.append(entity.getBody() + "\n");
 				}
 				catch (RestClientException e) {
 					if (e instanceof TooManyRequests) {
-						builder.append("TooManyRequests " + index.incrementAndGet() + "\n");
+						builder.append("TooManyRequests ").append(index.incrementAndGet() + "\n");
 					}
 					else {
 						throw e;
 					}
 				}
-				count.countDown();
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				finally {
+					count.countDown();
+				}
 			}).start();
 		}
 		count.await();
@@ -90,6 +157,7 @@ public class BusinessController {
 
 	/**
 	 * Get information with unirate.
+	 *
 	 * @return information
 	 */
 	@GetMapping("/unirate")

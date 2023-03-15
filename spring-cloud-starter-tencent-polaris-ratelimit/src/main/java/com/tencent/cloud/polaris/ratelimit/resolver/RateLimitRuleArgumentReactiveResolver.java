@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 import com.tencent.polaris.ratelimit.api.rpc.Argument;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
@@ -51,7 +50,7 @@ import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata
  */
 public class RateLimitRuleArgumentReactiveResolver {
 
-	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckServletFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RateLimitRuleArgumentReactiveResolver.class);
 
 	private final ServiceRuleManager serviceRuleManager;
 
