@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.circuitbreaker.gateway;
 
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,9 +27,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.InvalidPropertyException;
@@ -42,9 +43,12 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerFilterFactory;
 import org.springframework.cloud.gateway.support.HttpStatusHolder;
 import org.springframework.cloud.gateway.support.ServiceUnavailableException;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.server.ResponseStatusException;
@@ -65,8 +69,6 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.r
  * @author seanyu 2023-02-27
  */
 public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreakerFilterFactory {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisCircuitBreakerFilterFactory.class);
 
 	private String routeIdPrefix;
 
@@ -151,6 +153,12 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 		return Arrays.asList(allHttpStatus);
 	}
 
+	private Set<HttpStatus> getDefaultStatus() {
+		return Arrays.stream(HttpStatus.values())
+				.filter(status -> status.is4xxClientError() || status.is5xxServerError())
+				.collect(Collectors.toSet());
+	}
+
 	@Override
 	public GatewayFilter apply(Config config) {
 		Set<HttpStatus> statuses = config.getStatusCodes().stream()
@@ -166,6 +174,9 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 				})
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
+		if (CollectionUtils.isEmpty(statuses)) {
+			statuses.addAll(getDefaultStatus());
+		}
 		String circuitBreakerId = getCircuitBreakerId(config);
 		return new GatewayFilter() {
 			@Override
@@ -179,6 +190,22 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 					}
 				}), t -> {
 					if (config.getFallbackUri() == null) {
+						if (t instanceof CallAbortedException) {
+							CircuitBreakerStatus.FallbackInfo fallbackInfo = ((CallAbortedException) t).getFallbackInfo();
+							if (fallbackInfo != null) {
+								ServerHttpResponse response = exchange.getResponse();
+								response.setRawStatusCode(fallbackInfo.getCode());
+								if (fallbackInfo.getHeaders() != null) {
+									fallbackInfo.getHeaders().forEach((k, v) -> response.getHeaders().add(k, v));
+								}
+								if (fallbackInfo.getBody() != null) {
+									byte[] bytes = fallbackInfo.getBody().getBytes(StandardCharsets.UTF_8);
+									DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bytes);
+									return exchange.getResponse().writeWith(Flux.just(buffer));
+								}
+								return chain.filter(exchange);
+							}
+						}
 						return Mono.error(t);
 					}
 
@@ -217,7 +244,6 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 			return Mono.error(new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, t.getMessage(), t));
 		}
 		if (t instanceof CallAbortedException) {
-			LOGGER.debug("PolarisCircuitBreaker CallAbortedException: {}", t.getMessage());
 			return Mono.error(new ServiceUnavailableException());
 		}
 		if (resumeWithoutError) {
