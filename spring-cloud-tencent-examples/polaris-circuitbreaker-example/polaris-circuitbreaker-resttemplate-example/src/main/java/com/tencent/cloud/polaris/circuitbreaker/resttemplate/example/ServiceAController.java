@@ -40,14 +40,19 @@ public class ServiceAController {
 	@Autowired
 	private CircuitBreakerFactory circuitBreakerFactory;
 
+//	@GetMapping("/getBServiceInfo")
+//	public String getBServiceInfo() {
+//		return circuitBreakerFactory
+//				.create("polaris-circuitbreaker-callee-service#/example/service/b/info")
+//				.run(() ->
+//						restTemplate.getForObject("/example/service/b/info", String.class),
+//						throwable -> "trigger the refuse for service b"
+//				);
+//	}
+
 	@GetMapping("/getBServiceInfo")
 	public String getBServiceInfo() {
-		return circuitBreakerFactory
-				.create("polaris-circuitbreaker-callee-service#/example/service/b/info")
-				.run(() ->
-						restTemplate.getForObject("/example/service/b/info", String.class),
-						throwable -> "trigger the refuse for service b"
-				);
+		return restTemplate.getForObject("/example/service/b/info", String.class);
 	}
 
 }
