@@ -26,14 +26,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
 import com.tencent.polaris.ratelimit.api.rpc.Argument;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
