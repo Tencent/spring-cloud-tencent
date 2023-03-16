@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientFilter;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -61,6 +62,7 @@ public class MetadataTransferAutoConfigurationTest {
 					assertThat(context).hasSingleBean(EncodeTransferMedataRestTemplateInterceptor.class);
 					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
 					assertThat(context).hasSingleBean(GlobalFilter.class);
+					assertThat(context).hasSingleBean(EncodeTransferMedataWebClientFilter.class);
 				});
 	}
 

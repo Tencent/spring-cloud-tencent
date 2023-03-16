@@ -59,7 +59,7 @@ public class BusinessController {
 	@Autowired
 	private RestTemplate restTemplate;
 	@Autowired
-	private WebClient.Builder WebClientBuilder;
+	private WebClient.Builder webClientBuilder;
 	@Value("${spring.application.name}")
 	private String appName;
 
@@ -80,7 +80,7 @@ public class BusinessController {
 	@GetMapping("/invoke/webclient")
 	public String invokeInfoWebClient() throws InterruptedException, ExecutionException {
 		StringBuffer builder = new StringBuffer();
-		WebClient webClient = WebClientBuilder.baseUrl("http://" + appName).build();
+		WebClient webClient = webClientBuilder.baseUrl("http://" + appName).build();
 		List<Mono<String>> monoList = new ArrayList<>();
 		for (int i = 0; i < 30; i++) {
 			Mono<String> response = webClient.get()
