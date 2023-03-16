@@ -96,7 +96,7 @@ public class BusinessController {
 					.doOnSuccess(s -> builder.append(s + "\n"))
 					.doOnError(e -> {
 						if (e instanceof WebClientResponseException) {
-							if (((WebClientResponseException)e).getRawStatusCode() == 429) {
+							if (((WebClientResponseException) e).getRawStatusCode() == 429) {
 								builder.append("TooManyRequests ").append(index.incrementAndGet() + "\n");
 							}
 						}
@@ -104,7 +104,7 @@ public class BusinessController {
 					.onErrorReturn("");
 			monoList.add(response);
 		}
-		for (Mono<String> mono : monoList){
+		for (Mono<String> mono : monoList) {
 			mono.toFuture().get();
 		}
 		index.set(0);
@@ -125,7 +125,7 @@ public class BusinessController {
 			new Thread(() -> {
 				try {
 					HttpHeaders httpHeaders = new HttpHeaders();
-					httpHeaders.add("xxx","xxx");
+					httpHeaders.add("xxx", "xxx");
 					ResponseEntity<String> entity = restTemplate.exchange(
 							"http://" + appName + "/business/info?yyy={yyy}",
 							HttpMethod.GET,
