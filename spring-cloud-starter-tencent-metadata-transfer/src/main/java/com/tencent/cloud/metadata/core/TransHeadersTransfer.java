@@ -100,7 +100,7 @@ public final class TransHeadersTransfer {
 	/**
 	 * According to {@link ClientRequest} and trans-headers(key list in string type) in metadata, build
 	 * the complete headers(key-value list in map type) into metadata.
-	 * @param clientRequest
+	 * @param clientRequest clientRequest
 	 */
 	public static void transfer(ClientRequest clientRequest) {
 		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
