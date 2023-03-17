@@ -72,12 +72,13 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 			Response response = context.getResponse();
 			Exception exception = context.getException();
 			RetStatus retStatus = RetStatus.RetFail;
+			long delay = context.getDelay();
 			if (exception instanceof SocketTimeoutException) {
 				retStatus = RetStatus.RetTimeout;
 			}
-			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}].", retStatus.name(), request.httpMethod()
-					.name(), request.url(), response.status());
-			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, retStatus);
+			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.", retStatus.name(), request.httpMethod()
+					.name(), request.url(), response.status(), delay);
+			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, response, delay, retStatus);
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}
