@@ -11,6 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.AbstractClientHttpResponse;
 
+import static com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter.POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER;
+
 public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpResponse {
 
 	private final CircuitBreakerStatus.FallbackInfo fallbackInfo;
@@ -57,12 +59,12 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 
 	@Override
 	public HttpHeaders getHeaders() {
+		HttpHeaders headers = new HttpHeaders();
 		if (fallbackInfo.getHeaders() != null) {
-			HttpHeaders headers = new HttpHeaders();
 			fallbackInfo.getHeaders().forEach(headers::add);
-			return headers;
 		}
-		return null;
+		headers.add(POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER, "true");
+		return headers;
 	}
 
 }

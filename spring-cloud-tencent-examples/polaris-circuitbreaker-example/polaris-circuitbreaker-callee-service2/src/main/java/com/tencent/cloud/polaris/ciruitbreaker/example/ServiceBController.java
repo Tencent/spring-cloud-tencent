@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.polaris.ciruitbreaker.example;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,5 +44,19 @@ public class ServiceBController {
 	@ResponseStatus(value = HttpStatus.BAD_GATEWAY, reason = "failed for call my service")
 	public String info() {
 		return "failed for call service B2";
+	}
+
+	@GetMapping("/health")
+	@ResponseStatus(value = HttpStatus.BAD_GATEWAY, reason = "failed for call my service")
+	public String health() {
+		System.out.println("health check: 502 instance");
+		return "hello world ! I'm a service B1";
+	}
+
+	@GetMapping("/health-svc")
+	@ResponseStatus(value = HttpStatus.BAD_GATEWAY, reason = "failed for call my service")
+	public String healthsvc() {
+		System.out.println("health-svc check: 502 instance");
+		return "hello world ! I'm a service B1";
 	}
 }
