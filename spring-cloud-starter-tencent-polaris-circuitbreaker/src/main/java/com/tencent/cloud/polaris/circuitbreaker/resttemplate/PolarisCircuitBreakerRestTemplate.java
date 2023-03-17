@@ -13,6 +13,6 @@ public @interface PolarisCircuitBreakerRestTemplate {
 
 	String fallback() default "";
 
-	Class<PolarisCircuitBreakerFallback> fallbackClass() default PolarisCircuitBreakerFallback.class;
+	Class<? extends PolarisCircuitBreakerFallback> fallbackClass() default PolarisCircuitBreakerFallback.class;
 
 }

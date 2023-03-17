@@ -2,6 +2,9 @@ package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -17,20 +20,22 @@ import org.springframework.web.client.RestTemplate;
 
 public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements MergedBeanDefinitionPostProcessor {
 
+	private static final Logger log = LoggerFactory.getLogger(PolarisCircuitBreakerRestTemplateBeanPostProcessor.class);
 	private final ApplicationContext applicationContext;
 
-	private final CircuitBreakerFactory circuitBreakerFactory;
-
-	public PolarisCircuitBreakerRestTemplateBeanPostProcessor(ApplicationContext applicationContext, CircuitBreakerFactory circuitBreakerFactory) {
+	public PolarisCircuitBreakerRestTemplateBeanPostProcessor(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-		this.circuitBreakerFactory = circuitBreakerFactory;
 	}
 
-	private ConcurrentHashMap<String, PolarisCircuitBreakerRestTemplate> cache = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, PolarisCircuitBreakerRestTemplate> cache = new ConcurrentHashMap<>();
 
-	private void checkPolarisCircuitBreakerRestTemplate(PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate,
-			String beanName) {
-
+	private void checkPolarisCircuitBreakerRestTemplate(PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate) {
+		if (
+				StringUtils.hasText(polarisCircuitBreakerRestTemplate.fallback()) &&
+						!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreakerRestTemplate.fallbackClass().toGenericString())
+		) {
+			throw new IllegalArgumentException("PolarisCircuitBreakerRestTemplate's fallback and fallbackClass could not set at sametime !");
+		}
 	}
 
 	@Override
@@ -45,7 +50,7 @@ public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements Merge
 				polarisCircuitBreakerRestTemplate = beanDefinition.getResolvedFactoryMethod()
 						.getAnnotation(PolarisCircuitBreakerRestTemplate.class);
 			}
-			checkPolarisCircuitBreakerRestTemplate(polarisCircuitBreakerRestTemplate, beanName);
+			checkPolarisCircuitBreakerRestTemplate(polarisCircuitBreakerRestTemplate);
 			cache.put(beanName, polarisCircuitBreakerRestTemplate);
 		}
 	}
@@ -63,6 +68,7 @@ public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements Merge
 					.append(polarisCircuitBreakerRestTemplate.fallbackClass().getSimpleName());
 			RestTemplate restTemplate = (RestTemplate) bean;
 			String interceptorBeanName = interceptorBeanNamePrefix + "@" + bean;
+			CircuitBreakerFactory circuitBreakerFactory = this.applicationContext.getBean(CircuitBreakerFactory.class);
 			registerBean(interceptorBeanName, polarisCircuitBreakerRestTemplate, applicationContext, circuitBreakerFactory);
 			PolarisCircuitBreakerRestTemplateInterceptor polarisCircuitBreakerRestTemplateInterceptor = applicationContext
 					.getBean(interceptorBeanName, PolarisCircuitBreakerRestTemplateInterceptor.class);

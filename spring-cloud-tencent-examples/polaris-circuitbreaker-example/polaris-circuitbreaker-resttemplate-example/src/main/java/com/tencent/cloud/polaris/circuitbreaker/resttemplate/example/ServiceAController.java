@@ -19,7 +19,9 @@ package com.tencent.cloud.polaris.circuitbreaker.resttemplate.example;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,24 +37,38 @@ import org.springframework.web.client.RestTemplate;
 public class ServiceAController {
 
 	@Autowired
-	private RestTemplate restTemplate;
+	@Qualifier("defaultRestTemplate")
+	private RestTemplate defaultRestTemplate;
+
+	@Autowired
+	@Qualifier("fallbackRestTemplate")
+	private RestTemplate fallbackRestTemplate;
+
+	@Autowired
+	@Qualifier("fallbackClassRestTemplate")
+	private RestTemplate fallbackClassRestTemplate;
 
 	@Autowired
 	private CircuitBreakerFactory circuitBreakerFactory;
 
-//	@GetMapping("/getBServiceInfo")
-//	public String getBServiceInfo() {
-//		return circuitBreakerFactory
-//				.create("polaris-circuitbreaker-callee-service#/example/service/b/info")
-//				.run(() ->
-//						restTemplate.getForObject("/example/service/b/info", String.class),
-//						throwable -> "trigger the refuse for service b"
-//				);
-//	}
-
 	@GetMapping("/getBServiceInfo")
 	public String getBServiceInfo() {
-		return restTemplate.getForObject("/example/service/b/info", String.class);
+		return circuitBreakerFactory
+				.create("polaris-circuitbreaker-callee-service#/example/service/b/info")
+				.run(() ->
+						defaultRestTemplate.getForObject("/example/service/b/info", String.class),
+						throwable -> "trigger the refuse for service b"
+				);
+	}
+
+	@GetMapping("/getBServiceInfo/fallback")
+	public String getBServiceInfoFallback() {
+		return fallbackRestTemplate.getForObject("/example/service/b/info", String.class);
+	}
+
+	@GetMapping("/getBServiceInfo/fallbackClass")
+	public String getBServiceInfoFallbackClass() {
+		return fallbackClassRestTemplate.getForObject("/example/service/b/info", String.class);
 	}
 
 }
