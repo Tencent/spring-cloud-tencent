@@ -76,12 +76,4 @@ public class PolarisCircuitBreakerAutoConfiguration {
 		return new CircuitBreakerConfigModifier(properties);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-	public static PolarisCircuitBreakerRestTemplateBeanPostProcessor sentinelBeanPostProcessor(
-			ApplicationContext applicationContext, CircuitBreakerFactory circuitBreakerFactory) {
-		return new PolarisCircuitBreakerRestTemplateBeanPostProcessor(applicationContext, circuitBreakerFactory);
-	}
-
 }

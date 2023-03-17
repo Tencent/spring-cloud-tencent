@@ -60,7 +60,7 @@ public class ReactivePolarisCircuitBreakerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveCircuitBreakerFactory.class)
-	public ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI) {
+	public ReactiveCircuitBreakerFactory polarisReactiveCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI) {
 		ReactivePolarisCircuitBreakerFactory factory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI);
 		customizers.forEach(customizer -> customizer.customize(factory));
 		return factory;

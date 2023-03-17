@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.context.ApplicationContext;
@@ -14,6 +13,7 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
@@ -45,11 +45,11 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 					}
 				},
 				t -> {
-					if (!StringUtils.isEmpty(polarisCircuitBreakerRestTemplate.fallback())) {
+					if (StringUtils.hasText(polarisCircuitBreakerRestTemplate.fallback())) {
 						CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(200, null, polarisCircuitBreakerRestTemplate.fallback());
 						return new PolarisCircuitBreakerHttpResponse(fallbackInfo);
 					}
-					if (polarisCircuitBreakerRestTemplate.fallbackClass() != null && polarisCircuitBreakerRestTemplate.fallbackClass().getSuperclass() != null) {
+					if (!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreakerRestTemplate.fallbackClass().toGenericString())) {
 						Method method = ReflectionUtils.findMethod(PolarisCircuitBreakerFallback.class, "fallback");
 						PolarisCircuitBreakerFallback polarisCircuitBreakerFallback = applicationContext.getBean(polarisCircuitBreakerRestTemplate.fallbackClass());
 						return (PolarisCircuitBreakerHttpResponse) ReflectionUtils.invokeMethod(method, polarisCircuitBreakerFallback);
