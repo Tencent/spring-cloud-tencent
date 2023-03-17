@@ -30,6 +30,7 @@ import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import feign.Request;
 import feign.RequestTemplate;
+import feign.Response;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public final class ReporterUtils {
 	private ReporterUtils() {
 	}
 
-	public static ServiceCallResult createServiceCallResult(final Request request, RetStatus retStatus) {
+	public static ServiceCallResult createServiceCallResult(final Request request, final Response response, long delay, RetStatus retStatus) {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
@@ -68,7 +69,9 @@ public final class ReporterUtils {
 		}
 		URI uri = URI.create(request.url());
 		resultRequest.setMethod(uri.getPath());
+		resultRequest.setRetCode(response.status());
 		resultRequest.setRetStatus(retStatus);
+		resultRequest.setDelay(delay);
 		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String sourceService = MetadataContext.LOCAL_SERVICE;
 		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
