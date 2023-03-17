@@ -35,6 +35,8 @@ public class EnhancedFeignContext {
 
 	private Exception exception;
 
+	private long delay;
+
 	public Request getRequest() {
 		return request;
 	}
@@ -65,5 +67,13 @@ public class EnhancedFeignContext {
 
 	public void setException(Exception exception) {
 		this.exception = exception;
+	}
+
+	public long getDelay() {
+		return delay;
+	}
+
+	public void setDelay(long delay) {
+		this.delay = delay;
 	}
 }
