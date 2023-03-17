@@ -39,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -63,7 +64,7 @@ public class SuccessPolarisReporterTest {
 	@BeforeAll
 	static void beforeAll() {
 		mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
-		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(Request.class), any(RetStatus.class)))
+		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(Request.class), any(Response.class), anyLong(), any(RetStatus.class)))
 				.thenReturn(mock(ServiceCallResult.class));
 	}
 
