@@ -27,6 +27,7 @@ import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import feign.Request;
 import feign.RequestTemplate;
+import feign.Response;
 import feign.Target;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -94,7 +95,11 @@ public class ReporterUtilsTest {
 		doReturn(requestTemplate).when(request).requestTemplate();
 		doReturn("http://1.1.1.1:2345/path").when(request).url();
 
-		ServiceCallResult serviceCallResult = ReporterUtils.createServiceCallResult(request, RetStatus.RetSuccess);
+		// mock request
+		Response response = mock(Response.class);
+		doReturn(502).when(response).status();
+
+		ServiceCallResult serviceCallResult = ReporterUtils.createServiceCallResult(request, response, 10L, RetStatus.RetSuccess);
 		assertThat(serviceCallResult.getNamespace()).isEqualTo(NAMESPACE_TEST);
 		assertThat(serviceCallResult.getService()).isEqualTo(SERVICE_PROVIDER);
 		assertThat(serviceCallResult.getHost()).isEqualTo("1.1.1.1");
@@ -104,5 +109,7 @@ public class ReporterUtilsTest {
 		assertThat(serviceCallResult.getCallerService().getNamespace()).isEqualTo(NAMESPACE_TEST);
 		assertThat(serviceCallResult.getCallerService().getService()).isEqualTo(SERVICE_PROVIDER);
 		assertThat(serviceCallResult.getLabels()).isEqualTo("k1:v1|k2:v2");
+		assertThat(serviceCallResult.getRetCode()).isEqualTo(502);
+		assertThat(serviceCallResult.getDelay()).isEqualTo(10L);
 	}
 }

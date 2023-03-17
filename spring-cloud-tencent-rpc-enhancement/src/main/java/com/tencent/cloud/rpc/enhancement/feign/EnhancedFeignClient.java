@@ -40,7 +40,7 @@ public class EnhancedFeignClient implements Client {
 
 	private final Client delegate;
 
-	private EnhancedFeignPluginRunner pluginRunner;
+	private final EnhancedFeignPluginRunner pluginRunner;
 
 	public EnhancedFeignClient(Client target, EnhancedFeignPluginRunner pluginRunner) {
 		this.delegate = checkNotNull(target, "target");
@@ -56,7 +56,9 @@ public class EnhancedFeignClient implements Client {
 		// Run pre enhanced feign plugins.
 		pluginRunner.run(PRE, enhancedFeignContext);
 		try {
+			long startMillis = System.currentTimeMillis();
 			Response response = delegate.execute(request, options);
+			enhancedFeignContext.setDelay(System.currentTimeMillis() - startMillis);
 			enhancedFeignContext.setResponse(response);
 
 			// Run post enhanced feign plugins.
