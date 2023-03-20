@@ -1,6 +1,8 @@
 package com.tencent.cloud.polaris.circuitbreaker.resttemplate.example;
 
 
+import java.util.HashMap;
+
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
 
@@ -12,6 +14,9 @@ public class CustomPolarisCircuitBreakerFallback implements PolarisCircuitBreake
 	public PolarisCircuitBreakerHttpResponse fallback() {
 		return new PolarisCircuitBreakerHttpResponse(
 				200,
+				new HashMap<String, String>(){{
+					put("Content-Type", "application/json");
+				}},
 				"{\"msg\": \"this is a fallback class\"}");
 	}
 }

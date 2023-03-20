@@ -62,13 +62,13 @@ public class ServiceAController {
 	}
 
 	@GetMapping("/getBServiceInfo/fallback")
-	public String getBServiceInfoFallback() {
-		return fallbackRestTemplate.getForObject("/example/service/b/info", String.class);
+	public ResponseEntity<String> getBServiceInfoFallback() {
+		return fallbackRestTemplate.getForEntity("/example/service/b/info", String.class);
 	}
 
 	@GetMapping("/getBServiceInfo/fallbackClass")
-	public String getBServiceInfoFallbackClass() {
-		return fallbackClassRestTemplate.getForObject("/example/service/b/info", String.class);
+	public ResponseEntity<String> getBServiceInfoFallbackClass() {
+		return fallbackClassRestTemplate.getForEntity("/example/service/b/info", String.class);
 	}
 
 }
