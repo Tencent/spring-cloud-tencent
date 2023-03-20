@@ -29,28 +29,36 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 		this(new CircuitBreakerStatus.FallbackInfo(code, headers, body));
 	}
 
-	public PolarisCircuitBreakerHttpResponse(CircuitBreakerStatus.FallbackInfo fallbackInfo){
+	PolarisCircuitBreakerHttpResponse(CircuitBreakerStatus.FallbackInfo fallbackInfo){
 		this.fallbackInfo = fallbackInfo;
 	}
 
 	@Override
-	public int getRawStatusCode() throws IOException {
+	public final int getRawStatusCode() throws IOException {
 		return fallbackInfo.getCode();
 	}
 
 	@Override
-	public String getStatusText() throws IOException {
+	public final String getStatusText() throws IOException {
 		HttpStatus status = HttpStatus.resolve(getRawStatusCode());
 		return (status != null ? status.getReasonPhrase() : "");
 	}
 
 	@Override
-	public void close() {
-
+	public final void close() {
+		InputStream body = this.getBody();
+		if (body != null) {
+			try {
+				body.close();
+			}
+			catch (IOException e) {
+				// Ignore exception on close...
+			}
+		}
 	}
 
 	@Override
-	public InputStream getBody() throws IOException {
+	public final InputStream getBody() {
 		if (fallbackInfo.getBody() != null) {
 			return new ByteArrayInputStream(fallbackInfo.getBody().getBytes());
 		}
@@ -58,7 +66,7 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 	}
 
 	@Override
-	public HttpHeaders getHeaders() {
+	public final HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		if (fallbackInfo.getHeaders() != null) {
 			fallbackInfo.getHeaders().forEach(headers::add);
