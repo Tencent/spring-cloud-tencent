@@ -14,6 +14,9 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+
+import static com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter.HEADER_HAS_ERROR;
 
 public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
@@ -23,14 +26,18 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 
 	private final CircuitBreakerFactory circuitBreakerFactory;
 
+	private final RestTemplate restTemplate;
+
 	public PolarisCircuitBreakerRestTemplateInterceptor(
 			PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate,
 			ApplicationContext applicationContext,
-			CircuitBreakerFactory circuitBreakerFactory
+			CircuitBreakerFactory circuitBreakerFactory,
+			RestTemplate restTemplate
 	) {
 		this.polarisCircuitBreakerRestTemplate = polarisCircuitBreakerRestTemplate;
 		this.applicationContext = applicationContext;
 		this.circuitBreakerFactory = circuitBreakerFactory;
+		this.restTemplate =  restTemplate;
 	}
 
 	@Override
@@ -38,7 +45,15 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 		return circuitBreakerFactory.create(request.getURI().getHost() + "#" + request.getURI().getPath()).run(
 				() -> {
 					try {
-						return execution.execute(request, body);
+						ClientHttpResponse response = execution.execute(request, body);
+						// pre handle response error
+						// EnhancedRestTemplateReporter always return true,
+						// so we need to check header set by EnhancedRestTemplateReporter
+						restTemplate.getErrorHandler().hasError(response);
+						if (Boolean.parseBoolean(response.getHeaders().getFirst(HEADER_HAS_ERROR))) {
+							restTemplate.getErrorHandler().handleError(request.getURI(), request.getMethod(), response);
+						}
+						return response;
 					}
 					catch (IOException e) {
 						throw new IllegalStateException(e);

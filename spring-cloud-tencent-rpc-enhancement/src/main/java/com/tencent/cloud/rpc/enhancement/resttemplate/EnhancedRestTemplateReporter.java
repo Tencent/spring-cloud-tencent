@@ -57,7 +57,7 @@ import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter implements ResponseErrorHandler, ApplicationContextAware {
 
 	public static final String POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER = "PolarisCircuitBreakerFallback";
-	static final String HEADER_HAS_ERROR = "X-SCT-Has-Error";
+	public static final String HEADER_HAS_ERROR = "X-SCT-Has-Error";
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedRestTemplateReporter.class);
 	private final ConsumerAPI consumerAPI;
 	private ResponseErrorHandler delegateHandler;
@@ -191,10 +191,8 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 	}
 
 	private void clear(ClientHttpResponse response) {
-		if (!response.getHeaders().containsKey(HEADER_HAS_ERROR)) {
-			return;
-		}
 		response.getHeaders().remove(HEADER_HAS_ERROR);
+		response.getHeaders().remove(POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER);
 	}
 
 	private ServiceCallResult createServiceCallResult(URI uri) {
