@@ -16,8 +16,8 @@ public class PolarisFeignCircuitBreaker {
 	/**
 	 * @return builder for Feign CircuitBreaker integration
 	 */
-	public static PolarisFeignCircuitBreaker.Builder builder(Feign.Builder delegateBuilder) {
-		return new PolarisFeignCircuitBreaker.Builder(delegateBuilder);
+	public static PolarisFeignCircuitBreaker.Builder builder() {
+		return new PolarisFeignCircuitBreaker.Builder();
 	}
 
 	/**
@@ -25,10 +25,7 @@ public class PolarisFeignCircuitBreaker {
 	 */
 	public static final class Builder extends Feign.Builder {
 
-		private final Feign.Builder delegateBuilder;
-
-		public Builder(Feign.Builder delegateBuilder) {
-			this.delegateBuilder = delegateBuilder;
+		public Builder() {
 		}
 
 		private CircuitBreakerFactory circuitBreakerFactory;
@@ -66,9 +63,9 @@ public class PolarisFeignCircuitBreaker {
 		}
 
 		public Feign build(final FallbackFactory<?> nullableFallbackFactory) {
-			delegateBuilder.invocationHandlerFactory((target, dispatch) -> new PolarisFeignCircuitBreakerInvocationHandler(
+			this.invocationHandlerFactory((target, dispatch) -> new PolarisFeignCircuitBreakerInvocationHandler(
 					circuitBreakerFactory, feignClientName, target, dispatch, nullableFallbackFactory, circuitBreakerNameResolver, this.decoder));
-			return delegateBuilder.build();
+			return this.build();
 		}
 
 	}

@@ -26,10 +26,10 @@ public class PolarisFeignCircuitBreakerTargeter implements Targeter {
 	@Override
 	public <T> T target(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context,
 			Target.HardCodedTarget<T> target) {
-		if (!(feign instanceof FeignCircuitBreaker.Builder)) {
+		if (!(feign instanceof PolarisFeignCircuitBreaker.Builder)) {
 			return feign.target(target);
 		}
-		PolarisFeignCircuitBreaker.Builder builder = PolarisFeignCircuitBreaker.builder(feign);
+		PolarisFeignCircuitBreaker.Builder builder = (PolarisFeignCircuitBreaker.Builder) feign;
 		String name = !StringUtils.hasText(factory.getContextId()) ? factory.getName() : factory.getContextId();
 		Class<?> fallback = factory.getFallback();
 		if (fallback != void.class) {
