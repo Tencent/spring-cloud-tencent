@@ -69,7 +69,7 @@ public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements Merge
 			RestTemplate restTemplate = (RestTemplate) bean;
 			String interceptorBeanName = interceptorBeanNamePrefix + "@" + bean;
 			CircuitBreakerFactory circuitBreakerFactory = this.applicationContext.getBean(CircuitBreakerFactory.class);
-			registerBean(interceptorBeanName, polarisCircuitBreakerRestTemplate, applicationContext, circuitBreakerFactory);
+			registerBean(interceptorBeanName, polarisCircuitBreakerRestTemplate, applicationContext, circuitBreakerFactory, restTemplate);
 			PolarisCircuitBreakerRestTemplateInterceptor polarisCircuitBreakerRestTemplateInterceptor = applicationContext
 					.getBean(interceptorBeanName, PolarisCircuitBreakerRestTemplateInterceptor.class);
 			restTemplate.getInterceptors().add(0, polarisCircuitBreakerRestTemplateInterceptor);
@@ -85,8 +85,8 @@ public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements Merge
 				.isAnnotated(PolarisCircuitBreakerRestTemplate.class.getName());
 	}
 
-	private void registerBean(String interceptorBeanName,
-			PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate, ApplicationContext applicationContext, CircuitBreakerFactory circuitBreakerFactory) {
+	private void registerBean(String interceptorBeanName, PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate,
+			ApplicationContext applicationContext, CircuitBreakerFactory circuitBreakerFactory, RestTemplate restTemplate) {
 		// register PolarisCircuitBreakerRestTemplateInterceptor bean
 		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext
 				.getAutowireCapableBeanFactory();
@@ -95,6 +95,7 @@ public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements Merge
 		beanDefinitionBuilder.addConstructorArgValue(polarisCircuitBreakerRestTemplate);
 		beanDefinitionBuilder.addConstructorArgValue(applicationContext);
 		beanDefinitionBuilder.addConstructorArgValue(circuitBreakerFactory);
+		beanDefinitionBuilder.addConstructorArgValue(restTemplate);
 		BeanDefinition interceptorBeanDefinition = beanDefinitionBuilder
 				.getRawBeanDefinition();
 		beanFactory.registerBeanDefinition(interceptorBeanName,
