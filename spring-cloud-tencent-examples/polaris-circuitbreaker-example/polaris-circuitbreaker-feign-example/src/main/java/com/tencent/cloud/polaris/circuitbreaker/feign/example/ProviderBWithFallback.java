@@ -3,7 +3,7 @@ package com.tencent.cloud.polaris.circuitbreaker.feign.example;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@FeignClient(name = "polaris-circuitbreaker-callee-service", contextId = "use-code-fallback", fallback = ProviderBFallback.class)
+@FeignClient(name = "polaris-circuitbreaker-callee-service", contextId = "fallback-from-code", fallback = ProviderBFallback.class)
 public interface ProviderBWithFallback {
 
 	/**

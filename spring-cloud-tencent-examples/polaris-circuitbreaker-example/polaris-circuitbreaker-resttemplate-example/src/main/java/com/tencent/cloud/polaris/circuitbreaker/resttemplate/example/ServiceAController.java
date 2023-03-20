@@ -41,12 +41,12 @@ public class ServiceAController {
 	private RestTemplate defaultRestTemplate;
 
 	@Autowired
-	@Qualifier("fallbackRestTemplate")
-	private RestTemplate fallbackRestTemplate;
+	@Qualifier("restTemplateFallbackFromPolaris")
+	private RestTemplate restTemplateFallbackFromPolaris;
 
 	@Autowired
-	@Qualifier("fallbackClassRestTemplate")
-	private RestTemplate fallbackClassRestTemplate;
+	@Qualifier("restTemplateFallbackFromCode")
+	private RestTemplate restTemplateFallbackFromCode;
 
 	@Autowired
 	private CircuitBreakerFactory circuitBreakerFactory;
@@ -61,14 +61,14 @@ public class ServiceAController {
 				);
 	}
 
-	@GetMapping("/getBServiceInfo/fallback")
+	@GetMapping("/getBServiceInfo/fallbackFromPolaris")
 	public ResponseEntity<String> getBServiceInfoFallback() {
-		return fallbackRestTemplate.getForEntity("/example/service/b/info", String.class);
+		return restTemplateFallbackFromPolaris.getForEntity("/example/service/b/info", String.class);
 	}
 
-	@GetMapping("/getBServiceInfo/fallbackClass")
+	@GetMapping("/getBServiceInfo/fallbackFromCode")
 	public ResponseEntity<String> getBServiceInfoFallbackClass() {
-		return fallbackClassRestTemplate.getForEntity("/example/service/b/info", String.class);
+		return restTemplateFallbackFromCode.getForEntity("/example/service/b/info", String.class);
 	}
 
 }
