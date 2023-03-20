@@ -56,7 +56,7 @@ public class ServiceAResTemplate {
 	@Bean
 	@LoadBalanced
 	@PolarisCircuitBreakerRestTemplate
-	public RestTemplate fallbackRestTemplate() {
+	public RestTemplate restTemplateFallbackFromPolaris() {
 		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://polaris-circuitbreaker-callee-service");
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setUriTemplateHandler(uriBuilderFactory);
@@ -66,7 +66,7 @@ public class ServiceAResTemplate {
 	@Bean
 	@LoadBalanced
 	@PolarisCircuitBreakerRestTemplate(fallbackClass = CustomPolarisCircuitBreakerFallback.class)
-	public RestTemplate fallbackClassRestTemplate() {
+	public RestTemplate restTemplateFallbackFromCode() {
 		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://polaris-circuitbreaker-callee-service");
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setUriTemplateHandler(uriBuilderFactory);

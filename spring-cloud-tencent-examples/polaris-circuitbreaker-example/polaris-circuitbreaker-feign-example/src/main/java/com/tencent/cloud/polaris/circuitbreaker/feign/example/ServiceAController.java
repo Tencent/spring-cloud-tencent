@@ -42,8 +42,8 @@ public class ServiceAController {
 	 * Get info of Service B by Feign.
 	 * @return info of Service B
 	 */
-	@GetMapping("/getBServiceInfo/fallbackFromLocalCode")
-	public String getBServiceInfoFallbackFromLocalCode() {
+	@GetMapping("/getBServiceInfo/fallbackFromCode")
+	public String getBServiceInfoFallbackFromCode() {
 		return providerBWithFallback.info();
 	}
 
