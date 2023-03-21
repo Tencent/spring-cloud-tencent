@@ -17,12 +17,16 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.feign;
 
+import java.lang.reflect.Field;
+
 import feign.Feign;
 import feign.Target;
+import feign.codec.Decoder;
 
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.openfeign.CircuitBreakerNameResolver;
 import org.springframework.cloud.openfeign.FallbackFactory;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * PolarisFeignCircuitBreaker, mostly copy from FeignCircuitBreaker, but giving Polaris modification.
@@ -85,8 +89,11 @@ public final class PolarisFeignCircuitBreaker {
 		}
 
 		public Feign build(final FallbackFactory<?> nullableFallbackFactory) {
+			Field field = ReflectionUtils.findField(Feign.Builder.class, "decoder");
+			field.setAccessible(true);
+			Decoder decoder = (Decoder) ReflectionUtils.getField(field, this);
 			this.invocationHandlerFactory((target, dispatch) -> new PolarisFeignCircuitBreakerInvocationHandler(
-					circuitBreakerFactory, feignClientName, target, dispatch, nullableFallbackFactory, circuitBreakerNameResolver, this.decoder));
+					circuitBreakerFactory, feignClientName, target, dispatch, nullableFallbackFactory, circuitBreakerNameResolver, decoder));
 			return this.build();
 		}
 
