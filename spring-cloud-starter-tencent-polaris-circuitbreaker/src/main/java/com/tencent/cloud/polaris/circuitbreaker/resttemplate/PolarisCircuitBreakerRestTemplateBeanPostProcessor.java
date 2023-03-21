@@ -83,6 +83,8 @@ public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements Merge
 					.append(StringUtils.uncapitalize(
 							PolarisCircuitBreakerRestTemplate.class.getSimpleName()))
 					.append("_")
+					.append(polarisCircuitBreakerRestTemplate.fallback())
+					.append("_")
 					.append(polarisCircuitBreakerRestTemplate.fallbackClass().getSimpleName());
 			RestTemplate restTemplate = (RestTemplate) bean;
 			String interceptorBeanName = interceptorBeanNamePrefix + "@" + bean;

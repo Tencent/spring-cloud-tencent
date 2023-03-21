@@ -32,8 +32,7 @@ import org.springframework.context.annotation.Import;
 		PolarisCircuitBreakerAutoConfiguration.class,
 		ReactivePolarisCircuitBreakerAutoConfiguration.class,
 		PolarisCircuitBreakerFeignClientAutoConfiguration.class,
-		GatewayPolarisCircuitBreakerAutoConfiguration.class,
-		PolarisCircuitBreakerRestTemplateAutoConfiguration.class
+		GatewayPolarisCircuitBreakerAutoConfiguration.class
 })
 public class PolarisCircuitBreakerBootstrapConfiguration {
 

@@ -97,4 +97,7 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 		return headers;
 	}
 
+	public CircuitBreakerStatus.FallbackInfo getFallbackInfo() {
+		return fallbackInfo;
+	}
 }
