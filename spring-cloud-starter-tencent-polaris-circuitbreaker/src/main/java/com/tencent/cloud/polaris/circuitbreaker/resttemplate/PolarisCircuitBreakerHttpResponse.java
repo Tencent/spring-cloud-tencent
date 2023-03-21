@@ -39,6 +39,10 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 
 	private final CircuitBreakerStatus.FallbackInfo fallbackInfo;
 
+	private HttpHeaders headers = new HttpHeaders();
+
+	private InputStream body;
+
 	public PolarisCircuitBreakerHttpResponse(int code) {
 		this(new CircuitBreakerStatus.FallbackInfo(code, null, null));
 	}
@@ -53,6 +57,13 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 
 	PolarisCircuitBreakerHttpResponse(CircuitBreakerStatus.FallbackInfo fallbackInfo) {
 		this.fallbackInfo = fallbackInfo;
+		headers.add(POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER, "true");
+		if (fallbackInfo.getHeaders() != null) {
+			fallbackInfo.getHeaders().forEach(headers::add);
+		}
+		if (fallbackInfo.getBody() != null) {
+			body = new ByteArrayInputStream(fallbackInfo.getBody().getBytes());
+		}
 	}
 
 	@Override
@@ -68,10 +79,9 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 
 	@Override
 	public final void close() {
-		InputStream body = this.getBody();
-		if (body != null) {
+		if (this.body != null) {
 			try {
-				body.close();
+				this.body.close();
 			}
 			catch (IOException e) {
 				// Ignore exception on close...
@@ -81,23 +91,15 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 
 	@Override
 	public final InputStream getBody() {
-		if (fallbackInfo.getBody() != null) {
-			return new ByteArrayInputStream(fallbackInfo.getBody().getBytes());
-		}
-		return null;
+		return this.body;
 	}
 
 	@Override
 	public final HttpHeaders getHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		if (fallbackInfo.getHeaders() != null) {
-			fallbackInfo.getHeaders().forEach(headers::add);
-		}
-		headers.add(POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER, "true");
-		return headers;
+		return this.headers;
 	}
 
 	public CircuitBreakerStatus.FallbackInfo getFallbackInfo() {
-		return fallbackInfo;
+		return this.fallbackInfo;
 	}
 }
