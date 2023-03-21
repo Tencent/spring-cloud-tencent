@@ -18,7 +18,6 @@
 package com.tencent.cloud.polaris.circuitbreaker.feign.example;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
