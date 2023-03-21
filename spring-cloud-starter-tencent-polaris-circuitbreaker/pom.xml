@@ -80,6 +80,20 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>healthchecker-http</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>healthchecker-udp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>healthchecker-tcp</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>
