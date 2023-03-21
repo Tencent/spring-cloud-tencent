@@ -69,12 +69,13 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 			Request request = context.getRequest();
 			Response response = context.getResponse();
 			RetStatus retStatus = RetStatus.RetSuccess;
+			long delay = context.getDelay();
 			if (apply(HttpStatus.resolve(response.status()))) {
 				retStatus = RetStatus.RetFail;
 			}
-			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}].", retStatus.name(), request.httpMethod()
-					.name(), request.url(), response.status());
-			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, retStatus);
+			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.", retStatus.name(), request.httpMethod()
+					.name(), request.url(), response.status(), delay);
+			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, response, delay, retStatus);
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}
