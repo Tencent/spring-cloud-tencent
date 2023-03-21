@@ -18,8 +18,6 @@
 
 package com.tencent.cloud.polaris.ciruitbreaker.example;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
