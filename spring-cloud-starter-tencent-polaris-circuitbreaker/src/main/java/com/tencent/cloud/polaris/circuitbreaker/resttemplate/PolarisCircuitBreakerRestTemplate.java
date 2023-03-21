@@ -44,7 +44,8 @@ public @interface PolarisCircuitBreakerRestTemplate {
 	String fallback() default "";
 
 	/**
-	 * a fallback Class,  will return a PolarisCircuitBreakerHttpResponse when any exception occurs.
+	 * a fallback Class, will return a PolarisCircuitBreakerHttpResponse when any exception occurs.
+	 * fallback Class must be a spring bean.
 	 *
 	 * @return PolarisCircuitBreakerFallback
 	 */
