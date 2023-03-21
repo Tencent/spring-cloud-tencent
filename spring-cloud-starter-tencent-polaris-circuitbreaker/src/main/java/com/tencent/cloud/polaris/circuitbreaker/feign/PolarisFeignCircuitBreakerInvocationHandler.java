@@ -96,7 +96,7 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 			return toString();
 		}
 
-		String circuitName = circuitBreakerNameResolver.resolveCircuitBreakerName(target.name(), target, method);
+		String circuitName = circuitBreakerNameResolver.resolveCircuitBreakerName(feignClientName, target, method);
 		CircuitBreaker circuitBreaker = factory.create(circuitName);
 		Supplier<Object> supplier = asSupplier(method, args);
 		Function<Throwable, Object> fallbackFunction;
