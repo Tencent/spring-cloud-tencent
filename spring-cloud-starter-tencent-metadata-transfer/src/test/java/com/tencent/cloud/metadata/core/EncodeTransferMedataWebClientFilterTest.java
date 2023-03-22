@@ -52,6 +52,8 @@ public class EncodeTransferMedataWebClientFilterTest {
 
 	@Test
 	public void testTransitiveMetadataFromApplicationConfig() {
+		MetadataContext metadataContext = MetadataContextHolder.get();
+		metadataContext.setTransHeadersKV("xxx", "xxx");
 		String metadata = webClientBuilder.baseUrl("http://localhost:" + localServerPort).build()
 				.get()
 				.uri("/test")
