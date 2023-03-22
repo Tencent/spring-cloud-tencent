@@ -18,9 +18,25 @@
 package com.tencent.cloud.polaris.circuitbreaker;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
+import com.tencent.polaris.api.pojo.ServiceKey;
+import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
+import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
+import com.tencent.polaris.client.util.Utils;
+import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
+import com.tencent.polaris.test.common.TestUtils;
+import com.tencent.polaris.test.mock.discovery.NamingServer;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
@@ -40,10 +56,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -67,17 +80,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureWebTestClient(timeout = "10000")
 public class PolarisCircuitBreakerGatewayIntegrationTest {
 
+	private static final String TEST_SERVICE_NAME = "test-service-callee";
+
 	@Autowired
 	private WebTestClient webClient;
 
+	private static NamingServer namingServer;
+
+	@AfterAll
+	public static void afterAll() {
+		if (null != namingServer) {
+			namingServer.terminate();
+		}
+	}
+
 	@Test
 	public void fallback() throws Exception {
-
-		stubFor(get(urlEqualTo("/err"))
-				.willReturn(aResponse()
-						.withStatus(500)
-						.withBody("err")
-						.withFixedDelay(3000)));
 
 		webClient
 				.get().uri("/err")
@@ -87,28 +105,48 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 				.expectBody()
 				.consumeWith(
 						response -> assertThat(response.getResponseBody()).isEqualTo("fallback".getBytes()));
-	}
-
-	@Test
-	public void noFallback() throws Exception {
-
-		stubFor(get(urlEqualTo("/err-no-fallback"))
-				.willReturn(aResponse()
-						.withStatus(500)
-						.withBody("err")
-						.withFixedDelay(3000)));
 
 		webClient
 				.get().uri("/err-no-fallback")
 				.header("Host", "www.circuitbreaker-no-fallback.com")
 				.exchange()
 				.expectStatus().isEqualTo(500);
+
+		Utils.sleepUninterrupted(2000);
+
+		webClient
+				.get().uri("/err-no-fallback")
+				.header("Host", "www.circuitbreaker-no-fallback.com")
+				.exchange()
+				.expectStatus().isEqualTo(200);
 	}
 
 
 	@Configuration
 	@EnableAutoConfiguration
 	public static class TestApplication {
+
+		@Bean
+		public CircuitBreakAPI circuitBreakAPI() throws InvalidProtocolBufferException {
+			try {
+				namingServer = NamingServer.startNamingServer(10081);
+				System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
+			}
+			catch (IOException e) {
+
+			}
+			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
+
+			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
+			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
+			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
+			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
+			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
+			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
+			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
+			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
+			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		}
 
 		@Bean
 		public RouteLocator myRoutes(RouteLocatorBuilder builder) {
@@ -123,13 +161,14 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 									.circuitBreaker(config -> config
 											.setStatusCodes(codeSets)
 											.setFallbackUri("forward:/fallback")
+											.setName(TEST_SERVICE_NAME)
 									))
 							.uri(httpUri))
 					.route(p -> p
 							.host("*.circuitbreaker-no-fallback.com")
 							.filters(f -> f
 									.circuitBreaker(config -> config
-											.setStatusCodes(codeSets)
+											.setName(TEST_SERVICE_NAME)
 									))
 							.uri(httpUri))
 					.build();
