@@ -79,7 +79,7 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 							hasError = Boolean.parseBoolean(response.getHeaders().getFirst(HEADER_HAS_ERROR));
 						}
 						if (hasError) {
-							restTemplate.getErrorHandler().handleError(request.getURI(), request.getMethod(), response);
+							errorHandler.handleError(request.getURI(), request.getMethod(), response);
 						}
 						return response;
 					}
