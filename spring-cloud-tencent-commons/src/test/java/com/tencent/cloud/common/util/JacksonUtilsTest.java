@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.util.StringUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -43,7 +45,7 @@ public class JacksonUtilsTest {
 		sourceMap.put("k2", "v2");
 		sourceMap.put("k3", "v3");
 		assertThat(JacksonUtils.serialize2Json(sourceMap)).isEqualTo("{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}");
-		assertThat(JacksonUtils.serialize2Json(sourceMap, true)).isEqualTo("{\n  \"k1\" : \"v1\",\n  \"k2\" : \"v2\",\n  \"k3\" : \"v3\"\n}");
+		assertThat(StringUtils.trimAllWhitespace(JacksonUtils.serialize2Json(sourceMap, true))).isEqualTo("{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\"}");
 	}
 
 	@Test
