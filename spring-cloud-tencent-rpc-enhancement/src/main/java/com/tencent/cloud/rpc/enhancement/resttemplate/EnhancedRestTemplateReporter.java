@@ -129,7 +129,6 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		if (Boolean.parseBoolean(response.getHeaders().getFirst(POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER))) {
 			return;
 		}
-		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
 			ServiceCallResult resultRequest = createServiceCallResult(url, response);
 			Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
