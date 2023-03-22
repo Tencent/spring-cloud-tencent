@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.ratelimit.utils;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import com.tencent.polaris.api.plugin.ratelimiter.QuotaResult;
@@ -66,6 +67,37 @@ public class QuotaCheckUtilsTest {
 
 	@Test
 	public void testGetQuota() {
+		// Pass
+		String serviceName = "TestApp1";
+		QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI, null, serviceName, 1, new HashMap<>(), null);
+		assertThat(quotaResponse.getCode()).isEqualTo(QuotaResultCode.QuotaResultOk);
+		assertThat(quotaResponse.getWaitMs()).isEqualTo(0);
+		assertThat(quotaResponse.getInfo()).isEqualTo("QuotaResultOk");
+
+		// Unirate waiting 1000ms
+		serviceName = "TestApp2";
+		quotaResponse = QuotaCheckUtils.getQuota(limitAPI, null, serviceName, 1, new HashMap<>(), null);
+		assertThat(quotaResponse.getCode()).isEqualTo(QuotaResultCode.QuotaResultOk);
+		assertThat(quotaResponse.getWaitMs()).isEqualTo(1000);
+		assertThat(quotaResponse.getInfo()).isEqualTo("QuotaResultOk");
+
+		// Rate limited
+		serviceName = "TestApp3";
+		quotaResponse = QuotaCheckUtils.getQuota(limitAPI, null, serviceName, 1, new HashMap<>(), null);
+		assertThat(quotaResponse.getCode()).isEqualTo(QuotaResultCode.QuotaResultLimited);
+		assertThat(quotaResponse.getWaitMs()).isEqualTo(0);
+		assertThat(quotaResponse.getInfo()).isEqualTo("QuotaResultLimited");
+
+		// Exception
+		serviceName = "TestApp4";
+		quotaResponse = QuotaCheckUtils.getQuota(limitAPI, null, serviceName, 1, new HashMap<>(), null);
+		assertThat(quotaResponse.getCode()).isEqualTo(QuotaResultCode.QuotaResultOk);
+		assertThat(quotaResponse.getWaitMs()).isEqualTo(0);
+		assertThat(quotaResponse.getInfo()).isEqualTo("get quota failed");
+	}
+
+	@Test
+	public void testGetQuota2() {
 		// Pass
 		String serviceName = "TestApp1";
 		QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(limitAPI, null, serviceName, 1, new HashSet<>(), null);

@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilterTest;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
@@ -43,6 +45,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME;
+import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -84,6 +88,12 @@ public class RateLimitRuleArgumentServletResolverTest {
 		MockHttpServletRequest request = new MockHttpServletRequest(null, "GET", "/xxx");
 		request.setParameter("yyy", "yyy");
 		request.addHeader("xxx", "xxx");
+		MetadataContext metadataContext = new MetadataContext();
+		metadataContext.setUpstreamDisposableMetadata(new HashMap<String, String>() {{
+			put(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+			put(DEFAULT_METADATA_SOURCE_SERVICE_NAME, MetadataContext.LOCAL_SERVICE);
+		}});
+		MetadataContextHolder.set(metadataContext);
 		Set<Argument> arguments = rateLimitRuleArgumentServletResolver.getArguments(request, MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE);
 		Set<Argument> exceptRes = new HashSet<>();
 		exceptRes.add(Argument.buildMethod("GET"));
@@ -91,6 +101,7 @@ public class RateLimitRuleArgumentServletResolverTest {
 		exceptRes.add(Argument.buildQuery("yyy", "yyy"));
 		exceptRes.add(Argument.buildCallerIP("127.0.0.1"));
 		exceptRes.add(Argument.buildCustom("xxx", "xxx"));
+		exceptRes.add(Argument.buildCallerService(MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE));
 		assertThat(arguments).isEqualTo(exceptRes);
 	}
 
