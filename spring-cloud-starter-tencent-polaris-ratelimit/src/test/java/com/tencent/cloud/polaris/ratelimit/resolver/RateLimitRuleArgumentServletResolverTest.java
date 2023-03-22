@@ -62,7 +62,15 @@ public class RateLimitRuleArgumentServletResolverTest {
 
 	private final PolarisRateLimiterLabelServletResolver labelResolver =
 			exchange -> Collections.singletonMap("xxx", "xxx");
-	private RateLimitRuleArgumentServletResolver rateLimitRuleArgumentServletResolver;
+	private final PolarisRateLimiterLabelServletResolver labelResolverEx =
+			exchange -> {
+				throw new RuntimeException();
+			};
+
+	private RateLimitRuleArgumentServletResolver rateLimitRuleArgumentServletResolver1;
+	private RateLimitRuleArgumentServletResolver rateLimitRuleArgumentServletResolver2;
+	private RateLimitRuleArgumentServletResolver rateLimitRuleArgumentServletResolver3;
+	private RateLimitRuleArgumentServletResolver rateLimitRuleArgumentServletResolver4;
 
 	@BeforeEach
 	void setUp() throws InvalidProtocolBufferException {
@@ -78,7 +86,19 @@ public class RateLimitRuleArgumentServletResolverTest {
 		RateLimitProto.RateLimit rateLimit = RateLimitProto.RateLimit.newBuilder().addRules(rateLimitRule).build();
 		when(serviceRuleManager.getServiceRateLimitRule(anyString(), anyString())).thenReturn(rateLimit);
 
-		this.rateLimitRuleArgumentServletResolver = new RateLimitRuleArgumentServletResolver(serviceRuleManager, labelResolver);
+		// normal
+		this.rateLimitRuleArgumentServletResolver1 = new RateLimitRuleArgumentServletResolver(serviceRuleManager, labelResolver);
+		// ex
+		this.rateLimitRuleArgumentServletResolver2 = new RateLimitRuleArgumentServletResolver(serviceRuleManager, labelResolverEx);
+		// null
+		ServiceRuleManager serviceRuleManager1 = mock(ServiceRuleManager.class);
+		when(serviceRuleManager1.getServiceRateLimitRule(anyString(), anyString())).thenReturn(null);
+		this.rateLimitRuleArgumentServletResolver3 = new RateLimitRuleArgumentServletResolver(serviceRuleManager1, labelResolver);
+		// null 2
+		ServiceRuleManager serviceRuleManager2 = mock(ServiceRuleManager.class);
+		RateLimitProto.RateLimit rateLimit2 = RateLimitProto.RateLimit.newBuilder().build();
+		when(serviceRuleManager2.getServiceRateLimitRule(anyString(), anyString())).thenReturn(rateLimit2);
+		this.rateLimitRuleArgumentServletResolver4 = new RateLimitRuleArgumentServletResolver(serviceRuleManager2, labelResolver);
 	}
 
 	@Test
@@ -94,7 +114,7 @@ public class RateLimitRuleArgumentServletResolverTest {
 			put(DEFAULT_METADATA_SOURCE_SERVICE_NAME, MetadataContext.LOCAL_SERVICE);
 		}});
 		MetadataContextHolder.set(metadataContext);
-		Set<Argument> arguments = rateLimitRuleArgumentServletResolver.getArguments(request, MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE);
+		Set<Argument> arguments = rateLimitRuleArgumentServletResolver1.getArguments(request, MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE);
 		Set<Argument> exceptRes = new HashSet<>();
 		exceptRes.add(Argument.buildMethod("GET"));
 		exceptRes.add(Argument.buildHeader("xxx", "xxx"));
@@ -103,6 +123,10 @@ public class RateLimitRuleArgumentServletResolverTest {
 		exceptRes.add(Argument.buildCustom("xxx", "xxx"));
 		exceptRes.add(Argument.buildCallerService(MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE));
 		assertThat(arguments).isEqualTo(exceptRes);
+
+		rateLimitRuleArgumentServletResolver2.getArguments(request, MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE);
+		rateLimitRuleArgumentServletResolver3.getArguments(request, MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE);
+		rateLimitRuleArgumentServletResolver4.getArguments(request, MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE);
 	}
 
 	@SpringBootApplication
