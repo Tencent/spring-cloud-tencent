@@ -31,6 +31,8 @@ import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
 import com.tencent.polaris.plugins.connector.common.constant.ConsulConstant;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
 
@@ -38,6 +40,9 @@ import org.springframework.util.CollectionUtils;
  * @author lingxiao.wlx
  */
 public class ConsulConfigModifier implements PolarisConfigModifier {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConsulConfigModifier.class);
+
 	private static final String ID = "consul";
 
 	private final ConsulContextProperties consulContextProperties;
@@ -49,6 +54,23 @@ public class ConsulConfigModifier implements PolarisConfigModifier {
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		if (consulContextProperties != null && consulContextProperties.isEnabled()) {
+			// Check if Consul client Available
+			boolean consulAvailable = false;
+			try {
+				consulAvailable = null != Class.forName("com.ecwid.consul.v1.ConsulClient");
+			}
+			catch (Throwable ignored) {
+
+			}
+			if (!consulAvailable) {
+				LOGGER.error("Please import \"connector-consul\" dependency when enabling consul service registration and discovery.\n"
+						+ "Add dependency configuration below to pom.xml:\n"
+						+ "<dependency>\n"
+						+ "\t<groupId>com.tencent.polaris</groupId>\n"
+						+ "\t<artifactId>connector-consul</artifactId>\n"
+						+ "</dependency>");
+				throw new RuntimeException("Dependency \"connector-consul\" not found.");
+			}
 			if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
 				configuration.getGlobal().setServerConnectors(new ArrayList<>());
 			}
