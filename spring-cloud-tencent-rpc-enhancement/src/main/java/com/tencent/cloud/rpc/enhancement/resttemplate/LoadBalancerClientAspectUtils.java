@@ -38,6 +38,7 @@ public final class LoadBalancerClientAspectUtils {
 			ServiceInstance instance = (ServiceInstance) server;
 			MetadataContextHolder.get().setLoadbalancer("host", instance.getHost());
 			MetadataContextHolder.get().setLoadbalancer("port", String.valueOf(instance.getPort()));
+			MetadataContextHolder.get().setLoadbalancer("startMillis", String.valueOf(System.currentTimeMillis()));
 		}
 	}
 }

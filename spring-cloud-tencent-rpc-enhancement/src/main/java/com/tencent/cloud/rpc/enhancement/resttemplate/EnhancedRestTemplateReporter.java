@@ -129,10 +129,13 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		}
 		ServiceCallResult resultRequest = createServiceCallResult(url);
 		try {
+			ServiceCallResult resultRequest = createServiceCallResult(url, response);
 			Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
 
 			String targetHost = loadBalancerContext.get("host");
 			String targetPort = loadBalancerContext.get("port");
+			String startMillis = loadBalancerContext.get("startMillis");
+			long delay = System.currentTimeMillis() - Long.parseLong(startMillis);
 
 			if (StringUtils.isBlank(targetHost) || StringUtils.isBlank(targetPort)) {
 				LOGGER.warn("Can not get target host or port from metadata context. host = {}, port = {}", targetHost, targetPort);
@@ -141,6 +144,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 
 			resultRequest.setHost(targetHost);
 			resultRequest.setPort(Integer.parseInt(targetPort));
+			resultRequest.setDelay(delay);
 
 			// checking response http status code
 			if (apply(response.getStatusCode())) {
@@ -160,8 +164,8 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 			}
 
 			// processing report with consumerAPI .
-			LOGGER.debug("Will report result of {}. URL=[{}]. Response=[{}].", resultRequest.getRetStatus().name(),
-					url, response);
+			LOGGER.debug("Will report result of {}. Request=[{}]. Response=[{}]. Delay=[{}]ms.", resultRequest.getRetStatus()
+					.name(), url, response.getStatusCode().value(), delay);
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 		catch (Exception e) {
@@ -201,12 +205,13 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		response.getHeaders().remove(POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER);
 	}
 
-	private ServiceCallResult createServiceCallResult(URI uri) {
+	private ServiceCallResult createServiceCallResult(URI uri, ClientHttpResponse response) throws IOException {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 		String serviceName = uri.getHost();
 		resultRequest.setService(serviceName);
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		resultRequest.setMethod(uri.getPath());
+		resultRequest.setRetCode(response.getStatusCode().value());
 		resultRequest.setRetStatus(RetStatus.RetSuccess);
 		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String sourceService = MetadataContext.LOCAL_SERVICE;

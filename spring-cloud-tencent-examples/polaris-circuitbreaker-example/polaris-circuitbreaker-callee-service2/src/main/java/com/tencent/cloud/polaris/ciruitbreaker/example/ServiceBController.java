@@ -18,10 +18,14 @@
 
 package com.tencent.cloud.polaris.ciruitbreaker.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -33,15 +37,48 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/example/service/b")
 public class ServiceBController {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ServiceBController.class);
+
+	private boolean ifBadGateway = true;
+
+	private boolean ifDelay = true;
+
+	@GetMapping("/setBadGateway")
+	public void setBadGateway(@RequestParam boolean param) {
+		if (param) {
+			LOG.info("info is set to return HttpStatus.BAD_GATEWAY.");
+		}
+		else {
+			LOG.info("info is set to return HttpStatus.OK.");
+		}
+		this.ifBadGateway = param;
+	}
+
+	@GetMapping("/setDelay")
+	public void setDelay(@RequestParam boolean param) {
+		if (param) {
+			LOG.info("info is set to delay 100ms.");
+		}
+		else {
+			LOG.info("info is set to no delay.");
+		}
+		this.ifDelay = param;
+	}
+
 	/**
 	 * Get service information.
 	 *
 	 * @return service information
 	 */
 	@GetMapping("/info")
-	@ResponseStatus(value = HttpStatus.BAD_GATEWAY, reason = "failed for call my service")
-	public String info() {
-		return "failed for call service B2";
+	public ResponseEntity<String> info() throws InterruptedException {
+		if (ifBadGateway) {
+			return new ResponseEntity<>("failed for call my service", HttpStatus.BAD_GATEWAY);
+		}
+		if (ifDelay) {
+			Thread.sleep(100);
+		}
+		return new ResponseEntity<>("hello world ! I'm a service B2", HttpStatus.OK);
 	}
 
 	@GetMapping("/health")
