@@ -25,12 +25,12 @@ import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreak
 import org.springframework.stereotype.Component;
 
 /**
- * CustomPolarisCircuitBreakerFallback.
+ * CustomFallback.
  *
  * @author sean yu
  */
 @Component
-public class CustomPolarisCircuitBreakerFallback implements PolarisCircuitBreakerFallback {
+public class CustomFallback implements PolarisCircuitBreakerFallback {
 	@Override
 	public PolarisCircuitBreakerHttpResponse fallback() {
 		return new PolarisCircuitBreakerHttpResponse(
