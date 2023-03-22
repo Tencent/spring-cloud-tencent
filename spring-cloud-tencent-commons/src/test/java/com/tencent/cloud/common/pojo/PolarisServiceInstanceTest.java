@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.common.pojo;
 
+import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ public class PolarisServiceInstanceTest {
 
 	@Test
 	@DisplayName("test getters and setters.")
-	void test() {
+	public void test1() {
 		Instance secureInstance = mock(Instance.class);
 		doReturn("test-ID").when(secureInstance).getId();
 		doReturn(SERVICE_PROVIDER).when(secureInstance).getService();
@@ -53,11 +54,45 @@ public class PolarisServiceInstanceTest {
 		assertThat(securePolarisServiceInstance.getPort()).isEqualTo(8080);
 		assertThat(securePolarisServiceInstance.isSecure()).isTrue();
 		assertThat(securePolarisServiceInstance.getScheme()).isEqualTo("https");
+		assertThat(securePolarisServiceInstance.getUri().toString()).isEqualTo("https://1.1.1.1:8080");
 
 		Instance insecureInstance = mock(Instance.class);
 		doReturn("http").when(insecureInstance).getProtocol();
 		PolarisServiceInstance insecurePolarisServiceInstance = new PolarisServiceInstance(insecureInstance);
 		assertThat(insecurePolarisServiceInstance.isSecure()).isFalse();
 		assertThat(insecurePolarisServiceInstance.getScheme()).isEqualTo("http");
+	}
+
+
+	@Test
+	@DisplayName("test equals().")
+	public void test2() {
+		DefaultInstance instance1 = new DefaultInstance();
+		instance1.setId("test-1");
+		instance1.setProtocol("http");
+		PolarisServiceInstance polarisServiceInstance1 = new PolarisServiceInstance(instance1);
+
+		DefaultInstance instance2 = new DefaultInstance();
+		instance2.setId("test-1");
+		instance2.setProtocol("http");
+		PolarisServiceInstance polarisServiceInstance2 = new PolarisServiceInstance(instance2);
+
+		assertThat(polarisServiceInstance1.equals(polarisServiceInstance2)).isTrue();
+	}
+
+	@Test
+	@DisplayName("test hashCode().")
+	public void test3() {
+		DefaultInstance instance1 = new DefaultInstance();
+		instance1.setId("test-1");
+		instance1.setProtocol("http");
+		PolarisServiceInstance polarisServiceInstance1 = new PolarisServiceInstance(instance1);
+
+		DefaultInstance instance2 = new DefaultInstance();
+		instance2.setId("test-1");
+		instance2.setProtocol("http");
+		PolarisServiceInstance polarisServiceInstance2 = new PolarisServiceInstance(instance2);
+
+		assertThat(polarisServiceInstance1.hashCode()).isEqualTo(polarisServiceInstance2.hashCode());
 	}
 }
