@@ -54,6 +54,7 @@ public class PolarisServiceInstanceTest {
 		assertThat(securePolarisServiceInstance.getPort()).isEqualTo(8080);
 		assertThat(securePolarisServiceInstance.isSecure()).isTrue();
 		assertThat(securePolarisServiceInstance.getScheme()).isEqualTo("https");
+		assertThat(securePolarisServiceInstance.getUri().toString()).isEqualTo("https://1.1.1.1:8080");
 
 		Instance insecureInstance = mock(Instance.class);
 		doReturn("http").when(insecureInstance).getProtocol();
