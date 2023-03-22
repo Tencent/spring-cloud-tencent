@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +27,9 @@ import java.util.stream.Collectors;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerRestTemplate;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
@@ -40,23 +42,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.cloud.openfeign.FallbackFactory;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -64,29 +64,17 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
-		classes = PolarisCircuitBreakerFeignIntegrationTest.TestConfig.class,
+		classes = PolarisCircuitBreakerRestTemplateIntegrationTest.TestConfig.class,
 		properties = {
 				"spring.cloud.gateway.enabled=false",
-				"spring.cloud.openfeign.circuitbreaker.enabled=true",
+				"feign.circuitbreaker.enabled=true",
 				"spring.cloud.polaris.namespace=default",
 				"spring.cloud.polaris.service=Test"
-})
+		})
 @DirtiesContext
-public class PolarisCircuitBreakerFeignIntegrationTest {
+public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
 	private static final String TEST_SERVICE_NAME = "test-service-callee";
-
-	@Autowired
-	private EchoService echoService;
-
-	@Autowired
-	private FooService fooService;
-
-	@Autowired
-	private BarService barService;
-
-	@Autowired
-	private BazService bazService;
 
 	private static NamingServer namingServer;
 
@@ -97,26 +85,32 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 		}
 	}
 
-	@Test
-	public void contextLoads() throws Exception {
-		assertThat(echoService).isNotNull();
-		assertThat(fooService).isNotNull();
-	}
+	@Autowired
+	@Qualifier("restTemplateFallbackFromPolaris")
+	private RestTemplate restTemplateFallbackFromPolaris;
+
+	@Autowired
+	@Qualifier("restTemplateFallbackFromCode")
+	private RestTemplate restTemplateFallbackFromCode;
+
+	@Autowired
+	@Qualifier("restTemplateFallbackFromCode2")
+	private RestTemplate restTemplateFallbackFromCode2;
 
 	@Test
-	public void testFeignClient() {
-		assertThat(echoService.echo("test")).isEqualTo("echo fallback");
+	public void testRestTemplate() {
+		assertThat(restTemplateFallbackFromCode.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
 		Utils.sleepUninterrupted(2000);
-		assertThatThrownBy(() -> {
-			fooService.echo("test");
-		}).isInstanceOf(NoFallbackAvailableException.class);
+		assertThat(restTemplateFallbackFromCode.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
 		Utils.sleepUninterrupted(2000);
-		assertThat(barService.bar()).isEqualTo("\"fallback from polaris server\"");
+		assertThat(restTemplateFallbackFromCode2.getForObject("/example/service/b/info", String.class)).isEqualTo("fallback");
 		Utils.sleepUninterrupted(2000);
-		assertThat(bazService.baz()).isEqualTo("\"fallback from polaris server\"");
-		assertThat(fooService.toString()).isNotEqualTo(echoService.toString());
-		assertThat(fooService.hashCode()).isNotEqualTo(echoService.hashCode());
-		assertThat(echoService.equals(fooService)).isEqualTo(Boolean.FALSE);
+		assertThat(restTemplateFallbackFromCode2.getForObject("/example/service/b/info", String.class)).isEqualTo("fallback");
+		Utils.sleepUninterrupted(2000);
+		assertThat(restTemplateFallbackFromPolaris.getForObject("/example/service/b/info", String.class)).isEqualTo("\"fallback from polaris server\"");
+		Utils.sleepUninterrupted(2000);
+		assertThat(restTemplateFallbackFromPolaris.getForObject("/example/service/b/info", String.class)).isEqualTo("\"fallback from polaris server\"");
+
 	}
 
 	@Configuration
@@ -126,13 +120,38 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	public static class TestConfig {
 
 		@Bean
-		public EchoServiceFallback echoServiceFallback() {
-			return new EchoServiceFallback();
+		@LoadBalanced
+		@PolarisCircuitBreakerRestTemplate
+		public RestTemplate restTemplateFallbackFromPolaris() {
+			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.setUriTemplateHandler(uriBuilderFactory);
+			return restTemplate;
 		}
 
 		@Bean
-		public CustomFallbackFactory customFallbackFactory() {
-			return new CustomFallbackFactory();
+		@LoadBalanced
+		@PolarisCircuitBreakerRestTemplate(fallbackClass = CustomPolarisCircuitBreakerFallback.class)
+		public RestTemplate restTemplateFallbackFromCode() {
+			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.setUriTemplateHandler(uriBuilderFactory);
+			return restTemplate;
+		}
+
+		@Bean
+		@LoadBalanced
+		@PolarisCircuitBreakerRestTemplate(fallback = "fallback")
+		public RestTemplate restTemplateFallbackFromCode2() {
+			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.setUriTemplateHandler(uriBuilderFactory);
+			return restTemplate;
+		}
+
+		@Bean
+		public CustomPolarisCircuitBreakerFallback customPolarisCircuitBreakerFallback() {
+			return new CustomPolarisCircuitBreakerFallback();
 		}
 
 		@Bean
@@ -159,70 +178,14 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	}
 
-	@FeignClient(value = TEST_SERVICE_NAME, contextId = "1", fallback = EchoServiceFallback.class)
-	public interface EchoService {
-
-		@RequestMapping(path = "echo/{str}")
-		String echo(@RequestParam("str") String param);
-
-	}
-
-	@FeignClient(value = TEST_SERVICE_NAME, contextId = "2", fallbackFactory = CustomFallbackFactory.class)
-	public interface FooService {
-
-		@RequestMapping("echo/{str}")
-		String echo(@RequestParam("str") String param);
-
-	}
-
-	@FeignClient(value = TEST_SERVICE_NAME, contextId = "3")
-	public interface BarService {
-
-		@RequestMapping(path = "bar")
-		String bar();
-
-	}
-
-	public interface BazService {
-
-		@RequestMapping(path = "baz")
-		String baz();
-
-	}
-
-	@FeignClient(value = TEST_SERVICE_NAME, contextId = "4")
-	public interface BazClient extends BazService {
-
-	}
-
-	public static class EchoServiceFallback implements EchoService {
-
+	public static class CustomPolarisCircuitBreakerFallback implements PolarisCircuitBreakerFallback {
 		@Override
-		public String echo(@RequestParam("str") String param) {
-			return "echo fallback";
+		public PolarisCircuitBreakerHttpResponse fallback() {
+			return new PolarisCircuitBreakerHttpResponse(
+					200,
+					"\"this is a fallback class\"");
 		}
-
 	}
 
-	public static class FooServiceFallback implements FooService {
-
-		@Override
-		public String echo(@RequestParam("str") String param) {
-			throw new NoFallbackAvailableException("fallback", new RuntimeException());
-		}
-
-	}
-
-	public static class CustomFallbackFactory
-			implements FallbackFactory<FooService> {
-
-		private FooService fooService = new FooServiceFallback();
-
-		@Override
-		public FooService create(Throwable throwable) {
-			return fooService;
-		}
-
-	}
 
 }
