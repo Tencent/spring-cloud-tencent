@@ -72,7 +72,7 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 	}
 
 	@Override
-	public final String getStatusText() throws IOException {
+	public final String getStatusText() {
 		HttpStatus status = HttpStatus.resolve(getRawStatusCode());
 		return (status != null ? status.getReasonPhrase() : "");
 	}
