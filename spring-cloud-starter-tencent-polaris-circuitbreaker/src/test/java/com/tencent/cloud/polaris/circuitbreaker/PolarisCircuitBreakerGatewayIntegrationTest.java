@@ -112,7 +112,7 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 				.exchange()
 				.expectStatus().isEqualTo(500);
 
-		Utils.sleepUninterrupted(2000);
+		Utils.sleepUninterrupted(5000);
 
 		webClient
 				.get().uri("/err-no-fallback")
