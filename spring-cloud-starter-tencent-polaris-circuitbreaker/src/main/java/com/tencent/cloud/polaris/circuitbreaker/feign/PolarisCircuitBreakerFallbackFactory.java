@@ -72,14 +72,7 @@ public class PolarisCircuitBreakerFallbackFactory implements FallbackFactory {
 							.status(fallbackInfo.getCode());
 					if (fallbackInfo.getHeaders() != null) {
 						Map<String, Collection<String>> headers = new HashMap<>();
-						fallbackInfo.getHeaders().forEach((k, v) -> {
-							if (headers.containsKey(k)) {
-								headers.get(k).add(v);
-							}
-							else {
-								headers.put(k, new HashSet<>(Collections.singleton(v)));
-							}
-						});
+						fallbackInfo.getHeaders().forEach((k, v) -> headers.put(k, Collections.singleton(v)));
 						responseBuilder.headers(headers);
 					}
 					if (fallbackInfo.getBody() != null) {
