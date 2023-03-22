@@ -30,6 +30,18 @@
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
+			<artifactId>connector-consul</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>connector-nacos</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-test-mock-discovery</artifactId>
 			<scope>test</scope>
 			<exclusions>
