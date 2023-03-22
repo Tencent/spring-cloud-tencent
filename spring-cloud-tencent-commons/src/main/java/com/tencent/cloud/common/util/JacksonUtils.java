@@ -111,14 +111,4 @@ public final class JacksonUtils {
 			throw new RuntimeException("Json to map failed.", e);
 		}
 	}
-
-	public static <T> T json2JavaBean(String content, Class<T> valueType) {
-		try {
-			return OM.readValue(content, valueType);
-		}
-		catch (Exception e) {
-			LOG.error("json {} to class {} failed. ", content, valueType, e);
-			throw new RuntimeException("json to class failed.", e);
-		}
-	}
 }
