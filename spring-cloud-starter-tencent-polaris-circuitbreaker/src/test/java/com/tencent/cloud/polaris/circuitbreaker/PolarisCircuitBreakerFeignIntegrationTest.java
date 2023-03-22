@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
@@ -104,9 +105,12 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	}
 
 	@Test
-	public void testFeignClient() {
+	public void testFeignClient() throws InvocationTargetException {
 		assertThat(echoService.echo("test")).isEqualTo("echo fallback");
 		Utils.sleepUninterrupted(2000);
+		assertThatThrownBy(() -> {
+			echoService.echo(null);
+		}).isInstanceOf(Exception.class);
 		assertThatThrownBy(() -> {
 			fooService.echo("test");
 		}).isInstanceOf(NoFallbackAvailableException.class);
@@ -163,7 +167,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	public interface EchoService {
 
 		@RequestMapping(path = "echo/{str}")
-		String echo(@RequestParam("str") String param);
+		String echo(@RequestParam("str") String param) throws InvocationTargetException;
 
 	}
 
@@ -198,7 +202,10 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	public static class EchoServiceFallback implements EchoService {
 
 		@Override
-		public String echo(@RequestParam("str") String param) {
+		public String echo(@RequestParam("str") String param) throws InvocationTargetException {
+			if (param == null) {
+				throw new InvocationTargetException(new Exception());
+			}
 			return "echo fallback";
 		}
 
