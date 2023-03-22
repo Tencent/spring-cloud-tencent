@@ -65,6 +65,9 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
+		if (Objects.isNull(nacosContextProperties) || !nacosContextProperties.isEnabled()) {
+			return;
+		}
 		// Check if Nacos Available
 		boolean nacosAvailable = false;
 		try {
@@ -81,9 +84,6 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 					+ "\t<artifactId>connector-nacos</artifactId>\n"
 					+ "</dependency>");
 			throw new RuntimeException("Dependency \"connector-nacos\" not found.");
-		}
-		if (Objects.isNull(nacosContextProperties) || !nacosContextProperties.isEnabled()) {
-			return;
 		}
 		if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
 			configuration.getGlobal().setServerConnectors(new ArrayList<>());
