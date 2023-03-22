@@ -31,6 +31,8 @@ import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
 
@@ -41,7 +43,6 @@ import org.springframework.util.CollectionUtils;
  */
 public class NacosConfigModifier implements PolarisConfigModifier {
 
-	private static final String ID = "nacos";
 	/**
 	 * nacos username.
 	 */
@@ -54,7 +55,8 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 	 * nacos contextPath.
 	 */
 	public static final String CONTEXT_PATH = "contextPath";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(NacosConfigModifier.class);
+	private static final String ID = "nacos";
 	private final NacosContextProperties nacosContextProperties;
 
 	public NacosConfigModifier(NacosContextProperties nacosContextProperties) {
@@ -65,6 +67,23 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 	public void modify(ConfigurationImpl configuration) {
 		if (Objects.isNull(nacosContextProperties) || !nacosContextProperties.isEnabled()) {
 			return;
+		}
+		// Check if Nacos Available
+		boolean nacosAvailable = false;
+		try {
+			nacosAvailable = null != Class.forName("com.alibaba.nacos.api.naming.NamingService");
+		}
+		catch (Throwable ignored) {
+
+		}
+		if (!nacosAvailable) {
+			LOGGER.error("Please import \"connector-nacos\" dependency when enabling nacos service registration and discovery.\n"
+					+ "Add dependency configuration below to pom.xml:\n"
+					+ "<dependency>\n"
+					+ "\t<groupId>com.tencent.polaris</groupId>\n"
+					+ "\t<artifactId>connector-nacos</artifactId>\n"
+					+ "</dependency>");
+			throw new RuntimeException("Dependency \"connector-nacos\" not found.");
 		}
 		if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
 			configuration.getGlobal().setServerConnectors(new ArrayList<>());
