@@ -199,8 +199,8 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 									Set<HttpStatus> statusNeedToCheck = new HashSet<>();
 									statusNeedToCheck.addAll(statuses);
 									statusNeedToCheck.addAll(getDefaultStatus());
-									if (statusNeedToCheck.contains(HttpStatus.resolve(exchange.getResponse().getStatusCode().value()))) {
-										HttpStatusCode status = exchange.getResponse().getStatusCode();
+									HttpStatusCode status = exchange.getResponse().getStatusCode();
+									if (statusNeedToCheck.contains(HttpStatus.resolve(status.value()))) {
 										throw new CircuitBreakerStatusCodeException(status);
 									}
 								}),
