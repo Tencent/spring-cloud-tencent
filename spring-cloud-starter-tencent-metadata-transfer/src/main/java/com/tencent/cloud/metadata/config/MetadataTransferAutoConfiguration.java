@@ -150,7 +150,7 @@ public class MetadataTransferAutoConfiguration {
 	 * Create when WebClient.Builder exists.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(name = { "reactor.core.publisher.Mono", "reactor.core.publisher.Flux" })
+	@ConditionalOnClass(name = "org.springframework.web.reactive.function.client.WebClient")
 	protected static class MetadataTransferWebClientConfig {
 		@Autowired(required = false)
 		private List<WebClient.Builder> webClientBuilder = Collections.emptyList();
