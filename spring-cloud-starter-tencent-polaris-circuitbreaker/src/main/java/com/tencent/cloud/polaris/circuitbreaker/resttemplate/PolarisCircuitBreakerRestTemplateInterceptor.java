@@ -44,7 +44,7 @@ import static com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplat
  */
 public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
-	private final PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate;
+	private final PolarisCircuitBreaker polarisCircuitBreaker;
 
 	private final ApplicationContext applicationContext;
 
@@ -53,12 +53,12 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 	private final RestTemplate restTemplate;
 
 	public PolarisCircuitBreakerRestTemplateInterceptor(
-			PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate,
+			PolarisCircuitBreaker polarisCircuitBreaker,
 			ApplicationContext applicationContext,
 			CircuitBreakerFactory circuitBreakerFactory,
 			RestTemplate restTemplate
 	) {
-		this.polarisCircuitBreakerRestTemplate = polarisCircuitBreakerRestTemplate;
+		this.polarisCircuitBreaker = polarisCircuitBreaker;
 		this.applicationContext = applicationContext;
 		this.circuitBreakerFactory = circuitBreakerFactory;
 		this.restTemplate =  restTemplate;
@@ -88,13 +88,13 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 					}
 				},
 				t -> {
-					if (StringUtils.hasText(polarisCircuitBreakerRestTemplate.fallback())) {
-						CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(200, null, polarisCircuitBreakerRestTemplate.fallback());
+					if (StringUtils.hasText(polarisCircuitBreaker.fallback())) {
+						CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(200, null, polarisCircuitBreaker.fallback());
 						return new PolarisCircuitBreakerHttpResponse(fallbackInfo);
 					}
-					if (!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreakerRestTemplate.fallbackClass().toGenericString())) {
+					if (!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreaker.fallbackClass().toGenericString())) {
 						Method method = ReflectionUtils.findMethod(PolarisCircuitBreakerFallback.class, "fallback");
-						PolarisCircuitBreakerFallback polarisCircuitBreakerFallback = applicationContext.getBean(polarisCircuitBreakerRestTemplate.fallbackClass());
+						PolarisCircuitBreakerFallback polarisCircuitBreakerFallback = applicationContext.getBean(polarisCircuitBreaker.fallbackClass());
 						return (PolarisCircuitBreakerHttpResponse) ReflectionUtils.invokeMethod(method, polarisCircuitBreakerFallback);
 					}
 					if (t instanceof CallAbortedException) {

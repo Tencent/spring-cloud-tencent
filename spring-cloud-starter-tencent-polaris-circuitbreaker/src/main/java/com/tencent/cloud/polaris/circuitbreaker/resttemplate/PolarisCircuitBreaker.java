@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * PolarisCircuitBreakerRestTemplate annotation.
+ * PolarisCircuitBreaker annotation.
  * if coded fallback or fallbackClass provided, RestTemplate will always return fallback when any exception occurs,
  * if none coded fallback or fallbackClass provided, RestTemplate will return fallback response from Polaris server when fallback occurs.
  * fallback and fallbackClass cannot provide at same time.
@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface PolarisCircuitBreakerRestTemplate {
+public @interface PolarisCircuitBreaker {
 
 	/**
 	 * a fallback string, will return a response { status: 200, body: fallback string} when any exception occurs.

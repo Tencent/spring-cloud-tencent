@@ -45,51 +45,51 @@ public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements Merge
 		this.applicationContext = applicationContext;
 	}
 
-	private final ConcurrentHashMap<String, PolarisCircuitBreakerRestTemplate> cache = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, PolarisCircuitBreaker> cache = new ConcurrentHashMap<>();
 
-	private void checkPolarisCircuitBreakerRestTemplate(PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate) {
+	private void checkPolarisCircuitBreakerRestTemplate(PolarisCircuitBreaker polarisCircuitBreaker) {
 		if (
-				StringUtils.hasText(polarisCircuitBreakerRestTemplate.fallback()) &&
-						!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreakerRestTemplate.fallbackClass().toGenericString())
+				StringUtils.hasText(polarisCircuitBreaker.fallback()) &&
+						!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreaker.fallbackClass().toGenericString())
 		) {
-			throw new IllegalArgumentException("PolarisCircuitBreakerRestTemplate's fallback and fallbackClass could not set at sametime !");
+			throw new IllegalArgumentException("PolarisCircuitBreaker's fallback and fallbackClass could not set at sametime !");
 		}
 	}
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
 		if (checkAnnotated(beanDefinition, beanType, beanName)) {
-			PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate;
+			PolarisCircuitBreaker polarisCircuitBreaker;
 			if (beanDefinition.getSource() instanceof StandardMethodMetadata) {
-				polarisCircuitBreakerRestTemplate = ((StandardMethodMetadata) beanDefinition.getSource()).getIntrospectedMethod()
-						.getAnnotation(PolarisCircuitBreakerRestTemplate.class);
+				polarisCircuitBreaker = ((StandardMethodMetadata) beanDefinition.getSource()).getIntrospectedMethod()
+						.getAnnotation(PolarisCircuitBreaker.class);
 			}
 			else {
-				polarisCircuitBreakerRestTemplate = beanDefinition.getResolvedFactoryMethod()
-						.getAnnotation(PolarisCircuitBreakerRestTemplate.class);
+				polarisCircuitBreaker = beanDefinition.getResolvedFactoryMethod()
+						.getAnnotation(PolarisCircuitBreaker.class);
 			}
-			checkPolarisCircuitBreakerRestTemplate(polarisCircuitBreakerRestTemplate);
-			cache.put(beanName, polarisCircuitBreakerRestTemplate);
+			checkPolarisCircuitBreakerRestTemplate(polarisCircuitBreaker);
+			cache.put(beanName, polarisCircuitBreaker);
 		}
 	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (cache.containsKey(beanName)) {
-			// add interceptor for each RestTemplate with @PolarisCircuitBreakerRestTemplate annotation
+			// add interceptor for each RestTemplate with @PolarisCircuitBreaker annotation
 			StringBuilder interceptorBeanNamePrefix = new StringBuilder();
-			PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate = cache.get(beanName);
+			PolarisCircuitBreaker polarisCircuitBreaker = cache.get(beanName);
 			interceptorBeanNamePrefix
 					.append(StringUtils.uncapitalize(
-							PolarisCircuitBreakerRestTemplate.class.getSimpleName()))
+							PolarisCircuitBreaker.class.getSimpleName()))
 					.append("_")
-					.append(polarisCircuitBreakerRestTemplate.fallback())
+					.append(polarisCircuitBreaker.fallback())
 					.append("_")
-					.append(polarisCircuitBreakerRestTemplate.fallbackClass().getSimpleName());
+					.append(polarisCircuitBreaker.fallbackClass().getSimpleName());
 			RestTemplate restTemplate = (RestTemplate) bean;
 			String interceptorBeanName = interceptorBeanNamePrefix + "@" + bean;
 			CircuitBreakerFactory circuitBreakerFactory = this.applicationContext.getBean(CircuitBreakerFactory.class);
-			registerBean(interceptorBeanName, polarisCircuitBreakerRestTemplate, applicationContext, circuitBreakerFactory, restTemplate);
+			registerBean(interceptorBeanName, polarisCircuitBreaker, applicationContext, circuitBreakerFactory, restTemplate);
 			PolarisCircuitBreakerRestTemplateInterceptor polarisCircuitBreakerRestTemplateInterceptor = applicationContext
 					.getBean(interceptorBeanName, PolarisCircuitBreakerRestTemplateInterceptor.class);
 			restTemplate.getInterceptors().add(0, polarisCircuitBreakerRestTemplateInterceptor);
@@ -102,17 +102,17 @@ public class PolarisCircuitBreakerRestTemplateBeanPostProcessor implements Merge
 		return beanName != null && beanType == RestTemplate.class
 				&& beanDefinition.getSource() instanceof MethodMetadata
 				&& ((MethodMetadata) beanDefinition.getSource())
-				.isAnnotated(PolarisCircuitBreakerRestTemplate.class.getName());
+				.isAnnotated(PolarisCircuitBreaker.class.getName());
 	}
 
-	private void registerBean(String interceptorBeanName, PolarisCircuitBreakerRestTemplate polarisCircuitBreakerRestTemplate,
+	private void registerBean(String interceptorBeanName, PolarisCircuitBreaker polarisCircuitBreaker,
 			ApplicationContext applicationContext, CircuitBreakerFactory circuitBreakerFactory, RestTemplate restTemplate) {
 		// register PolarisCircuitBreakerRestTemplateInterceptor bean
 		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext
 				.getAutowireCapableBeanFactory();
 		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder
 				.genericBeanDefinition(PolarisCircuitBreakerRestTemplateInterceptor.class);
-		beanDefinitionBuilder.addConstructorArgValue(polarisCircuitBreakerRestTemplate);
+		beanDefinitionBuilder.addConstructorArgValue(polarisCircuitBreaker);
 		beanDefinitionBuilder.addConstructorArgValue(applicationContext);
 		beanDefinitionBuilder.addConstructorArgValue(circuitBreakerFactory);
 		beanDefinitionBuilder.addConstructorArgValue(restTemplate);

@@ -35,8 +35,8 @@ spring:
           'filters[1]':
             name: CircuitBreaker
             args:
-              # statusCodes 缺省时会自动识别 "4**，5**" 为错误
-              statusCodes: '''4**,502'''
+              # statusCodes 缺省时会自动识别 "4**,5**" 为错误
+#              statusCodes: '''4**,502'''
               # fallbackUri 缺省时会在熔断触发后拉取 plaris server 配置的降级作为 response
               fallbackUri: '''forward:/polaris-fallback'''
 #      routes:
