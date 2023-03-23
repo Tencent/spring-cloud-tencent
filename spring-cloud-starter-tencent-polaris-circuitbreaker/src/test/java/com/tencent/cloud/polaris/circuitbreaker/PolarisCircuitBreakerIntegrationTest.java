@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerRestTemplate;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -83,7 +83,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
-		classes = PolarisCircuitBreakerRestTemplateIntegrationTest.TestConfig.class,
+		classes = PolarisCircuitBreakerIntegrationTest.TestConfig.class,
 		properties = {
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
@@ -91,7 +91,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 				"spring.cloud.polaris.service=test"
 		})
 @DirtiesContext
-public class PolarisCircuitBreakerRestTemplateIntegrationTest {
+public class PolarisCircuitBreakerIntegrationTest {
 
 	private static final String TEST_SERVICE_NAME = "test-service-callee";
 
@@ -174,7 +174,7 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 	public static class TestConfig {
 
 		@Bean
-		@PolarisCircuitBreakerRestTemplate(fallback = "fallback")
+		@PolarisCircuitBreaker(fallback = "fallback")
 		public RestTemplate defaultRestTemplate(RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI) {
 			RestTemplate defaultRestTemplate = new RestTemplate();
 			EnhancedRestTemplateReporter enhancedRestTemplateReporter = new EnhancedRestTemplateReporter(properties, consumerAPI);
@@ -184,7 +184,7 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreakerRestTemplate
+		@PolarisCircuitBreaker
 		public RestTemplate restTemplateFallbackFromPolaris() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
@@ -194,7 +194,7 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreakerRestTemplate(fallbackClass = CustomPolarisCircuitBreakerFallback.class)
+		@PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback.class)
 		public RestTemplate restTemplateFallbackFromCode() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
@@ -204,7 +204,7 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreakerRestTemplate(fallbackClass = CustomPolarisCircuitBreakerFallback2.class)
+		@PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback2.class)
 		public RestTemplate restTemplateFallbackFromCode2() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
@@ -214,7 +214,7 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreakerRestTemplate(fallbackClass = CustomPolarisCircuitBreakerFallback3.class)
+		@PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback3.class)
 		public RestTemplate restTemplateFallbackFromCode3() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
@@ -224,7 +224,7 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreakerRestTemplate(fallback = "fallback")
+		@PolarisCircuitBreaker(fallback = "fallback")
 		public RestTemplate restTemplateFallbackFromCode4() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
