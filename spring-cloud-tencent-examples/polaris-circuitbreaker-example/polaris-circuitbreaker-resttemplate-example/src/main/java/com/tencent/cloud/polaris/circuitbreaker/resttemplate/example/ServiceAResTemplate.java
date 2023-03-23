@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.resttemplate.example;
 
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerRestTemplate;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -50,7 +50,7 @@ public class ServiceAResTemplate {
 
 	@Bean
 	@LoadBalanced
-	@PolarisCircuitBreakerRestTemplate
+	@PolarisCircuitBreaker
 	public RestTemplate restTemplateFallbackFromPolaris() {
 		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://polaris-circuitbreaker-callee-service");
 		RestTemplate restTemplate = new RestTemplate();
@@ -60,7 +60,7 @@ public class ServiceAResTemplate {
 
 	@Bean
 	@LoadBalanced
-	@PolarisCircuitBreakerRestTemplate(fallbackClass = CustomFallback.class)
+	@PolarisCircuitBreaker(fallbackClass = CustomFallback.class)
 	public RestTemplate restTemplateFallbackFromCode() {
 		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://polaris-circuitbreaker-callee-service");
 		RestTemplate restTemplate = new RestTemplate();

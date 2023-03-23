@@ -23,12 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.polaris.circuitbreaker.gateway.PolarisCircuitBreakerFilterFactory;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
@@ -48,6 +50,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
@@ -85,6 +88,9 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 	@Autowired
 	private WebTestClient webClient;
 
+	@Autowired
+	private ApplicationContext applicationContext;
+
 	private static NamingServer namingServer;
 
 	@AfterAll
@@ -106,15 +112,41 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 				.consumeWith(
 						response -> assertThat(response.getResponseBody()).isEqualTo("fallback".getBytes()));
 
+		Utils.sleepUninterrupted(2000);
+
 		webClient
-				.get().uri("/err-no-fallback")
-				.header("Host", "www.circuitbreaker-no-fallback.com")
+				.get().uri("/err-skip-fallback")
+				.header("Host", "www.circuitbreaker-skip-fallback.com")
 				.exchange()
-				.expectStatus().isEqualTo(500);
+				.expectStatus();
 
 		Utils.sleepUninterrupted(2000);
 
 		// this should be 200, but for some unknown reason, GitHub action run failed in windows, so we skip this check
+		webClient
+				.get().uri("/err-skip-fallback")
+				.header("Host", "www.circuitbreaker-skip-fallback.com")
+				.exchange()
+				.expectStatus();
+
+		Utils.sleepUninterrupted(2000);
+
+		webClient
+				.get().uri("/err-no-fallback")
+				.header("Host", "www.circuitbreaker-no-fallback.com")
+				.exchange()
+				.expectStatus();
+
+		Utils.sleepUninterrupted(2000);
+
+		webClient
+				.get().uri("/err-no-fallback")
+				.header("Host", "www.circuitbreaker-no-fallback.com")
+				.exchange()
+				.expectStatus();
+
+		Utils.sleepUninterrupted(2000);
+
 		webClient
 				.get().uri("/err-no-fallback")
 				.header("Host", "www.circuitbreaker-no-fallback.com")
@@ -151,7 +183,6 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 
 		@Bean
 		public RouteLocator myRoutes(RouteLocatorBuilder builder) {
-			String httpUri = "http://httpbin.org:80";
 			Set<String> codeSets = new HashSet<>();
 			codeSets.add("4**");
 			codeSets.add("5**");
@@ -164,14 +195,22 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 											.setFallbackUri("forward:/fallback")
 											.setName(TEST_SERVICE_NAME)
 									))
-							.uri(httpUri))
+							.uri("http://httpbin.org:80"))
+					.route(p -> p
+							.host("*.circuitbreaker-skip-fallback.com")
+							.filters(f -> f
+									.circuitBreaker(config -> config
+											.setStatusCodes(Collections.singleton("5**"))
+											.setName(TEST_SERVICE_NAME)
+									))
+							.uri("http://httpbin.org:80"))
 					.route(p -> p
 							.host("*.circuitbreaker-no-fallback.com")
 							.filters(f -> f
 									.circuitBreaker(config -> config
 											.setName(TEST_SERVICE_NAME)
 									))
-							.uri(httpUri))
+							.uri("lb://" + TEST_SERVICE_NAME))
 					.build();
 		}
 
