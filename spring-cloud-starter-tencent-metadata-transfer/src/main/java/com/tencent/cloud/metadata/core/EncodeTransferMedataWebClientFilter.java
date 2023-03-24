@@ -59,7 +59,6 @@ public class EncodeTransferMedataWebClientFilter implements ExchangeFilterFuncti
 
 		ClientRequest request = requestBuilder.build();
 
-		TransHeadersTransfer.transfer(request);
 		return next.exchange(request);
 	}
 
