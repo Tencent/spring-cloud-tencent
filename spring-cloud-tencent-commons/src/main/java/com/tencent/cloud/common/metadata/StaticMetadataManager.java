@@ -258,7 +258,7 @@ public class StaticMetadataManager {
 			List<InstanceMetadataProvider> instanceMetadataProviders) {
 		// resolve region info
 		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
-			Set<String> providerRegions = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getRegion).filter(Objects::nonNull).collect(Collectors.toSet());
+			Set<String> providerRegions = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getRegion).filter(region -> !StringUtils.isBlank(region)).collect(Collectors.toSet());
 			if (!CollectionUtils.isEmpty(providerRegions)) {
 				if (providerRegions.size() > 1) {
 					throw new IllegalArgumentException("Multiple Regions Provided in InstanceMetadataProviders");
@@ -275,7 +275,7 @@ public class StaticMetadataManager {
 
 		// resolve zone info
 		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
-			Set<String> providerZones = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getZone).filter(Objects::nonNull).collect(Collectors.toSet());
+			Set<String> providerZones = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getZone).filter(zone -> !StringUtils.isBlank(zone)).collect(Collectors.toSet());
 			if (!CollectionUtils.isEmpty(providerZones)) {
 				if (providerZones.size() > 1) {
 					throw new IllegalArgumentException("Multiple Zones Provided in InstanceMetadataProviders");
@@ -292,7 +292,7 @@ public class StaticMetadataManager {
 
 		// resolve campus info
 		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
-			Set<String> providerCampus = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getCampus).filter(Objects::nonNull).collect(Collectors.toSet());
+			Set<String> providerCampus = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getCampus).filter(campus -> !StringUtils.isBlank(campus)).collect(Collectors.toSet());
 			if (!CollectionUtils.isEmpty(providerCampus)) {
 				if (providerCampus.size() > 1) {
 					throw new IllegalArgumentException("Multiple Campus Provided in InstanceMetadataProviders");
