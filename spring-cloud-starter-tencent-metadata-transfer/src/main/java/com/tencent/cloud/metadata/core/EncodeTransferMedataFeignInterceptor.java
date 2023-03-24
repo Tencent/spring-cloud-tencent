@@ -25,7 +25,6 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.util.DefaultTransferMedataUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
@@ -38,7 +37,6 @@ import org.springframework.web.client.RestTemplate;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
-import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.DEFAULT_DISPOSABLE_METADATA;
 import static java.net.URLEncoder.encode;
 
 /**
@@ -63,12 +61,7 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
-		Map<String, String> defaultMetadata = DefaultTransferMedataUtils.getDefaultTransferMedata();
 
-		// build default disposable metadata request header
-		this.buildMetadataHeader(requestTemplate, defaultMetadata, DEFAULT_DISPOSABLE_METADATA);
-
-		// build custom disposable metadata request header
 		this.buildMetadataHeader(requestTemplate, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
 		// process custom metadata

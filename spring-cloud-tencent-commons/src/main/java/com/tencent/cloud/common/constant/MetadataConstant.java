@@ -84,11 +84,6 @@ public final class MetadataConstant {
 		public static final String CUSTOM_DISPOSABLE_METADATA = "SCT-CUSTOM-DISPOSABLE-METADATA";
 
 		/**
-		 * Default Disposable Metadata.
-		 */
-		public static final String DEFAULT_DISPOSABLE_METADATA = "SCT-DEFAULT-DISPOSABLE-METADATA";
-
-		/**
 		 * System Metadata.
 		 */
 		public static final String SYSTEM_METADATA = "SCT-SYSTEM-METADATA";

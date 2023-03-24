@@ -25,7 +25,6 @@ import java.util.Map;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.util.DefaultTransferMedataUtils;
 import reactor.core.publisher.Mono;
 
 import org.springframework.util.CollectionUtils;
@@ -37,7 +36,6 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
-import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.DEFAULT_DISPOSABLE_METADATA;
 
 /**
  * web client filter used for writing metadata in HTTP request header.
@@ -52,13 +50,11 @@ public class EncodeTransferMedataWebClientFilter implements ExchangeFilterFuncti
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
-		Map<String, String> defaultMetadata = DefaultTransferMedataUtils.getDefaultTransferMedata();
 
 		ClientRequest.Builder requestBuilder = ClientRequest.from(clientRequest);
 
 		this.buildMetadataHeader(requestBuilder, customMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(requestBuilder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
-		this.buildMetadataHeader(requestBuilder, defaultMetadata, DEFAULT_DISPOSABLE_METADATA);
 		this.buildTransmittedHeader(requestBuilder, transHeaders);
 
 		ClientRequest request = requestBuilder.build();

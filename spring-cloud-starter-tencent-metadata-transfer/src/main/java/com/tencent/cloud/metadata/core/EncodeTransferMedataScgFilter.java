@@ -26,7 +26,6 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.metadata.util.DefaultTransferMedataUtils;
 import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -39,7 +38,6 @@ import org.springframework.web.server.ServerWebExchange;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
-import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.DEFAULT_DISPOSABLE_METADATA;
 import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 
 /**
@@ -69,11 +67,9 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
-		Map<String, String> defaultMetadata = DefaultTransferMedataUtils.getDefaultTransferMedata();
 
 		this.buildMetadataHeader(builder, customMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
-		this.buildMetadataHeader(builder, defaultMetadata, DEFAULT_DISPOSABLE_METADATA);
 
 		TransHeadersTransfer.transfer(exchange.getRequest());
 

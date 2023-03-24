@@ -121,13 +121,13 @@ public final class MetadataContextHolder {
 	/**
 	 * Save metadata map to thread local.
 	 * @param dynamicTransitiveMetadata custom metadata collection
-	 * @param dynamicCustomDisposableMetadata custom disposable metadata collection
-	 * @param dynamicDefaultDisposableMetadata default disposable metadata collection
+	 * @param dynamicDisposableMetadata custom disposable metadata connection
 	 */
-	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicCustomDisposableMetadata, Map<String, String> dynamicDefaultDisposableMetadata) {
+	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata) {
 		// Init ThreadLocal.
 		MetadataContextHolder.remove();
 		MetadataContext metadataContext = MetadataContextHolder.get();
+
 		// Save transitive metadata to ThreadLocal.
 		if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
 			Map<String, String> staticTransitiveMetadata = metadataContext.getTransitiveMetadata();
@@ -136,14 +136,8 @@ public final class MetadataContextHolder {
 			mergedTransitiveMetadata.putAll(dynamicTransitiveMetadata);
 			metadataContext.setTransitiveMetadata(Collections.unmodifiableMap(mergedTransitiveMetadata));
 		}
-		if (!CollectionUtils.isEmpty(dynamicCustomDisposableMetadata) || !CollectionUtils.isEmpty(dynamicDefaultDisposableMetadata)) {
-			Map<String, String> mergedUpstreamDisposableMetadata = new HashMap<>();
-			if (!CollectionUtils.isEmpty(dynamicCustomDisposableMetadata)) {
-				mergedUpstreamDisposableMetadata.putAll(dynamicCustomDisposableMetadata);
-			}
-			if (!CollectionUtils.isEmpty(dynamicDefaultDisposableMetadata)) {
-				mergedUpstreamDisposableMetadata.putAll(dynamicDefaultDisposableMetadata);
-			}
+		if (!CollectionUtils.isEmpty(dynamicDisposableMetadata)) {
+			Map<String, String> mergedUpstreamDisposableMetadata = new HashMap<>(dynamicDisposableMetadata);
 			metadataContext.setUpstreamDisposableMetadata(Collections.unmodifiableMap(mergedUpstreamDisposableMetadata));
 		}
 
