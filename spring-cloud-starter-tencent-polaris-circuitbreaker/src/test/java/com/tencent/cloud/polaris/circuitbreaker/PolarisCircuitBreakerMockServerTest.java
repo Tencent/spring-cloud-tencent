@@ -121,7 +121,7 @@ public class PolarisCircuitBreakerMockServerTest {
 				}
 			}, t -> "fallback");
 			resList.add(res);
-			Utils.sleepUninterrupted(1000);
+			Utils.sleepUninterrupted(2000);
 		}
 		assertThat(resList).isEqualTo(Arrays.asList("invoke success", "fallback", "fallback", "fallback", "fallback"));
 

@@ -17,43 +17,23 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.feign.example;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Circuit breaker example caller controller.
+ * ProviderBWithFallback.
  *
  * @author sean yu
  */
-@RestController
-@RequestMapping("/example/service/a")
-public class ServiceAController {
-
-	@Autowired
-	private ProviderB polarisServiceB;
-
-	@Autowired
-	private ProviderBWithFallback providerBWithFallback;
+@FeignClient(name = "polaris-circuitbreaker-callee-service", contextId = "fallback-from-code", fallback = ProviderBFallback.class)
+public interface ProviderBWithFallback {
 
 	/**
-	 * Get info of Service B by Feign.
-	 * @return info of Service B
+	 * Get info of service B.
+	 *
+	 * @return info of service B
 	 */
-	@GetMapping("/getBServiceInfo/fallbackFromCode")
-	public String getBServiceInfoFallbackFromCode() {
-		return providerBWithFallback.info();
-	}
-
-	/**
-	 * Get info of Service B by Feign.
-	 * @return info of Service B
-	 */
-	@GetMapping("/getBServiceInfo/fallbackFromPolaris")
-	public String getBServiceInfoFallbackFromPolaris() {
-		return polarisServiceB.info();
-	}
+	@GetMapping("/example/service/b/info")
+	String info();
 
 }

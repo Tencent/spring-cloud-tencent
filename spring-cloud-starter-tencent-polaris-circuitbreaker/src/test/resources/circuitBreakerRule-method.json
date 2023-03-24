@@ -9,7 +9,7 @@
   "mtime": "2023-02-21 17:35:31",
   "etime": "",
   "description": "",
-  "level": "SERVICE",
+  "level": "METHOD",
   "ruleMatcher": {
     "source": {
       "service": "*",
@@ -18,7 +18,7 @@
     "destination": {
       "service": "*",
       "namespace": "*",
-      "method": null
+      "method": {"type": "REGEX", "value": "*"}
     }
   },
   "errorConditions": [
