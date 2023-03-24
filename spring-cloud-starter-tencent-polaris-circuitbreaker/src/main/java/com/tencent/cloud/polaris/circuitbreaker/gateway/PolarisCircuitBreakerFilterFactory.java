@@ -158,7 +158,7 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 
 	private Set<HttpStatus> getDefaultStatus() {
 		return Arrays.stream(HttpStatus.values())
-				.filter(status -> status.is4xxClientError() || status.is5xxServerError())
+				.filter(HttpStatus::is5xxServerError)
 				.collect(Collectors.toSet());
 	}
 

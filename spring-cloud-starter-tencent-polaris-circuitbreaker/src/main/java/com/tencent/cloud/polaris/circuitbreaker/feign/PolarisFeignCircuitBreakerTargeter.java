@@ -29,7 +29,7 @@ import org.springframework.cloud.openfeign.Targeter;
 import org.springframework.util.StringUtils;
 
 /**
- * PolarisFeignCircuitBreakerTargeter, mostly copy from FeignCircuitBreakerTargeter, but giving Polaris modification.
+ * PolarisFeignCircuitBreakerTargeter, mostly copy from {@link org.springframework.cloud.openfeign.FeignCircuitBreakerTargeter}, but giving Polaris modification.
  *
  * @author sean yu
  */
