@@ -19,7 +19,9 @@ package com.tencent.cloud.polaris.circuitbreaker.resttemplate.example;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +37,16 @@ import org.springframework.web.client.RestTemplate;
 public class ServiceAController {
 
 	@Autowired
-	private RestTemplate restTemplate;
+	@Qualifier("defaultRestTemplate")
+	private RestTemplate defaultRestTemplate;
+
+	@Autowired
+	@Qualifier("restTemplateFallbackFromPolaris")
+	private RestTemplate restTemplateFallbackFromPolaris;
+
+	@Autowired
+	@Qualifier("restTemplateFallbackFromCode")
+	private RestTemplate restTemplateFallbackFromCode;
 
 	@Autowired
 	private CircuitBreakerFactory circuitBreakerFactory;
@@ -45,9 +56,19 @@ public class ServiceAController {
 		return circuitBreakerFactory
 				.create("polaris-circuitbreaker-callee-service#/example/service/b/info")
 				.run(() ->
-						restTemplate.getForObject("/example/service/b/info", String.class),
+						defaultRestTemplate.getForObject("/example/service/b/info", String.class),
 						throwable -> "trigger the refuse for service b"
 				);
+	}
+
+	@GetMapping("/getBServiceInfo/fallbackFromPolaris")
+	public ResponseEntity<String> getBServiceInfoFallback() {
+		return restTemplateFallbackFromPolaris.getForEntity("/example/service/b/info", String.class);
+	}
+
+	@GetMapping("/getBServiceInfo/fallbackFromCode")
+	public ResponseEntity<String> getBServiceInfoFallbackClass() {
+		return restTemplateFallbackFromCode.getForEntity("/example/service/b/info", String.class);
 	}
 
 }

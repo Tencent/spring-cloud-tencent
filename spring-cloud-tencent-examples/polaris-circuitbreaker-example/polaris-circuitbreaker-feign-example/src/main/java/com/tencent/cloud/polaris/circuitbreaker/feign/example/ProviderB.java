@@ -18,7 +18,6 @@
 package com.tencent.cloud.polaris.circuitbreaker.feign.example;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -26,8 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author sean yu
  */
-@Primary
-@FeignClient(name = "polaris-circuitbreaker-callee-service", fallback = ProviderBFallback.class)
+@FeignClient(name = "polaris-circuitbreaker-callee-service", contextId = "fallback-from-polaris")
 public interface ProviderB {
 
 	/**

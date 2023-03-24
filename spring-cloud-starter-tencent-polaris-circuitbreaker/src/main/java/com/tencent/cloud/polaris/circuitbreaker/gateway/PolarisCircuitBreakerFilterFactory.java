@@ -19,16 +19,18 @@ package com.tencent.cloud.polaris.circuitbreaker.gateway;
 
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.InvalidPropertyException;
@@ -40,10 +42,14 @@ import org.springframework.cloud.gateway.discovery.DiscoveryLocatorProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerFilterFactory;
+import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.support.HttpStatusHolder;
 import org.springframework.cloud.gateway.support.ServiceUnavailableException;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.server.ResponseStatusException;
@@ -54,6 +60,7 @@ import static java.util.Optional.ofNullable;
 import static org.springframework.cloud.gateway.support.GatewayToStringStyler.filterToStringCreator;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.CIRCUITBREAKER_EXECUTION_EXCEPTION_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.containsEncodedParts;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.reset;
 
@@ -64,8 +71,6 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.r
  * @author seanyu 2023-02-27
  */
 public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreakerFilterFactory {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisCircuitBreakerFilterFactory.class);
 
 	private String routeIdPrefix;
 
@@ -150,6 +155,12 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 		return Arrays.asList(allHttpStatus);
 	}
 
+	private Set<HttpStatus> getDefaultStatus() {
+		return Arrays.stream(HttpStatus.values())
+				.filter(HttpStatus::is5xxServerError)
+				.collect(Collectors.toSet());
+	}
+
 	@Override
 	public GatewayFilter apply(Config config) {
 		Set<HttpStatus> statuses = config.getStatusCodes().stream()
@@ -165,40 +176,82 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 				})
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
+		if (CollectionUtils.isEmpty(statuses)) {
+			statuses.addAll(getDefaultStatus());
+		}
 		String circuitBreakerId = getCircuitBreakerId(config);
 		return new GatewayFilter() {
 			@Override
 			public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+				Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
+				String serviceName = circuitBreakerId;
+				if (route != null) {
+					serviceName = route.getUri().getHost();
+				}
 				String path = exchange.getRequest().getPath().value();
-				ReactiveCircuitBreaker cb = reactiveCircuitBreakerFactory.create(circuitBreakerId + "#" + path);
-				return cb.run(chain.filter(exchange).doOnSuccess(v -> {
-					if (statuses.contains(exchange.getResponse().getStatusCode())) {
-						HttpStatus status = exchange.getResponse().getStatusCode();
-						throw new CircuitBreakerStatusCodeException(status);
-					}
-				}), t -> {
-					if (config.getFallbackUri() == null) {
-						return Mono.error(t);
-					}
+				ReactiveCircuitBreaker cb = reactiveCircuitBreakerFactory.create(serviceName + "#" + path);
+				return cb.run(
+						chain.filter(exchange)
+								.doOnSuccess(v -> {
+									// throw CircuitBreakerStatusCodeException by default for all need checking status
+									// so polaris can report right error status
+									Set<HttpStatus> statusNeedToCheck = new HashSet<>();
+									statusNeedToCheck.addAll(statuses);
+									statusNeedToCheck.addAll(getDefaultStatus());
+									HttpStatus status = exchange.getResponse().getStatusCode();
+									if (statusNeedToCheck.contains(status)) {
+										throw new CircuitBreakerStatusCodeException(status);
+									}
+								}),
+						t -> {
+							// pre-check CircuitBreakerStatusCodeException's status matches input status
+							if (t instanceof CircuitBreakerStatusCodeException) {
+								HttpStatus status = ((CircuitBreakerStatusCodeException) t).getStatusCode();
+								// no need to fallback
+								if (!statuses.contains(status)) {
+									return Mono.error(t);
+								}
+							}
+							// do fallback
+							if (config.getFallbackUri() == null) {
+								// polaris checking
+								if (t instanceof CallAbortedException) {
+									CircuitBreakerStatus.FallbackInfo fallbackInfo = ((CallAbortedException) t).getFallbackInfo();
+									if (fallbackInfo != null) {
+										ServerHttpResponse response = exchange.getResponse();
+										response.setRawStatusCode(fallbackInfo.getCode());
+										if (fallbackInfo.getHeaders() != null) {
+											fallbackInfo.getHeaders().forEach((k, v) -> response.getHeaders().add(k, v));
+										}
+										DataBuffer bodyBuffer = null;
+										if (fallbackInfo.getBody() != null) {
+											byte[] bytes = fallbackInfo.getBody().getBytes(StandardCharsets.UTF_8);
+											bodyBuffer = response.bufferFactory().wrap(bytes);
+										}
+										return bodyBuffer != null ? response.writeWith(Flux.just(bodyBuffer)) : response.setComplete();
+									}
+								}
+								return Mono.error(t);
+							}
+							exchange.getResponse().setStatusCode(null);
+							reset(exchange);
 
-					exchange.getResponse().setStatusCode(null);
-					reset(exchange);
+							// TODO: copied from RouteToRequestUrlFilter
+							URI uri = exchange.getRequest().getURI();
+							// TODO: assume always?
+							boolean encoded = containsEncodedParts(uri);
+							URI requestUrl = UriComponentsBuilder.fromUri(uri).host(null).port(null)
+									.uri(config.getFallbackUri()).scheme(null).build(encoded).toUri();
+							exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUrl);
+							addExceptionDetails(t, exchange);
 
-					// TODO: copied from RouteToRequestUrlFilter
-					URI uri = exchange.getRequest().getURI();
-					// TODO: assume always?
-					boolean encoded = containsEncodedParts(uri);
-					URI requestUrl = UriComponentsBuilder.fromUri(uri).host(null).port(null)
-							.uri(config.getFallbackUri()).scheme(null).build(encoded).toUri();
-					exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUrl);
-					addExceptionDetails(t, exchange);
+							// Reset the exchange
+							reset(exchange);
 
-					// Reset the exchange
-					reset(exchange);
-
-					ServerHttpRequest request = exchange.getRequest().mutate().uri(requestUrl).build();
-					return getDispatcherHandler().handle(exchange.mutate().request(request).build());
-				}).onErrorResume(t -> handleErrorWithoutFallback(t, config.isResumeWithoutError()));
+							ServerHttpRequest request = exchange.getRequest().mutate().uri(requestUrl).build();
+							return getDispatcherHandler().handle(exchange.mutate().request(request).build());
+						})
+						.onErrorResume(t -> handleErrorWithoutFallback(t, config.isResumeWithoutError()));
 			}
 
 			@Override
@@ -216,8 +269,10 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 			return Mono.error(new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, t.getMessage(), t));
 		}
 		if (t instanceof CallAbortedException) {
-			LOGGER.debug("PolarisCircuitBreaker CallAbortedException: {}", t.getMessage());
 			return Mono.error(new ServiceUnavailableException());
+		}
+		if (t instanceof CircuitBreakerStatusCodeException) {
+			return Mono.empty();
 		}
 		if (resumeWithoutError) {
 			return Mono.empty();

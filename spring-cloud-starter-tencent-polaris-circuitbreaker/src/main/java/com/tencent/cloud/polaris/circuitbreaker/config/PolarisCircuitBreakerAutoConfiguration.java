@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerRestTemplateBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
@@ -31,9 +32,11 @@ import com.tencent.polaris.client.api.SDKContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -70,6 +73,13 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	@ConditionalOnMissingBean(CircuitBreakerConfigModifier.class)
 	public CircuitBreakerConfigModifier circuitBreakerConfigModifier(RpcEnhancementReporterProperties properties) {
 		return new CircuitBreakerConfigModifier(properties);
+	}
+
+	@Bean
+	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
+	public static PolarisCircuitBreakerRestTemplateBeanPostProcessor polarisCircuitBreakerRestTemplateBeanPostProcessor(
+			ApplicationContext applicationContext) {
+		return new PolarisCircuitBreakerRestTemplateBeanPostProcessor(applicationContext);
 	}
 
 }
