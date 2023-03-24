@@ -18,7 +18,25 @@
 package com.tencent.cloud.polaris.circuitbreaker;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
+import com.tencent.polaris.api.pojo.ServiceKey;
+import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
+import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
+import com.tencent.polaris.client.util.Utils;
+import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
+import com.tencent.polaris.test.common.TestUtils;
+import com.tencent.polaris.test.mock.discovery.NamingServer;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -26,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -36,6 +55,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -55,6 +75,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @DirtiesContext
 public class PolarisCircuitBreakerFeignIntegrationTest {
 
+	private static final String TEST_SERVICE_NAME = "test-service-callee";
+
 	@Autowired
 	private EchoService echoService;
 
@@ -67,6 +89,15 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	@Autowired
 	private BazService bazService;
 
+	private static NamingServer namingServer;
+
+	@AfterAll
+	public static void afterAll() {
+		if (null != namingServer) {
+			namingServer.terminate();
+		}
+	}
+
 	@Test
 	public void contextLoads() throws Exception {
 		assertThat(echoService).isNotNull();
@@ -74,18 +105,19 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	}
 
 	@Test
-	public void testFeignClient() {
+	public void testFeignClient() throws InvocationTargetException {
 		assertThat(echoService.echo("test")).isEqualTo("echo fallback");
-		assertThat(fooService.echo("test")).isEqualTo("foo fallback");
-
+		Utils.sleepUninterrupted(2000);
 		assertThatThrownBy(() -> {
-			barService.bar();
+			echoService.echo(null);
 		}).isInstanceOf(Exception.class);
-
 		assertThatThrownBy(() -> {
-			bazService.baz();
-		}).isInstanceOf(Exception.class);
-
+			fooService.echo("test");
+		}).isInstanceOf(NoFallbackAvailableException.class);
+		Utils.sleepUninterrupted(2000);
+		assertThat(barService.bar()).isEqualTo("\"fallback from polaris server\"");
+		Utils.sleepUninterrupted(2000);
+		assertThat(bazService.baz()).isEqualTo("\"fallback from polaris server\"");
 		assertThat(fooService.toString()).isNotEqualTo(echoService.toString());
 		assertThat(fooService.hashCode()).isNotEqualTo(echoService.hashCode());
 		assertThat(echoService.equals(fooService)).isEqualTo(Boolean.FALSE);
@@ -107,17 +139,39 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 			return new CustomFallbackFactory();
 		}
 
+		@Bean
+		public CircuitBreakAPI circuitBreakAPI() throws InvalidProtocolBufferException {
+			try {
+				namingServer = NamingServer.startNamingServer(10081);
+				System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
+			}
+			catch (IOException e) {
+
+			}
+			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
+
+			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
+			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
+			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
+			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
+			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
+			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
+			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
+			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
+			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		}
+
 	}
 
-	@FeignClient(value = "test-service", fallback = EchoServiceFallback.class)
+	@FeignClient(value = TEST_SERVICE_NAME, contextId = "1", fallback = EchoServiceFallback.class)
 	public interface EchoService {
 
 		@RequestMapping(path = "echo/{str}")
-		String echo(@RequestParam("str") String param);
+		String echo(@RequestParam("str") String param) throws InvocationTargetException;
 
 	}
 
-	@FeignClient(value = "foo-service", fallbackFactory = CustomFallbackFactory.class)
+	@FeignClient(value = TEST_SERVICE_NAME, contextId = "2", fallbackFactory = CustomFallbackFactory.class)
 	public interface FooService {
 
 		@RequestMapping("echo/{str}")
@@ -125,7 +179,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	}
 
-	@FeignClient("bar-service")
+	@FeignClient(value = TEST_SERVICE_NAME, contextId = "3")
 	public interface BarService {
 
 		@RequestMapping(path = "bar")
@@ -140,7 +194,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	}
 
-	@FeignClient("baz-service")
+	@FeignClient(value = TEST_SERVICE_NAME, contextId = "4")
 	public interface BazClient extends BazService {
 
 	}
@@ -148,7 +202,10 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	public static class EchoServiceFallback implements EchoService {
 
 		@Override
-		public String echo(@RequestParam("str") String param) {
+		public String echo(@RequestParam("str") String param) throws InvocationTargetException {
+			if (param == null) {
+				throw new InvocationTargetException(new Exception());
+			}
 			return "echo fallback";
 		}
 
@@ -158,7 +215,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 
 		@Override
 		public String echo(@RequestParam("str") String param) {
-			return "foo fallback";
+			throw new NoFallbackAvailableException("fallback", new RuntimeException());
 		}
 
 	}
