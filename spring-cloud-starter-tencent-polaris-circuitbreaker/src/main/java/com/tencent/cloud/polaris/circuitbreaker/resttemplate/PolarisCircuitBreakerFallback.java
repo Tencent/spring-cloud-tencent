@@ -15,20 +15,15 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.feign.example;
-
-import org.springframework.stereotype.Component;
+package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 
 /**
- * Circuit breaker example callee fallback.
+ * PolarisCircuitBreakerFallback.
  *
  * @author sean yu
  */
-@Component
-public class ProviderBFallback implements ProviderBWithFallback {
+public interface PolarisCircuitBreakerFallback {
 
-	@Override
-	public String info() {
-		return "fallback: trigger the refuse for service b";
-	}
+	PolarisCircuitBreakerHttpResponse fallback();
+
 }

@@ -15,20 +15,29 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.feign.example;
+package com.tencent.cloud.polaris.circuitbreaker.resttemplate.example;
+
+import java.util.HashMap;
+
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
 
 import org.springframework.stereotype.Component;
 
 /**
- * Circuit breaker example callee fallback.
+ * CustomFallback.
  *
  * @author sean yu
  */
 @Component
-public class ProviderBFallback implements ProviderBWithFallback {
-
+public class CustomFallback implements PolarisCircuitBreakerFallback {
 	@Override
-	public String info() {
-		return "fallback: trigger the refuse for service b";
+	public PolarisCircuitBreakerHttpResponse fallback() {
+		return new PolarisCircuitBreakerHttpResponse(
+				200,
+				new HashMap<String, String>() {{
+					put("Content-Type", "application/json");
+				}},
+				"{\"msg\": \"this is a fallback class\"}");
 	}
 }

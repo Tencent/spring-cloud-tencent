@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -79,5 +80,19 @@ public class ServiceBController {
 			Thread.sleep(100);
 		}
 		return new ResponseEntity<>("hello world ! I'm a service B2", HttpStatus.OK);
+	}
+
+	@GetMapping("/health")
+	@ResponseStatus(value = HttpStatus.BAD_GATEWAY, reason = "failed for call my service")
+	public String health() {
+		System.out.println("health check: 502 instance");
+		return "hello world ! I'm a service B1";
+	}
+
+	@GetMapping("/health-svc")
+	@ResponseStatus(value = HttpStatus.BAD_GATEWAY, reason = "failed for call my service")
+	public String healthsvc() {
+		System.out.println("health-svc check: 502 instance");
+		return "hello world ! I'm a service B1";
 	}
 }
