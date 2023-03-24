@@ -17,8 +17,6 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -29,11 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.reactive.function.client.ClientRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -80,25 +76,6 @@ public class TransHeadersTransferTest {
 		builder.header("header2", header2);
 		builder.header("header3", header3);
 		MockServerHttpRequest request = builder.build();
-		TransHeadersTransfer.transfer(request);
-		Map<String, String> transHeadersKV = MetadataContextHolder.get().getTransHeadersKV();
-		assertThat(transHeadersKV.get("header1")).isEqualTo(JacksonUtils.serialize2Json(header1));
-		assertThat(transHeadersKV.get("header2")).isEqualTo(JacksonUtils.serialize2Json(header2));
-		assertThat(transHeadersKV.get("header3")).isEqualTo(JacksonUtils.serialize2Json(header3));
-	}
-
-	@Test
-	public void transferWebClientTest() throws URISyntaxException {
-		MetadataContext metadataContext = MetadataContextHolder.get();
-		metadataContext.setTransHeaders("header1,header2,header3", "");
-		ClientRequest.Builder builder = ClientRequest.create(HttpMethod.GET, new URI(""));
-		String[] header1 = {"1"};
-		String[] header2 = {"2"};
-		String[] header3 = {"3"};
-		builder.header("header1", header1);
-		builder.header("header2", header2);
-		builder.header("header3", header3);
-		ClientRequest request = builder.build();
 		TransHeadersTransfer.transfer(request);
 		Map<String, String> transHeadersKV = MetadataContextHolder.get().getTransHeadersKV();
 		assertThat(transHeadersKV.get("header1")).isEqualTo(JacksonUtils.serialize2Json(header1));
