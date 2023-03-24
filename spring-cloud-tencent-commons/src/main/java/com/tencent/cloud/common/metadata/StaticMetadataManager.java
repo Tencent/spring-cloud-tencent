@@ -21,7 +21,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
@@ -81,14 +83,14 @@ public class StaticMetadataManager {
 	private String campus;
 
 	public StaticMetadataManager(MetadataLocalProperties metadataLocalProperties,
-			InstanceMetadataProvider instanceMetadataProvider) {
+			List<InstanceMetadataProvider> instanceMetadataProviders) {
 		parseConfigMetadata(metadataLocalProperties);
 
 		parseEnvMetadata();
 
-		parseCustomMetadata(instanceMetadataProvider);
+		parseCustomMetadata(instanceMetadataProviders);
 
-		parseLocationMetadata(metadataLocalProperties, instanceMetadataProvider);
+		parseLocationMetadata(metadataLocalProperties, instanceMetadataProviders);
 
 		merge();
 
@@ -182,14 +184,20 @@ public class StaticMetadataManager {
 	}
 
 	@SuppressWarnings("DuplicatedCode")
-	private void parseCustomMetadata(InstanceMetadataProvider instanceMetadataProvider) {
-		if (instanceMetadataProvider == null) {
+	private void parseCustomMetadata(List<InstanceMetadataProvider> instanceMetadataProviders) {
+		if (CollectionUtils.isEmpty(instanceMetadataProviders)) {
 			customSPIMetadata = Collections.emptyMap();
 			customSPITransitiveMetadata = Collections.emptyMap();
 			customSPIDisposableMetadata = Collections.emptyMap();
 			return;
 		}
 
+		instanceMetadataProviders.forEach(this::parseCustomMetadata);
+
+	}
+
+	@SuppressWarnings("DuplicatedCode")
+	private void parseCustomMetadata(InstanceMetadataProvider instanceMetadataProvider) {
 		// resolve all metadata
 		Map<String, String> allMetadata = instanceMetadataProvider.getMetadata();
 		if (allMetadata == null) {
@@ -247,10 +255,16 @@ public class StaticMetadataManager {
 	}
 
 	private void parseLocationMetadata(MetadataLocalProperties metadataLocalProperties,
-			InstanceMetadataProvider instanceMetadataProvider) {
+			List<InstanceMetadataProvider> instanceMetadataProviders) {
 		// resolve region info
-		if (instanceMetadataProvider != null) {
-			region = instanceMetadataProvider.getRegion();
+		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
+			Set<String> providerRegions = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getRegion).filter(Objects::nonNull).collect(Collectors.toSet());
+			if (!CollectionUtils.isEmpty(providerRegions)) {
+				if (providerRegions.size() > 1) {
+					throw new IllegalArgumentException("Multiple Regions Provided in InstanceMetadataProviders");
+				}
+				region = providerRegions.iterator().next();
+			}
 		}
 		if (StringUtils.isBlank(region)) {
 			region = System.getenv(ENV_METADATA_REGION);
@@ -260,8 +274,14 @@ public class StaticMetadataManager {
 		}
 
 		// resolve zone info
-		if (instanceMetadataProvider != null) {
-			zone = instanceMetadataProvider.getZone();
+		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
+			Set<String> providerZones = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getZone).filter(Objects::nonNull).collect(Collectors.toSet());
+			if (!CollectionUtils.isEmpty(providerZones)) {
+				if (providerZones.size() > 1) {
+					throw new IllegalArgumentException("Multiple Zones Provided in InstanceMetadataProviders");
+				}
+				zone = providerZones.iterator().next();
+			}
 		}
 		if (StringUtils.isBlank(zone)) {
 			zone = System.getenv(ENV_METADATA_ZONE);
@@ -271,8 +291,14 @@ public class StaticMetadataManager {
 		}
 
 		// resolve campus info
-		if (instanceMetadataProvider != null) {
-			campus = instanceMetadataProvider.getCampus();
+		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
+			Set<String> providerCampus = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getCampus).filter(Objects::nonNull).collect(Collectors.toSet());
+			if (!CollectionUtils.isEmpty(providerCampus)) {
+				if (providerCampus.size() > 1) {
+					throw new IllegalArgumentException("Multiple Campus Provided in InstanceMetadataProviders");
+				}
+				campus = providerCampus.iterator().next();
+			}
 		}
 		if (StringUtils.isBlank(campus)) {
 			campus = System.getenv(ENV_METADATA_CAMPUS);

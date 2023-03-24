@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = PolarisRateLimitPropertiesTest.TestApplication.class)
+@SpringBootTest(classes = PolarisRateLimitPropertiesTest.TestApplication.class, properties = "spring.application.name=test")
 @ActiveProfiles("test")
 public class PolarisRateLimitPropertiesTest {
 
