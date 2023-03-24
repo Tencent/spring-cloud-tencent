@@ -6,3 +6,4 @@
 - [feature: add ratelimit provider info and refactor ratelimit use arguments.](https://github.com/Tencent/spring-cloud-tencent/pull/902)
 - [fix:optimize instance circuit beaker.](https://github.com/Tencent/spring-cloud-tencent/pull/908)
 - [fix:optimize multi service registration and discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/914)
+- [feature: improve circuit breaker usage.](https://github.com/Tencent/spring-cloud-tencent/pull/916)

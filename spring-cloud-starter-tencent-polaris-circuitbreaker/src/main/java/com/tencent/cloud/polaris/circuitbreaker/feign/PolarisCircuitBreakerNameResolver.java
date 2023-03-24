@@ -36,6 +36,7 @@ public class PolarisCircuitBreakerNameResolver implements CircuitBreakerNameReso
 
 	@Override
 	public String resolveCircuitBreakerName(String feignClientName, Target<?> target, Method method) {
+		String serviceName = target.name();
 		RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
 		String path = "";
 		if (requestMapping != null) {
@@ -44,8 +45,8 @@ public class PolarisCircuitBreakerNameResolver implements CircuitBreakerNameReso
 					requestMapping.path()[0];
 		}
 		return "".equals(path) ?
-				MetadataContext.LOCAL_NAMESPACE + "#" + feignClientName :
-				MetadataContext.LOCAL_NAMESPACE + "#" + feignClientName + "#" + path;
+				MetadataContext.LOCAL_NAMESPACE + "#" + serviceName :
+				MetadataContext.LOCAL_NAMESPACE + "#" + serviceName + "#" + path;
 	}
 
 }
