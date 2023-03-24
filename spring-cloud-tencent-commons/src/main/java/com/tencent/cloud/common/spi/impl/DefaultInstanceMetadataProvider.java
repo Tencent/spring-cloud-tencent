@@ -13,13 +13,19 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.metadata.util;
+package com.tencent.cloud.common.spi.impl;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import com.tencent.cloud.common.spi.InstanceMetadataProvider;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 
 import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME;
 import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE;
@@ -27,19 +33,31 @@ import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_NAMESPACE;
 import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_SERVICE;
 
 /**
- * DefaultTransferMedataUtils.
+ * DefaultInstanceMetadataProvider.
+ * provide DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE, DEFAULT_METADATA_SOURCE_SERVICE_NAME
  *
- * @author seanyu 2023-02-27
+ * @author sean yu
  */
-public final class DefaultTransferMedataUtils {
+public class DefaultInstanceMetadataProvider implements InstanceMetadataProvider {
 
-	private DefaultTransferMedataUtils() {
+	private final ApplicationContextAwareUtils applicationContextAwareUtils;
+
+	// ensure ApplicationContextAwareUtils init before
+	public DefaultInstanceMetadataProvider(ApplicationContextAwareUtils applicationContextAwareUtils) {
+		this.applicationContextAwareUtils = applicationContextAwareUtils;
 	}
 
-	public static Map<String, String> getDefaultTransferMedata() {
+	@Override
+	public Map<String, String> getMetadata() {
 		return new HashMap<String, String>() {{
 			put(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE, LOCAL_NAMESPACE);
 			put(DEFAULT_METADATA_SOURCE_SERVICE_NAME, LOCAL_SERVICE);
 		}};
 	}
+
+	@Override
+	public Set<String> getDisposableMetadataKeys() {
+		return new HashSet<>(Arrays.asList(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE, DEFAULT_METADATA_SOURCE_SERVICE_NAME));
+	}
+
 }

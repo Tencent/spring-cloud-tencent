@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.common.metadata.config.MetadataAutoConfiguration;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,9 @@ public class FeignAutoConfigurationTest {
 					MetadataAutoConfiguration.class,
 					RouterAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
-					FeignAutoConfiguration.class));
+					FeignAutoConfiguration.class,
+					ApplicationContextAwareUtils.class
+			)).withPropertyValues("spring.application.name=test");
 
 	@Test
 	public void routerLabelInterceptor() {
