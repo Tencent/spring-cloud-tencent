@@ -32,7 +32,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.reactive.function.client.ClientRequest;
 
 /**
  * According to request and trans-headers(key list in string type) in metadata, build
@@ -84,32 +83,6 @@ public final class TransHeadersTransfer {
 			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
 			String[] transHeaderArray = transHeaders.split(",");
 			HttpHeaders headers = serverHttpRequest.getHeaders();
-			Set<String> headerKeys = headers.keySet();
-			for (String httpHeader : headerKeys) {
-				Arrays.stream(transHeaderArray).forEach(transHeader -> {
-					if (transHeader.equals(httpHeader)) {
-						List<String> list = headers.get(httpHeader);
-						String httpHeaderValue = JacksonUtils.serialize2Json(list);
-						// for example, {"trans-headers-kv" : {"header1":"v1","header2":"v2"...}}
-						MetadataContextHolder.get().setTransHeadersKV(httpHeader, httpHeaderValue);
-					}
-				});
-			}
-		}
-	}
-
-	/**
-	 * According to {@link ClientRequest} and trans-headers(key list in string type) in metadata, build
-	 * the complete headers(key-value list in map type) into metadata.
-	 * @param clientRequest clientRequest
-	 */
-	public static void transfer(ClientRequest clientRequest) {
-		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
-		Map<String, String> transHeaderMetadata = MetadataContextHolder.get().getTransHeaders();
-		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
-			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
-			String[] transHeaderArray = transHeaders.split(",");
-			HttpHeaders headers = clientRequest.headers();
 			Set<String> headerKeys = headers.keySet();
 			for (String httpHeader : headerKeys) {
 				Arrays.stream(transHeaderArray).forEach(transHeader -> {
