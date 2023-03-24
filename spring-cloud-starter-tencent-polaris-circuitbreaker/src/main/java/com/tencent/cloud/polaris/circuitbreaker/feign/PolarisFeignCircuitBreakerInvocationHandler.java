@@ -41,7 +41,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import static feign.Util.checkNotNull;
 
 /**
- * PolarisFeignCircuitBreakerInvocationHandler, mostly copy from FeignCircuitBreakerInvocationHandler, but giving Polaris modification.
+ * PolarisFeignCircuitBreakerInvocationHandler, mostly copy from {@link org.springframework.cloud.openfeign.FeignCircuitBreakerInvocationHandler}, but giving Polaris modification.
  *
  * @author sean yu
  */

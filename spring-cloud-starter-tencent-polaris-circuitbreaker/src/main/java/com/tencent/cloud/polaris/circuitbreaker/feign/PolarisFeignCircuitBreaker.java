@@ -29,7 +29,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * PolarisFeignCircuitBreaker, mostly copy from FeignCircuitBreaker, but giving Polaris modification.
+ * PolarisFeignCircuitBreaker, mostly copy from {@link org.springframework.cloud.openfeign.FeignCircuitBreaker}, but giving Polaris modification.
  *
  * @author sean yu
  */
