@@ -1,0 +1,59 @@
+{
+  "@type": "type.googleapis.com/v1.CircuitBreakerRule",
+  "id": "5f1601f01823474d9be39c0bbb26ab87",
+  "name": "test",
+  "namespace": "TestCircuitBreakerRule",
+  "enable": true,
+  "revision": "10b120c08706429f8fdc3fb44a53224b",
+  "ctime": "1754-08-31 06:49:24",
+  "mtime": "2023-02-21 17:35:31",
+  "etime": "",
+  "description": "",
+  "level": "METHOD",
+  "ruleMatcher": {
+    "source": {
+      "service": "*",
+      "namespace": "*"
+    },
+    "destination": {
+      "service": "*",
+      "namespace": "*",
+      "method": {"type": "REGEX", "value": "*"}
+    }
+  },
+  "errorConditions": [
+    {
+      "inputType": "RET_CODE",
+      "condition": {
+        "type": "NOT_EQUALS",
+        "value": "200",
+        "valueType": "TEXT"
+      }
+    }
+  ],
+  "triggerCondition": [
+    {
+      "triggerType": "CONSECUTIVE_ERROR",
+      "errorCount": 1,
+      "errorPercent": 1,
+      "interval": 5,
+      "minimumRequest": 5
+    }
+  ],
+  "maxEjectionPercent": 0,
+  "recoverCondition": {
+    "sleepWindow": 60,
+    "consecutiveSuccess": 3
+  },
+  "faultDetectConfig": {
+    "enable": true
+  },
+  "fallbackConfig": {
+    "enable": true,
+    "response": {
+      "code": 200,
+      "headers": [{"key": "xxx", "value": "xxx"}],
+      "body": "\"fallback from polaris server\""
+    }
+  }
+}

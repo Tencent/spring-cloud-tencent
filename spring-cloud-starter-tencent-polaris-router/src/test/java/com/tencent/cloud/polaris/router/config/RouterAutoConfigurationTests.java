@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.common.metadata.config.MetadataAutoConfiguration;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +43,9 @@ public class RouterAutoConfigurationTests {
 					MetadataAutoConfiguration.class,
 					RouterAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
-					RouterAutoConfiguration.RouterLabelRestTemplateConfig.class));
+					RouterAutoConfiguration.RouterLabelRestTemplateConfig.class,
+					ApplicationContextAwareUtils.class
+			)).withPropertyValues("spring.application.name=test");
 
 	@Test
 	public void testRouterLabelRestTemplateConfig() {

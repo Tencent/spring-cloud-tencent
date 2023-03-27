@@ -40,4 +40,16 @@ public class ServiceBController {
 	public String info() {
 		return "hello world ! I'm a service B1";
 	}
+
+	@GetMapping("/health")
+	public String health() {
+		System.out.println("health check: 200 instance");
+		return "hello world ! I'm a service B1";
+	}
+
+	@GetMapping("/health-svc")
+	public String healthsvc() {
+		System.out.println("health-svc check: 200 instance");
+		return "hello world ! I'm a service B1";
+	}
 }
