@@ -35,12 +35,24 @@ public class ServiceAController {
 	@Autowired
 	private ProviderB polarisServiceB;
 
+	@Autowired
+	private ProviderBWithFallback providerBWithFallback;
+
 	/**
 	 * Get info of Service B by Feign.
 	 * @return info of Service B
 	 */
-	@GetMapping("/getBServiceInfo")
-	public String getBServiceInfo() {
+	@GetMapping("/getBServiceInfo/fallbackFromCode")
+	public String getBServiceInfoFallbackFromCode() {
+		return providerBWithFallback.info();
+	}
+
+	/**
+	 * Get info of Service B by Feign.
+	 * @return info of Service B
+	 */
+	@GetMapping("/getBServiceInfo/fallbackFromPolaris")
+	public String getBServiceInfoFallbackFromPolaris() {
 		return polarisServiceB.info();
 	}
 

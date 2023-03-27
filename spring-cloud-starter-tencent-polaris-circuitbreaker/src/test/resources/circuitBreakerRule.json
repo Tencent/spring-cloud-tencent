@@ -49,11 +49,11 @@
     "enable": true
   },
   "fallbackConfig": {
-    "enable": false,
+    "enable": true,
     "response": {
-      "code": 0,
-      "headers": [],
-      "body": ""
+      "code": 200,
+      "headers": [{"key": "xxx", "value": "xxx"}],
+      "body": "\"fallback from polaris server\""
     }
   }
 }

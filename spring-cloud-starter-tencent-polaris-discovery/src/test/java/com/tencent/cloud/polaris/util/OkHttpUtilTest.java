@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = OkHttpUtilTest.TestApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = OkHttpUtilTest.TestApplication.class, properties = {"spring.application.name=test", "spring.cloud.polaris.discovery.register=false"})
 public class OkHttpUtilTest {
 
 	@LocalServerPort

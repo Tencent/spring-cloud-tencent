@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Rate limit application.
@@ -39,5 +40,12 @@ public class RateLimitCalleeService {
 	@LoadBalanced
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
+	}
+
+
+	@LoadBalanced
+	@Bean
+	WebClient.Builder webClientBuilder() {
+		return WebClient.builder();
 	}
 }

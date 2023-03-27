@@ -55,7 +55,7 @@ public final class MetadataConstant {
 		/**
 		 * Order of filter.
 		 */
-		public static final int WEB_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 13;
+		public static final int WEB_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 9;
 
 		/**
 		 * Order of MetadataFirstFeignInterceptor.
@@ -93,4 +93,19 @@ public final class MetadataConstant {
 		 */
 		public static final String METADATA_CONTEXT = "SCT-METADATA-CONTEXT";
 	}
+
+	public static class DefaultMetadata {
+
+		/**
+		 * Default Metadata Source Service Namespace Key.
+		 */
+		public static final String DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE = "source_service_namespace";
+
+		/**
+		 * Default Metadata Source Service Name Key.
+		 */
+		public static final String DEFAULT_METADATA_SOURCE_SERVICE_NAME = "source_service_name";
+
+	}
+
 }

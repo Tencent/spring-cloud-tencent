@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
  * @author sean yu
  */
 @Component
-public class ProviderBFallback implements ProviderB {
+public class ProviderBFallback implements ProviderBWithFallback {
 
 	@Override
 	public String info() {
