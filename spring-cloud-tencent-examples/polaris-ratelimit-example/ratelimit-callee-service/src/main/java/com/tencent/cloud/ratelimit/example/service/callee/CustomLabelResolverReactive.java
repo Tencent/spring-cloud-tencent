@@ -17,35 +17,28 @@
 
 package com.tencent.cloud.ratelimit.example.service.callee;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
 
 /**
- * Rate limit application.
+ * resolver custom label from request.
  *
- * @author Haotian Zhang
+ * @author sean yu
  */
-@SpringBootApplication
-public class RateLimitCalleeService {
+@Component
+public class CustomLabelResolverReactive implements PolarisRateLimiterLabelReactiveResolver {
+	@Override
+	public Map<String, String> resolve(ServerWebExchange exchange) {
+		// rate limit by some request params. such as query params, headers ..
 
-	public static void main(String[] args) {
-		SpringApplication.run(RateLimitCalleeService.class, args);
-	}
+		Map<String, String> labels = new HashMap<>();
+		labels.put("user", "zhangsan");
 
-	@Bean
-	@LoadBalanced
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
-
-
-	@LoadBalanced
-	@Bean
-	WebClient.Builder webClientBuilder() {
-		return WebClient.builder();
+		return labels;
 	}
 }

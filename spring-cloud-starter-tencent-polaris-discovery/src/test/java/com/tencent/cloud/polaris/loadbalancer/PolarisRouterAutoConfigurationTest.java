@@ -40,7 +40,7 @@ public class PolarisRouterAutoConfigurationTest {
 					PolarisLoadBalancerTest.class,
 					PolarisContextAutoConfiguration.class,
 					PolarisLoadBalancerAutoConfiguration.class))
-			.withPropertyValues("spring.cloud.loadbalancer.configurations=polaris");
+			.withPropertyValues("spring.cloud.loadbalancer.configurations=polaris", "spring.application.name=test");
 
 	private final ApplicationContextRunner noPolarisContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(

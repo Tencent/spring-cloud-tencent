@@ -135,13 +135,14 @@ public final class MetadataContextHolder {
 			mergedTransitiveMetadata.putAll(staticTransitiveMetadata);
 			mergedTransitiveMetadata.putAll(dynamicTransitiveMetadata);
 			metadataContext.setTransitiveMetadata(Collections.unmodifiableMap(mergedTransitiveMetadata));
-
-			Map<String, String> mergedDisposableMetadata = new HashMap<>(dynamicDisposableMetadata);
-			metadataContext.setUpstreamDisposableMetadata(Collections.unmodifiableMap(mergedDisposableMetadata));
-
-			Map<String, String> staticDisposableMetadata = metadataContext.getFragmentContext(FRAGMENT_DISPOSABLE);
-			metadataContext.setDisposableMetadata(Collections.unmodifiableMap(staticDisposableMetadata));
 		}
+		if (!CollectionUtils.isEmpty(dynamicDisposableMetadata)) {
+			Map<String, String> mergedUpstreamDisposableMetadata = new HashMap<>(dynamicDisposableMetadata);
+			metadataContext.setUpstreamDisposableMetadata(Collections.unmodifiableMap(mergedUpstreamDisposableMetadata));
+		}
+
+		Map<String, String> staticDisposableMetadata = metadataContext.getFragmentContext(FRAGMENT_DISPOSABLE);
+		metadataContext.setDisposableMetadata(Collections.unmodifiableMap(staticDisposableMetadata));
 		MetadataContextHolder.set(metadataContext);
 	}
 
