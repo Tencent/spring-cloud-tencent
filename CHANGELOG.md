@@ -7,3 +7,4 @@
 - [fix:optimize instance circuit beaker.](https://github.com/Tencent/spring-cloud-tencent/pull/910)
 - [fix:optimize multi service registration and discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/915)
 - [feature: improve circuit breaker usage.](https://github.com/Tencent/spring-cloud-tencent/pull/917)
+- [fix:fix nacos and consul registration.](https://github.com/Tencent/spring-cloud-tencent/pull/922)
