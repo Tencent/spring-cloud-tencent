@@ -27,7 +27,11 @@ import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.discovery.client.api.DefaultConsumerAPI;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+
+import java.util.Objects;
 
 /**
  * PolarisCircuitBreakerUtils.
@@ -35,6 +39,8 @@ import org.springframework.util.Assert;
  * @author seanyu 2023-02-27
  */
 public final class PolarisCircuitBreakerUtils {
+
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisCircuitBreakerUtils.class);
 
 	private PolarisCircuitBreakerUtils() {
 
@@ -61,20 +67,28 @@ public final class PolarisCircuitBreakerUtils {
 
 	public static void reportStatus(ConsumerAPI consumerAPI,
 									PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf, CallAbortedException e) {
-		ServiceCallResult result = new ServiceCallResult();
-		result.setMethod(conf.getMethod());
-		result.setNamespace(conf.getNamespace());
-		result.setService(conf.getService());
-		result.setRuleName(e.getRuleName());
-		result.setRetStatus(RetStatus.RetReject);
-		result.setCallerService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
+		try {
+			ServiceCallResult result = new ServiceCallResult();
+			result.setMethod(conf.getMethod());
+			result.setNamespace(conf.getNamespace());
+			result.setService(conf.getService());
+			result.setRuleName(e.getRuleName());
+			result.setRetStatus(RetStatus.RetReject);
+			result.setCallerService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
 
-		String callerIp = ((DefaultConsumerAPI) consumerAPI).getSDKContext().getConfig().getGlobal().getAPI().getBindIP();
-		if (StringUtils.isNotBlank(callerIp)) {
-			result.setCallerIp(callerIp);
+			if (Objects.nonNull(e.getFallbackInfo())) {
+				result.setRetCode(e.getFallbackInfo().getCode());
+			}
+
+			String callerIp = ((DefaultConsumerAPI) consumerAPI).getSDKContext().getConfig().getGlobal().getAPI().getBindIP();
+			if (StringUtils.isNotBlank(callerIp)) {
+				result.setCallerIp(callerIp);
+			}
+
+			consumerAPI.updateServiceCallResult(result);
+		} catch (Throwable ex) {
+			LOG.error("[CircuitBreaker]");
 		}
-
-		consumerAPI.updateServiceCallResult(result);
 	}
 
 }
