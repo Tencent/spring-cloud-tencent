@@ -18,6 +18,10 @@
 package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.loadbalancer.reactive.PolarisLoadBalancerClientRequestTransformer;
+import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -29,6 +33,7 @@ import org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerClientRequestTransformer;
 import org.springframework.cloud.loadbalancer.core.ReactorLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
@@ -94,5 +99,13 @@ public class PolarisLoadBalancerClientConfiguration {
 			return new PolarisServiceInstanceListSupplier(
 					ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().build(context));
 		}
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public LoadBalancerClientRequestTransformer polarisLoadBalancerClientRequestTransformer(
+			SDKContext sdkContext) {
+		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
+		return new PolarisLoadBalancerClientRequestTransformer(consumerAPI);
 	}
 }

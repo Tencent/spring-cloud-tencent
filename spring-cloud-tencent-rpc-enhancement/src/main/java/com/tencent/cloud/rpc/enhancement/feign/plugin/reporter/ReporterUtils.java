@@ -20,14 +20,19 @@ package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
+import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
@@ -49,7 +54,7 @@ public final class ReporterUtils {
 	private ReporterUtils() {
 	}
 
-	public static ServiceCallResult createServiceCallResult(final Request request, final Response response, long delay, RetStatus retStatus) {
+	public static ServiceCallResult createServiceCallResult(final SDKContext context, final Request request, final Response response, long delay, RetStatus retStatus) {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
@@ -65,17 +70,24 @@ public final class ReporterUtils {
 			catch (UnsupportedEncodingException e) {
 				LOGGER.error("unsupported charset exception " + UTF_8, e);
 			}
-			resultRequest.setLabels(convertLabel(label));
+			resultRequest.setLabels(AbstractPolarisReporterAdapter.convertLabel(label));
 		}
 		URI uri = URI.create(request.url());
 		resultRequest.setMethod(uri.getPath());
 		resultRequest.setRetCode(response.status());
-		resultRequest.setRetStatus(retStatus);
+		resultRequest.setRetStatus(getRetStatusFromRequest(response, retStatus));
 		resultRequest.setDelay(delay);
 		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String sourceService = MetadataContext.LOCAL_SERVICE;
 		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
 			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
+		}
+		if (StringUtils.isNotBlank(context.getConfig().getGlobal().getAPI().getBindIP())) {
+			resultRequest.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
+		}
+		String ruleName = getActiveRuleNameFromRequest(response);
+		if (StringUtils.isNotBlank(ruleName)) {
+			resultRequest.setRuleName(ruleName);
 		}
 		resultRequest.setHost(uri.getHost());
 		// -1 means access directly by url, and use http default port number 80
@@ -84,9 +96,30 @@ public final class ReporterUtils {
 		return resultRequest;
 	}
 
-	private static String convertLabel(String label) {
-		label = label.replaceAll("\"|\\{|\\}", "")
-				.replaceAll(",", "|");
-		return label;
+	private static RetStatus getRetStatusFromRequest(Response response, RetStatus defaultVal) {
+		if (response.headers().containsKey(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
+			Collection<String> values = response.headers().get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
+			if (CollectionUtils.isNotEmpty(values)) {
+				String retStatusVal = com.tencent.polaris.api.utils.StringUtils.defaultString(new ArrayList<>(values).get(0));
+				if (Objects.equals(retStatusVal, RetStatus.RetFlowControl.getDesc())) {
+					return RetStatus.RetFlowControl;
+				}
+				if (Objects.equals(retStatusVal, RetStatus.RetReject.getDesc())) {
+					return RetStatus.RetReject;
+				}
+			}
+		}
+		return defaultVal;
+	}
+
+	private static String getActiveRuleNameFromRequest(Response response) {
+		if (response.headers().containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
+			Collection<String> values = response.headers().get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
+			if (CollectionUtils.isNotEmpty(values)) {
+				String val = com.tencent.polaris.api.utils.StringUtils.defaultString(new ArrayList<>(values).get(0));
+				return val;
+			}
+		}
+		return "";
 	}
 }

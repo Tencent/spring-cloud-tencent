@@ -25,6 +25,7 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.Response;
 import org.junit.jupiter.api.AfterAll;
@@ -63,8 +64,9 @@ public class ExceptionPolarisReporterTest {
 
 	@BeforeAll
 	static void beforeAll() {
+		SDKContext context = ReporterUtilsTest.mockSDKContext();
 		mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
-		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(Request.class), any(Response.class), anyLong(), any(RetStatus.class)))
+		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(context, any(Request.class), any(Response.class), anyLong(), any(RetStatus.class)))
 				.thenReturn(mock(ServiceCallResult.class));
 	}
 

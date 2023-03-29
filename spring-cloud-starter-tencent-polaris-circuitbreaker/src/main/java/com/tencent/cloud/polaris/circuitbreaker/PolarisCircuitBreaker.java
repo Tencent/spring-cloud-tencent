@@ -22,6 +22,8 @@ import java.util.function.Supplier;
 
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisResultToErrorCode;
+import com.tencent.cloud.polaris.circuitbreaker.util.PolarisCircuitBreakerUtils;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.api.FunctionalDecorator;
@@ -43,10 +45,18 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 
 	private final FunctionalDecorator decorator;
 
-	public PolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf, CircuitBreakAPI circuitBreakAPI) {
+	private final PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf;
+
+	private final ConsumerAPI consumerAPI;
+
+	public PolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf,
+								 ConsumerAPI consumerAPI,
+								 CircuitBreakAPI circuitBreakAPI) {
 		FunctionalDecoratorRequest makeDecoratorRequest = new FunctionalDecoratorRequest(new ServiceKey(conf.getNamespace(), conf.getService()), conf.getMethod());
 		makeDecoratorRequest.setSourceService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
 		makeDecoratorRequest.setResultToErrorCode(new PolarisResultToErrorCode());
+		this.consumerAPI = consumerAPI;
+		this.conf = conf;
 		this.decorator = circuitBreakAPI.makeFunctionalDecorator(makeDecoratorRequest);
 	}
 
@@ -58,11 +68,13 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 		}
 		catch (CallAbortedException e) {
 			LOGGER.debug("PolarisCircuitBreaker CallAbortedException: {}", e.getMessage());
+			PolarisCircuitBreakerUtils.reportStatus(consumerAPI, conf, e);
 			return fallback.apply(e);
 		}
 		catch (Exception e) {
 			return fallback.apply(e);
 		}
 	}
+
 
 }

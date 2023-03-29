@@ -116,4 +116,10 @@ public abstract class AbstractPolarisReporterAdapter {
 		// DEFAULT RETURN FALSE.
 		return false;
 	}
+
+	public static String convertLabel(String label) {
+		label = label.replaceAll("\"|\\{|\\}", "")
+				.replaceAll(",", "|");
+		return label;
+	}
 }

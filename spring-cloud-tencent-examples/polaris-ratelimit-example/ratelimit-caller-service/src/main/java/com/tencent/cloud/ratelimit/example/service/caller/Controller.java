@@ -15,19 +15,10 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.ratelimit.example.service.callee;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+package com.tencent.cloud.ratelimit.example.service.caller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -42,18 +33,20 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
-/**
- * Rate limit controller.
- *
- * @author Haotian Zhang
- */
-@Deprecated
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 @RestController
 @RequestMapping("/business")
-public class BusinessController {
+public class Controller {
 
-	private static final Logger LOG = LoggerFactory.getLogger(BusinessController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
 
 	private final AtomicInteger index = new AtomicInteger(0);
 	private final AtomicLong lastTimestamp = new AtomicLong(0);
@@ -61,8 +54,8 @@ public class BusinessController {
 	private RestTemplate restTemplate;
 	@Autowired
 	private WebClient.Builder webClientBuilder;
-	@Value("${spring.application.name}")
-	private String appName;
+
+	private String appName = "RateLimitCalleeService";
 
 	/**
 	 * Get information.
@@ -174,4 +167,5 @@ public class BusinessController {
 		lastTimestamp.set(currentTimestamp);
 		return "hello world for ratelimit service with diff from last request:" + (currentTimestamp - lastTime) + "ms.";
 	}
+
 }

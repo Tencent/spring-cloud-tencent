@@ -19,6 +19,14 @@ package com.tencent.cloud.polaris.circuitbreaker.util;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
+import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.pojo.RetStatus;
+import com.tencent.polaris.api.pojo.ServiceKey;
+import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
+import com.tencent.polaris.discovery.client.api.DefaultConsumerAPI;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -49,6 +57,24 @@ public final class PolarisCircuitBreakerUtils {
 			return new String[]{polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2]};
 		}
 		return new String[]{MetadataContext.LOCAL_NAMESPACE, id, ""};
+	}
+
+	public static void reportStatus(ConsumerAPI consumerAPI,
+									PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf, CallAbortedException e) {
+		ServiceCallResult result = new ServiceCallResult();
+		result.setMethod(conf.getMethod());
+		result.setNamespace(conf.getNamespace());
+		result.setService(conf.getService());
+		result.setRuleName(e.getRuleName());
+		result.setRetStatus(RetStatus.RetReject);
+		result.setCallerService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
+
+		String callerIp = ((DefaultConsumerAPI) consumerAPI).getSDKContext().getConfig().getGlobal().getAPI().getBindIP();
+		if (StringUtils.isNotBlank(callerIp)) {
+			result.setCallerIp(callerIp);
+		}
+
+		consumerAPI.updateServiceCallResult(result);
 	}
 
 }

@@ -25,6 +25,7 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.Response;
 import org.slf4j.Logger;
@@ -44,8 +45,11 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 	private final ConsumerAPI consumerAPI;
 
-	public SuccessPolarisReporter(RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI) {
+	private final SDKContext context;
+
+	public SuccessPolarisReporter(RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
 		super(properties);
+		this.context = context;
 		this.consumerAPI = consumerAPI;
 	}
 
@@ -75,7 +79,7 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 			}
 			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.", retStatus.name(), request.httpMethod()
 					.name(), request.url(), response.status(), delay);
-			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, response, delay, retStatus);
+			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(this.context, request, response, delay, retStatus);
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}

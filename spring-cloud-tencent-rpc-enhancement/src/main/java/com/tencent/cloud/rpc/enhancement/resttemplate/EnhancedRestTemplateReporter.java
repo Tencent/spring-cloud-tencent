@@ -21,9 +21,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -34,6 +38,7 @@ import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,10 +71,12 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 	public static final String HEADER_HAS_ERROR = "X-SCT-Has-Error";
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedRestTemplateReporter.class);
 	private final ConsumerAPI consumerAPI;
+	private final SDKContext context;
 	private ResponseErrorHandler delegateHandler;
 
-	public EnhancedRestTemplateReporter(RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI) {
+	public EnhancedRestTemplateReporter(RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
 		super(properties);
+		this.context = context;
 		this.consumerAPI = consumerAPI;
 	}
 
@@ -149,6 +156,9 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 			if (apply(response.getStatusCode())) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
+			resultRequest.setRetStatus(getRetStatusFromRequest(response, resultRequest.getRetStatus()));
+			resultRequest.setRuleName(getActiveRuleNameFromRequest(response));
+			resultRequest.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
 
 			List<String> labels = response.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER);
 			if (CollectionUtils.isNotEmpty(labels)) {
@@ -170,12 +180,6 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		catch (Exception e) {
 			LOGGER.error("RestTemplate response reporter execute failed of {} url {}", response, url, e);
 		}
-	}
-
-	private String convertLabel(String label) {
-		label = label.replaceAll("\"|\\{|\\}", "")
-				.replaceAll(",", "|");
-		return label;
 	}
 
 	private void invokeDelegateHandler(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
@@ -226,5 +230,32 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 
 	protected void setDelegateHandler(ResponseErrorHandler delegateHandler) {
 		this.delegateHandler = delegateHandler;
+	}
+
+	private static RetStatus getRetStatusFromRequest(ClientHttpResponse response, RetStatus defaultVal) {
+		if (response.getHeaders().containsKey(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
+			List<String> values = response.getHeaders().get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
+			if (CollectionUtils.isNotEmpty(values)) {
+				String retStatusVal = com.tencent.polaris.api.utils.StringUtils.defaultString(values.get(0));
+				if (Objects.equals(retStatusVal, RetStatus.RetFlowControl.getDesc())) {
+					return RetStatus.RetFlowControl;
+				}
+				if (Objects.equals(retStatusVal, RetStatus.RetReject.getDesc())) {
+					return RetStatus.RetReject;
+				}
+			}
+		}
+		return defaultVal;
+	}
+
+	private static String getActiveRuleNameFromRequest(ClientHttpResponse response) {
+		if (response.getHeaders().containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
+			Collection<String> values = response.getHeaders().get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
+			if (CollectionUtils.isNotEmpty(values)) {
+				String val = com.tencent.polaris.api.utils.StringUtils.defaultString(new ArrayList<>(values).get(0));
+				return val;
+			}
+		}
+		return "";
 	}
 }

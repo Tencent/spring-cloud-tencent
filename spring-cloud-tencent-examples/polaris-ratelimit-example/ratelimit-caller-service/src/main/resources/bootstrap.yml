@@ -1,17 +1,13 @@
 server:
-  port: 48081
+  port: 58080
 spring:
   application:
-    name: RateLimitCalleeService
+    name: RateLimitCallerService
   cloud:
     polaris:
       address: grpc://127.0.0.1:8091
       namespace: default
       enabled: true
-      ratelimit:
-        enabled: true
-        rejectRequestTipsFilePath: reject-tips.html
-        maxQueuingTime: 500
 
 management:
   endpoints:
