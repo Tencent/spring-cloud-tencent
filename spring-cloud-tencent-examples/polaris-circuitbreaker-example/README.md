@@ -1,10 +1,10 @@
-# Spring Cloud Polaris CircuitBreaker Example
+# Spring Cloud Polaris Circuitbreaker example
 
 ## Example Introduction
 
-This example shows how to use```spring-cloud-starter-tencent-polaris-circuitbreaker``` in Spring Cloud project and other features
+This example shows how to use```spring-cloud-starter-tencent-polaris-circuitbreaker```in Spring Cloud project for its features.
 
-This example is divided to two microservice, ```polaris-circuitbreaker-example-a``` and ```polaris-circuitbreaker-example-b```. In these two microservices, ```polaris-circuitbreaker-example-a``` invokes ```polaris-circuitbreaker-example-b```.
+This example contains callee-service```polaris-circuitbreaker-callee-service```、```polaris-circuitbreaker-callee-service2```and caller-service```polaris-circuitbreaker-feign-example```、```polaris-circuitbreaker-gateway-example```、```polaris-circuitbreaker-webclient-example```.
 
 ## Instruction
 
@@ -21,58 +21,46 @@ spring:
       address: ${ip}:${port}
 ```
 
-###Launching Example
+### Launching Example
 
-###Launching Polaris Backend Service
+#### Launching Polaris Backend Service
 
 Reference to [Polaris Getting Started](https://github.com/PolarisMesh/polaris#getting-started)
 
-####Launching Application
+#### Launching callee service
 
-Note, because verification is needed for circuit-break feature, therefore, one needs to deploy more than two invoked services (two deployment in this example)
+Launching```polaris-circuitbreaker-example/polaris-circuitbreaker-callee-service```、```polaris-circuitbreaker-example/polaris-circuitbreaker-callee-service2```
 
-Launching```spring-cloud-tencent-examples/polaris-circuitbreaker-example/polaris-circuitbreaker-example-a```'s ServiceA and ```spring-cloud-tencent-examples/polaris-circuitbreaker-example/polaris-circuitbreaker-example-b```'s ServiceB
 
-note, Service B needs to launch two. One can adjust the port on the same machine.
+#### Launching caller service
 
-Two Services B's ```com.tencent.cloud.polaris.circuitbreaker.example.ServiceBController.info``` logics are different. One returns normally, one is abnormal.
+##### Launching Feign and Verify
 
-- Maven Package Launching
+Launching```polaris-circuitbreaker-example/polaris-circuitbreaker-feign-example```.
 
-Execute under ```spring-cloud-tencent-examples/polaris-discovery-example```
+Sending request`curl --location --request GET 'http://127.0.0.1:48080/example/service/a/getBServiceInfo/fallbackFromPolaris'`, Verify circuit breaker and fallback from Polaris-server.
 
-note, Service B needs to launch two. One can adjust the port on the same machine.
+Sending request`curl --location --request GET 'http://127.0.0.1:48080/example/service/a/getBServiceInfo/fallbackFromCode'`, Verify circuit breaker and fallback from code.
 
-Two Services B's com.tencent.cloud.polaris.circuitbreaker.example.ServiceBController.info logics are different. One returns normally, one is abnormal.
+##### Launching RestTemplate and Verify
 
-```sh
-mvn clean package
-```
+Launching```polaris-circuitbreaker-example/polaris-circuitbreaker-resttemplate-example```.
 
-Then under ``polaris-circuitbreaker-example-a``` and ``polaris-circuitbreaker-example-b``` find the package that generated jar, and run it
+Sending request`curl --location --request GET 'http://127.0.0.1:48080/example/service/a/getBServiceInfo/fallbackFromPolaris'`, Verify circuit breaker and fallback from Polaris-server.
 
-```
-java -jar ${app.jar}
-```
+Sending request`curl --location --request GET 'http://127.0.0.1:48080/example/service/a/getBServiceInfo/fallbackFromCode'`, Verify circuit breaker and fallback from code.
 
-Launch application, change ${app.jar} to jar's package name
+##### Launching WebClient and Verify
 
-##Verify
+Launching```polaris-circuitbreaker-example/polaris-circuitbreaker-webclient-example```。
 
-####Feign Invoke
+Sending request`curl --location --request GET 'http://127.0.0.1:48080/example/service/a/getBServiceInfo'`, Verify circuit breaker and fallback from code.
 
-Execute the following orders to invoke Feign, the logic is ```ServiceB``` has an abnormal signal
+##### Launching SCG and Verify
 
-```shell
-curl -L -X GET 'localhost:48080/example/service/a/getBServiceInfo'
-```
+Launching```polaris-circuitbreaker-example/polaris-circuitbreaker-gateway-example```。
 
-Expected return condition:
+Sending request`curl --location --request GET 'http://127.0.0.1:48080/polaris-circuitbreaker-callee-service/example/service/b/info'`, Verify circuit breaker and fallback from code.
 
-when appear
+Changing```polaris-circuitbreaker-example/polaris-circuitbreaker-gateway-example/resources/bootstrap.yml```, delete local fallback and restart, Verify circuit breaker and fallback from Polaris-server.
 
-```
-trigger the refuse for service b
-```
-
-it means the request signals abnormal ServiceB, and will ciruitbreak this instance, the later requests will return normally. 
