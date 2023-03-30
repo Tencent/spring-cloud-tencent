@@ -37,6 +37,16 @@ public final class HeaderConstant {
 	 */
 	public static final String INTERNAL_CALLEE_SERVICE_ID = "internal-callee-serviceid";
 
+	/**
+	 * The name information of the called instance host.
+	 */
+	public static final String INTERNAL_CALLEE_INSTANCE_HOST = "internal-callee-instance-host";
+
+	/**
+	 * The name information of the called instance port.
+	 */
+	public static final String INTERNAL_CALLEE_INSTANCE_PORT = "internal-callee-instance-port";
+
 	private HeaderConstant() {
 	}
 }

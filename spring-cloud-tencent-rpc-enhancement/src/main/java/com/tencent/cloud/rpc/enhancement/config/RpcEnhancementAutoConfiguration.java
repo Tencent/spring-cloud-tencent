@@ -30,6 +30,8 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisR
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
+import com.tencent.cloud.rpc.enhancement.scg.EnhancedPolarisHttpHeadersFilter;
+import com.tencent.cloud.rpc.enhancement.scg.EnhancedPolarisHttpClientCustomizer;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
@@ -44,6 +46,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.gateway.config.HttpClientCustomizer;
+import org.springframework.cloud.gateway.filter.headers.HttpHeadersFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -155,6 +159,27 @@ public class RpcEnhancementAutoConfiguration {
 		public ExchangeFilterFunction exchangeFilterFunction(
 				RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
 			return new EnhancedWebClientReporter(properties, consumerAPI);
+		}
+	}
+
+	/**
+	 * Configuration for Polaris {@link org.springframework.web.reactive.function.client.WebClient} which can automatically bring in the call
+	 * results for reporting.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.config.GatewayAutoConfiguration")
+	@Role(RootBeanDefinition.ROLE_INFRASTRUCTURE)
+	protected static class PolarisGatewayAutoConfiguration {
+
+		@Bean
+		public HttpHeadersFilter enhancedPolarisHttpHeadersFilter() {
+			return new EnhancedPolarisHttpHeadersFilter();
+		}
+
+		@Bean
+		public HttpClientCustomizer httpClientCustomizer(
+				RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
+			return new EnhancedPolarisHttpClientCustomizer(properties, context, consumerAPI);
 		}
 
 	}

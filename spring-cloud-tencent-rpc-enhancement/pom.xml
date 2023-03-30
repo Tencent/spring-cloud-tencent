@@ -51,6 +51,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-gateway-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-test-common</artifactId>
 			<scope>test</scope>
