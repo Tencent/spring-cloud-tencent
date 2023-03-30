@@ -82,6 +82,7 @@
 		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
+		<spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
 
 		<!-- Maven Plugin Versions -->
 		<maven-javadoc-plugin.verison>3.3.0</maven-javadoc-plugin.verison>
@@ -162,6 +163,12 @@
 			</dependency>
 
 			<!-- spring cloud tencent plugins -->
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-discovery-adapter-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-featureenv-plugin</artifactId>
@@ -262,6 +269,12 @@
 				<artifactId>system-stubs-jupiter</artifactId>
 				<version>${system-stubs-jupiter.version}</version>
 				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.alibaba.cloud</groupId>
+				<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+				<version>${spring-cloud-alibaba.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -25,8 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.pojo.PolarisServiceInstance;
-import com.tencent.polaris.api.pojo.DefaultInstance;
+import com.tencent.cloud.polaris.router.spi.InstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
@@ -57,14 +56,14 @@ public final class RouterUtils {
 	 * @param servers servers
 	 * @return ServiceInstances
 	 */
-	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers) {
+	public static ServiceInstances transferServersToServiceInstances(Flux<List<ServiceInstance>> servers, InstanceTransformer instanceTransformer) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		AtomicReference<List<Instance>> instancesRef = new AtomicReference<>();
 		servers.subscribe(serviceInstances -> {
 			instancesRef.set(serviceInstances
 					.stream()
-					.map(RouterUtils::transferServerToServiceInstance)
+					.map(instanceTransformer::transform)
 					.collect(Collectors.toList()));
 
 			latch.countDown();
@@ -86,32 +85,5 @@ public final class RouterUtils {
 		List<Instance> instances = instancesRef.get() == null ? Collections.emptyList() : instancesRef.get();
 
 		return new DefaultServiceInstances(serviceKey, instances);
-	}
-
-	/**
-	 * transfer ServiceInstance to DefaultInstance.
-	 *
-	 * @param serviceInstance serviceInstance
-	 * @return defaultInstance
-	 */
-	public static DefaultInstance transferServerToServiceInstance(ServiceInstance serviceInstance) {
-		DefaultInstance instance = new DefaultInstance();
-		instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-		instance.setService(serviceInstance.getServiceId());
-		instance.setProtocol(serviceInstance.getScheme());
-		instance.setId(serviceInstance.getInstanceId());
-		instance.setHost(serviceInstance.getHost());
-		instance.setPort(serviceInstance.getPort());
-		instance.setMetadata(serviceInstance.getMetadata());
-
-		if (serviceInstance instanceof PolarisServiceInstance) {
-			PolarisServiceInstance polarisServiceInstance = (PolarisServiceInstance) serviceInstance;
-			instance.setRegion(polarisServiceInstance.getPolarisInstance().getRegion());
-			instance.setZone(polarisServiceInstance.getPolarisInstance().getZone());
-			instance.setCampus(polarisServiceInstance.getPolarisInstance().getCampus());
-			instance.setWeight(polarisServiceInstance.getPolarisInstance().getWeight());
-		}
-
-		return instance;
 	}
 }

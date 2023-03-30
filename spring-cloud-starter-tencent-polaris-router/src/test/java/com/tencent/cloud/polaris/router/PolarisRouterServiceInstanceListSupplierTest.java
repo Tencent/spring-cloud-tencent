@@ -39,6 +39,7 @@ import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterce
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.transformer.PolarisInstanceTransformer;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
@@ -117,7 +118,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			setTransitiveMetadata();
 
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, requestInterceptors, null);
+					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
@@ -154,7 +155,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			setTransitiveMetadata();
 
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, requestInterceptors, null);
+					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
@@ -192,7 +193,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			setTransitiveMetadata();
 
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, requestInterceptors, null);
+					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
@@ -219,7 +220,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			setTransitiveMetadata();
 
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, requestInterceptors, null);
+					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 
 			ProcessRoutersResponse assembleResponse = assembleProcessRoutersResponse();
 			when(routerAPI.processRouters(any())).thenReturn(assembleResponse);
@@ -234,7 +235,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 	@Test
 	public void buildRouterContext() {
 		PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-				delegate, routerAPI, requestInterceptors, null);
+				delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 
 		HttpHeaders headers = new HttpHeaders();
 		PolarisRouterContext context = polarisSupplier.buildRouterContext(headers);
@@ -256,7 +257,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 	@Test
 	public void testGet01() {
 		PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-				delegate, routerAPI, requestInterceptors, null);
+				delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 		assertThatThrownBy(() -> polarisSupplier.get()).isInstanceOf(PolarisException.class);
 	}
 
@@ -267,7 +268,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 					.thenReturn(testCallerService);
 
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, requestInterceptors, null);
+					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 
 			MockServerHttpRequest httpRequest = MockServerHttpRequest.get("/" + testCalleeService + "/users")
 					.header("k1", "v1")

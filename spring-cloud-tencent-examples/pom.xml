@@ -16,6 +16,7 @@
 	<description>Examples of Spring Cloud Tencent</description>
 
 	<modules>
+		<module>multiple-discovery-example</module>
 		<module>polaris-discovery-example</module>
 		<module>polaris-ratelimit-example</module>
 		<module>polaris-circuitbreaker-example</module>
