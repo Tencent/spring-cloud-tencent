@@ -64,9 +64,8 @@ public class ExceptionPolarisReporterTest {
 
 	@BeforeAll
 	static void beforeAll() {
-		SDKContext context = ReporterUtilsTest.mockSDKContext();
 		mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
-		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(context, any(Request.class), any(Response.class), anyLong(), any(RetStatus.class)))
+		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(SDKContext.class), any(Request.class), any(Response.class), anyLong(), any(RetStatus.class)))
 				.thenReturn(mock(ServiceCallResult.class));
 	}
 

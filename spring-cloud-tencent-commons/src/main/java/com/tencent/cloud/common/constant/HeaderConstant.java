@@ -18,22 +18,22 @@
 package com.tencent.cloud.common.constant;
 
 /**
- * Built-in system http header fields
+ * Built-in system http header fields.
  */
 public final class HeaderConstant {
 
 	/**
-	 * The called service returns the real call result of its own processing request
+	 * The called service returns the real call result of its own processing request.
 	 */
 	public static final String INTERNAL_CALLEE_RET_STATUS = "internal-callee-retstatus";
 
 	/**
-	 * The name of the rule that the current limit/circiutbreaker rule takes effect
+	 * The name of the rule that the current limit/circiutbreaker rule takes effect.
 	 */
 	public static final String INTERNAL_ACTIVE_RULE_NAME = "internal-callee-activerule";
 
 	/**
-	 * The name information of the called service
+	 * The name information of the called service.
 	 */
 	public static final String INTERNAL_CALLEE_SERVICE_ID = "internal-callee-serviceid";
 

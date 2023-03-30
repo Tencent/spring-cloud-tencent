@@ -82,7 +82,7 @@ public final class ReporterUtils {
 		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
 			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
 		}
-		if (StringUtils.isNotBlank(context.getConfig().getGlobal().getAPI().getBindIP())) {
+		if (Objects.nonNull(context)) {
 			resultRequest.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
 		}
 		String ruleName = getActiveRuleNameFromRequest(response);

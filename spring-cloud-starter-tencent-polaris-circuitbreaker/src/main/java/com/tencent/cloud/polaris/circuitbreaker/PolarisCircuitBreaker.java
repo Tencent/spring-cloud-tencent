@@ -50,8 +50,8 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 	private final ConsumerAPI consumerAPI;
 
 	public PolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf,
-								 ConsumerAPI consumerAPI,
-								 CircuitBreakAPI circuitBreakAPI) {
+			ConsumerAPI consumerAPI,
+			CircuitBreakAPI circuitBreakAPI) {
 		FunctionalDecoratorRequest makeDecoratorRequest = new FunctionalDecoratorRequest(new ServiceKey(conf.getNamespace(), conf.getService()), conf.getMethod());
 		makeDecoratorRequest.setSourceService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
 		makeDecoratorRequest.setResultToErrorCode(new PolarisResultToErrorCode());
@@ -75,6 +75,5 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 			return fallback.apply(e);
 		}
 	}
-
 
 }

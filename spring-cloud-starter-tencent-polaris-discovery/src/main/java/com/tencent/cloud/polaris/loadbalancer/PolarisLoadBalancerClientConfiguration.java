@@ -70,6 +70,13 @@ public class PolarisLoadBalancerClientConfiguration {
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI);
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	public LoadBalancerClientRequestTransformer polarisLoadBalancerClientRequestTransformer(SDKContext sdkContext) {
+		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
+		return new PolarisLoadBalancerClientRequestTransformer(consumerAPI);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnReactiveDiscoveryEnabled
 	@Order(REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER)
@@ -99,13 +106,5 @@ public class PolarisLoadBalancerClientConfiguration {
 			return new PolarisServiceInstanceListSupplier(
 					ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().build(context));
 		}
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public LoadBalancerClientRequestTransformer polarisLoadBalancerClientRequestTransformer(
-			SDKContext sdkContext) {
-		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
-		return new PolarisLoadBalancerClientRequestTransformer(consumerAPI);
 	}
 }

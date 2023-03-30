@@ -17,8 +17,9 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.util;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
+import java.util.Objects;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
@@ -29,9 +30,8 @@ import com.tencent.polaris.discovery.client.api.DefaultConsumerAPI;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
-import java.util.Objects;
+import org.springframework.util.Assert;
 
 /**
  * PolarisCircuitBreakerUtils.
@@ -57,16 +57,16 @@ public final class PolarisCircuitBreakerUtils {
 		Assert.hasText(id, "A CircuitBreaker must have an id. Id could be : namespace#service#method or service#method or service");
 		String[] polarisCircuitBreakerMetaData = id.split("#");
 		if (polarisCircuitBreakerMetaData.length == 2) {
-			return new String[]{MetadataContext.LOCAL_NAMESPACE, polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1]};
+			return new String[] {MetadataContext.LOCAL_NAMESPACE, polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1]};
 		}
 		if (polarisCircuitBreakerMetaData.length == 3) {
-			return new String[]{polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2]};
+			return new String[] {polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2]};
 		}
-		return new String[]{MetadataContext.LOCAL_NAMESPACE, id, ""};
+		return new String[] {MetadataContext.LOCAL_NAMESPACE, id, ""};
 	}
 
 	public static void reportStatus(ConsumerAPI consumerAPI,
-									PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf, CallAbortedException e) {
+			PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf, CallAbortedException e) {
 		try {
 			ServiceCallResult result = new ServiceCallResult();
 			result.setMethod(conf.getMethod());
@@ -80,13 +80,15 @@ public final class PolarisCircuitBreakerUtils {
 				result.setRetCode(e.getFallbackInfo().getCode());
 			}
 
-			String callerIp = ((DefaultConsumerAPI) consumerAPI).getSDKContext().getConfig().getGlobal().getAPI().getBindIP();
+			String callerIp = ((DefaultConsumerAPI) consumerAPI).getSDKContext().getConfig().getGlobal().getAPI()
+					.getBindIP();
 			if (StringUtils.isNotBlank(callerIp)) {
 				result.setCallerIp(callerIp);
 			}
 
 			consumerAPI.updateServiceCallResult(result);
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			LOG.error("[CircuitBreaker]");
 		}
 	}

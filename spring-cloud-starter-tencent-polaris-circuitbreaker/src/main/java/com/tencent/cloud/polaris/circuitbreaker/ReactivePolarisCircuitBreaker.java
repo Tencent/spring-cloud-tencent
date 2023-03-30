@@ -30,8 +30,6 @@ import com.tencent.polaris.circuitbreak.api.InvokeHandler;
 import com.tencent.polaris.circuitbreak.api.pojo.FunctionalDecoratorRequest;
 import com.tencent.polaris.circuitbreak.api.pojo.InvokeContext;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -51,8 +49,8 @@ public class ReactivePolarisCircuitBreaker implements ReactiveCircuitBreaker {
 	private final PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf;
 
 	public ReactivePolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf,
-										 ConsumerAPI consumerAPI,
-										 CircuitBreakAPI circuitBreakAPI) {
+			ConsumerAPI consumerAPI,
+			CircuitBreakAPI circuitBreakAPI) {
 		InvokeContext.RequestContext requestContext = new FunctionalDecoratorRequest(new ServiceKey(conf.getNamespace(), conf.getService()), conf.getMethod());
 		requestContext.setSourceService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
 		requestContext.setResultToErrorCode(new PolarisResultToErrorCode());

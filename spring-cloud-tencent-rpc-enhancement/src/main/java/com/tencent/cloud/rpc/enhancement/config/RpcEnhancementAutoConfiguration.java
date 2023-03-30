@@ -32,8 +32,8 @@ import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClient
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
-
 import com.tencent.polaris.client.api.SDKContext;
+
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -92,15 +92,15 @@ public class RpcEnhancementAutoConfiguration {
 
 			@Bean
 			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties,
-																@Autowired(required = false) SDKContext context,
-																@Autowired(required = false) ConsumerAPI consumerAPI) {
+					@Autowired(required = false) SDKContext context,
+					@Autowired(required = false) ConsumerAPI consumerAPI) {
 				return new SuccessPolarisReporter(properties, context, consumerAPI);
 			}
 
 			@Bean
 			public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
-																	 @Autowired(required = false) SDKContext context,
-																	@Autowired(required = false) ConsumerAPI consumerAPI) {
+					@Autowired(required = false) SDKContext context,
+					@Autowired(required = false) ConsumerAPI consumerAPI) {
 				return new ExceptionPolarisReporter(properties, context, consumerAPI);
 			}
 		}

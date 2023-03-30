@@ -158,7 +158,9 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 			}
 			resultRequest.setRetStatus(getRetStatusFromRequest(response, resultRequest.getRetStatus()));
 			resultRequest.setRuleName(getActiveRuleNameFromRequest(response));
-			resultRequest.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
+			if (Objects.nonNull(context)) {
+				resultRequest.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
+			}
 
 			List<String> labels = response.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER);
 			if (CollectionUtils.isNotEmpty(labels)) {
