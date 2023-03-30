@@ -38,8 +38,10 @@ import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouter
 import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerRequest;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.transformer.PolarisInstanceTransformer;
+import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
@@ -64,6 +66,7 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.DefaultRequest;
+import org.springframework.cloud.client.loadbalancer.DefaultRequestContext;
 import org.springframework.cloud.client.loadbalancer.RequestData;
 import org.springframework.cloud.client.loadbalancer.RequestDataContext;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
@@ -220,7 +223,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			setTransitiveMetadata();
 
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
+					delegate, routerAPI, requestInterceptors, Collections.singletonList(new TestRouterResponseInterceptor()), new PolarisInstanceTransformer());
 
 			ProcessRoutersResponse assembleResponse = assembleProcessRoutersResponse();
 			when(routerAPI.processRouters(any())).thenReturn(assembleResponse);
@@ -280,6 +283,30 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 		}
 	}
 
+	@Test
+	public void testGet03() {
+		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+					.thenReturn(testCallerService);
+			MetadataContextHolder.set(new MetadataContext());
+			mockedApplicationContextAwareUtils.when(() -> delegate.get())
+					.thenReturn(assembleServers());
+			mockedApplicationContextAwareUtils.when(() -> routerAPI.processRouters(any()))
+					.thenReturn(new ProcessRoutersResponse(new DefaultServiceInstances(null, new ArrayList<>())));
+
+			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
+					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
+
+			MockServerHttpRequest httpRequest = MockServerHttpRequest.get("/" + testCalleeService + "/users")
+					.header("k1", "v1")
+					.header(RouterConstant.ROUTER_LABEL_HEADER, "{\"k1\":\"v1\"}")
+					.queryParam("userid", "zhangsan")
+					.build();
+			DefaultRequestContext requestDataContext = new DefaultRequestContext(new PolarisLoadBalancerRequest(httpRequest, null), "blue");
+			DefaultRequest request = new DefaultRequest(requestDataContext);
+			assertThat(polarisSupplier.get(request).blockFirst().size()).isEqualTo(0);
+		}
+	}
 	private void setTransitiveMetadata() {
 		if (initTransitiveMetadata.compareAndSet(false, true)) {
 			// mock transitive metadata
@@ -325,5 +352,12 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			servers.add(new PolarisServiceInstance(instance));
 		}
 		return Flux.fromIterable(Collections.singletonList(servers));
+	}
+
+	public class TestRouterResponseInterceptor implements RouterResponseInterceptor {
+		@Override
+		public void apply(ProcessRoutersResponse response, PolarisRouterContext routerContext) {
+			// do nothing
+		}
 	}
 }

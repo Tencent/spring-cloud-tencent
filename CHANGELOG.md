@@ -9,3 +9,4 @@
 - [feature: improve circuit breaker usage.](https://github.com/Tencent/spring-cloud-tencent/pull/916)
 - [fix:fix nacos and consul registration.](https://github.com/Tencent/spring-cloud-tencent/pull/919)
 - [Documentation content changes: add circuitbreaker readme.](https://github.com/Tencent/spring-cloud-tencent/pull/929)
+- [fix: fix PolarisRouterServiceInstanceListSupplier npe with reactive feign.](https://github.com/Tencent/spring-cloud-tencent/pull/925)
