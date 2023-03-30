@@ -98,12 +98,14 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		PolarisRouterContext routerContext = null;
 
 		DefaultRequestContext requestContext = (DefaultRequestContext) request.getContext();
-		if (requestContext instanceof RequestDataContext) {
-			routerContext = buildRouterContext(((RequestDataContext) requestContext).getClientRequest().getHeaders());
-		}
-		else if (requestContext.getClientRequest() instanceof PolarisLoadBalancerRequest) {
-			routerContext = buildRouterContext(((PolarisLoadBalancerRequest<?>) requestContext.getClientRequest()).getRequest()
-					.getHeaders());
+		if (requestContext != null) {
+			if (requestContext instanceof RequestDataContext) {
+				routerContext = buildRouterContext(((RequestDataContext) requestContext).getClientRequest().getHeaders());
+			}
+			else if (requestContext.getClientRequest() instanceof PolarisLoadBalancerRequest) {
+				routerContext = buildRouterContext(((PolarisLoadBalancerRequest<?>) requestContext.getClientRequest()).getRequest()
+						.getHeaders());
+			}
 		}
 
 		if (routerContext == null) {
