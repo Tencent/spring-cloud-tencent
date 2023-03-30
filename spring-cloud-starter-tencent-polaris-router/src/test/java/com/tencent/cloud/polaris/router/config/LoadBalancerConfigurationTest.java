@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
+import com.tencent.cloud.polaris.router.transformer.PolarisInstanceTransformer;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.jupiter.api.Test;
 
@@ -59,6 +60,7 @@ public class LoadBalancerConfigurationTest {
 						PolarisContextAutoConfiguration.class))
 				.withBean(SimpleReactiveDiscoveryProperties.class)
 				.withBean(SimpleReactiveDiscoveryClient.class)
+				.withBean(PolarisInstanceTransformer.class)
 				.run(context -> {
 					assertThat(context).hasSingleBean(LoadBalancerConfiguration.PolarisReactiveSupportConfiguration.class);
 					assertThat(context).hasSingleBean(RouterAPI.class);
@@ -75,6 +77,7 @@ public class LoadBalancerConfigurationTest {
 				))
 				.withBean(SimpleDiscoveryProperties.class)
 				.withBean(SimpleDiscoveryClient.class)
+				.withBean(PolarisInstanceTransformer.class)
 				.run(context -> {
 					assertThat(context).hasSingleBean(LoadBalancerConfiguration.PolarisBlockingSupportConfiguration.class);
 					assertThat(context).hasSingleBean(DiscoveryClient.class);

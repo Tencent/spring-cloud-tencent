@@ -1,0 +1,26 @@
+server:
+  port: 48080
+spring:
+  application:
+    name: NacosCallerService
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+      loadbalancer:
+        enabled: true
+      circuitbreaker:
+        enabled: true
+    nacos:
+      discovery:
+        server-addr: 9.134.5.52:8848
+
+feign:
+  circuitbreaker:
+    enabled: true
+
+logging:
+  level:
+    root: info
+    com.tencent.cloud: debug
