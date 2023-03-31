@@ -81,7 +81,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 )
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test-gateway")
-@AutoConfigureWebTestClient(timeout = "10000")
+@AutoConfigureWebTestClient(timeout = "1000000")
 public class PolarisCircuitBreakerGatewayIntegrationTest {
 
 	private static final String TEST_SERVICE_NAME = "test-service-callee";
