@@ -72,6 +72,11 @@ public final class ReporterUtils {
 		resultRequest.setRetCode(response.status());
 		resultRequest.setRetStatus(retStatus);
 		resultRequest.setDelay(delay);
+		String scheme = uri.getScheme();
+		if (StringUtils.isBlank(scheme)) {
+			scheme = "http";
+		}
+		resultRequest.setProtocol(scheme);
 		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String sourceService = MetadataContext.LOCAL_SERVICE;
 		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
