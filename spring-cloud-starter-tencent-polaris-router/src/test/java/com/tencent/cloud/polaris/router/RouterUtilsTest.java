@@ -24,6 +24,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.router.transformer.PolarisInstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
@@ -52,7 +53,7 @@ public class RouterUtilsTest {
 
 	@Test
 	public void testTransferEmptyInstances() {
-		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.empty());
+		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.empty(), new PolarisInstanceTransformer());
 		assertThat(serviceInstances.getInstances()).isNotNull();
 		assertThat(serviceInstances.getInstances()).isEmpty();
 	}
@@ -82,7 +83,7 @@ public class RouterUtilsTest {
 				instances.add(new PolarisServiceInstance(instance));
 			}
 
-			ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.just(instances));
+			ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.just(instances), new PolarisInstanceTransformer());
 
 			assertThat(serviceInstances.getInstances()).isNotNull();
 			assertThat(serviceInstances.getInstances().size()).isEqualTo(instanceSize);

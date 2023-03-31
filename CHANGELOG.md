@@ -11,3 +11,5 @@
 - [Documentation content changes: add circuitbreaker readme.](https://github.com/Tencent/spring-cloud-tencent/pull/930)
 - [fix: fix PolarisRouterServiceInstanceListSupplier npe with reactive feign.](https://github.com/Tencent/spring-cloud-tencent/pull/926)
 - [feat:support webclient and gateway report call metrics](https://github.com/Tencent/spring-cloud-tencent/pull/924)
+- [fix: adapt for nacos instance.](https://github.com/Tencent/spring-cloud-tencent/pull/935)
+
