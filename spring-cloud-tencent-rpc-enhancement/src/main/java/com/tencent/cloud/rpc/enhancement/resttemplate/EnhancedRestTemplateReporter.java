@@ -28,6 +28,7 @@ import java.util.Objects;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.RequestLabelUtils;
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -168,7 +169,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 				catch (UnsupportedEncodingException e) {
 					LOGGER.error("unsupported charset exception " + UTF_8, e);
 				}
-				resultRequest.setLabels(convertLabel(label));
+				resultRequest.setLabels(RequestLabelUtils.convertLabel(label));
 			}
 
 			// processing report with consumerAPI .

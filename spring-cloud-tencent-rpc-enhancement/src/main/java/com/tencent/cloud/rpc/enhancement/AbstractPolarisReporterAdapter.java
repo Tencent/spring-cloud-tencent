@@ -81,12 +81,6 @@ public abstract class AbstractPolarisReporterAdapter {
 		return new ArrayList<>(Arrays.asList(items));
 	}
 
-	public static String convertLabel(String label) {
-		label = label.replaceAll("\"|\\{|\\}", "")
-				.replaceAll(",", "|");
-		return label;
-	}
-
 	/**
 	 * Callback after completion of request processing, Check if business meltdown reporting is required.
 	 *

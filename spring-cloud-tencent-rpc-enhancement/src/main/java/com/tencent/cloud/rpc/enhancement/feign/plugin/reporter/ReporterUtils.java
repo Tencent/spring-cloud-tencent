@@ -25,7 +25,7 @@ import java.util.Objects;
 
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
+import com.tencent.cloud.common.util.RequestLabelUtils;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
@@ -68,7 +68,7 @@ public final class ReporterUtils {
 			catch (UnsupportedEncodingException e) {
 				LOGGER.error("unsupported charset exception " + UTF_8, e);
 			}
-			resultRequest.setLabels(AbstractPolarisReporterAdapter.convertLabel(label));
+			resultRequest.setLabels(RequestLabelUtils.convertLabel(label));
 		}
 		URI uri = URI.create(request.url());
 		resultRequest.setMethod(uri.getPath());
