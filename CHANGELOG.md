@@ -10,4 +10,4 @@
 - [fix:fix nacos and consul registration.](https://github.com/Tencent/spring-cloud-tencent/pull/921)
 - [Documentation content changes: add circuitbreaker readme.](https://github.com/Tencent/spring-cloud-tencent/pull/930)
 - [fix: fix PolarisRouterServiceInstanceListSupplier npe with reactive feign.](https://github.com/Tencent/spring-cloud-tencent/pull/926)
-- - [feat:support webclient and gateway report call metrics](https://github.com/Tencent/spring-cloud-tencent/pull/924)
+- [feat:support webclient and gateway report call metrics](https://github.com/Tencent/spring-cloud-tencent/pull/924)

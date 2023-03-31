@@ -88,12 +88,13 @@ public class ExceptionPolarisReporter extends AbstractPolarisReporterAdapter imp
 			}
 			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.", retStatus.name(), request.httpMethod()
 					.name(), request.url(), response.status(), delay);
-			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(this.context, request, response, delay, retStatus);
-
-			HttpHeaders headers = new HttpHeaders();
-			response.headers().forEach((s, strings) -> headers.addAll(s, new ArrayList<>(strings)));
-			resultRequest.setRetStatus(getRetStatusFromRequest(headers, resultRequest.getRetStatus()));
-			resultRequest.setRuleName(getActiveRuleNameFromRequest(headers));
+			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(this.context, request, response,
+					delay, retStatus, serviceCallResult -> {
+						HttpHeaders headers = new HttpHeaders();
+						response.headers().forEach((s, strings) -> headers.addAll(s, new ArrayList<>(strings)));
+						serviceCallResult.setRetStatus(getRetStatusFromRequest(headers, serviceCallResult.getRetStatus()));
+						serviceCallResult.setRuleName(getActiveRuleNameFromRequest(headers));
+					});
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}

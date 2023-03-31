@@ -21,7 +21,7 @@
 
 1. 添加环境变量
 
-   - 北极星服务端地址：polaris_address=grpc://183.47.111.80:8091
+   - 北极星服务端地址：polaris_address=grpc://127.0.0.1:8091
    - 可观测性PushGateway地址：prometheus_address=127.0.0.1:9091
 
 2. 启动router-grayrelease-gateway应用
@@ -134,7 +134,7 @@
    
 1. 添加环境变量
 
-   - 北极星服务端地址：polaris_address=grpc://183.47.111.80:8091
+   - 北极星服务端地址：polaris_address=grpc://127.0.0.1:8091
    - 可观测性PushGateway地址：prometheus_address=127.0.0.1:9091
    - 环境标识：SCT_METADATA_CONTENT_env=blue
    - 透传环境标识：SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -148,7 +148,7 @@
 
 1. 添加环境变量
 
-   - 北极星服务端地址：polaris_address=grpc://183.47.111.80:8091
+   - 北极星服务端地址：polaris_address=grpc://127.0.0.1:8091
    - 可观测性PushGateway地址：prometheus_address=127.0.0.1:9091
    - 环境标识：SCT_METADATA_CONTENT_env=green
    - 透传环境标识：SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -161,7 +161,7 @@
 
 1. 添加环境变量
 
-   - 北极星服务端地址：polaris_address=grpc://183.47.111.80:8091
+   - 北极星服务端地址：polaris_address=grpc://127.0.0.1:8091
    - 可观测性PushGateway地址：prometheus_address=127.0.0.1:9091
    - 环境标识：SCT_METADATA_CONTENT_env=purple
    - 透传环境标识：SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -180,7 +180,7 @@
 
 1. 添加环境变量
 
-   - 北极星服务端地址：polaris_address=grpc://183.47.111.80:8091
+   - 北极星服务端地址：polaris_address=grpc://127.0.0.1:8091
    - 可观测性PushGateway地址：prometheus_address=127.0.0.1:9091
    - 环境标识：SCT_METADATA_CONTENT_env=blue
    - 透传环境标识：SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -195,7 +195,7 @@
 
 1. 添加环境变量
 
-   - 北极星服务端地址：polaris_address=grpc://183.47.111.80:8091
+   - 北极星服务端地址：polaris_address=grpc://127.0.0.1:8091
    - 可观测性PushGateway地址：prometheus_address=127.0.0.1:9091
    - 环境标识：SCT_METADATA_CONTENT_env=purple
    - 透传环境标识：SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -208,7 +208,7 @@
 
 1. 添加环境变量
 
-   - 北极星服务端地址：polaris_address=grpc://183.47.111.80:8091
+   - 北极星服务端地址：polaris_address=grpc://127.0.0.1:8091
    - 可观测性PushGateway地址：prometheus_address=127.0.0.1:9091
    - 环境标识：SCT_METADATA_CONTENT_env=blue
    - 透传环境标识：SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -222,7 +222,7 @@
 
 1. 添加环境变量
 
-   - 北极星服务端地址：polaris_address=grpc://183.47.111.80:8091
+   - 北极星服务端地址：polaris_address=grpc://127.0.0.1:8091
    - 可观测性PushGateway地址：prometheus_address=127.0.0.1:9091
    - 环境标识：SCT_METADATA_CONTENT_env=green
    - 透传环境标识：SCT_METADATA_CONTENT_TRANSITIVE=env

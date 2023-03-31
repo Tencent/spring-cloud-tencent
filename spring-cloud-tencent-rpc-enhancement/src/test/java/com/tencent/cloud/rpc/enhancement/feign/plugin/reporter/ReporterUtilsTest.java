@@ -103,7 +103,9 @@ public class ReporterUtilsTest {
 		Response response = mock(Response.class);
 		doReturn(502).when(response).status();
 
-		ServiceCallResult serviceCallResult = ReporterUtils.createServiceCallResult(mockSDKContext(), request, response, 10L, RetStatus.RetSuccess);
+		ServiceCallResult serviceCallResult = ReporterUtils.createServiceCallResult(mockSDKContext(), request, response, 10L, RetStatus.RetSuccess, result -> {
+
+		});
 		assertThat(serviceCallResult.getNamespace()).isEqualTo(NAMESPACE_TEST);
 		assertThat(serviceCallResult.getService()).isEqualTo(SERVICE_PROVIDER);
 		assertThat(serviceCallResult.getHost()).isEqualTo("1.1.1.1");

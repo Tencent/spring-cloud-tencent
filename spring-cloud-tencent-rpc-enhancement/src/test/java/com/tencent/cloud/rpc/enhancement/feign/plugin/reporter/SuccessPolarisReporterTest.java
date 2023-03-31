@@ -18,6 +18,7 @@
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
@@ -65,8 +66,9 @@ public class SuccessPolarisReporterTest {
 	@BeforeAll
 	static void beforeAll() {
 		mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
-		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(SDKContext.class), any(Request.class), any(Response.class), anyLong(), any(RetStatus.class)))
-				.thenReturn(mock(ServiceCallResult.class));
+		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(SDKContext.class), any(Request.class),
+						any(Response.class), anyLong(), any(RetStatus.class), any(Consumer.class)))
+				.thenReturn(new ServiceCallResult());
 	}
 
 	@AfterAll

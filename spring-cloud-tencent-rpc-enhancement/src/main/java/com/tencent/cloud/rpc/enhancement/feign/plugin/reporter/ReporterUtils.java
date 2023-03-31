@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -52,7 +53,8 @@ public final class ReporterUtils {
 	private ReporterUtils() {
 	}
 
-	public static ServiceCallResult createServiceCallResult(final SDKContext context, final Request request, final Response response, long delay, RetStatus retStatus) {
+	public static ServiceCallResult createServiceCallResult(final SDKContext context, final Request request,
+			final Response response, long delay, RetStatus retStatus, final Consumer<ServiceCallResult> consumer) {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
@@ -86,7 +88,7 @@ public final class ReporterUtils {
 		resultRequest.setHost(uri.getHost());
 		// -1 means access directly by url, and use http default port number 80
 		resultRequest.setPort(uri.getPort() == -1 ? 80 : uri.getPort());
-
+		consumer.accept(resultRequest);
 		return resultRequest;
 	}
 
