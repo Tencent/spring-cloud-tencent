@@ -295,7 +295,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 					.thenReturn(new ProcessRoutersResponse(new DefaultServiceInstances(null, new ArrayList<>())));
 
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, requestInterceptors, null);
+					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 
 			MockServerHttpRequest httpRequest = MockServerHttpRequest.get("/" + testCalleeService + "/users")
 					.header("k1", "v1")
