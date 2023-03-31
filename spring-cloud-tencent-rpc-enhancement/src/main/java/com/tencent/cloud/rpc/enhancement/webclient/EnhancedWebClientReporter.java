@@ -22,7 +22,6 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 import com.tencent.cloud.common.constant.HeaderConstant;
@@ -67,35 +66,6 @@ public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter im
 		super(reportProperties);
 		this.context = ((DefaultConsumerAPI) consumerAPI).getSDKContext();
 		this.consumerAPI = consumerAPI;
-	}
-
-	private static RetStatus getRetStatusFromRequest(ClientResponse response, RetStatus defaultVal) {
-		HttpHeaders headers = response.headers().asHttpHeaders();
-		if (headers.containsKey(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
-			List<String> values = headers.get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
-			if (CollectionUtils.isNotEmpty(values)) {
-				String retStatusVal = com.tencent.polaris.api.utils.StringUtils.defaultString(values.get(0));
-				if (Objects.equals(retStatusVal, RetStatus.RetFlowControl.getDesc())) {
-					return RetStatus.RetFlowControl;
-				}
-				if (Objects.equals(retStatusVal, RetStatus.RetReject.getDesc())) {
-					return RetStatus.RetReject;
-				}
-			}
-		}
-		return defaultVal;
-	}
-
-	private static String getActiveRuleNameFromRequest(ClientResponse response) {
-		HttpHeaders headers = response.headers().asHttpHeaders();
-		if (headers.containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
-			List<String> values = headers.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
-			if (CollectionUtils.isNotEmpty(values)) {
-				String val = com.tencent.polaris.api.utils.StringUtils.defaultString(values.get(0));
-				return val;
-			}
-		}
-		return "";
 	}
 
 	@Override
@@ -144,11 +114,13 @@ public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter im
 			RetStatus retStatus = RetStatus.RetSuccess;
 			ClientResponse response = signal.get();
 			if (Objects.nonNull(response)) {
-				callResult.setRuleName(getActiveRuleNameFromRequest(response));
+				HttpHeaders headers = response.headers().asHttpHeaders();
+
+				callResult.setRuleName(getActiveRuleNameFromRequest(headers));
 				if (apply(response.statusCode())) {
 					retStatus = RetStatus.RetFail;
 				}
-				retStatus = getRetStatusFromRequest(response, retStatus);
+				retStatus = getRetStatusFromRequest(headers, retStatus);
 			}
 			if (signal.isOnError()) {
 				Throwable throwable = signal.getThrowable();

@@ -21,13 +21,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -156,8 +153,8 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 			if (apply(response.getStatusCode())) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
-			resultRequest.setRetStatus(getRetStatusFromRequest(response, resultRequest.getRetStatus()));
-			resultRequest.setRuleName(getActiveRuleNameFromRequest(response));
+			resultRequest.setRetStatus(getRetStatusFromRequest(response.getHeaders(), resultRequest.getRetStatus()));
+			resultRequest.setRuleName(getActiveRuleNameFromRequest(response.getHeaders()));
 			if (Objects.nonNull(context)) {
 				resultRequest.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
 			}
@@ -234,30 +231,4 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		this.delegateHandler = delegateHandler;
 	}
 
-	private static RetStatus getRetStatusFromRequest(ClientHttpResponse response, RetStatus defaultVal) {
-		if (response.getHeaders().containsKey(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
-			List<String> values = response.getHeaders().get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
-			if (CollectionUtils.isNotEmpty(values)) {
-				String retStatusVal = com.tencent.polaris.api.utils.StringUtils.defaultString(values.get(0));
-				if (Objects.equals(retStatusVal, RetStatus.RetFlowControl.getDesc())) {
-					return RetStatus.RetFlowControl;
-				}
-				if (Objects.equals(retStatusVal, RetStatus.RetReject.getDesc())) {
-					return RetStatus.RetReject;
-				}
-			}
-		}
-		return defaultVal;
-	}
-
-	private static String getActiveRuleNameFromRequest(ClientHttpResponse response) {
-		if (response.getHeaders().containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
-			Collection<String> values = response.getHeaders().get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
-			if (CollectionUtils.isNotEmpty(values)) {
-				String val = com.tencent.polaris.api.utils.StringUtils.defaultString(new ArrayList<>(values).get(0));
-				return val;
-			}
-		}
-		return "";
-	}
 }

@@ -71,7 +71,10 @@ public class EnhancedPolarisHttpClient extends HttpClient {
 						.code()))) {
 					status = RetStatus.RetFail;
 				}
-				status = getRetStatusFromRequest(responseHeaders, status);
+				org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+				responseHeaders.forEach(entry -> headers.add(entry.getKey(), entry.getValue()));
+				status = adapter.getRetStatusFromRequest(headers, status);
+				result.setRuleName(adapter.getActiveRuleNameFromRequest(headers));
 			}
 			else {
 				if (throwable instanceof SocketTimeoutException) {
@@ -80,7 +83,6 @@ public class EnhancedPolarisHttpClient extends HttpClient {
 			}
 			result.setMethod(httpClientResponse.uri());
 			result.setRetCode(httpClientResponse.status().code());
-			result.setRuleName(getActiveRuleNameFromRequest(responseHeaders));
 			result.setRetStatus(status);
 			if (Objects.nonNull(context)) {
 				result.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
@@ -101,27 +103,6 @@ public class EnhancedPolarisHttpClient extends HttpClient {
 		this.target = client;
 		this.adapter = new Reporter(properties);
 		this.registerReportHandler();
-	}
-
-	private static RetStatus getRetStatusFromRequest(HttpHeaders headers, RetStatus defaultVal) {
-		if (headers.contains(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
-			String retStatusVal = headers.get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
-			if (Objects.equals(retStatusVal, RetStatus.RetFlowControl.getDesc())) {
-				return RetStatus.RetFlowControl;
-			}
-			if (Objects.equals(retStatusVal, RetStatus.RetReject.getDesc())) {
-				return RetStatus.RetReject;
-			}
-		}
-		return defaultVal;
-	}
-
-	private static String getActiveRuleNameFromRequest(HttpHeaders headers) {
-		if (headers.contains(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
-			String val = headers.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
-			return val;
-		}
-		return "";
 	}
 
 	@Override
@@ -172,6 +153,16 @@ public class EnhancedPolarisHttpClient extends HttpClient {
 		@Override
 		public boolean apply(HttpStatus httpStatus) {
 			return super.apply(httpStatus);
+		}
+
+		@Override
+		public RetStatus getRetStatusFromRequest(org.springframework.http.HttpHeaders headers, RetStatus defaultVal) {
+			return super.getRetStatusFromRequest(headers, defaultVal);
+		}
+
+		@Override
+		public String getActiveRuleNameFromRequest(org.springframework.http.HttpHeaders headers) {
+			return super.getActiveRuleNameFromRequest(headers);
 		}
 	}
 

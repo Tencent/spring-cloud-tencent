@@ -18,7 +18,9 @@
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 
+import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
@@ -33,13 +35,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
 
 /**
  * Polaris reporter when feign call fails.
  *
  * @author Haotian Zhang
  */
-public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
+public class ExceptionPolarisReporter extends AbstractPolarisReporterAdapter implements EnhancedFeignPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExceptionPolarisReporter.class);
 	private final RpcEnhancementReporterProperties reporterProperties;
@@ -48,9 +51,11 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 
 	private final SDKContext context;
 
+
 	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reporterProperties,
 			SDKContext context,
 			ConsumerAPI consumerAPI) {
+		super(reporterProperties);
 		this.reporterProperties = reporterProperties;
 		this.context = context;
 		this.consumerAPI = consumerAPI;
@@ -84,6 +89,11 @@ public class ExceptionPolarisReporter implements EnhancedFeignPlugin {
 			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.", retStatus.name(), request.httpMethod()
 					.name(), request.url(), response.status(), delay);
 			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(this.context, request, response, delay, retStatus);
+
+			HttpHeaders headers = new HttpHeaders();
+			response.headers().forEach((s, strings) -> headers.addAll(s, new ArrayList<>(strings)));
+			resultRequest.setRetStatus(getRetStatusFromRequest(headers, resultRequest.getRetStatus()));
+			resultRequest.setRuleName(getActiveRuleNameFromRequest(headers));
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}

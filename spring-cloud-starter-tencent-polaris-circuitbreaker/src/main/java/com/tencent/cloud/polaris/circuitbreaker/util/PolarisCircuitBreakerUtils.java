@@ -89,7 +89,7 @@ public final class PolarisCircuitBreakerUtils {
 			consumerAPI.updateServiceCallResult(result);
 		}
 		catch (Throwable ex) {
-			LOG.error("[CircuitBreaker]");
+			LOG.error("[CircuitBreaker] report circuitbreaker call result fail ", ex);
 		}
 	}
 
