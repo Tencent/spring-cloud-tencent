@@ -36,7 +36,7 @@ public class NacosInstanceTransformer implements InstanceTransformer {
 		if ("com.alibaba.cloud.nacos.NacosServiceInstance".equals(serviceInstance.getClass().getName())) {
 			String nacosWeight = serviceInstance.getMetadata().get("nacos.weight");
 			instance.setWeight(
-					StringUtils.isBlank(nacosWeight) ? 100 : new Double(Double.parseDouble(nacosWeight) * 100).intValue()
+					StringUtils.isBlank(nacosWeight) ? 100 : (int) Double.parseDouble(nacosWeight) * 100
 			);
 			String nacosHealthy = serviceInstance.getMetadata().get("nacos.healthy");
 			instance.setHealthy(
