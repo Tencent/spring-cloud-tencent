@@ -10,4 +10,4 @@
 - [fix:fix nacos and consul registration.](https://github.com/Tencent/spring-cloud-tencent/pull/921)
 - [Documentation content changes: add circuitbreaker readme.](https://github.com/Tencent/spring-cloud-tencent/pull/930)
 - [fix: fix PolarisRouterServiceInstanceListSupplier npe with reactive feign.](https://github.com/Tencent/spring-cloud-tencent/pull/926)
-- [fix: adapt for nacos instance.](https://github.com/Tencent/spring-cloud-tencent/pull/933)
+- [fix: adapt for nacos instance.](https://github.com/Tencent/spring-cloud-tencent/pull/935)
