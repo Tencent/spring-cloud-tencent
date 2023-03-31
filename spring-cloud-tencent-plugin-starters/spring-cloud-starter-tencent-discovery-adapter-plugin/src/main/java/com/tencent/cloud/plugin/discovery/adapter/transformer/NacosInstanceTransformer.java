@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.plugin.discovery.adapter.transformer;
 
-import com.alibaba.cloud.nacos.NacosServiceInstance;
 import com.tencent.cloud.polaris.router.spi.InstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import org.apache.commons.lang.StringUtils;
@@ -34,17 +33,16 @@ public class NacosInstanceTransformer implements InstanceTransformer {
 
 	@Override
 	public void transformCustom(DefaultInstance instance, ServiceInstance serviceInstance) {
-		if (serviceInstance instanceof NacosServiceInstance) {
-			NacosServiceInstance nacosServiceInstance = (NacosServiceInstance) serviceInstance;
-			String nacosWeight = nacosServiceInstance.getMetadata().get("nacos.weight");
+		if ("com.alibaba.cloud.nacos.NacosServiceInstance".equals(serviceInstance.getClass().getName())) {
+			String nacosWeight = serviceInstance.getMetadata().get("nacos.weight");
 			instance.setWeight(
 					StringUtils.isBlank(nacosWeight) ? 100 : new Double(Double.parseDouble(nacosWeight) * 100).intValue()
 			);
-			String nacosHealthy = nacosServiceInstance.getMetadata().get("nacos.healthy");
+			String nacosHealthy = serviceInstance.getMetadata().get("nacos.healthy");
 			instance.setHealthy(
 					!StringUtils.isBlank(nacosHealthy) && Boolean.parseBoolean(nacosHealthy)
 			);
-			String nacosInstanceId = nacosServiceInstance.getMetadata().get("nacos.instanceId");
+			String nacosInstanceId = serviceInstance.getMetadata().get("nacos.instanceId");
 			instance.setId(nacosInstanceId);
 		}
 	}
