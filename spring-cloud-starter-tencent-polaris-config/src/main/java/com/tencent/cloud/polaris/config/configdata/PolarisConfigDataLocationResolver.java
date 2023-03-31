@@ -264,6 +264,8 @@ public class PolarisConfigDataLocationResolver implements
 		List<PolarisConfigModifier> modifierList = modifierList(polarisConfigProperties, polarisContextProperties);
 		return SDKContext.initContextByConfig(polarisContextProperties.configuration(modifierList, () -> {
 			return loadPolarisConfigProperties(resolverContext, String.class, "spring.cloud.client.ip-address");
+		}, () -> {
+			return loadPolarisConfigProperties(resolverContext, Integer.class, "spring.cloud.polaris.local-port");
 		}));
 	}
 
