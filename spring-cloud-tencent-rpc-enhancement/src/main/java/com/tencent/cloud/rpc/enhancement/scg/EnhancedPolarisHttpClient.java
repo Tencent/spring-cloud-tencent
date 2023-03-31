@@ -34,6 +34,8 @@ import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.client.api.SDKContext;
 import io.netty.handler.codec.http.HttpHeaders;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.netty.Connection;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientConfig;
@@ -43,6 +45,8 @@ import reactor.netty.http.client.HttpClientResponse;
 import org.springframework.http.HttpStatus;
 
 public class EnhancedPolarisHttpClient extends HttpClient {
+
+	private static final Logger LOG = LoggerFactory.getLogger(EnhancedPolarisHttpClient.class);
 
 	private final RpcEnhancementReporterProperties properties;
 	private final SDKContext context;
@@ -87,7 +91,12 @@ public class EnhancedPolarisHttpClient extends HttpClient {
 			if (Objects.nonNull(context)) {
 				result.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
 			}
-			consumerAPI.updateServiceCallResult(result);
+			try {
+				consumerAPI.updateServiceCallResult(result);
+			}
+			catch (Throwable ex) {
+				LOG.error("update service call result fail", ex);
+			}
 		}
 	};
 	private HttpClient target;
