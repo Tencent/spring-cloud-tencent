@@ -70,10 +70,10 @@
 	</developers>
 
 	<properties>
-		<revision>1.11.0-2020.0.6-SNAPSHOT</revision>
+		<revision>1.10.3-2020.0.6</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.11.3-SNAPSHOT</polaris.version>
+		<polaris.version>1.11.3</polaris.version>
 		<guava.version>31.0.1-jre</guava.version>
 		<logback.version>1.2.11</logback.version>
 		<mocktio.version>4.5.1</mocktio.version>
@@ -162,6 +162,12 @@
 			</dependency>
 
 			<!-- spring cloud tencent plugins -->
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-discovery-adapter-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-featureenv-plugin</artifactId>
@@ -263,6 +269,7 @@
 				<version>${system-stubs-jupiter.version}</version>
 				<scope>test</scope>
 			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
