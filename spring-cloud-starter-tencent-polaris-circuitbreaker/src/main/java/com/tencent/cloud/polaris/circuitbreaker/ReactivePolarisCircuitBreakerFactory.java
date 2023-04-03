@@ -21,6 +21,7 @@ import java.util.function.Function;
 
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.polaris.circuitbreaker.util.PolarisCircuitBreakerUtils;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
@@ -46,10 +47,12 @@ public class ReactivePolarisCircuitBreakerFactory extends
 
 	private final CircuitBreakAPI circuitBreakAPI;
 
-	public ReactivePolarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI) {
-		this.circuitBreakAPI = circuitBreakAPI;
-	}
+	private final ConsumerAPI consumerAPI;
 
+	public ReactivePolarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
+		this.circuitBreakAPI = circuitBreakAPI;
+		this.consumerAPI = consumerAPI;
+	}
 
 	@Override
 	public ReactiveCircuitBreaker create(String id) {
