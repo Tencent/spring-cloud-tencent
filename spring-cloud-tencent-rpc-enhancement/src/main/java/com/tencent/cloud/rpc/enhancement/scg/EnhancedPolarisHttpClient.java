@@ -36,10 +36,8 @@ import io.netty.handler.codec.http.HttpHeaders;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.netty.Connection;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientConfig;
-import reactor.netty.http.client.HttpClientRequest;
 import reactor.netty.http.client.HttpClientResponse;
 
 import org.springframework.http.HttpStatus;
@@ -125,23 +123,20 @@ public class EnhancedPolarisHttpClient extends HttpClient {
 	}
 
 	private void registerReportHandler() {
-		target = target.doOnRequest(new BiConsumer<HttpClientRequest, Connection>() {
-			@Override
-			public void accept(HttpClientRequest request, Connection connection) {
-				String serviceId = request.requestHeaders().get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID);
-				String host = request.requestHeaders().get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST);
-				String port = request.requestHeaders().get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT);
-				if (StringUtils.isNotBlank(serviceId)) {
-					MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID, serviceId);
-					MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST, host);
-					MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT, port);
-					MetadataContextHolder.get().setLoadbalancer("startTime", System.currentTimeMillis() + "");
-				}
-
-				request.requestHeaders().remove(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID);
-				request.requestHeaders().remove(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST);
-				request.requestHeaders().remove(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT);
+		target = target.doOnRequest((request, connection) -> {
+			String serviceId = request.requestHeaders().get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID);
+			String host = request.requestHeaders().get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST);
+			String port = request.requestHeaders().get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT);
+			if (StringUtils.isNotBlank(serviceId)) {
+				MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID, serviceId);
+				MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST, host);
+				MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT, port);
+				MetadataContextHolder.get().setLoadbalancer("startTime", System.currentTimeMillis() + "");
 			}
+
+			request.requestHeaders().remove(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID);
+			request.requestHeaders().remove(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST);
+			request.requestHeaders().remove(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT);
 		});
 		target = target.doOnResponse((httpClientResponse, connection) -> handler.accept(httpClientResponse, null));
 		target = target.doOnResponseError(handler);

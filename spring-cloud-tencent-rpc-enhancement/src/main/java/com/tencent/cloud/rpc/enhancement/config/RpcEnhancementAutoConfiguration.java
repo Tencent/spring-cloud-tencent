@@ -158,7 +158,7 @@ public class RpcEnhancementAutoConfiguration {
 		@Bean
 		public ExchangeFilterFunction exchangeFilterFunction(
 				RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
-			return new EnhancedWebClientReporter(properties, consumerAPI);
+			return new EnhancedWebClientReporter(properties, context, consumerAPI);
 		}
 	}
 

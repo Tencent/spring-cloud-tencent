@@ -36,7 +36,6 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.discovery.client.api.DefaultConsumerAPI;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,18 +53,16 @@ import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter implements ExchangeFilterFunction {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedWebClientReporter.class);
-
-	private static final String METRICS_WEBCLIENT_START_TIME = EnhancedWebClientReporter.class.getName()
+	protected static final String METRICS_WEBCLIENT_START_TIME = EnhancedWebClientReporter.class.getName()
 			+ ".START_TIME";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedWebClientReporter.class);
 	private final ConsumerAPI consumerAPI;
 
 	private final SDKContext context;
 
-	public EnhancedWebClientReporter(RpcEnhancementReporterProperties reportProperties, ConsumerAPI consumerAPI) {
+	public EnhancedWebClientReporter(RpcEnhancementReporterProperties reportProperties, SDKContext context, ConsumerAPI consumerAPI) {
 		super(reportProperties);
-		this.context = ((DefaultConsumerAPI) consumerAPI).getSDKContext();
+		this.context = context;
 		this.consumerAPI = consumerAPI;
 	}
 
@@ -75,10 +72,10 @@ public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter im
 				.contextWrite(this::putStartTime);
 	}
 
-	private Mono<ClientResponse> instrumentResponse(ClientRequest request, Mono<ClientResponse> responseMono) {
+	Mono<ClientResponse> instrumentResponse(ClientRequest request, Mono<ClientResponse> responseMono) {
 		return Mono.deferContextual((ctx) -> responseMono.doOnEach((signal) -> {
 			// report result to polaris
-			if (reportProperties.isEnabled()) {
+			if (!reportProperties.isEnabled()) {
 				return;
 			}
 			ServiceCallResult callResult = new ServiceCallResult();
@@ -110,7 +107,9 @@ public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter im
 			callResult.setHost(uri.getHost());
 			// -1 means access directly by url, and use http default port number 80
 			callResult.setPort(uri.getPort() == -1 ? 80 : uri.getPort());
-			callResult.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
+			if (Objects.nonNull(context)) {
+				callResult.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
+			}
 
 			RetStatus retStatus = RetStatus.RetSuccess;
 			ClientResponse response = signal.get();
