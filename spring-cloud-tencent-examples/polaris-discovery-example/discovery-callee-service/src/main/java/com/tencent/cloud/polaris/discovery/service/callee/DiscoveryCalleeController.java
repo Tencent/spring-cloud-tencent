@@ -35,30 +35,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/discovery/service/callee")
 public class DiscoveryCalleeController {
 
-	private static Logger LOG = LoggerFactory.getLogger(DiscoveryCalleeController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DiscoveryCalleeController.class);
 
 	@Value("${server.port:0}")
 	private int port;
 
+	@Value("${spring.cloud.client.ip-address:127.0.0.1}")
+	private String ip;
+
 	/**
 	 * Get information of callee.
+	 *
 	 * @return information of callee
 	 */
 	@GetMapping("/info")
 	public String info() {
-		LOG.info("Discovery Service Callee [{}] is called.", port);
-		return String.format("Discovery Service Callee [%s] is called.", port);
+		LOG.info("Discovery Service Callee [{}:{}] is called.", ip, port);
+		return String.format("Discovery Service Callee [%s:%s] is called.", ip, port);
 	}
 
 	/**
 	 * Get sum of two value.
+	 *
 	 * @param value1 value 1
 	 * @param value2 value 2
 	 * @return sum
 	 */
 	@GetMapping("/sum")
 	public int sum(@RequestParam int value1, @RequestParam int value2) {
-		LOG.info("Discovery Service Callee is called and sum is {}.", value1 + value2);
+		LOG.info("Discovery Service Callee [{}:{}] is called and sum is {}.", ip, port, value1 + value2);
 		return value1 + value2;
 	}
 }
