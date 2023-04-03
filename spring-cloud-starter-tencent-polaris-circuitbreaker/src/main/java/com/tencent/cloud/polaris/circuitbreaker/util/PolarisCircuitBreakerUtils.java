@@ -79,13 +79,6 @@ public final class PolarisCircuitBreakerUtils {
 			if (Objects.nonNull(e.getFallbackInfo())) {
 				result.setRetCode(e.getFallbackInfo().getCode());
 			}
-
-			String callerIp = ((DefaultConsumerAPI) consumerAPI).getSDKContext().getConfig().getGlobal().getAPI()
-					.getBindIP();
-			if (StringUtils.isNotBlank(callerIp)) {
-				result.setCallerIp(callerIp);
-			}
-
 			consumerAPI.updateServiceCallResult(result);
 		}
 		catch (Throwable ex) {
