@@ -17,6 +17,55 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.util;
 
+import java.util.HashMap;
+
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
+import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
+import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
+import static org.mockito.ArgumentMatchers.anyString;
+
 public class PolarisCircuitBreakerUtilsTests {
+
+	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
+
+
+	@BeforeAll
+	static void beforeAll() {
+		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
+		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+				.thenReturn("unit-test");
+	}
+
+	@AfterAll
+	static void afterAll() {
+		mockedApplicationContextAwareUtils.close();
+	}
+
+	@BeforeEach
+	void setUp() {
+		MetadataContext.LOCAL_NAMESPACE = NAMESPACE_TEST;
+		MetadataContext.LOCAL_SERVICE = SERVICE_PROVIDER;
+	}
+
+	@Test
+	public void testReportStatus() {
+		ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+		Mockito.doNothing().when(consumerAPI).updateServiceCallResult(new ServiceCallResult());
+		PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf = new PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration();
+		PolarisCircuitBreakerUtils.reportStatus(consumerAPI, conf, new CallAbortedException("mock", new CircuitBreakerStatus.FallbackInfo(0, new HashMap<>(), "")));
+	}
 
 }
