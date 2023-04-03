@@ -97,7 +97,7 @@ public class QuotaCheckReactiveFilterTest {
 				return new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultLimited, 0, "QuotaResultLimited"));
 			}
 			else {
-				return new QuotaResponse(new QuotaResult(null, 0, null));
+				return new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultOk, 0, null));
 			}
 		});
 
