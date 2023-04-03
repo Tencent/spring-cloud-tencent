@@ -26,8 +26,6 @@ import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
-import com.tencent.polaris.discovery.client.api.DefaultConsumerAPI;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,13 +77,6 @@ public final class PolarisCircuitBreakerUtils {
 			if (Objects.nonNull(e.getFallbackInfo())) {
 				result.setRetCode(e.getFallbackInfo().getCode());
 			}
-
-			String callerIp = ((DefaultConsumerAPI) consumerAPI).getSDKContext().getConfig().getGlobal().getAPI()
-					.getBindIP();
-			if (StringUtils.isNotBlank(callerIp)) {
-				result.setCallerIp(callerIp);
-			}
-
 			consumerAPI.updateServiceCallResult(result);
 		}
 		catch (Throwable ex) {
