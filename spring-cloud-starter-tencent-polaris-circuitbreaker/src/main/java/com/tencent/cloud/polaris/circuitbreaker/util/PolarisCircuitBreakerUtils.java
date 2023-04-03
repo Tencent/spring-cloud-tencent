@@ -25,9 +25,7 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
-import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
-import com.tencent.polaris.discovery.client.api.DefaultConsumerAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
