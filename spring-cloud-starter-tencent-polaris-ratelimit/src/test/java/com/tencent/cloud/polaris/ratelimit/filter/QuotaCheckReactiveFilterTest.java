@@ -94,7 +94,9 @@ public class QuotaCheckReactiveFilterTest {
 				return new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultOk, 1000, "QuotaResultOk"));
 			}
 			else if (serviceName.equals("TestApp3")) {
-				return new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultLimited, 0, "QuotaResultLimited"));
+				QuotaResponse response = new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultLimited, 0, "QuotaResultLimited"));
+				response.setActiveRule(RateLimitProto.Rule.newBuilder().build());
+				return response;
 			}
 			else {
 				return new QuotaResponse(new QuotaResult(null, 0, null));
