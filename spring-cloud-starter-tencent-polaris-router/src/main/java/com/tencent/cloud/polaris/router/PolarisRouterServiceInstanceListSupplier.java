@@ -33,6 +33,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerRequest;
+import com.tencent.cloud.polaris.router.spi.InstanceTransformer;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
 import com.tencent.polaris.api.exception.ErrorCode;
@@ -73,14 +74,16 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 	private final RouterAPI routerAPI;
 	private final List<RouterRequestInterceptor> requestInterceptors;
 	private final List<RouterResponseInterceptor> responseInterceptors;
+	private final InstanceTransformer instanceTransformer;
 
 	public PolarisRouterServiceInstanceListSupplier(ServiceInstanceListSupplier delegate,
 			RouterAPI routerAPI, List<RouterRequestInterceptor> requestInterceptors,
-			List<RouterResponseInterceptor> responseInterceptors) {
+			List<RouterResponseInterceptor> responseInterceptors, InstanceTransformer instanceTransformer) {
 		super(delegate);
 		this.routerAPI = routerAPI;
 		this.requestInterceptors = requestInterceptors;
 		this.responseInterceptors = responseInterceptors;
+		this.instanceTransformer = instanceTransformer;
 	}
 
 	@Override
@@ -143,7 +146,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 	}
 
 	Flux<List<ServiceInstance>> doRouter(Flux<List<ServiceInstance>> allServers, PolarisRouterContext routerContext) {
-		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(allServers);
+		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(allServers, instanceTransformer);
 
 		List<ServiceInstance> filteredInstances = new ArrayList<>();
 		if (serviceInstances.getInstances().size() > 0) {
