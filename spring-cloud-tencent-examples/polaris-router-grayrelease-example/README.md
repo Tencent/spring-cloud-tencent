@@ -21,7 +21,7 @@ Incoming requests dispatched from Gateway service to 3 environments:
 
 1. add environment variables
 
-   - polaris server address: polaris_address=grpc://183.47.111.80:8091
+   - polaris server address: polaris_address=grpc://127.0.0.1:8091
    - pushgateway address: prometheus_address=127.0.0.1:9091
 
 2. start router-grayrelease-gateway application
@@ -134,7 +134,7 @@ Incoming requests dispatched from Gateway service to 3 environments:
    
 1. add environment variables
 
-   - polaris server address: polaris_address=grpc://183.47.111.80:8091
+   - polaris server address: polaris_address=grpc://127.0.0.1:8091
    - pushgateway address: prometheus_address=127.0.0.1:9091
    - env tag: SCT_METADATA_CONTENT_env=blue
    - transitive tag: SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -148,7 +148,7 @@ Incoming requests dispatched from Gateway service to 3 environments:
 
 1. add environment variables
 
-   - polaris server address: polaris_address=grpc://183.47.111.80:8091
+   - polaris server address: polaris_address=grpc://127.0.0.1:8091
    - pushgateway address: prometheus_address=127.0.0.1:9091
    - env tag: SCT_METADATA_CONTENT_env=green
    - transitive tag: SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -161,7 +161,7 @@ Incoming requests dispatched from Gateway service to 3 environments:
 
 1. add environment variables
 
-   - polaris server address: polaris_address=grpc://183.47.111.80:8091
+   - polaris server address: polaris_address=grpc://127.0.0.1:8091
    - pushgateway address: prometheus_address=127.0.0.1:9091
    - env tag: SCT_METADATA_CONTENT_env=purple
    - transitive tag: SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -180,7 +180,7 @@ You can find the instances with different tags in polaris console.
    
 1. add environment variables
 
-   - polaris server address: polaris_address=grpc://183.47.111.80:8091
+   - polaris server address: polaris_address=grpc://127.0.0.1:8091
    - pushgateway address: prometheus_address=127.0.0.1:9091
    - env tag: SCT_METADATA_CONTENT_env=blue
    - transitive tag: SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -194,7 +194,7 @@ You can find the instances with different tags in polaris console.
 
 1. add environment variables
 
-   - polaris server address: polaris_address=grpc://183.47.111.80:8091
+   - polaris server address: polaris_address=grpc://127.0.0.1:8091
    - pushgateway address: prometheus_address=127.0.0.1:9091
    - env tag: SCT_METADATA_CONTENT_env=purple
    - transitive tag: SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -207,7 +207,7 @@ You can find the instances with different tags in polaris console.
    
 1. add environment variables
 
-   - polaris server address: polaris_address=grpc://183.47.111.80:8091
+   - polaris server address: polaris_address=grpc://127.0.0.1:8091
    - pushgateway address: prometheus_address=127.0.0.1:9091
    - env tag: SCT_METADATA_CONTENT_env=blue
    - transitive tag: SCT_METADATA_CONTENT_TRANSITIVE=env
@@ -221,7 +221,7 @@ You can find the instances with different tags in polaris console.
 
 1. add environment variables
 
-   - polaris server address: polaris_address=grpc://183.47.111.80:8091
+   - polaris server address: polaris_address=grpc://127.0.0.1:8091
    - pushgateway address: prometheus_address=127.0.0.1:9091
    - env tag: SCT_METADATA_CONTENT_env=green
    - transitive tag: SCT_METADATA_CONTENT_TRANSITIVE=env
