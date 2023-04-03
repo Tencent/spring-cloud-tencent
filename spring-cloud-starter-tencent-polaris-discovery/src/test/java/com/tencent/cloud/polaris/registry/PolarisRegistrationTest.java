@@ -88,6 +88,13 @@ public class PolarisRegistrationTest {
 		nacosContextProperties = mock(NacosContextProperties.class);
 		doReturn(true).when(nacosContextProperties).isEnabled();
 		doReturn(true).when(nacosContextProperties).isRegisterEnabled();
+		doReturn("/").when(nacosContextProperties).getContextPath();
+		doReturn("cluster").when(nacosContextProperties).getClusterName();
+		doReturn("").when(nacosContextProperties).getGroup();
+		doReturn(true).when(nacosContextProperties).isDiscoveryEnabled();
+		doReturn("").when(nacosContextProperties).getPassword();
+		doReturn("").when(nacosContextProperties).getUsername();
+		doReturn("").when(nacosContextProperties).getServerAddr();
 
 		// mock SDKContext
 		APIConfig apiConfig = mock(APIConfig.class);
@@ -176,7 +183,7 @@ public class PolarisRegistrationTest {
 		Map<String, String> metadata = polarisRegistration1.getMetadata();
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
-		assertThat(metadata.size()).isEqualTo(3);
+		assertThat(metadata.size()).isEqualTo(4);
 		assertThat(metadata.get("key1")).isEqualTo("value1");
 	}
 
