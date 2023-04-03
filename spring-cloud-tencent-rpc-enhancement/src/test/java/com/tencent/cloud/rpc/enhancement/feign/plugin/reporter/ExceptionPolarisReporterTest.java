@@ -20,6 +20,8 @@ package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
@@ -28,9 +30,12 @@ import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
+import feign.RequestTemplate;
 import feign.Response;
+import feign.Target;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,9 +44,12 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -56,6 +64,7 @@ import static org.mockito.Mockito.verify;
 public class ExceptionPolarisReporterTest {
 
 	private static MockedStatic<ReporterUtils> mockedReporterUtils;
+	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
 	private ConsumerAPI consumerAPI;
 	@Mock
@@ -65,6 +74,9 @@ public class ExceptionPolarisReporterTest {
 
 	@BeforeAll
 	static void beforeAll() {
+		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
+		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+				.thenReturn("unit-test");
 		mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
 		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(SDKContext.class), any(Request.class),
 						any(Response.class), anyLong(), any(RetStatus.class), any(Consumer.class)))
@@ -73,7 +85,14 @@ public class ExceptionPolarisReporterTest {
 
 	@AfterAll
 	static void afterAll() {
+		mockedApplicationContextAwareUtils.close();
 		mockedReporterUtils.close();
+	}
+
+	@BeforeEach
+	void setUp() {
+		MetadataContext.LOCAL_NAMESPACE = NAMESPACE_TEST;
+		MetadataContext.LOCAL_SERVICE = SERVICE_PROVIDER;
 	}
 
 	@Test
@@ -103,6 +122,33 @@ public class ExceptionPolarisReporterTest {
 		doReturn(true).when(reporterProperties).isEnabled();
 		exceptionPolarisReporter.run(context);
 		verify(context, times(1)).getRequest();
+
+
+		try {
+			mockedReporterUtils.close();
+			// mock target
+			Target<?> target = mock(Target.class);
+			doReturn(SERVICE_PROVIDER).when(target).name();
+
+			// mock RequestTemplate.class
+			RequestTemplate requestTemplate = new RequestTemplate();
+			requestTemplate.feignTarget(target);
+
+			EnhancedFeignContext feignContext = new EnhancedFeignContext();
+			request = Request.create(Request.HttpMethod.GET, "/", new HashMap<>(), null, null, requestTemplate);
+			response = Response.builder()
+					.request(request)
+					.build();
+			feignContext.setRequest(request);
+			feignContext.setResponse(response);
+			exceptionPolarisReporter.run(feignContext);
+		}
+		finally {
+			mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
+			mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(SDKContext.class), any(Request.class),
+							any(Response.class), anyLong(), any(RetStatus.class), any(Consumer.class)))
+					.thenReturn(new ServiceCallResult());
+		}
 	}
 
 	@Test
