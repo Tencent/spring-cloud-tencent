@@ -42,7 +42,8 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.stat.host=127.0.0.1")
 			.withPropertyValues("spring.cloud.polaris.stat.port=20000")
 			.withPropertyValues("spring.cloud.polaris.stat.path=/xxx")
-			.withPropertyValues("spring.application.name=test");
+			.withPropertyValues("spring.application.name=test")
+			.withPropertyValues("spring.cloud.gateway.enabled=false");
 
 	private final ApplicationContextRunner pushContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
@@ -51,13 +52,15 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
-			.withPropertyValues("spring.application.name=test");
+			.withPropertyValues("spring.application.name=test")
+			.withPropertyValues("spring.cloud.gateway.enabled=false");
 
 	private final ApplicationContextRunner disabledContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.enabled=false")
-			.withPropertyValues("spring.application.name=test");
+			.withPropertyValues("spring.application.name=test")
+			.withPropertyValues("spring.cloud.gateway.enabled=false");
 
 	@Test
 	void testPull() {
