@@ -1,0 +1,20 @@
+server:
+  port: 58080
+spring:
+  application:
+    name: RateLimitCallerService
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-ratelimit
+logging:
+  level:
+    com.tencent.cloud.polaris: debug

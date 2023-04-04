@@ -31,10 +31,12 @@ import java.util.stream.Collectors;
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
 import com.tencent.polaris.client.util.Utils;
+import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
@@ -104,8 +106,9 @@ public class PolarisCircuitBreakerMockServerTest {
 	public void testCircuitBreaker() {
 		Configuration configuration = TestUtils.configWithEnvAddress();
 		CircuitBreakAPI circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
 
-		PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = new PolarisCircuitBreakerFactory(circuitBreakAPI);
+		PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
 		CircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
 
 		// trigger fallback for 5 times
@@ -126,7 +129,7 @@ public class PolarisCircuitBreakerMockServerTest {
 		assertThat(resList).isEqualTo(Arrays.asList("invoke success", "fallback", "fallback", "fallback", "fallback"));
 
 		// always fallback
-		ReactivePolarisCircuitBreakerFactory reactivePolarisCircuitBreakerFactory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI);
+		ReactivePolarisCircuitBreakerFactory reactivePolarisCircuitBreakerFactory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
 		ReactiveCircuitBreaker rcb = reactivePolarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
 
 		assertThat(Mono.just("foobar").transform(it -> rcb.run(it, t -> Mono.just("fallback")))

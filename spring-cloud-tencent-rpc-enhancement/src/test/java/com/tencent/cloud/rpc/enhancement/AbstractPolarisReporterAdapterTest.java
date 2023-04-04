@@ -17,10 +17,13 @@
 
 package com.tencent.cloud.rpc.enhancement;
 
+import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.polaris.api.pojo.RetStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -102,6 +105,48 @@ public class AbstractPolarisReporterAdapterTest {
 		Assertions.assertThat(adapter.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
 		Assertions.assertThat(adapter.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(false);
 		Assertions.assertThat(adapter.apply(HttpStatus.FORBIDDEN)).isEqualTo(true);
+	}
+
+	@Test
+	public void testGetRetStatusFromRequest() {
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
+		// Mock Condition
+		properties.getStatuses().clear();
+		properties.getSeries().clear();
+		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
+
+		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties);
+
+		HttpHeaders headers = new HttpHeaders();
+		RetStatus ret = adapter.getRetStatusFromRequest(headers, RetStatus.RetFail);
+		Assertions.assertThat(ret).isEqualTo(RetStatus.RetFail);
+
+		headers.set(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
+		ret = adapter.getRetStatusFromRequest(headers, RetStatus.RetFail);
+		Assertions.assertThat(ret).isEqualTo(RetStatus.RetFlowControl);
+
+		headers.set(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetReject.getDesc());
+		ret = adapter.getRetStatusFromRequest(headers, RetStatus.RetFail);
+		Assertions.assertThat(ret).isEqualTo(RetStatus.RetReject);
+	}
+
+	@Test
+	public void testGetActiveRuleNameFromRequest() {
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
+		// Mock Condition
+		properties.getStatuses().clear();
+		properties.getSeries().clear();
+		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
+
+		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties);
+
+		HttpHeaders headers = new HttpHeaders();
+		String ruleName = adapter.getActiveRuleNameFromRequest(headers);
+		Assertions.assertThat(ruleName).isEqualTo("");
+
+		headers.set(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, "mock_rule");
+		ruleName = adapter.getActiveRuleNameFromRequest(headers);
+		Assertions.assertThat(ruleName).isEqualTo("mock_rule");
 	}
 
 	/**

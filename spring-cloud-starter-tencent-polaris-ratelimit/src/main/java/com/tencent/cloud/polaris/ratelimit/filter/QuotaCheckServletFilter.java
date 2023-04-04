@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
@@ -35,6 +36,7 @@ import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentServlet
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.cloud.polaris.ratelimit.utils.RateLimitUtils;
+import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.Argument;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
@@ -110,6 +112,10 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 					response.setStatus(polarisRateLimitProperties.getRejectHttpCode());
 					response.setContentType("text/html;charset=UTF-8");
 					response.getWriter().write(rejectTips);
+				}
+				response.addHeader(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
+				if (Objects.nonNull(quotaResponse.getActiveRule())) {
+					response.addHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, quotaResponse.getActiveRule().getName().getValue());
 				}
 				return;
 			}

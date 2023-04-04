@@ -24,6 +24,7 @@ import com.tencent.cloud.polaris.circuitbreaker.ReactivePolarisCircuitBreakerFac
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
 import com.tencent.polaris.client.api.SDKContext;
@@ -60,8 +61,8 @@ public class ReactivePolarisCircuitBreakerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveCircuitBreakerFactory.class)
-	public ReactiveCircuitBreakerFactory polarisReactiveCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI) {
-		ReactivePolarisCircuitBreakerFactory factory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI);
+	public ReactiveCircuitBreakerFactory polarisReactiveCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
+		ReactivePolarisCircuitBreakerFactory factory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
 		customizers.forEach(customizer -> customizer.customize(factory));
 		return factory;
 	}

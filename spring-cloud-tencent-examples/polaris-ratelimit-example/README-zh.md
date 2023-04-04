@@ -27,12 +27,14 @@
     - 在北极星服务端，可以通过控制台，在命名空间Production下，添加服务RateLimitCalleeService。
     - 启动服务被调方：
       1. IDE直接启动：找到主类 `RateLimitCalleeService`，执行 main 方法启动应用。
-      2. 打包编译后启动：首先执行 `mvn clean package` 将工程编译打包，然后执行 `java -jar ratelimit-callee-sevice-${verion}.jar`启动应用。  
+      2. 打包编译后启动：首先执行 `mvn clean package` 将工程编译打包
+         - 执行 `java -jar ratelimit-callee-sevice-${verion}.jar`启动应用
+         - 执行 `java -jar ratelimit-caller-sevice-${verion}.jar`启动应用
     - 启动后，可以在北极星控制台上看到注册上来的服务实例信息。
 
 3. 调用服务
     
-    通过浏览器访问http://127.0.0.1:48081/business/invoke，可以看到以下输出信息：
+    通过浏览器访问http://127.0.0.1:58080/business/invoke，可以看到以下输出信息：
     ````
    hello world for ratelimit service 1
    hello world for ratelimit service 2
