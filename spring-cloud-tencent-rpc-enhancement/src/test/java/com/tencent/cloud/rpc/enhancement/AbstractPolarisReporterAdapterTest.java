@@ -125,6 +125,10 @@ public class AbstractPolarisReporterAdapterTest {
 		headers.set(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
 		ret = adapter.getRetStatusFromRequest(headers, RetStatus.RetFail);
 		Assertions.assertThat(ret).isEqualTo(RetStatus.RetFlowControl);
+
+		headers.set(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetReject.getDesc());
+		ret = adapter.getRetStatusFromRequest(headers, RetStatus.RetFail);
+		Assertions.assertThat(ret).isEqualTo(RetStatus.RetReject);
 	}
 
 	@Test
