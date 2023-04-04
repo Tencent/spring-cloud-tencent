@@ -30,7 +30,11 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisR
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
+import com.tencent.cloud.rpc.enhancement.scg.EnhancedPolarisHttpClientCustomizer;
+import com.tencent.cloud.rpc.enhancement.scg.EnhancedPolarisHttpHeadersFilter;
+import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +46,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.gateway.config.HttpClientCustomizer;
+import org.springframework.cloud.gateway.filter.headers.HttpHeadersFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 
 /**
  * Auto Configuration for Polaris {@link feign.Feign} OR {@link RestTemplate} which can automatically bring in the call
@@ -89,14 +96,16 @@ public class RpcEnhancementAutoConfiguration {
 
 			@Bean
 			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties,
-																@Autowired(required = false) ConsumerAPI consumerAPI) {
-				return new SuccessPolarisReporter(properties, consumerAPI);
+					@Autowired(required = false) SDKContext context,
+					@Autowired(required = false) ConsumerAPI consumerAPI) {
+				return new SuccessPolarisReporter(properties, context, consumerAPI);
 			}
 
 			@Bean
 			public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
-																	@Autowired(required = false) ConsumerAPI consumerAPI) {
-				return new ExceptionPolarisReporter(properties, consumerAPI);
+					@Autowired(required = false) SDKContext context,
+					@Autowired(required = false) ConsumerAPI consumerAPI) {
+				return new ExceptionPolarisReporter(properties, context, consumerAPI);
 			}
 		}
 	}
@@ -117,8 +126,8 @@ public class RpcEnhancementAutoConfiguration {
 
 		@Bean
 		public EnhancedRestTemplateReporter enhancedRestTemplateReporter(
-				RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI) {
-			return new EnhancedRestTemplateReporter(properties, consumerAPI);
+				RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
+			return new EnhancedRestTemplateReporter(properties, context, consumerAPI);
 		}
 
 		@Bean
@@ -136,5 +145,45 @@ public class RpcEnhancementAutoConfiguration {
 		public BlockingLoadBalancerClientAspect blockingLoadBalancerClientAspect() {
 			return new BlockingLoadBalancerClientAspect();
 		}
+	}
+
+
+	/**
+	 * Configuration for Polaris {@link org.springframework.web.reactive.function.client.WebClient} which can automatically bring in the call
+	 * results for reporting.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.springframework.web.reactive.function.client.WebClient")
+	protected static class PolarisWebClientAutoConfiguration {
+
+		@Bean
+		public ExchangeFilterFunction exchangeFilterFunction(
+				RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
+			return new EnhancedWebClientReporter(properties, context, consumerAPI);
+		}
+	}
+
+	/**
+	 * Configuration for Polaris {@link org.springframework.web.reactive.function.client.WebClient} which can automatically bring in the call
+	 * results for reporting.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.config.GatewayAutoConfiguration")
+	@Role(RootBeanDefinition.ROLE_INFRASTRUCTURE)
+	protected static class PolarisGatewayAutoConfiguration {
+
+		@Bean
+		@ConditionalOnClass(name = {"org.springframework.cloud.gateway.filter.headers.HttpHeadersFilter"})
+		public HttpHeadersFilter enhancedPolarisHttpHeadersFilter() {
+			return new EnhancedPolarisHttpHeadersFilter();
+		}
+
+		@Bean
+		@ConditionalOnClass(name = {"org.springframework.cloud.gateway.config.HttpClientCustomizer"})
+		public HttpClientCustomizer httpClientCustomizer(
+				RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
+			return new EnhancedPolarisHttpClientCustomizer(properties, context, consumerAPI);
+		}
+
 	}
 }
