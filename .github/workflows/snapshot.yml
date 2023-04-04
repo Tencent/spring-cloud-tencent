@@ -10,8 +10,27 @@ on:
       - greenwich
 
 jobs:
+  check-snapshot:
+    runs-on: ubuntu-latest
+    outputs:
+      IS_SNAPSHOT: ${{ steps.set_output_1.outputs.IS_SNAPSHOT }}
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v3
+      - name: Check deploy type
+        id: set_output_1
+        run: |
+          line="$(grep SNAPSHOT pom.xml || true)"
+          echo $line
+          if [ -n "$line" ]; then
+            echo "IS_SNAPSHOT=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_SNAPSHOT=false" >> $GITHUB_OUTPUT
+          fi
   snapshot:
     runs-on: ubuntu-latest
+    needs: check-snapshot
+    if: ${{ needs.check-snapshot.outputs.IS_SNAPSHOT == 'true' }}
     steps:
       - name: Checkout codes
         uses: actions/checkout@v3
