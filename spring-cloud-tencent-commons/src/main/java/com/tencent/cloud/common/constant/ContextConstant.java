@@ -62,7 +62,7 @@ public final class ContextConstant {
 		/**
 		 * Order of circuit breaker configuration modifier.
 		 */
-		public static Integer CIRCUIT_BREAKER_ORDER = 1;
+		public static Integer CIRCUIT_BREAKER_ORDER = 2;
 
 		/**
 		 * Order of discovery configuration modifier.

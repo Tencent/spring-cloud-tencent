@@ -13,4 +13,4 @@ spring:
         port: 28083
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: 9.134.5.52:8848
