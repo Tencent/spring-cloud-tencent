@@ -32,13 +32,14 @@ Examples provided by Polaris all support to run at IDE, or compile and run with 
 - Launch callee server:
 
    1. Launch IDE directly: First find `RateLimitCalleeService`, execute main then launch application
-   2. compile package then launch: first execute `mvn clean package` compile the package, then execute  `java -jar ratelimit-callee-sevice-${verion}.jar` execute the application
-
+   2. compile package then launch: first execute `mvn clean package` compile the package
+      - then execute  `java -jar ratelimit-callee-sevice-${verion}.jar` execute the application
+      - then execute  `java -jar ratelimit-caller-sevice-${verion}.jar` execute the application
    - After launching, one can watch server instance from Polaris control panel
 
    3. Invoke Service
 
-  After visiting http://127.0.0.1:48081/business/invoke, one can see the following information:
+  After visiting http://127.0.0.1:58080/business/invoke, one can see the following information:
 
    ````
   hello world for ratelimit service 1
@@ -61,7 +62,7 @@ Examples provided by Polaris all support to run at IDE, or compile and run with 
       ![](polaris-ratelimit-ui.png)
 
 5. Verify rate limit result
-   continue visit http://127.0.0.1:48081/business/invoke, one can see, after 10 invokes, rate limit will start:
+   continue visit http://127.0.0.1:68080/business/invoke, one can see, after 10 invokes, rate limit will start:
 
   ````
    hello world for ratelimit service 1

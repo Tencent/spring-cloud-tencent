@@ -48,6 +48,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
  *
  * @author Haotian Zhang
  */
+@Deprecated
 @RestController
 @RequestMapping("/business")
 public class BusinessController {

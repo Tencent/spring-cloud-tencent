@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
+import java.util.ArrayList;
+
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
@@ -25,12 +27,14 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -44,8 +48,11 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 	private final ConsumerAPI consumerAPI;
 
-	public SuccessPolarisReporter(RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI) {
+	private final SDKContext context;
+
+	public SuccessPolarisReporter(RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
 		super(properties);
+		this.context = context;
 		this.consumerAPI = consumerAPI;
 	}
 
@@ -75,7 +82,13 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 			}
 			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.", retStatus.name(), request.httpMethod()
 					.name(), request.url(), response.status(), delay);
-			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(request, response, delay, retStatus);
+			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(this.context, request, response,
+					delay, retStatus, serviceCallResult -> {
+						HttpHeaders headers = new HttpHeaders();
+						response.headers().forEach((s, strings) -> headers.addAll(s, new ArrayList<>(strings)));
+						serviceCallResult.setRetStatus(getRetStatusFromRequest(headers, serviceCallResult.getRetStatus()));
+						serviceCallResult.setRuleName(getActiveRuleNameFromRequest(headers));
+					});
 			consumerAPI.updateServiceCallResult(resultRequest);
 		}
 	}
