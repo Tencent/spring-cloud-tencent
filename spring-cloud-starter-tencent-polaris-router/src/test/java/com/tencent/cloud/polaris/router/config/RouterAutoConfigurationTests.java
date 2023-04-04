@@ -42,6 +42,7 @@ public class RouterAutoConfigurationTests {
 					TestRestTemplatesConfiguration.class,
 					MetadataAutoConfiguration.class,
 					RouterAutoConfiguration.class,
+					RouterBootstrapAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
 					RouterAutoConfiguration.RouterLabelRestTemplateConfig.class,
 					ApplicationContextAwareUtils.class
