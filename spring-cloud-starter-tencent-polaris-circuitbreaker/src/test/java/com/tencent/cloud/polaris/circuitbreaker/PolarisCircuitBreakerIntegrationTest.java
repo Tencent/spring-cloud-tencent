@@ -39,6 +39,7 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
+import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.client.util.Utils;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
@@ -175,9 +176,9 @@ public class PolarisCircuitBreakerIntegrationTest {
 
 		@Bean
 		@PolarisCircuitBreaker(fallback = "fallback")
-		public RestTemplate defaultRestTemplate(RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI) {
+		public RestTemplate defaultRestTemplate(RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
 			RestTemplate defaultRestTemplate = new RestTemplate();
-			EnhancedRestTemplateReporter enhancedRestTemplateReporter = new EnhancedRestTemplateReporter(properties, consumerAPI);
+			EnhancedRestTemplateReporter enhancedRestTemplateReporter = new EnhancedRestTemplateReporter(properties, context, consumerAPI);
 			defaultRestTemplate.setErrorHandler(enhancedRestTemplateReporter);
 			return defaultRestTemplate;
 		}

@@ -40,7 +40,8 @@ public class PolarisStatPropertiesTest {
 			.withPropertyValues("spring.cloud.polaris.stat.path=/xxx")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091")
-			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000");
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
+			.withPropertyValues("spring.cloud.gateway.enabled=false");
 
 	@Test
 	public void testDefaultInitialization() {

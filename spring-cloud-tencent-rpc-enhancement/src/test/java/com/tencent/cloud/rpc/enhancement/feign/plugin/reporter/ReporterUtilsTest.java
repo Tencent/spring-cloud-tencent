@@ -23,8 +23,12 @@ import java.net.URLEncoder;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.config.global.APIConfig;
+import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
@@ -99,7 +103,9 @@ public class ReporterUtilsTest {
 		Response response = mock(Response.class);
 		doReturn(502).when(response).status();
 
-		ServiceCallResult serviceCallResult = ReporterUtils.createServiceCallResult(request, response, 10L, RetStatus.RetSuccess);
+		ServiceCallResult serviceCallResult = ReporterUtils.createServiceCallResult(mockSDKContext(), request, response, 10L, RetStatus.RetSuccess, result -> {
+
+		});
 		assertThat(serviceCallResult.getNamespace()).isEqualTo(NAMESPACE_TEST);
 		assertThat(serviceCallResult.getService()).isEqualTo(SERVICE_PROVIDER);
 		assertThat(serviceCallResult.getHost()).isEqualTo("1.1.1.1");
@@ -111,5 +117,18 @@ public class ReporterUtilsTest {
 		assertThat(serviceCallResult.getLabels()).isEqualTo("k1:v1|k2:v2");
 		assertThat(serviceCallResult.getRetCode()).isEqualTo(502);
 		assertThat(serviceCallResult.getDelay()).isEqualTo(10L);
+	}
+
+	public static SDKContext mockSDKContext() {
+		APIConfig apiConfig = mock(APIConfig.class);
+		doReturn("127.0.0.1").when(apiConfig).getBindIP();
+		GlobalConfig globalConfig = mock(GlobalConfig.class);
+		doReturn(apiConfig).when(globalConfig).getAPI();
+		Configuration configuration = mock(Configuration.class);
+		doReturn(globalConfig).when(configuration).getGlobal();
+		SDKContext context = mock(SDKContext.class);
+		doReturn(configuration).when(context).getConfig();
+
+		return context;
 	}
 }
