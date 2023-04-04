@@ -27,7 +27,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.StringValue;
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
@@ -94,7 +96,7 @@ public class QuotaCheckServletFilterTest {
 			}
 			else if (serviceName.equals("TestApp3")) {
 				QuotaResponse response = new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultLimited, 0, "QuotaResultLimited"));
-				response.setActiveRule(RateLimitProto.Rule.newBuilder().build());
+				response.setActiveRule(RateLimitProto.Rule.newBuilder().setName(StringValue.newBuilder().setValue("MOCK_RULE").build()).build());
 				return response;
 			}
 			else {
@@ -181,6 +183,7 @@ public class QuotaCheckServletFilterTest {
 			quotaCheckServletFilter.doFilterInternal(request, testApp3Response, filterChain);
 			assertThat(testApp3Response.getStatus()).isEqualTo(419);
 			assertThat(testApp3Response.getContentAsString()).isEqualTo("RejectRequestTips提示消息");
+			assertThat(testApp3Response.getHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)).isEqualTo("MOCK_RULE");
 
 			MockHttpServletResponse testApp3Response2 = new MockHttpServletResponse();
 			quotaCheckWithHtmlRejectTipsServletFilter.doFilterInternal(request, testApp3Response2, filterChain);
