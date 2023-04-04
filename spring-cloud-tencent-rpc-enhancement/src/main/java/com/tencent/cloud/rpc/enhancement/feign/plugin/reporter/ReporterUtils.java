@@ -21,13 +21,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.util.RequestLabelUtils;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
@@ -49,7 +53,8 @@ public final class ReporterUtils {
 	private ReporterUtils() {
 	}
 
-	public static ServiceCallResult createServiceCallResult(final Request request, final Response response, long delay, RetStatus retStatus) {
+	public static ServiceCallResult createServiceCallResult(final SDKContext context, final Request request,
+			final Response response, long delay, RetStatus retStatus, final Consumer<ServiceCallResult> consumer) {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
@@ -65,7 +70,7 @@ public final class ReporterUtils {
 			catch (UnsupportedEncodingException e) {
 				LOGGER.error("unsupported charset exception " + UTF_8, e);
 			}
-			resultRequest.setLabels(convertLabel(label));
+			resultRequest.setLabels(RequestLabelUtils.convertLabel(label));
 		}
 		URI uri = URI.create(request.url());
 		resultRequest.setMethod(uri.getPath());
@@ -82,16 +87,14 @@ public final class ReporterUtils {
 		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
 			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
 		}
+		if (Objects.nonNull(context)) {
+			resultRequest.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
+		}
 		resultRequest.setHost(uri.getHost());
 		// -1 means access directly by url, and use http default port number 80
 		resultRequest.setPort(uri.getPort() == -1 ? 80 : uri.getPort());
-
+		consumer.accept(resultRequest);
 		return resultRequest;
 	}
 
-	private static String convertLabel(String label) {
-		label = label.replaceAll("\"|\\{|\\}", "")
-				.replaceAll(",", "|");
-		return label;
-	}
 }

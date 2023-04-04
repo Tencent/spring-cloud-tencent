@@ -38,7 +38,10 @@ import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = RpcEnhancementReporterPropertiesTest.TestApplication.class, properties = "spring.application.name=test")
+@SpringBootTest(classes = RpcEnhancementReporterPropertiesTest.TestApplication.class, properties = {
+		"spring.application.name=test",
+		"spring.cloud.gateway.enabled=false"
+})
 @ActiveProfiles("test")
 public class RpcEnhancementReporterPropertiesTest {
 

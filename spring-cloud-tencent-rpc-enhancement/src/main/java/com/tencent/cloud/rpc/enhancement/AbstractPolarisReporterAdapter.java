@@ -19,13 +19,18 @@ package com.tencent.cloud.rpc.enhancement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.polaris.api.pojo.RetStatus;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 
@@ -115,5 +120,32 @@ public abstract class AbstractPolarisReporterAdapter {
 		}
 		// DEFAULT RETURN FALSE.
 		return false;
+	}
+
+	protected RetStatus getRetStatusFromRequest(HttpHeaders headers, RetStatus defaultVal) {
+		if (headers.containsKey(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
+			List<String> values = headers.get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
+			if (CollectionUtils.isNotEmpty(values)) {
+				String retStatusVal = com.tencent.polaris.api.utils.StringUtils.defaultString(values.get(0));
+				if (Objects.equals(retStatusVal, RetStatus.RetFlowControl.getDesc())) {
+					return RetStatus.RetFlowControl;
+				}
+				if (Objects.equals(retStatusVal, RetStatus.RetReject.getDesc())) {
+					return RetStatus.RetReject;
+				}
+			}
+		}
+		return defaultVal;
+	}
+
+	protected String getActiveRuleNameFromRequest(HttpHeaders headers) {
+		if (headers.containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
+			Collection<String> values = headers.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
+			if (CollectionUtils.isNotEmpty(values)) {
+				String val = com.tencent.polaris.api.utils.StringUtils.defaultString(new ArrayList<>(values).get(0));
+				return val;
+			}
+		}
+		return "";
 	}
 }
