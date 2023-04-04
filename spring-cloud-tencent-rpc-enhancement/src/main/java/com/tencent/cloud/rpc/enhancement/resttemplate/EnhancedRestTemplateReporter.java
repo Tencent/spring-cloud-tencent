@@ -23,10 +23,12 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.RequestLabelUtils;
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -34,6 +36,7 @@ import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,10 +71,12 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 	public static final String HEADER_HAS_ERROR = "X-SCT-Has-Error";
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedRestTemplateReporter.class);
 	private final ConsumerAPI consumerAPI;
+	private final SDKContext context;
 	private ResponseErrorHandler delegateHandler;
 
-	public EnhancedRestTemplateReporter(RpcEnhancementReporterProperties properties, ConsumerAPI consumerAPI) {
+	public EnhancedRestTemplateReporter(RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
 		super(properties);
+		this.context = context;
 		this.consumerAPI = consumerAPI;
 	}
 
@@ -153,7 +158,11 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 			if (apply(httpStatus)) {
 				resultRequest.setRetStatus(RetStatus.RetFail);
 			}
-
+			resultRequest.setRetStatus(getRetStatusFromRequest(response.getHeaders(), resultRequest.getRetStatus()));
+			resultRequest.setRuleName(getActiveRuleNameFromRequest(response.getHeaders()));
+			if (Objects.nonNull(context)) {
+				resultRequest.setCallerIp(context.getConfig().getGlobal().getAPI().getBindIP());
+			}
 			List<String> labels = response.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER);
 			if (CollectionUtils.isNotEmpty(labels)) {
 				String label = labels.get(0);
@@ -163,7 +172,7 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 				catch (UnsupportedEncodingException e) {
 					LOGGER.error("unsupported charset exception " + UTF_8, e);
 				}
-				resultRequest.setLabels(convertLabel(label));
+				resultRequest.setLabels(RequestLabelUtils.convertLabel(label));
 			}
 
 			// processing report with consumerAPI .
@@ -174,12 +183,6 @@ public class EnhancedRestTemplateReporter extends AbstractPolarisReporterAdapter
 		catch (Exception e) {
 			LOGGER.error("RestTemplate response reporter execute failed of {} url {}", response, url, e);
 		}
-	}
-
-	private String convertLabel(String label) {
-		label = label.replaceAll("\"|\\{|\\}", "")
-				.replaceAll(",", "|");
-		return label;
 	}
 
 	private void invokeDelegateHandler(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
