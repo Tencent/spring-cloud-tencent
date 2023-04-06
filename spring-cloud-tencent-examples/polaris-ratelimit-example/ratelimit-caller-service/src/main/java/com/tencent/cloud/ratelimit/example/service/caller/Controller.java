@@ -76,7 +76,7 @@ public class Controller {
 	}
 
 	@GetMapping("/invoke/webclient")
-	public String invokeInfoWebClient(@RequestParam String value1, @RequestParam String value2, @RequestHeader Map<String, String> headers) throws InterruptedException, ExecutionException {
+	public String invokeInfoWebClient(@RequestParam(defaultValue = "value1") String value1, @RequestParam(defaultValue = "value1") String value2, @RequestHeader Map<String, String> headers) throws InterruptedException, ExecutionException {
 		StringBuffer builder = new StringBuffer();
 		WebClient webClient = webClientBuilder.baseUrl("http://" + appName).build();
 
@@ -123,7 +123,7 @@ public class Controller {
 	 * @throws InterruptedException exception
 	 */
 	@GetMapping("/invoke")
-	public String invokeInfo(@RequestParam String value1, @RequestParam String value2, @RequestHeader Map<String, String> headers) throws InterruptedException {
+	public String invokeInfo(@RequestParam(defaultValue = "value1") String value1, @RequestParam(defaultValue = "value1") String value2, @RequestHeader Map<String, String> headers) throws InterruptedException {
 		StringBuffer builder = new StringBuffer();
 		CountDownLatch count = new CountDownLatch(30);
 		for (int i = 0; i < 30; i++) {

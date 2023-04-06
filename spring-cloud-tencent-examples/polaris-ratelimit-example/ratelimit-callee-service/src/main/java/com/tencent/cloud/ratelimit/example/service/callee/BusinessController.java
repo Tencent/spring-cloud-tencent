@@ -63,18 +63,24 @@ public class BusinessController {
 	@Value("${spring.application.name}")
 	private String appName;
 
+	@Value("${server.port:0}")
+	private int port;
+
+	@Value("${spring.cloud.client.ip-address:127.0.0.1}")
+	private String ip;
+
 	/**
 	 * Get information.
 	 * @return information
 	 */
 	@GetMapping("/info")
 	public String info() {
-		return "hello world for ratelimit service " + index.incrementAndGet();
+		return String.format("hello world for ratelimit service %s [%s:%s] is called.", index.incrementAndGet(), ip, port);
 	}
 
 	@GetMapping("/info/webclient")
 	public Mono<String> infoWebClient() {
-		return Mono.just("hello world for ratelimit service " + index.incrementAndGet());
+		return Mono.just(String.format("hello world for ratelimit service %s [%s:%s] is called.", index.incrementAndGet(), ip, port));
 	}
 
 	@GetMapping("/invoke/webclient")
@@ -92,11 +98,11 @@ public class BusinessController {
 					.header("xxx", "xxx")
 					.retrieve()
 					.bodyToMono(String.class)
-					.doOnSuccess(s -> builder.append(s + "\n"))
+					.doOnSuccess(s -> builder.append(s).append("\n"))
 					.doOnError(e -> {
 						if (e instanceof WebClientResponseException) {
 							if (((WebClientResponseException) e).getRawStatusCode() == 429) {
-								builder.append("TooManyRequests ").append(index.incrementAndGet() + "\n");
+								builder.append("TooManyRequests ").append(index.incrementAndGet()).append("\n");
 							}
 						}
 					})
@@ -132,11 +138,11 @@ public class BusinessController {
 							String.class,
 							"yyy"
 					);
-					builder.append(entity.getBody() + "\n");
+					builder.append(entity.getBody()).append("\n");
 				}
 				catch (RestClientException e) {
 					if (e instanceof TooManyRequests) {
-						builder.append("TooManyRequests ").append(index.incrementAndGet() + "\n");
+						builder.append("TooManyRequests ").append(index.incrementAndGet()).append("\n");
 					}
 					else {
 						throw e;
