@@ -17,13 +17,15 @@
 
 package com.tencent.cloud.ratelimit.example.service.callee;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+
+import static com.tencent.cloud.ratelimit.example.service.callee.CustomLabelResolver.getLabels;
 
 /**
  * resolver custom label from request.
@@ -32,13 +34,13 @@ import org.springframework.web.server.ServerWebExchange;
  */
 @Component
 public class CustomLabelResolverReactive implements PolarisRateLimiterLabelReactiveResolver {
+	@Value("${label.key-value:}")
+	private String[] keyValues;
+
 	@Override
 	public Map<String, String> resolve(ServerWebExchange exchange) {
 		// rate limit by some request params. such as query params, headers ..
 
-		Map<String, String> labels = new HashMap<>();
-		labels.put("user", "zhangsan");
-
-		return labels;
+		return getLabels(keyValues);
 	}
 }
