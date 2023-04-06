@@ -40,6 +40,7 @@ public class CustomLabelResolver implements PolarisRateLimiterLabelServletResolv
 	private static final Logger LOG = LoggerFactory.getLogger(CustomLabelResolver.class);
 	@Value("${label.key-value:}")
 	private String[] keyValues;
+
 	@Override
 	public Map<String, String> resolve(HttpServletRequest request) {
 		// rate limit by some request params. such as query params, headers ..
@@ -51,7 +52,7 @@ public class CustomLabelResolver implements PolarisRateLimiterLabelServletResolv
 		Map<String, String> labels = new HashMap<>();
 		for (String kv : keyValues) {
 			String key = kv.substring(0, kv.indexOf(":"));
-			String value = kv.substring(kv.indexOf(":")+1);
+			String value = kv.substring(kv.indexOf(":") + 1);
 			labels.put(key, value);
 		}
 
