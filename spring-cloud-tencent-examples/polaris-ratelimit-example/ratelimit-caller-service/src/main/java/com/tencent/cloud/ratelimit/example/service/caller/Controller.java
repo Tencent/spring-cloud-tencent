@@ -19,10 +19,12 @@ package com.tencent.cloud.ratelimit.example.service.caller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException.TooManyRequests;
 import org.springframework.web.client.RestClientException;
@@ -55,7 +59,7 @@ public class Controller {
 	@Autowired
 	private WebClient.Builder webClientBuilder;
 
-	private String appName = "RateLimitCalleeService";
+	private final String appName = "RateLimitCalleeService";
 
 	/**
 	 * Get information.
@@ -72,25 +76,33 @@ public class Controller {
 	}
 
 	@GetMapping("/invoke/webclient")
-	public String invokeInfoWebClient() throws InterruptedException, ExecutionException {
+	public String invokeInfoWebClient(@RequestParam String value1, @RequestParam String value2, @RequestHeader Map<String, String> headers) throws InterruptedException, ExecutionException {
 		StringBuffer builder = new StringBuffer();
 		WebClient webClient = webClientBuilder.baseUrl("http://" + appName).build();
+
+		Consumer<HttpHeaders> headersConsumer = httpHeaders -> {
+			for (Map.Entry<String, String> entry : headers.entrySet()) {
+				httpHeaders.add(entry.getKey(), entry.getValue());
+			}
+		};
+
 		List<Mono<String>> monoList = new ArrayList<>();
 		for (int i = 0; i < 30; i++) {
 			Mono<String> response = webClient.get()
 					.uri(uriBuilder -> uriBuilder
 							.path("/business/info/webclient")
-							.queryParam("yyy", "yyy")
+							.queryParam("value1", value1)
+							.queryParam("value2", value2)
 							.build()
 					)
-					.header("xxx", "xxx")
+					.headers(headersConsumer)
 					.retrieve()
 					.bodyToMono(String.class)
-					.doOnSuccess(s -> builder.append(s + "\n"))
+					.doOnSuccess(s -> builder.append(s).append("\n"))
 					.doOnError(e -> {
 						if (e instanceof WebClientResponseException) {
 							if (((WebClientResponseException) e).getRawStatusCode() == 429) {
-								builder.append("TooManyRequests ").append(index.incrementAndGet() + "\n");
+								builder.append("TooManyRequests ").append(index.incrementAndGet()).append("\n");
 							}
 						}
 					})
@@ -111,26 +123,28 @@ public class Controller {
 	 * @throws InterruptedException exception
 	 */
 	@GetMapping("/invoke")
-	public String invokeInfo() throws InterruptedException {
+	public String invokeInfo(@RequestParam String value1, @RequestParam String value2, @RequestHeader Map<String, String> headers) throws InterruptedException {
 		StringBuffer builder = new StringBuffer();
 		CountDownLatch count = new CountDownLatch(30);
 		for (int i = 0; i < 30; i++) {
 			new Thread(() -> {
 				try {
 					HttpHeaders httpHeaders = new HttpHeaders();
-					httpHeaders.add("xxx", "xxx");
+					for (Map.Entry<String, String> entry : headers.entrySet()) {
+						httpHeaders.add(entry.getKey(), entry.getValue());
+					}
 					ResponseEntity<String> entity = restTemplate.exchange(
-							"http://" + appName + "/business/info?yyy={yyy}",
+							"http://" + appName + "/business/info?value1={value1}&value2={value2}",
 							HttpMethod.GET,
 							new HttpEntity<>(httpHeaders),
 							String.class,
-							"yyy"
+							value1, value2
 					);
-					builder.append(entity.getBody() + "\n");
+					builder.append(entity.getBody()).append("\n");
 				}
 				catch (RestClientException e) {
 					if (e instanceof TooManyRequests) {
-						builder.append("TooManyRequests ").append(index.incrementAndGet() + "\n");
+						builder.append("TooManyRequests ").append(index.incrementAndGet()).append("\n");
 					}
 					else {
 						throw e;

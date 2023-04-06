@@ -22,3 +22,6 @@ management:
 logging:
   level:
     com.tencent.cloud.polaris: debug
+
+label:
+  key-value: user:zhangsan, user2:lisi
