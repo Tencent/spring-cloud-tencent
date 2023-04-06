@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,12 +36,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomLabelResolver implements PolarisRateLimiterLabelServletResolver {
 
+	@Value("${label.key-value:}")
+	private String[] keyValues;
 	@Override
 	public Map<String, String> resolve(HttpServletRequest request) {
 		// rate limit by some request params. such as query params, headers ..
 
+		return getLabels(keyValues);
+	}
+
+	static Map<String, String> getLabels(String[] keyValues) {
 		Map<String, String> labels = new HashMap<>();
-		labels.put("user", "zhangsan");
+		for (String kv : keyValues) {
+			String key = kv.substring(0, kv.indexOf(":"));
+			String value = kv.substring(kv.indexOf(":"));
+			labels.put(key, value);
+		}
 
 		return labels;
 	}
