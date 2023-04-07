@@ -18,3 +18,4 @@ management:
 logging:
   level:
     com.tencent.cloud.polaris: debug
+

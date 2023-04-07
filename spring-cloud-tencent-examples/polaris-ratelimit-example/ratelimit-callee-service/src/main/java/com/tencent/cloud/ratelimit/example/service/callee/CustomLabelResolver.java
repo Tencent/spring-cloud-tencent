@@ -24,7 +24,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,14 +37,26 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CustomLabelResolver implements PolarisRateLimiterLabelServletResolver {
+	private static final Logger LOG = LoggerFactory.getLogger(CustomLabelResolver.class);
+	@Value("${label.key-value:}")
+	private String[] keyValues;
 
 	@Override
 	public Map<String, String> resolve(HttpServletRequest request) {
 		// rate limit by some request params. such as query params, headers ..
 
-		Map<String, String> labels = new HashMap<>();
-		labels.put("user", "zhangsan");
+		return getLabels(keyValues);
+	}
 
+	static Map<String, String> getLabels(String[] keyValues) {
+		Map<String, String> labels = new HashMap<>();
+		for (String kv : keyValues) {
+			String key = kv.substring(0, kv.indexOf(":"));
+			String value = kv.substring(kv.indexOf(":") + 1);
+			labels.put(key, value);
+		}
+
+		LOG.info("Current labels:{}", labels);
 		return labels;
 	}
 }
