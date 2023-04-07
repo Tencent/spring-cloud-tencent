@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
@@ -76,6 +77,7 @@ public class PolarisRegistration implements Registration {
 
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
+			@Nullable PolarisContextProperties polarisContextProperties,
 			@Nullable ConsulContextProperties consulContextProperties,
 			SDKContext context, StaticMetadataManager staticMetadataManager,
 			@Nullable NacosContextProperties nacosContextProperties,
@@ -89,6 +91,9 @@ public class PolarisRegistration implements Registration {
 		this.servletWebServerApplicationContext = servletWebServerApplicationContext;
 		this.reactiveWebServerApplicationContext = reactiveWebServerApplicationContext;
 		host = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
+		if (polarisContextProperties != null) {
+			port = polarisContextProperties.getLocalPort();
+		}
 	}
 
 	@Override

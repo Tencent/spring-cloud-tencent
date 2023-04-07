@@ -52,7 +52,8 @@ public class PolarisContextAutoConfiguration {
 	@ConditionalOnMissingBean
 	public SDKContext polarisContext(PolarisContextProperties properties, Environment environment, List<PolarisConfigModifier> modifierList) throws PolarisException {
 		return SDKContext.initContextByConfig(properties.configuration(modifierList,
-				() -> environment.getProperty("spring.cloud.client.ip-address")));
+				() -> environment.getProperty("spring.cloud.client.ip-address"),
+				() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
 	}
 
 	@Bean

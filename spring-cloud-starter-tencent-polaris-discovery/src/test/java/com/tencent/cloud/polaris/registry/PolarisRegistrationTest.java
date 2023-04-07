@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.api.config.Configuration;
@@ -62,6 +63,10 @@ public class PolarisRegistrationTest {
 
 	private PolarisRegistration polarisRegistration3;
 
+	private PolarisRegistration polarisRegistration4;
+
+	private static int testLocalPort = 10086;
+
 	@BeforeEach
 	void setUp() {
 		// mock PolarisDiscoveryProperties
@@ -69,6 +74,10 @@ public class PolarisRegistrationTest {
 		doReturn(SERVICE_PROVIDER).when(polarisDiscoveryProperties).getService();
 		doReturn("http").when(polarisDiscoveryProperties).getProtocol();
 		doReturn(true).when(polarisDiscoveryProperties).isRegisterEnabled();
+
+		// mock PolarisContextProperties
+		PolarisContextProperties polarisContextProperties = mock(PolarisContextProperties.class);
+		doReturn(testLocalPort).when(polarisContextProperties).getLocalPort();
 
 		// mock ConsulContextProperties
 		ConsulContextProperties consulContextProperties = mock(ConsulContextProperties.class);
@@ -79,6 +88,13 @@ public class PolarisRegistrationTest {
 		nacosContextProperties = mock(NacosContextProperties.class);
 		doReturn(true).when(nacosContextProperties).isEnabled();
 		doReturn(true).when(nacosContextProperties).isRegisterEnabled();
+		doReturn("/").when(nacosContextProperties).getContextPath();
+		doReturn("cluster").when(nacosContextProperties).getClusterName();
+		doReturn("").when(nacosContextProperties).getGroup();
+		doReturn(true).when(nacosContextProperties).isDiscoveryEnabled();
+		doReturn("").when(nacosContextProperties).getPassword();
+		doReturn("").when(nacosContextProperties).getUsername();
+		doReturn("").when(nacosContextProperties).getServerAddr();
 
 		// mock SDKContext
 		APIConfig apiConfig = mock(APIConfig.class);
@@ -106,15 +122,19 @@ public class PolarisRegistrationTest {
 		ReactiveWebServerApplicationContext reactiveWebServerApplicationContext = mock(ReactiveWebServerApplicationContext.class);
 		doReturn(reactiveWebServer).when(reactiveWebServerApplicationContext).getWebServer();
 
-		polarisRegistration1 = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
+		polarisRegistration1 = new PolarisRegistration(polarisDiscoveryProperties, null, consulContextProperties,
 				polarisContext, staticMetadataManager, nacosContextProperties,
 				servletWebServerApplicationContext, null);
 
-		polarisRegistration2 = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
+		polarisRegistration2 = new PolarisRegistration(polarisDiscoveryProperties, null, consulContextProperties,
 				polarisContext, staticMetadataManager, nacosContextProperties,
 				null, reactiveWebServerApplicationContext);
 
-		polarisRegistration3 = new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties,
+		polarisRegistration3 = new PolarisRegistration(polarisDiscoveryProperties, null, consulContextProperties,
+				polarisContext, staticMetadataManager, nacosContextProperties,
+				null, null);
+
+		polarisRegistration4 = new PolarisRegistration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties,
 				polarisContext, staticMetadataManager, nacosContextProperties,
 				null, null);
 	}
@@ -139,6 +159,7 @@ public class PolarisRegistrationTest {
 		catch (RuntimeException e) {
 			assertThat(e.getMessage()).isEqualTo("Unsupported web type.");
 		}
+		assertThat(polarisRegistration4.getPort()).isEqualTo(testLocalPort);
 	}
 
 	@Test
@@ -162,7 +183,7 @@ public class PolarisRegistrationTest {
 		Map<String, String> metadata = polarisRegistration1.getMetadata();
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
-		assertThat(metadata.size()).isEqualTo(3);
+		assertThat(metadata.size()).isEqualTo(4);
 		assertThat(metadata.get("key1")).isEqualTo("value1");
 	}
 
