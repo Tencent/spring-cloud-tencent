@@ -25,7 +25,6 @@ import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.ConditionalOnBlockingDiscoveryEnabled;
@@ -71,13 +70,12 @@ public class PolarisLoadBalancerClientConfiguration {
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnClass(name = "org.springframework.web.reactive.function.client.ClientRequest")
-	public LoadBalancerClientRequestTransformer polarisLoadBalancerClientRequestTransformer(SDKContext sdkContext) {
-		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
-		return new PolarisLoadBalancerClientRequestTransformer(consumerAPI);
-	}
+//	@Bean
+//	@ConditionalOnMissingBean
+//	public LoadBalancerClientRequestTransformer polarisLoadBalancerClientRequestTransformer(SDKContext sdkContext) {
+//		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
+//		return new PolarisLoadBalancerClientRequestTransformer(consumerAPI);
+//	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnReactiveDiscoveryEnabled
