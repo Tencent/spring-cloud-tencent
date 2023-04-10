@@ -96,8 +96,6 @@ public class ExceptionPolarisReporter extends AbstractPolarisReporterAdapter imp
 
 		ServiceCallResult resultRequest = createServiceCallResult(
 				request.requestTemplate().feignTarget().name(),
-				null,
-				null,
 				URI.create(request.url()),
 				requestHeaders,
 				responseHeaders,
@@ -111,8 +109,6 @@ public class ExceptionPolarisReporter extends AbstractPolarisReporterAdapter imp
 
 		ResourceStat resourceStat = createInstanceResourceStat(
 				request.requestTemplate().feignTarget().name(),
-				null,
-				null,
 				URI.create(request.url()),
 				status,
 				delay,

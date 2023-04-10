@@ -39,7 +39,6 @@ public final class LoadBalancerClientAspectUtils {
 			ServiceInstance instance = (ServiceInstance) server;
 			MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST, instance.getHost());
 			MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT, String.valueOf(instance.getPort()));
-			MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALL_START_TIME, String.valueOf(System.currentTimeMillis()));
 		}
 	}
 }

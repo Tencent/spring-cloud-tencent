@@ -29,9 +29,9 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
+import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.scg.PolarisGatewayReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisRestTemplateReporter;
-import com.tencent.cloud.rpc.enhancement.scg.EnhancedPolarisHttpHeadersFilter;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
@@ -48,13 +48,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.gateway.filter.headers.HttpHeadersFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -167,6 +165,13 @@ public class RpcEnhancementAutoConfiguration {
 	@ConditionalOnClass(name = "org.springframework.web.reactive.function.client.WebClient")
 	protected static class PolarisWebClientAutoConfiguration {
 
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerClientRequestTransformer")
+		public PolarisLoadBalancerClientRequestTransformer polarisLoadBalancerClientRequestTransformer() {
+			return new PolarisLoadBalancerClientRequestTransformer();
+		}
+
 		@Autowired(required = false)
 		private List<WebClient.Builder> webClientBuilder = Collections.emptyList();
 
@@ -179,7 +184,7 @@ public class RpcEnhancementAutoConfiguration {
 		}
 
 		@Bean
-		public SmartInitializingSingleton addEncodeTransferMetadataFilterForWebClient(EnhancedWebClientReporter reporter) {
+		public SmartInitializingSingleton addEnhancedWebClientReporterForWebClient(EnhancedWebClientReporter reporter) {
 			return () -> webClientBuilder.forEach(webClient -> {
 				webClient.filter(reporter);
 			});
@@ -194,12 +199,6 @@ public class RpcEnhancementAutoConfiguration {
 	@ConditionalOnClass(name = "org.springframework.cloud.gateway.config.GatewayAutoConfiguration")
 	@Role(RootBeanDefinition.ROLE_INFRASTRUCTURE)
 	protected static class PolarisGatewayAutoConfiguration {
-
-		@Bean
-		@ConditionalOnClass(name = {"org.springframework.cloud.gateway.filter.headers.HttpHeadersFilter"})
-		public HttpHeadersFilter enhancedPolarisHttpHeadersFilter() {
-			return new EnhancedPolarisHttpHeadersFilter();
-		}
 
 		@Bean
 		@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")

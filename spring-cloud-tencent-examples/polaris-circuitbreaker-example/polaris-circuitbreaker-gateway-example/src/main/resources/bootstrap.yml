@@ -54,6 +54,6 @@ logging:
   level:
     root: info
     com.tencent.polaris.discovery.client.flow.RegisterFlow: off
-    com.tencent.polaris.plugins.registry.memory.CacheObject: off
-    com.tencent.cloud.polaris.circuitbreaker: debug
+    com.tencent.polaris.plugins.registry: off
+    com.tencent.cloud: debug
 
