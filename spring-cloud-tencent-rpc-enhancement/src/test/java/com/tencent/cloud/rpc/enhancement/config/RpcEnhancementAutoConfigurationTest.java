@@ -22,7 +22,7 @@ import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignPluginRunner;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
+import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisRestTemplateReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.jupiter.api.Test;
 
@@ -60,10 +60,8 @@ public class RpcEnhancementAutoConfigurationTest {
 			assertThat(context).hasSingleBean(EnhancedFeignBeanPostProcessor.class);
 			assertThat(context).hasSingleBean(SuccessPolarisReporter.class);
 			assertThat(context).hasSingleBean(ExceptionPolarisReporter.class);
-			assertThat(context).hasSingleBean(EnhancedRestTemplateReporter.class);
+			assertThat(context).hasSingleBean(PolarisRestTemplateReporter.class);
 			assertThat(context).hasSingleBean(RestTemplate.class);
-			RestTemplate restTemplate = context.getBean(RestTemplate.class);
-			assertThat(restTemplate.getErrorHandler() instanceof EnhancedRestTemplateReporter).isTrue();
 		});
 	}
 

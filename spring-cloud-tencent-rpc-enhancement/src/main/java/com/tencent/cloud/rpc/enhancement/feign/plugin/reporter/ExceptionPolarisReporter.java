@@ -18,6 +18,7 @@
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.util.ArrayList;
 
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
@@ -26,8 +27,10 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.Response;
@@ -49,16 +52,16 @@ public class ExceptionPolarisReporter extends AbstractPolarisReporterAdapter imp
 
 	private final ConsumerAPI consumerAPI;
 
-	private final SDKContext context;
-
+	private final CircuitBreakAPI circuitBreakAPI;
 
 	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reporterProperties,
 			SDKContext context,
-			ConsumerAPI consumerAPI) {
-		super(reporterProperties);
+			ConsumerAPI consumerAPI,
+			CircuitBreakAPI circuitBreakAPI) {
+		super(reporterProperties, context);
 		this.reporterProperties = reporterProperties;
-		this.context = context;
 		this.consumerAPI = consumerAPI;
+		this.circuitBreakAPI = circuitBreakAPI;
 	}
 
 	@Override
@@ -77,26 +80,46 @@ public class ExceptionPolarisReporter extends AbstractPolarisReporterAdapter imp
 			return;
 		}
 
-		if (consumerAPI != null) {
-			Request request = context.getRequest();
-			Response response = context.getResponse();
-			Exception exception = context.getException();
-			RetStatus retStatus = RetStatus.RetFail;
-			long delay = context.getDelay();
-			if (exception instanceof SocketTimeoutException) {
-				retStatus = RetStatus.RetTimeout;
-			}
-			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.", retStatus.name(), request.httpMethod()
-					.name(), request.url(), response.status(), delay);
-			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(this.context, request, response,
-					delay, retStatus, serviceCallResult -> {
-						HttpHeaders headers = new HttpHeaders();
-						response.headers().forEach((s, strings) -> headers.addAll(s, new ArrayList<>(strings)));
-						serviceCallResult.setRetStatus(getRetStatusFromRequest(headers, serviceCallResult.getRetStatus()));
-						serviceCallResult.setRuleName(getActiveRuleNameFromRequest(headers));
-					});
-			consumerAPI.updateServiceCallResult(resultRequest);
+		Request request = context.getRequest();
+		Response response = context.getResponse();
+		Exception exception = context.getException();
+		long delay = context.getDelay();
+
+		HttpHeaders requestHeaders = new HttpHeaders();
+		request.headers().forEach((s, strings) -> requestHeaders.addAll(s, new ArrayList<>(strings)));
+		HttpHeaders responseHeaders = new HttpHeaders();
+		Integer status = null;
+		if (response != null) {
+			response.headers().forEach((s, strings) -> responseHeaders.addAll(s, new ArrayList<>(strings)));
+			status = response.status();
 		}
+
+		ServiceCallResult resultRequest = createServiceCallResult(
+				request.requestTemplate().feignTarget().name(),
+				null,
+				null,
+				URI.create(request.url()),
+				requestHeaders,
+				responseHeaders,
+				status,
+				delay,
+				exception
+		);
+		LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.",
+				resultRequest.getRetStatus().name(), request.httpMethod().name(), request.url(), status, delay);
+		consumerAPI.updateServiceCallResult(resultRequest);
+
+		ResourceStat resourceStat = createInstanceResourceStat(
+				request.requestTemplate().feignTarget().name(),
+				null,
+				null,
+				URI.create(request.url()),
+				status,
+				delay,
+				exception
+		);
+		circuitBreakAPI.report(resourceStat);
+
 	}
 
 	@Override
