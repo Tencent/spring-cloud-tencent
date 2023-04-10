@@ -30,8 +30,8 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisR
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
-import com.tencent.cloud.rpc.enhancement.scg.PolarisGatewayReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisRestTemplateReporter;
+import com.tencent.cloud.rpc.enhancement.scg.EnhancedPolarisGatewayReporter;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedPolarisRestTemplateReporter;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
@@ -133,15 +133,15 @@ public class RpcEnhancementAutoConfiguration {
 		private List<RestTemplate> restTemplates = Collections.emptyList();
 
 		@Bean
-		public PolarisRestTemplateReporter polarisRestTemplateReporter(RpcEnhancementReporterProperties properties,
+		public EnhancedPolarisRestTemplateReporter enhancedPolarisRestTemplateReporter(RpcEnhancementReporterProperties properties,
 				SDKContext context,
 				ConsumerAPI consumerAPI,
 				CircuitBreakAPI circuitBreakAPI) {
-			return new PolarisRestTemplateReporter(properties, context, consumerAPI, circuitBreakAPI);
+			return new EnhancedPolarisRestTemplateReporter(properties, context, consumerAPI, circuitBreakAPI);
 		}
 
 		@Bean
-		public SmartInitializingSingleton setPolarisReporterForRestTemplate(PolarisRestTemplateReporter reporter) {
+		public SmartInitializingSingleton setPolarisReporterForRestTemplate(EnhancedPolarisRestTemplateReporter reporter) {
 			return () -> {
 				for (RestTemplate restTemplate : restTemplates) {
 					restTemplate.getInterceptors().add(reporter);
@@ -203,11 +203,11 @@ public class RpcEnhancementAutoConfiguration {
 
 		@Bean
 		@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
-		public PolarisGatewayReporter polarisGatewayReporter(RpcEnhancementReporterProperties properties,
+		public EnhancedPolarisGatewayReporter enhancedPolarisGatewayReporter(RpcEnhancementReporterProperties properties,
 				SDKContext context,
 				ConsumerAPI consumerAPI,
 				CircuitBreakAPI circuitBreakAPI) {
-			return new PolarisGatewayReporter(properties, context, consumerAPI, circuitBreakAPI);
+			return new EnhancedPolarisGatewayReporter(properties, context, consumerAPI, circuitBreakAPI);
 		}
 
 	}

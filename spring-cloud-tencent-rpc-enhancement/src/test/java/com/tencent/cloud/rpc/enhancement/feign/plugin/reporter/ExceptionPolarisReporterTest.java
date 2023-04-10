@@ -18,16 +18,17 @@
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
+import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.config.global.APIConfig;
+import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.api.pojo.RetStatus;
-import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.RequestTemplate;
@@ -47,8 +48,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -64,11 +63,14 @@ import static org.mockito.Mockito.verify;
 public class ExceptionPolarisReporterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	private static MockedStatic<ReporterUtils> mockedReporterUtils;
+	@Mock
+	private RpcEnhancementReporterProperties reporterProperties;
+	@Mock
+	private SDKContext sdkContext;
 	@Mock
 	private ConsumerAPI consumerAPI;
 	@Mock
-	private RpcEnhancementReporterProperties reporterProperties;
+	private CircuitBreakAPI circuitBreakAPI;
 	@InjectMocks
 	private ExceptionPolarisReporter exceptionPolarisReporter;
 
@@ -77,16 +79,11 @@ public class ExceptionPolarisReporterTest {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
-		mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
-		mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(SDKContext.class), any(Request.class),
-						any(Response.class), anyLong(), any(RetStatus.class), any(Consumer.class)))
-				.thenReturn(new ServiceCallResult());
 	}
 
 	@AfterAll
 	static void afterAll() {
 		mockedApplicationContextAwareUtils.close();
-		mockedReporterUtils.close();
 	}
 
 	@BeforeEach
@@ -107,47 +104,40 @@ public class ExceptionPolarisReporterTest {
 
 	@Test
 	public void testRun() {
-		// mock request
-		Request request = Request.create(Request.HttpMethod.GET, "/", new HashMap<>(), null, null, null);
-		// mock response
-		Response response = mock(Response.class);
-
 		EnhancedFeignContext context = mock(EnhancedFeignContext.class);
-		doReturn(request).when(context).getRequest();
-		doReturn(response).when(context).getResponse();
 		// test not report
 		exceptionPolarisReporter.run(context);
 		verify(context, times(0)).getRequest();
-		// test do report
+
 		doReturn(true).when(reporterProperties).isEnabled();
-		exceptionPolarisReporter.run(context);
-		verify(context, times(1)).getRequest();
+		// mock target
+		Target<?> target = mock(Target.class);
+		doReturn(SERVICE_PROVIDER).when(target).name();
 
-		try {
-			mockedReporterUtils.close();
-			// mock target
-			Target<?> target = mock(Target.class);
-			doReturn(SERVICE_PROVIDER).when(target).name();
+		APIConfig apiConfig = mock(APIConfig.class);
+		doReturn("0.0.0.0").when(apiConfig).getBindIP();
 
-			// mock RequestTemplate.class
-			RequestTemplate requestTemplate = new RequestTemplate();
-			requestTemplate.feignTarget(target);
+		GlobalConfig globalConfig = mock(GlobalConfig.class);
+		doReturn(apiConfig).when(globalConfig).getAPI();
 
-			EnhancedFeignContext feignContext = new EnhancedFeignContext();
-			request = Request.create(Request.HttpMethod.GET, "/", new HashMap<>(), null, null, requestTemplate);
-			response = Response.builder()
-					.request(request)
-					.build();
-			feignContext.setRequest(request);
-			feignContext.setResponse(response);
-			exceptionPolarisReporter.run(feignContext);
-		}
-		finally {
-			mockedReporterUtils = Mockito.mockStatic(ReporterUtils.class);
-			mockedReporterUtils.when(() -> ReporterUtils.createServiceCallResult(any(SDKContext.class), any(Request.class),
-							any(Response.class), anyLong(), any(RetStatus.class), any(Consumer.class)))
-					.thenReturn(new ServiceCallResult());
-		}
+		Configuration configuration = mock(Configuration.class);
+		doReturn(globalConfig).when(configuration).getGlobal();
+
+		doReturn(configuration).when(sdkContext).getConfig();
+
+		// mock RequestTemplate.class
+		RequestTemplate requestTemplate = new RequestTemplate();
+		requestTemplate.feignTarget(target);
+
+		EnhancedFeignContext feignContext = new EnhancedFeignContext();
+		Request request = Request.create(Request.HttpMethod.GET, "http://0.0.0.0/", new HashMap<>(), null, null, requestTemplate);
+		Response response = Response.builder()
+				.request(request)
+				.build();
+		feignContext.setRequest(request);
+		feignContext.setResponse(response);
+		exceptionPolarisReporter.run(feignContext);
+		exceptionPolarisReporter.getOrder();
 	}
 
 	@Test

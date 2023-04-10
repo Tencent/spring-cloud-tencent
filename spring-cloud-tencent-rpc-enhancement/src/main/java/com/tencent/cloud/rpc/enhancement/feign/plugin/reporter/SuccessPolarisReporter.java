@@ -27,8 +27,6 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
-import com.tencent.polaris.api.plugin.circuitbreaker.entity.InstanceResource;
-import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
@@ -39,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 
 /**
  * Polaris reporter when feign call is successful.

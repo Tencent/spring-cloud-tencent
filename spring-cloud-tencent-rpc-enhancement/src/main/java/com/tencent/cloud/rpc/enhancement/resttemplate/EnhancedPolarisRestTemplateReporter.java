@@ -39,9 +39,14 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
-public class PolarisRestTemplateReporter extends AbstractPolarisReporterAdapter implements ClientHttpRequestInterceptor {
+/**
+ * EnhancedPolarisRestTemplateReporter.
+ *
+ * @author sean yu
+ */
+public class EnhancedPolarisRestTemplateReporter extends AbstractPolarisReporterAdapter implements ClientHttpRequestInterceptor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PolarisRestTemplateReporter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EnhancedPolarisRestTemplateReporter.class);
 
 	private final ConsumerAPI consumerAPI;
 
@@ -53,7 +58,7 @@ public class PolarisRestTemplateReporter extends AbstractPolarisReporterAdapter 
 	 *
 	 * @param reportProperties instance of {@link RpcEnhancementReporterProperties}.
 	 */
-	public PolarisRestTemplateReporter(RpcEnhancementReporterProperties reportProperties,
+	public EnhancedPolarisRestTemplateReporter(RpcEnhancementReporterProperties reportProperties,
 			SDKContext context,
 			ConsumerAPI consumerAPI,
 			CircuitBreakAPI circuitBreakAPI) {
@@ -74,7 +79,8 @@ public class PolarisRestTemplateReporter extends AbstractPolarisReporterAdapter 
 		IOException ex = null;
 		try {
 			response = execution.execute(request, body);
-		} catch (SocketTimeoutException e) {
+		}
+		catch (SocketTimeoutException e) {
 			ex = e;
 		}
 		HttpHeaders requestHeaders = request.getHeaders();

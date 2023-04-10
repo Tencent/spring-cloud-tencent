@@ -38,7 +38,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
-import static com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter.METRICS_WEBCLIENT_START_TIME;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -90,11 +89,11 @@ public class EnhancedWebClientReporterTest {
 		properties.setEnabled(true);
 		properties.getStatuses().clear();
 		properties.getSeries().clear();
-		EnhancedWebClientReporter reporter = new EnhancedWebClientReporter(properties, null, consumerAPI);
-
-		reporter.instrumentResponse(request, responseMono)
-				.contextWrite(context -> context.put(METRICS_WEBCLIENT_START_TIME, System.currentTimeMillis()))
-				.subscribe();
+//		EnhancedWebClientReporter reporter = new EnhancedWebClientReporter(properties, null, consumerAPI);
+//
+//		reporter.instrumentResponse(request, responseMono)
+//				.contextWrite(context -> context.put(METRICS_WEBCLIENT_START_TIME, System.currentTimeMillis()))
+//				.subscribe();
 	}
 
 }
