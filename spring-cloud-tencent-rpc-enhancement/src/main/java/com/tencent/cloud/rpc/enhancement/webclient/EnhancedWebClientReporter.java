@@ -17,35 +17,20 @@
 
 package com.tencent.cloud.rpc.enhancement.webclient;
 
-import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 
 import com.tencent.cloud.common.constant.HeaderConstant;
-import com.tencent.cloud.common.constant.RouterConstant;
-import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.util.RequestLabelUtils;
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
-import com.tencent.polaris.api.pojo.RetStatus;
-import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
-import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
-import reactor.util.context.Context;
-import reactor.util.context.ContextView;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -53,7 +38,6 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter implements ExchangeFilterFunction {
 	private static final Logger LOG = LoggerFactory.getLogger(EnhancedWebClientReporter.class);
@@ -75,24 +59,16 @@ public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter im
 		if (!reportProperties.isEnabled()) {
 			return next.exchange(request);
 		}
-
-		MetadataContextHolder.get().setLoadbalancer(
-				HeaderConstant.INTERNAL_CALLEE_SERVICE_ID,
-				request.headers().getFirst(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID)
-		);
-		MetadataContextHolder.get().setLoadbalancer(
-				HeaderConstant.INTERNAL_CALL_START_TIME,
-				String.valueOf(System.currentTimeMillis())
-		);
+		long startTime = System.currentTimeMillis();
 		return next.exchange(request)
-				.doOnSuccess(response -> instrumentResponse(request, response, null))
-				.doOnError(t -> instrumentResponse(request, null, t));
+				.doOnSuccess(response -> instrumentResponse(request, response, null, startTime))
+				.doOnError(t -> instrumentResponse(request, null, t, startTime));
 	}
 
-	private void instrumentResponse(ClientRequest request, ClientResponse response, Throwable t) {
+	private void instrumentResponse(ClientRequest request, ClientResponse response, Throwable t, long startTime) {
 		Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
 		String serviceId = loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID);
-		long delay = System.currentTimeMillis() - Long.parseLong(loadBalancerContext.get(HeaderConstant.INTERNAL_CALL_START_TIME));
+		long delay = System.currentTimeMillis() - startTime;
 
 		HttpHeaders requestHeaders = request.headers();
 		HttpHeaders responseHeaders = null;
@@ -104,8 +80,6 @@ public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter im
 
 		ServiceCallResult resultRequest = createServiceCallResult(
 				serviceId,
-				null,
-				null,
 				request.url(),
 				requestHeaders,
 				responseHeaders,
@@ -119,8 +93,6 @@ public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter im
 
 		ResourceStat resourceStat = createInstanceResourceStat(
 				serviceId,
-				null,
-				null,
 				request.url(),
 				status,
 				delay,
