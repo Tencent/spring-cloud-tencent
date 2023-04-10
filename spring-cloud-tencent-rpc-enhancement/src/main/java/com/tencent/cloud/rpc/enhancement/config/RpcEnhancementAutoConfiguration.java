@@ -29,6 +29,7 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
+import com.tencent.cloud.rpc.enhancement.scg.RecordRequestStartTimeGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.scg.EnhancedPolarisGatewayReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedPolarisRestTemplateReporter;
@@ -208,6 +209,12 @@ public class RpcEnhancementAutoConfiguration {
 				ConsumerAPI consumerAPI,
 				CircuitBreakAPI circuitBreakAPI) {
 			return new EnhancedPolarisGatewayReporter(properties, context, consumerAPI, circuitBreakAPI);
+		}
+
+		@Bean
+		@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
+		public RecordRequestStartTimeGlobalFilter recordRequestStartTimeGlobalFilter() {
+			return new RecordRequestStartTimeGlobalFilter();
 		}
 
 	}

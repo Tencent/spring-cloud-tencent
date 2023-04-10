@@ -47,8 +47,6 @@ public final class HeaderConstant {
 	 */
 	public static final String INTERNAL_CALLEE_INSTANCE_PORT = "internal-callee-instance-port";
 
-	public static final String INTERNAL_CALL_START_TIME = "internal-call-start-time";
-
 	private HeaderConstant() {
 	}
 }
