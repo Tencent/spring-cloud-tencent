@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
+import java.net.URI;
 import java.util.ArrayList;
 
 import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
@@ -25,8 +26,11 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
+import com.tencent.polaris.api.plugin.circuitbreaker.entity.InstanceResource;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
 import feign.Response;
@@ -48,12 +52,15 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 	private final ConsumerAPI consumerAPI;
 
-	private final SDKContext context;
+	private final CircuitBreakAPI circuitBreakAPI;
 
-	public SuccessPolarisReporter(RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
-		super(properties);
-		this.context = context;
+	public SuccessPolarisReporter(RpcEnhancementReporterProperties properties,
+			SDKContext context,
+			ConsumerAPI consumerAPI,
+			CircuitBreakAPI circuitBreakAPI) {
+		super(properties, context);
 		this.consumerAPI = consumerAPI;
+		this.circuitBreakAPI = circuitBreakAPI;
 	}
 
 	@Override
@@ -72,25 +79,44 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 			return;
 		}
 
-		if (consumerAPI != null) {
-			Request request = context.getRequest();
-			Response response = context.getResponse();
-			RetStatus retStatus = RetStatus.RetSuccess;
-			long delay = context.getDelay();
-			if (apply(HttpStatus.resolve(response.status()))) {
-				retStatus = RetStatus.RetFail;
-			}
-			LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.", retStatus.name(), request.httpMethod()
-					.name(), request.url(), response.status(), delay);
-			ServiceCallResult resultRequest = ReporterUtils.createServiceCallResult(this.context, request, response,
-					delay, retStatus, serviceCallResult -> {
-						HttpHeaders headers = new HttpHeaders();
-						response.headers().forEach((s, strings) -> headers.addAll(s, new ArrayList<>(strings)));
-						serviceCallResult.setRetStatus(getRetStatusFromRequest(headers, serviceCallResult.getRetStatus()));
-						serviceCallResult.setRuleName(getActiveRuleNameFromRequest(headers));
-					});
-			consumerAPI.updateServiceCallResult(resultRequest);
+		Request request = context.getRequest();
+		Response response = context.getResponse();
+		long delay = context.getDelay();
+		HttpHeaders requestHeaders = new HttpHeaders();
+		request.headers().forEach((s, strings) -> requestHeaders.addAll(s, new ArrayList<>(strings)));
+		HttpHeaders responseHeaders = new HttpHeaders();
+		Integer status = null;
+		if (response != null) {
+			response.headers().forEach((s, strings) -> responseHeaders.addAll(s, new ArrayList<>(strings)));
+			status = response.status();
 		}
+
+		ServiceCallResult resultRequest = createServiceCallResult(
+				request.requestTemplate().feignTarget().name(),
+				null,
+				null,
+				URI.create(request.url()),
+				requestHeaders,
+				responseHeaders,
+				status,
+				delay,
+				null
+		);
+		LOG.debug("Will report result of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.",
+				resultRequest.getRetStatus().name(), request.httpMethod().name(), request.url(), status, delay);
+		consumerAPI.updateServiceCallResult(resultRequest);
+
+		ResourceStat resourceStat = createInstanceResourceStat(
+				request.requestTemplate().feignTarget().name(),
+				null,
+				null,
+				URI.create(request.url()),
+				status,
+				delay,
+				null
+		);
+		circuitBreakAPI.report(resourceStat);
+
 	}
 
 	@Override
