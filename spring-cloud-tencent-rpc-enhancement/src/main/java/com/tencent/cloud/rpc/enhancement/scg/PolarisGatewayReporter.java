@@ -15,11 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
+
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 
 public class PolarisGatewayReporter extends AbstractPolarisReporterAdapter implements GlobalFilter {
 
@@ -48,36 +52,28 @@ public class PolarisGatewayReporter extends AbstractPolarisReporterAdapter imple
 		if (!reportProperties.isEnabled()) {
 			return chain.filter(exchange);
 		}
-		MetadataContextHolder.get().setLoadbalancer(
-				HeaderConstant.INTERNAL_CALLEE_SERVICE_ID,
-				exchange.getRequest().getHeaders().getFirst(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID)
-		);
-		MetadataContextHolder.get().setLoadbalancer(
-				HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST,
-				exchange.getRequest().getHeaders().getFirst(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST)
-		);
-		MetadataContextHolder.get().setLoadbalancer(
-				HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT,
-				exchange.getRequest().getHeaders().getFirst(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT)
-		);
-		MetadataContextHolder.get().setLoadbalancer(
-				HeaderConstant.INTERNAL_CALL_START_TIME,
-				String.valueOf(System.currentTimeMillis())
-		);
+		long startTime = System.currentTimeMillis();
 		return chain.filter(exchange)
-				.doOnSuccess(v -> instrumentResponse(exchange, null))
-				.doOnError(t -> instrumentResponse(exchange, t));
+				.doOnSuccess(v -> instrumentResponse(exchange, null, startTime))
+				.doOnError(t -> instrumentResponse(exchange, t, startTime));
 	}
 
-	private void instrumentResponse(ServerWebExchange exchange, Throwable t) {
-		Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
-		String serviceId = loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID);
-		String targetHost = loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST);
-		Integer targetPort = Integer.valueOf(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT));
-		long delay = System.currentTimeMillis() - Long.parseLong(loadBalancerContext.get(HeaderConstant.INTERNAL_CALL_START_TIME));
-
+	private void instrumentResponse(ServerWebExchange exchange, Throwable t, long startTime) {
 		ServerHttpResponse response = exchange.getResponse();
 		ServerHttpRequest request = exchange.getRequest();
+
+		long delay = System.currentTimeMillis() - startTime;
+		String serviceId = null;
+		String targetHost = null;
+		Integer targetPort = null;
+
+		Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
+		if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
+			ServiceInstance instance = serviceInstanceResponse.getServer();
+			serviceId = instance.getServiceId();
+			targetHost = instance.getHost();
+			targetPort = instance.getPort();
+		}
 
 		ServiceCallResult resultRequest = createServiceCallResult(
 				serviceId,

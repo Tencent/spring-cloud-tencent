@@ -93,8 +93,6 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 		ServiceCallResult resultRequest = createServiceCallResult(
 				request.requestTemplate().feignTarget().name(),
-				null,
-				null,
 				URI.create(request.url()),
 				requestHeaders,
 				responseHeaders,
@@ -108,8 +106,6 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 		ResourceStat resourceStat = createInstanceResourceStat(
 				request.requestTemplate().feignTarget().name(),
-				null,
-				null,
 				URI.create(request.url()),
 				status,
 				delay,

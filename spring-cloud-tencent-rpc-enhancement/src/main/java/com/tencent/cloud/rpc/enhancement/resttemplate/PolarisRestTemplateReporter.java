@@ -69,6 +69,7 @@ public class PolarisRestTemplateReporter extends AbstractPolarisReporterAdapter 
 			return execution.execute(request, body);
 		}
 
+		long startTime = System.currentTimeMillis();
 		ClientHttpResponse response = null;
 		IOException ex = null;
 		try {
@@ -87,7 +88,7 @@ public class PolarisRestTemplateReporter extends AbstractPolarisReporterAdapter 
 		Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
 		String targetHost = loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST);
 		Integer targetPort = Integer.valueOf(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT));
-		long delay = System.currentTimeMillis() - Long.parseLong(loadBalancerContext.get(HeaderConstant.INTERNAL_CALL_START_TIME));
+		long delay = System.currentTimeMillis() - startTime;
 
 		ServiceCallResult resultRequest = createServiceCallResult(
 				request.getURI().getHost(),

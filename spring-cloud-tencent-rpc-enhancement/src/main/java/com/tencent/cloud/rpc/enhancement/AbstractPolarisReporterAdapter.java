@@ -92,6 +92,13 @@ public abstract class AbstractPolarisReporterAdapter {
 		this.context = context;
 	}
 
+	public ServiceCallResult createServiceCallResult(
+			@Nullable String calleeServiceName, URI uri, HttpHeaders requestHeaders, @Nullable HttpHeaders responseHeaders,
+			@Nullable Integer statusCode, long delay, @Nullable Throwable exception) {
+		return createServiceCallResult(
+				calleeServiceName, uri.getHost(), uri.getPort(), uri, requestHeaders, responseHeaders, statusCode, delay, exception);
+	}
+
 	/**
 	 * createServiceCallResult
 	 * @param calleeServiceName will pick up url host when null
@@ -125,6 +132,13 @@ public abstract class AbstractPolarisReporterAdapter {
 		resultRequest.setRetStatus(getRetStatusFromRequest(responseHeaders, getDefaultRetStatus(statusCode, exception)));
 		resultRequest.setRuleName(getActiveRuleNameFromRequest(responseHeaders));
 		return resultRequest;
+	}
+
+	public ResourceStat createInstanceResourceStat(
+			@Nullable String calleeServiceName, URI uri,
+			@Nullable Integer statusCode, long delay, @Nullable Throwable exception) {
+		return createInstanceResourceStat(
+				calleeServiceName, uri.getHost(), uri.getPort(), uri, statusCode, delay, exception);
 	}
 
 	/**
