@@ -38,7 +38,11 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 
-
+/**
+ * EnhancedWebClientReporter.
+ *
+ * @author sean yu
+ */
 public class EnhancedWebClientReporter extends AbstractPolarisReporterAdapter implements ExchangeFilterFunction {
 	private static final Logger LOG = LoggerFactory.getLogger(EnhancedWebClientReporter.class);
 	private final ConsumerAPI consumerAPI;

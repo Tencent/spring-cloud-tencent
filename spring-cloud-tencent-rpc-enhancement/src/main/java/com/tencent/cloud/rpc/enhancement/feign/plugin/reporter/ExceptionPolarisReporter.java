@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
-import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -28,7 +27,6 @@ import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
 import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
-import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
