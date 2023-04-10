@@ -36,6 +36,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 
+import static com.tencent.cloud.rpc.enhancement.scg.RecordRequestStartTimeGlobalFilter.START_TIME;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 
 /**
@@ -70,17 +71,20 @@ public class EnhancedPolarisGatewayReporter extends AbstractPolarisReporterAdapt
 		if (!reportProperties.isEnabled()) {
 			return chain.filter(exchange);
 		}
-		long startTime = System.currentTimeMillis();
 		return chain.filter(exchange)
-				.doOnSuccess(v -> instrumentResponse(exchange, null, startTime))
-				.doOnError(t -> instrumentResponse(exchange, t, startTime));
+				.doOnSuccess(v -> instrumentResponse(exchange, null))
+				.doOnError(t -> instrumentResponse(exchange, t));
 	}
 
-	private void instrumentResponse(ServerWebExchange exchange, Throwable t, long startTime) {
+	private void instrumentResponse(ServerWebExchange exchange, Throwable t) {
 		ServerHttpResponse response = exchange.getResponse();
 		ServerHttpRequest request = exchange.getRequest();
 
-		long delay = System.currentTimeMillis() - startTime;
+		long delay = 0L;
+		Long startTime = exchange.getAttribute(START_TIME);
+		if (startTime != null) {
+			delay = System.currentTimeMillis() - startTime;
+		}
 		String serviceId = null;
 		String targetHost = null;
 		Integer targetPort = null;
