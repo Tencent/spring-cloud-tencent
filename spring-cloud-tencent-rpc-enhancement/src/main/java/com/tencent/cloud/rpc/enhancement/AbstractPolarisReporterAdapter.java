@@ -119,7 +119,6 @@ public abstract class AbstractPolarisReporterAdapter {
 		resultRequest.setMethod(uri.getPath());
 		resultRequest.setRetCode(statusCode == null ? -1 : statusCode);
 		resultRequest.setDelay(delay);
-		resultRequest.setProtocol(getProtocol(uri));
 		resultRequest.setCallerService(new ServiceKey(MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE));
 		resultRequest.setCallerIp(this.context.getConfig().getGlobal().getAPI().getBindIP());
 		resultRequest.setHost(StringUtils.isBlank(calleeHost) ? uri.getHost() : calleeHost);
@@ -157,8 +156,7 @@ public abstract class AbstractPolarisReporterAdapter {
 				calleeServiceKey,
 				StringUtils.isBlank(calleeHost) ? uri.getHost() : calleeHost,
 				calleePort == null ? getPort(uri) : calleePort,
-				callerServiceKey,
-				getProtocol(uri)
+				callerServiceKey
 		);
 		return new ResourceStat(resource, statusCode == null ? -1 : statusCode, delay, getDefaultRetStatus(statusCode, exception));
 	}
@@ -255,14 +253,6 @@ public abstract class AbstractPolarisReporterAdapter {
 			retStatus = RetStatus.RetFail;
 		}
 		return retStatus;
-	}
-
-	private String getProtocol(URI uri) {
-		String scheme = uri.getScheme();
-		if (StringUtils.isBlank(scheme)) {
-			scheme = "http";
-		}
-		return scheme;
 	}
 
 	private int getPort(URI uri) {
