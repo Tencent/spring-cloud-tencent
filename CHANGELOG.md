@@ -7,3 +7,4 @@
 - [fix: fix nacos CircuitBreaker disable bug.](https://github.com/Tencent/spring-cloud-tencent/pull/949)
 - [feature: add config for customized local port.](https://github.com/Tencent/spring-cloud-tencent/pull/957)
 - [refactor:refactor reactor code in router module.](https://github.com/Tencent/spring-cloud-tencent/pull/959)
+- [refactor: refactor circuitbreaker .](https://github.com/Tencent/spring-cloud-tencent/pull/964)
