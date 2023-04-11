@@ -53,6 +53,11 @@ public class PolarisContextProperties {
 	private String localIpAddress;
 
 	/**
+	 * current server local port.
+	 */
+	private Integer localPort;
+
+	/**
 	 * If polaris enabled.
 	 */
 	private Boolean enabled;
@@ -67,7 +72,7 @@ public class PolarisContextProperties {
 	 */
 	private String service;
 
-	public Configuration configuration(List<PolarisConfigModifier> modifierList, Supplier<String> ipAddressSupplier) {
+	public Configuration configuration(List<PolarisConfigModifier> modifierList, Supplier<String> ipAddressSupplier, Supplier<Integer> portSupplier) {
 		// 1. Read user-defined polaris.yml configuration
 		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
 				.defaultConfig(ConfigProvider.DEFAULT_CONFIG);
@@ -77,6 +82,9 @@ public class PolarisContextProperties {
 		if (StringUtils.isBlank(localIpAddress)) {
 			defaultHost = ipAddressSupplier.get();
 			this.localIpAddress = defaultHost;
+		}
+		if (this.localPort == null || this.localPort <= 0) {
+			this.localPort = portSupplier.get();
 		}
 
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);
@@ -108,6 +116,14 @@ public class PolarisContextProperties {
 
 	public void setLocalIpAddress(String localIpAddress) {
 		this.localIpAddress = localIpAddress;
+	}
+
+	public Integer getLocalPort() {
+		return localPort;
+	}
+
+	public void setLocalPort(Integer localPort) {
+		this.localPort = localPort;
 	}
 
 	public Boolean getEnabled() {

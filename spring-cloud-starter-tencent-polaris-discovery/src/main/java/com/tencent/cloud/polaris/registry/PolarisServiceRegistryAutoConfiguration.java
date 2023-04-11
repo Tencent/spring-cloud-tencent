@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.registry;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
@@ -65,11 +66,12 @@ public class PolarisServiceRegistryAutoConfiguration {
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
 	public PolarisRegistration polarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
+			PolarisContextProperties polarisContextProperties,
 			@Autowired(required = false) ConsulContextProperties consulContextProperties,
 			SDKContext context, StaticMetadataManager staticMetadataManager, NacosContextProperties nacosContextProperties,
 			@Autowired(required = false) ServletWebServerApplicationContext servletWebServerApplicationContext,
 			@Autowired(required = false) ReactiveWebServerApplicationContext reactiveWebServerApplicationContext) {
-		return new PolarisRegistration(polarisDiscoveryProperties, consulContextProperties, context,
+		return new PolarisRegistration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties, context,
 				staticMetadataManager, nacosContextProperties,
 				servletWebServerApplicationContext, reactiveWebServerApplicationContext);
 	}

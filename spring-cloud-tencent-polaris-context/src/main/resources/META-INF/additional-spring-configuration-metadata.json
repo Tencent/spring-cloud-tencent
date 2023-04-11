@@ -38,7 +38,13 @@
       "name": "spring.cloud.polaris.local-ip-address",
       "type": "java.lang.String",
       "defaultValue": "",
-      "description": "current server local ip address."
+      "description": "current server local ip address to be registered."
+    },
+    {
+      "name": "spring.cloud.polaris.local-port",
+      "type": "java.lang.Integer",
+      "defaultValue": "",
+      "description": "current server local port to be registered."
     }
   ],
   "hints": []
