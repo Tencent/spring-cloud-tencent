@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
@@ -41,9 +40,6 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.client.api.SDKContext;
-import feign.Request;
-import feign.RequestTemplate;
-import feign.Response;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +96,7 @@ public abstract class AbstractPolarisReporterAdapter {
 	}
 
 	/**
-	 * createServiceCallResult
+	 * createServiceCallResult.
 	 * @param calleeServiceName will pick up url host when null
 	 * @param calleeHost will pick up url host when null
 	 * @param calleePort will pick up url port when null
@@ -142,7 +138,7 @@ public abstract class AbstractPolarisReporterAdapter {
 	}
 
 	/**
-	 * createInstanceResourceStat
+	 * createInstanceResourceStat.
 	 * @param calleeServiceName will pick up url host when null
 	 * @param calleeHost will pick up url host when null
 	 * @param calleePort will pick up url port when null
@@ -254,7 +250,8 @@ public abstract class AbstractPolarisReporterAdapter {
 			if (exception instanceof SocketTimeoutException) {
 				retStatus = RetStatus.RetTimeout;
 			}
-		}else if (statusCode == null || apply(HttpStatus.resolve(statusCode))) {
+		}
+		else if (statusCode == null || apply(HttpStatus.resolve(statusCode))) {
 			retStatus = RetStatus.RetFail;
 		}
 		return retStatus;

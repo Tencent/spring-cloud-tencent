@@ -18,7 +18,6 @@
 package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
 
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
@@ -29,8 +28,6 @@ import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.config.global.APIConfig;
 import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.api.pojo.RetStatus;
-import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import feign.Request;
@@ -51,8 +48,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;

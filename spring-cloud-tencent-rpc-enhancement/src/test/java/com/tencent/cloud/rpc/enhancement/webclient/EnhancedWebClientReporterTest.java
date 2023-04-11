@@ -51,7 +51,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -121,11 +121,11 @@ public class EnhancedWebClientReporterTest {
 
 		EnhancedWebClientReporter reporter = new EnhancedWebClientReporter(reporterProperties, sdkContext, consumerAPI, circuitBreakAPI);
 		ClientResponse clientResponse1 = reporter.filter(clientRequest, exchangeFunction).block();
-		assertSame(clientResponse, clientResponse1);
+		assertThat(clientResponse1).isEqualTo(clientResponse);
 
 		doReturn(true).when(reporterProperties).isEnabled();
 		ClientResponse clientResponse2 = reporter.filter(clientRequest, exchangeFunction).block();
-		assertSame(clientResponse, clientResponse2);
+		assertThat(clientResponse2).isEqualTo(clientResponse);
 
 	}
 

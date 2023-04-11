@@ -52,8 +52,8 @@ import org.springframework.http.client.ClientHttpResponse;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -129,14 +129,14 @@ public class EnhancedPolarisRestTemplateReporterTest {
 
 		EnhancedPolarisRestTemplateReporter reporter = new EnhancedPolarisRestTemplateReporter(reporterProperties, sdkContext, consumerAPI, circuitBreakAPI);
 		actualResult = reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution);
-		assertSame(mockClientHttpResponse, actualResult);
+		assertThat(actualResult).isEqualTo(mockClientHttpResponse);
 
 		doReturn(true).when(reporterProperties).isEnabled();
 		actualResult = reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution);
-		assertSame(mockClientHttpResponse, actualResult);
+		assertThat(actualResult).isEqualTo(mockClientHttpResponse);
 
 		doThrow(new SocketTimeoutException()).when(mockClientHttpRequestExecution).execute(mockHttpRequest, inputBody);
-		assertThrows(SocketTimeoutException.class, () -> reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution));
+		assertThatThrownBy(() -> reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution)).isInstanceOf(SocketTimeoutException.class);
 	}
 
 }
