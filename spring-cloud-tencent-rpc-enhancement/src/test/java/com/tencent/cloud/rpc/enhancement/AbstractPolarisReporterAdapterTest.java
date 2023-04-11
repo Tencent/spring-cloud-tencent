@@ -130,8 +130,8 @@ public class AbstractPolarisReporterAdapterTest {
 				"test",
 				new URI("http://0.0.0.0/"),
 				requestHeaders,
-				new HttpHeaders(),
-				200,
+				null,
+				null,
 				0,
 				new SocketTimeoutException()
 		);
@@ -170,7 +170,7 @@ public class AbstractPolarisReporterAdapterTest {
 
 		resourceStat = adapter.createInstanceResourceStat("test",
 				new URI("http://0.0.0.0/"),
-				200,
+				null,
 				0,
 				new SocketTimeoutException()
 		);
