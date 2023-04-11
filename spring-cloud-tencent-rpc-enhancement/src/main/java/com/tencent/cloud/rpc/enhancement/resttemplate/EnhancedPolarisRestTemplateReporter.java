@@ -93,7 +93,7 @@ public class EnhancedPolarisRestTemplateReporter extends AbstractPolarisReporter
 
 		Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
 		String targetHost = loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST);
-		Integer targetPort = Integer.valueOf(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT));
+		Integer targetPort = loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT) != null ? Integer.valueOf(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT)) : null;
 		long delay = System.currentTimeMillis() - startTime;
 
 		ServiceCallResult resultRequest = createServiceCallResult(
