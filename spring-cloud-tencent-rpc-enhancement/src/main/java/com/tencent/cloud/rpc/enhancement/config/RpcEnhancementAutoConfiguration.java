@@ -211,11 +211,5 @@ public class RpcEnhancementAutoConfiguration {
 			return new EnhancedPolarisGatewayReporter(properties, context, consumerAPI, circuitBreakAPI);
 		}
 
-		@Bean
-		@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
-		public RecordRequestStartTimeGlobalFilter recordRequestStartTimeGlobalFilter() {
-			return new RecordRequestStartTimeGlobalFilter();
-		}
-
 	}
 }
