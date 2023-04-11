@@ -77,7 +77,7 @@ public final class PolarisCircuitBreakerUtils {
 			if (Objects.nonNull(e.getFallbackInfo())) {
 				result.setRetCode(e.getFallbackInfo().getCode());
 			}
-//			consumerAPI.updateServiceCallResult(result);
+			consumerAPI.updateServiceCallResult(result);
 		}
 		catch (Throwable ex) {
 			LOG.error("[CircuitBreaker] report circuitbreaker call result fail ", ex);
