@@ -32,11 +32,12 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 
-import static com.tencent.cloud.rpc.enhancement.scg.RecordRequestStartTimeGlobalFilter.START_TIME;
+import static org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter.ROUTE_TO_URL_FILTER_ORDER;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 
 /**
@@ -44,7 +45,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
  *
  * @author sean yu
  */
-public class EnhancedPolarisGatewayReporter extends AbstractPolarisReporterAdapter implements GlobalFilter {
+public class EnhancedPolarisGatewayReporter extends AbstractPolarisReporterAdapter implements GlobalFilter, Ordered {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EnhancedPolarisGatewayReporter.class);
 
@@ -71,20 +72,17 @@ public class EnhancedPolarisGatewayReporter extends AbstractPolarisReporterAdapt
 		if (!reportProperties.isEnabled()) {
 			return chain.filter(exchange);
 		}
+		long startTime = System.currentTimeMillis();
 		return chain.filter(exchange)
-				.doOnSuccess(v -> instrumentResponse(exchange, null))
-				.doOnError(t -> instrumentResponse(exchange, t));
+				.doOnSuccess(v -> instrumentResponse(exchange, null, startTime))
+				.doOnError(t -> instrumentResponse(exchange, t, startTime));
 	}
 
-	private void instrumentResponse(ServerWebExchange exchange, Throwable t) {
+	private void instrumentResponse(ServerWebExchange exchange, Throwable t, long startTime) {
 		ServerHttpResponse response = exchange.getResponse();
 		ServerHttpRequest request = exchange.getRequest();
 
-		long delay = 0L;
-		Long startTime = exchange.getAttribute(START_TIME);
-		if (startTime != null) {
-			delay = System.currentTimeMillis() - startTime;
-		}
+		long delay = System.currentTimeMillis() - startTime;
 		String serviceId = null;
 		String targetHost = null;
 		Integer targetPort = null;
@@ -124,4 +122,8 @@ public class EnhancedPolarisGatewayReporter extends AbstractPolarisReporterAdapt
 		circuitBreakAPI.report(resourceStat);
 	}
 
+	@Override
+	public int getOrder() {
+		return ROUTE_TO_URL_FILTER_ORDER + 1;
+	}
 }
