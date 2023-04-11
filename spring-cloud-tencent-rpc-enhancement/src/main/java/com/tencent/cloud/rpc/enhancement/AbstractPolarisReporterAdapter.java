@@ -186,7 +186,7 @@ public abstract class AbstractPolarisReporterAdapter {
 	 * @param httpStatus request http status code
 	 * @return true , otherwise return false .
 	 */
-	private boolean apply(@Nullable HttpStatus httpStatus) {
+	protected boolean apply(@Nullable HttpStatus httpStatus) {
 		if (Objects.isNull(httpStatus)) {
 			return false;
 		}
@@ -221,7 +221,7 @@ public abstract class AbstractPolarisReporterAdapter {
 		return false;
 	}
 
-	private RetStatus getRetStatusFromRequest(HttpHeaders headers, RetStatus defaultVal) {
+	protected RetStatus getRetStatusFromRequest(HttpHeaders headers, RetStatus defaultVal) {
 		if (headers != null && headers.containsKey(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
 			List<String> values = headers.get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
 			if (CollectionUtils.isNotEmpty(values)) {
@@ -237,7 +237,7 @@ public abstract class AbstractPolarisReporterAdapter {
 		return defaultVal;
 	}
 
-	private String getActiveRuleNameFromRequest(HttpHeaders headers) {
+	protected String getActiveRuleNameFromRequest(HttpHeaders headers) {
 		if (headers != null && headers.containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
 			Collection<String> values = headers.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
 			if (CollectionUtils.isNotEmpty(values)) {
