@@ -309,12 +309,6 @@ public class AbstractPolarisReporterAdapterTest {
 	 */
 	public static class SimplePolarisReporterAdapter extends AbstractPolarisReporterAdapter {
 
-		/**
-		 * Constructor With {@link RpcEnhancementReporterProperties} .
-		 *
-		 * @param reportProperties instance of {@link RpcEnhancementReporterProperties}.
-		 * @param context
-		 */
 		protected SimplePolarisReporterAdapter(RpcEnhancementReporterProperties reportProperties, SDKContext context) {
 			super(reportProperties, context);
 		}
