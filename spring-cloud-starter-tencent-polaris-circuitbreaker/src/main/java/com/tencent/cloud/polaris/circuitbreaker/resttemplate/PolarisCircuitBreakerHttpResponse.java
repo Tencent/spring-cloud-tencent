@@ -55,7 +55,6 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 
 	PolarisCircuitBreakerHttpResponse(CircuitBreakerStatus.FallbackInfo fallbackInfo) {
 		this.fallbackInfo = fallbackInfo;
-//		headers.add(POLARIS_CIRCUIT_BREAKER_FALLBACK_HEADER, "true");
 		if (fallbackInfo.getHeaders() != null) {
 			fallbackInfo.getHeaders().forEach(headers::add);
 		}
