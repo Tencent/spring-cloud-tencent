@@ -33,12 +33,9 @@ import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeig
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
-import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.client.util.Utils;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
@@ -142,12 +139,11 @@ public class PolarisCircuitBreakerIntegrationTest {
 		mockServer.verify();
 		mockServer.reset();
 		HttpHeaders headers = new HttpHeaders();
-		// no delegateHandler in EnhancedRestTemplateReporter, so this will except err
 		mockServer
 				.expect(ExpectedCount.once(), requestTo(new URI("http://localhost:18001/example/service/b/info")))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withStatus(HttpStatus.BAD_GATEWAY).headers(headers).body("BAD_GATEWAY"));
-		assertThat(defaultRestTemplate.getForObject("http://localhost:18001/example/service/b/info", String.class)).isEqualTo("BAD_GATEWAY");
+		assertThat(defaultRestTemplate.getForObject("http://localhost:18001/example/service/b/info", String.class)).isEqualTo("fallback");
 		mockServer.verify();
 		mockServer.reset();
 		assertThat(restTemplateFallbackFromCode.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
