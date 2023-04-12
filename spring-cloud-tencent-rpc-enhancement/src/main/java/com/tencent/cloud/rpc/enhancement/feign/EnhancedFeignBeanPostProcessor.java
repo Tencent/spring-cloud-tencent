@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.feign;
 
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import feign.Client;
 
 import org.springframework.beans.BeansException;
@@ -37,11 +38,11 @@ import org.springframework.lang.NonNull;
  */
 public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
-	private final EnhancedFeignPluginRunner pluginRunner;
+	private final EnhancedPluginRunner pluginRunner;
 
 	private BeanFactory factory;
 
-	public EnhancedFeignBeanPostProcessor(EnhancedFeignPluginRunner pluginRunner) {
+	public EnhancedFeignBeanPostProcessor(EnhancedPluginRunner pluginRunner) {
 		this.pluginRunner = pluginRunner;
 	}
 

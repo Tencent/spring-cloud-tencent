@@ -16,16 +16,13 @@
  *
  */
 
-package com.tencent.cloud.rpc.enhancement.feign;
+package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.util.Comparator;
 import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
 
 import org.springframework.util.CollectionUtils;
 
@@ -34,14 +31,14 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Derek Yi 2022-08-16
  */
-public class DefaultEnhancedFeignPluginRunner implements EnhancedFeignPluginRunner {
+public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 
-	private final Multimap<String, EnhancedFeignPlugin> pluginMap = ArrayListMultimap.create();
+	private final Multimap<String, EnhancedPlugin> pluginMap = ArrayListMultimap.create();
 
-	public DefaultEnhancedFeignPluginRunner(List<EnhancedFeignPlugin> enhancedFeignPlugins) {
-		if (!CollectionUtils.isEmpty(enhancedFeignPlugins)) {
-			enhancedFeignPlugins.stream()
-					.sorted(Comparator.comparing(EnhancedFeignPlugin::getOrder))
+	public DefaultEnhancedPluginRunner(List<EnhancedPlugin> enhancedPlugins) {
+		if (!CollectionUtils.isEmpty(enhancedPlugins)) {
+			enhancedPlugins.stream()
+					.sorted(Comparator.comparing(EnhancedPlugin::getOrder))
 					.forEach(plugin -> pluginMap.put(plugin.getType().name(), plugin));
 		}
 	}
@@ -53,8 +50,8 @@ public class DefaultEnhancedFeignPluginRunner implements EnhancedFeignPluginRunn
 	 * @param context context in enhanced feign client.
 	 */
 	@Override
-	public void run(EnhancedFeignPluginType pluginType, EnhancedFeignContext context) {
-		for (EnhancedFeignPlugin plugin : pluginMap.get(pluginType.name())) {
+	public void run(EnhancedPluginType pluginType, EnhancedPluginContext context) {
+		for (EnhancedPlugin plugin : pluginMap.get(pluginType.name())) {
 			try {
 				plugin.run(context);
 			}

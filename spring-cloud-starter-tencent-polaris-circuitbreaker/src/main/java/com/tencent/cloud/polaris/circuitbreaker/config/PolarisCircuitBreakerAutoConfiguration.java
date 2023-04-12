@@ -22,6 +22,8 @@ import java.util.List;
 
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerRestTemplateBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
@@ -59,6 +61,20 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	@ConditionalOnMissingBean(CircuitBreakAPI.class)
 	public CircuitBreakAPI circuitBreakAPI(SDKContext polarisContext) {
 		return CircuitBreakAPIFactory.createCircuitBreakAPIByContext(polarisContext);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
+	public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+			SDKContext polarisContext, CircuitBreakAPI circuitBreakAPI) {
+		return new SuccessCircuitBreakerReporter(properties, polarisContext, circuitBreakAPI);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
+	public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+			SDKContext polarisContext, CircuitBreakAPI circuitBreakAPI) {
+		return new ExceptionCircuitBreakerReporter(properties, polarisContext, circuitBreakAPI);
 	}
 
 	@Bean
