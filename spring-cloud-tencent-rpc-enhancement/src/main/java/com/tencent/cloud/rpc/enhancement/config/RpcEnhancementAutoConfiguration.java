@@ -22,20 +22,18 @@ import java.util.List;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.rpc.enhancement.feign.DefaultEnhancedFeignPluginRunner;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
-import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignPluginRunner;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
+import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
+import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedPolarisRestTemplateReporter;
-import com.tencent.cloud.rpc.enhancement.scg.EnhancedPolarisGatewayReporter;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplate;
+import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
 import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
-import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -69,9 +67,23 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class RpcEnhancementAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(CircuitBreakAPI.class)
-	public CircuitBreakAPI circuitBreakAPI(SDKContext polarisContext) {
-		return CircuitBreakAPIFactory.createCircuitBreakAPIByContext(polarisContext);
+	public EnhancedPluginRunner enhancedFeignPluginRunner(
+			@Autowired(required = false) List<EnhancedPlugin> enhancedPlugins) {
+		return new DefaultEnhancedPluginRunner(enhancedPlugins);
+	}
+
+	@Bean
+	public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties,
+			SDKContext context,
+			ConsumerAPI consumerAPI) {
+		return new SuccessPolarisReporter(properties, context, consumerAPI);
+	}
+
+	@Bean
+	public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
+			SDKContext context,
+			ConsumerAPI consumerAPI) {
+		return new ExceptionPolarisReporter(properties, context, consumerAPI);
 	}
 
 	/**
@@ -87,35 +99,10 @@ public class RpcEnhancementAutoConfiguration {
 	protected static class PolarisFeignClientAutoConfiguration {
 
 		@Bean
-		public EnhancedFeignPluginRunner enhancedFeignPluginRunner(
-				@Autowired(required = false) List<EnhancedFeignPlugin> enhancedFeignPlugins) {
-			return new DefaultEnhancedFeignPluginRunner(enhancedFeignPlugins);
-		}
-
-		@Bean
-		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(@Lazy EnhancedFeignPluginRunner pluginRunner) {
+		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(@Lazy EnhancedPluginRunner pluginRunner) {
 			return new EnhancedFeignBeanPostProcessor(pluginRunner);
 		}
 
-		@Configuration
-		static class PolarisReporterConfig {
-
-			@Bean
-			public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties,
-					SDKContext context,
-					ConsumerAPI consumerAPI,
-					CircuitBreakAPI circuitBreakAPI) {
-				return new SuccessPolarisReporter(properties, context, consumerAPI, circuitBreakAPI);
-			}
-
-			@Bean
-			public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
-					SDKContext context,
-					ConsumerAPI consumerAPI,
-					CircuitBreakAPI circuitBreakAPI) {
-				return new ExceptionPolarisReporter(properties, context, consumerAPI, circuitBreakAPI);
-			}
-		}
 	}
 
 	/**
@@ -133,15 +120,12 @@ public class RpcEnhancementAutoConfiguration {
 		private List<RestTemplate> restTemplates = Collections.emptyList();
 
 		@Bean
-		public EnhancedPolarisRestTemplateReporter enhancedPolarisRestTemplateReporter(RpcEnhancementReporterProperties properties,
-				SDKContext context,
-				ConsumerAPI consumerAPI,
-				CircuitBreakAPI circuitBreakAPI) {
-			return new EnhancedPolarisRestTemplateReporter(properties, context, consumerAPI, circuitBreakAPI);
+		public EnhancedRestTemplate enhancedPolarisRestTemplateReporter(@Lazy EnhancedPluginRunner pluginRunner) {
+			return new EnhancedRestTemplate(pluginRunner);
 		}
 
 		@Bean
-		public SmartInitializingSingleton setPolarisReporterForRestTemplate(EnhancedPolarisRestTemplateReporter reporter) {
+		public SmartInitializingSingleton setPolarisReporterForRestTemplate(EnhancedRestTemplate reporter) {
 			return () -> {
 				for (RestTemplate restTemplate : restTemplates) {
 					restTemplate.getInterceptors().add(reporter);
@@ -155,6 +139,7 @@ public class RpcEnhancementAutoConfiguration {
 		public BlockingLoadBalancerClientAspect blockingLoadBalancerClientAspect() {
 			return new BlockingLoadBalancerClientAspect();
 		}
+
 	}
 
 
@@ -166,22 +151,12 @@ public class RpcEnhancementAutoConfiguration {
 	@ConditionalOnClass(name = "org.springframework.web.reactive.function.client.WebClient")
 	protected static class PolarisWebClientAutoConfiguration {
 
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerClientRequestTransformer")
-		public PolarisLoadBalancerClientRequestTransformer polarisLoadBalancerClientRequestTransformer() {
-			return new PolarisLoadBalancerClientRequestTransformer();
-		}
-
 		@Autowired(required = false)
 		private List<WebClient.Builder> webClientBuilder = Collections.emptyList();
 
 		@Bean
-		public EnhancedWebClientReporter exchangeFilterFunction(RpcEnhancementReporterProperties properties,
-				SDKContext context,
-				ConsumerAPI consumerAPI,
-				CircuitBreakAPI circuitBreakAPI) {
-			return new EnhancedWebClientReporter(properties, context, consumerAPI, circuitBreakAPI);
+		public EnhancedWebClientReporter exchangeFilterFunction(@Lazy EnhancedPluginRunner pluginRunner) {
+			return new EnhancedWebClientReporter(pluginRunner);
 		}
 
 		@Bean
@@ -190,6 +165,14 @@ public class RpcEnhancementAutoConfiguration {
 				webClient.filter(reporter);
 			});
 		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerClientRequestTransformer")
+		public PolarisLoadBalancerClientRequestTransformer polarisLoadBalancerClientRequestTransformer() {
+			return new PolarisLoadBalancerClientRequestTransformer();
+		}
+
 	}
 
 	/**
@@ -203,12 +186,10 @@ public class RpcEnhancementAutoConfiguration {
 
 		@Bean
 		@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
-		public EnhancedPolarisGatewayReporter enhancedPolarisGatewayReporter(RpcEnhancementReporterProperties properties,
-				SDKContext context,
-				ConsumerAPI consumerAPI,
-				CircuitBreakAPI circuitBreakAPI) {
-			return new EnhancedPolarisGatewayReporter(properties, context, consumerAPI, circuitBreakAPI);
+		public EnhancedGatewayGlobalFilter enhancedPolarisGatewayReporter(@Lazy EnhancedPluginRunner pluginRunner) {
+			return new EnhancedGatewayGlobalFilter(pluginRunner);
 		}
 
 	}
+
 }

@@ -13,34 +13,23 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.rpc.enhancement.feign.plugin;
+package com.tencent.cloud.rpc.enhancement.plugin;
 
 /**
- * Type of EnhancedFeignPlugin.
+ * Plugin runner.
  *
- * @author Haotian Zhang
+ * @author Derek Yi 2022-08-16
  */
-public enum EnhancedFeignPluginType {
+public interface EnhancedPluginRunner {
 
 	/**
-	 * Pre feign plugin.
+	 * run the plugin.
+	 *
+	 * @param pluginType type of plugin
+	 * @param context context in enhanced feign client.
 	 */
-	PRE,
-
-	/**
-	 * Post feign plugin.
-	 */
-	POST,
-
-	/**
-	 * Exception feign plugin.
-	 */
-	EXCEPTION,
-
-	/**
-	 * Finally feign plugin.
-	 */
-	FINALLY
+	void run(EnhancedPluginType pluginType, EnhancedPluginContext context);
 }

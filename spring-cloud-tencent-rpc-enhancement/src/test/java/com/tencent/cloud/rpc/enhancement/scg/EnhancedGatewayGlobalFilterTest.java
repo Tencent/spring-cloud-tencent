@@ -19,17 +19,14 @@ package com.tencent.cloud.rpc.enhancement.scg;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.config.Configuration;
-import com.tencent.polaris.api.config.global.APIConfig;
-import com.tencent.polaris.api.config.global.GlobalConfig;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
+import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -54,23 +51,20 @@ import org.springframework.web.server.ServerWebExchange;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 
 @ExtendWith(MockitoExtension.class)
-public class EnhancedPolarisGatewayReporterTest {
+public class EnhancedGatewayGlobalFilterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
 	private RpcEnhancementReporterProperties reporterProperties;
 	@Mock
 	private SDKContext sdkContext;
-	@Mock
-	private ConsumerAPI consumerAPI;
-	@Mock
-	private CircuitBreakAPI circuitBreakAPI;
 	@Mock
 	ServerWebExchange exchange;
 	@Mock
@@ -106,16 +100,6 @@ public class EnhancedPolarisGatewayReporterTest {
 
 	@Test
 	public void testRun() throws URISyntaxException {
-		APIConfig apiConfig = mock(APIConfig.class);
-		doReturn("0.0.0.0").when(apiConfig).getBindIP();
-
-		GlobalConfig globalConfig = mock(GlobalConfig.class);
-		doReturn(apiConfig).when(globalConfig).getAPI();
-
-		Configuration configuration = mock(Configuration.class);
-		doReturn(globalConfig).when(configuration).getGlobal();
-
-		doReturn(configuration).when(sdkContext).getConfig();
 
 		doReturn(new URI("http://0.0.0.0/")).when(request).getURI();
 		doReturn(new HttpHeaders()).when(request).getHeaders();
@@ -124,9 +108,6 @@ public class EnhancedPolarisGatewayReporterTest {
 		doReturn(Mono.empty()).when(chain).filter(exchange);
 
 		ServiceInstance serviceInstance = mock(ServiceInstance.class);
-		doReturn("test").when(serviceInstance).getServiceId();
-		doReturn("0.0.0.0").when(serviceInstance).getHost();
-		doReturn(80).when(serviceInstance).getPort();
 		Response<ServiceInstance> serviceInstanceResponse = new Response<ServiceInstance>() {
 			@Override
 			public boolean hasServer() {
@@ -142,14 +123,14 @@ public class EnhancedPolarisGatewayReporterTest {
 		doReturn(request).when(exchange).getRequest();
 		doReturn(response).when(exchange).getResponse();
 
-		EnhancedPolarisGatewayReporter reporter = new EnhancedPolarisGatewayReporter(reporterProperties, sdkContext, consumerAPI, circuitBreakAPI);
+		EnhancedGatewayGlobalFilter reporter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(new ArrayList<>()));
 		reporter.getOrder();
 
 		reporter.filter(exchange, chain).block();
 
-		doReturn(true).when(reporterProperties).isEnabled();
+		doReturn(Mono.error(new RuntimeException())).when(chain).filter(exchange);
 
-		reporter.filter(exchange, chain).block();
+		assertThatThrownBy(() -> reporter.filter(exchange, chain).block()).isInstanceOf(RuntimeException.class);
 
 	}
 }

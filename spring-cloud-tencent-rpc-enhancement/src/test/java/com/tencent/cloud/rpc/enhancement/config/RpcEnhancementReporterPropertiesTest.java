@@ -40,7 +40,8 @@ import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RpcEnhancementReporterPropertiesTest.TestApplication.class, properties = {
 		"spring.application.name=test",
-		"spring.cloud.gateway.enabled=false"
+		"spring.cloud.gateway.enabled=false",
+		"spring.cloud.tencent.rpc-enhancement.reporter=true"
 })
 @ActiveProfiles("test")
 public class RpcEnhancementReporterPropertiesTest {
@@ -58,6 +59,7 @@ public class RpcEnhancementReporterPropertiesTest {
 		assertThat(rpcEnhancementReporterProperties.getStatuses()).isNotEmpty();
 		assertThat(rpcEnhancementReporterProperties.getStatuses().get(0)).isEqualTo(MULTIPLE_CHOICES);
 		assertThat(rpcEnhancementReporterProperties.getStatuses().get(1)).isEqualTo(MOVED_PERMANENTLY);
+		assertThat(rpcEnhancementReporterProperties.isEnabled()).isEqualTo(true);
 	}
 
 	@SpringBootApplication
