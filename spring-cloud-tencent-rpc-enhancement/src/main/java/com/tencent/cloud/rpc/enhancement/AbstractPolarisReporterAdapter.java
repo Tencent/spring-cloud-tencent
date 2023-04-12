@@ -68,7 +68,6 @@ import static org.springframework.http.HttpStatus.VARIANT_ALSO_NEGOTIATES;
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022-07-11
  */
 public abstract class AbstractPolarisReporterAdapter {
-
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractPolarisReporterAdapter.class);
 	private static final List<HttpStatus> HTTP_STATUSES = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
 			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
@@ -86,13 +85,6 @@ public abstract class AbstractPolarisReporterAdapter {
 	protected AbstractPolarisReporterAdapter(RpcEnhancementReporterProperties reportProperties, SDKContext context) {
 		this.reportProperties = reportProperties;
 		this.context = context;
-	}
-
-	public ServiceCallResult createServiceCallResult(
-			@Nullable String calleeServiceName, URI uri, HttpHeaders requestHeaders, @Nullable HttpHeaders responseHeaders,
-			@Nullable Integer statusCode, long delay, @Nullable Throwable exception) {
-		return createServiceCallResult(
-				calleeServiceName, uri.getHost(), uri.getPort(), uri, requestHeaders, responseHeaders, statusCode, delay, exception);
 	}
 
 	/**
@@ -127,13 +119,6 @@ public abstract class AbstractPolarisReporterAdapter {
 		resultRequest.setRetStatus(getRetStatusFromRequest(responseHeaders, getDefaultRetStatus(statusCode, exception)));
 		resultRequest.setRuleName(getActiveRuleNameFromRequest(responseHeaders));
 		return resultRequest;
-	}
-
-	public ResourceStat createInstanceResourceStat(
-			@Nullable String calleeServiceName, URI uri,
-			@Nullable Integer statusCode, long delay, @Nullable Throwable exception) {
-		return createInstanceResourceStat(
-				calleeServiceName, uri.getHost(), uri.getPort(), uri, statusCode, delay, exception);
 	}
 
 	/**
@@ -261,16 +246,18 @@ public abstract class AbstractPolarisReporterAdapter {
 	}
 
 	private String getLabels(HttpHeaders headers) {
-		Collection<String> labels = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
-		if (CollectionUtils.isNotEmpty(labels) && labels.iterator().hasNext()) {
-			String label = labels.iterator().next();
-			try {
-				label = URLDecoder.decode(label, UTF_8);
+		if (headers != null) {
+			Collection<String> labels = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
+			if (CollectionUtils.isNotEmpty(labels) && labels.iterator().hasNext()) {
+				String label = labels.iterator().next();
+				try {
+					label = URLDecoder.decode(label, UTF_8);
+				}
+				catch (UnsupportedEncodingException e) {
+					LOG.error("unsupported charset exception " + UTF_8, e);
+				}
+				return RequestLabelUtils.convertLabel(label);
 			}
-			catch (UnsupportedEncodingException e) {
-				LOG.error("unsupported charset exception " + UTF_8, e);
-			}
-			return RequestLabelUtils.convertLabel(label);
 		}
 		return null;
 	}

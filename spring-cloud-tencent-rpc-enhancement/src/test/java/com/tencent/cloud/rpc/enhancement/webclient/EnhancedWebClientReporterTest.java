@@ -19,17 +19,14 @@ package com.tencent.cloud.rpc.enhancement.webclient;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.config.Configuration;
-import com.tencent.polaris.api.config.global.APIConfig;
-import com.tencent.polaris.api.config.global.GlobalConfig;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
+import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,6 +49,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -65,10 +63,6 @@ public class EnhancedWebClientReporterTest {
 	private RpcEnhancementReporterProperties reporterProperties;
 	@Mock
 	private SDKContext sdkContext;
-	@Mock
-	private ConsumerAPI consumerAPI;
-	@Mock
-	private CircuitBreakAPI circuitBreakAPI;
 	@Mock
 	private ClientRequest clientRequest;
 	@Mock
@@ -101,16 +95,6 @@ public class EnhancedWebClientReporterTest {
 	}
 	@Test
 	public void testRun() throws URISyntaxException {
-		APIConfig apiConfig = mock(APIConfig.class);
-		doReturn("0.0.0.0").when(apiConfig).getBindIP();
-
-		GlobalConfig globalConfig = mock(GlobalConfig.class);
-		doReturn(apiConfig).when(globalConfig).getAPI();
-
-		Configuration configuration = mock(Configuration.class);
-		doReturn(globalConfig).when(configuration).getGlobal();
-
-		doReturn(configuration).when(sdkContext).getConfig();
 
 		doReturn(new URI("http://0.0.0.0/")).when(clientRequest).url();
 		doReturn(new HttpHeaders()).when(clientRequest).headers();
@@ -119,13 +103,17 @@ public class EnhancedWebClientReporterTest {
 		doReturn(headers).when(clientResponse).headers();
 		doReturn(Mono.just(clientResponse)).when(exchangeFunction).exchange(any());
 
-		EnhancedWebClientReporter reporter = new EnhancedWebClientReporter(reporterProperties, sdkContext, consumerAPI, circuitBreakAPI);
+		EnhancedWebClientReporter reporter = new EnhancedWebClientReporter(new DefaultEnhancedPluginRunner(new ArrayList<>()));
 		ClientResponse clientResponse1 = reporter.filter(clientRequest, exchangeFunction).block();
 		assertThat(clientResponse1).isEqualTo(clientResponse);
 
-		doReturn(true).when(reporterProperties).isEnabled();
 		ClientResponse clientResponse2 = reporter.filter(clientRequest, exchangeFunction).block();
 		assertThat(clientResponse2).isEqualTo(clientResponse);
+
+		doReturn(Mono.error(new RuntimeException())).when(exchangeFunction).exchange(any());
+
+		assertThatThrownBy(() -> reporter.filter(clientRequest, exchangeFunction).block()).isInstanceOf(RuntimeException.class);
+
 
 	}
 

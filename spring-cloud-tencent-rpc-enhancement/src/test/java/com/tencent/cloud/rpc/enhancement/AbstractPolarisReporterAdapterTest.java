@@ -106,6 +106,8 @@ public class AbstractPolarisReporterAdapterTest {
 
 		serviceCallResult = adapter.createServiceCallResult(
 				"test",
+				null,
+				null,
 				new URI("http://0.0.0.0/"),
 				requestHeaders,
 				new HttpHeaders(),
@@ -117,6 +119,8 @@ public class AbstractPolarisReporterAdapterTest {
 
 		serviceCallResult = adapter.createServiceCallResult(
 				"test",
+				null,
+				null,
 				new URI("http://0.0.0.0/"),
 				requestHeaders,
 				new HttpHeaders(),
@@ -128,6 +132,8 @@ public class AbstractPolarisReporterAdapterTest {
 
 		serviceCallResult = adapter.createServiceCallResult(
 				"test",
+				null,
+				null,
 				new URI("http://0.0.0.0/"),
 				requestHeaders,
 				null,
@@ -161,6 +167,8 @@ public class AbstractPolarisReporterAdapterTest {
 		ResourceStat resourceStat;
 
 		resourceStat = adapter.createInstanceResourceStat("test",
+				null,
+				null,
 				new URI("http://0.0.0.0/"),
 				200,
 				0,
@@ -169,6 +177,8 @@ public class AbstractPolarisReporterAdapterTest {
 		assertThat(resourceStat.getRetStatus()).isEqualTo(RetStatus.RetSuccess);
 
 		resourceStat = adapter.createInstanceResourceStat("test",
+				null,
+				null,
 				new URI("http://0.0.0.0/"),
 				null,
 				0,

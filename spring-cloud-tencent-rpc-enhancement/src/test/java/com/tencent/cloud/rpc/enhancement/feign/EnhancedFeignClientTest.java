@@ -22,9 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPlugin;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
+import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import feign.Client;
 import feign.Request;
 import feign.RequestTemplate;
@@ -72,9 +73,9 @@ public class EnhancedFeignClientTest {
 			fail("Exception encountered.", e);
 		}
 
-		List<EnhancedFeignPlugin> enhancedFeignPlugins = getMockEnhancedFeignPlugins();
+		List<EnhancedPlugin> enhancedPlugins = getMockEnhancedFeignPlugins();
 		try {
-			new EnhancedFeignClient(mock(Client.class), new DefaultEnhancedFeignPluginRunner(enhancedFeignPlugins));
+			new EnhancedFeignClient(mock(Client.class), new DefaultEnhancedPluginRunner(enhancedPlugins));
 		}
 		catch (Throwable e) {
 			fail("Exception encountered.", e);
@@ -103,7 +104,7 @@ public class EnhancedFeignClientTest {
 		RequestTemplate requestTemplate = new RequestTemplate();
 		requestTemplate.feignTarget(target);
 
-		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate, new DefaultEnhancedFeignPluginRunner(getMockEnhancedFeignPlugins()));
+		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate, new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins()));
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
@@ -127,44 +128,22 @@ public class EnhancedFeignClientTest {
 		}
 	}
 
-	private List<EnhancedFeignPlugin> getMockEnhancedFeignPlugins() {
-		List<EnhancedFeignPlugin> enhancedFeignPlugins = new ArrayList<>();
+	private List<EnhancedPlugin> getMockEnhancedFeignPlugins() {
+		List<EnhancedPlugin> enhancedPlugins = new ArrayList<>();
 
-		enhancedFeignPlugins.add(new EnhancedFeignPlugin() {
+		enhancedPlugins.add(new EnhancedPlugin() {
 			@Override
-			public EnhancedFeignPluginType getType() {
-				return EnhancedFeignPluginType.PRE;
+			public EnhancedPluginType getType() {
+				return EnhancedPluginType.PRE;
 			}
 
 			@Override
-			public void run(EnhancedFeignContext context) {
-
-			}
-
-			@Override
-			public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+			public void run(EnhancedPluginContext context) {
 
 			}
 
 			@Override
-			public int getOrder() {
-				return 0;
-			}
-		});
-
-		enhancedFeignPlugins.add(new EnhancedFeignPlugin() {
-			@Override
-			public EnhancedFeignPluginType getType() {
-				return EnhancedFeignPluginType.POST;
-			}
-
-			@Override
-			public void run(EnhancedFeignContext context) {
-
-			}
-
-			@Override
-			public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+			public void handlerThrowable(EnhancedPluginContext context, Throwable throwable) {
 
 			}
 
@@ -174,41 +153,19 @@ public class EnhancedFeignClientTest {
 			}
 		});
 
-		enhancedFeignPlugins.add(new EnhancedFeignPlugin() {
+		enhancedPlugins.add(new EnhancedPlugin() {
 			@Override
-			public EnhancedFeignPluginType getType() {
-				return EnhancedFeignPluginType.EXCEPTION;
+			public EnhancedPluginType getType() {
+				return EnhancedPluginType.POST;
 			}
 
 			@Override
-			public void run(EnhancedFeignContext context) {
-
-			}
-
-			@Override
-			public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+			public void run(EnhancedPluginContext context) {
 
 			}
 
 			@Override
-			public int getOrder() {
-				return 0;
-			}
-		});
-
-		enhancedFeignPlugins.add(new EnhancedFeignPlugin() {
-			@Override
-			public EnhancedFeignPluginType getType() {
-				return EnhancedFeignPluginType.FINALLY;
-			}
-
-			@Override
-			public void run(EnhancedFeignContext context) {
-
-			}
-
-			@Override
-			public void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+			public void handlerThrowable(EnhancedPluginContext context, Throwable throwable) {
 
 			}
 
@@ -218,7 +175,51 @@ public class EnhancedFeignClientTest {
 			}
 		});
 
-		return enhancedFeignPlugins;
+		enhancedPlugins.add(new EnhancedPlugin() {
+			@Override
+			public EnhancedPluginType getType() {
+				return EnhancedPluginType.EXCEPTION;
+			}
+
+			@Override
+			public void run(EnhancedPluginContext context) {
+
+			}
+
+			@Override
+			public void handlerThrowable(EnhancedPluginContext context, Throwable throwable) {
+
+			}
+
+			@Override
+			public int getOrder() {
+				return 0;
+			}
+		});
+
+		enhancedPlugins.add(new EnhancedPlugin() {
+			@Override
+			public EnhancedPluginType getType() {
+				return EnhancedPluginType.FINALLY;
+			}
+
+			@Override
+			public void run(EnhancedPluginContext context) {
+
+			}
+
+			@Override
+			public void handlerThrowable(EnhancedPluginContext context, Throwable throwable) {
+
+			}
+
+			@Override
+			public int getOrder() {
+				return 0;
+			}
+		});
+
+		return enhancedPlugins;
 
 	}
 

@@ -21,17 +21,14 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.config.Configuration;
-import com.tencent.polaris.api.config.global.APIConfig;
-import com.tencent.polaris.api.config.global.GlobalConfig;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
+import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -60,17 +57,13 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class EnhancedPolarisRestTemplateReporterTest {
+public class EnhancedRestTemplateTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
 	private RpcEnhancementReporterProperties reporterProperties;
 	@Mock
 	private SDKContext sdkContext;
-	@Mock
-	private ConsumerAPI consumerAPI;
-	@Mock
-	private CircuitBreakAPI circuitBreakAPI;
 	@Mock
 	private ClientHttpRequestExecution mockClientHttpRequestExecution;
 	@Mock
@@ -107,17 +100,6 @@ public class EnhancedPolarisRestTemplateReporterTest {
 	@Test
 	public void testRun() throws IOException, URISyntaxException {
 
-		APIConfig apiConfig = mock(APIConfig.class);
-		doReturn("0.0.0.0").when(apiConfig).getBindIP();
-
-		GlobalConfig globalConfig = mock(GlobalConfig.class);
-		doReturn(apiConfig).when(globalConfig).getAPI();
-
-		Configuration configuration = mock(Configuration.class);
-		doReturn(globalConfig).when(configuration).getGlobal();
-
-		doReturn(configuration).when(sdkContext).getConfig();
-
 		ClientHttpResponse actualResult;
 		final byte[] inputBody = null;
 
@@ -127,11 +109,10 @@ public class EnhancedPolarisRestTemplateReporterTest {
 		doReturn(mockHttpHeaders).when(mockHttpRequest).getHeaders();
 		doReturn(mockClientHttpResponse).when(mockClientHttpRequestExecution).execute(mockHttpRequest, inputBody);
 
-		EnhancedPolarisRestTemplateReporter reporter = new EnhancedPolarisRestTemplateReporter(reporterProperties, sdkContext, consumerAPI, circuitBreakAPI);
+		EnhancedRestTemplate reporter = new EnhancedRestTemplate(new DefaultEnhancedPluginRunner(new ArrayList<>()));
 		actualResult = reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution);
 		assertThat(actualResult).isEqualTo(mockClientHttpResponse);
 
-		doReturn(true).when(reporterProperties).isEnabled();
 		actualResult = reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution);
 		assertThat(actualResult).isEqualTo(mockClientHttpResponse);
 

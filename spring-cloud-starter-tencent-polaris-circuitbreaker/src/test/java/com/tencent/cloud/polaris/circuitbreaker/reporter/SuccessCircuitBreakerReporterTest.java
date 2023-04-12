@@ -15,25 +15,19 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
+package com.tencent.cloud.polaris.circuitbreaker.reporter;
 
-import java.util.HashMap;
+import java.net.URI;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignContext;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.EnhancedFeignPluginType;
-import com.tencent.polaris.api.config.Configuration;
-import com.tencent.polaris.api.config.global.APIConfig;
-import com.tencent.polaris.api.config.global.GlobalConfig;
-import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
-import feign.Request;
-import feign.RequestTemplate;
-import feign.Response;
-import feign.Target;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +39,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.http.HttpMethod;
+
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,24 +52,22 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for {@link ExceptionPolarisReporter}.
+ * SuccessCircuitBreakerReporterTest.
  *
- * @author Haotian Zhang
+ * @author sean yu
  */
 @ExtendWith(MockitoExtension.class)
-public class ExceptionPolarisReporterTest {
+public class SuccessCircuitBreakerReporterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
-	private RpcEnhancementReporterProperties reporterProperties;
-	@Mock
 	private SDKContext sdkContext;
 	@Mock
-	private ConsumerAPI consumerAPI;
+	private RpcEnhancementReporterProperties reporterProperties;
+	@InjectMocks
+	private SuccessCircuitBreakerReporter successCircuitBreakerReporter;
 	@Mock
 	private CircuitBreakAPI circuitBreakAPI;
-	@InjectMocks
-	private ExceptionPolarisReporter exceptionPolarisReporter;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -94,62 +89,55 @@ public class ExceptionPolarisReporterTest {
 
 	@Test
 	public void testGetName() {
-		assertThat(exceptionPolarisReporter.getName()).isEqualTo(ExceptionPolarisReporter.class.getName());
+		assertThat(successCircuitBreakerReporter.getName()).isEqualTo(SuccessCircuitBreakerReporter.class.getName());
 	}
 
 	@Test
 	public void testType() {
-		assertThat(exceptionPolarisReporter.getType()).isEqualTo(EnhancedFeignPluginType.EXCEPTION);
+		assertThat(successCircuitBreakerReporter.getType()).isEqualTo(EnhancedPluginType.POST);
 	}
 
 	@Test
-	public void testRun() {
-		EnhancedFeignContext context = mock(EnhancedFeignContext.class);
+	public void testRun() throws Throwable {
+
+		EnhancedPluginContext context = mock(EnhancedPluginContext.class);
 		// test not report
-		exceptionPolarisReporter.run(context);
+		successCircuitBreakerReporter.run(context);
 		verify(context, times(0)).getRequest();
 
 		doReturn(true).when(reporterProperties).isEnabled();
-		// mock target
-		Target<?> target = mock(Target.class);
-		doReturn(SERVICE_PROVIDER).when(target).name();
 
-		APIConfig apiConfig = mock(APIConfig.class);
-		doReturn("0.0.0.0").when(apiConfig).getBindIP();
-
-		GlobalConfig globalConfig = mock(GlobalConfig.class);
-		doReturn(apiConfig).when(globalConfig).getAPI();
-
-		Configuration configuration = mock(Configuration.class);
-		doReturn(globalConfig).when(configuration).getGlobal();
-
-		doReturn(configuration).when(sdkContext).getConfig();
-
-		// mock RequestTemplate.class
-		RequestTemplate requestTemplate = new RequestTemplate();
-		requestTemplate.feignTarget(target);
-
-		EnhancedFeignContext feignContext = new EnhancedFeignContext();
-		Request request = Request.create(Request.HttpMethod.GET, "http://0.0.0.0/", new HashMap<>(), null, null, requestTemplate);
-		Response response = Response.builder()
-				.request(request)
+		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
+		EnhancedRequestContext request = EnhancedRequestContext.builder()
+				.httpMethod(HttpMethod.GET)
+				.url(URI.create("http://0.0.0.0/"))
 				.build();
-		feignContext.setRequest(request);
-		feignContext.setResponse(response);
-		exceptionPolarisReporter.run(feignContext);
-		exceptionPolarisReporter.getOrder();
+		EnhancedResponseContext response = EnhancedResponseContext.builder()
+				.httpStatus(200)
+				.build();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+		serviceInstance.setServiceId(SERVICE_PROVIDER);
+
+		pluginContext.setRequest(request);
+		pluginContext.setResponse(response);
+		pluginContext.setServiceInstance(serviceInstance);
+
+		successCircuitBreakerReporter.run(pluginContext);
+		successCircuitBreakerReporter.getOrder();
+		successCircuitBreakerReporter.getName();
+		successCircuitBreakerReporter.getType();
 	}
 
 	@Test
 	public void testHandlerThrowable() {
 		// mock request
-		Request request = mock(Request.class);
+		EnhancedRequestContext request = mock(EnhancedRequestContext.class);
 		// mock response
-		Response response = mock(Response.class);
+		EnhancedResponseContext response = mock(EnhancedResponseContext.class);
 
-		EnhancedFeignContext context = new EnhancedFeignContext();
+		EnhancedPluginContext context = new EnhancedPluginContext();
 		context.setRequest(request);
 		context.setResponse(response);
-		exceptionPolarisReporter.handlerThrowable(context, new RuntimeException("Mock exception."));
+		successCircuitBreakerReporter.handlerThrowable(context, new RuntimeException("Mock exception."));
 	}
 }
