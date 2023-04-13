@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 
@@ -34,8 +33,6 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
-
-import static com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter.HEADER_HAS_ERROR;
 
 /**
  * PolarisCircuitBreakerRestTemplateInterceptor.
@@ -70,15 +67,8 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 				() -> {
 					try {
 						ClientHttpResponse response = execution.execute(request, body);
-						// pre handle response error
-						// EnhancedRestTemplateReporter always return true,
-						// so we need to check header set by EnhancedRestTemplateReporter
 						ResponseErrorHandler errorHandler = restTemplate.getErrorHandler();
-						boolean hasError = errorHandler.hasError(response);
-						if (errorHandler instanceof EnhancedRestTemplateReporter) {
-							hasError = Boolean.parseBoolean(response.getHeaders().getFirst(HEADER_HAS_ERROR));
-						}
-						if (hasError) {
+						if (errorHandler.hasError(response)) {
 							errorHandler.handleError(request.getURI(), request.getMethod(), response);
 						}
 						return response;

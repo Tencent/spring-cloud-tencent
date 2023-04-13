@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.webclient;
+package com.tencent.cloud.rpc.enhancement.scg;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,24 +39,26 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFunction;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.server.ServerWebExchange;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 
 @ExtendWith(MockitoExtension.class)
-public class EnhancedWebClientReporterTest {
+public class EnhancedGatewayGlobalFilterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
@@ -64,11 +66,13 @@ public class EnhancedWebClientReporterTest {
 	@Mock
 	private SDKContext sdkContext;
 	@Mock
-	private ClientRequest clientRequest;
+	ServerWebExchange exchange;
 	@Mock
-	private ExchangeFunction exchangeFunction;
+	GatewayFilterChain chain;
 	@Mock
-	private ClientResponse clientResponse;
+	ServerHttpResponse response;
+	@Mock
+	ServerHttpRequest request;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -93,28 +97,40 @@ public class EnhancedWebClientReporterTest {
 		MetadataContext.LOCAL_NAMESPACE = NAMESPACE_TEST;
 		MetadataContext.LOCAL_SERVICE = SERVICE_PROVIDER;
 	}
+
 	@Test
 	public void testRun() throws URISyntaxException {
 
-		doReturn(new URI("http://0.0.0.0/")).when(clientRequest).url();
-		doReturn(new HttpHeaders()).when(clientRequest).headers();
-		doReturn(HttpMethod.GET).when(clientRequest).method();
-		ClientResponse.Headers headers = mock(ClientResponse.Headers.class);
-		doReturn(headers).when(clientResponse).headers();
-		doReturn(Mono.just(clientResponse)).when(exchangeFunction).exchange(any());
+		doReturn(new URI("http://0.0.0.0/")).when(request).getURI();
+		doReturn(new HttpHeaders()).when(request).getHeaders();
+		doReturn(HttpMethod.GET).when(request).getMethod();
+		doReturn(new HttpHeaders()).when(response).getHeaders();
+		doReturn(Mono.empty()).when(chain).filter(exchange);
 
-		EnhancedWebClientReporter reporter = new EnhancedWebClientReporter(new DefaultEnhancedPluginRunner(new ArrayList<>()));
-		ClientResponse clientResponse1 = reporter.filter(clientRequest, exchangeFunction).block();
-		assertThat(clientResponse1).isEqualTo(clientResponse);
+		ServiceInstance serviceInstance = mock(ServiceInstance.class);
+		Response<ServiceInstance> serviceInstanceResponse = new Response<ServiceInstance>() {
+			@Override
+			public boolean hasServer() {
+				return true;
+			}
 
-		ClientResponse clientResponse2 = reporter.filter(clientRequest, exchangeFunction).block();
-		assertThat(clientResponse2).isEqualTo(clientResponse);
+			@Override
+			public ServiceInstance getServer() {
+				return serviceInstance;
+			}
+		};
+		doReturn(serviceInstanceResponse).when(exchange).getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
+		doReturn(request).when(exchange).getRequest();
+		doReturn(response).when(exchange).getResponse();
 
-		doReturn(Mono.error(new RuntimeException())).when(exchangeFunction).exchange(any());
+		EnhancedGatewayGlobalFilter reporter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(new ArrayList<>()));
+		reporter.getOrder();
 
-		assertThatThrownBy(() -> reporter.filter(clientRequest, exchangeFunction).block()).isInstanceOf(RuntimeException.class);
+		reporter.filter(exchange, chain).block();
 
+		doReturn(Mono.error(new RuntimeException())).when(chain).filter(exchange);
+
+		assertThatThrownBy(() -> reporter.filter(exchange, chain).block()).isInstanceOf(RuntimeException.class);
 
 	}
-
 }

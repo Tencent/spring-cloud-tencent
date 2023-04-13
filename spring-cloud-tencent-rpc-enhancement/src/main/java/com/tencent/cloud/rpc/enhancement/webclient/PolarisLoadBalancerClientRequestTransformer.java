@@ -15,30 +15,28 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.loadbalancer.reactive;
+package com.tencent.cloud.rpc.enhancement.webclient;
 
 import com.tencent.cloud.common.constant.HeaderConstant;
-import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerClientRequestTransformer;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ClientRequest;
 
+/**
+ * PolarisLoadBalancerClientRequestTransformer.
+ *
+ * @author sean yu
+ */
 public class PolarisLoadBalancerClientRequestTransformer implements LoadBalancerClientRequestTransformer {
-
-	private final ConsumerAPI consumerAPI;
-
-	public PolarisLoadBalancerClientRequestTransformer(ConsumerAPI consumerAPI) {
-		this.consumerAPI = consumerAPI;
-	}
 
 	@Override
 	public ClientRequest transformRequest(ClientRequest request, ServiceInstance instance) {
 		if (instance != null) {
-			HttpHeaders headers = request.headers();
-			headers.add(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID, instance.getServiceId());
+			MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID, instance.getServiceId());
 		}
 		return request;
 	}
+
 }

@@ -15,67 +15,69 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.webclient;
+package com.tencent.cloud.rpc.enhancement.scg;
 
-import java.util.Map;
-
-import com.tencent.cloud.common.constant.HeaderConstant;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import reactor.core.publisher.Mono;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.ExchangeFunction;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
+import org.springframework.web.server.ServerWebExchange;
 
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.EXCEPTION;
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.FINALLY;
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.POST;
+import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.PRE;
+import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 
 /**
- * EnhancedWebClientReporter.
+ * EnhancedGatewayGlobalFilter.
  *
  * @author sean yu
  */
-public class EnhancedWebClientReporter implements ExchangeFilterFunction {
+public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
+
 	private final EnhancedPluginRunner pluginRunner;
 
-	public EnhancedWebClientReporter(EnhancedPluginRunner pluginRunner) {
+	public EnhancedGatewayGlobalFilter(EnhancedPluginRunner pluginRunner) {
 		this.pluginRunner = pluginRunner;
 	}
 
 	@Override
-	public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
+	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
-				.httpHeaders(request.headers())
-				.httpMethod(request.method())
-				.url(request.url())
+				.httpHeaders(exchange.getRequest().getHeaders())
+				.httpMethod(exchange.getRequest().getMethod())
+				.url(exchange.getRequest().getURI())
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
-		long startTime = System.currentTimeMillis();
-		return next.exchange(request)
-				.doOnSubscribe(subscription -> {
-					Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
-					DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-					serviceInstance.setServiceId(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID));
-					serviceInstance.setHost(request.url().getHost());
-					serviceInstance.setPort(request.url().getPort());
-					enhancedPluginContext.setServiceInstance(serviceInstance);
-				})
-				.doOnSuccess(response -> {
-					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
+		// Run pre enhanced plugins.
+		pluginRunner.run(PRE, enhancedPluginContext);
 
+		long startTime = System.currentTimeMillis();
+		return chain.filter(exchange)
+				.doOnSubscribe(v -> {
+					Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
+					if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
+						ServiceInstance instance = serviceInstanceResponse.getServer();
+						enhancedPluginContext.setServiceInstance(instance);
+					}
+				})
+				.doOnSuccess(v -> {
+					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-							.httpStatus(response.rawStatusCode())
-							.httpHeaders(response.headers().asHttpHeaders())
+							.httpStatus(exchange.getResponse().getRawStatusCode())
+							.httpHeaders(exchange.getResponse().getHeaders())
 							.build();
 					enhancedPluginContext.setResponse(enhancedResponseContext);
 
@@ -93,5 +95,10 @@ public class EnhancedWebClientReporter implements ExchangeFilterFunction {
 					// Run finally enhanced plugins.
 					pluginRunner.run(FINALLY, enhancedPluginContext);
 				});
+	}
+
+	@Override
+	public int getOrder() {
+		return LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
 	}
 }

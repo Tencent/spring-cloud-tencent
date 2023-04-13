@@ -8,3 +8,4 @@
 - [fix: fix nacos CircuitBreaker disable bug.](https://github.com/Tencent/spring-cloud-tencent/pull/948)
 - [feature: optimize polaris-ratelimit-example, add caller query params and headers, add callee custom label resolver.](https://github.com/Tencent/spring-cloud-tencent/pull/951)
 - [refactor:refactor reactor code in router module.](https://github.com/Tencent/spring-cloud-tencent/pull/955)
+- [refactor: refactor circuitbreaker .](https://github.com/Tencent/spring-cloud-tencent/pull/963)

@@ -15,59 +15,51 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.feign;
+package com.tencent.cloud.rpc.enhancement.resttemplate;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
+import java.util.Map;
 
+import com.tencent.cloud.common.constant.HeaderConstant;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
-import feign.Client;
-import feign.Request;
-import feign.Request.Options;
-import feign.Response;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.EXCEPTION;
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.FINALLY;
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.POST;
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.PRE;
-import static feign.Util.checkNotNull;
 
 /**
- * Wrap for {@link Client}.
+ * EnhancedRestTemplateInterceptor.
  *
- * @author Haotian Zhang
+ * @author sean yu
  */
-public class EnhancedFeignClient implements Client {
-
-	private final Client delegate;
+public class EnhancedRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
 	private final EnhancedPluginRunner pluginRunner;
 
-	public EnhancedFeignClient(Client target, EnhancedPluginRunner pluginRunner) {
-		this.delegate = checkNotNull(target, "target");
+	public EnhancedRestTemplateInterceptor(EnhancedPluginRunner pluginRunner) {
 		this.pluginRunner = pluginRunner;
 	}
 
 	@Override
-	public Response execute(Request request, Options options) throws IOException {
+	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
-		HttpHeaders requestHeaders = new HttpHeaders();
-		request.headers().forEach((s, strings) -> requestHeaders.addAll(s, new ArrayList<>(strings)));
-		URI url = URI.create(request.url());
-
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
-				.httpHeaders(requestHeaders)
-				.httpMethod(HttpMethod.resolve(request.httpMethod().name()))
-				.url(url)
+				.httpHeaders(request.getHeaders())
+				.httpMethod(request.getMethod())
+				.url(request.getURI())
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
@@ -75,38 +67,39 @@ public class EnhancedFeignClient implements Client {
 		pluginRunner.run(PRE, enhancedPluginContext);
 		long startMillis = System.currentTimeMillis();
 		try {
-			Response response = delegate.execute(request, options);
+			ClientHttpResponse response = execution.execute(request, body);
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 
-			HttpHeaders responseHeaders = new HttpHeaders();
-			response.headers().forEach((s, strings) -> responseHeaders.addAll(s, new ArrayList<>(strings)));
-
 			EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-					.httpStatus(response.status())
-					.httpHeaders(responseHeaders)
+					.httpStatus(response.getRawStatusCode())
+					.httpHeaders(response.getHeaders())
 					.build();
 			enhancedPluginContext.setResponse(enhancedResponseContext);
 
+			Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
 			DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-			serviceInstance.setServiceId(request.requestTemplate().feignTarget().name());
-			serviceInstance.setHost(url.getHost());
-			serviceInstance.setPort(url.getPort());
+			serviceInstance.setServiceId(request.getURI().getHost());
+			serviceInstance.setHost(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST));
+			if (loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT) != null) {
+				serviceInstance.setPort(Integer.parseInt(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT)));
+			}
 			enhancedPluginContext.setServiceInstance(serviceInstance);
 
 			// Run post enhanced plugins.
 			pluginRunner.run(POST, enhancedPluginContext);
 			return response;
 		}
-		catch (IOException origin) {
+		catch (IOException e) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
-			enhancedPluginContext.setThrowable(origin);
-			// Run exception enhanced feign plugins.
+			enhancedPluginContext.setThrowable(e);
+			// Run exception enhanced plugins.
 			pluginRunner.run(EXCEPTION, enhancedPluginContext);
-			throw origin;
+			throw e;
 		}
 		finally {
 			// Run finally enhanced plugins.
 			pluginRunner.run(FINALLY, enhancedPluginContext);
 		}
 	}
+
 }
