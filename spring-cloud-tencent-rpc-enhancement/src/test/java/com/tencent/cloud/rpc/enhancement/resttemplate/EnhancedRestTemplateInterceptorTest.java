@@ -57,7 +57,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class EnhancedRestTemplateTest {
+public class EnhancedRestTemplateInterceptorTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
@@ -109,7 +109,7 @@ public class EnhancedRestTemplateTest {
 		doReturn(mockHttpHeaders).when(mockHttpRequest).getHeaders();
 		doReturn(mockClientHttpResponse).when(mockClientHttpRequestExecution).execute(mockHttpRequest, inputBody);
 
-		EnhancedRestTemplate reporter = new EnhancedRestTemplate(new DefaultEnhancedPluginRunner(new ArrayList<>()));
+		EnhancedRestTemplateInterceptor reporter = new EnhancedRestTemplateInterceptor(new DefaultEnhancedPluginRunner(new ArrayList<>()));
 		actualResult = reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution);
 		assertThat(actualResult).isEqualTo(mockClientHttpResponse);
 

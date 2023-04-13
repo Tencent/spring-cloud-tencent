@@ -62,6 +62,14 @@ public class EnhancedWebClientReporter implements ExchangeFilterFunction {
 
 		long startTime = System.currentTimeMillis();
 		return next.exchange(request)
+				.doOnSubscribe(subscription -> {
+					Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
+					DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+					serviceInstance.setServiceId(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID));
+					serviceInstance.setHost(request.url().getHost());
+					serviceInstance.setPort(request.url().getPort());
+					enhancedPluginContext.setServiceInstance(serviceInstance);
+				})
 				.doOnSuccess(response -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 
@@ -71,27 +79,12 @@ public class EnhancedWebClientReporter implements ExchangeFilterFunction {
 							.build();
 					enhancedPluginContext.setResponse(enhancedResponseContext);
 
-					Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
-					DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-					serviceInstance.setServiceId(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID));
-					serviceInstance.setHost(request.url().getHost());
-					serviceInstance.setPort(request.url().getPort());
-					enhancedPluginContext.setServiceInstance(serviceInstance);
-
 					// Run post enhanced plugins.
 					pluginRunner.run(POST, enhancedPluginContext);
 				})
 				.doOnError(t -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
-
 					enhancedPluginContext.setThrowable(t);
-
-					Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
-					DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-					serviceInstance.setServiceId(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID));
-					serviceInstance.setHost(request.url().getHost());
-					serviceInstance.setPort(request.url().getPort());
-					enhancedPluginContext.setServiceInstance(serviceInstance);
 
 					// Run exception enhanced plugins.
 					pluginRunner.run(EXCEPTION, enhancedPluginContext);
