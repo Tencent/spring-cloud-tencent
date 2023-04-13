@@ -39,15 +39,15 @@ import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.POST;
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.PRE;
 
 /**
- * EnhancedRestTemplate.
+ * EnhancedRestTemplateInterceptor.
  *
  * @author sean yu
  */
-public class EnhancedRestTemplate implements ClientHttpRequestInterceptor {
+public class EnhancedRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
 	private final EnhancedPluginRunner pluginRunner;
 
-	public EnhancedRestTemplate(EnhancedPluginRunner pluginRunner) {
+	public EnhancedRestTemplateInterceptor(EnhancedPluginRunner pluginRunner) {
 		this.pluginRunner = pluginRunner;
 	}
 
