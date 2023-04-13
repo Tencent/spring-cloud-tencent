@@ -81,10 +81,11 @@ public class PolarisRingHashLoadBalancer implements ReactorServiceInstanceLoadBa
 	public Mono<Response<ServiceInstance>> choose(Request request) {
 		ServiceInstanceListSupplier supplier = supplierObjectProvider
 				.getIfAvailable(NoopServiceInstanceListSupplier::new);
-		return supplier.get(request).next().map(this::getInstanceResponse);
+		String hashKey = Optional.ofNullable(PolarisLoadBalancerRingHashKeyProvider.getHashKey()).orElse("");
+		return supplier.get(request).next().map(serviceInstances -> getInstanceResponse(serviceInstances, hashKey));
 	}
 
-	private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> serviceInstances) {
+	private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> serviceInstances, String hashKey) {
 		if (serviceInstances.isEmpty()) {
 			log.warn("No servers available for service: " + this.serviceId);
 			return new EmptyResponse();
@@ -94,12 +95,11 @@ public class PolarisRingHashLoadBalancer implements ReactorServiceInstanceLoadBa
 		request.setDstInstances(convertToPolarisServiceInstances(serviceInstances));
 		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_RING_HASH);
 		Criteria criteria = new Criteria();
-		criteria.setHashKey(Optional.ofNullable(PolarisLoadBalancerRingHashKeyProvider.getHashKey()).orElse(""));
+		criteria.setHashKey(hashKey);
 		request.setCriteria(criteria);
 
 		try {
 			ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(request);
-			PolarisLoadBalancerRingHashKeyProvider.remove();
 			return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
 		}
 		catch (Exception e) {

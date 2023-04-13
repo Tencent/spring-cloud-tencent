@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+
 /**
  * PolarisLoadBalancerRingHashKeyProvider.
  *
@@ -24,22 +26,17 @@ package com.tencent.cloud.polaris.loadbalancer;
  */
 public final class PolarisLoadBalancerRingHashKeyProvider {
 
-	private static final ThreadLocal<String> hashKeys = new ThreadLocal<>();
+	private static final String LOAD_BALANCER_HASH_KEY = "LOAD_BALANCER_HASH_KEY";
 
 	private PolarisLoadBalancerRingHashKeyProvider() {
 	}
 
 	public static void hashKey(String key) {
-		hashKeys.set(key);
-	}
-
-	static void remove() {
-		hashKeys.remove();
+		MetadataContextHolder.get().setLoadbalancer(LOAD_BALANCER_HASH_KEY, key);
 	}
 
 	static String getHashKey() {
-		return hashKeys.get();
+		return MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_HASH_KEY);
 	}
-
 
 }
