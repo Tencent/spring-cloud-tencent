@@ -89,10 +89,10 @@ public class PolarisLoadBalancerClientConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisRingHash")
 	public ReactorLoadBalancer<ServiceInstance> polarisRingHashLoadBalancer(Environment environment,
-			LoadBalancerClientFactory loadBalancerClientFactory, RouterAPI routerAPI, PolarisLoadBalancerRingHashKeyProvider ringHashKeyProvider) {
+			LoadBalancerClientFactory loadBalancerClientFactory, RouterAPI routerAPI) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
 		return new PolarisRingHashLoadBalancer(name,
-				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI, ringHashKeyProvider);
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI);
 	}
 
 	@Configuration(proxyBeanMethods = false)

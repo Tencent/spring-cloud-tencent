@@ -89,7 +89,6 @@ public class PolarisWeightedLoadBalancerAutoConfigurationTest {
 	@Test
 	public void testPolarisRingHashInitialization() {
 		this.contextRunner
-				.withBean(PolarisRibbonTest.MockPolarisLoadBalancerRingHashKeyProvider.class)
 				.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisRingHash").run(context -> {
 					assertThat(context).hasSingleBean(RouterAPI.class);
 					assertThat(context).hasSingleBean(RestTemplate.class);
@@ -106,14 +105,6 @@ public class PolarisWeightedLoadBalancerAutoConfigurationTest {
 		@LoadBalanced
 		public RestTemplate restTemplate() {
 			return new RestTemplate();
-		}
-
-		class MockPolarisLoadBalancerRingHashKeyProvider implements PolarisLoadBalancerRingHashKeyProvider {
-
-			@Override
-			public String hashKey() {
-				return "test";
-			}
 		}
 	}
 }
