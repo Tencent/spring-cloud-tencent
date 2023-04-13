@@ -21,7 +21,7 @@ Visit [Wiki](https://github.com/Tencent/spring-cloud-tencent/wiki) to learn more
 
 ## Introduction
 
-Spring Cloud Tencent is an one-stop microservice solution which implements the standard Spring Cloud SPI. It integrates Spring Cloud with Tencent open source middleware and makes it easy to develop distributed service or microservice.
+Spring Cloud Tencent is an one-stop microservice solution which implements the standard Spring Cloud SPI. It integrates Spring Cloud with Tencent middlewares and makes it easy to develop microservice.
 
 <img src="https://user-images.githubusercontent.com/4991116/170412596-692f8dae-42f7-495f-a451-01396e381eb0.png" width="80%" />
 
