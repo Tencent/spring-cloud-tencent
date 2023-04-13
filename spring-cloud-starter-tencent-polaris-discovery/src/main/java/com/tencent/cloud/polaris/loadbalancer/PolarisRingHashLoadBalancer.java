@@ -42,29 +42,34 @@ import org.springframework.cloud.client.loadbalancer.EmptyResponse;
 import org.springframework.cloud.client.loadbalancer.Request;
 import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
-import org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer;
+import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 
 /**
- * Loadbalancer of Polaris.
+ * PolarisRingHashLoadBalancer.
  *
- * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ * @author sean yu
  */
-public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
+public class PolarisRingHashLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisLoadBalancer.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisWeightedLoadBalancer.class);
 
 	private final String serviceId;
 
 	private final RouterAPI routerAPI;
 
-	private final ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
+	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
-	public PolarisLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
-		super(supplierObjectProvider, serviceId);
+	private PolarisLoadBalancerRingHashKeyProvider ringHashKeyProvider;
+
+	public PolarisRingHashLoadBalancer(String serviceId,
+			ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
+			RouterAPI routerAPI,
+			PolarisLoadBalancerRingHashKeyProvider ringHashKeyProvider) {
 		this.serviceId = serviceId;
 		this.supplierObjectProvider = supplierObjectProvider;
 		this.routerAPI = routerAPI;
+		this.ringHashKeyProvider = ringHashKeyProvider;
 	}
 
 	private static ServiceInstances convertToPolarisServiceInstances(List<ServiceInstance> serviceInstances) {
@@ -84,22 +89,25 @@ public class PolarisLoadBalancer extends RoundRobinLoadBalancer {
 
 	private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> serviceInstances) {
 		if (serviceInstances.isEmpty()) {
-			LOGGER.warn("No servers available for service: " + this.serviceId);
+			log.warn("No servers available for service: " + this.serviceId);
 			return new EmptyResponse();
 		}
 
 		ProcessLoadBalanceRequest request = new ProcessLoadBalanceRequest();
 		request.setDstInstances(convertToPolarisServiceInstances(serviceInstances));
-		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_RANDOM);
-		request.setCriteria(new Criteria());
+		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_RING_HASH);
+		Criteria criteria = new Criteria();
+		criteria.setHashKey(ringHashKeyProvider.hashKey());
+		request.setCriteria(criteria);
 
 		try {
 			ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(request);
 			return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
 		}
 		catch (Exception e) {
-			LOGGER.warn("PolarisRoutingLoadbalancer error", e);
+			log.warn("PolarisRoutingLoadbalancer error", e);
 			return new EmptyResponse();
 		}
 	}
+
 }
