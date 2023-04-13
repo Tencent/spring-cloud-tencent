@@ -22,8 +22,24 @@ package com.tencent.cloud.polaris.loadbalancer;
  *
  * @author seanthefish
  */
-public interface PolarisLoadBalancerRingHashKeyProvider {
+public final class PolarisLoadBalancerRingHashKeyProvider {
 
-	String hashKey();
+	private static final ThreadLocal<String> hashKeys = new ThreadLocal<>();
+
+	private PolarisLoadBalancerRingHashKeyProvider() {
+	}
+
+	public static void hashKey(String key) {
+		hashKeys.set(key);
+	}
+
+	static void remove() {
+		hashKeys.remove();
+	}
+
+	static String getHashKey() {
+		return hashKeys.get();
+	}
+
 
 }

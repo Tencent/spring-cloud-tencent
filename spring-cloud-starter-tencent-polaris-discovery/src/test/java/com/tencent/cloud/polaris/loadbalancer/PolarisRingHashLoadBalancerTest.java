@@ -96,7 +96,7 @@ public class PolarisRingHashLoadBalancerTest {
 		when(routerAPI.processLoadBalance(any())).thenReturn(mockLbRes);
 
 		// request construct and execute invoke
-		PolarisRingHashLoadBalancer polarisRingHashLoadBalancer = new PolarisRingHashLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI, new MockPolarisLoadBalancerRingHashKeyProvider());
+		PolarisRingHashLoadBalancer polarisRingHashLoadBalancer = new PolarisRingHashLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
 		Mono<Response<ServiceInstance>> responseMono = polarisRingHashLoadBalancer.choose(request);
 		ServiceInstance serviceInstance = responseMono.block().getServer();
 
@@ -114,13 +114,5 @@ public class PolarisRingHashLoadBalancerTest {
 		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getService()).isEqualTo(LOCAL_SERVICE);
 		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getHost()).isEqualTo("host");
 		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getPort()).isEqualTo(8090);
-	}
-
-	class MockPolarisLoadBalancerRingHashKeyProvider implements PolarisLoadBalancerRingHashKeyProvider {
-
-		@Override
-		public String hashKey() {
-			return "test";
-		}
 	}
 }
