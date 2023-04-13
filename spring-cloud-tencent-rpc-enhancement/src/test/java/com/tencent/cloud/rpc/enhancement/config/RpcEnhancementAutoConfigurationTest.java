@@ -19,10 +19,10 @@ package com.tencent.cloud.rpc.enhancement.config;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
-import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignPluginRunner;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.ExceptionPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.feign.plugin.reporter.SuccessPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
+import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.jupiter.api.Test;
 
@@ -56,14 +56,12 @@ public class RpcEnhancementAutoConfigurationTest {
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(ConsumerAPI.class);
-			assertThat(context).hasSingleBean(EnhancedFeignPluginRunner.class);
+			assertThat(context).hasSingleBean(EnhancedPluginRunner.class);
 			assertThat(context).hasSingleBean(EnhancedFeignBeanPostProcessor.class);
 			assertThat(context).hasSingleBean(SuccessPolarisReporter.class);
 			assertThat(context).hasSingleBean(ExceptionPolarisReporter.class);
-			assertThat(context).hasSingleBean(EnhancedRestTemplateReporter.class);
+			assertThat(context).hasSingleBean(EnhancedRestTemplateInterceptor.class);
 			assertThat(context).hasSingleBean(RestTemplate.class);
-			RestTemplate restTemplate = context.getBean(RestTemplate.class);
-			assertThat(restTemplate.getErrorHandler() instanceof EnhancedRestTemplateReporter).isTrue();
 		});
 	}
 

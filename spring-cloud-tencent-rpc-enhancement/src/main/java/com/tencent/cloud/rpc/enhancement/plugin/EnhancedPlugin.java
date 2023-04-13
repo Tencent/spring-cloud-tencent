@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.feign.plugin;
+package com.tencent.cloud.rpc.enhancement.plugin;
 
 import org.springframework.core.Ordered;
 
@@ -24,7 +24,7 @@ import org.springframework.core.Ordered;
  *
  * @author Haotian Zhang
  */
-public interface EnhancedFeignPlugin extends Ordered {
+public interface EnhancedPlugin extends Ordered {
 
 	/**
 	 * Get name of plugin.
@@ -38,9 +38,9 @@ public interface EnhancedFeignPlugin extends Ordered {
 	/**
 	 * Get type of plugin.
 	 *
-	 * @return {@link EnhancedFeignPluginType}
+	 * @return {@link EnhancedPluginType}
 	 */
-	EnhancedFeignPluginType getType();
+	EnhancedPluginType getType();
 
 	/**
 	 * Run the plugin.
@@ -48,15 +48,15 @@ public interface EnhancedFeignPlugin extends Ordered {
 	 * @param context context in enhanced feign client.
 	 * @throws Throwable throwable thrown from run method.
 	 */
-	void run(EnhancedFeignContext context) throws Throwable;
+	void run(EnhancedPluginContext context) throws Throwable;
 
 	/**
-	 * Handler throwable from {@link EnhancedFeignPlugin#run(EnhancedFeignContext)}.
+	 * Handler throwable from {@link EnhancedPlugin#run(EnhancedPluginContext)}.
 	 *
 	 * @param context context in enhanced feign client.
 	 * @param throwable throwable thrown from run method.
 	 */
-	default void handlerThrowable(EnhancedFeignContext context, Throwable throwable) {
+	default void handlerThrowable(EnhancedPluginContext context, Throwable throwable) {
 
 	}
 }

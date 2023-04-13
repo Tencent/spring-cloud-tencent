@@ -33,13 +33,9 @@ import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeig
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter;
-import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
-import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.client.util.Utils;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
@@ -71,7 +67,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import static com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateReporter.HEADER_HAS_ERROR;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -144,13 +139,11 @@ public class PolarisCircuitBreakerIntegrationTest {
 		mockServer.verify();
 		mockServer.reset();
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HEADER_HAS_ERROR, "true");
-		// no delegateHandler in EnhancedRestTemplateReporter, so this will except err
 		mockServer
 				.expect(ExpectedCount.once(), requestTo(new URI("http://localhost:18001/example/service/b/info")))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withStatus(HttpStatus.BAD_GATEWAY).headers(headers).body("BAD_GATEWAY"));
-		assertThat(defaultRestTemplate.getForObject("http://localhost:18001/example/service/b/info", String.class)).isEqualTo("BAD_GATEWAY");
+		assertThat(defaultRestTemplate.getForObject("http://localhost:18001/example/service/b/info", String.class)).isEqualTo("fallback");
 		mockServer.verify();
 		mockServer.reset();
 		assertThat(restTemplateFallbackFromCode.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
@@ -176,11 +169,8 @@ public class PolarisCircuitBreakerIntegrationTest {
 
 		@Bean
 		@PolarisCircuitBreaker(fallback = "fallback")
-		public RestTemplate defaultRestTemplate(RpcEnhancementReporterProperties properties, SDKContext context, ConsumerAPI consumerAPI) {
-			RestTemplate defaultRestTemplate = new RestTemplate();
-			EnhancedRestTemplateReporter enhancedRestTemplateReporter = new EnhancedRestTemplateReporter(properties, context, consumerAPI);
-			defaultRestTemplate.setErrorHandler(enhancedRestTemplateReporter);
-			return defaultRestTemplate;
+		public RestTemplate defaultRestTemplate() {
+			return new RestTemplate();
 		}
 
 		@Bean

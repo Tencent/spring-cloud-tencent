@@ -13,17 +13,23 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.rpc.enhancement.resttemplate;
-
-import org.springframework.web.client.ResponseErrorHandler;
+package com.tencent.cloud.rpc.enhancement.plugin;
 
 /**
- * Polaris Response Error Handler Definition Of {@link ResponseErrorHandler}.
+ * Plugin runner.
  *
- * @author wh 2022/6/21
+ * @author Derek Yi 2022-08-16
  */
-public interface PolarisResponseErrorHandler extends ResponseErrorHandler {
+public interface EnhancedPluginRunner {
 
+	/**
+	 * run the plugin.
+	 *
+	 * @param pluginType type of plugin
+	 * @param context context in enhanced feign client.
+	 */
+	void run(EnhancedPluginType pluginType, EnhancedPluginContext context);
 }

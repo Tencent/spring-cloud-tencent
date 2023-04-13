@@ -15,8 +15,10 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.webclient;
+package com.tencent.cloud.rpc.enhancement.resttemplate;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -37,26 +39,25 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Mono;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFunction;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpResponse;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class EnhancedWebClientReporterTest {
+public class EnhancedRestTemplateInterceptorTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
@@ -64,11 +65,13 @@ public class EnhancedWebClientReporterTest {
 	@Mock
 	private SDKContext sdkContext;
 	@Mock
-	private ClientRequest clientRequest;
+	private ClientHttpRequestExecution mockClientHttpRequestExecution;
 	@Mock
-	private ExchangeFunction exchangeFunction;
+	private ClientHttpResponse mockClientHttpResponse;
 	@Mock
-	private ClientResponse clientResponse;
+	private HttpRequest mockHttpRequest;
+	@Mock
+	private HttpHeaders mockHttpHeaders;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -93,28 +96,28 @@ public class EnhancedWebClientReporterTest {
 		MetadataContext.LOCAL_NAMESPACE = NAMESPACE_TEST;
 		MetadataContext.LOCAL_SERVICE = SERVICE_PROVIDER;
 	}
+
 	@Test
-	public void testRun() throws URISyntaxException {
+	public void testRun() throws IOException, URISyntaxException {
 
-		doReturn(new URI("http://0.0.0.0/")).when(clientRequest).url();
-		doReturn(new HttpHeaders()).when(clientRequest).headers();
-		doReturn(HttpMethod.GET).when(clientRequest).method();
-		ClientResponse.Headers headers = mock(ClientResponse.Headers.class);
-		doReturn(headers).when(clientResponse).headers();
-		doReturn(Mono.just(clientResponse)).when(exchangeFunction).exchange(any());
+		ClientHttpResponse actualResult;
+		final byte[] inputBody = null;
 
-		EnhancedWebClientReporter reporter = new EnhancedWebClientReporter(new DefaultEnhancedPluginRunner(new ArrayList<>()));
-		ClientResponse clientResponse1 = reporter.filter(clientRequest, exchangeFunction).block();
-		assertThat(clientResponse1).isEqualTo(clientResponse);
+		URI uri = new URI("http://0.0.0.0/");
+		doReturn(uri).when(mockHttpRequest).getURI();
+		doReturn(HttpMethod.GET).when(mockHttpRequest).getMethod();
+		doReturn(mockHttpHeaders).when(mockHttpRequest).getHeaders();
+		doReturn(mockClientHttpResponse).when(mockClientHttpRequestExecution).execute(mockHttpRequest, inputBody);
 
-		ClientResponse clientResponse2 = reporter.filter(clientRequest, exchangeFunction).block();
-		assertThat(clientResponse2).isEqualTo(clientResponse);
+		EnhancedRestTemplateInterceptor reporter = new EnhancedRestTemplateInterceptor(new DefaultEnhancedPluginRunner(new ArrayList<>()));
+		actualResult = reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution);
+		assertThat(actualResult).isEqualTo(mockClientHttpResponse);
 
-		doReturn(Mono.error(new RuntimeException())).when(exchangeFunction).exchange(any());
+		actualResult = reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution);
+		assertThat(actualResult).isEqualTo(mockClientHttpResponse);
 
-		assertThatThrownBy(() -> reporter.filter(clientRequest, exchangeFunction).block()).isInstanceOf(RuntimeException.class);
-
-
+		doThrow(new SocketTimeoutException()).when(mockClientHttpRequestExecution).execute(mockHttpRequest, inputBody);
+		assertThatThrownBy(() -> reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution)).isInstanceOf(SocketTimeoutException.class);
 	}
 
 }
