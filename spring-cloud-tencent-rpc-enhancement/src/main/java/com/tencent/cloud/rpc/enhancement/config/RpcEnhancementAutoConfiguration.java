@@ -29,7 +29,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplate;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
@@ -120,12 +120,12 @@ public class RpcEnhancementAutoConfiguration {
 		private List<RestTemplate> restTemplates = Collections.emptyList();
 
 		@Bean
-		public EnhancedRestTemplate enhancedPolarisRestTemplateReporter(@Lazy EnhancedPluginRunner pluginRunner) {
-			return new EnhancedRestTemplate(pluginRunner);
+		public EnhancedRestTemplateInterceptor enhancedPolarisRestTemplateReporter(@Lazy EnhancedPluginRunner pluginRunner) {
+			return new EnhancedRestTemplateInterceptor(pluginRunner);
 		}
 
 		@Bean
-		public SmartInitializingSingleton setPolarisReporterForRestTemplate(EnhancedRestTemplate reporter) {
+		public SmartInitializingSingleton setPolarisReporterForRestTemplate(EnhancedRestTemplateInterceptor reporter) {
 			return () -> {
 				for (RestTemplate restTemplate : restTemplates) {
 					restTemplate.getInterceptors().add(reporter);

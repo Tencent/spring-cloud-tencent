@@ -34,7 +34,7 @@ import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.EXCEPT
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.FINALLY;
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.POST;
 import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.PRE;
-import static org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter.ROUTE_TO_URL_FILTER_ORDER;
+import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 
 /**
@@ -66,34 +66,27 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 
 		long startTime = System.currentTimeMillis();
 		return chain.filter(exchange)
+				.doOnSubscribe(v -> {
+					Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
+					if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
+						ServiceInstance instance = serviceInstanceResponse.getServer();
+						enhancedPluginContext.setServiceInstance(instance);
+					}
+				})
 				.doOnSuccess(v -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
-
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
 							.httpStatus(exchange.getResponse().getRawStatusCode())
 							.httpHeaders(exchange.getResponse().getHeaders())
 							.build();
 					enhancedPluginContext.setResponse(enhancedResponseContext);
 
-					Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
-					if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
-						ServiceInstance instance = serviceInstanceResponse.getServer();
-						enhancedPluginContext.setServiceInstance(instance);
-					}
-
 					// Run post enhanced plugins.
 					pluginRunner.run(POST, enhancedPluginContext);
 				})
 				.doOnError(t -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
-
 					enhancedPluginContext.setThrowable(t);
-
-					Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
-					if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
-						ServiceInstance instance = serviceInstanceResponse.getServer();
-						enhancedPluginContext.setServiceInstance(instance);
-					}
 
 					// Run exception enhanced plugins.
 					pluginRunner.run(EXCEPTION, enhancedPluginContext);
@@ -106,6 +99,6 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 
 	@Override
 	public int getOrder() {
-		return ROUTE_TO_URL_FILTER_ORDER + 1;
+		return LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
 	}
 }
