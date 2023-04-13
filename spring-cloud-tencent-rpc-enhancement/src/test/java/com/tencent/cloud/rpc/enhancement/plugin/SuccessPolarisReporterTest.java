@@ -15,50 +15,58 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.feign.plugin.reporter;
+package com.tencent.cloud.rpc.enhancement.plugin;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URI;
 
-import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.config.global.APIConfig;
 import com.tencent.polaris.api.config.global.GlobalConfig;
-import com.tencent.polaris.api.pojo.RetStatus;
-import com.tencent.polaris.api.rpc.ServiceCallResult;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
-import feign.Request;
-import feign.RequestTemplate;
-import feign.Response;
-import feign.Target;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.http.HttpMethod;
+
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
- * Test for {@link ReporterUtils}.
+ * Test for {@link SuccessPolarisReporter}.
  *
  * @author Haotian Zhang
  */
 @ExtendWith(MockitoExtension.class)
-public class ReporterUtilsTest {
-
+public class SuccessPolarisReporterTest {
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
+	@Mock
+	private SDKContext sdkContext;
+	@Mock
+	private RpcEnhancementReporterProperties reporterProperties;
+	@InjectMocks
+	private SuccessPolarisReporter successPolarisReporter;
+	@Mock
+	private ConsumerAPI consumerAPI;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -79,56 +87,66 @@ public class ReporterUtilsTest {
 	}
 
 	@Test
-	public void testCreateServiceCallResult() {
-		// mock target
-		Target<?> target = mock(Target.class);
-		doReturn(SERVICE_PROVIDER).when(target).name();
-
-		// mock RequestTemplate.class
-		RequestTemplate requestTemplate = new RequestTemplate();
-		requestTemplate.feignTarget(target);
-		try {
-			requestTemplate.header(RouterConstant.ROUTER_LABEL_HEADER, URLEncoder.encode("{\"k1\":\"v1\",\"k2\":\"v2\"}", UTF_8));
-		}
-		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + UTF_8);
-		}
-
-		// mock request
-		Request request = mock(Request.class);
-		doReturn(requestTemplate).when(request).requestTemplate();
-		doReturn("http://1.1.1.1:2345/path").when(request).url();
-
-		// mock request
-		Response response = mock(Response.class);
-		doReturn(502).when(response).status();
-
-		ServiceCallResult serviceCallResult = ReporterUtils.createServiceCallResult(mockSDKContext(), request, response, 10L, RetStatus.RetSuccess, result -> {
-
-		});
-		assertThat(serviceCallResult.getNamespace()).isEqualTo(NAMESPACE_TEST);
-		assertThat(serviceCallResult.getService()).isEqualTo(SERVICE_PROVIDER);
-		assertThat(serviceCallResult.getHost()).isEqualTo("1.1.1.1");
-		assertThat(serviceCallResult.getPort()).isEqualTo(2345);
-		assertThat(serviceCallResult.getRetStatus()).isEqualTo(RetStatus.RetSuccess);
-		assertThat(serviceCallResult.getMethod()).isEqualTo("/path");
-		assertThat(serviceCallResult.getCallerService().getNamespace()).isEqualTo(NAMESPACE_TEST);
-		assertThat(serviceCallResult.getCallerService().getService()).isEqualTo(SERVICE_PROVIDER);
-		assertThat(serviceCallResult.getLabels()).isEqualTo("k1:v1|k2:v2");
-		assertThat(serviceCallResult.getRetCode()).isEqualTo(502);
-		assertThat(serviceCallResult.getDelay()).isEqualTo(10L);
+	public void testGetName() {
+		assertThat(successPolarisReporter.getName()).isEqualTo(SuccessPolarisReporter.class.getName());
 	}
 
-	public static SDKContext mockSDKContext() {
+	@Test
+	public void testType() {
+		assertThat(successPolarisReporter.getType()).isEqualTo(EnhancedPluginType.POST);
+	}
+
+	@Test
+	public void testRun() {
+
+		EnhancedPluginContext context = mock(EnhancedPluginContext.class);
+		// test not report
+		successPolarisReporter.run(context);
+		verify(context, times(0)).getRequest();
+
+		doReturn(true).when(reporterProperties).isEnabled();
 		APIConfig apiConfig = mock(APIConfig.class);
-		doReturn("127.0.0.1").when(apiConfig).getBindIP();
+		doReturn("0.0.0.0").when(apiConfig).getBindIP();
+
 		GlobalConfig globalConfig = mock(GlobalConfig.class);
 		doReturn(apiConfig).when(globalConfig).getAPI();
+
 		Configuration configuration = mock(Configuration.class);
 		doReturn(globalConfig).when(configuration).getGlobal();
-		SDKContext context = mock(SDKContext.class);
-		doReturn(configuration).when(context).getConfig();
 
-		return context;
+		doReturn(configuration).when(sdkContext).getConfig();
+
+		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
+		EnhancedRequestContext request = EnhancedRequestContext.builder()
+				.httpMethod(HttpMethod.GET)
+				.url(URI.create("http://0.0.0.0/"))
+				.build();
+		EnhancedResponseContext response = EnhancedResponseContext.builder()
+				.httpStatus(200)
+				.build();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+		serviceInstance.setServiceId(SERVICE_PROVIDER);
+
+		pluginContext.setRequest(request);
+		pluginContext.setResponse(response);
+		pluginContext.setServiceInstance(serviceInstance);
+
+		successPolarisReporter.run(pluginContext);
+		successPolarisReporter.getOrder();
+		successPolarisReporter.getName();
+		successPolarisReporter.getType();
+	}
+
+	@Test
+	public void testHandlerThrowable() {
+		// mock request
+		EnhancedRequestContext request = mock(EnhancedRequestContext.class);
+		// mock response
+		EnhancedResponseContext response = mock(EnhancedResponseContext.class);
+
+		EnhancedPluginContext context = new EnhancedPluginContext();
+		context.setRequest(request);
+		context.setResponse(response);
+		successPolarisReporter.handlerThrowable(context, new RuntimeException("Mock exception."));
 	}
 }
