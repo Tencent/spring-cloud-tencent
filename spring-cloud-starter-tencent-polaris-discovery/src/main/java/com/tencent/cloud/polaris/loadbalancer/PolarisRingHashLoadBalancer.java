@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.loadbalancer;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -60,16 +61,12 @@ public class PolarisRingHashLoadBalancer implements ReactorServiceInstanceLoadBa
 
 	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
-	private PolarisLoadBalancerRingHashKeyProvider ringHashKeyProvider;
-
 	public PolarisRingHashLoadBalancer(String serviceId,
 			ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
-			RouterAPI routerAPI,
-			PolarisLoadBalancerRingHashKeyProvider ringHashKeyProvider) {
+			RouterAPI routerAPI) {
 		this.serviceId = serviceId;
 		this.supplierObjectProvider = supplierObjectProvider;
 		this.routerAPI = routerAPI;
-		this.ringHashKeyProvider = ringHashKeyProvider;
 	}
 
 	private static ServiceInstances convertToPolarisServiceInstances(List<ServiceInstance> serviceInstances) {
@@ -97,11 +94,12 @@ public class PolarisRingHashLoadBalancer implements ReactorServiceInstanceLoadBa
 		request.setDstInstances(convertToPolarisServiceInstances(serviceInstances));
 		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_RING_HASH);
 		Criteria criteria = new Criteria();
-		criteria.setHashKey(ringHashKeyProvider.hashKey());
+		criteria.setHashKey(Optional.ofNullable(PolarisLoadBalancerRingHashKeyProvider.getHashKey()).orElse(""));
 		request.setCriteria(criteria);
 
 		try {
 			ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(request);
+			PolarisLoadBalancerRingHashKeyProvider.remove();
 			return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
 		}
 		catch (Exception e) {
