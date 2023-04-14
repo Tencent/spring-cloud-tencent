@@ -8,3 +8,4 @@
 - [feature: add config for customized local port.](https://github.com/Tencent/spring-cloud-tencent/pull/956)
 - [refactor:refactor reactor code in router module.](https://github.com/Tencent/spring-cloud-tencent/pull/958)
 - [refactor: refactor circuitbreaker .](https://github.com/Tencent/spring-cloud-tencent/pull/962)
+- [feature: add polaris ring hash load balancer .](https://github.com/Tencent/spring-cloud-tencent/pull/966)
