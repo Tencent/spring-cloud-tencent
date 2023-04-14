@@ -20,6 +20,8 @@ package com.tencent.cloud.polaris.loadbalancer;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -39,13 +41,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *
  * @author Haotian Zhang
  */
-public class PolarisLoadBalancerAutoConfigurationTest {
+@ExtendWith(MockitoExtension.class)
+public class PolarisWeightedRandomLoadBalancerAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
-			.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisWeighted")
 			.withConfiguration(AutoConfigurations.of(
 					PolarisRibbonTest.class,
 					PolarisLoadBalancerAutoConfiguration.class,
@@ -59,6 +61,40 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 			assertThatThrownBy(() -> {
 				context.getBean(RestTemplate.class).getForEntity("http://wrong.url", String.class);
 			}).isInstanceOf(Exception.class);
+		});
+	}
+
+	@Test
+	public void testRandomInitialization() {
+		this.contextRunner.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=random").run(context -> {
+			assertThat(context).hasSingleBean(RouterAPI.class);
+			assertThat(context).hasSingleBean(RestTemplate.class);
+			assertThatThrownBy(() -> {
+				context.getBean(RestTemplate.class).getForEntity("http://wrong.url", String.class);
+			}).isInstanceOf(Exception.class);
+		});
+	}
+
+	@Test
+	public void testPolarisWeightedInitialization() {
+		this.contextRunner.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisWeightedRandom").run(context -> {
+			assertThat(context).hasSingleBean(RouterAPI.class);
+			assertThat(context).hasSingleBean(RestTemplate.class);
+			assertThatThrownBy(() -> {
+				context.getBean(RestTemplate.class).getForEntity("http://wrong.url", String.class);
+			}).isInstanceOf(Exception.class);
+		});
+	}
+
+	@Test
+	public void testPolarisRingHashInitialization() {
+		this.contextRunner
+				.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisRingHash").run(context -> {
+					assertThat(context).hasSingleBean(RouterAPI.class);
+					assertThat(context).hasSingleBean(RestTemplate.class);
+					assertThatThrownBy(() -> {
+						context.getBean(RestTemplate.class).getForEntity("http://wrong.url", String.class);
+					}).isInstanceOf(Exception.class);
 		});
 	}
 
