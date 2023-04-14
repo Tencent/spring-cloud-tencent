@@ -50,9 +50,9 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  */
-public class PolarisWeightedLoadBalancer implements ReactorServiceInstanceLoadBalancer {
+public class PolarisWeightedRandomLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisWeightedLoadBalancer.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisWeightedRandomLoadBalancer.class);
 
 	private final String serviceId;
 
@@ -60,7 +60,7 @@ public class PolarisWeightedLoadBalancer implements ReactorServiceInstanceLoadBa
 
 	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
-	public PolarisWeightedLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
+	public PolarisWeightedRandomLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
 		this.serviceId = serviceId;
 		this.supplierObjectProvider = supplierObjectProvider;
 		this.routerAPI = routerAPI;
