@@ -29,7 +29,9 @@ import org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
+import org.springframework.cloud.loadbalancer.core.RandomLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ReactorLoadBalancer;
+import org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -53,15 +55,43 @@ public class PolarisLoadBalancerClientConfiguration {
 	 */
 	private static final int REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER = 193827465;
 
-	private final static String STRATEGY_WEIGHT = "polarisWeighted";
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "roundRobin", matchIfMissing = true)
+	public ReactorLoadBalancer<ServiceInstance> roundRobinLoadBalancer(Environment environment,
+			LoadBalancerClientFactory loadBalancerClientFactory) {
+		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
+		return new RoundRobinLoadBalancer(
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), name);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = STRATEGY_WEIGHT)
-	public ReactorLoadBalancer<ServiceInstance> polarisLoadBalancer(Environment environment,
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "random")
+	public ReactorLoadBalancer<ServiceInstance> randomLoadBalancer(Environment environment,
+			LoadBalancerClientFactory loadBalancerClientFactory) {
+		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
+		return new RandomLoadBalancer(
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), name);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRandom")
+	public ReactorLoadBalancer<ServiceInstance> polarisWeightedLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, RouterAPI routerAPI) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
-		return new PolarisLoadBalancer(name,
+		return new PolarisWeightedRandomLoadBalancer(name,
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisRingHash")
+	public ReactorLoadBalancer<ServiceInstance> polarisRingHashLoadBalancer(Environment environment,
+			LoadBalancerClientFactory loadBalancerClientFactory, RouterAPI routerAPI) {
+		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
+		return new PolarisRingHashLoadBalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI);
 	}
 

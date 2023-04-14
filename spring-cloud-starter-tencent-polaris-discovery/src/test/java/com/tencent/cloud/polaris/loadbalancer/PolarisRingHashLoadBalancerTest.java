@@ -21,6 +21,8 @@ package com.tencent.cloud.polaris.loadbalancer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.api.pojo.Instance;
@@ -43,21 +45,24 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.Request;
 import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
+import org.springframework.context.ApplicationContext;
 
 import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_NAMESPACE;
 import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_SERVICE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisLoadBalancer}.
+ * PolarisRingHashLoadBalancerTest.
  *
- * @author rod.xu
+ * @author sean yu
  */
 @ExtendWith(MockitoExtension.class)
-public class PolarisLoadBalancerTest {
+public class PolarisRingHashLoadBalancerTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static Instance testInstance;
@@ -71,7 +76,13 @@ public class PolarisLoadBalancerTest {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
-
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		MetadataLocalProperties metadataLocalProperties = mock(MetadataLocalProperties.class);
+		StaticMetadataManager staticMetadataManager = mock(StaticMetadataManager.class);
+		doReturn(metadataLocalProperties).when(applicationContext).getBean(MetadataLocalProperties.class);
+		doReturn(staticMetadataManager).when(applicationContext).getBean(StaticMetadataManager.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 		testInstance = Instance.createDefaultInstance("instance-id", LOCAL_NAMESPACE,
 				LOCAL_SERVICE, "host", 8090);
 	}
@@ -96,8 +107,8 @@ public class PolarisLoadBalancerTest {
 		when(routerAPI.processLoadBalance(any())).thenReturn(mockLbRes);
 
 		// request construct and execute invoke
-		PolarisLoadBalancer polarisLoadBalancer = new PolarisLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
-		Mono<Response<ServiceInstance>> responseMono = polarisLoadBalancer.choose(request);
+		PolarisRingHashLoadBalancer polarisRingHashLoadBalancer = new PolarisRingHashLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
+		Mono<Response<ServiceInstance>> responseMono = polarisRingHashLoadBalancer.choose(request);
 		ServiceInstance serviceInstance = responseMono.block().getServer();
 
 		// verify method has invoked
