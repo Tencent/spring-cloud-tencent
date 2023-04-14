@@ -53,7 +53,7 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  */
 public class PolarisRingHashLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisWeightedLoadBalancer.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisWeightedRandomLoadBalancer.class);
 
 	private final String serviceId;
 
