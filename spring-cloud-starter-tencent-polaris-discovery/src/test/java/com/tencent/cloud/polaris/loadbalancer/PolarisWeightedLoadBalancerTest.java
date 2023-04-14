@@ -52,12 +52,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PolarisWeightedRandomLoadBalancer}.
+ * Test for {@link PolarisWeightedLoadBalancer}.
  *
  * @author rod.xu
  */
 @ExtendWith(MockitoExtension.class)
-public class PolarisWeightedRandomLoadBalancerTest {
+public class PolarisWeightedLoadBalancerTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static Instance testInstance;
@@ -97,8 +97,8 @@ public class PolarisWeightedRandomLoadBalancerTest {
 		when(routerAPI.processLoadBalance(any())).thenReturn(mockLbRes);
 
 		// request construct and execute invoke
-		PolarisWeightedRandomLoadBalancer polarisWeightedRandomLoadBalancer = new PolarisWeightedRandomLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
-		Mono<Response<ServiceInstance>> responseMono = polarisWeightedRandomLoadBalancer.choose(request);
+		PolarisWeightedLoadBalancer polarisWeightedLoadBalancer = new PolarisWeightedLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
+		Mono<Response<ServiceInstance>> responseMono = polarisWeightedLoadBalancer.choose(request);
 		ServiceInstance serviceInstance = responseMono.block().getServer();
 
 		// verify method has invoked

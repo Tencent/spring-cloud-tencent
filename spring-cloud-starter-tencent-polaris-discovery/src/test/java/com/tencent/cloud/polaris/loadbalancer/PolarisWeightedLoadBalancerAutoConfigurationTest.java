@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Haotian Zhang
  */
 @ExtendWith(MockitoExtension.class)
-public class PolarisWeightedRandomLoadBalancerAutoConfigurationTest {
+public class PolarisWeightedLoadBalancerAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
