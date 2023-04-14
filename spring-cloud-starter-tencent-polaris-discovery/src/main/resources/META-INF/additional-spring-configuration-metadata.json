@@ -136,8 +136,8 @@
           "description": "random load balancer."
         },
         {
-          "value": "polarisWeightedRandom",
-          "description": "polaris weighted random load balancer."
+          "value": "polarisWeighted",
+          "description": "polaris weighted load balancer."
         },
         {
           "value": "polarisRingHash",
