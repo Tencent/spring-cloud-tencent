@@ -77,11 +77,11 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeighted")
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRandom")
 	public ReactorLoadBalancer<ServiceInstance> polarisWeightedLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, RouterAPI routerAPI) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
-		return new PolarisWeightedLoadBalancer(name,
+		return new PolarisWeightedRandomLoadBalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI);
 	}
 
