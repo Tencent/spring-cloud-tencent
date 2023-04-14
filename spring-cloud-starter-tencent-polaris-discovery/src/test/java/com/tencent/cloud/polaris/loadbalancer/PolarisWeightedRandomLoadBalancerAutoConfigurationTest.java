@@ -77,7 +77,7 @@ public class PolarisWeightedRandomLoadBalancerAutoConfigurationTest {
 
 	@Test
 	public void testPolarisWeightedInitialization() {
-		this.contextRunner.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisWeightedRandom").run(context -> {
+		this.contextRunner.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisWeighted").run(context -> {
 			assertThat(context).hasSingleBean(RouterAPI.class);
 			assertThat(context).hasSingleBean(RestTemplate.class);
 			assertThatThrownBy(() -> {
