@@ -188,11 +188,12 @@ public class StaticMetadataManager {
 		customSPIMetadata = new HashMap<>();
 		customSPITransitiveMetadata = new HashMap<>();
 		customSPIDisposableMetadata = new HashMap<>();
-		if (CollectionUtils.isEmpty(instanceMetadataProviders)) {
-			return;
+		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
+			instanceMetadataProviders.forEach(this::parseCustomMetadata);
 		}
-		instanceMetadataProviders.forEach(this::parseCustomMetadata);
-
+		customSPIMetadata = Collections.unmodifiableMap(customSPIMetadata);
+		customSPITransitiveMetadata = Collections.unmodifiableMap(customSPITransitiveMetadata);
+		customSPIDisposableMetadata = Collections.unmodifiableMap(customSPIDisposableMetadata);
 	}
 
 	@SuppressWarnings("DuplicatedCode")
