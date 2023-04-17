@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.common.metadata;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,15 +27,27 @@ import java.util.Set;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
+import com.tencent.cloud.common.spi.impl.DefaultInstanceMetadataProvider;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
+import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME;
+import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE;
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -53,6 +66,26 @@ public class StaticMetadataManagerTest {
 	@Mock
 	private MetadataLocalProperties metadataLocalProperties;
 
+	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
+
+	@BeforeAll
+	static void beforeAll() {
+		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
+		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+				.thenReturn("unit-test");
+	}
+
+	@AfterAll
+	static void afterAll() {
+		mockedApplicationContextAwareUtils.close();
+	}
+
+	@BeforeEach
+	void setUp() {
+		MetadataContext.LOCAL_NAMESPACE = NAMESPACE_TEST;
+		MetadataContext.LOCAL_SERVICE = SERVICE_PROVIDER;
+	}
+
 	@Test
 	public void testParseConfigMetadata() {
 		Map<String, String> content = new HashMap<>();
@@ -63,6 +96,7 @@ public class StaticMetadataManagerTest {
 
 		when(metadataLocalProperties.getContent()).thenReturn(content);
 		when(metadataLocalProperties.getTransitive()).thenReturn(Collections.singletonList("k1"));
+		when(metadataLocalProperties.getDisposable()).thenReturn(Collections.singletonList("k1"));
 
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties, null);
 
@@ -74,6 +108,10 @@ public class StaticMetadataManagerTest {
 		Map<String, String> transitiveMetadata = metadataManager.getConfigTransitiveMetadata();
 		assertThat(transitiveMetadata.size()).isEqualTo(1);
 		assertThat(transitiveMetadata.get("k1")).isEqualTo("v1");
+
+		Map<String, String> disposableMetadata = metadataManager.getConfigDisposableMetadata();
+		assertThat(disposableMetadata.size()).isEqualTo(1);
+		assertThat(disposableMetadata.get("k1")).isEqualTo("v1");
 
 		assertThat(metadataManager.getZone()).isEqualTo("zone1");
 		assertThat(metadataManager.getRegion()).isEqualTo("region1");
@@ -93,17 +131,25 @@ public class StaticMetadataManagerTest {
 		when(metadataLocalProperties.getTransitive()).thenReturn(Collections.singletonList("k1"));
 
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties,
-				Collections.singletonList(new MockedMetadataProvider()));
+				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider(null)));
 
 		Map<String, String> metadata = metadataManager.getAllCustomMetadata();
-		assertThat(metadata.size()).isEqualTo(3);
+		assertThat(metadata.size()).isEqualTo(5);
 		assertThat(metadata.get("k1")).isEqualTo("v1");
 		assertThat(metadata.get("k2")).isEqualTo("v22");
 		assertThat(metadata.get("k3")).isEqualTo("v33");
+		assertThat(metadata.get(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE)).isEqualTo(NAMESPACE_TEST);
+		assertThat(metadata.get(DEFAULT_METADATA_SOURCE_SERVICE_NAME)).isEqualTo(SERVICE_PROVIDER);
 
 		Map<String, String> transitiveMetadata = metadataManager.getCustomSPITransitiveMetadata();
 		assertThat(transitiveMetadata.size()).isEqualTo(1);
-		assertThat(metadata.get("k2")).isEqualTo("v22");
+		assertThat(transitiveMetadata.get("k2")).isEqualTo("v22");
+
+		Map<String, String> disposableMetadata = metadataManager.getCustomSPIDisposableMetadata();
+		assertThat(disposableMetadata.size()).isEqualTo(3);
+		assertThat(disposableMetadata.get("k3")).isEqualTo("v33");
+		assertThat(disposableMetadata.get(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE)).isEqualTo(NAMESPACE_TEST);
+		assertThat(disposableMetadata.get(DEFAULT_METADATA_SOURCE_SERVICE_NAME)).isEqualTo(SERVICE_PROVIDER);
 
 		assertThat(metadataManager.getZone()).isEqualTo("zone2");
 		assertThat(metadataManager.getRegion()).isEqualTo("region1");
@@ -126,29 +172,38 @@ public class StaticMetadataManagerTest {
 		when(metadataLocalProperties.getTransitive()).thenReturn(Collections.singletonList("k1"));
 
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties,
-				Collections.singletonList(new MockedMetadataProvider()));
+				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider(null)));
 
 		Map<String, String> metadata = metadataManager.getMergedStaticMetadata();
-		assertThat(metadata.size()).isEqualTo(6);
+		assertThat(metadata.size()).isEqualTo(8);
 		assertThat(metadata.get("k1")).isEqualTo("v1");
 		assertThat(metadata.get("k2")).isEqualTo("v22");
 		assertThat(metadata.get("k3")).isEqualTo("v33");
+		assertThat(metadata.get(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE)).isEqualTo(NAMESPACE_TEST);
+		assertThat(metadata.get(DEFAULT_METADATA_SOURCE_SERVICE_NAME)).isEqualTo(SERVICE_PROVIDER);
 
 		Map<String, String> transitiveMetadata = metadataManager.getMergedStaticTransitiveMetadata();
 		assertThat(transitiveMetadata.size()).isEqualTo(2);
-		assertThat(metadata.get("k1")).isEqualTo("v1");
-		assertThat(metadata.get("k2")).isEqualTo("v22");
+		assertThat(transitiveMetadata.get("k1")).isEqualTo("v1");
+		assertThat(transitiveMetadata.get("k2")).isEqualTo("v22");
+
+		Map<String, String> disposableMetadata = metadataManager.getMergedStaticDisposableMetadata();
+		assertThat(disposableMetadata.size()).isEqualTo(3);
+		assertThat(disposableMetadata.get("k3")).isEqualTo("v33");
+		assertThat(disposableMetadata.get(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE)).isEqualTo(NAMESPACE_TEST);
+		assertThat(disposableMetadata.get(DEFAULT_METADATA_SOURCE_SERVICE_NAME)).isEqualTo(SERVICE_PROVIDER);
 
 		assertThat(metadataManager.getAllEnvMetadata()).isEmpty();
 		assertThat(metadataManager.getEnvTransitiveMetadata()).isEmpty();
 
 		assertThat(metadataManager.getZone()).isEqualTo("zone2");
 		assertThat(metadataManager.getRegion()).isEqualTo("region1");
+		assertThat(metadataManager.getCampus()).isEqualTo("campus2");
 
 		Map<String, String> locationInfo = metadataManager.getLocationMetadata();
 		assertThat(locationInfo.get("zone")).isEqualTo("zone2");
 		assertThat(locationInfo.get("region")).isEqualTo("region1");
-		assertThat(locationInfo.get("campus")).isEqualTo("campus1");
+		assertThat(locationInfo.get("campus")).isEqualTo("campus2");
 	}
 
 	@Test
@@ -196,6 +251,13 @@ public class StaticMetadataManagerTest {
 		}
 
 		@Override
+		public Set<String> getDisposableMetadataKeys() {
+			Set<String> transitiveKeys = new HashSet<>();
+			transitiveKeys.add("k3");
+			return transitiveKeys;
+		}
+
+		@Override
 		public String getRegion() {
 			return "region1";
 		}
@@ -207,7 +269,7 @@ public class StaticMetadataManagerTest {
 
 		@Override
 		public String getCampus() {
-			return null;
+			return "campus2";
 		}
 	}
 }
