@@ -39,7 +39,8 @@ import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
-import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRule;
+import com.tencent.cloud.polaris.loadbalancer.PolarisRingHashRule;
+import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRandomRule;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
@@ -72,7 +73,8 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 
 	final static String STRATEGY_RANDOM = "random";
 	final static String STRATEGY_ROUND_ROBIN = "roundRobin";
-	final static String STRATEGY_WEIGHT = "polarisWeighted";
+	final static String STRATEGY_WEIGHT = "polarisWeightedRandom";
+	final static String STRATEGY_HASH_RING = "polarisRingHash";
 	final static String STRATEGY_RETRY = "retry";
 	final static String STRATEGY_RESPONSE_TIME_WEIGHTED = "responseTimeWeighted";
 	final static String STRATEGY_BEST_AVAILABLE = "bestAvailable";
@@ -228,7 +230,9 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		case STRATEGY_RANDOM:
 			return new RandomRule();
 		case STRATEGY_WEIGHT:
-			return new PolarisWeightedRule(routerAPI);
+			return new PolarisWeightedRandomRule(routerAPI);
+		case STRATEGY_HASH_RING:
+			return new PolarisRingHashRule(routerAPI);
 		case STRATEGY_RETRY:
 			return new RetryRule();
 		case STRATEGY_RESPONSE_TIME_WEIGHTED:

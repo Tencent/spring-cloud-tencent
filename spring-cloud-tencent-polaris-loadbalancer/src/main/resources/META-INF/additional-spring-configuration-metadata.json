@@ -15,8 +15,31 @@
     {
       "name": "spring.cloud.polaris.loadbalancer.strategy",
       "type": "java.lang.String",
-      "defaultValue": "random",
-      "description": "retry,best_available,availability_filtering,round_robin,weighted_response_time,zone_avoidance,random,consistent_hash,weighted_random."
+      "defaultValue": "roundRobin",
+      "description": "loadbalancer strategy."
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.cloud.polaris.loadbalancer.strategy",
+      "values": [
+        {
+          "value": "roundRobin",
+          "description": "round robin load balancer."
+        },
+        {
+          "value": "random",
+          "description": "random load balancer."
+        },
+        {
+          "value": "polarisWeightedRandom",
+          "description": "polaris weighted random load balancer."
+        },
+        {
+          "value": "polarisRingHash",
+          "description": "polaris ring hash load balancer."
+        }
+      ]
     }
   ]
 }

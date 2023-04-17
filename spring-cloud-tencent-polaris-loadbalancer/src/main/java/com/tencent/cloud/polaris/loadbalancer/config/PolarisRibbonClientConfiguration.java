@@ -22,11 +22,18 @@ import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.IPing;
 import com.netflix.loadbalancer.IRule;
+import com.netflix.loadbalancer.RandomRule;
+import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
+import com.tencent.cloud.polaris.loadbalancer.PolarisRingHashRule;
+import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRandomRule;
 import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.router.api.core.RouterAPI;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -42,5 +49,33 @@ public class PolarisRibbonClientConfiguration {
 			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
 		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
 				consumerAPI, polarisLoadBalancerProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "roundRobin", matchIfMissing = true)
+	public IRule roundRobinRule() {
+		return new RoundRobinRule();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "random")
+	public IRule randomRule() {
+		return new RandomRule();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRandom")
+	public IRule polarisWeightedRandomRule(RouterAPI routerAPI) {
+		return new PolarisWeightedRandomRule(routerAPI);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisRingHash")
+	public IRule polarisRingHashRule(RouterAPI routerAPI) {
+		return new PolarisRingHashRule(routerAPI);
 	}
 }

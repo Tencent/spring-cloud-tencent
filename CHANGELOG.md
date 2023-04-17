@@ -16,4 +16,5 @@
 - [feature: optimize polaris-discovery-example/discovery-callee-service, add client-ip return.](https://github.com/Tencent/spring-cloud-tencent/commit/d2d66dccbef4b9b858885ae365e8f90e0e5555af)
 - [docs:prevent the release of the final version of the sdk.](https://github.com/Tencent/spring-cloud-tencent/commit/be4dc8063bf8feb45d1430de979e9a85339b53c8)
 - [feature: add config for customized local port.](https://github.com/Tencent/spring-cloud-tencent/commit/099508ea04687094e7ede8e5bb39eccc43287e5a)
-- [feat:support webclient and gateway report call metrics]()
+- [feat:support webclient and gateway report call metrics](https://github.com/Tencent/spring-cloud-tencent/commit/2e8074b16363d437e106b965003b9261157f6a9d)
+- [feature: add polaris ring hash load balancer.]()

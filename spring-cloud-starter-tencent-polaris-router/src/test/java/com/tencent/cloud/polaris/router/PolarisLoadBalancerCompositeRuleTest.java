@@ -41,7 +41,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRule;
+import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRandomRule;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
@@ -140,7 +140,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
-		assertThat(lbRule).isInstanceOf(PolarisWeightedRule.class);
+		assertThat(lbRule).isInstanceOf(PolarisWeightedRandomRule.class);
 	}
 
 	@Test

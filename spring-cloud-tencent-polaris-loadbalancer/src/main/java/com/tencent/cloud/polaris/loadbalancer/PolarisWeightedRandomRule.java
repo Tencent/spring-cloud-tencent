@@ -41,12 +41,12 @@ import org.springframework.util.CollectionUtils;
  *
  * @author lepdou 2022-05-17
  */
-public class PolarisWeightedRule extends PredicateBasedRule {
+public class PolarisWeightedRandomRule extends PredicateBasedRule {
 
 	private final RouterAPI routerAPI;
 	private CompositePredicate compositePredicate;
 
-	public PolarisWeightedRule(RouterAPI routerAPI) {
+	public PolarisWeightedRandomRule(RouterAPI routerAPI) {
 		this.routerAPI = routerAPI;
 	}
 
@@ -69,7 +69,9 @@ public class PolarisWeightedRule extends PredicateBasedRule {
 		}
 
 		// filter circuit breaker servers by ribbon
-		servers = compositePredicate.getEligibleServers(servers);
+		if (compositePredicate != null) {
+			servers = compositePredicate.getEligibleServers(servers);
+		}
 
 		ServiceInstances serviceInstances = LoadBalancerUtils.transferServersToServiceInstances(servers);
 

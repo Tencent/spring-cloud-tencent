@@ -18,6 +18,8 @@ spring:
       stat:
         enabled: true
         port: 28081
+      loadbalancer:
+        strategy: polarisWeightedRandom
     tencent:
       rpc-enhancement:
         reporter:
