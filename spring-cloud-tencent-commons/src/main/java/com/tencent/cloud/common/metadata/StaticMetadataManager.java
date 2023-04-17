@@ -184,26 +184,24 @@ public class StaticMetadataManager {
 
 	@SuppressWarnings("DuplicatedCode")
 	private void parseCustomMetadata(List<InstanceMetadataProvider> instanceMetadataProviders) {
-		if (CollectionUtils.isEmpty(instanceMetadataProviders)) {
-			customSPIMetadata = Collections.emptyMap();
-			customSPITransitiveMetadata = Collections.emptyMap();
-			customSPIDisposableMetadata = Collections.emptyMap();
-			return;
+		// init customSPIMetadata
+		customSPIMetadata = new HashMap<>();
+		customSPITransitiveMetadata = new HashMap<>();
+		customSPIDisposableMetadata = new HashMap<>();
+		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
+			instanceMetadataProviders.forEach(this::parseCustomMetadata);
 		}
-
-		instanceMetadataProviders.forEach(this::parseCustomMetadata);
-
+		customSPIMetadata = Collections.unmodifiableMap(customSPIMetadata);
+		customSPITransitiveMetadata = Collections.unmodifiableMap(customSPITransitiveMetadata);
+		customSPIDisposableMetadata = Collections.unmodifiableMap(customSPIDisposableMetadata);
 	}
 
 	@SuppressWarnings("DuplicatedCode")
 	private void parseCustomMetadata(InstanceMetadataProvider instanceMetadataProvider) {
 		// resolve all metadata
 		Map<String, String> allMetadata = instanceMetadataProvider.getMetadata();
-		if (allMetadata == null) {
-			customSPIMetadata = Collections.emptyMap();
-		}
-		else {
-			customSPIMetadata = Collections.unmodifiableMap(allMetadata);
+		if (!CollectionUtils.isEmpty(allMetadata)) {
+			customSPIMetadata.putAll(allMetadata);
 		}
 
 		// resolve transitive metadata
@@ -216,7 +214,7 @@ public class StaticMetadataManager {
 				}
 			}
 		}
-		customSPITransitiveMetadata = Collections.unmodifiableMap(transitiveMetadata);
+		customSPITransitiveMetadata.putAll(transitiveMetadata);
 
 		Set<String> disposableKeys = instanceMetadataProvider.getDisposableMetadataKeys();
 		Map<String, String> disposableMetadata = new HashMap<>();
@@ -227,7 +225,7 @@ public class StaticMetadataManager {
 				}
 			}
 		}
-		customSPIDisposableMetadata = Collections.unmodifiableMap(disposableMetadata);
+		customSPIDisposableMetadata.putAll(disposableMetadata);
 	}
 
 	private void merge() {
