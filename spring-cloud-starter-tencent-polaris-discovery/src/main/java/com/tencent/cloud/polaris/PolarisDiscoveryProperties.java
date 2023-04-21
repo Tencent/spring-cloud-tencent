@@ -46,6 +46,11 @@ public class PolarisDiscoveryProperties {
 	private String service;
 
 	/**
+	 * Service instance id.
+	 */
+	private String instanceId;
+
+	/**
 	 * The polaris authentication token.
 	 */
 	private String token;
@@ -95,6 +100,14 @@ public class PolarisDiscoveryProperties {
 	 * Millis interval of refresh of service info list. Default: 60000.
 	 */
 	private Long serviceListRefreshInterval = 60000L;
+
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
+	}
 
 	public String getNamespace() {
 		return namespace;
@@ -204,6 +217,7 @@ public class PolarisDiscoveryProperties {
 		return "PolarisDiscoveryProperties{" +
 				"namespace='" + namespace + '\'' +
 				", service='" + service + '\'' +
+				", instanceId='" + instanceId + '\'' +
 				", token='" + token + '\'' +
 				", weight=" + weight +
 				", version='" + version + '\'' +
