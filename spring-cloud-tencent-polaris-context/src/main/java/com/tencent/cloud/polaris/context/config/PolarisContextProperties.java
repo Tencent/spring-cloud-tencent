@@ -21,6 +21,7 @@ package com.tencent.cloud.polaris.context.config;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
@@ -30,9 +31,7 @@ import com.tencent.polaris.factory.ConfigAPIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.lang.StringUtils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -68,19 +67,18 @@ public class PolarisContextProperties {
 	 */
 	private String service;
 
-	@Autowired
-	private Environment environment;
-
-	@Autowired
-	private List<PolarisConfigModifier> modifierList;
-
-	protected Configuration configuration() {
+	public Configuration configuration(List<PolarisConfigModifier> modifierList, Supplier<String> ipAddressSupplier) {
 		// 1. Read user-defined polaris.yml configuration
 		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
 				.defaultConfig(ConfigProvider.DEFAULT_CONFIG);
 
 		// 2. Override user-defined polaris.yml configuration with SCT configuration
-		String defaultHost = getHost();
+		String defaultHost = this.localIpAddress;
+		if (StringUtils.isBlank(localIpAddress)) {
+			defaultHost = ipAddressSupplier.get();
+			this.localIpAddress = defaultHost;
+		}
+
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);
 
 		Collection<PolarisConfigModifier> modifiers = modifierList;
@@ -94,14 +92,6 @@ public class PolarisContextProperties {
 		}
 
 		return configuration;
-	}
-
-	private String getHost() {
-		if (StringUtils.isNotBlank(localIpAddress)) {
-			return localIpAddress;
-		}
-		this.localIpAddress = environment.getProperty("spring.cloud.client.ip-address");
-		return this.localIpAddress;
 	}
 
 	public String getAddress() {
@@ -143,5 +133,4 @@ public class PolarisContextProperties {
 	public void setService(String service) {
 		this.service = service;
 	}
-
 }

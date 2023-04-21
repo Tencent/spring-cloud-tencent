@@ -18,19 +18,25 @@
 
 package com.tencent.cloud.polaris.context.config;
 
+import java.util.List;
+
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.ModifyAddress;
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
+import com.tencent.polaris.factory.api.RouterAPIFactory;
+import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * Autoconfiguration for Polaris {@link SDKContext}.
@@ -44,9 +50,9 @@ public class PolarisContextAutoConfiguration {
 
 	@Bean(name = "polarisContext", initMethod = "init", destroyMethod = "destroy")
 	@ConditionalOnMissingBean
-	public SDKContext polarisContext(PolarisContextProperties properties)
-			throws PolarisException {
-		return SDKContext.initContextByConfig(properties.configuration());
+	public SDKContext polarisContext(PolarisContextProperties properties, Environment environment, List<PolarisConfigModifier> modifierList) throws PolarisException {
+		return SDKContext.initContextByConfig(properties.configuration(modifierList,
+				() -> environment.getProperty("spring.cloud.client.ip-address")));
 	}
 
 	@Bean
@@ -62,6 +68,11 @@ public class PolarisContextAutoConfiguration {
 	}
 
 	@Bean
+	public RouterAPI polarisRouter(SDKContext polarisContext) throws PolarisException {
+		return RouterAPIFactory.createRouterAPIByContext(polarisContext);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public ModifyAddress polarisConfigModifier(PolarisContextProperties properties) {
 		return new ModifyAddress(properties);
@@ -69,7 +80,7 @@ public class PolarisContextAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ServiceRuleManager serviceRuleManager(SDKContext sdkContext) {
-		return new ServiceRuleManager(sdkContext);
+	public ServiceRuleManager serviceRuleManager(SDKContext sdkContext, ConsumerAPI consumerAPI) {
+		return new ServiceRuleManager(sdkContext, consumerAPI);
 	}
 }

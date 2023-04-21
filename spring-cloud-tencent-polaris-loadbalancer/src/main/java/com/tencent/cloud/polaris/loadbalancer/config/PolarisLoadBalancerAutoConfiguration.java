@@ -18,10 +18,6 @@
 package com.tencent.cloud.polaris.loadbalancer.config;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.polaris.api.exception.PolarisException;
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.factory.api.RouterAPIFactory;
-import com.tencent.polaris.router.api.core.RouterAPI;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,10 +43,5 @@ public class PolarisLoadBalancerAutoConfiguration {
 	@Bean
 	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
 		return new PolarisLoadBalancerProperties();
-	}
-
-	@Bean
-	public RouterAPI routerAPI(SDKContext polarisContext) throws PolarisException {
-		return RouterAPIFactory.createRouterAPIByContext(polarisContext);
 	}
 }

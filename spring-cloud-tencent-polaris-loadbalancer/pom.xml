@@ -24,11 +24,6 @@
 		<!-- Polaris dependencies start -->
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
-			<artifactId>polaris-router-factory</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-discovery-api</artifactId>
 		</dependency>
 
@@ -55,12 +50,12 @@
 			<artifactId>mockito-inline</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>com.tencent.polaris</groupId>
-            <artifactId>polaris-discovery-client</artifactId>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-discovery-client</artifactId>
+			<scope>test</scope>
+		</dependency>
 
-    </dependencies>
+	</dependencies>
 
 </project>
