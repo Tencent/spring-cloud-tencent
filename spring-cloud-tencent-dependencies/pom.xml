@@ -181,12 +181,6 @@
 				<version>${revision}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>com.tencent.cloud</groupId>
-				<artifactId>spring-cloud-tencent-pushgateway-plugin</artifactId>
-				<version>${revision}</version>
-			</dependency>
-
 			<!-- third part framework dependencies -->
 			<dependency>
 				<groupId>com.google.guava</groupId>

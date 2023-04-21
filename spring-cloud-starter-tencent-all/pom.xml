@@ -46,9 +46,16 @@
 			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
 		</dependency>
 
+		<!-- Spring Cloud -->
 		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-pushgateway-plugin</artifactId>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+
+		<!-- Spring Boot -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 	</dependencies>
 </project>
