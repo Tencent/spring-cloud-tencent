@@ -17,28 +17,36 @@
 
 package com.tencent.cloud.rpc.enhancement.resttemplate;
 
-import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import org.aspectj.lang.ProceedingJoinPoint;
 
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer;
+import org.springframework.http.HttpRequest;
 
 /**
- * Extract load balancer result from {@link LoadBalancerClient} and put to MetadataContext.
- * @author lepdou 2022-09-06
+ * PolarisLoadBalancerRequestTransformer.
+ *
+ * @author sean yu
  */
-public final class LoadBalancerClientAspectUtils {
+public class PolarisLoadBalancerRequestTransformer implements LoadBalancerRequestTransformer {
 
-	private LoadBalancerClientAspectUtils() {
-	}
+	/**
+	 * LOAD_BALANCER_SERVICE_INSTANCE MetadataContext key.
+	 */
+	public static final String LOAD_BALANCER_SERVICE_INSTANCE = "LOAD_BALANCER_SERVICE_INSTANCE";
 
-	public static void extractLoadBalancerResult(ProceedingJoinPoint joinPoint) {
-		Object server = joinPoint.getArgs()[0];
-		if (server instanceof ServiceInstance) {
-			ServiceInstance instance = (ServiceInstance) server;
-			MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST, instance.getHost());
-			MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT, String.valueOf(instance.getPort()));
+	/**
+	 * Transform Request, add Loadbalancer ServiceInstance to MetadataContext.
+	 * @param request request
+	 * @param instance instance
+	 * @return HttpRequest
+	 */
+	@Override
+	public HttpRequest transformRequest(HttpRequest request, ServiceInstance instance) {
+		if (instance != null) {
+			MetadataContextHolder.get().setLoadbalancer(LOAD_BALANCER_SERVICE_INSTANCE, instance);
 		}
+		return request;
 	}
+
 }

@@ -17,25 +17,33 @@
 
 package com.tencent.cloud.rpc.enhancement.feign;
 
-import java.util.List;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import feign.Request;
 
-import feign.Client;
-
-import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
-import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
-import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequestTransformer;
 
-/**
- * Wrap for {@link FeignBlockingLoadBalancerClient}.
- *
- * @author Haotian Zhang
- */
-public class EnhancedFeignBlockingLoadBalancerClient extends FeignBlockingLoadBalancerClient {
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 
-	public EnhancedFeignBlockingLoadBalancerClient(Client delegate, LoadBalancerClient loadBalancerClient,
-			LoadBalancerProperties properties, LoadBalancerClientFactory loadBalancerClientFactory) {
-		super(delegate, loadBalancerClient, properties, loadBalancerClientFactory);
+/**
+ * PolarisLoadBalancerFeignRequestTransformer.
+ *
+ * @author sean yu
+ */
+public class PolarisLoadBalancerFeignRequestTransformer implements LoadBalancerFeignRequestTransformer {
+
+	/**
+	 * Transform Request, add Loadbalancer ServiceInstance to MetadataContext.
+	 * @param request request
+	 * @param instance instance
+	 * @return HttpRequest
+	 */
+	@Override
+	public Request transformRequest(Request request, ServiceInstance instance) {
+		if (instance != null) {
+			MetadataContextHolder.get().setLoadbalancer(LOAD_BALANCER_SERVICE_INSTANCE, instance);
+		}
+		return request;
 	}
+
 }

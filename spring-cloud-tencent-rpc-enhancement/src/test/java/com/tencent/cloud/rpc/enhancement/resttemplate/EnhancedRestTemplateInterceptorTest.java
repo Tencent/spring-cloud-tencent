@@ -40,6 +40,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -109,7 +110,7 @@ public class EnhancedRestTemplateInterceptorTest {
 		doReturn(mockHttpHeaders).when(mockHttpRequest).getHeaders();
 		doReturn(mockClientHttpResponse).when(mockClientHttpRequestExecution).execute(mockHttpRequest, inputBody);
 
-		EnhancedRestTemplateInterceptor reporter = new EnhancedRestTemplateInterceptor(new DefaultEnhancedPluginRunner(new ArrayList<>()));
+		EnhancedRestTemplateInterceptor reporter = new EnhancedRestTemplateInterceptor(new DefaultEnhancedPluginRunner(new ArrayList<>(), null, sdkContext));
 		actualResult = reporter.intercept(mockHttpRequest, inputBody, mockClientHttpRequestExecution);
 		assertThat(actualResult).isEqualTo(mockClientHttpResponse);
 

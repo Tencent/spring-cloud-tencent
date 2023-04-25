@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement;
+package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
@@ -30,6 +30,7 @@ import java.util.Objects;
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.RequestLabelUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
@@ -39,7 +40,6 @@ import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
 import com.tencent.polaris.api.utils.CollectionUtils;
-import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,29 +63,20 @@ import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.springframework.http.HttpStatus.VARIANT_ALSO_NEGOTIATES;
 
 /**
- * Abstract Polaris Reporter Adapter .
+ * Abstract Polaris Plugin Adapter .
  *
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022-07-11
  */
-public abstract class AbstractPolarisReporterAdapter {
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractPolarisReporterAdapter.class);
+public final class PolarisEnhancedPluginUtils {
+
+	private PolarisEnhancedPluginUtils() {
+
+	}
+
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisEnhancedPluginUtils.class);
 	private static final List<HttpStatus> HTTP_STATUSES = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
 			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
 			INSUFFICIENT_STORAGE, LOOP_DETECTED, BANDWIDTH_LIMIT_EXCEEDED, NOT_EXTENDED, NETWORK_AUTHENTICATION_REQUIRED);
-
-	protected final RpcEnhancementReporterProperties reportProperties;
-
-	protected final SDKContext context;
-
-	/**
-	 * Constructor With {@link RpcEnhancementReporterProperties} .
-	 *
-	 * @param reportProperties instance of {@link RpcEnhancementReporterProperties}.
-	 */
-	protected AbstractPolarisReporterAdapter(RpcEnhancementReporterProperties reportProperties, SDKContext context) {
-		this.reportProperties = reportProperties;
-		this.context = context;
-	}
 
 	/**
 	 * createServiceCallResult.
@@ -100,7 +91,7 @@ public abstract class AbstractPolarisReporterAdapter {
 	 * @param exception exception
 	 * @return ServiceCallResult
 	 */
-	public ServiceCallResult createServiceCallResult(
+	public static ServiceCallResult createServiceCallResult(String callerHost,
 			@Nullable String calleeServiceName, @Nullable String calleeHost, @Nullable Integer calleePort,
 			URI uri, HttpHeaders requestHeaders, @Nullable HttpHeaders responseHeaders,
 			@Nullable Integer statusCode, long delay, @Nullable Throwable exception) {
@@ -112,11 +103,11 @@ public abstract class AbstractPolarisReporterAdapter {
 		resultRequest.setRetCode(statusCode == null ? -1 : statusCode);
 		resultRequest.setDelay(delay);
 		resultRequest.setCallerService(new ServiceKey(MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE));
-		resultRequest.setCallerIp(this.context.getConfig().getGlobal().getAPI().getBindIP());
+		resultRequest.setCallerIp(callerHost);
 		resultRequest.setHost(StringUtils.isBlank(calleeHost) ? uri.getHost() : calleeHost);
 		resultRequest.setPort(calleePort == null ? getPort(uri) : calleePort);
 		resultRequest.setLabels(getLabels(requestHeaders));
-		resultRequest.setRetStatus(getRetStatusFromRequest(responseHeaders, getDefaultRetStatus(statusCode, exception)));
+		resultRequest.setRetStatus(getRetStatusFromRequest(responseHeaders, statusCode, exception));
 		resultRequest.setRuleName(getActiveRuleNameFromRequest(responseHeaders));
 		return resultRequest;
 	}
@@ -132,7 +123,7 @@ public abstract class AbstractPolarisReporterAdapter {
 	 * @param exception exception
 	 * @return ResourceStat
 	 */
-	public ResourceStat createInstanceResourceStat(
+	public static ResourceStat createInstanceResourceStat(
 			@Nullable String calleeServiceName, @Nullable String calleeHost, @Nullable Integer calleePort,
 			URI uri, @Nullable Integer statusCode, long delay, @Nullable Throwable exception) {
 		ServiceKey calleeServiceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, StringUtils.isBlank(calleeServiceName) ? uri.getHost() : calleeServiceName);
@@ -165,11 +156,12 @@ public abstract class AbstractPolarisReporterAdapter {
 	 * @param httpStatus request http status code
 	 * @return true , otherwise return false .
 	 */
-	protected boolean apply(@Nullable HttpStatus httpStatus) {
+	static boolean apply(@Nullable HttpStatus httpStatus) {
 		if (Objects.isNull(httpStatus)) {
 			return false;
 		}
 		else {
+			RpcEnhancementReporterProperties reportProperties = ApplicationContextAwareUtils.getApplicationContext().getBean(RpcEnhancementReporterProperties.class);
 			// statuses > series
 			List<HttpStatus> status = reportProperties.getStatuses();
 
@@ -200,7 +192,11 @@ public abstract class AbstractPolarisReporterAdapter {
 		return false;
 	}
 
-	protected RetStatus getRetStatusFromRequest(HttpHeaders headers, RetStatus defaultVal) {
+	public static RetStatus getRetStatusFromRequest(HttpHeaders headers, Integer statusCode, Throwable exception) {
+		return getRetStatusFromRequest(headers, getDefaultRetStatus(statusCode, exception));
+	}
+
+	static RetStatus getRetStatusFromRequest(HttpHeaders headers, RetStatus defaultVal) {
 		if (headers != null && headers.containsKey(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
 			List<String> values = headers.get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
 			if (CollectionUtils.isNotEmpty(values)) {
@@ -216,7 +212,7 @@ public abstract class AbstractPolarisReporterAdapter {
 		return defaultVal;
 	}
 
-	protected String getActiveRuleNameFromRequest(HttpHeaders headers) {
+	static String getActiveRuleNameFromRequest(HttpHeaders headers) {
 		if (headers != null && headers.containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
 			Collection<String> values = headers.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
 			if (CollectionUtils.isNotEmpty(values)) {
@@ -226,7 +222,7 @@ public abstract class AbstractPolarisReporterAdapter {
 		return "";
 	}
 
-	private RetStatus getDefaultRetStatus(Integer statusCode, Throwable exception) {
+	private static RetStatus getDefaultRetStatus(Integer statusCode, Throwable exception) {
 		RetStatus retStatus = RetStatus.RetSuccess;
 		if (exception != null) {
 			retStatus = RetStatus.RetFail;
@@ -240,12 +236,12 @@ public abstract class AbstractPolarisReporterAdapter {
 		return retStatus;
 	}
 
-	private int getPort(URI uri) {
+	private static int getPort(URI uri) {
 		// -1 means access directly by url, and use http default port number 80
 		return uri.getPort() == -1 ? 80 : uri.getPort();
 	}
 
-	private String getLabels(HttpHeaders headers) {
+	private static String getLabels(HttpHeaders headers) {
 		if (headers != null) {
 			Collection<String> labels = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
 			if (CollectionUtils.isNotEmpty(labels) && labels.iterator().hasNext()) {

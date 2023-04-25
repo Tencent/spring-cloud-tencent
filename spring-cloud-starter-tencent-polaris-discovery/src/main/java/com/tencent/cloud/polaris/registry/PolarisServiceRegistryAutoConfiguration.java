@@ -26,6 +26,7 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
+import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,9 +79,13 @@ public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(PolarisServiceRegistry registry,
-			AutoServiceRegistrationProperties autoServiceRegistrationProperties, PolarisRegistration registration) {
-		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
+	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
+			PolarisServiceRegistry registry,
+			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
+			PolarisRegistration registration,
+			@Autowired(required = false) AssemblyAPI assemblyAPI
+	) {
+		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration, assemblyAPI);
 	}
 
 	@Bean

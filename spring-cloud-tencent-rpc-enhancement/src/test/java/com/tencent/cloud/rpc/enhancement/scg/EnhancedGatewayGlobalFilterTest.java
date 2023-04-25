@@ -39,6 +39,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
+import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -123,7 +124,7 @@ public class EnhancedGatewayGlobalFilterTest {
 		doReturn(request).when(exchange).getRequest();
 		doReturn(response).when(exchange).getResponse();
 
-		EnhancedGatewayGlobalFilter reporter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(new ArrayList<>()));
+		EnhancedGatewayGlobalFilter reporter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(new ArrayList<>(), null, sdkContext));
 		reporter.getOrder();
 
 		reporter.filter(exchange, chain).block();

@@ -13,28 +13,23 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.rpc.enhancement.plugin;
+package com.tencent.cloud.tsf.adapter.config;
 
-import org.springframework.cloud.client.ServiceInstance;
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.factory.config.ConfigurationImpl;
 
-/**
- * Plugin runner.
- *
- * @author Derek Yi 2022-08-16
- */
-public interface EnhancedPluginRunner {
+public class PolarisFlowConfigModifier implements PolarisConfigModifier {
 
-	/**
-	 * run the plugin.
-	 *
-	 * @param pluginType type of plugin
-	 * @param context context in enhanced feign client.
-	 */
-	void run(EnhancedPluginType pluginType, EnhancedPluginContext context);
+	@Override
+	public void modify(ConfigurationImpl configuration) {
 
-	ServiceInstance getLocalServiceInstance();
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
+	}
 
 }

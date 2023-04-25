@@ -35,7 +35,12 @@ public class EnhancedPluginContext {
 
 	private long delay;
 
-	private ServiceInstance serviceInstance;
+	private ServiceInstance localServiceInstance;
+
+	/**
+	 * targetServiceInstance only exist in a client runner type.
+	 */
+	private ServiceInstance targetServiceInstance;
 
 	public EnhancedRequestContext getRequest() {
 		return request;
@@ -69,12 +74,20 @@ public class EnhancedPluginContext {
 		this.delay = delay;
 	}
 
-	public ServiceInstance getServiceInstance() {
-		return serviceInstance;
+	public ServiceInstance getLocalServiceInstance() {
+		return localServiceInstance;
 	}
 
-	public void setServiceInstance(ServiceInstance serviceInstance) {
-		this.serviceInstance = serviceInstance;
+	public void setLocalServiceInstance(ServiceInstance localServiceInstance) {
+		this.localServiceInstance = localServiceInstance;
+	}
+
+	public ServiceInstance getTargetServiceInstance() {
+		return targetServiceInstance;
+	}
+
+	public void setTargetServiceInstance(ServiceInstance targetServiceInstance) {
+		this.targetServiceInstance = targetServiceInstance;
 	}
 
 	@Override
@@ -84,7 +97,9 @@ public class EnhancedPluginContext {
 				", response=" + response +
 				", throwable=" + throwable +
 				", delay=" + delay +
-				", serviceInstance=" + serviceInstance +
+				", localServiceInstance=" + localServiceInstance +
+				", targetServiceInstance=" + targetServiceInstance +
 				'}';
 	}
+
 }

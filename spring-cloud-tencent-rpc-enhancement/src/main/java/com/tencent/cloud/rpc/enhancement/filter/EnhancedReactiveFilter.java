@@ -15,8 +15,9 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.scg;
+package com.tencent.cloud.rpc.enhancement.filter;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -24,31 +25,26 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import reactor.core.publisher.Mono;
 
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.Response;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.web.server.ServerWebExchange;
-
-import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 
 /**
- * EnhancedGatewayGlobalFilter.
+ * EnhancedReactiveFilter.
  *
  * @author sean yu
  */
-public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
+public class EnhancedReactiveFilter implements WebFilter, Ordered {
 
 	private final EnhancedPluginRunner pluginRunner;
 
-	public EnhancedGatewayGlobalFilter(EnhancedPluginRunner pluginRunner) {
+	public EnhancedReactiveFilter(EnhancedPluginRunner pluginRunner) {
 		this.pluginRunner = pluginRunner;
 	}
 
 	@Override
-	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
@@ -58,20 +54,14 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
-		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
-		Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
-		if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
-			ServiceInstance instance = serviceInstanceResponse.getServer();
-			enhancedPluginContext.setTargetServiceInstance(instance);
-		}
-
 		// Run pre enhanced plugins.
-		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+		pluginRunner.run(EnhancedPluginType.Server.PRE, enhancedPluginContext);
 
-		long startTime = System.currentTimeMillis();
+		long startMillis = System.currentTimeMillis();
 		return chain.filter(exchange)
 				.doOnSuccess(v -> {
-					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
+					enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
+
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
 							.httpStatus(exchange.getResponse().getRawStatusCode())
 							.httpHeaders(exchange.getResponse().getHeaders())
@@ -79,23 +69,23 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 					enhancedPluginContext.setResponse(enhancedResponseContext);
 
 					// Run post enhanced plugins.
-					pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+					pluginRunner.run(EnhancedPluginType.Server.POST, enhancedPluginContext);
 				})
-				.doOnError(t -> {
-					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
-					enhancedPluginContext.setThrowable(t);
-
+				.doOnError(e -> {
+					enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
+					enhancedPluginContext.setThrowable(e);
 					// Run exception enhanced plugins.
-					pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
+					pluginRunner.run(EnhancedPluginType.Server.EXCEPTION, enhancedPluginContext);
 				})
 				.doFinally(v -> {
 					// Run finally enhanced plugins.
-					pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+					pluginRunner.run(EnhancedPluginType.Server.FINALLY, enhancedPluginContext);
 				});
 	}
 
 	@Override
 	public int getOrder() {
-		return LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
+		return MetadataConstant.OrderConstant.WEB_FILTER_ORDER + 1;
 	}
+
 }
