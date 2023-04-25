@@ -27,6 +27,8 @@ import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
+import com.tencent.polaris.assembly.api.AssemblyAPI;
+import com.tencent.polaris.assembly.factory.AssemblyAPIFactory;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.factory.api.RouterAPIFactory;
@@ -71,6 +73,11 @@ public class PolarisContextAutoConfiguration {
 	@Bean
 	public RouterAPI polarisRouter(SDKContext polarisContext) throws PolarisException {
 		return RouterAPIFactory.createRouterAPIByContext(polarisContext);
+	}
+
+	@Bean
+	public AssemblyAPI assemblyAPI(SDKContext polarisContext) throws PolarisException {
+		return AssemblyAPIFactory.createAssemblyAPIByContext(polarisContext);
 	}
 
 	@Bean
