@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.rpc.enhancement.plugin;
 
+import org.springframework.cloud.client.ServiceInstance;
+
 /**
  * Plugin runner.
  *
@@ -32,4 +34,7 @@ public interface EnhancedPluginRunner {
 	 * @param context context in enhanced feign client.
 	 */
 	void run(EnhancedPluginType pluginType, EnhancedPluginContext context);
+
+	ServiceInstance getLocalServiceInstance();
+
 }

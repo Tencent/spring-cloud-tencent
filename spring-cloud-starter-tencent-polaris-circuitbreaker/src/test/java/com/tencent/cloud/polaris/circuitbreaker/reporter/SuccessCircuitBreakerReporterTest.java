@@ -94,7 +94,7 @@ public class SuccessCircuitBreakerReporterTest {
 
 	@Test
 	public void testType() {
-		assertThat(successCircuitBreakerReporter.getType()).isEqualTo(EnhancedPluginType.POST);
+		assertThat(successCircuitBreakerReporter.getType()).isEqualTo(EnhancedPluginType.Client.POST);
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class SuccessCircuitBreakerReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance);
 
 		successCircuitBreakerReporter.run(pluginContext);
 		successCircuitBreakerReporter.getOrder();

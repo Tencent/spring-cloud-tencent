@@ -111,24 +111,24 @@ public class EnhancedPluginContextTest {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 		enhancedPluginContext.setRequest(requestContext);
 		enhancedPluginContext.setResponse(responseContext);
-		enhancedPluginContext.setServiceInstance(new DefaultServiceInstance());
+		enhancedPluginContext.setTargetServiceInstance(new DefaultServiceInstance());
 		enhancedPluginContext.setThrowable(mock(Exception.class));
 		enhancedPluginContext.setDelay(0);
 		assertThat(enhancedPluginContext.getRequest()).isNotNull();
 		assertThat(enhancedPluginContext.getResponse()).isNotNull();
-		assertThat(enhancedPluginContext.getServiceInstance()).isNotNull();
+		assertThat(enhancedPluginContext.getTargetServiceInstance()).isNotNull();
 		assertThat(enhancedPluginContext.getThrowable()).isNotNull();
 		assertThat(enhancedPluginContext.getDelay()).isNotNull();
 
-		EnhancedPlugin enhancedPlugin = new SuccessPolarisReporter(reporterProperties, sdkContext, consumerAPI);
-		EnhancedPlugin enhancedPlugin1 = new ExceptionPolarisReporter(reporterProperties, sdkContext, consumerAPI);
-		EnhancedPluginRunner enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin, enhancedPlugin1));
-		enhancedPluginRunner.run(EnhancedPluginType.POST, enhancedPluginContext);
+		EnhancedPlugin enhancedPlugin = new SuccessPolarisReporter(reporterProperties, consumerAPI);
+		EnhancedPlugin enhancedPlugin1 = new ExceptionPolarisReporter(reporterProperties, consumerAPI);
+		EnhancedPluginRunner enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin, enhancedPlugin1), null, sdkContext);
+		enhancedPluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 
 		EnhancedPlugin enhancedPlugin2 = mock(EnhancedPlugin.class);
 		doThrow(new RuntimeException()).when(enhancedPlugin2).run(any());
-		doReturn(EnhancedPluginType.POST).when(enhancedPlugin2).getType();
-		enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin2));
-		enhancedPluginRunner.run(EnhancedPluginType.POST, enhancedPluginContext);
+		doReturn(EnhancedPluginType.Client.POST).when(enhancedPlugin2).getType();
+		enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin2), null, sdkContext);
+		enhancedPluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 	}
 }

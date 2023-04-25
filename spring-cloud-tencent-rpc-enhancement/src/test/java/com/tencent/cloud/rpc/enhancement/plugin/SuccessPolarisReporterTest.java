@@ -93,7 +93,7 @@ public class SuccessPolarisReporterTest {
 
 	@Test
 	public void testType() {
-		assertThat(successPolarisReporter.getType()).isEqualTo(EnhancedPluginType.POST);
+		assertThat(successPolarisReporter.getType()).isEqualTo(EnhancedPluginType.Client.POST);
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class SuccessPolarisReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance);
 
 		successPolarisReporter.run(pluginContext);
 		successPolarisReporter.getOrder();

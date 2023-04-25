@@ -19,15 +19,14 @@ package com.tencent.cloud.polaris.circuitbreaker.reporter;
 
 import java.util.Optional;
 
-import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.cloud.rpc.enhancement.plugin.PolarisEnhancedPluginUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
-import com.tencent.polaris.client.api.SDKContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +34,17 @@ import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.core.Ordered;
 
-public class ExceptionCircuitBreakerReporter extends AbstractPolarisReporterAdapter implements EnhancedPlugin {
+public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExceptionCircuitBreakerReporter.class);
 
 	private final CircuitBreakAPI circuitBreakAPI;
 
+	private final RpcEnhancementReporterProperties reportProperties;
+
 	public ExceptionCircuitBreakerReporter(RpcEnhancementReporterProperties reportProperties,
-			SDKContext context,
 			CircuitBreakAPI circuitBreakAPI) {
-		super(reportProperties, context);
+		this.reportProperties = reportProperties;
 		this.circuitBreakAPI = circuitBreakAPI;
 	}
 
@@ -55,19 +55,19 @@ public class ExceptionCircuitBreakerReporter extends AbstractPolarisReporterAdap
 
 	@Override
 	public EnhancedPluginType getType() {
-		return EnhancedPluginType.EXCEPTION;
+		return EnhancedPluginType.Client.EXCEPTION;
 	}
 
 	@Override
 	public void run(EnhancedPluginContext context) throws Throwable {
-		if (!super.reportProperties.isEnabled()) {
+		if (!this.reportProperties.isEnabled()) {
 			return;
 		}
 
 		EnhancedRequestContext request = context.getRequest();
-		ServiceInstance serviceInstance = Optional.ofNullable(context.getServiceInstance()).orElse(new DefaultServiceInstance());
+		ServiceInstance serviceInstance = Optional.ofNullable(context.getTargetServiceInstance()).orElse(new DefaultServiceInstance());
 
-		ResourceStat resourceStat = createInstanceResourceStat(
+		ResourceStat resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat(
 				serviceInstance.getServiceId(),
 				serviceInstance.getHost(),
 				serviceInstance.getPort(),

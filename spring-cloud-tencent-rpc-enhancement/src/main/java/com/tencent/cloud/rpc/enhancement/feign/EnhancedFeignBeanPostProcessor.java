@@ -27,6 +27,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
+import org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequestTransformer;
 import org.springframework.cloud.openfeign.loadbalancer.RetryableFeignBlockingLoadBalancerClient;
 
 /**
@@ -63,7 +64,9 @@ public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFa
 				if (delegate != null) {
 					return new EnhancedFeignBlockingLoadBalancerClient(createPolarisFeignClient(delegate),
 							factory.getBean(BlockingLoadBalancerClient.class),
-							factory.getBean(LoadBalancerClientFactory.class));
+							factory.getBean(LoadBalancerClientFactory.class),
+							factory.getBeanProvider(LoadBalancerFeignRequestTransformer.class).stream().toList()
+					);
 				}
 			}
 			return createPolarisFeignClient((Client) bean);

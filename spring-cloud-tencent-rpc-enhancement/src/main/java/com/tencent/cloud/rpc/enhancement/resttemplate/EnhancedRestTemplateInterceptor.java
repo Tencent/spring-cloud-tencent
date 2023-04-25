@@ -18,25 +18,21 @@
 package com.tencent.cloud.rpc.enhancement.resttemplate;
 
 import java.io.IOException;
-import java.util.Map;
 
-import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.EXCEPTION;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.FINALLY;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.POST;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.PRE;
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 
 /**
  * EnhancedRestTemplateInterceptor.
@@ -63,8 +59,13 @@ public class EnhancedRestTemplateInterceptor implements ClientHttpRequestInterce
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
+		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
+		enhancedPluginContext.setTargetServiceInstance(
+				(ServiceInstance) MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE));
+
 		// Run pre enhanced plugins.
-		pluginRunner.run(PRE, enhancedPluginContext);
+		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+
 		long startMillis = System.currentTimeMillis();
 		try {
 			ClientHttpResponse response = execution.execute(request, body);
@@ -76,29 +77,20 @@ public class EnhancedRestTemplateInterceptor implements ClientHttpRequestInterce
 					.build();
 			enhancedPluginContext.setResponse(enhancedResponseContext);
 
-			Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
-			DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-			serviceInstance.setServiceId(request.getURI().getHost());
-			serviceInstance.setHost(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST));
-			if (loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT) != null) {
-				serviceInstance.setPort(Integer.parseInt(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT)));
-			}
-			enhancedPluginContext.setServiceInstance(serviceInstance);
-
 			// Run post enhanced plugins.
-			pluginRunner.run(POST, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 			return response;
 		}
 		catch (IOException e) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 			enhancedPluginContext.setThrowable(e);
 			// Run exception enhanced plugins.
-			pluginRunner.run(EXCEPTION, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
 			throw e;
 		}
 		finally {
 			// Run finally enhanced plugins.
-			pluginRunner.run(FINALLY, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 		}
 	}
 

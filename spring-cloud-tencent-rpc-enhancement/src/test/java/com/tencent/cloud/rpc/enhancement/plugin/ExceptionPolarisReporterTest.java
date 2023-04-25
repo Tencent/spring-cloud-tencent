@@ -95,7 +95,7 @@ public class ExceptionPolarisReporterTest {
 
 	@Test
 	public void testType() {
-		assertThat(exceptionPolarisReporter.getType()).isEqualTo(EnhancedPluginType.EXCEPTION);
+		assertThat(exceptionPolarisReporter.getType()).isEqualTo(EnhancedPluginType.Client.EXCEPTION);
 	}
 
 	@Test
@@ -132,7 +132,7 @@ public class ExceptionPolarisReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance);
 		pluginContext.setThrowable(new RuntimeException());
 
 		exceptionPolarisReporter.run(pluginContext);

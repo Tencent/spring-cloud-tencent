@@ -20,15 +20,14 @@ package com.tencent.cloud.rpc.enhancement.plugin.reporter;
 
 import java.util.Optional;
 
-import com.tencent.cloud.rpc.enhancement.AbstractPolarisReporterAdapter;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.cloud.rpc.enhancement.plugin.PolarisEnhancedPluginUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
-import com.tencent.polaris.client.api.SDKContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,16 +40,17 @@ import org.springframework.core.Ordered;
  *
  * @author Haotian Zhang
  */
-public class ExceptionPolarisReporter extends AbstractPolarisReporterAdapter implements EnhancedPlugin {
+public class ExceptionPolarisReporter implements EnhancedPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExceptionPolarisReporter.class);
 
 	private final ConsumerAPI consumerAPI;
 
-	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reporterProperties,
-			SDKContext context,
+	private final RpcEnhancementReporterProperties reportProperties;
+
+	public ExceptionPolarisReporter(RpcEnhancementReporterProperties reportProperties,
 			ConsumerAPI consumerAPI) {
-		super(reporterProperties, context);
+		this.reportProperties = reportProperties;
 		this.consumerAPI = consumerAPI;
 	}
 
@@ -61,22 +61,24 @@ public class ExceptionPolarisReporter extends AbstractPolarisReporterAdapter imp
 
 	@Override
 	public EnhancedPluginType getType() {
-		return EnhancedPluginType.EXCEPTION;
+		return EnhancedPluginType.Client.EXCEPTION;
 	}
 
 	@Override
 	public void run(EnhancedPluginContext context) {
-		if (!super.reportProperties.isEnabled()) {
+		if (!this.reportProperties.isEnabled()) {
 			return;
 		}
 
 		EnhancedRequestContext request = context.getRequest();
-		ServiceInstance serviceInstance = Optional.ofNullable(context.getServiceInstance()).orElse(new DefaultServiceInstance());
+		ServiceInstance callerServiceInstance = Optional.ofNullable(context.getLocalServiceInstance()).orElse(new DefaultServiceInstance());
+		ServiceInstance calleeServiceInstance = Optional.ofNullable(context.getTargetServiceInstance()).orElse(new DefaultServiceInstance());
 
-		ServiceCallResult resultRequest = createServiceCallResult(
-				serviceInstance.getServiceId(),
-				serviceInstance.getHost(),
-				serviceInstance.getPort(),
+		ServiceCallResult resultRequest = PolarisEnhancedPluginUtils.createServiceCallResult(
+				callerServiceInstance.getHost(),
+				calleeServiceInstance.getServiceId(),
+				calleeServiceInstance.getHost(),
+				calleeServiceInstance.getPort(),
 				request.getUrl(),
 				request.getHttpHeaders(),
 				null,
