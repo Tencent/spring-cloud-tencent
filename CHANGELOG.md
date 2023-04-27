@@ -15,4 +15,5 @@
 - [fix:fix instance circuit breaker not working bug.](https://github.com/Tencent/spring-cloud-tencent/commit/ca65902a7d65bc5e4e2ccbd68b6f7cb22a346fa9)
 - [feature: optimize polaris-discovery-example/discovery-callee-service, add client-ip return.](https://github.com/Tencent/spring-cloud-tencent/commit/d2d66dccbef4b9b858885ae365e8f90e0e5555af)
 - [docs:prevent the release of the final version of the sdk.](https://github.com/Tencent/spring-cloud-tencent/commit/be4dc8063bf8feb45d1430de979e9a85339b53c8)
-- [feature: add config for customized local port.]()
+- [feature: add config for customized local port.](https://github.com/Tencent/spring-cloud-tencent/commit/099508ea04687094e7ede8e5bb39eccc43287e5a)
+- [feat:support webclient and gateway report call metrics]()

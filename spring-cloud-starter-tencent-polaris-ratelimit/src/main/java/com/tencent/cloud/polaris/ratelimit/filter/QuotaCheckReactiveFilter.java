@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
@@ -32,6 +33,7 @@ import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentReactiv
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.cloud.polaris.ratelimit.utils.RateLimitUtils;
+import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.Argument;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
@@ -70,9 +72,9 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 	private String rejectTips;
 
 	public QuotaCheckReactiveFilter(LimitAPI limitAPI,
-			PolarisRateLimitProperties polarisRateLimitProperties,
-			RateLimitRuleArgumentReactiveResolver rateLimitRuleArgumentResolver,
-			@Nullable PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
+									PolarisRateLimitProperties polarisRateLimitProperties,
+									RateLimitRuleArgumentReactiveResolver rateLimitRuleArgumentResolver,
+									@Nullable PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
 		this.limitAPI = limitAPI;
 		this.polarisRateLimitProperties = polarisRateLimitProperties;
 		this.rateLimitRuleArgumentResolver = rateLimitRuleArgumentResolver;
@@ -108,14 +110,17 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 					response.setRawStatusCode(polarisRateLimiterLimitedFallback.rejectHttpCode());
 					response.getHeaders().setContentType(polarisRateLimiterLimitedFallback.mediaType());
 					dataBuffer = response.bufferFactory().allocateBuffer()
-							.write(polarisRateLimiterLimitedFallback.rejectTips()
-									.getBytes(polarisRateLimiterLimitedFallback.charset()));
+							.write(polarisRateLimiterLimitedFallback.rejectTips().getBytes(polarisRateLimiterLimitedFallback.charset()));
 				}
 				else {
 					response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
 					response.getHeaders().setContentType(MediaType.TEXT_HTML);
 					dataBuffer = response.bufferFactory().allocateBuffer()
 							.write(rejectTips.getBytes(StandardCharsets.UTF_8));
+				}
+				response.getHeaders().add(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
+				if (Objects.nonNull(quotaResponse.getActiveRule())) {
+					response.getHeaders().add(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, quotaResponse.getActiveRule().getName().getValue());
 				}
 				return response.writeWith(Mono.just(dataBuffer));
 			}

@@ -115,8 +115,7 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				}
 				response.addHeader(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
 				if (Objects.nonNull(quotaResponse.getActiveRule())) {
-					response.addHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, quotaResponse.getActiveRule().getName()
-							.getValue());
+					response.addHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, quotaResponse.getActiveRule().getName().getValue());
 				}
 				return;
 			}

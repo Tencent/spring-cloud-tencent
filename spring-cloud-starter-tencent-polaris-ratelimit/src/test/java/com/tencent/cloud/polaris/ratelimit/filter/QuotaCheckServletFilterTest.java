@@ -69,8 +69,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = QuotaCheckServletFilterTest.TestApplication.class,
 		properties = {
-				"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"
-		})
+		"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"
+})
 public class QuotaCheckServletFilterTest {
 
 	private final PolarisRateLimiterLabelServletResolver labelResolver =
@@ -113,11 +113,9 @@ public class QuotaCheckServletFilterTest {
 
 		ServiceRuleManager serviceRuleManager = mock(ServiceRuleManager.class);
 
-		RateLimitProto.Rule.Builder ratelimitRuleBuilder = RateLimitProto.Rule.newBuilder();
-		InputStream inputStream = QuotaCheckServletFilterTest.class.getClassLoader()
-				.getResourceAsStream("ratelimit.json");
-		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
-				.collect(Collectors.joining(""));
+		RateLimitProto.Rule.Builder ratelimitRuleBuilder =  RateLimitProto.Rule.newBuilder();
+		InputStream inputStream = QuotaCheckServletFilterTest.class.getClassLoader().getResourceAsStream("ratelimit.json");
+		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
 		JsonFormat.parser().ignoringUnknownFields().merge(json, ratelimitRuleBuilder);
 		RateLimitProto.Rule rateLimitRule = ratelimitRuleBuilder.build();
 		RateLimitProto.RateLimit rateLimit = RateLimitProto.RateLimit.newBuilder().addRules(rateLimitRule).build();
