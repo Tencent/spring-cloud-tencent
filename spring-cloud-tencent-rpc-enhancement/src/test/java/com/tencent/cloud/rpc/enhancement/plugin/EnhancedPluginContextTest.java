@@ -25,6 +25,9 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
+import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.config.global.APIConfig;
+import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
@@ -38,6 +41,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.client.serviceregistry.Registration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
@@ -65,6 +70,8 @@ public class EnhancedPluginContextTest {
 	private SDKContext sdkContext;
 	@Mock
 	private ConsumerAPI consumerAPI;
+	@Mock
+	private Registration registration;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -122,12 +129,26 @@ public class EnhancedPluginContextTest {
 
 		EnhancedPlugin enhancedPlugin = new SuccessPolarisReporter(reporterProperties, consumerAPI);
 		EnhancedPlugin enhancedPlugin1 = new ExceptionPolarisReporter(reporterProperties, consumerAPI);
-		EnhancedPluginRunner enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin, enhancedPlugin1), null, sdkContext);
+		EnhancedPluginRunner enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin, enhancedPlugin1), registration, sdkContext);
 		enhancedPluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+
+		assertThat(enhancedPluginRunner.getLocalServiceInstance()).isEqualTo(registration);
 
 		EnhancedPlugin enhancedPlugin2 = mock(EnhancedPlugin.class);
 		doThrow(new RuntimeException()).when(enhancedPlugin2).run(any());
 		doReturn(EnhancedPluginType.Client.POST).when(enhancedPlugin2).getType();
+
+		APIConfig apiConfig = mock(APIConfig.class);
+		doReturn("0.0.0.0").when(apiConfig).getBindIP();
+
+		GlobalConfig globalConfig = mock(GlobalConfig.class);
+		doReturn(apiConfig).when(globalConfig).getAPI();
+
+		Configuration configuration = mock(Configuration.class);
+		doReturn(globalConfig).when(configuration).getGlobal();
+
+		doReturn(configuration).when(sdkContext).getConfig();
+
 		enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin2), null, sdkContext);
 		enhancedPluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 	}

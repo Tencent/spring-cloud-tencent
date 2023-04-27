@@ -18,8 +18,15 @@
 package com.tencent.cloud.rpc.enhancement.plugin.assembly;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import com.google.common.net.HttpHeaders;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.RequestContext;
@@ -39,10 +46,25 @@ public class AssemblyRequestContext implements RequestContext {
 
 	private final String callerIp;
 
+	private final Map<String, String> cookies;
+
 	public AssemblyRequestContext(EnhancedRequestContext requestContext, ServiceKey callerService, String callerIp) {
 		this.requestContext = requestContext;
 		this.callerService = callerService;
 		this.callerIp = callerIp;
+		this.cookies = new HashMap<>();
+		List<String> allCookies =
+				Optional.ofNullable(requestContext.getHttpHeaders().get(HttpHeaders.COOKIE))
+						.orElse(new ArrayList<>())
+						.stream()
+						.flatMap(it -> Arrays.stream(it.split(";")))
+						.toList();
+		allCookies.forEach(cookie -> {
+			String[] cookieKV = cookie.split("=");
+			if (cookieKV.length == 2) {
+				cookies.put(cookieKV[0], cookieKV[1]);
+			}
+		});
 	}
 
 	@Override
@@ -72,17 +94,17 @@ public class AssemblyRequestContext implements RequestContext {
 
 	@Override
 	public String getCookie(String key) {
-		return null;
+		return this.cookies.get(key);
 	}
 
 	@Override
 	public void setCookie(String key, String value) {
-
+		this.cookies.put(key, value);
 	}
 
 	@Override
 	public Collection<String> listCookieKeys() {
-		return null;
+		return this.cookies.keySet();
 	}
 
 	@Override

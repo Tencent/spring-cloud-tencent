@@ -50,7 +50,7 @@ public class AssemblyClientExceptionHook implements EnhancedPlugin {
 	}
 
 	@Override
-	public void run(EnhancedPluginContext context) throws Throwable {
+	public void run(EnhancedPluginContext context) {
 		AfterRequest afterRequest = new AfterRequest();
 		afterRequest.setTargetService(new ServiceKey(MetadataContext.LOCAL_NAMESPACE, context.getTargetServiceInstance().getServiceId()));
 		RequestContext requestContext = new AssemblyRequestContext(
@@ -59,9 +59,8 @@ public class AssemblyClientExceptionHook implements EnhancedPlugin {
 				context.getLocalServiceInstance().getHost()
 		);
 		afterRequest.setRequestContext(requestContext);
-		AssemblyResponseContext responseContext = new AssemblyResponseContext();
-		responseContext.setThrowable(context.getThrowable());
-		responseContext.setRetStatus(PolarisEnhancedPluginUtils.getRetStatusFromRequest(null, null, context.getThrowable()));
+
+		AssemblyResponseContext responseContext = new AssemblyResponseContext(null, context.getThrowable());
 		afterRequest.setResponseContext(responseContext);
 
 		assemblyAPI.afterCallService(afterRequest);

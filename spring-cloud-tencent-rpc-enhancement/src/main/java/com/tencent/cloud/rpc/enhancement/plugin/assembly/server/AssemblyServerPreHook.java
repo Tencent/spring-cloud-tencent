@@ -48,7 +48,7 @@ public class AssemblyServerPreHook implements EnhancedPlugin {
 	}
 
 	@Override
-	public void run(EnhancedPluginContext context) throws Throwable {
+	public void run(EnhancedPluginContext context) {
 		BeforeRequest beforeRequest = new BeforeRequest();
 		RequestContext requestContext = new AssemblyRequestContext(
 				context.getRequest(),

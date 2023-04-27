@@ -20,6 +20,7 @@ package com.tencent.cloud.rpc.enhancement.plugin;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
@@ -43,6 +44,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -71,6 +73,12 @@ public class PolarisEnhancedPluginUtilsTest {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		RpcEnhancementReporterProperties reporterProperties = mock(RpcEnhancementReporterProperties.class);
+		doReturn(reporterProperties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 	}
 
 	@AfterAll
@@ -86,16 +94,6 @@ public class PolarisEnhancedPluginUtilsTest {
 
 	@Test
 	public void testServiceCallResult() throws URISyntaxException {
-		APIConfig apiConfig = mock(APIConfig.class);
-		doReturn("0.0.0.0").when(apiConfig).getBindIP();
-
-		GlobalConfig globalConfig = mock(GlobalConfig.class);
-		doReturn(apiConfig).when(globalConfig).getAPI();
-
-		Configuration configuration = mock(Configuration.class);
-		doReturn(globalConfig).when(configuration).getGlobal();
-
-		doReturn(configuration).when(sdkContext).getConfig();
 
 		ServiceCallResult serviceCallResult;
 
@@ -201,9 +199,30 @@ public class PolarisEnhancedPluginUtilsTest {
 	public void testApplyWithDefaultConfig() {
 		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
 
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 		// Assert
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
+	}
+
+	@Test
+	public void testApplyWithHttpStatus() {
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
+		properties.setStatuses(Arrays.asList(HttpStatus.BAD_GATEWAY, HttpStatus.INTERNAL_SERVER_ERROR));
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
+		// Assert
+		assertThat(PolarisEnhancedPluginUtils.apply(null)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(true);
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
 	}
 
@@ -213,6 +232,12 @@ public class PolarisEnhancedPluginUtilsTest {
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.setIgnoreInternalServerError(false);
+
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 
 		// Assert
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
@@ -227,6 +252,12 @@ public class PolarisEnhancedPluginUtilsTest {
 		properties.getStatuses().clear();
 		properties.setIgnoreInternalServerError(true);
 
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
+
 		// Assert
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
@@ -239,6 +270,12 @@ public class PolarisEnhancedPluginUtilsTest {
 		// Mock Condition
 		properties.getStatuses().clear();
 		properties.getSeries().clear();
+
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 
 		// Assert
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
@@ -254,6 +291,12 @@ public class PolarisEnhancedPluginUtilsTest {
 		properties.getSeries().clear();
 		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
 
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
+
 		// Assert
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
 		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
@@ -264,11 +307,6 @@ public class PolarisEnhancedPluginUtilsTest {
 
 	@Test
 	public void testGetRetStatusFromRequest() {
-		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
-		// Mock Condition
-		properties.getStatuses().clear();
-		properties.getSeries().clear();
-		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
 
 		HttpHeaders headers = new HttpHeaders();
 		RetStatus ret = PolarisEnhancedPluginUtils.getRetStatusFromRequest(headers, RetStatus.RetFail);
@@ -285,11 +323,6 @@ public class PolarisEnhancedPluginUtilsTest {
 
 	@Test
 	public void testGetActiveRuleNameFromRequest() {
-		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
-		// Mock Condition
-		properties.getStatuses().clear();
-		properties.getSeries().clear();
-		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
 
 		HttpHeaders headers = new HttpHeaders();
 		String ruleName = PolarisEnhancedPluginUtils.getActiveRuleNameFromRequest(headers);

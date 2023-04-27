@@ -1,20 +1,3 @@
-/*
- * Tencent is pleased to support the open source community by making Spring Cloud Tencent available.
- *
- * Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
- *
- * Licensed under the BSD 3-Clause License (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://opensource.org/licenses/BSD-3-Clause
- *
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- */
-
 package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.net.URI;
@@ -22,8 +5,8 @@ import java.net.URI;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
-import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerPostHook;
+import com.tencent.polaris.assembly.api.AssemblyAPI;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -45,23 +29,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-/**
- * Test for {@link SuccessPolarisReporter}.
- *
- * @author Haotian Zhang
- */
 @ExtendWith(MockitoExtension.class)
-public class SuccessPolarisReporterTest {
+public class AssemblyServerPostHookTest {
+
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	@Mock
-	private RpcEnhancementReporterProperties reporterProperties;
 	@InjectMocks
-	private SuccessPolarisReporter successPolarisReporter;
+	private AssemblyServerPostHook assemblyServerPostHook;
 	@Mock
-	private ConsumerAPI consumerAPI;
+	private AssemblyAPI assemblyAPI;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -89,45 +65,44 @@ public class SuccessPolarisReporterTest {
 
 	@Test
 	public void testGetName() {
-		assertThat(successPolarisReporter.getName()).isEqualTo(SuccessPolarisReporter.class.getName());
+		assertThat(assemblyServerPostHook.getName()).isEqualTo(AssemblyServerPostHook.class.getName());
 	}
 
 	@Test
 	public void testType() {
-		assertThat(successPolarisReporter.getType()).isEqualTo(EnhancedPluginType.Client.POST);
+		assertThat(assemblyServerPostHook.getType()).isEqualTo(EnhancedPluginType.Server.POST);
 	}
 
 	@Test
 	public void testRun() {
-
-		EnhancedPluginContext context = mock(EnhancedPluginContext.class);
-		// test not report
-		successPolarisReporter.run(context);
-		verify(context, times(0)).getRequest();
-
-		doReturn(true).when(reporterProperties).isEnabled();
-
 		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
 		EnhancedRequestContext request = EnhancedRequestContext.builder()
 				.httpMethod(HttpMethod.GET)
 				.url(URI.create("http://0.0.0.0/"))
+				.httpHeaders(new HttpHeaders())
 				.build();
 		request.toString();
 		EnhancedResponseContext response = EnhancedResponseContext.builder()
 				.httpStatus(200)
 				.build();
 		response.toString();
-		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-		serviceInstance.setServiceId(SERVICE_PROVIDER);
+
+		DefaultServiceInstance targetServiceInstance = new DefaultServiceInstance();
+		targetServiceInstance.setServiceId(SERVICE_PROVIDER);
+
+		DefaultServiceInstance localServiceInstance = new DefaultServiceInstance();
+		localServiceInstance.setServiceId(SERVICE_PROVIDER);
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setTargetServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(targetServiceInstance);
+		pluginContext.setLocalServiceInstance(localServiceInstance);
+		pluginContext.setThrowable(new RuntimeException());
 
-		successPolarisReporter.run(pluginContext);
-		successPolarisReporter.getOrder();
-		successPolarisReporter.getName();
-		successPolarisReporter.getType();
+		assemblyServerPostHook.run(pluginContext);
+		assemblyServerPostHook.getOrder();
+		assemblyServerPostHook.getName();
+		assemblyServerPostHook.getType();
 	}
 
 	@Test
@@ -140,6 +115,7 @@ public class SuccessPolarisReporterTest {
 		EnhancedPluginContext context = new EnhancedPluginContext();
 		context.setRequest(request);
 		context.setResponse(response);
-		successPolarisReporter.handlerThrowable(context, new RuntimeException("Mock exception."));
+		assemblyServerPostHook.handlerThrowable(context, new RuntimeException("Mock exception."));
 	}
+
 }
