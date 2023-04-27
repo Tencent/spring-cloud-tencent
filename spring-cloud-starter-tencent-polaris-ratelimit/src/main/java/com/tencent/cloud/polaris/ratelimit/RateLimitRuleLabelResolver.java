@@ -34,8 +34,9 @@ import org.springframework.util.CollectionUtils;
 /**
  * resolve labels from rate limit rule.
  *
- * @author lepdou 2022-05-13
+ *@author lepdou 2022-05-13
  */
+@Deprecated
 public class RateLimitRuleLabelResolver {
 
 	private final ServiceRuleManager serviceRuleManager;

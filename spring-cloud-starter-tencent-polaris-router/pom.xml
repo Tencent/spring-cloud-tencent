@@ -73,10 +73,10 @@
 			<artifactId>spring-retry</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-netflix-zuul</artifactId>
+			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
 			<optional>true</optional>
 		</dependency>
 

@@ -136,24 +136,29 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 
 		// 2. filter by router
 		List<Server> serversAfterRouter;
-		if (key instanceof PolarisRouterContext) {
-			// router implement for Feign and scg
-			PolarisRouterContext routerContext = (PolarisRouterContext) key;
-			serversAfterRouter = doRouter(allServers, routerContext);
-		}
-		else if (key instanceof HttpRequest) {
-			// router implement for rest template
-			HttpRequest request = (HttpRequest) key;
+		if (key != null) {
+			if (key instanceof PolarisRouterContext) {
+				// router implement for Feign and scg
+				PolarisRouterContext routerContext = (PolarisRouterContext) key;
+				serversAfterRouter = doRouter(allServers, routerContext);
+			}
+			else if (key instanceof HttpRequest) {
+				// router implement for rest template
+				HttpRequest request = (HttpRequest) key;
 
-			String routerContextStr = request.getHeaders().getFirst(RouterConstant.HEADER_ROUTER_CONTEXT);
+				String routerContextStr = request.getHeaders().getFirst(RouterConstant.HEADER_ROUTER_CONTEXT);
 
-			if (StringUtils.isEmpty(routerContextStr)) {
-				serversAfterRouter = allServers;
+				if (StringUtils.isEmpty(routerContextStr)) {
+					serversAfterRouter = allServers;
+				}
+				else {
+					PolarisRouterContext routerContext = JacksonUtils.deserialize(UriEncoder.decode(routerContextStr),
+							PolarisRouterContext.class);
+					serversAfterRouter = doRouter(allServers, routerContext);
+				}
 			}
 			else {
-				PolarisRouterContext routerContext = JacksonUtils.deserialize(UriEncoder.decode(routerContextStr),
-						PolarisRouterContext.class);
-				serversAfterRouter = doRouter(allServers, routerContext);
+				serversAfterRouter = allServers;
 			}
 		}
 		else {

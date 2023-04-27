@@ -35,7 +35,7 @@ public class RpcEnhancementReporterProperties {
 	/**
 	 * Whether report call result to polaris.
 	 */
-	private boolean enabled;
+	private boolean enabled = true;
 
 	/**
 	 * Specify the Http status code(s) that needs to be reported as FAILED.

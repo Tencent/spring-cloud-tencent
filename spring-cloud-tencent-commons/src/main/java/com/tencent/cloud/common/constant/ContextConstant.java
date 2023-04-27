@@ -79,4 +79,29 @@ public final class ContextConstant {
 		 */
 		public static Integer STAT_REPORTER_ORDER = 1;
 	}
+
+	public static final class Zuul {
+
+		/**
+		 * polaris circuit breaker.
+		 */
+		public static final String POLARIS_CIRCUIT_BREAKER = "PolarisCircuitBreaker";
+
+		/**
+		 * timestamp before route.
+		 */
+		public static final String POLARIS_PRE_ROUTE_TIME = "PolarisPreRouteTime";
+		/**
+		 * is in routing state.
+		 */
+		public static final String POLARIS_IS_IN_ROUTING_STATE = "PolarisIsInRoutingState";
+
+		/**
+		 * polaris circuit breaker.
+		 */
+		public static final String ENHANCED_PLUGIN_CONTEXT = "EnhancedPluginContext";
+
+		private Zuul() {
+		}
+	}
 }

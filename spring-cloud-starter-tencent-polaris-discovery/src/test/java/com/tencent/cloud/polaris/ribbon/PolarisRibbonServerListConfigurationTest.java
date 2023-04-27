@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 
+import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +45,9 @@ public class PolarisRibbonServerListConfigurationTest {
 		this.applicationContextRunner
 				.withConfiguration(AutoConfigurations.of(
 						TestApplication.class, PolarisRibbonServerListConfiguration.class))
+				.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
+				.withPropertyValues("server.port=" + PORT)
+				.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 				.run(context -> {
 					assertThat(context).hasSingleBean(PolarisRibbonServerListConfiguration.class);
 					assertThat(context).hasSingleBean(ServerList.class);

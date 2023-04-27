@@ -1,0 +1,95 @@
+{
+  "id": "f7560cce829e4d4c8556a6be63539af5",
+  "service": "xxx",
+  "namespace": "default",
+  "subset": {},
+  "priority": 0,
+  "resource": "QPS",
+  "type": "GLOBAL",
+  "labels": {},
+  "amounts": [
+    {
+      "maxAmount": 1,
+      "validDuration": "1s",
+      "precision": null,
+      "startAmount": null,
+      "minAmount": null
+    }
+  ],
+  "action": "REJECT",
+  "disable": false,
+  "report": null,
+  "ctime": "2022-12-11 21:56:59",
+  "mtime": "2023-03-10 15:40:33",
+  "revision": "6eec6f416bee40ecbf664c93add61358",
+  "service_token": null,
+  "adjuster": null,
+  "regex_combine": true,
+  "amountMode": "GLOBAL_TOTAL",
+  "failover": "FAILOVER_LOCAL",
+  "cluster": null,
+  "method": {
+    "type": "EXACT",
+    "value": "/xxx",
+    "value_type": "TEXT"
+  },
+  "arguments": [
+    {
+      "type": "CALLER_SERVICE",
+      "key": "default",
+      "value": {
+        "type": "EXACT",
+        "value": "xxx",
+        "value_type": "TEXT"
+      }
+    },
+    {
+      "type": "HEADER",
+      "key": "xxx",
+      "value": {
+        "type": "EXACT",
+        "value": "xxx",
+        "value_type": "TEXT"
+      }
+    },
+    {
+      "type": "QUERY",
+      "key": "yyy",
+      "value": {
+        "type": "EXACT",
+        "value": "yyy",
+        "value_type": "TEXT"
+      }
+    },
+    {
+      "type": "METHOD",
+      "key": "$method",
+      "value": {
+        "type": "EXACT",
+        "value": "GET",
+        "value_type": "TEXT"
+      }
+    },
+    {
+      "type": "CALLER_IP",
+      "key": "$caller_ip",
+      "value": {
+        "type": "EXACT",
+        "value": "127.0.0.1",
+        "value_type": "TEXT"
+      }
+    },
+    {
+      "type": "CUSTOM",
+      "key": "xxx",
+      "value": {
+        "type": "EXACT",
+        "value": "xxx",
+        "value_type": "TEXT"
+      }
+    }
+  ],
+  "name": "xxx",
+  "etime": "2023-03-10 15:40:33",
+  "max_queue_delay": 30
+}

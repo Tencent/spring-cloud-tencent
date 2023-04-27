@@ -27,16 +27,9 @@ import org.springframework.core.Ordered;
 public final class MetadataConstant {
 
 	/**
-	 * Default Private Constructor.
-	 */
-	private MetadataConstant() {
-	}
-
-	/**
 	 * sct transitive header prefix.
 	 */
 	public static final String SCT_TRANSITIVE_HEADER_PREFIX = "X-SCT-Metadata-Transitive-";
-
 	/**
 	 * sct transitive header prefix length.
 	 */
@@ -46,11 +39,14 @@ public final class MetadataConstant {
 	 * polaris transitive header prefix.
 	 */
 	public static final String POLARIS_TRANSITIVE_HEADER_PREFIX = "X-Polaris-Metadata-Transitive-";
-
 	/**
 	 * polaris transitive header prefix length.
 	 */
 	public static final int POLARIS_TRANSITIVE_HEADER_PREFIX_LENGTH = POLARIS_TRANSITIVE_HEADER_PREFIX.length();
+
+	private MetadataConstant() {
+
+	}
 
 	/**
 	 * Order of filter, interceptor, ...
@@ -60,7 +56,7 @@ public final class MetadataConstant {
 		/**
 		 * Order of filter.
 		 */
-		public static final int WEB_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 13;
+		public static final int WEB_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 9;
 
 		/**
 		 * Order of MetadataFirstFeignInterceptor.
@@ -98,4 +94,19 @@ public final class MetadataConstant {
 		 */
 		public static final String METADATA_CONTEXT = "SCT-METADATA-CONTEXT";
 	}
+
+	public static class DefaultMetadata {
+
+		/**
+		 * Default Metadata Source Service Namespace Key.
+		 */
+		public static final String DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE = "source_service_namespace";
+
+		/**
+		 * Default Metadata Source Service Name Key.
+		 */
+		public static final String DEFAULT_METADATA_SOURCE_SERVICE_NAME = "source_service_name";
+
+	}
+
 }

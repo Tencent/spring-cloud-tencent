@@ -26,10 +26,12 @@ import java.util.stream.Collectors;
 
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientFilter;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MetadataTransferAutoConfigurationTest {
 
 	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
+	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
 
 	/**
 	 * No any web application.
@@ -85,6 +88,23 @@ public class MetadataTransferAutoConfigurationTest {
 						//EncodeTransferMetadataFeignInterceptor is not added repeatedly
 						assertThat(encodeTransferMedataFeignInterceptorList.size()).isEqualTo(1);
 					}
+				});
+	}
+
+	/**
+	 * Reactive web application.
+	 */
+	@Test
+	public void test3() {
+		this.reactiveWebApplicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataTransferAutoConfiguration.class))
+				.run(context -> {
+					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
+					assertThat(context).hasSingleBean(EncodeTransferMedataFeignInterceptor.class);
+					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
+					assertThat(context).hasSingleBean(EncodeTransferMedataRestTemplateInterceptor.class);
+					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
+					assertThat(context).hasSingleBean(GlobalFilter.class);
+					assertThat(context).hasSingleBean(EncodeTransferMedataWebClientFilter.class);
 				});
 	}
 

@@ -1,0 +1,23 @@
+server:
+  session-timeout: 1800
+  port: 48080
+spring:
+  application:
+    name: polaris-circuitbreaker-zuul-example
+  cloud:
+    polaris:
+      address: grpc://183.47.111.80:8091
+      namespace: default
+      circuitbreaker:
+        enabled: true
+zuul:
+  routes:
+    GatewayCalleeService:
+      serviceId: polaris-circuitbreaker-callee-service
+      path: /polaris-circuitbreaker-callee-service/**
+logging:
+  level:
+    root: info
+    com.tencent.polaris.discovery.client.flow.RegisterFlow: off
+    com.tencent.polaris.plugins.registry: off
+    com.tencent.cloud: debug

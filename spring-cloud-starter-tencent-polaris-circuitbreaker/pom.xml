@@ -15,8 +15,34 @@
 	<dependencies>
 		<!-- Spring Cloud Tencent dependencies start -->
 		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-gateway</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -60,11 +86,56 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>healthchecker-http</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>healthchecker-udp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>healthchecker-tcp</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-test-common</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-test-mock-discovery</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
