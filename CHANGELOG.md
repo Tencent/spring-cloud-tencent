@@ -13,4 +13,5 @@
 - [refactor:optimize sct-all.](https://github.com/Tencent/spring-cloud-tencent/commit/3859cd7eefcd93752d05113597656e584d97c38d)
 - [feature:add polaris circuit breaker support](https://github.com/Tencent/spring-cloud-tencent/commit/1dffb915afc79b5d48e325fa497e94f93546a573)
 - [fix:fix instance circuit breaker not working bug.](https://github.com/Tencent/spring-cloud-tencent/commit/ca65902a7d65bc5e4e2ccbd68b6f7cb22a346fa9)
-- [feature: optimize polaris-discovery-example/discovery-callee-service, add client-ip return.]()
+- [feature: optimize polaris-discovery-example/discovery-callee-service, add client-ip return.](https://github.com/Tencent/spring-cloud-tencent/commit/d2d66dccbef4b9b858885ae365e8f90e0e5555af)
+- [docs:prevent the release of the final version of the sdk.]()
