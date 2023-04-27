@@ -11,4 +11,5 @@
 - [refactor:refactor stat module.](https://github.com/Tencent/spring-cloud-tencent/commit/9408bfbb948446738c050b3b18d8ed3124da36c1)
 - [fix:fix NPE.](https://github.com/Tencent/spring-cloud-tencent/commit/17a9a8d75aef6ed39a0a1c7aa4b7d547f5d3d40e)
 - [refactor:optimize sct-all.](https://github.com/Tencent/spring-cloud-tencent/commit/3859cd7eefcd93752d05113597656e584d97c38d)
-- [feature:add polaris circuit breaker support]()
+- [feature:add polaris circuit breaker support](https://github.com/Tencent/spring-cloud-tencent/commit/1dffb915afc79b5d48e325fa497e94f93546a573)
+- [fix:fix instance circuit breaker not working bug.]()

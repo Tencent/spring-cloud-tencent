@@ -148,6 +148,7 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 		GetHealthyInstancesRequest request = new GetHealthyInstancesRequest();
 		request.setNamespace(namespace);
 		request.setService(serviceName);
+		request.setIncludeCircuitBreakInstances(false);
 		return consumerAPI.getHealthyInstances(request);
 	}
 }
