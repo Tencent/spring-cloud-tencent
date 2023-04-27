@@ -20,8 +20,11 @@ package com.tencent.cloud.rpc.enhancement.plugin.assembly;
 import java.util.Collection;
 
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.plugin.PolarisEnhancedPluginUtils;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ResponseContext;
+
+import org.springframework.lang.Nullable;
 
 /**
  * AssemblyResponseContext.
@@ -30,45 +33,50 @@ import com.tencent.polaris.api.rpc.ResponseContext;
  */
 public class AssemblyResponseContext implements ResponseContext {
 
-	private EnhancedResponseContext responseContext;
+	private final EnhancedResponseContext responseContext;
 
-	private Throwable throwable;
+	private final Throwable throwable;
 
-	private RetStatus retStatus;
+	private final RetStatus retStatus;
 
-	public AssemblyResponseContext() {
-	}
-
-	public AssemblyResponseContext(EnhancedResponseContext responseContext) {
+	public AssemblyResponseContext(@Nullable EnhancedResponseContext responseContext, @Nullable Throwable throwable) {
 		this.responseContext = responseContext;
+		this.throwable = throwable;
+		if (responseContext == null) {
+			this.retStatus = PolarisEnhancedPluginUtils.getRetStatusFromRequest(null, null, throwable);
+		}
+		else {
+			this.retStatus = PolarisEnhancedPluginUtils.getRetStatusFromRequest(responseContext.getHttpHeaders(), responseContext.getHttpStatus(), throwable);
+		}
 	}
 
 	@Override
 	public Object getRetCode() {
+		if (responseContext == null) {
+			return null;
+		}
 		return this.responseContext.getHttpStatus();
 	}
 
 	@Override
 	public String getHeader(String key) {
+		if (responseContext == null) {
+			return null;
+		}
 		return this.responseContext.getHttpHeaders().getFirst(key);
 	}
 
 	@Override
 	public Collection<String> listHeaders() {
+		if (responseContext == null) {
+			return null;
+		}
 		return this.responseContext.getHttpHeaders().keySet();
-	}
-
-	public void setThrowable(Throwable throwable) {
-		this.throwable = throwable;
 	}
 
 	@Override
 	public Throwable getThrowable() {
 		return this.throwable;
-	}
-
-	public void setRetStatus(RetStatus retStatus) {
-		this.retStatus = retStatus;
 	}
 
 	@Override

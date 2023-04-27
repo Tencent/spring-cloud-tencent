@@ -90,7 +90,7 @@ public class RpcEnhancementAutoConfiguration {
 	@Lazy
 	public EnhancedPluginRunner enhancedFeignPluginRunner(
 			@Autowired(required = false) List<EnhancedPlugin> enhancedPlugins,
-			@Autowired(required = false) @Lazy Registration registration,
+			@Autowired(required = false) Registration registration,
 			SDKContext sdkContext) {
 		return new DefaultEnhancedPluginRunner(enhancedPlugins, registration, sdkContext);
 	}
@@ -139,7 +139,7 @@ public class RpcEnhancementAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	protected static class MetadataServletFilterConfig {
+	protected static class RpcEnhancementServletFilterConfig {
 
 		@Bean
 		public FilterRegistrationBean<EnhancedServletFilter> metadataServletFilterRegistrationBean(
@@ -160,7 +160,7 @@ public class RpcEnhancementAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	protected static class MetadataReactiveFilterConfig {
+	protected static class RpcEnhancementReactiveFilterConfig {
 
 		@Bean
 		public EnhancedReactiveFilter enhancedReactiveFilter(@Lazy EnhancedPluginRunner pluginRunner) {

@@ -46,11 +46,11 @@ public class AssemblyServerExceptionHook implements EnhancedPlugin {
 
 	@Override
 	public EnhancedPluginType getType() {
-		return EnhancedPluginType.Server.POST;
+		return EnhancedPluginType.Server.EXCEPTION;
 	}
 
 	@Override
-	public void run(EnhancedPluginContext context) throws Throwable {
+	public void run(EnhancedPluginContext context) {
 		AfterRequest afterRequest = new AfterRequest();
 		RequestContext requestContext = new AssemblyRequestContext(
 				context.getRequest(),
@@ -58,9 +58,8 @@ public class AssemblyServerExceptionHook implements EnhancedPlugin {
 				context.getLocalServiceInstance().getHost()
 		);
 		afterRequest.setRequestContext(requestContext);
-		AssemblyResponseContext responseContext = new AssemblyResponseContext();
-		responseContext.setThrowable(context.getThrowable());
-		responseContext.setRetStatus(PolarisEnhancedPluginUtils.getRetStatusFromRequest(null, null, context.getThrowable()));
+
+		AssemblyResponseContext responseContext = new AssemblyResponseContext(null, context.getThrowable());
 		afterRequest.setResponseContext(responseContext);
 
 		assemblyAPI.afterProcess(afterRequest);

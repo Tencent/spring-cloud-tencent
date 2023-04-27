@@ -20,6 +20,8 @@ package com.tencent.cloud.polaris.circuitbreaker.reporter;
 import java.net.URI;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -40,6 +42,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -74,6 +77,12 @@ public class SuccessCircuitBreakerReporterTest {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		RpcEnhancementReporterProperties reporterProperties = mock(RpcEnhancementReporterProperties.class);
+		doReturn(reporterProperties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 	}
 
 	@AfterAll
