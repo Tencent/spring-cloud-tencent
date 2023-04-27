@@ -50,7 +50,7 @@ public class AssemblyServerPostHook implements EnhancedPlugin {
 	}
 
 	@Override
-	public void run(EnhancedPluginContext context) throws Throwable {
+	public void run(EnhancedPluginContext context) {
 		AfterRequest afterRequest = new AfterRequest();
 		RequestContext requestContext = new AssemblyRequestContext(
 				context.getRequest(),
@@ -58,8 +58,8 @@ public class AssemblyServerPostHook implements EnhancedPlugin {
 				context.getLocalServiceInstance().getHost()
 		);
 		afterRequest.setRequestContext(requestContext);
-		AssemblyResponseContext responseContext = new AssemblyResponseContext(context.getResponse());
-		responseContext.setRetStatus(PolarisEnhancedPluginUtils.getRetStatusFromRequest(context.getResponse().getHttpHeaders(), context.getResponse().getHttpStatus(), null));
+
+		AssemblyResponseContext responseContext = new AssemblyResponseContext(context.getResponse(), null);
 		afterRequest.setResponseContext(responseContext);
 
 		assemblyAPI.afterProcess(afterRequest);

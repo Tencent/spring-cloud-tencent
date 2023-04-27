@@ -41,6 +41,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
@@ -65,6 +66,8 @@ public class EnhancedGatewayGlobalFilterTest {
 	private RpcEnhancementReporterProperties reporterProperties;
 	@Mock
 	private SDKContext sdkContext;
+	@Mock
+	Registration registration;
 	@Mock
 	ServerWebExchange exchange;
 	@Mock
@@ -123,7 +126,7 @@ public class EnhancedGatewayGlobalFilterTest {
 		doReturn(request).when(exchange).getRequest();
 		doReturn(response).when(exchange).getResponse();
 
-		EnhancedGatewayGlobalFilter reporter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(new ArrayList<>(), null, sdkContext));
+		EnhancedGatewayGlobalFilter reporter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(new ArrayList<>(), registration, null));
 		reporter.getOrder();
 
 		reporter.filter(exchange, chain).block();

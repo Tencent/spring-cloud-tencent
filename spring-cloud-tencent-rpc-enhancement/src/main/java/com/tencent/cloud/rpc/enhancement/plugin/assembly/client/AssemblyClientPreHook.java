@@ -48,7 +48,7 @@ public class AssemblyClientPreHook implements EnhancedPlugin {
 	}
 
 	@Override
-	public void run(EnhancedPluginContext context) throws Throwable {
+	public void run(EnhancedPluginContext context) {
 		BeforeRequest beforeRequest = new BeforeRequest();
 		beforeRequest.setTargetService(new ServiceKey(MetadataContext.LOCAL_NAMESPACE, context.getTargetServiceInstance().getServiceId()));
 		RequestContext requestContext = new AssemblyRequestContext(

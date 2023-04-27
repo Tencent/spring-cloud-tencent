@@ -44,6 +44,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.BeansException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
@@ -160,36 +161,29 @@ public final class PolarisEnhancedPluginUtils {
 		if (Objects.isNull(httpStatus)) {
 			return false;
 		}
-		else {
-			RpcEnhancementReporterProperties reportProperties = ApplicationContextAwareUtils.getApplicationContext().getBean(RpcEnhancementReporterProperties.class);
-			// statuses > series
-			List<HttpStatus> status = reportProperties.getStatuses();
-
-			if (status.isEmpty()) {
-				List<HttpStatus.Series> series = reportProperties.getSeries();
-				// Check INTERNAL_SERVER_ERROR (500) status.
-				if (reportProperties.isIgnoreInternalServerError() && Objects.equals(httpStatus, INTERNAL_SERVER_ERROR)) {
-					return false;
-				}
-				if (series.isEmpty()) {
-					return HTTP_STATUSES.contains(httpStatus);
-				}
-				else {
-					try {
-						return series.contains(HttpStatus.Series.valueOf(httpStatus));
-					}
-					catch (Exception e) {
-						LOG.warn("Decode http status failed.", e);
-					}
-				}
-			}
-			else {
-				// Use the user-specified fuse status code.
-				return status.contains(httpStatus);
-			}
+		RpcEnhancementReporterProperties reportProperties;
+		try {
+			reportProperties = ApplicationContextAwareUtils.getApplicationContext().getBean(RpcEnhancementReporterProperties.class);
 		}
-		// DEFAULT RETURN FALSE.
-		return false;
+		catch (BeansException e) {
+			LOG.error("get RpcEnhancementReporterProperties bean err", e);
+			reportProperties = new RpcEnhancementReporterProperties();
+		}
+		// statuses > series
+		List<HttpStatus> status = reportProperties.getStatuses();
+		if (status.isEmpty()) {
+			List<HttpStatus.Series> series = reportProperties.getSeries();
+			// Check INTERNAL_SERVER_ERROR (500) status.
+			if (reportProperties.isIgnoreInternalServerError() && Objects.equals(httpStatus, INTERNAL_SERVER_ERROR)) {
+				return false;
+			}
+			if (series.isEmpty()) {
+				return HTTP_STATUSES.contains(httpStatus);
+			}
+			return series.contains(httpStatus.series());
+		}
+		// Use the user-specified fuse status code.
+		return status.contains(httpStatus);
 	}
 
 	public static RetStatus getRetStatusFromRequest(HttpHeaders headers, Integer statusCode, Throwable exception) {
