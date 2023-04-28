@@ -24,9 +24,14 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -247,6 +252,28 @@ public final class PolarisEnhancedPluginUtils {
 					LOG.error("unsupported charset exception " + UTF_8, e);
 				}
 				return RequestLabelUtils.convertLabel(label);
+			}
+		}
+		return null;
+	}
+
+	public static Map<String, String> getLabelMap(HttpHeaders headers) {
+		if (headers != null) {
+			Collection<String> labels = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
+			if (CollectionUtils.isNotEmpty(labels) && labels.iterator().hasNext()) {
+				String label = labels.iterator().next();
+				try {
+					label = URLDecoder.decode(label, UTF_8);
+				}
+				catch (UnsupportedEncodingException e) {
+					LOG.error("unsupported charset exception " + UTF_8, e);
+				}
+				try {
+					return new ObjectMapper().readValue(label, new TypeReference<HashMap<String,String>>() {});
+				}
+				catch (JsonProcessingException e) {
+					LOG.error("parse label map exception", e);
+				}
 			}
 		}
 		return null;

@@ -20,6 +20,7 @@ package com.tencent.cloud.rpc.enhancement.config;
 import java.util.Collections;
 import java.util.List;
 
+import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
@@ -40,6 +41,8 @@ import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientExchangeFilterFunction;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -87,6 +90,13 @@ import static jakarta.servlet.DispatcherType.REQUEST;
 public class RpcEnhancementAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass(PolarisServiceInstance.class)
+	public InstanceTransformer instanceTransformer() {
+		return new PolarisInstanceTransformer();
+	}
+
+	@Bean
 	@Lazy
 	public EnhancedPluginRunner enhancedFeignPluginRunner(
 			@Autowired(required = false) List<EnhancedPlugin> enhancedPlugins,
@@ -108,13 +118,13 @@ public class RpcEnhancementAutoConfiguration {
 	}
 
 	@Bean
-	public AssemblyClientExceptionHook assemblyClientExceptionHook(AssemblyAPI assemblyAPI) {
-		return new AssemblyClientExceptionHook(assemblyAPI);
+	public AssemblyClientExceptionHook assemblyClientExceptionHook(AssemblyAPI assemblyAPI, InstanceTransformer instanceTransformer) {
+		return new AssemblyClientExceptionHook(assemblyAPI, instanceTransformer);
 	}
 
 	@Bean
-	public AssemblyClientPostHook assemblyClientPostHook(AssemblyAPI assemblyAPI) {
-		return new AssemblyClientPostHook(assemblyAPI);
+	public AssemblyClientPostHook assemblyClientPostHook(AssemblyAPI assemblyAPI, InstanceTransformer instanceTransformer) {
+		return new AssemblyClientPostHook(assemblyAPI, instanceTransformer);
 	}
 
 	@Bean
