@@ -19,7 +19,7 @@
 package com.tencent.cloud.plugin.discovery.adapter.config;
 
 import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosInstanceTransformer;
-import com.tencent.cloud.polaris.router.transformer.PolarisInstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;

@@ -54,6 +54,8 @@ public class EnhancedReactiveFilter implements WebFilter, Ordered {
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
+		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
+
 		// Run pre enhanced plugins.
 		pluginRunner.run(EnhancedPluginType.Server.PRE, enhancedPluginContext);
 

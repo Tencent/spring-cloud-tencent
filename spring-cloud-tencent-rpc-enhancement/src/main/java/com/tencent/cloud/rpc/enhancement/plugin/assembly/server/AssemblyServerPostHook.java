@@ -22,12 +22,14 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.PolarisEnhancedPluginUtils;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.AssemblyMetadataProvider;
 import com.tencent.cloud.rpc.enhancement.plugin.assembly.AssemblyRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.assembly.AssemblyResponseContext;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.RequestContext;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.AfterRequest;
+import com.tencent.polaris.assembly.api.pojo.Capability;
 
 import org.springframework.core.Ordered;
 
@@ -52,15 +54,16 @@ public class AssemblyServerPostHook implements EnhancedPlugin {
 	@Override
 	public void run(EnhancedPluginContext context) {
 		AfterRequest afterRequest = new AfterRequest();
-		RequestContext requestContext = new AssemblyRequestContext(
+		afterRequest.setCapabilities(new Capability[]{Capability.ALL});
+		afterRequest.setRequestContext(new AssemblyRequestContext(
 				context.getRequest(),
 				new ServiceKey(MetadataContext.LOCAL_NAMESPACE, context.getLocalServiceInstance().getServiceId()),
 				context.getLocalServiceInstance().getHost()
-		);
-		afterRequest.setRequestContext(requestContext);
-
-		AssemblyResponseContext responseContext = new AssemblyResponseContext(context.getResponse(), null);
-		afterRequest.setResponseContext(responseContext);
+		));
+		afterRequest.setResponseContext(new AssemblyResponseContext(context.getResponse(), null));
+		afterRequest.setMetadataProvider(new AssemblyMetadataProvider(context.getLocalServiceInstance(), MetadataContext.LOCAL_NAMESPACE));
+		afterRequest.setDelay(context.getDelay());
+		afterRequest.setRouteLabels(PolarisEnhancedPluginUtils.getLabelMap(context.getRequest().getHttpHeaders()));
 
 		assemblyAPI.afterProcess(afterRequest);
 	}

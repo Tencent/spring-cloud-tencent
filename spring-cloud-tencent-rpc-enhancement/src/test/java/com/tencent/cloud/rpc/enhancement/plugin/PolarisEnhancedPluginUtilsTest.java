@@ -21,15 +21,13 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.config.Configuration;
-import com.tencent.polaris.api.config.global.APIConfig;
-import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
@@ -99,6 +97,10 @@ public class PolarisEnhancedPluginUtilsTest {
 
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add(RouterConstant.ROUTER_LABEL_HEADER, "{\"k1\":\"v1\"}");
+
+		assertThat(PolarisEnhancedPluginUtils.getLabelMap(requestHeaders)).isEqualTo(new HashMap<String, String>(){{
+			put("k1", "v1");
+		}});
 
 		serviceCallResult = PolarisEnhancedPluginUtils.createServiceCallResult(
 				"0.0.0.0",
