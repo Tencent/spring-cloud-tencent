@@ -21,11 +21,13 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.AssemblyMetadataProvider;
 import com.tencent.cloud.rpc.enhancement.plugin.assembly.AssemblyRequestContext;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.RequestContext;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.BeforeRequest;
+import com.tencent.polaris.assembly.api.pojo.Capability;
 
 import org.springframework.core.Ordered;
 
@@ -49,14 +51,18 @@ public class AssemblyClientPreHook implements EnhancedPlugin {
 
 	@Override
 	public void run(EnhancedPluginContext context) {
+
 		BeforeRequest beforeRequest = new BeforeRequest();
-		beforeRequest.setTargetService(new ServiceKey(MetadataContext.LOCAL_NAMESPACE, context.getTargetServiceInstance().getServiceId()));
-		RequestContext requestContext = new AssemblyRequestContext(
+		beforeRequest.setCapabilities(new Capability[]{Capability.ALL});
+		beforeRequest.setRequestContext(new AssemblyRequestContext(
 				context.getRequest(),
 				new ServiceKey(MetadataContext.LOCAL_NAMESPACE, context.getLocalServiceInstance().getServiceId()),
 				context.getLocalServiceInstance().getHost()
-		);
-		beforeRequest.setRequestContext(requestContext);
+		));
+		beforeRequest.setMetadataProvider(new AssemblyMetadataProvider(context.getLocalServiceInstance(), MetadataContext.LOCAL_NAMESPACE));
+		// TargetService only exist in client side
+		beforeRequest.setTargetService(new ServiceKey(MetadataContext.LOCAL_NAMESPACE, context.getTargetServiceInstance().getServiceId()));
+
 		assemblyAPI.beforeCallService(beforeRequest);
 	}
 

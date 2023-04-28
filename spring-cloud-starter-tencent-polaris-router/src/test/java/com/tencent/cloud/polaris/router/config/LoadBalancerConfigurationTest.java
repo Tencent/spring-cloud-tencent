@@ -20,7 +20,7 @@ package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
-import com.tencent.cloud.polaris.router.transformer.PolarisInstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.jupiter.api.Test;
 
