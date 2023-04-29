@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link PolarisConfigFilePuller}.
  *
- * @author wlx
+ * @author wlx, youta
  */
 @ExtendWith(MockitoExtension.class)
 public class PolarisConfigFilePullerTest {
@@ -75,8 +75,10 @@ public class PolarisConfigFilePullerTest {
 		Map<String, Object> emptyMap = new HashMap<>();
 		ConfigKVFile emptyConfigFile = new MockedConfigKVFile(emptyMap);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yml")).thenReturn(emptyConfigFile);
+		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yaml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap.properties")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
+		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yaml")).thenReturn(emptyConfigFile);
 		CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
 
 		puller.initInternalConfigFiles(compositePropertySource, new String[] {}, new String[] {}, testServiceName);
@@ -113,11 +115,15 @@ public class PolarisConfigFilePullerTest {
 		Map<String, Object> emptyMap = new HashMap<>();
 		ConfigKVFile emptyConfigFile = new MockedConfigKVFile(emptyMap);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yml")).thenReturn(emptyConfigFile);
+		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yaml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application-dev.yml")).thenReturn(emptyConfigFile);
+		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application-dev.yaml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap.properties")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap-dev.properties")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
+		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yaml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yml")).thenReturn(emptyConfigFile);
+		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yaml")).thenReturn(emptyConfigFile);
 		List<String> active = new ArrayList<>();
 		active.add("dev");
 		String[] activeProfiles = active.toArray(new String[] {});
