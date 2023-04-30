@@ -88,8 +88,10 @@ public class PolarisConfigDataLoaderTest {
 			Map<String, Object> emptyMap = new HashMap<>();
 			ConfigKVFile emptyConfigFile = new MockedConfigKVFile(emptyMap);
 			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yml")).thenReturn(emptyConfigFile);
+			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yaml")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap.properties")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
+			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yaml")).thenReturn(emptyConfigFile);
 			Map<String, Object> applicationProperties = new HashMap<>();
 			applicationProperties.put("k1", "v1");
 			applicationProperties.put("k2", "v2");
@@ -162,11 +164,15 @@ public class PolarisConfigDataLoaderTest {
 			Map<String, Object> emptyMap = new HashMap<>();
 			ConfigKVFile emptyConfigFile = new MockedConfigKVFile(emptyMap);
 			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yml")).thenReturn(emptyConfigFile);
+			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yaml")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application-dev.yml")).thenReturn(emptyConfigFile);
+			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application-dev.yaml")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap.properties")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap-dev.properties")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
+			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yaml")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yml")).thenReturn(emptyConfigFile);
+			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yaml")).thenReturn(emptyConfigFile);
 
 			when(polarisConfigProperties.getGroups()).thenReturn(null);
 			when(polarisConfigProperties.getGroups()).thenReturn(null);
@@ -226,8 +232,10 @@ public class PolarisConfigDataLoaderTest {
 
 			when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "application.properties")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yml")).thenReturn(emptyConfigFile);
+			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "application.yaml")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "bootstrap.properties")).thenReturn(emptyConfigFile);
 			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
+			when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yaml")).thenReturn(emptyConfigFile);
 
 			String customGroup = "group1";
 			String customFile1 = "file1.properties";
