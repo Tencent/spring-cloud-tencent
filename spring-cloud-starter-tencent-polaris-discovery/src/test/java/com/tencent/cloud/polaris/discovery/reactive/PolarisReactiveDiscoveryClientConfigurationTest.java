@@ -69,6 +69,11 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 		this.contextRunner.run(context -> assertThat(context).hasSingleBean(PolarisReactiveDiscoveryClient.class));
 	}
 
+	@Test
+	public void shouldWorkWithDefaults() {
+		contextRunner.run(context -> assertThat(context).hasBean("polarisReactiveDiscoveryClientHealthIndicator"));
+	}
+
 	@Configuration
 	@EnableAutoConfiguration
 	static class PolarisReactiveDiscoveryClientConfiguration {
