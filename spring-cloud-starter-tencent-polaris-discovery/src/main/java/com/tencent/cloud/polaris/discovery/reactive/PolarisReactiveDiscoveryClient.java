@@ -48,7 +48,7 @@ public class PolarisReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 
 	@Override
 	public String description() {
-		return "Spring Cloud Tencent Polaris Reactive Discovery Client.";
+		return "Spring Cloud Tencent Polaris Reactive Discovery Client";
 	}
 
 	@Override
