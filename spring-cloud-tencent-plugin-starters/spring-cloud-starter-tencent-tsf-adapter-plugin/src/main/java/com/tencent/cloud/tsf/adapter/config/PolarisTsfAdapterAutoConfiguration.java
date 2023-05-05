@@ -33,8 +33,8 @@ public class PolarisTsfAdapterAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisFlowConfigModifier polarisFlowConfigModifier() throws PolarisException {
-		return new PolarisFlowConfigModifier();
+	public PolarisTsfFlowConfigModifier polarisFlowConfigModifier() throws PolarisException {
+		return new PolarisTsfFlowConfigModifier();
 	}
 
 
