@@ -21,6 +21,11 @@ import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 
+/**
+ * PolarisTsfFlowConfigModifier.
+ *
+ * @author sean yu
+ */
 public class PolarisTsfFlowConfigModifier implements PolarisConfigModifier {
 
 	public static final String TSF_FLOW_NAME = "tsf";
