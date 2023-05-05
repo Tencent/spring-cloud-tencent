@@ -17,19 +17,22 @@
 
 package com.tencent.cloud.tsf.adapter.config;
 
+import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 
-public class PolarisFlowConfigModifier implements PolarisConfigModifier {
+public class PolarisTsfFlowConfigModifier implements PolarisConfigModifier {
+
+	public static final String TSF_FLOW_NAME = "tsf";
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
-
+		configuration.getGlobal().getSystem().getFlow().setName(TSF_FLOW_NAME);
 	}
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return ContextConstant.ModifierOrder.FIRST;
 	}
 
 }
