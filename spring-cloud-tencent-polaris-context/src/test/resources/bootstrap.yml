@@ -6,3 +6,4 @@ spring:
       namespace: dev
       service: TestApp
       enabled: true
+      local-port: 9090
