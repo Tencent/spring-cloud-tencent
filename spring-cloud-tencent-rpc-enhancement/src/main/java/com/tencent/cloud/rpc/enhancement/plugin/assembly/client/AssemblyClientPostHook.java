@@ -27,7 +27,6 @@ import com.tencent.cloud.rpc.enhancement.plugin.assembly.AssemblyRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.assembly.AssemblyResponseContext;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.polaris.api.pojo.ServiceKey;
-import com.tencent.polaris.api.rpc.RequestContext;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.AfterRequest;
 import com.tencent.polaris.assembly.api.pojo.Capability;

@@ -269,7 +269,7 @@ public final class PolarisEnhancedPluginUtils {
 					LOG.error("unsupported charset exception " + UTF_8, e);
 				}
 				try {
-					return new ObjectMapper().readValue(label, new TypeReference<HashMap<String,String>>() {});
+					return new ObjectMapper().readValue(label, new TypeReference<HashMap<String, String>>() { });
 				}
 				catch (JsonProcessingException e) {
 					LOG.error("parse label map exception", e);

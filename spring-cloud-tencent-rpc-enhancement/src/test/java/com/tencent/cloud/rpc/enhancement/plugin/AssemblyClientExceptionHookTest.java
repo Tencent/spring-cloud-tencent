@@ -6,6 +6,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientExceptionHook;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,6 +39,8 @@ public class AssemblyClientExceptionHookTest {
 	private AssemblyClientExceptionHook assemblyClientExceptionHook;
 	@Mock
 	private AssemblyAPI assemblyAPI;
+	@Mock
+	private InstanceTransformer instanceTransformer;
 
 	@BeforeAll
 	static void beforeAll() {
