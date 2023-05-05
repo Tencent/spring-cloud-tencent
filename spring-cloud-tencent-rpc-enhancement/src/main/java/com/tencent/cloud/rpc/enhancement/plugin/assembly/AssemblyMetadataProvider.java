@@ -1,6 +1,5 @@
 package com.tencent.cloud.rpc.enhancement.plugin.assembly;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.MetadataProvider;
 

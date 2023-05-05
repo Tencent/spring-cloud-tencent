@@ -98,7 +98,7 @@ public class PolarisEnhancedPluginUtilsTest {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add(RouterConstant.ROUTER_LABEL_HEADER, "{\"k1\":\"v1\"}");
 
-		assertThat(PolarisEnhancedPluginUtils.getLabelMap(requestHeaders)).isEqualTo(new HashMap<String, String>(){{
+		assertThat(PolarisEnhancedPluginUtils.getLabelMap(requestHeaders)).isEqualTo(new HashMap<String, String>() {{
 			put("k1", "v1");
 		}});
 
