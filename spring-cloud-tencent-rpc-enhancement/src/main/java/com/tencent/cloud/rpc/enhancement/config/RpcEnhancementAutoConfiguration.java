@@ -152,7 +152,7 @@ public class RpcEnhancementAutoConfiguration {
 	protected static class RpcEnhancementServletFilterConfig {
 
 		@Bean
-		public FilterRegistrationBean<EnhancedServletFilter> metadataServletFilterRegistrationBean(
+		public FilterRegistrationBean<EnhancedServletFilter> enhancedServletFilterRegistrationBean(
 				EnhancedServletFilter enhancedServletFilter) {
 			FilterRegistrationBean<EnhancedServletFilter> filterRegistrationBean =
 					new FilterRegistrationBean<>(enhancedServletFilter);

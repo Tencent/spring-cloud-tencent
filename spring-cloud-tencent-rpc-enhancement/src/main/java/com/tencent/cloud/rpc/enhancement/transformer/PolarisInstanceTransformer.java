@@ -19,7 +19,6 @@
 package com.tencent.cloud.rpc.enhancement.transformer;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
-import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 
 import org.springframework.cloud.client.ServiceInstance;
