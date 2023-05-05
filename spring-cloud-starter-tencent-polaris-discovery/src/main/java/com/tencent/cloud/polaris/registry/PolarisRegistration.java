@@ -69,7 +69,7 @@ public class PolarisRegistration implements Registration {
 
 	private Map<String, String> metadata;
 
-	private String host;
+	private final String host;
 
 	private int port;
 
@@ -131,10 +131,6 @@ public class PolarisRegistration implements Registration {
 			}
 		}
 		return port;
-	}
-
-	protected void setPort(int port) {
-		this.port = port;
 	}
 
 	@Override
