@@ -26,6 +26,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * PolarisTsfAdapterAutoConfiguration.
+ *
+ * @author sean yu
+ */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
 @AutoConfigureAfter(RpcEnhancementAutoConfiguration.class)
