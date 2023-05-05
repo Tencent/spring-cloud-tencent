@@ -58,5 +58,6 @@ public class PolarisContextGetHostTest {
 		assertThat(polarisContextProperties.getEnabled()).isTrue();
 		assertThat(polarisContextProperties.getNamespace()).isEqualTo("dev");
 		assertThat(polarisContextProperties.getService()).isEqualTo("TestApp");
+		assertThat(polarisContextProperties.getLocalPort()).isEqualTo(9090);
 	}
 }
