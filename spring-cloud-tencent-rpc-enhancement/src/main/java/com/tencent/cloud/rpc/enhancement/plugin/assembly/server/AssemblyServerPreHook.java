@@ -28,7 +28,7 @@ import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.BeforeRequest;
 import com.tencent.polaris.assembly.api.pojo.Capability;
 
-import org.springframework.core.Ordered;
+import static com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant.ServerPluginOrder.ASSEMBLY_PLUGIN_ORDER;
 
 /**
  * AssemblyServerPreHook.
@@ -64,7 +64,7 @@ public class AssemblyServerPreHook implements EnhancedPlugin {
 
 	@Override
 	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE + 3;
+		return ASSEMBLY_PLUGIN_ORDER;
 	}
 
 }
