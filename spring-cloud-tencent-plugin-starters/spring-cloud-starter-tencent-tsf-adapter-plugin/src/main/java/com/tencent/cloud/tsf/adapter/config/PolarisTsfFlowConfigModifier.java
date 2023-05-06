@@ -28,6 +28,9 @@ import com.tencent.polaris.factory.config.ConfigurationImpl;
  */
 public class PolarisTsfFlowConfigModifier implements PolarisConfigModifier {
 
+	/**
+	 * Polaris Tsf Flow Name.
+	 */
 	public static final String TSF_FLOW_NAME = "tsf";
 
 	@Override

@@ -31,7 +31,7 @@ import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.AfterRequest;
 import com.tencent.polaris.assembly.api.pojo.Capability;
 
-import org.springframework.core.Ordered;
+import static com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant.ClientPluginOrder.ASSEMBLY_PLUGIN_ORDER;
 
 /**
  * AssemblyClientExceptionHook.
@@ -77,6 +77,6 @@ public class AssemblyClientExceptionHook implements EnhancedPlugin {
 
 	@Override
 	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE + 3;
+		return ASSEMBLY_PLUGIN_ORDER;
 	}
 }
