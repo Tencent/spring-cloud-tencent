@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test for {@link PolarisReactiveDiscoveryClientConfiguration}.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, youta
  */
 public class PolarisReactiveDiscoveryClientConfigurationTest {
 
@@ -68,6 +68,11 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> assertThat(context).hasSingleBean(PolarisReactiveDiscoveryClient.class));
+	}
+
+	@Test
+	public void shouldWorkWithDefaults() {
+		contextRunner.run(context -> assertThat(context).hasBean("polarisReactiveDiscoveryClientHealthIndicator"));
 	}
 
 	@Configuration
