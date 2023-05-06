@@ -34,9 +34,14 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.core.Ordered;
 
+import static com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant.ClientPluginOrder.CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER;
 
+/**
+ * SuccessCircuitBreakerReporter.
+ *
+ * @author sean yu
+ */
 public class SuccessCircuitBreakerReporter implements EnhancedPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SuccessPolarisReporter.class);
@@ -94,6 +99,6 @@ public class SuccessCircuitBreakerReporter implements EnhancedPlugin {
 
 	@Override
 	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE + 2;
+		return CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER;
 	}
 }
