@@ -15,15 +15,14 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.resttemplate;
+package com.tencent.cloud.rpc.enhancement.feign;
 
-import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import org.aspectj.lang.ProceedingJoinPoint;
+import feign.Request;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.context.ApplicationContext;
 
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,14 +44,23 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+/**
+ * PolarisLoadBalancerFeignRequestTransformerTest.
+ *
+ * @author sean yu
+ */
 @ExtendWith(MockitoExtension.class)
-public class BlockingLoadBalancerClientAspectTest {
+public class PolarisLoadBalancerFeignRequestTransformerTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	@Mock
-	private ProceedingJoinPoint proceedingJoinPoint;
 
-	private BlockingLoadBalancerClientAspect aspect = new BlockingLoadBalancerClientAspect();
+	private PolarisLoadBalancerFeignRequestTransformer transformer = new PolarisLoadBalancerFeignRequestTransformer();
+
+	@Mock
+	private Request clientRequest;
+
+	@Mock
+	private ServiceInstance serviceInstance;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -79,14 +88,7 @@ public class BlockingLoadBalancerClientAspectTest {
 
 	@Test
 	public void test() throws Throwable {
-		ServiceInstance serviceInstance = mock(ServiceInstance.class);
-		doReturn("0.0.0.0").when(serviceInstance).getHost();
-		doReturn(80).when(serviceInstance).getPort();
-		doReturn(new Object[]{ serviceInstance }).when(proceedingJoinPoint).getArgs();
-		aspect.invoke(proceedingJoinPoint);
-		aspect.pointcut();
-		assertThat(MetadataContextHolder.get().getLoadbalancerMetadata().get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_HOST)).isEqualTo("0.0.0.0");
-		assertThat(MetadataContextHolder.get().getLoadbalancerMetadata().get(HeaderConstant.INTERNAL_CALLEE_INSTANCE_PORT)).isEqualTo("80");
+		transformer.transformRequest(clientRequest, serviceInstance);
+		assertThat(MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE)).isEqualTo(serviceInstance);
 	}
-
 }

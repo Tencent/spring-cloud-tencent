@@ -15,29 +15,32 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.resttemplate;
+package com.tencent.cloud.tsf.adapter.config;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.factory.config.ConfigurationImpl;
 
 /**
- * Intercept for BlockingLoadBalancerClient, put host and port to thread local.
+ * PolarisTsfFlowConfigModifier.
  *
- * @author lepdou 2022-09-05
+ * @author sean yu
  */
-@Aspect
-public class BlockingLoadBalancerClientAspect {
+public class PolarisTsfFlowConfigModifier implements PolarisConfigModifier {
 
-	@Pointcut("execution(public * org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient.reconstructURI(..)) ")
-	public void pointcut() {
+	/**
+	 * Polaris Tsf Flow Name.
+	 */
+	public static final String TSF_FLOW_NAME = "tsf";
 
+	@Override
+	public void modify(ConfigurationImpl configuration) {
+		configuration.getGlobal().getSystem().getFlow().setName(TSF_FLOW_NAME);
 	}
 
-	@Around("pointcut()")
-	public Object invoke(ProceedingJoinPoint joinPoint) throws Throwable {
-		LoadBalancerClientAspectUtils.extractLoadBalancerResult(joinPoint);
-		return joinPoint.proceed();
+	@Override
+	public int getOrder() {
+		return ContextConstant.ModifierOrder.FIRST;
 	}
+
 }

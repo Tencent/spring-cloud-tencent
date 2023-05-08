@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.plugin.discovery.adapter.transformer;
 
-import com.tencent.cloud.polaris.router.spi.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import org.apache.commons.lang.StringUtils;
 

@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.rpc.enhancement.webclient;
 
-import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
@@ -37,6 +36,7 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.reactive.function.client.ClientRequest;
 
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,8 +83,7 @@ public class PolarisLoadBalancerClientRequestTransformerTest {
 
 	@Test
 	public void test() throws Throwable {
-		doReturn("test").when(serviceInstance).getServiceId();
 		transformer.transformRequest(clientRequest, serviceInstance);
-		assertThat(MetadataContextHolder.get().getLoadbalancerMetadata().get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID)).isEqualTo("test");
+		assertThat(MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE)).isEqualTo(serviceInstance);
 	}
 }

@@ -21,7 +21,7 @@ package com.tencent.cloud.plugin.discovery.adapter.config;
 import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosInstanceTransformer;
 import com.tencent.cloud.polaris.router.config.ConditionalOnPolarisRouterEnabled;
 import com.tencent.cloud.polaris.router.config.LoadBalancerConfiguration;
-import com.tencent.cloud.polaris.router.spi.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

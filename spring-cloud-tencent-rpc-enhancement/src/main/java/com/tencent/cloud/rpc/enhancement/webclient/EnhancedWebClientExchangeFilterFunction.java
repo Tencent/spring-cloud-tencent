@@ -17,35 +17,31 @@
 
 package com.tencent.cloud.rpc.enhancement.webclient;
 
-import java.util.Map;
-
-import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import reactor.core.publisher.Mono;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.EXCEPTION;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.FINALLY;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.POST;
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 
 /**
- * EnhancedWebClientReporter.
+ * EnhancedWebClientExchangeFilterFunction.
  *
  * @author sean yu
  */
-public class EnhancedWebClientReporter implements ExchangeFilterFunction {
+public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFunction {
 	private final EnhancedPluginRunner pluginRunner;
 
-	public EnhancedWebClientReporter(EnhancedPluginRunner pluginRunner) {
+	public EnhancedWebClientExchangeFilterFunction(EnhancedPluginRunner pluginRunner) {
 		this.pluginRunner = pluginRunner;
 	}
 
@@ -60,38 +56,37 @@ public class EnhancedWebClientReporter implements ExchangeFilterFunction {
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
+		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
+		enhancedPluginContext.setTargetServiceInstance(
+				(ServiceInstance) MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE));
+
+		// Run post enhanced plugins.
+		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+
 		long startTime = System.currentTimeMillis();
 		return next.exchange(request)
-				.doOnSubscribe(subscription -> {
-					Map<String, String> loadBalancerContext = MetadataContextHolder.get().getLoadbalancerMetadata();
-					DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-					serviceInstance.setServiceId(loadBalancerContext.get(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID));
-					serviceInstance.setHost(request.url().getHost());
-					serviceInstance.setPort(request.url().getPort());
-					enhancedPluginContext.setServiceInstance(serviceInstance);
-				})
 				.doOnSuccess(response -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-							.httpStatus(response.rawStatusCode())
+							.httpStatus(response.statusCode().value())
 							.httpHeaders(response.headers().asHttpHeaders())
 							.build();
 					enhancedPluginContext.setResponse(enhancedResponseContext);
 
 					// Run post enhanced plugins.
-					pluginRunner.run(POST, enhancedPluginContext);
+					pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 				})
 				.doOnError(t -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 					enhancedPluginContext.setThrowable(t);
 
 					// Run exception enhanced plugins.
-					pluginRunner.run(EXCEPTION, enhancedPluginContext);
+					pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
 				})
 				.doFinally(v -> {
 					// Run finally enhanced plugins.
-					pluginRunner.run(FINALLY, enhancedPluginContext);
+					pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 				});
 	}
 }

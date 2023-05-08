@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.polaris.router.spi.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;

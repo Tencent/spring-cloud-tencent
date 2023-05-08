@@ -73,7 +73,7 @@
 		<revision>1.12.0-2022.0.1-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.12.3</polaris.version>
+		<polaris.version>1.13.0-SNAPSHOT</polaris.version>
 		<guava.version>31.1-jre</guava.version>
 		<mocktio.version>4.9.0</mocktio.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
@@ -161,6 +161,12 @@
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-discovery-adapter-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-tsf-adapter-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 

@@ -95,7 +95,7 @@ public class ExceptionCircuitBreakerReporterTest {
 
 	@Test
 	public void testType() {
-		assertThat(exceptionCircuitBreakerReporter.getType()).isEqualTo(EnhancedPluginType.EXCEPTION);
+		assertThat(exceptionCircuitBreakerReporter.getType()).isEqualTo(EnhancedPluginType.Client.EXCEPTION);
 	}
 
 	@Test
@@ -121,7 +121,7 @@ public class ExceptionCircuitBreakerReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance);
 		pluginContext.setThrowable(new RuntimeException());
 
 		exceptionCircuitBreakerReporter.run(pluginContext);
