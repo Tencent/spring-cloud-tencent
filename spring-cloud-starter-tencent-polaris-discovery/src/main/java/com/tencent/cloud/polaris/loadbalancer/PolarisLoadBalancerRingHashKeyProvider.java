@@ -36,7 +36,7 @@ public final class PolarisLoadBalancerRingHashKeyProvider {
 	}
 
 	static String getHashKey() {
-		return MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_HASH_KEY);
+		return (String) MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_HASH_KEY);
 	}
 
 }

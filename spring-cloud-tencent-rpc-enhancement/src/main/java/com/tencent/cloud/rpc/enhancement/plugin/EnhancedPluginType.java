@@ -22,25 +22,52 @@ package com.tencent.cloud.rpc.enhancement.plugin;
  *
  * @author Haotian Zhang
  */
-public enum EnhancedPluginType {
+public interface EnhancedPluginType {
 
-	/**
-	 * Pre feign plugin.
-	 */
-	PRE,
+	enum Client implements EnhancedPluginType {
+		/**
+		 * Pre Client plugin.
+		 */
+		PRE,
 
-	/**
-	 * Post feign plugin.
-	 */
-	POST,
+		/**
+		 * Post Client plugin.
+		 */
+		POST,
 
-	/**
-	 * Exception feign plugin.
-	 */
-	EXCEPTION,
+		/**
+		 * Exception Client plugin.
+		 */
+		EXCEPTION,
 
-	/**
-	 * Finally feign plugin.
-	 */
-	FINALLY
+		/**
+		 * Finally Client plugin.
+		 */
+		FINALLY
+
+	}
+
+	enum Server implements EnhancedPluginType {
+		/**
+		 * Pre Server plugin.
+		 */
+		PRE,
+
+		/**
+		 * Post Server plugin.
+		 */
+		POST,
+
+		/**
+		 * Exception Server plugin.
+		 */
+		EXCEPTION,
+
+		/**
+		 * Finally Server plugin.
+		 */
+		FINALLY
+
+	}
+
 }

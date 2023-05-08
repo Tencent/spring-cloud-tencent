@@ -23,7 +23,12 @@ import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.polaris.client.api.SDKContext;
 
+import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -33,13 +38,28 @@ import org.springframework.util.CollectionUtils;
  */
 public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 
-	private final Multimap<String, EnhancedPlugin> pluginMap = ArrayListMultimap.create();
+	private final Multimap<EnhancedPluginType, EnhancedPlugin> pluginMap = ArrayListMultimap.create();
 
-	public DefaultEnhancedPluginRunner(List<EnhancedPlugin> enhancedPlugins) {
+	private final ServiceInstance localServiceInstance;
+
+	public DefaultEnhancedPluginRunner(
+			List<EnhancedPlugin> enhancedPlugins,
+			Registration registration,
+			SDKContext sdkContext
+	) {
 		if (!CollectionUtils.isEmpty(enhancedPlugins)) {
 			enhancedPlugins.stream()
 					.sorted(Comparator.comparing(EnhancedPlugin::getOrder))
-					.forEach(plugin -> pluginMap.put(plugin.getType().name(), plugin));
+					.forEach(plugin -> pluginMap.put(plugin.getType(), plugin));
+		}
+		if (registration != null) {
+			localServiceInstance = registration;
+		}
+		else {
+			DefaultServiceInstance defaultServiceInstance = new DefaultServiceInstance();
+			defaultServiceInstance.setServiceId(MetadataContext.LOCAL_SERVICE);
+			defaultServiceInstance.setHost(sdkContext.getConfig().getGlobal().getAPI().getBindIP());
+			localServiceInstance = defaultServiceInstance;
 		}
 	}
 
@@ -51,7 +71,7 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 	 */
 	@Override
 	public void run(EnhancedPluginType pluginType, EnhancedPluginContext context) {
-		for (EnhancedPlugin plugin : pluginMap.get(pluginType.name())) {
+		for (EnhancedPlugin plugin : pluginMap.get(pluginType)) {
 			try {
 				plugin.run(context);
 			}
@@ -60,4 +80,10 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 			}
 		}
 	}
+
+	@Override
+	public ServiceInstance getLocalServiceInstance() {
+		return this.localServiceInstance;
+	}
+
 }

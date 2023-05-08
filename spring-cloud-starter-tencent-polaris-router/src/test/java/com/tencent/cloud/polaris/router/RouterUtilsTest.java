@@ -24,7 +24,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.polaris.router.transformer.PolarisInstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;

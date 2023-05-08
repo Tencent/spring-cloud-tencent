@@ -16,7 +16,7 @@
  *
  */
 
-package com.tencent.cloud.polaris.router.spi;
+package com.tencent.cloud.rpc.enhancement.transformer;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.api.pojo.DefaultInstance;
