@@ -26,6 +26,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
+import com.tencent.polaris.client.api.SDKContext;
 import feign.Client;
 import feign.Request;
 import feign.RequestTemplate;
@@ -34,6 +35,7 @@ import feign.Target;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -55,6 +57,9 @@ import static org.mockito.Mockito.mock;
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp", "spring.cloud.gateway.enabled=false"})
 public class EnhancedFeignClientTest {
 
+	@Autowired
+	private SDKContext sdkContext;
+
 	@Test
 	public void testConstructor() {
 		try {
@@ -75,7 +80,7 @@ public class EnhancedFeignClientTest {
 
 		List<EnhancedPlugin> enhancedPlugins = getMockEnhancedFeignPlugins();
 		try {
-			new EnhancedFeignClient(mock(Client.class), new DefaultEnhancedPluginRunner(enhancedPlugins));
+			new EnhancedFeignClient(mock(Client.class), new DefaultEnhancedPluginRunner(enhancedPlugins, null, sdkContext));
 		}
 		catch (Throwable e) {
 			fail("Exception encountered.", e);
@@ -104,7 +109,7 @@ public class EnhancedFeignClientTest {
 		RequestTemplate requestTemplate = new RequestTemplate();
 		requestTemplate.feignTarget(target);
 
-		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate, new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins()));
+		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate, new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins(), null, sdkContext));
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
@@ -134,7 +139,7 @@ public class EnhancedFeignClientTest {
 		enhancedPlugins.add(new EnhancedPlugin() {
 			@Override
 			public EnhancedPluginType getType() {
-				return EnhancedPluginType.PRE;
+				return EnhancedPluginType.Client.PRE;
 			}
 
 			@Override
@@ -156,7 +161,7 @@ public class EnhancedFeignClientTest {
 		enhancedPlugins.add(new EnhancedPlugin() {
 			@Override
 			public EnhancedPluginType getType() {
-				return EnhancedPluginType.POST;
+				return EnhancedPluginType.Client.POST;
 			}
 
 			@Override
@@ -178,7 +183,7 @@ public class EnhancedFeignClientTest {
 		enhancedPlugins.add(new EnhancedPlugin() {
 			@Override
 			public EnhancedPluginType getType() {
-				return EnhancedPluginType.EXCEPTION;
+				return EnhancedPluginType.Client.EXCEPTION;
 			}
 
 			@Override
@@ -200,7 +205,7 @@ public class EnhancedFeignClientTest {
 		enhancedPlugins.add(new EnhancedPlugin() {
 			@Override
 			public EnhancedPluginType getType() {
-				return EnhancedPluginType.FINALLY;
+				return EnhancedPluginType.Client.FINALLY;
 			}
 
 			@Override

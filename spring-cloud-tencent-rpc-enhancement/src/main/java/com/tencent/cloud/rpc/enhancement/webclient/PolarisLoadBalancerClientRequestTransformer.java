@@ -17,12 +17,13 @@
 
 package com.tencent.cloud.rpc.enhancement.webclient;
 
-import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerClientRequestTransformer;
 import org.springframework.web.reactive.function.client.ClientRequest;
+
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 
 /**
  * PolarisLoadBalancerClientRequestTransformer.
@@ -31,10 +32,16 @@ import org.springframework.web.reactive.function.client.ClientRequest;
  */
 public class PolarisLoadBalancerClientRequestTransformer implements LoadBalancerClientRequestTransformer {
 
+	/**
+	 * Transform Request, add Loadbalancer ServiceInstance to MetadataContext.
+	 * @param request request
+	 * @param instance instance
+	 * @return HttpRequest
+	 */
 	@Override
 	public ClientRequest transformRequest(ClientRequest request, ServiceInstance instance) {
 		if (instance != null) {
-			MetadataContextHolder.get().setLoadbalancer(HeaderConstant.INTERNAL_CALLEE_SERVICE_ID, instance.getServiceId());
+			MetadataContextHolder.get().setLoadbalancer(LOAD_BALANCER_SERVICE_INSTANCE, instance);
 		}
 		return request;
 	}

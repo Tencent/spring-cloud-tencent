@@ -104,6 +104,11 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>loadbalancer-ringhash</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-assembly-factory</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>

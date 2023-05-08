@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import feign.Client;
@@ -30,14 +32,11 @@ import feign.Request;
 import feign.Request.Options;
 import feign.Response;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.EXCEPTION;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.FINALLY;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.POST;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.PRE;
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 import static feign.Util.checkNotNull;
 
 /**
@@ -66,13 +65,18 @@ public class EnhancedFeignClient implements Client {
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(requestHeaders)
-				.httpMethod(HttpMethod.resolve(request.httpMethod().name()))
+				.httpMethod(HttpMethod.valueOf(request.httpMethod().name()))
 				.url(url)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
+		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
+		enhancedPluginContext.setTargetServiceInstance(
+				(ServiceInstance) MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE));
+
 		// Run pre enhanced plugins.
-		pluginRunner.run(PRE, enhancedPluginContext);
+		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+
 		long startMillis = System.currentTimeMillis();
 		try {
 			Response response = delegate.execute(request, options);
@@ -87,26 +91,20 @@ public class EnhancedFeignClient implements Client {
 					.build();
 			enhancedPluginContext.setResponse(enhancedResponseContext);
 
-			DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-			serviceInstance.setServiceId(request.requestTemplate().feignTarget().name());
-			serviceInstance.setHost(url.getHost());
-			serviceInstance.setPort(url.getPort());
-			enhancedPluginContext.setServiceInstance(serviceInstance);
-
 			// Run post enhanced plugins.
-			pluginRunner.run(POST, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 			return response;
 		}
 		catch (IOException origin) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 			enhancedPluginContext.setThrowable(origin);
 			// Run exception enhanced feign plugins.
-			pluginRunner.run(EXCEPTION, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
 			throw origin;
 		}
 		finally {
 			// Run finally enhanced plugins.
-			pluginRunner.run(FINALLY, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 		}
 	}
 }

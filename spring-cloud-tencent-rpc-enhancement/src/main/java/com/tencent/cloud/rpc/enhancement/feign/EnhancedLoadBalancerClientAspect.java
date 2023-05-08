@@ -15,29 +15,35 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.resttemplate;
+package com.tencent.cloud.rpc.enhancement.feign;
 
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
+
 /**
- * Intercept for BlockingLoadBalancerClient, put host and port to thread local.
+ * EnhancedLoadBalancerClientAspect.
  *
- * @author lepdou 2022-09-05
+ * @author sean yu
  */
 @Aspect
-public class BlockingLoadBalancerClientAspect {
+public class EnhancedLoadBalancerClientAspect {
 
-	@Pointcut("execution(public * org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient.reconstructURI(..)) ")
+	@Pointcut("execution(public * org.springframework.cloud.client.loadbalancer.ServiceInstanceChooser.choose(..)) ")
 	public void pointcut() {
 
 	}
 
 	@Around("pointcut()")
 	public Object invoke(ProceedingJoinPoint joinPoint) throws Throwable {
-		LoadBalancerClientAspectUtils.extractLoadBalancerResult(joinPoint);
-		return joinPoint.proceed();
+		Object result = joinPoint.proceed();
+		if (result != null) {
+			MetadataContextHolder.get().setLoadbalancer(LOAD_BALANCER_SERVICE_INSTANCE, result);
+		}
+		return result;
 	}
 }

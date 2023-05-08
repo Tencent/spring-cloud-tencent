@@ -15,20 +15,19 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement;
+package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.config.Configuration;
-import com.tencent.polaris.api.config.global.APIConfig;
-import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
 import com.tencent.polaris.api.pojo.RetStatus;
 import com.tencent.polaris.api.rpc.ServiceCallResult;
@@ -43,6 +42,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -54,12 +54,12 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test For {@link AbstractPolarisReporterAdapter}.
+ * Test For {@link PolarisEnhancedPluginUtils}.
  *
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022/7/11
  */
 @ExtendWith(MockitoExtension.class)
-public class AbstractPolarisReporterAdapterTest {
+public class PolarisEnhancedPluginUtilsTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private final RpcEnhancementReporterProperties reporterProperties = new RpcEnhancementReporterProperties();
@@ -71,6 +71,12 @@ public class AbstractPolarisReporterAdapterTest {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		RpcEnhancementReporterProperties reporterProperties = mock(RpcEnhancementReporterProperties.class);
+		doReturn(reporterProperties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 	}
 
 	@AfterAll
@@ -86,25 +92,18 @@ public class AbstractPolarisReporterAdapterTest {
 
 	@Test
 	public void testServiceCallResult() throws URISyntaxException {
-		APIConfig apiConfig = mock(APIConfig.class);
-		doReturn("0.0.0.0").when(apiConfig).getBindIP();
-
-		GlobalConfig globalConfig = mock(GlobalConfig.class);
-		doReturn(apiConfig).when(globalConfig).getAPI();
-
-		Configuration configuration = mock(Configuration.class);
-		doReturn(globalConfig).when(configuration).getGlobal();
-
-		doReturn(configuration).when(sdkContext).getConfig();
-
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(reporterProperties, sdkContext);
 
 		ServiceCallResult serviceCallResult;
 
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add(RouterConstant.ROUTER_LABEL_HEADER, "{\"k1\":\"v1\"}");
 
-		serviceCallResult = adapter.createServiceCallResult(
+		assertThat(PolarisEnhancedPluginUtils.getLabelMap(requestHeaders)).isEqualTo(new HashMap<String, String>() {{
+			put("k1", "v1");
+		}});
+
+		serviceCallResult = PolarisEnhancedPluginUtils.createServiceCallResult(
+				"0.0.0.0",
 				"test",
 				null,
 				null,
@@ -117,7 +116,8 @@ public class AbstractPolarisReporterAdapterTest {
 		);
 		assertThat(serviceCallResult.getRetStatus()).isEqualTo(RetStatus.RetSuccess);
 
-		serviceCallResult = adapter.createServiceCallResult(
+		serviceCallResult = PolarisEnhancedPluginUtils.createServiceCallResult(
+				"0.0.0.0",
 				"test",
 				null,
 				null,
@@ -130,7 +130,8 @@ public class AbstractPolarisReporterAdapterTest {
 		);
 		assertThat(serviceCallResult.getRetStatus()).isEqualTo(RetStatus.RetFail);
 
-		serviceCallResult = adapter.createServiceCallResult(
+		serviceCallResult = PolarisEnhancedPluginUtils.createServiceCallResult(
+				"0.0.0.0",
 				"test",
 				null,
 				null,
@@ -143,7 +144,8 @@ public class AbstractPolarisReporterAdapterTest {
 		);
 		assertThat(serviceCallResult.getRetStatus()).isEqualTo(RetStatus.RetTimeout);
 
-		serviceCallResult = adapter.createServiceCallResult(
+		serviceCallResult = PolarisEnhancedPluginUtils.createServiceCallResult(
+				"0.0.0.0",
 				"test",
 				"0.0.0.0",
 				8080,
@@ -162,11 +164,9 @@ public class AbstractPolarisReporterAdapterTest {
 	@Test
 	public void testResourceStat() throws URISyntaxException {
 
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(reporterProperties, sdkContext);
-
 		ResourceStat resourceStat;
 
-		resourceStat = adapter.createInstanceResourceStat("test",
+		resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat("test",
 				null,
 				null,
 				new URI("http://0.0.0.0/"),
@@ -176,7 +176,7 @@ public class AbstractPolarisReporterAdapterTest {
 		);
 		assertThat(resourceStat.getRetStatus()).isEqualTo(RetStatus.RetSuccess);
 
-		resourceStat = adapter.createInstanceResourceStat("test",
+		resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat("test",
 				null,
 				null,
 				new URI("http://0.0.0.0/"),
@@ -186,7 +186,7 @@ public class AbstractPolarisReporterAdapterTest {
 		);
 		assertThat(resourceStat.getRetStatus()).isEqualTo(RetStatus.RetTimeout);
 
-		resourceStat = adapter.createInstanceResourceStat("test",
+		resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat("test",
 				null,
 				null,
 				new URI("http://0.0.0.0/"),
@@ -200,13 +200,32 @@ public class AbstractPolarisReporterAdapterTest {
 	@Test
 	public void testApplyWithDefaultConfig() {
 		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
-		// Mock Condition
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties, sdkContext);
 
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 		// Assert
-		assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
+	}
+
+	@Test
+	public void testApplyWithHttpStatus() {
+		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
+		properties.setStatuses(Arrays.asList(HttpStatus.BAD_GATEWAY, HttpStatus.INTERNAL_SERVER_ERROR));
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
+		// Assert
+		assertThat(PolarisEnhancedPluginUtils.apply(null)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(true);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
 	}
 
 	@Test
@@ -216,12 +235,16 @@ public class AbstractPolarisReporterAdapterTest {
 		properties.getStatuses().clear();
 		properties.setIgnoreInternalServerError(false);
 
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties, sdkContext);
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 
 		// Assert
-		assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(true);
-		assertThat(adapter.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(true);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
 	}
 
 	@Test
@@ -231,12 +254,16 @@ public class AbstractPolarisReporterAdapterTest {
 		properties.getStatuses().clear();
 		properties.setIgnoreInternalServerError(true);
 
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties, sdkContext);
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 
 		// Assert
-		assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
 	}
 
 	@Test
@@ -246,12 +273,16 @@ public class AbstractPolarisReporterAdapterTest {
 		properties.getStatuses().clear();
 		properties.getSeries().clear();
 
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties, sdkContext);
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 
 		// Assert
-		assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(true);
 	}
 
 	@Test
@@ -262,65 +293,46 @@ public class AbstractPolarisReporterAdapterTest {
 		properties.getSeries().clear();
 		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
 
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties, sdkContext);
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		doReturn(properties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 
 		// Assert
-		assertThat(adapter.apply(HttpStatus.OK)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(false);
-		assertThat(adapter.apply(HttpStatus.FORBIDDEN)).isEqualTo(true);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.OK)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.INTERNAL_SERVER_ERROR)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.BAD_GATEWAY)).isEqualTo(false);
+		assertThat(PolarisEnhancedPluginUtils.apply(HttpStatus.FORBIDDEN)).isEqualTo(true);
 	}
 
 
 	@Test
 	public void testGetRetStatusFromRequest() {
-		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
-		// Mock Condition
-		properties.getStatuses().clear();
-		properties.getSeries().clear();
-		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
-
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties, sdkContext);
 
 		HttpHeaders headers = new HttpHeaders();
-		RetStatus ret = adapter.getRetStatusFromRequest(headers, RetStatus.RetFail);
+		RetStatus ret = PolarisEnhancedPluginUtils.getRetStatusFromRequest(headers, RetStatus.RetFail);
 		assertThat(ret).isEqualTo(RetStatus.RetFail);
 
 		headers.set(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
-		ret = adapter.getRetStatusFromRequest(headers, RetStatus.RetFail);
+		ret = PolarisEnhancedPluginUtils.getRetStatusFromRequest(headers, RetStatus.RetFail);
 		assertThat(ret).isEqualTo(RetStatus.RetFlowControl);
 
 		headers.set(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetReject.getDesc());
-		ret = adapter.getRetStatusFromRequest(headers, RetStatus.RetFail);
+		ret = PolarisEnhancedPluginUtils.getRetStatusFromRequest(headers, RetStatus.RetFail);
 		assertThat(ret).isEqualTo(RetStatus.RetReject);
 	}
 
 	@Test
 	public void testGetActiveRuleNameFromRequest() {
-		RpcEnhancementReporterProperties properties = new RpcEnhancementReporterProperties();
-		// Mock Condition
-		properties.getStatuses().clear();
-		properties.getSeries().clear();
-		properties.getSeries().add(HttpStatus.Series.CLIENT_ERROR);
-
-		SimplePolarisReporterAdapter adapter = new SimplePolarisReporterAdapter(properties, sdkContext);
 
 		HttpHeaders headers = new HttpHeaders();
-		String ruleName = adapter.getActiveRuleNameFromRequest(headers);
+		String ruleName = PolarisEnhancedPluginUtils.getActiveRuleNameFromRequest(headers);
 		assertThat(ruleName).isEqualTo("");
 
 		headers.set(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, "mock_rule");
-		ruleName = adapter.getActiveRuleNameFromRequest(headers);
+		ruleName = PolarisEnhancedPluginUtils.getActiveRuleNameFromRequest(headers);
 		assertThat(ruleName).isEqualTo("mock_rule");
 	}
 
-	/**
-	 * Simple Polaris CircuitBreak Adapter Implements .
-	 */
-	public static class SimplePolarisReporterAdapter extends AbstractPolarisReporterAdapter {
-
-		protected SimplePolarisReporterAdapter(RpcEnhancementReporterProperties reportProperties, SDKContext context) {
-			super(reportProperties, context);
-		}
-	}
 }

@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.router.transformer;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
 import org.junit.jupiter.api.BeforeAll;
