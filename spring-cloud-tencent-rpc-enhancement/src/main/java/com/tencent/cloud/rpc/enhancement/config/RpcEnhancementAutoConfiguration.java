@@ -24,7 +24,7 @@ import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
-import com.tencent.cloud.rpc.enhancement.feign.PolarisLoadBalancerFeignRequestTransformer;
+import com.tencent.cloud.rpc.enhancement.feign.EnhancedLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.filter.EnhancedReactiveFilter;
 import com.tencent.cloud.rpc.enhancement.filter.EnhancedServletFilter;
 import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
@@ -70,11 +70,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import static jakarta.servlet.DispatcherType.ASYNC;
-import static jakarta.servlet.DispatcherType.ERROR;
-import static jakarta.servlet.DispatcherType.FORWARD;
-import static jakarta.servlet.DispatcherType.INCLUDE;
-import static jakarta.servlet.DispatcherType.REQUEST;
+import static javax.servlet.DispatcherType.ASYNC;
+import static javax.servlet.DispatcherType.ERROR;
+import static javax.servlet.DispatcherType.FORWARD;
+import static javax.servlet.DispatcherType.INCLUDE;
+import static javax.servlet.DispatcherType.REQUEST;
 
 /**
  * Auto Configuration for Polaris {@link feign.Feign} OR {@link RestTemplate} which can automatically bring in the call
@@ -197,9 +197,9 @@ public class RpcEnhancementAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnClass(name = {"org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequestTransformer"})
-		public PolarisLoadBalancerFeignRequestTransformer polarisLoadBalancerFeignRequestTransformer() {
-			return new PolarisLoadBalancerFeignRequestTransformer();
+		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.ServiceInstanceChooser")
+		public EnhancedLoadBalancerClientAspect enhancedLoadBalancerClientAspect() {
+			return new EnhancedLoadBalancerClientAspect();
 		}
 
 	}

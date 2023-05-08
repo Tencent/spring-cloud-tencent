@@ -18,32 +18,32 @@
 package com.tencent.cloud.rpc.enhancement.feign;
 
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import feign.Request;
-
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequestTransformer;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 
 import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 
 /**
- * PolarisLoadBalancerFeignRequestTransformer.
+ * EnhancedLoadBalancerClientAspect.
  *
  * @author sean yu
  */
-public class PolarisLoadBalancerFeignRequestTransformer implements LoadBalancerFeignRequestTransformer {
+@Aspect
+public class EnhancedLoadBalancerClientAspect {
 
-	/**
-	 * Transform Request, add Loadbalancer ServiceInstance to MetadataContext.
-	 * @param request request
-	 * @param instance instance
-	 * @return HttpRequest
-	 */
-	@Override
-	public Request transformRequest(Request request, ServiceInstance instance) {
-		if (instance != null) {
-			MetadataContextHolder.get().setLoadbalancer(LOAD_BALANCER_SERVICE_INSTANCE, instance);
-		}
-		return request;
+	@Pointcut("execution(public * org.springframework.cloud.client.loadbalancer.ServiceInstanceChooser.choose(..)) ")
+	public void pointcut() {
+
 	}
 
+	@Around("pointcut()")
+	public Object invoke(ProceedingJoinPoint joinPoint) throws Throwable {
+		Object result = joinPoint.proceed();
+		if (result != null) {
+			MetadataContextHolder.get().setLoadbalancer(LOAD_BALANCER_SERVICE_INSTANCE, result);
+		}
+		return result;
+	}
 }

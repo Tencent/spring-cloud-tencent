@@ -22,12 +22,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerProperties;
 import org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
-import org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequestTransformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,9 +63,6 @@ public class EnhancedFeignBeanPostProcessorTest {
 			}
 			return null;
 		}).when(beanFactory).getBean(any(Class.class));
-		ObjectProvider objectProvider = mock(ObjectProvider.class);
-		doReturn(new PolarisLoadBalancerFeignRequestTransformer()).when(objectProvider).getObject();
-		doReturn(objectProvider).when(beanFactory).getBeanProvider(LoadBalancerFeignRequestTransformer.class);
 		enhancedFeignBeanPostProcessor.setBeanFactory(beanFactory);
 
 		// isNeedWrap(bean) == false

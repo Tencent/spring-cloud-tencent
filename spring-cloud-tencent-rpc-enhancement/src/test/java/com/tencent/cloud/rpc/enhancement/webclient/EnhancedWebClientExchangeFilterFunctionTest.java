@@ -43,7 +43,7 @@ import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
@@ -105,7 +105,7 @@ public class EnhancedWebClientExchangeFilterFunctionTest {
 		doReturn(HttpMethod.GET).when(clientRequest).method();
 		ClientResponse.Headers headers = mock(ClientResponse.Headers.class);
 		doReturn(headers).when(clientResponse).headers();
-		doReturn(HttpStatusCode.valueOf(200)).when(clientResponse).statusCode();
+		doReturn(HttpStatus.valueOf(200)).when(clientResponse).statusCode();
 		doReturn(Mono.just(clientResponse)).when(exchangeFunction).exchange(any());
 
 		EnhancedWebClientExchangeFilterFunction reporter = new EnhancedWebClientExchangeFilterFunction(new DefaultEnhancedPluginRunner(new ArrayList<>(), registration, null));

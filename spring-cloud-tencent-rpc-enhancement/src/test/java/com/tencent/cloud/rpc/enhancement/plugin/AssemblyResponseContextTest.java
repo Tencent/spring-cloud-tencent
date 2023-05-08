@@ -18,8 +18,8 @@
 package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
@@ -86,7 +86,7 @@ public class AssemblyResponseContextTest {
 		assertThat(assemblyResponseContext.getRetCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(assemblyResponseContext.getThrowable()).isEqualTo(null);
 		assertThat(assemblyResponseContext.getRetStatus()).isEqualTo(RetStatus.RetSuccess);
-		assertThat(assemblyResponseContext.listHeaders()).isEqualTo(new HashSet<>(List.of("a")));
+		assertThat(assemblyResponseContext.listHeaders()).isEqualTo(new HashSet<>(Arrays.asList("a")));
 
 		Throwable e = new SocketTimeoutException();
 		assemblyResponseContext = new AssemblyResponseContext(null, e);

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.google.common.net.HttpHeaders;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
@@ -58,7 +59,7 @@ public class AssemblyRequestContext implements RequestContext {
 						.orElse(new ArrayList<>())
 						.stream()
 						.flatMap(it -> Arrays.stream(it.split(";")))
-						.toList();
+						.collect(Collectors.toList());
 		allCookies.forEach(cookie -> {
 			String[] cookieKV = cookie.split("=");
 			if (cookieKV.length == 2) {
