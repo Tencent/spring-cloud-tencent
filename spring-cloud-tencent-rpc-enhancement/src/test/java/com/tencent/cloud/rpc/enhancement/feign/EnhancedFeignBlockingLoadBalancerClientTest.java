@@ -30,6 +30,6 @@ public class EnhancedFeignBlockingLoadBalancerClientTest {
 
 	@Test
 	public void testConstructor() {
-		assertThatCode(() -> new EnhancedFeignBlockingLoadBalancerClient(null, null, null, null)).doesNotThrowAnyException();
+		assertThatCode(() -> new EnhancedFeignBlockingLoadBalancerClient(null, null, null)).doesNotThrowAnyException();
 	}
 }

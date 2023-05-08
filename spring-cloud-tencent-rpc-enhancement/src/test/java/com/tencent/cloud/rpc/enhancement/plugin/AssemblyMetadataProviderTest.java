@@ -43,7 +43,7 @@ public class AssemblyMetadataProviderTest {
 	@Test
 	public void testAssemblyMetadataProvider() {
 		ServiceInstance serviceInstance = Mockito.mock(ServiceInstance.class);
-		Map<String, String> metadata = new HashMap<>() {{
+		Map<String, String> metadata = new HashMap<String, String>() {{
 			put("k", "v");
 		}};
 		doReturn(metadata).when(serviceInstance).getMetadata();

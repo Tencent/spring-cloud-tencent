@@ -22,7 +22,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import feign.Request;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,22 +45,18 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 /**
- * PolarisLoadBalancerFeignRequestTransformerTest.
+ * EnhancedLoadBalancerClientAspectTest.
  *
  * @author sean yu
  */
 @ExtendWith(MockitoExtension.class)
-public class PolarisLoadBalancerFeignRequestTransformerTest {
+public class EnhancedLoadBalancerClientAspectTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-
-	private PolarisLoadBalancerFeignRequestTransformer transformer = new PolarisLoadBalancerFeignRequestTransformer();
-
 	@Mock
-	private Request clientRequest;
+	private ProceedingJoinPoint proceedingJoinPoint;
 
-	@Mock
-	private ServiceInstance serviceInstance;
+	private EnhancedLoadBalancerClientAspect aspect = new EnhancedLoadBalancerClientAspect();
 
 	@BeforeAll
 	static void beforeAll() {
@@ -88,7 +84,10 @@ public class PolarisLoadBalancerFeignRequestTransformerTest {
 
 	@Test
 	public void test() throws Throwable {
-		transformer.transformRequest(clientRequest, serviceInstance);
+		ServiceInstance serviceInstance = mock(ServiceInstance.class);
+		doReturn(serviceInstance).when(proceedingJoinPoint).proceed();
+		aspect.invoke(proceedingJoinPoint);
+		aspect.pointcut();
 		assertThat(MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE)).isEqualTo(serviceInstance);
 	}
 }

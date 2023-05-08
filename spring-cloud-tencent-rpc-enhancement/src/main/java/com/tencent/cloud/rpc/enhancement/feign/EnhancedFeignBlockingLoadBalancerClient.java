@@ -17,14 +17,11 @@
 
 package com.tencent.cloud.rpc.enhancement.feign;
 
-import java.util.List;
-
 import feign.Client;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient;
-import org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequestTransformer;
 
 /**
  * Wrap for {@link FeignBlockingLoadBalancerClient}.
@@ -34,7 +31,9 @@ import org.springframework.cloud.openfeign.loadbalancer.LoadBalancerFeignRequest
 public class EnhancedFeignBlockingLoadBalancerClient extends FeignBlockingLoadBalancerClient {
 
 	public EnhancedFeignBlockingLoadBalancerClient(Client delegate, LoadBalancerClient loadBalancerClient,
-			LoadBalancerClientFactory loadBalancerClientFactory, List<LoadBalancerFeignRequestTransformer> transformers) {
-		super(delegate, loadBalancerClient, loadBalancerClientFactory, transformers);
+			LoadBalancerClientFactory loadBalancerClientFactory) {
+		super(delegate, loadBalancerClient, loadBalancerClientFactory);
 	}
+
+
 }
