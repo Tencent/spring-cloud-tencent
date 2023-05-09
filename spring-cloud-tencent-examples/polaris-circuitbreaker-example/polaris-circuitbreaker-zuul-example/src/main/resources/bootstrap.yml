@@ -10,6 +10,7 @@ spring:
       namespace: default
       circuitbreaker:
         enabled: true
+      enabled: true
 zuul:
   routes:
     GatewayCalleeService:
