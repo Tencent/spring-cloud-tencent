@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.feign;
 
 
 import java.io.BufferedReader;
@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -36,10 +35,10 @@ import com.tencent.polaris.client.util.Utils;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -50,11 +49,13 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -69,8 +70,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		properties = {
 				"spring.cloud.gateway.enabled=false",
 				"spring.cloud.openfeign.circuitbreaker.enabled=true",
-				"spring.cloud.polaris.namespace=default",
-				"spring.cloud.polaris.service=Test"
+				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
+				"spring.cloud.polaris.service=test"
 })
 @DirtiesContext
 public class PolarisCircuitBreakerFeignIntegrationTest {
@@ -88,15 +89,6 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	@Autowired
 	private BazService bazService;
-
-	private static NamingServer namingServer;
-
-	@AfterAll
-	public static void afterAll() {
-		if (null != namingServer) {
-			namingServer.terminate();
-		}
-	}
 
 	@Test
 	public void contextLoads() throws Exception {
@@ -140,23 +132,28 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 		}
 
 		@Bean
-		public CircuitBreakAPI circuitBreakAPI() throws InvalidProtocolBufferException {
-			try {
-				namingServer = NamingServer.startNamingServer(10081);
-				System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-			}
-			catch (IOException e) {
+		public PreDestroy preDestroy(NamingServer namingServer) {
+			return new PreDestroy(namingServer);
+		}
 
-			}
-			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
+		@Bean
+		public NamingServer namingServer() throws IOException {
+			NamingServer namingServer = NamingServer.startNamingServer(-1);
+			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
+			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
 
 			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
+			InputStream inputStream = PolarisCircuitBreakerFeignIntegrationTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
 			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
 			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
 			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
 			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
 			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
+			return namingServer;
+		}
+
+		@Bean
+		public CircuitBreakAPI circuitBreakAPI(NamingServer namingServer) {
 			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
 			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
 		}
@@ -164,6 +161,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	}
 
 	@FeignClient(value = TEST_SERVICE_NAME, contextId = "1", fallback = EchoServiceFallback.class)
+	@Primary
 	public interface EchoService {
 
 		@RequestMapping(path = "echo/{str}")
@@ -230,6 +228,18 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 			return fooService;
 		}
 
+	}
+
+	public static class PreDestroy implements DisposableBean {
+
+		private final NamingServer namingServer;
+		public PreDestroy(NamingServer namingServer) {
+			this.namingServer = namingServer;
+		}
+		@Override
+		public void destroy() throws Exception {
+			namingServer.terminate();
+		}
 	}
 
 }

@@ -77,13 +77,9 @@ public class PolarisCircuitBreakerMockServerTest {
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service"))
 				.thenReturn(SERVICE_CIRCUIT_BREAKER);
 
-		try {
-			namingServer = NamingServer.startNamingServer(-1);
-			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-		}
-		catch (IOException e) {
+		namingServer = NamingServer.startNamingServer(-1);
+		System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
 
-		}
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_CIRCUIT_BREAKER);
 
 		CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
@@ -100,6 +96,7 @@ public class PolarisCircuitBreakerMockServerTest {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
+		mockedApplicationContextAwareUtils.close();
 	}
 
 	@Test
