@@ -27,8 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.openfeign.CircuitBreakerNameResolver;
-import org.springframework.cloud.openfeign.FeignClientFactory;
 import org.springframework.cloud.openfeign.FeignClientFactoryBean;
+import org.springframework.cloud.openfeign.FeignContext;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
@@ -51,7 +51,7 @@ public class PolarisFeignCircuitBreakerTargeterTest {
 	@Test
 	public void testTarget() {
 		PolarisFeignCircuitBreakerTargeter targeter = new PolarisFeignCircuitBreakerTargeter(circuitBreakerFactory, circuitBreakerNameResolver);
-		targeter.target(new FeignClientFactoryBean(), new Feign.Builder(), new FeignClientFactory(), new Target.HardCodedTarget<>(TestApi.class, "/test"));
+		targeter.target(new FeignClientFactoryBean(), new Feign.Builder(), new FeignContext(), new Target.HardCodedTarget<>(TestApi.class, "/test"));
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class PolarisFeignCircuitBreakerTargeterTest {
 		FeignClientFactoryBean feignClientFactoryBean = mock(FeignClientFactoryBean.class);
 		doReturn(TestApi.class).when(feignClientFactoryBean).getFallback();
 		doReturn("test").when(feignClientFactoryBean).getName();
-		FeignClientFactory feignClientFactory = mock(FeignClientFactory.class);
+		FeignContext feignClientFactory = mock(FeignContext.class);
 		doReturn(null).when(feignClientFactory).getInstance("test", TestApi.class);
 		assertThatThrownBy(() -> {
 			targeter.target(feignClientFactoryBean, new PolarisFeignCircuitBreaker.Builder(), feignClientFactory, new Target.HardCodedTarget<>(TestApi.class, "/test"));
@@ -74,7 +74,7 @@ public class PolarisFeignCircuitBreakerTargeterTest {
 		doReturn(void.class).when(feignClientFactoryBean).getFallback();
 		doReturn(TestApi.class).when(feignClientFactoryBean).getFallbackFactory();
 		doReturn("test").when(feignClientFactoryBean).getName();
-		FeignClientFactory feignClientFactory = mock(FeignClientFactory.class);
+		FeignContext feignClientFactory = mock(FeignContext.class);
 		doReturn(Object.class).when(feignClientFactory).getInstance("test", TestApi.class);
 		assertThatThrownBy(() -> {
 			targeter.target(feignClientFactoryBean, new PolarisFeignCircuitBreaker.Builder(), feignClientFactory, new Target.HardCodedTarget<>(TestApi.class, "/test"));
