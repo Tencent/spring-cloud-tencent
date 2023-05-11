@@ -18,14 +18,12 @@
 package com.tencent.cloud.polaris;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulConfigModifier;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosConfigModifier;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.api.core.ProviderAPI;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,9 +44,8 @@ public class DiscoveryPropertiesAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PolarisDiscoveryHandler polarisDiscoveryHandler(PolarisDiscoveryProperties polarisDiscoveryProperties,
-															ProviderAPI providerAPI, SDKContext sdkContext,
-															ConsumerAPI polarisConsumer) {
-		return new PolarisDiscoveryHandler(polarisDiscoveryProperties, providerAPI, sdkContext, polarisConsumer);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new PolarisDiscoveryHandler(polarisDiscoveryProperties, polarisSDKContextManager);
 	}
 
 	@Bean

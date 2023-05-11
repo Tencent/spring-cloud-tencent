@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.polaris.router.api.core.RouterAPI;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -79,20 +79,20 @@ public class PolarisLoadBalancerClientConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRandom")
 	public ReactorLoadBalancer<ServiceInstance> polarisWeightedLoadBalancer(Environment environment,
-			LoadBalancerClientFactory loadBalancerClientFactory, RouterAPI routerAPI) {
+			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
 		return new PolarisWeightedRandomLoadBalancer(name,
-				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI);
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisRingHash")
 	public ReactorLoadBalancer<ServiceInstance> polarisRingHashLoadBalancer(Environment environment,
-			LoadBalancerClientFactory loadBalancerClientFactory, RouterAPI routerAPI) {
+			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
 		return new PolarisRingHashLoadBalancer(name,
-				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), routerAPI);
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
 	}
 
 	@Configuration(proxyBeanMethods = false)

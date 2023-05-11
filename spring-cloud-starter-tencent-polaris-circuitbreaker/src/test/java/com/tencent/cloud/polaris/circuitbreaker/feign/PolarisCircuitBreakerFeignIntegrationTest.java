@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
@@ -42,7 +44,10 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -89,7 +94,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	private BazService bazService;
 
 	@Test
-	public void contextLoads() throws Exception {
+	public void contextLoads() {
 		assertThat(echoService).isNotNull();
 		assertThat(fooService).isNotNull();
 	}
@@ -119,43 +124,37 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	@EnableFeignClients
 	public static class TestConfig {
 
+		@Autowired(required = false)
+		private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
+
+		{
+			PolarisSDKContextManager.innerDestroy();
+		}
+
+
 		@Bean
-		public EchoServiceFallback echoServiceFallback() {
-			return new EchoServiceFallback();
+		@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
+		public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
 		}
 
 		@Bean
-		public CustomFallbackFactory customFallbackFactory() {
-			return new CustomFallbackFactory();
+		@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
+		public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
 		}
 
 		@Bean
-		public PreDestroy preDestroy(NamingServer namingServer) {
-			return new PreDestroy(namingServer);
+		@ConditionalOnMissingBean(CircuitBreakerFactory.class)
+		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI,
+				PolarisSDKContextManager polarisSDKContextManager) {
+			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(
+					circuitBreakAPI, polarisSDKContextManager.getConsumerAPI());
+			customizers.forEach(customizer -> customizer.customize(factory));
+			return factory;
 		}
-
-		@Bean
-		public NamingServer namingServer() throws IOException {
-			NamingServer namingServer = NamingServer.startNamingServer(-1);
-			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
-
-			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-			InputStream inputStream = PolarisCircuitBreakerFeignIntegrationTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
-			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
-			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
-			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
-			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
-			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
-			return namingServer;
-		}
-
-		@Bean
-		public CircuitBreakAPI circuitBreakAPI(NamingServer namingServer) {
-			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
-			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
-		}
-
 	}
 
 	@FeignClient(value = TEST_SERVICE_NAME, contextId = "1", fallback = EchoServiceFallback.class)
@@ -219,7 +218,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	public static class CustomFallbackFactory
 			implements FallbackFactory<FooService> {
 
-		private FooService fooService = new FooServiceFallback();
+		private final FooService fooService = new FooServiceFallback();
 
 		@Override
 		public FooService create(Throwable throwable) {

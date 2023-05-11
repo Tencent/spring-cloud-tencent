@@ -20,8 +20,8 @@ package com.tencent.cloud.polaris.context.config;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.PostInitPolarisSDKContext;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +37,7 @@ public class PolarisContextPostConfiguration {
 
 	@Bean
 	public PostInitPolarisSDKContext postInitPolarisSDKContext(
-			SDKContext sdkContext, StaticMetadataManager staticMetadataManager) {
-		return new PostInitPolarisSDKContext(sdkContext, staticMetadataManager);
+			PolarisSDKContextManager polarisSDKContextManager, StaticMetadataManager staticMetadataManager) {
+		return new PostInitPolarisSDKContext(polarisSDKContextManager.getSDKContext(), staticMetadataManager);
 	}
 }

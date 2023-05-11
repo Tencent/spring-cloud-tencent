@@ -149,4 +149,16 @@ public class PolarisContextProperties {
 	public void setService(String service) {
 		this.service = service;
 	}
+
+	@Override
+	public String toString() {
+		return "PolarisContextProperties{" +
+				"address='" + address + '\'' +
+				", localIpAddress='" + localIpAddress + '\'' +
+				", localPort=" + localPort +
+				", enabled=" + enabled +
+				", namespace='" + namespace + '\'' +
+				", service='" + service + '\'' +
+				'}';
+	}
 }

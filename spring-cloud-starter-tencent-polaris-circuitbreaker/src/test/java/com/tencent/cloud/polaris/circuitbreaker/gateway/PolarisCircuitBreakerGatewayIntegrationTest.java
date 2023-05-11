@@ -23,12 +23,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.polaris.circuitbreaker.gateway.PolarisCircuitBreakerFilterFactory;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
@@ -43,8 +50,11 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -152,6 +162,13 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 	@EnableAutoConfiguration
 	public static class TestApplication {
 
+		@Autowired(required = false)
+		private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
+
+		{
+			PolarisSDKContextManager.innerDestroy();
+		}
+
 		@Bean
 		public PreDestroy preDestroy(NamingServer namingServer) {
 			return new PreDestroy(namingServer);
@@ -177,6 +194,30 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 		public CircuitBreakAPI circuitBreakAPI(NamingServer namingServer) throws IOException {
 			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
 			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
+		public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
+		public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(CircuitBreakerFactory.class)
+		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI,
+				PolarisSDKContextManager polarisSDKContextManager) {
+			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(
+					circuitBreakAPI, polarisSDKContextManager.getConsumerAPI());
+			customizers.forEach(customizer -> customizer.customize(factory));
+			return factory;
 		}
 
 		@Bean

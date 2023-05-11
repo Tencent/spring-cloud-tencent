@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>4.0.1</version>
+		<version>4.0.2</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -88,16 +88,16 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.12.0-2022.0.1-SNAPSHOT</revision>
+		<revision>1.12.0-2022.0.2-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>6.0.7</spring.framework.version>
+		<spring.framework.version>6.0.8</spring.framework.version>
 
 		<!-- Spring Boot -->
-		<spring.boot.version>3.0.4</spring.boot.version>
+		<spring.boot.version>3.0.6</spring.boot.version>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2022.0.1</spring.cloud.version>
+		<spring.cloud.version>2022.0.2</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
