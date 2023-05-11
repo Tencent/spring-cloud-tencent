@@ -34,6 +34,7 @@ import com.tencent.polaris.api.config.global.StatReporterConfig;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.plugin.common.PluginTypes;
+import com.tencent.polaris.api.plugin.stat.ReporterMetaInfo;
 import com.tencent.polaris.api.plugin.stat.StatReporter;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.rpc.InstanceDeregisterRequest;
@@ -140,7 +141,13 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 					StatReporter statReporter = (StatReporter) polarisSDKContextManager.getSDKContext().getPlugins()
 							.getPlugin(PluginTypes.STAT_REPORTER.getBaseType(), StatReporterConfig.DEFAULT_REPORTER_PROMETHEUS);
 					if (Objects.nonNull(statReporter)) {
-						LOGGER.info("Stat server started on port: " + statReporter.metaInfo().getPort() + " (http)");
+						ReporterMetaInfo reporterMetaInfo = statReporter.metaInfo();
+						if (reporterMetaInfo.getPort() != null) {
+							LOGGER.info("Stat server started on port: " + reporterMetaInfo.getPort() + " (http)");
+						}
+						else {
+							LOGGER.info("Stat server is set to type of Push gateway");
+						}
 					}
 					else {
 						LOGGER.warn("Plugin StatReporter not found");

@@ -127,7 +127,7 @@ public class PolarisSDKContextManager {
 				// init SDKContext
 				sdkContext = SDKContext.initContextByConfig(properties.configuration(modifierList,
 						() -> environment.getProperty("spring.cloud.client.ip-address"),
-						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
+						() -> environment.getProperty("server.port", Integer.class, 0)));
 				sdkContext.init();
 
 				// init ProviderAPI
