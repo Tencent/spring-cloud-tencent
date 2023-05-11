@@ -68,7 +68,7 @@ public class PolarisDiscoveryHandler {
 		GetAllInstancesRequest request = new GetAllInstancesRequest();
 		request.setNamespace(namespace);
 		request.setService(service);
-		return polarisConsumer.getAllInstance(request);
+		return polarisConsumer.getAllInstances(request);
 	}
 
 	/**
