@@ -50,7 +50,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -73,7 +72,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
 				"spring.cloud.polaris.service=test"
 })
-@DirtiesContext
 public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	private static final String TEST_SERVICE_NAME = "test-service-callee";
