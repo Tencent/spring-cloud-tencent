@@ -21,7 +21,8 @@ README:
 
 ## 介绍
 
-Spring Cloud Tencent 是基于 Spring Cloud SPI 实现的一站式微服务解决方案。通过集成 Spring Cloud 和腾讯中间件，让分布式服务和微服务的开发、测试、发布和运维变得更加简单。
+Spring Cloud Tencent 是基于 Spring Cloud SPI 实现的一站式微服务解决方案。通过集成 Spring Cloud
+和腾讯中间件，让分布式服务和微服务的开发、测试、发布和运维变得更加简单。
 
 <img src="https://user-images.githubusercontent.com/4991116/170412323-ecaf544c-1d7b-45db-9cf0-591544e50c64.png" width="80%" />
 
@@ -31,7 +32,7 @@ Spring Cloud Tencent 集成 Spring Cloud 和北极星。北极星是一个支持
 
 - [北极星 Github](https://github.com/polarismesh/polaris)
 
-Spring Cloud 集成北极星可以解决以下问题： 
+Spring Cloud 集成北极星可以解决以下问题：
 
 - 服务管理：服务发现、服务发现、健康检查
 - 流量控制：可自定义的流量路由、负载均衡、限频限流、访问控制
@@ -77,7 +78,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.11.0-2020.0.6</version>
+            <version>1.11.4-2020.0.6</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
