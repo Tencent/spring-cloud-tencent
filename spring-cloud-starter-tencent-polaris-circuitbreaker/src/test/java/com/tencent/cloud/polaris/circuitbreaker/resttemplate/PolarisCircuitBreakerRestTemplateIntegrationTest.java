@@ -30,12 +30,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -148,7 +146,8 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode2.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
 		Utils.sleepUninterrupted(2000);
-		assertThat(restTemplateFallbackFromCode3.getForEntity("/example/service/b/info", String.class).getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(restTemplateFallbackFromCode3.getForEntity("/example/service/b/info", String.class)
+				.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode4.getForObject("/example/service/b/info", String.class)).isEqualTo("fallback");
 		Utils.sleepUninterrupted(2000);
@@ -161,7 +160,7 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
 	@Configuration
 	@EnableAutoConfiguration
-	@ImportAutoConfiguration({ PolarisCircuitBreakerFeignClientAutoConfiguration.class })
+	@ImportAutoConfiguration({PolarisCircuitBreakerFeignClientAutoConfiguration.class})
 	@EnableFeignClients
 	public static class TestConfig {
 
@@ -248,12 +247,15 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 			NamingServer namingServer = NamingServer.startNamingServer(-1);
 			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
 			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
-			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-			InputStream inputStream = PolarisCircuitBreakerRestTemplateIntegrationTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
-			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
+			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
+			InputStream inputStream = PolarisCircuitBreakerRestTemplateIntegrationTest.class.getClassLoader()
+					.getResourceAsStream("circuitBreakerRule.json");
+			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.joining(""));
 			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
 			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
-			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
+			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder()
+					.addRules(circuitBreakerRule).build();
 			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
 			return namingServer;
 		}
@@ -345,14 +347,15 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 	public static class PreDestroy implements DisposableBean {
 
 		private final NamingServer namingServer;
+
 		public PreDestroy(NamingServer namingServer) {
 			this.namingServer = namingServer;
 		}
+
 		@Override
 		public void destroy() throws Exception {
 			namingServer.terminate();
 		}
 	}
-
 
 }

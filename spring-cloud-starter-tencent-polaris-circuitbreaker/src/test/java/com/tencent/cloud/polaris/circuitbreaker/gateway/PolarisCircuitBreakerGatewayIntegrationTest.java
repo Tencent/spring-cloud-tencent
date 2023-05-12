@@ -31,15 +31,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
-import com.tencent.cloud.polaris.circuitbreaker.gateway.PolarisCircuitBreakerFilterFactory;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
-import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
 import com.tencent.polaris.client.util.Utils;
+import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
@@ -165,10 +166,6 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 		@Autowired(required = false)
 		private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
 
-		{
-			PolarisSDKContextManager.innerDestroy();
-		}
-
 		@Bean
 		public PreDestroy preDestroy(NamingServer namingServer) {
 			return new PreDestroy(namingServer);
@@ -180,12 +177,15 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
 			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
 
-			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-			InputStream inputStream = PolarisCircuitBreakerGatewayIntegrationTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
-			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
+			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
+			InputStream inputStream = PolarisCircuitBreakerGatewayIntegrationTest.class.getClassLoader()
+					.getResourceAsStream("circuitBreakerRule.json");
+			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.joining(""));
 			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
 			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
-			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
+			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder()
+					.addRules(circuitBreakerRule).build();
 			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
 			return namingServer;
 		}
@@ -194,6 +194,12 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 		public CircuitBreakAPI circuitBreakAPI(NamingServer namingServer) throws IOException {
 			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
 			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		}
+
+		@Bean
+		public ConsumerAPI consumerAPI(NamingServer namingServer) {
+			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
+			return DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
 		}
 
 		@Bean
@@ -212,10 +218,8 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 
 		@Bean
 		@ConditionalOnMissingBean(CircuitBreakerFactory.class)
-		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI,
-				PolarisSDKContextManager polarisSDKContextManager) {
-			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(
-					circuitBreakAPI, polarisSDKContextManager.getConsumerAPI());
+		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
+			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
 			customizers.forEach(customizer -> customizer.customize(factory));
 			return factory;
 		}
@@ -266,9 +270,11 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 	public static class PreDestroy implements DisposableBean {
 
 		private final NamingServer namingServer;
+
 		public PreDestroy(NamingServer namingServer) {
 			this.namingServer = namingServer;
 		}
+
 		@Override
 		public void destroy() throws Exception {
 			namingServer.terminate();

@@ -29,11 +29,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
 import com.tencent.polaris.client.util.Utils;
+import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
@@ -76,7 +82,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 				"spring.cloud.openfeign.circuitbreaker.enabled=true",
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
 				"spring.cloud.polaris.service=test"
-})
+		})
 public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	private static final String TEST_SERVICE_NAME = "test-service-callee";
@@ -118,45 +124,6 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 		assertThat(echoService.equals(fooService)).isEqualTo(Boolean.FALSE);
 	}
 
-	@Configuration
-	@EnableAutoConfiguration
-	@ImportAutoConfiguration({ PolarisCircuitBreakerFeignClientAutoConfiguration.class })
-	@EnableFeignClients
-	public static class TestConfig {
-
-		@Autowired(required = false)
-		private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
-
-		{
-			PolarisSDKContextManager.innerDestroy();
-		}
-
-
-		@Bean
-		@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
-		public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-				CircuitBreakAPI circuitBreakAPI) {
-			return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
-		public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-				CircuitBreakAPI circuitBreakAPI) {
-			return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(CircuitBreakerFactory.class)
-		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI,
-				PolarisSDKContextManager polarisSDKContextManager) {
-			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(
-					circuitBreakAPI, polarisSDKContextManager.getConsumerAPI());
-			customizers.forEach(customizer -> customizer.customize(factory));
-			return factory;
-		}
-	}
-
 	@FeignClient(value = TEST_SERVICE_NAME, contextId = "1", fallback = EchoServiceFallback.class)
 	@Primary
 	public interface EchoService {
@@ -192,6 +159,84 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	@FeignClient(value = TEST_SERVICE_NAME, contextId = "4")
 	public interface BazClient extends BazService {
 
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@ImportAutoConfiguration({PolarisCircuitBreakerFeignClientAutoConfiguration.class})
+	@EnableFeignClients
+	public static class TestConfig {
+
+		@Autowired(required = false)
+		private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
+
+		@Bean
+		public EchoServiceFallback echoServiceFallback() {
+			return new EchoServiceFallback();
+		}
+
+		@Bean
+		public CustomFallbackFactory customFallbackFactory() {
+			return new CustomFallbackFactory();
+		}
+
+		@Bean
+		public PreDestroy preDestroy(NamingServer namingServer) {
+			return new PreDestroy(namingServer);
+		}
+
+		@Bean
+		public NamingServer namingServer() throws IOException {
+			NamingServer namingServer = NamingServer.startNamingServer(-1);
+			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
+			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
+
+			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
+			InputStream inputStream = PolarisCircuitBreakerFeignIntegrationTest.class.getClassLoader()
+					.getResourceAsStream("circuitBreakerRule.json");
+			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.joining(""));
+			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
+			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
+			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder()
+					.addRules(circuitBreakerRule).build();
+			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
+			return namingServer;
+		}
+
+		@Bean
+		public CircuitBreakAPI circuitBreakAPI(NamingServer namingServer) {
+			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
+			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		}
+
+		@Bean
+		public ConsumerAPI consumerAPI(NamingServer namingServer) {
+			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
+			return DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
+		public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
+		public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(CircuitBreakerFactory.class)
+		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
+			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+			customizers.forEach(customizer -> customizer.customize(factory));
+			return factory;
+		}
 	}
 
 	public static class EchoServiceFallback implements EchoService {
@@ -230,9 +275,11 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	public static class PreDestroy implements DisposableBean {
 
 		private final NamingServer namingServer;
+
 		public PreDestroy(NamingServer namingServer) {
 			this.namingServer = namingServer;
 		}
+
 		@Override
 		public void destroy() throws Exception {
 			namingServer.terminate();
