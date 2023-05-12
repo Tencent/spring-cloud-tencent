@@ -70,10 +70,10 @@
 	</developers>
 
 	<properties>
-		<revision>1.11.2-2022.0.1</revision>
+		<revision>1.11.4-2022.0.1</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.12.2</polaris.version>
+		<polaris.version>1.12.5</polaris.version>
 		<guava.version>31.1-jre</guava.version>
 		<mocktio.version>4.9.0</mocktio.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
