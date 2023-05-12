@@ -17,10 +17,12 @@
 
 package com.tencent.cloud.polaris.discovery;
 
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -60,6 +62,11 @@ public class PolarisDiscoveryClientConfigurationTest {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
+	}
+
+	@BeforeEach
+	void setUp() {
+		PolarisSDKContextManager.innerDestroy();
 	}
 
 	@Test

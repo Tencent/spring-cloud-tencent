@@ -23,7 +23,6 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
-import com.tencent.polaris.api.core.ConsumerAPI;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -55,7 +54,6 @@ public class RpcEnhancementAutoConfigurationTest {
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
-			assertThat(context).hasSingleBean(ConsumerAPI.class);
 			assertThat(context).hasSingleBean(EnhancedPluginRunner.class);
 			assertThat(context).hasSingleBean(EnhancedFeignBeanPostProcessor.class);
 			assertThat(context).hasSingleBean(SuccessPolarisReporter.class);

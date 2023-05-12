@@ -17,8 +17,9 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
-import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.plugins.stat.prometheus.handler.PrometheusHandlerConfig;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -62,11 +63,17 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.application.name=test")
 			.withPropertyValues("spring.cloud.gateway.enabled=false");
 
+	@BeforeEach
+	void setUp() {
+		PolarisSDKContextManager.innerDestroy();
+	}
+
 	@Test
 	void testPull() {
 		pullContextRunner.run(context -> {
-			SDKContext sdkContext = context.getBean(SDKContext.class);
-			PrometheusHandlerConfig prometheusHandlerConfig = sdkContext.getConfig().getGlobal().getStatReporter()
+			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
+			PrometheusHandlerConfig prometheusHandlerConfig = polarisSDKContextManager.getSDKContext().getConfig()
+					.getGlobal().getStatReporter()
 					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
 			assertThat(prometheusHandlerConfig.getType()).isEqualTo("pull");
 			assertThat(prometheusHandlerConfig.getHost()).isEqualTo("127.0.0.1");
@@ -78,8 +85,9 @@ public class StatConfigModifierTest {
 	@Test
 	void testPush() {
 		pushContextRunner.run(context -> {
-			SDKContext sdkContext = context.getBean(SDKContext.class);
-			PrometheusHandlerConfig prometheusHandlerConfig = sdkContext.getConfig().getGlobal().getStatReporter()
+			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
+			PrometheusHandlerConfig prometheusHandlerConfig = polarisSDKContextManager.getSDKContext().getConfig()
+					.getGlobal().getStatReporter()
 					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
 			assertThat(prometheusHandlerConfig.getType()).isEqualTo("push");
 			assertThat(prometheusHandlerConfig.getAddress()).isEqualTo("127.0.0.1:9091");
@@ -90,8 +98,9 @@ public class StatConfigModifierTest {
 	@Test
 	void testDisabled() {
 		disabledContextRunner.run(context -> {
-			SDKContext sdkContext = context.getBean(SDKContext.class);
-			PrometheusHandlerConfig prometheusHandlerConfig = sdkContext.getConfig().getGlobal().getStatReporter()
+			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
+			PrometheusHandlerConfig prometheusHandlerConfig = polarisSDKContextManager.getSDKContext().getConfig()
+					.getGlobal().getStatReporter()
 					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
 			assertThat(prometheusHandlerConfig.getPort()).isEqualTo(-1);
 		});
