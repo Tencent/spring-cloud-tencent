@@ -15,15 +15,12 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.config;
 
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
-import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration;
-import com.tencent.cloud.polaris.circuitbreaker.config.ReactivePolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisCircuitBreakerNameResolver;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -39,12 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Haotian Zhang
  */
-public class CircuitBreakerPolarisAutoConfigurationTest {
+public class PolarisCircuitBreakerAutoConfigurationTest {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
 					RpcEnhancementAutoConfiguration.class,
 					LoadBalancerAutoConfiguration.class,
+					PolarisCircuitBreakerFeignClientAutoConfiguration.class,
 					PolarisCircuitBreakerAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
@@ -62,7 +60,6 @@ public class CircuitBreakerPolarisAutoConfigurationTest {
 			assertThat(context).hasSingleBean(PolarisCircuitBreakerAutoConfiguration.class);
 			assertThat(context).hasSingleBean(CircuitBreakerFactory.class);
 			assertThat(context).hasSingleBean(CircuitBreakerConfigModifier.class);
-			assertThat(context).hasSingleBean(CircuitBreakAPI.class);
 			assertThat(context).hasSingleBean(PolarisCircuitBreakerNameResolver.class);
 		});
 	}
@@ -73,7 +70,6 @@ public class CircuitBreakerPolarisAutoConfigurationTest {
 			assertThat(context).hasSingleBean(ReactivePolarisCircuitBreakerAutoConfiguration.class);
 			assertThat(context).hasSingleBean(ReactiveCircuitBreakerFactory.class);
 			assertThat(context).hasSingleBean(CircuitBreakerConfigModifier.class);
-			assertThat(context).hasSingleBean(CircuitBreakAPI.class);
 		});
 	}
 

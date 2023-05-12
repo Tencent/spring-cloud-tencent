@@ -34,7 +34,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.core.Ordered;
+
+import static com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant.ClientPluginOrder.CONSUMER_REPORTER_PLUGIN_ORDER;
 
 /**
  * Polaris reporter when feign call is successful.
@@ -72,7 +73,8 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 		EnhancedRequestContext request = context.getRequest();
 		EnhancedResponseContext response = context.getResponse();
-		ServiceInstance serviceInstance = Optional.ofNullable(context.getServiceInstance()).orElse(new DefaultServiceInstance());
+		ServiceInstance serviceInstance = Optional.ofNullable(context.getServiceInstance())
+				.orElse(new DefaultServiceInstance());
 
 		ServiceCallResult resultRequest = createServiceCallResult(
 				serviceInstance.getServiceId(),
@@ -87,7 +89,8 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 		);
 
 		LOG.debug("Will report ServiceCallResult of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.",
-				resultRequest.getRetStatus().name(), request.getHttpMethod().name(), request.getUrl().getPath(), response.getHttpStatus(), context.getDelay());
+				resultRequest.getRetStatus().name(), request.getHttpMethod().name(), request.getUrl()
+						.getPath(), response.getHttpStatus(), context.getDelay());
 
 		consumerAPI.updateServiceCallResult(resultRequest);
 
@@ -101,6 +104,6 @@ public class SuccessPolarisReporter extends AbstractPolarisReporterAdapter imple
 
 	@Override
 	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE + 1;
+		return CONSUMER_REPORTER_PLUGIN_ORDER;
 	}
 }

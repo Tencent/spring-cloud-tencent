@@ -35,7 +35,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.core.Ordered;
+
+import static com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant.ClientPluginOrder.CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER;
 
 
 public class SuccessCircuitBreakerReporter extends AbstractPolarisReporterAdapter implements EnhancedPlugin {
@@ -68,7 +69,8 @@ public class SuccessCircuitBreakerReporter extends AbstractPolarisReporterAdapte
 		}
 		EnhancedRequestContext request = context.getRequest();
 		EnhancedResponseContext response = context.getResponse();
-		ServiceInstance serviceInstance = Optional.ofNullable(context.getServiceInstance()).orElse(new DefaultServiceInstance());
+		ServiceInstance serviceInstance = Optional.ofNullable(context.getServiceInstance())
+				.orElse(new DefaultServiceInstance());
 
 		ResourceStat resourceStat = createInstanceResourceStat(
 				serviceInstance.getServiceId(),
@@ -81,7 +83,8 @@ public class SuccessCircuitBreakerReporter extends AbstractPolarisReporterAdapte
 		);
 
 		LOG.debug("Will report CircuitBreaker ResourceStat of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.",
-				resourceStat.getRetStatus().name(), request.getHttpMethod().name(), request.getUrl().getPath(), response.getHttpStatus(), context.getDelay());
+				resourceStat.getRetStatus().name(), request.getHttpMethod().name(), request.getUrl()
+						.getPath(), response.getHttpStatus(), context.getDelay());
 
 		circuitBreakAPI.report(resourceStat);
 	}
@@ -94,6 +97,6 @@ public class SuccessCircuitBreakerReporter extends AbstractPolarisReporterAdapte
 
 	@Override
 	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE + 2;
+		return CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER;
 	}
 }

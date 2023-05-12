@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 public class PolarisCircuitBreakerTest {
 
-	private static final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private static ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
 					RpcEnhancementAutoConfiguration.class,
@@ -76,7 +76,7 @@ public class PolarisCircuitBreakerTest {
 
 	@Test
 	public void run() {
-		contextRunner.run(context -> {
+		this.contextRunner.run(context -> {
 
 			PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = context.getBean(PolarisCircuitBreakerFactory.class);
 			CircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
@@ -94,5 +94,8 @@ public class PolarisCircuitBreakerTest {
 
 		});
 	}
+
+
+
 
 }
