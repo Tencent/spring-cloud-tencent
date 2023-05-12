@@ -15,12 +15,9 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.config;
 
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
-import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration;
-import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
-import com.tencent.cloud.polaris.circuitbreaker.config.ReactivePolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;

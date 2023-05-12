@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker;
+package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,12 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
@@ -40,10 +36,10 @@ import com.tencent.polaris.client.util.Utils;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -57,7 +53,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -67,6 +62,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -79,26 +75,16 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
-		classes = PolarisCircuitBreakerIntegrationTest.TestConfig.class,
+		classes = PolarisCircuitBreakerRestTemplateIntegrationTest.TestConfig.class,
 		properties = {
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
-				"spring.cloud.polaris.namespace=default",
+				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
 				"spring.cloud.polaris.service=test"
 		})
-@DirtiesContext
-public class PolarisCircuitBreakerIntegrationTest {
+public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
 	private static final String TEST_SERVICE_NAME = "test-service-callee";
-
-	private static NamingServer namingServer;
-
-	@AfterAll
-	public static void afterAll() {
-		if (null != namingServer) {
-			namingServer.terminate();
-		}
-	}
 
 	@Autowired
 	@Qualifier("defaultRestTemplate")
@@ -168,14 +154,14 @@ public class PolarisCircuitBreakerIntegrationTest {
 	public static class TestConfig {
 
 		@Bean
-		@PolarisCircuitBreaker(fallback = "fallback")
+		@com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker(fallback = "fallback")
 		public RestTemplate defaultRestTemplate() {
 			return new RestTemplate();
 		}
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreaker
+		@com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker
 		public RestTemplate restTemplateFallbackFromPolaris() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
@@ -185,7 +171,7 @@ public class PolarisCircuitBreakerIntegrationTest {
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback.class)
+		@com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback.class)
 		public RestTemplate restTemplateFallbackFromCode() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
@@ -195,7 +181,7 @@ public class PolarisCircuitBreakerIntegrationTest {
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback2.class)
+		@com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback2.class)
 		public RestTemplate restTemplateFallbackFromCode2() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
@@ -205,7 +191,7 @@ public class PolarisCircuitBreakerIntegrationTest {
 
 		@Bean
 		@LoadBalanced
-		@PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback3.class)
+		@com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker(fallbackClass = CustomPolarisCircuitBreakerFallback3.class)
 		public RestTemplate restTemplateFallbackFromCode3() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://" + TEST_SERVICE_NAME);
 			RestTemplate restTemplate = new RestTemplate();
@@ -239,23 +225,27 @@ public class PolarisCircuitBreakerIntegrationTest {
 		}
 
 		@Bean
-		public CircuitBreakAPI circuitBreakAPI() throws InvalidProtocolBufferException {
-			try {
-				namingServer = NamingServer.startNamingServer(10081);
-				System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-			}
-			catch (IOException e) {
-
-			}
-			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
-
+		public NamingServer namingServer() throws IOException {
+			NamingServer namingServer = NamingServer.startNamingServer(-1);
+			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
+			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
 			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
+			InputStream inputStream = PolarisCircuitBreakerRestTemplateIntegrationTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
 			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
 			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
 			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
 			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
 			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
+			return namingServer;
+		}
+
+		@Bean
+		public PreDestroy preDestroy(NamingServer namingServer) {
+			return new PreDestroy(namingServer);
+		}
+
+		@Bean
+		public CircuitBreakAPI circuitBreakAPI(NamingServer namingServer) {
 			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
 			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
 		}
@@ -306,6 +296,18 @@ public class PolarisCircuitBreakerIntegrationTest {
 			return new PolarisCircuitBreakerHttpResponse(
 					200
 			);
+		}
+	}
+
+	public static class PreDestroy implements DisposableBean {
+
+		private final NamingServer namingServer;
+		public PreDestroy(NamingServer namingServer) {
+			this.namingServer = namingServer;
+		}
+		@Override
+		public void destroy() throws Exception {
+			namingServer.terminate();
 		}
 	}
 
