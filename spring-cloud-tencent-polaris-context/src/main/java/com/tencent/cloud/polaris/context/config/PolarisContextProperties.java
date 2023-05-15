@@ -83,10 +83,8 @@ public class PolarisContextProperties {
 			defaultHost = ipAddressSupplier.get();
 			this.localIpAddress = defaultHost;
 		}
-		Integer defaultPort = this.localPort;
 		if (this.localPort == null || this.localPort <= 0) {
-			defaultPort = portSupplier.get();
-			this.localPort = defaultPort;
+			this.localPort = portSupplier.get();
 		}
 
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);
@@ -157,10 +155,10 @@ public class PolarisContextProperties {
 		return "PolarisContextProperties{" +
 				"address='" + address + '\'' +
 				", localIpAddress='" + localIpAddress + '\'' +
-				", localPort=" + localPort +
+				((this.localPort == null || this.localPort <= 0) ? "" : ", localPort=" + localPort) +
 				", enabled=" + enabled +
 				", namespace='" + namespace + '\'' +
-				", service='" + service + '\'' +
+				((StringUtils.isBlank(this.service)) ? "" : ", service='" + service + '\'') +
 				'}';
 	}
 }
