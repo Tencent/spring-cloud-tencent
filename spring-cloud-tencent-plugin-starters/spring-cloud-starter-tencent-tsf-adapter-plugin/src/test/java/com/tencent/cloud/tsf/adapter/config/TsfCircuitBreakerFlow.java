@@ -17,16 +17,15 @@
 
 package com.tencent.cloud.tsf.adapter.config;
 
-import com.tencent.polaris.api.flow.DiscoveryFlow;
+import com.tencent.polaris.circuitbreak.api.flow.CircuitBreakerFlow;
 import com.tencent.polaris.client.api.SDKContext;
 
 /**
- * TsfDiscoveryFlow.
+ * TsfRouterFlow.
  *
  * @author sean yu
  */
-public class TsfDiscoveryFlow implements DiscoveryFlow {
-
+public class TsfCircuitBreakerFlow implements CircuitBreakerFlow {
 
 	@Override
 	public String getName() {
@@ -35,11 +34,6 @@ public class TsfDiscoveryFlow implements DiscoveryFlow {
 
 	@Override
 	public void setSDKContext(SDKContext sdkContext) {
-
-	}
-
-	@Override
-	public void destroy() {
 
 	}
 }

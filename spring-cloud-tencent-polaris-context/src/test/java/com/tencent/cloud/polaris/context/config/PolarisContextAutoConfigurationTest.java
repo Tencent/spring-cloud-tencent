@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.context.config;
 
-import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -41,8 +41,8 @@ public class PolarisContextAutoConfigurationTest {
 	@Test
 	public void testProperties() {
 		contextRunner.run(context -> {
-			final SDKContext sdkContext = context.getBean(SDKContext.class);
-			assertThat(sdkContext).isNotNull();
+			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
+			assertThat(polarisSDKContextManager).isNotNull();
 		});
 	}
 }
