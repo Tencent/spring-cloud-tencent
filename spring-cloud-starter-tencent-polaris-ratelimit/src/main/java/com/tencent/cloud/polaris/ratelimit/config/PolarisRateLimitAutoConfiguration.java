@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
@@ -27,9 +28,6 @@ import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentServlet
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.ratelimit.api.core.LimitAPI;
-import com.tencent.polaris.ratelimit.factory.LimitAPIFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -58,12 +56,6 @@ import static javax.servlet.DispatcherType.REQUEST;
 @ConditionalOnPolarisRateLimitEnabled
 public class PolarisRateLimitAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public LimitAPI limitAPI(SDKContext polarisContext) {
-		return LimitAPIFactory.createLimitAPIByContext(polarisContext);
-	}
-
 	/**
 	 * Create when web application type is SERVLET.
 	 */
@@ -79,11 +71,12 @@ public class PolarisRateLimitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI,
+		public QuotaCheckServletFilter quotaCheckFilter(PolarisSDKContextManager polarisSDKContextManager,
 				PolarisRateLimitProperties polarisRateLimitProperties,
 				RateLimitRuleArgumentServletResolver rateLimitRuleArgumentResolver,
 				@Autowired(required = false) PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
-			return new QuotaCheckServletFilter(limitAPI, polarisRateLimitProperties, rateLimitRuleArgumentResolver, polarisRateLimiterLimitedFallback);
+			return new QuotaCheckServletFilter(polarisSDKContextManager.getLimitAPI(), polarisRateLimitProperties,
+					rateLimitRuleArgumentResolver, polarisRateLimiterLimitedFallback);
 		}
 
 		@Bean
@@ -96,7 +89,6 @@ public class PolarisRateLimitAutoConfiguration {
 			registrationBean.setOrder(FILTER_ORDER);
 			return registrationBean;
 		}
-
 
 	}
 
@@ -114,11 +106,12 @@ public class PolarisRateLimitAutoConfiguration {
 		}
 
 		@Bean
-		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(LimitAPI limitAPI,
+		public QuotaCheckReactiveFilter quotaCheckReactiveFilter(PolarisSDKContextManager polarisSDKContextManager,
 				PolarisRateLimitProperties polarisRateLimitProperties,
 				RateLimitRuleArgumentReactiveResolver rateLimitRuleArgumentResolver,
 				@Nullable PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
-			return new QuotaCheckReactiveFilter(limitAPI, polarisRateLimitProperties, rateLimitRuleArgumentResolver, polarisRateLimiterLimitedFallback);
+			return new QuotaCheckReactiveFilter(polarisSDKContextManager.getLimitAPI(), polarisRateLimitProperties,
+					rateLimitRuleArgumentResolver, polarisRateLimiterLimitedFallback);
 		}
 	}
 }
