@@ -70,7 +70,7 @@
 	</developers>
 
 	<properties>
-		<revision>1.11.6-Hoxton.SR12-SNAPSHOT</revision>
+		<revision>1.11.6-Hoxton.SR12</revision>
 
 		<!-- Dependencies -->
 		<polaris.version>1.12.5</polaris.version>
