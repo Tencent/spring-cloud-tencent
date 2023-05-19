@@ -8,3 +8,4 @@
 - [feat:refactor SDKContext as static.](https://github.com/Tencent/spring-cloud-tencent/pull/995)
 - [Refactoring: Refactor Circuitbreaker ut.](https://github.com/Tencent/spring-cloud-tencent/pull/996)
 - [fix:fix random port read bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1000)
+- [docs:add release GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/1007)
