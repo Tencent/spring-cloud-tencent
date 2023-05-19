@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
-import com.tencent.polaris.client.api.SDKContext;
 import feign.Client;
 import feign.Request;
 import feign.RequestTemplate;
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.mock;
 public class EnhancedFeignClientTest {
 
 	@Autowired
-	private SDKContext sdkContext;
+	private PolarisSDKContextManager polarisSDKContextManager;
 
 	@Test
 	public void testConstructor() {
@@ -80,7 +80,8 @@ public class EnhancedFeignClientTest {
 
 		List<EnhancedPlugin> enhancedPlugins = getMockEnhancedFeignPlugins();
 		try {
-			new EnhancedFeignClient(mock(Client.class), new DefaultEnhancedPluginRunner(enhancedPlugins, null, sdkContext));
+			new EnhancedFeignClient(mock(Client.class),
+					new DefaultEnhancedPluginRunner(enhancedPlugins, null, polarisSDKContextManager.getSDKContext()));
 		}
 		catch (Throwable e) {
 			fail("Exception encountered.", e);
@@ -109,7 +110,8 @@ public class EnhancedFeignClientTest {
 		RequestTemplate requestTemplate = new RequestTemplate();
 		requestTemplate.feignTarget(target);
 
-		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate, new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins(), null, sdkContext));
+		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate,
+				new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins(), null, polarisSDKContextManager.getSDKContext()));
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",

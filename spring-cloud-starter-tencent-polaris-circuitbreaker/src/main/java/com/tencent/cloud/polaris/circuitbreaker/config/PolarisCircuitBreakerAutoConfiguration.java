@@ -25,12 +25,9 @@ import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModif
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerRestTemplateBeanPostProcessor;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
-import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -58,29 +55,31 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
 
 	@Bean
-	@ConditionalOnMissingBean(CircuitBreakAPI.class)
-	public CircuitBreakAPI circuitBreakAPI(SDKContext polarisContext) {
-		return CircuitBreakAPIFactory.createCircuitBreakAPIByContext(polarisContext);
+	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
+	public static PolarisCircuitBreakerRestTemplateBeanPostProcessor polarisCircuitBreakerRestTemplateBeanPostProcessor(
+			ApplicationContext applicationContext) {
+		return new PolarisCircuitBreakerRestTemplateBeanPostProcessor(applicationContext);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
 	public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-			CircuitBreakAPI circuitBreakAPI) {
-		return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new SuccessCircuitBreakerReporter(properties, polarisSDKContextManager.getCircuitBreakAPI());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
 	public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-			CircuitBreakAPI circuitBreakAPI) {
-		return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new ExceptionCircuitBreakerReporter(properties, polarisSDKContextManager.getCircuitBreakAPI());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(CircuitBreakerFactory.class)
-	public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
-		PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+	public CircuitBreakerFactory polarisCircuitBreakerFactory(PolarisSDKContextManager polarisSDKContextManager) {
+		PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(
+				polarisSDKContextManager.getCircuitBreakAPI(), polarisSDKContextManager.getConsumerAPI());
 		customizers.forEach(customizer -> customizer.customize(factory));
 		return factory;
 	}
@@ -90,13 +89,6 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	@ConditionalOnMissingBean(CircuitBreakerConfigModifier.class)
 	public CircuitBreakerConfigModifier circuitBreakerConfigModifier(RpcEnhancementReporterProperties properties) {
 		return new CircuitBreakerConfigModifier(properties);
-	}
-
-	@Bean
-	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-	public static PolarisCircuitBreakerRestTemplateBeanPostProcessor polarisCircuitBreakerRestTemplateBeanPostProcessor(
-			ApplicationContext applicationContext) {
-		return new PolarisCircuitBreakerRestTemplateBeanPostProcessor(applicationContext);
 	}
 
 }

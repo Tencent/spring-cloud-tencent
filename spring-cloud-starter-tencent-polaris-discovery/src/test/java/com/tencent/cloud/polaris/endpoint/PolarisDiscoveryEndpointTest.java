@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
@@ -27,6 +28,7 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -73,6 +75,11 @@ public class PolarisDiscoveryEndpointTest {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
+	}
+
+	@BeforeEach
+	void setUp() {
+		PolarisSDKContextManager.innerDestroy();
 	}
 
 	@Test

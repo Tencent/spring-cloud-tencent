@@ -15,31 +15,23 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.tsf.adapter.config;
+package com.tencent.cloud.polaris.context;
 
-import com.tencent.polaris.api.flow.DiscoveryFlow;
-import com.tencent.polaris.client.api.SDKContext;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * TsfDiscoveryFlow.
+ * Test controller.
  *
- * @author sean yu
+ * @author Haotian Zhang
  */
-public class TsfDiscoveryFlow implements DiscoveryFlow {
+@RestController
+@RequestMapping("/test")
+public class TestController {
 
-
-	@Override
-	public String getName() {
-		return PolarisTsfFlowConfigModifier.TSF_FLOW_NAME;
-	}
-
-	@Override
-	public void setSDKContext(SDKContext sdkContext) {
-
-	}
-
-	@Override
-	public void destroy() {
-
+	@GetMapping("/info")
+	public String info() throws Exception {
+		return "hello service info";
 	}
 }

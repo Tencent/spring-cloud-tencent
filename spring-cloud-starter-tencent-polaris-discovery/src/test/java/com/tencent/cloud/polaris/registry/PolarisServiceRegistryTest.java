@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
@@ -24,6 +25,7 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -87,6 +89,11 @@ public class PolarisServiceRegistryTest {
 		if (null != namingServer) {
 			namingServer.terminate();
 		}
+	}
+
+	@BeforeEach
+	void setUp() {
+		PolarisSDKContextManager.innerDestroy();
 	}
 
 	@Test
