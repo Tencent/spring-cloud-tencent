@@ -7,3 +7,4 @@
 - Refactoring: Refactor Circuitbreaker ut.
 - refactor:refactor rpc enhancement.
 - feat:refactor SDKContext as static.
+- docs:add release GitHub Action.
