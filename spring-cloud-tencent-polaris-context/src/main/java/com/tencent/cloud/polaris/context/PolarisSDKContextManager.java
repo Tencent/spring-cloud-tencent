@@ -111,8 +111,10 @@ public class PolarisSDKContextManager {
 					assemblyAPI = null;
 				}
 
-				sdkContext.destroy();
-				sdkContext = null;
+				if (Objects.nonNull(sdkContext)) {
+					sdkContext.destroy();
+					sdkContext = null;
+				}
 				LOG.info("Polaris SDK context is destroyed.");
 			}
 			catch (Throwable throwable) {

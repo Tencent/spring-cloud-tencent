@@ -7,3 +7,4 @@
 - [Feature: add AssemblyFlow to support tsf.](https://github.com/Tencent/spring-cloud-tencent/pull/993)
 - [Refactoring: Refactor Circuitbreaker ut.](https://github.com/Tencent/spring-cloud-tencent/pull/997)
 - [feat:refactor SDKContext as static.](https://github.com/Tencent/spring-cloud-tencent/pull/1001)
+- [docs:add release GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/1006)
