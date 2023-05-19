@@ -37,4 +37,9 @@ public class TsfDiscoveryFlow implements DiscoveryFlow {
 	public void setSDKContext(SDKContext sdkContext) {
 
 	}
+
+	@Override
+	public void destroy() {
+
+	}
 }
