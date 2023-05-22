@@ -101,10 +101,10 @@ For example:
 
 The experience environment of Polaris is provided for developers:
 
-- [Polaris Console](http://14.22.2.220:80)
-- Polaris Server Address: `grpc://14.22.2.171:8091`
+- [Polaris Console](http://119.91.66.223:80)
+- Polaris Server Address: `grpc://119.91.66.223:8091`
 
-The address of Polaris server in spring-cloud-tencent-example is `grpc://14.22.2.171:8091` by default.
+The address of Polaris server in spring-cloud-tencent-example is `grpc://119.91.66.223:8091` by default.
 
 ## Chat Group
 
