@@ -12,6 +12,11 @@
 
 	<artifactId>spring-cloud-starter-tencent-tsf-adapter-plugin</artifactId>
 	<name>Spring Cloud Starter Tencent TSF Plugin</name>
+	
+	<properties>
+        <!-- tsf adaptor polaris 版本 -->
+        <tsf.adaptor.polaris.version>1.0.0-2021.0-ALPHA</tsf.adaptor.polaris.version>
+    </properties>
 
 	<dependencies>
 
@@ -21,6 +26,20 @@
 			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
 		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
+		
+		<!-- Tsf Adaptor Polaris Plugin start -->
+		<dependency>
+			<groupId>com.tencent.polaris.tsf</groupId>
+			<artifactId>tsf-adaptor-polaris-assembly-process</artifactId>
+			<version>${tsf.adaptor.polaris.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.tencent.polaris.tsf</groupId>
+			<artifactId>tsf-adaptor-spring-cloud-tencent-plugins-2021</artifactId>
+			<version>${tsf.adaptor.polaris.version}</version>
+		</dependency>
+		<!-- Tsf Adaptor Polaris Plugin end -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
