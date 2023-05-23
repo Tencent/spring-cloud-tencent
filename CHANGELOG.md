@@ -9,3 +9,4 @@
 - [feat:refactor SDKContext as static.](https://github.com/Tencent/spring-cloud-tencent/pull/1001)
 - [docs:add release GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/1006)
 - [docs:update Polaris test environment ip.](https://github.com/Tencent/spring-cloud-tencent/pull/1010)
+- [Feature: add tsf adaptor polaris plugin dependency.](https://github.com/Tencent/spring-cloud-tencent/pull/1013)
