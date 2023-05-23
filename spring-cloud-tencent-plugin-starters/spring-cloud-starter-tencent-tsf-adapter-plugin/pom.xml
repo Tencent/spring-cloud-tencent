@@ -36,7 +36,7 @@
 		
 		<dependency>
 			<groupId>com.tencent.polaris.tsf</groupId>
-			<artifactId>tsf-adaptor-spring-cloud-tencent-plugins-2021</artifactId>
+			<artifactId>tsf-adaptor-spring-cloud-tencent-assembly-process</artifactId>
 			<version>${tsf.adaptor.polaris.version}</version>
 		</dependency>
 		<!-- Tsf Adaptor Polaris Plugin end -->
