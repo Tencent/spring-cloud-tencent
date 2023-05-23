@@ -53,4 +53,57 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<profiles>
+		<!-- Tsf Adaptor Polaris Plugin Repository start -->
+		<profile>
+			<id>nexus</id>
+			<repositories>
+				<repository>
+				  <id>qcloud-releases</id>
+				  <url>http://nexus.qcloud.woa.com/repository/maven-releases/</url>
+				  <releases>
+				    <enabled>true</enabled>
+				  </releases>
+				  <snapshots>
+				    <enabled>false</enabled>
+				  </snapshots>
+				</repository>
+				
+				<repository>
+				  <id>qcloud-snapshots</id>
+				  <url>http://nexus.qcloud.woa.com/repository/maven-snapshots/</url>
+				  <releases>
+				    <enabled>false</enabled>
+				  </releases>
+				  <snapshots>
+				    <enabled>true</enabled>
+				  </snapshots>
+				</repository>
+				
+				<repository>
+				  <id>tsf</id>
+				  <url>https://mirrors.tencent.com/repository/maven/tsf/</url>
+				  <releases>
+				    <enabled>true</enabled>
+				  </releases>
+				  <snapshots>
+				    <enabled>false</enabled>
+				  </snapshots>
+				</repository>
+				
+				<repository>
+				  <id>tsf-snapshot</id>
+				  <url>https://mirrors.tencent.com/repository/maven/tsf-snapshot/</url>
+				  <releases>
+				    <enabled>false</enabled>
+				  </releases>
+				  <snapshots>
+				    <enabled>true</enabled>
+				  </snapshots>
+				</repository>
+			</repositories>
+		</profile>
+		<!-- Tsf Adaptor Polaris Plugin Repository end -->
+	</profiles>
 </project>
