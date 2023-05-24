@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.PEER_SERVICE;
 import static feign.Util.checkNotNull;
 
 /**
@@ -82,20 +83,25 @@ public class PolarisFeignClient implements Client {
 		ServiceCallResult resultRequest = new ServiceCallResult();
 
 		resultRequest.setNamespace(MetadataContext.LOCAL_NAMESPACE);
-		String serviceName = request.requestTemplate().feignTarget().name();
-		resultRequest.setService(serviceName);
-		URI uri = URI.create(request.url());
-		resultRequest.setMethod(uri.getPath());
-		resultRequest.setRetStatus(RetStatus.RetSuccess);
-		String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
-		String sourceService = MetadataContext.LOCAL_SERVICE;
-		if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
-			resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
-		}
-		resultRequest.setHost(uri.getHost());
-		resultRequest.setPort(uri.getPort());
+		Object[] headers = request.headers().get(PEER_SERVICE).toArray();
+		int headersLength = headers.length;
+		if (headersLength != 0) {
+			String serviceName = (String) headers[headersLength - 1];
+			resultRequest.setService(serviceName);
+			URI uri = URI.create(request.url());
+			resultRequest.setMethod(uri.getPath());
+			resultRequest.setRetStatus(RetStatus.RetSuccess);
+			String sourceNamespace = MetadataContext.LOCAL_NAMESPACE;
+			String sourceService = MetadataContext.LOCAL_SERVICE;
+			if (StringUtils.isNotBlank(sourceNamespace) && StringUtils.isNotBlank(sourceService)) {
+				resultRequest.setCallerService(new ServiceKey(sourceNamespace, sourceService));
+			}
+			resultRequest.setHost(uri.getHost());
+			resultRequest.setPort(uri.getPort());
 
-		return resultRequest;
+			return resultRequest;
+		}
+		return null;
 	}
 
 }

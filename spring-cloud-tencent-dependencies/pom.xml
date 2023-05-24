@@ -70,14 +70,13 @@
 	</developers>
 
 	<properties>
-		<revision>1.5.4-Greenwich.SR6</revision>
+		<revision>1.5.5-Greenwich.SR6</revision>
 		<polaris.version>1.6.2</polaris.version>
 
 		<!-- Dependencies -->
 		<logback.version>1.2.7</logback.version>
 		<guava.version>23.0</guava.version>
 		<consul.version>1.4.5</consul.version>
-		<openfeign.version>2.2.6.RELEASE</openfeign.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<guava.version>31.0.1-jre</guava.version>
@@ -93,14 +92,6 @@
 				<artifactId>polaris-dependencies</artifactId>
 				<groupId>com.tencent.polaris</groupId>
 				<version>${polaris.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-openfeign-dependencies</artifactId>
-				<version>${openfeign.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
