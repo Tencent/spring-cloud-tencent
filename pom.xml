@@ -104,6 +104,7 @@
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
 		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+		<maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
 
 		<!--  Checkstyle      -->
 		<maven-checkstyle-plugin.failsOnError>true</maven-checkstyle-plugin.failsOnError>
@@ -159,6 +160,11 @@
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>${jacoco.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>${maven-shade-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
