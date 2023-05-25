@@ -63,7 +63,8 @@ public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFa
 				if (delegate != null) {
 					return new EnhancedFeignBlockingLoadBalancerClient(createPolarisFeignClient(delegate),
 							factory.getBean(BlockingLoadBalancerClient.class),
-							factory.getBean(LoadBalancerClientFactory.class));
+							factory.getBean(LoadBalancerClientFactory.class)
+					);
 				}
 			}
 			return createPolarisFeignClient((Client) bean);

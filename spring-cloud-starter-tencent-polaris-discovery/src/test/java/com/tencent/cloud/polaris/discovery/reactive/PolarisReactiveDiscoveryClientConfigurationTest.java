@@ -17,11 +17,13 @@
 
 package com.tencent.cloud.polaris.discovery.reactive;
 
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -36,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test for {@link PolarisReactiveDiscoveryClientConfiguration}.
  *
- * @author Haotian Zhang
+ * @author Haotian Zhang, youta
  */
 public class PolarisReactiveDiscoveryClientConfigurationTest {
 
@@ -65,9 +67,19 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 		}
 	}
 
+	@BeforeEach
+	void setUp() {
+		PolarisSDKContextManager.innerDestroy();
+	}
+
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> assertThat(context).hasSingleBean(PolarisReactiveDiscoveryClient.class));
+	}
+
+	@Test
+	public void shouldWorkWithDefaults() {
+		contextRunner.run(context -> assertThat(context).hasBean("polarisReactiveDiscoveryClientHealthIndicator"));
 	}
 
 	@Configuration

@@ -24,12 +24,9 @@ import com.tencent.cloud.polaris.circuitbreaker.ReactivePolarisCircuitBreakerFac
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
-import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -47,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
  * @author seanyu 2023-02-27
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(name = { "reactor.core.publisher.Mono", "reactor.core.publisher.Flux" })
+@ConditionalOnClass(name = {"reactor.core.publisher.Mono", "reactor.core.publisher.Flux"})
 @ConditionalOnPolarisCircuitBreakerEnabled
 @AutoConfigureAfter(RpcEnhancementAutoConfiguration.class)
 public class ReactivePolarisCircuitBreakerAutoConfiguration {
@@ -56,29 +53,24 @@ public class ReactivePolarisCircuitBreakerAutoConfiguration {
 	private List<Customizer<ReactivePolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
 
 	@Bean
-	@ConditionalOnMissingBean(CircuitBreakAPI.class)
-	public CircuitBreakAPI circuitBreakAPI(SDKContext polarisContext) {
-		return CircuitBreakAPIFactory.createCircuitBreakAPIByContext(polarisContext);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
 	public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-			SDKContext polarisContext, CircuitBreakAPI circuitBreakAPI) {
-		return new SuccessCircuitBreakerReporter(properties, polarisContext, circuitBreakAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new SuccessCircuitBreakerReporter(properties, polarisSDKContextManager.getCircuitBreakAPI());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
 	public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-			SDKContext polarisContext, CircuitBreakAPI circuitBreakAPI) {
-		return new ExceptionCircuitBreakerReporter(properties, polarisContext, circuitBreakAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new ExceptionCircuitBreakerReporter(properties, polarisSDKContextManager.getCircuitBreakAPI());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveCircuitBreakerFactory.class)
-	public ReactiveCircuitBreakerFactory polarisReactiveCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
-		ReactivePolarisCircuitBreakerFactory factory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+	public ReactiveCircuitBreakerFactory polarisReactiveCircuitBreakerFactory(PolarisSDKContextManager polarisSDKContextManager) {
+		ReactivePolarisCircuitBreakerFactory factory = new ReactivePolarisCircuitBreakerFactory(
+				polarisSDKContextManager.getCircuitBreakAPI(), polarisSDKContextManager.getConsumerAPI());
 		customizers.forEach(customizer -> customizer.customize(factory));
 		return factory;
 	}

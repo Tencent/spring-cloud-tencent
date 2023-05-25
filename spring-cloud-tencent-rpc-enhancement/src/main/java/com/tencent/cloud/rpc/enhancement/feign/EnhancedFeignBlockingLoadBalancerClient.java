@@ -34,4 +34,6 @@ public class EnhancedFeignBlockingLoadBalancerClient extends FeignBlockingLoadBa
 			LoadBalancerClientFactory loadBalancerClientFactory) {
 		super(delegate, loadBalancerClient, loadBalancerClientFactory);
 	}
+
+
 }

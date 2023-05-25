@@ -20,8 +20,7 @@ package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
-import com.tencent.cloud.polaris.router.transformer.PolarisInstanceTransformer;
-import com.tencent.polaris.router.api.core.RouterAPI;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -63,7 +62,6 @@ public class LoadBalancerConfigurationTest {
 				.withBean(PolarisInstanceTransformer.class)
 				.run(context -> {
 					assertThat(context).hasSingleBean(LoadBalancerConfiguration.PolarisReactiveSupportConfiguration.class);
-					assertThat(context).hasSingleBean(RouterAPI.class);
 					assertThat(context).hasSingleBean(ReactiveDiscoveryClient.class);
 					assertThat(context).hasSingleBean(PolarisRouterServiceInstanceListSupplier.class);
 				});
@@ -81,7 +79,6 @@ public class LoadBalancerConfigurationTest {
 				.run(context -> {
 					assertThat(context).hasSingleBean(LoadBalancerConfiguration.PolarisBlockingSupportConfiguration.class);
 					assertThat(context).hasSingleBean(DiscoveryClient.class);
-					assertThat(context).hasSingleBean(RouterAPI.class);
 					assertThat(context).hasSingleBean(PolarisRouterServiceInstanceListSupplier.class);
 				});
 	}

@@ -7,7 +7,7 @@ spring:
   cloud:
     tencent:
       plugin:
-        scg: 
+        scg:
           staining:
             enabled: true
             rule-staining:
@@ -16,7 +16,7 @@ spring:
           feature-env:
             enabled: true
     polaris:
-      address: grpc://183.47.111.80:8091
+      address: grpc://119.91.66.223:8091
       namespace: default
       enabled: true
     gateway:

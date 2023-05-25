@@ -40,6 +40,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -74,6 +75,12 @@ public class SuccessCircuitBreakerReporterTest {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		RpcEnhancementReporterProperties reporterProperties = mock(RpcEnhancementReporterProperties.class);
+		doReturn(reporterProperties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 	}
 
 	@AfterAll
@@ -94,7 +101,7 @@ public class SuccessCircuitBreakerReporterTest {
 
 	@Test
 	public void testType() {
-		assertThat(successCircuitBreakerReporter.getType()).isEqualTo(EnhancedPluginType.POST);
+		assertThat(successCircuitBreakerReporter.getType()).isEqualTo(EnhancedPluginType.Client.POST);
 	}
 
 	@Test
@@ -120,7 +127,7 @@ public class SuccessCircuitBreakerReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance);
 
 		successCircuitBreakerReporter.run(pluginContext);
 		successCircuitBreakerReporter.getOrder();

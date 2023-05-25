@@ -20,13 +20,13 @@ package com.tencent.cloud.polaris.registry;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -56,9 +56,10 @@ public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	public PolarisServiceRegistry polarisServiceRegistry(
-			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisSDKContextManager polarisSDKContextManager,
+			PolarisDiscoveryHandler polarisDiscoveryHandler,
 			StaticMetadataManager staticMetadataManager, PolarisStatProperties polarisStatProperties) {
-		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler,
+		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisSDKContextManager, polarisDiscoveryHandler,
 				staticMetadataManager, polarisStatProperties);
 	}
 
@@ -68,19 +69,24 @@ public class PolarisServiceRegistryAutoConfiguration {
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisContextProperties polarisContextProperties,
 			@Autowired(required = false) ConsulContextProperties consulContextProperties,
-			SDKContext context, StaticMetadataManager staticMetadataManager, NacosContextProperties nacosContextProperties,
+			PolarisSDKContextManager polarisSDKContextManager, StaticMetadataManager staticMetadataManager,
+			NacosContextProperties nacosContextProperties,
 			@Autowired(required = false) ServletWebServerApplicationContext servletWebServerApplicationContext,
 			@Autowired(required = false) ReactiveWebServerApplicationContext reactiveWebServerApplicationContext) {
-		return new PolarisRegistration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties, context,
-				staticMetadataManager, nacosContextProperties,
+		return new PolarisRegistration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties,
+				polarisSDKContextManager.getSDKContext(), staticMetadataManager, nacosContextProperties,
 				servletWebServerApplicationContext, reactiveWebServerApplicationContext);
 	}
 
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(PolarisServiceRegistry registry,
-			AutoServiceRegistrationProperties autoServiceRegistrationProperties, PolarisRegistration registration) {
-		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
+	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
+			PolarisServiceRegistry registry,
+			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
+			PolarisRegistration registration,
+			PolarisSDKContextManager polarisSDKContextManager
+	) {
+		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration, polarisSDKContextManager.getAssemblyAPI());
 	}
 
 	@Bean

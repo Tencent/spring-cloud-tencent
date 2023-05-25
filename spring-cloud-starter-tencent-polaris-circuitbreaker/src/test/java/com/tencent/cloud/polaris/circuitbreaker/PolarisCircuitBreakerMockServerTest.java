@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -76,14 +77,10 @@ public class PolarisCircuitBreakerMockServerTest {
 				.thenReturn(NAMESPACE_TEST);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service"))
 				.thenReturn(SERVICE_CIRCUIT_BREAKER);
+		PolarisSDKContextManager.innerDestroy();
+		namingServer = NamingServer.startNamingServer(-1);
+		System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
 
-		try {
-			namingServer = NamingServer.startNamingServer(-1);
-			System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-		}
-		catch (IOException e) {
-
-		}
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_CIRCUIT_BREAKER);
 
 		CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
@@ -99,6 +96,9 @@ public class PolarisCircuitBreakerMockServerTest {
 	public static void afterAll() {
 		if (null != namingServer) {
 			namingServer.terminate();
+		}
+		if (null != mockedApplicationContextAwareUtils) {
+			mockedApplicationContextAwareUtils.close();
 		}
 	}
 
@@ -145,7 +145,6 @@ public class PolarisCircuitBreakerMockServerTest {
 		assertThat(Flux.error(new RuntimeException("boom")).transform(it -> rcb.run(it, t -> Flux.just("fallback")))
 				.collectList().block())
 				.isEqualTo(Collections.singletonList("fallback"));
-
 
 	}
 

@@ -31,7 +31,7 @@ directly.
 By default, the applications point to the official Polaris experience environment, and you can directly view the service
 registration data at the experience site after a successful launch.
 
-- Console address: http://14.116.241.63:8080/
+- Console address: http://119.91.66.223:80/
     - Account: polaris
     - Password: polaris
 
@@ -89,7 +89,7 @@ Simulate a real-world scenario, assuming that the client request has a uid reque
 
 **Configure coloring rules**
 
-Polaris Configuration Address: http://14.116.241.63:8080/#/filegroup-detail?group=featureenv-gateway&namespace=default
+Polaris Configuration Address: http://119.91.66.223:80/#/filegroup-detail?group=featureenv-gateway&namespace=default
 
 Modify the `rule/staining.json` configuration file and fill in the following rule:
 

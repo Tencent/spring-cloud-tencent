@@ -20,21 +20,32 @@ package com.tencent.cloud.rpc.enhancement.config;
 import java.util.Collections;
 import java.util.List;
 
+import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
+import com.tencent.cloud.rpc.enhancement.feign.EnhancedLoadBalancerClientAspect;
+import com.tencent.cloud.rpc.enhancement.filter.EnhancedReactiveFilter;
+import com.tencent.cloud.rpc.enhancement.filter.EnhancedServletFilter;
 import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientExceptionHook;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientPostHook;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientPreHook;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerExceptionHook;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerPostHook;
+import com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerPreHook;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.BlockingLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
+import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
-import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientReporter;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientExchangeFilterFunction;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +55,24 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import static javax.servlet.DispatcherType.ASYNC;
+import static javax.servlet.DispatcherType.ERROR;
+import static javax.servlet.DispatcherType.FORWARD;
+import static javax.servlet.DispatcherType.INCLUDE;
+import static javax.servlet.DispatcherType.REQUEST;
 
 /**
  * Auto Configuration for Polaris {@link feign.Feign} OR {@link RestTemplate} which can automatically bring in the call
@@ -67,23 +88,92 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class RpcEnhancementAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass(PolarisServiceInstance.class)
+	public InstanceTransformer instanceTransformer() {
+		return new PolarisInstanceTransformer();
+	}
+
+	@Bean
+	@Lazy
 	public EnhancedPluginRunner enhancedFeignPluginRunner(
-			@Autowired(required = false) List<EnhancedPlugin> enhancedPlugins) {
-		return new DefaultEnhancedPluginRunner(enhancedPlugins);
+			@Autowired(required = false) List<EnhancedPlugin> enhancedPlugins,
+			@Autowired(required = false) Registration registration,
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new DefaultEnhancedPluginRunner(enhancedPlugins, registration, polarisSDKContextManager.getSDKContext());
 	}
 
 	@Bean
 	public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties,
-			SDKContext context,
-			ConsumerAPI consumerAPI) {
-		return new SuccessPolarisReporter(properties, context, consumerAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new SuccessPolarisReporter(properties, polarisSDKContextManager.getConsumerAPI());
 	}
 
 	@Bean
 	public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
-			SDKContext context,
-			ConsumerAPI consumerAPI) {
-		return new ExceptionPolarisReporter(properties, context, consumerAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new ExceptionPolarisReporter(properties, polarisSDKContextManager.getConsumerAPI());
+	}
+
+	@Bean
+	public AssemblyClientExceptionHook assemblyClientExceptionHook(PolarisSDKContextManager polarisSDKContextManager, InstanceTransformer instanceTransformer) {
+		return new AssemblyClientExceptionHook(polarisSDKContextManager.getAssemblyAPI(), instanceTransformer);
+	}
+
+	@Bean
+	public AssemblyClientPostHook assemblyClientPostHook(PolarisSDKContextManager polarisSDKContextManager, InstanceTransformer instanceTransformer) {
+		return new AssemblyClientPostHook(polarisSDKContextManager.getAssemblyAPI(), instanceTransformer);
+	}
+
+	@Bean
+	public AssemblyClientPreHook assemblyClientPreHook(PolarisSDKContextManager polarisSDKContextManager) {
+		return new AssemblyClientPreHook(polarisSDKContextManager.getAssemblyAPI());
+	}
+
+	@Bean
+	public AssemblyServerExceptionHook assemblyServerExceptionHook(PolarisSDKContextManager polarisSDKContextManager) {
+		return new AssemblyServerExceptionHook(polarisSDKContextManager.getAssemblyAPI());
+	}
+
+	@Bean
+	public AssemblyServerPostHook assemblyServerPostHook(PolarisSDKContextManager polarisSDKContextManager) {
+		return new AssemblyServerPostHook(polarisSDKContextManager.getAssemblyAPI());
+	}
+
+	@Bean
+	public AssemblyServerPreHook assemblyServerPreHook(PolarisSDKContextManager polarisSDKContextManager) {
+		return new AssemblyServerPreHook(polarisSDKContextManager.getAssemblyAPI());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	protected static class RpcEnhancementServletFilterConfig {
+
+		@Bean
+		public FilterRegistrationBean<EnhancedServletFilter> enhancedServletFilterRegistrationBean(
+				EnhancedServletFilter enhancedServletFilter) {
+			FilterRegistrationBean<EnhancedServletFilter> filterRegistrationBean =
+					new FilterRegistrationBean<>(enhancedServletFilter);
+			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
+			filterRegistrationBean.setOrder(enhancedServletFilter.getClass().getAnnotation(Order.class).value());
+			return filterRegistrationBean;
+		}
+
+		@Bean
+		public EnhancedServletFilter enhancedServletFilter(@Lazy EnhancedPluginRunner pluginRunner) {
+			return new EnhancedServletFilter(pluginRunner);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	protected static class RpcEnhancementReactiveFilterConfig {
+
+		@Bean
+		public EnhancedReactiveFilter enhancedReactiveFilter(@Lazy EnhancedPluginRunner pluginRunner) {
+			return new EnhancedReactiveFilter(pluginRunner);
+		}
 	}
 
 	/**
@@ -101,6 +191,13 @@ public class RpcEnhancementAutoConfiguration {
 		@Bean
 		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(@Lazy EnhancedPluginRunner pluginRunner) {
 			return new EnhancedFeignBeanPostProcessor(pluginRunner);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.ServiceInstanceChooser")
+		public EnhancedLoadBalancerClientAspect enhancedLoadBalancerClientAspect() {
+			return new EnhancedLoadBalancerClientAspect();
 		}
 
 	}
@@ -135,9 +232,9 @@ public class RpcEnhancementAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnClass(name = {"org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient"})
-		public BlockingLoadBalancerClientAspect blockingLoadBalancerClientAspect() {
-			return new BlockingLoadBalancerClientAspect();
+		@ConditionalOnClass(name = {"org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer"})
+		public PolarisLoadBalancerRequestTransformer polarisLoadBalancerRequestTransformer() {
+			return new PolarisLoadBalancerRequestTransformer();
 		}
 
 	}
@@ -154,12 +251,12 @@ public class RpcEnhancementAutoConfiguration {
 		private List<WebClient.Builder> webClientBuilder = Collections.emptyList();
 
 		@Bean
-		public EnhancedWebClientReporter exchangeFilterFunction(@Lazy EnhancedPluginRunner pluginRunner) {
-			return new EnhancedWebClientReporter(pluginRunner);
+		public EnhancedWebClientExchangeFilterFunction exchangeFilterFunction(@Lazy EnhancedPluginRunner pluginRunner) {
+			return new EnhancedWebClientExchangeFilterFunction(pluginRunner);
 		}
 
 		@Bean
-		public SmartInitializingSingleton addEnhancedWebClientReporterForWebClient(EnhancedWebClientReporter reporter) {
+		public SmartInitializingSingleton addEnhancedWebClientReporterForWebClient(EnhancedWebClientExchangeFilterFunction reporter) {
 			return () -> webClientBuilder.forEach(webClient -> {
 				webClient.filter(reporter);
 			});
@@ -188,7 +285,5 @@ public class RpcEnhancementAutoConfiguration {
 		public EnhancedGatewayGlobalFilter enhancedPolarisGatewayReporter(@Lazy EnhancedPluginRunner pluginRunner) {
 			return new EnhancedGatewayGlobalFilter(pluginRunner);
 		}
-
 	}
-
 }

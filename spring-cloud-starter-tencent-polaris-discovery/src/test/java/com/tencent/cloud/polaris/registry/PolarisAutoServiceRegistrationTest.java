@@ -75,7 +75,7 @@ public class PolarisAutoServiceRegistrationTest {
 		doNothing().when(serviceRegistry).register(nullable(PolarisRegistration.class));
 
 		polarisAutoServiceRegistration =
-				new PolarisAutoServiceRegistration(serviceRegistry, autoServiceRegistrationProperties, registration);
+				new PolarisAutoServiceRegistration(serviceRegistry, autoServiceRegistrationProperties, registration, null);
 
 		doReturn(environment).when(applicationContext).getEnvironment();
 		polarisAutoServiceRegistration.setApplicationContext(applicationContext);

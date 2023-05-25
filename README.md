@@ -21,17 +21,19 @@ Visit [Wiki](https://github.com/Tencent/spring-cloud-tencent/wiki) to learn more
 
 ## Introduction
 
-Spring Cloud Tencent is an one-stop microservice solution which implements the standard Spring Cloud SPI. It integrates Spring Cloud with Tencent middlewares and makes it easy to develop microservice.
+Spring Cloud Tencent is an one-stop microservice solution which implements the standard Spring Cloud SPI. It integrates
+Spring Cloud with Tencent middlewares and makes it easy to develop microservice.
 
 <img src="https://user-images.githubusercontent.com/4991116/170412596-692f8dae-42f7-495f-a451-01396e381eb0.png" width="80%" />
 
 **Service discovery and governance**
 
-Spring Cloud Tencent integrates Spring Cloud with Polaris which is an open source system for service discovery and governance.
+Spring Cloud Tencent integrates Spring Cloud with Polaris which is an open source system for service discovery and
+governance.
 
 - [Polaris Github](https://github.com/polarismesh/polaris)
 
-Spring Cloud with Polaris can solve these problem: 
+Spring Cloud with Polaris can solve these problem:
 
 - service management: service discovery, service registry and health check
 - traffic control: customizable routing, load balance, rate limiting and access control
@@ -78,7 +80,7 @@ For example:
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.11.1-2021.0.6</version>
+            <version>1.11.4-2021.0.6</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -99,10 +101,10 @@ For example:
 
 The experience environment of Polaris is provided for developers:
 
-- [Polaris Console](http://14.116.241.63:8080)
-- Polaris Server Address: `grpc://183.47.111.80:8091`
+- [Polaris Console](http://119.91.66.223:80)
+- Polaris Server Address: `grpc://119.91.66.223:8091`
 
-The address of Polaris server in spring-cloud-tencent-example is `grpc://183.47.111.80:8091` by default.
+The address of Polaris server in spring-cloud-tencent-example is `grpc://119.91.66.223:8091` by default.
 
 ## Chat Group
 

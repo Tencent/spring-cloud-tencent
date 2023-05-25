@@ -26,7 +26,7 @@
 
 应用默认指向北极星官方的体验环境，启动成功后可直接到体验站点查看服务注册数据。
 
-- 管控台地址： http://14.116.241.63:8080/
+- 管控台地址： http://119.91.66.223:80/
     - 账号：polaris
     - 密码：polaris
 
@@ -84,7 +84,7 @@ featureenv-front-example[feature2] -> featureenv-middle-example[base] -> feature
 
 **配置染色规则**
 
-配置地址：http://14.116.241.63:8080/#/filegroup-detail?group=featureenv-gateway&namespace=default
+配置地址：http://119.91.66.223:80/#/filegroup-detail?group=featureenv-gateway&namespace=default
 
 修改 rule/staining.json 配置文件，填写以下规则:
 
