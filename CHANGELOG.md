@@ -27,3 +27,4 @@
 - [refactor:optimize discovery properties initialization.](https://github.com/Tencent/spring-cloud-tencent/pull/1077)
 - [fix:upgrade spring version.](https://github.com/Tencent/spring-cloud-tencent/pull/1086)
 - [fix:Update README-zh.md](https://github.com/Tencent/spring-cloud-tencent/pull/1090).
+- [fix:the polaris config relation non-daemon thread should stop when application fails to start.](https://github.com/Tencent/spring-cloud-tencent/pull/1100)
