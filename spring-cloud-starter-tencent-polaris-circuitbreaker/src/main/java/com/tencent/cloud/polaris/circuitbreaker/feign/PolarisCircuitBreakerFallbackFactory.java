@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.polaris.circuitbreaker.exception.FallbackWrapperException;
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import feign.Request;
@@ -87,11 +88,11 @@ public class PolarisCircuitBreakerFallbackFactory implements FallbackFactory {
 						return decoder.decode(response, method.getGenericReturnType());
 					}
 					catch (IOException e) {
-						throw new IllegalStateException(e);
+						throw new FallbackWrapperException(e);
 					}
 				}
 			}
-			throw new IllegalStateException(t);
+			throw new FallbackWrapperException(t);
 		}
 	}
 }
