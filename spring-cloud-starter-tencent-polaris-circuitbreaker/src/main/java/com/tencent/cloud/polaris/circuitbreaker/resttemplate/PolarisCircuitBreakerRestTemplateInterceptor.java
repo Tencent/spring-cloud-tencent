@@ -98,11 +98,10 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 						throw new FallbackWrapperException(t);
 					}
 			);
-		} catch (FallbackWrapperException e) {
+		}
+		catch (FallbackWrapperException e) {
+			// unwrap And Rethrow
 			Throwable underlyingException = e.getCause();
-			if (underlyingException instanceof IllegalStateException) {
-				throw e;
-			}
 			if (underlyingException instanceof RuntimeException) {
 				throw (RuntimeException) underlyingException;
 			}
