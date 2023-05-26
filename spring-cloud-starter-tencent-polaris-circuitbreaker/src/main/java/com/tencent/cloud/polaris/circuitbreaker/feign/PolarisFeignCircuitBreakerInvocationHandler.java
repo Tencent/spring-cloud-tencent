@@ -122,7 +122,9 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 		}
 		try {
 			return circuitBreaker.run(supplier, fallbackFunction);
-		} catch (FallbackWrapperException e) {
+		}
+		catch (FallbackWrapperException e) {
+			// unwrap And Rethrow
 			throw e.getCause();
 		}
 	}
@@ -134,9 +136,9 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 				throw (RuntimeException) underlyingException;
 			}
 			if (underlyingException != null) {
-				throw new IllegalStateException(underlyingException);
+				throw new FallbackWrapperException(underlyingException);
 			}
-			throw new IllegalStateException(exception);
+			throw new FallbackWrapperException(exception);
 		}
 	}
 
