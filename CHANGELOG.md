@@ -9,3 +9,4 @@
 - [feat:refactor SDKContext as static.](https://github.com/Tencent/spring-cloud-tencent/pull/1005)
 - [docs:add release GitHub Action.](https://github.com/Tencent/spring-cloud-tencent/pull/1008)
 - [docs:update Polaris test environment ip.](https://github.com/Tencent/spring-cloud-tencent/pull/1011)
+- [fix:fix custom fallback exception.](https://github.com/Tencent/spring-cloud-tencent/pull/1021)
