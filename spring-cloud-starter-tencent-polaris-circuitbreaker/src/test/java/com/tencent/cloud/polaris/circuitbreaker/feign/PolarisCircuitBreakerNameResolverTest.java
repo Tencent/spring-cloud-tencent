@@ -117,7 +117,7 @@ public class PolarisCircuitBreakerNameResolverTest {
 
 	}
 
-	@RequestMapping(value = "/")
+	@RequestMapping("/")
 	public void mockRequestMapping3() {
 
 	}
