@@ -149,8 +149,7 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode2.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
 		Utils.sleepUninterrupted(2000);
-		assertThat(restTemplateFallbackFromCode3.getForEntity("/example/service/b/info", String.class)
-				.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(restTemplateFallbackFromCode3.getForEntity("/example/service/b/info", String.class).getStatusCode()).isEqualTo(HttpStatus.OK);
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode4.getForObject("/example/service/b/info", String.class)).isEqualTo("fallback");
 		Utils.sleepUninterrupted(2000);

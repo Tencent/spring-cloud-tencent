@@ -9,3 +9,4 @@
 - feat:refactor SDKContext as static.
 - docs:add release GitHub Action.
 - docs:update Polaris test environment ip.
+- fix:fix custom fallback exception.
