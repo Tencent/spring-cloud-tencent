@@ -110,7 +110,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 		Utils.sleepUninterrupted(2000);
 		assertThatThrownBy(() -> {
 			echoService.echo(null);
-		}).isInstanceOf(Exception.class);
+		}).isInstanceOf(InvocationTargetException.class);
 		assertThatThrownBy(() -> {
 			fooService.echo("test");
 		}).isInstanceOf(NoFallbackAvailableException.class);
@@ -204,7 +204,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 		@Override
 		public String echo(@RequestParam("str") String param) throws InvocationTargetException {
 			if (param == null) {
-				throw new InvocationTargetException(new Exception());
+				throw new InvocationTargetException(new Exception(), "test InvocationTargetException");
 			}
 			return "echo fallback";
 		}

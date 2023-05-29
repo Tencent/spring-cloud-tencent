@@ -69,6 +69,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -146,6 +147,9 @@ public class PolarisCircuitBreakerIntegrationTest {
 		assertThat(defaultRestTemplate.getForObject("http://localhost:18001/example/service/b/info", String.class)).isEqualTo("fallback");
 		mockServer.verify();
 		mockServer.reset();
+		assertThatThrownBy(() -> {
+			restTemplateFallbackFromPolaris.getForObject("/example/service/b/info", String.class);
+		}).isInstanceOf(IllegalStateException.class);
 		assertThat(restTemplateFallbackFromCode.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode2.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
