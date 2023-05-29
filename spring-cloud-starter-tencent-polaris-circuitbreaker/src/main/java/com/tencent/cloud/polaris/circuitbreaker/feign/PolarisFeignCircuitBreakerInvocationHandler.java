@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.tencent.cloud.polaris.circuitbreaker.exception.FallbackWrapperException;
 import feign.InvocationHandlerFactory;
 import feign.Target;
 import feign.codec.Decoder;
@@ -136,7 +137,13 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 				return fallback.fallback(method);
 			};
 		}
-		return circuitBreaker.run(supplier, fallbackFunction);
+		try {
+			return circuitBreaker.run(supplier, fallbackFunction);
+		}
+		catch (FallbackWrapperException e) {
+			// unwrap And Rethrow
+			throw e.getCause();
+		}
 	}
 
 	private void unwrapAndRethrow(Exception exception) {
@@ -146,9 +153,9 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 				throw (RuntimeException) underlyingException;
 			}
 			if (underlyingException != null) {
-				throw new IllegalStateException(underlyingException);
+				throw new FallbackWrapperException(underlyingException);
 			}
-			throw new IllegalStateException(exception);
+			throw new FallbackWrapperException(exception);
 		}
 	}
 

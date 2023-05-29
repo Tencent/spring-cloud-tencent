@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import com.tencent.cloud.polaris.circuitbreaker.exception.FallbackWrapperException;
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 
@@ -63,39 +64,50 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		return circuitBreakerFactory.create(request.getURI().getHost() + "#" + request.getURI().getPath()).run(
-				() -> {
-					try {
-						ClientHttpResponse response = execution.execute(request, body);
-						ResponseErrorHandler errorHandler = restTemplate.getErrorHandler();
-						if (errorHandler.hasError(response)) {
-							errorHandler.handleError(request.getURI(), request.getMethod(), response);
+		try {
+			return circuitBreakerFactory.create(request.getURI().getHost() + "#" + request.getURI().getPath()).run(
+					() -> {
+						try {
+							ClientHttpResponse response = execution.execute(request, body);
+							ResponseErrorHandler errorHandler = restTemplate.getErrorHandler();
+							if (errorHandler.hasError(response)) {
+								errorHandler.handleError(request.getURI(), request.getMethod(), response);
+							}
+							return response;
 						}
-						return response;
-					}
-					catch (IOException e) {
-						throw new IllegalStateException(e);
-					}
-				},
-				t -> {
-					if (StringUtils.hasText(polarisCircuitBreaker.fallback())) {
-						CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(200, null, polarisCircuitBreaker.fallback());
-						return new PolarisCircuitBreakerHttpResponse(fallbackInfo);
-					}
-					if (!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreaker.fallbackClass().toGenericString())) {
-						Method method = ReflectionUtils.findMethod(PolarisCircuitBreakerFallback.class, "fallback");
-						PolarisCircuitBreakerFallback polarisCircuitBreakerFallback = applicationContext.getBean(polarisCircuitBreaker.fallbackClass());
-						return (PolarisCircuitBreakerHttpResponse) ReflectionUtils.invokeMethod(method, polarisCircuitBreakerFallback);
-					}
-					if (t instanceof CallAbortedException) {
-						CircuitBreakerStatus.FallbackInfo fallbackInfo = ((CallAbortedException) t).getFallbackInfo();
-						if (fallbackInfo != null) {
+						catch (IOException e) {
+							throw new IllegalStateException(e);
+						}
+					},
+					t -> {
+						if (StringUtils.hasText(polarisCircuitBreaker.fallback())) {
+							CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(200, null, polarisCircuitBreaker.fallback());
 							return new PolarisCircuitBreakerHttpResponse(fallbackInfo);
 						}
+						if (!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreaker.fallbackClass().toGenericString())) {
+							Method method = ReflectionUtils.findMethod(PolarisCircuitBreakerFallback.class, "fallback");
+							PolarisCircuitBreakerFallback polarisCircuitBreakerFallback = applicationContext.getBean(polarisCircuitBreaker.fallbackClass());
+							return (PolarisCircuitBreakerHttpResponse) ReflectionUtils.invokeMethod(method, polarisCircuitBreakerFallback);
+						}
+						if (t instanceof CallAbortedException) {
+							CircuitBreakerStatus.FallbackInfo fallbackInfo = ((CallAbortedException) t).getFallbackInfo();
+							if (fallbackInfo != null) {
+								return new PolarisCircuitBreakerHttpResponse(fallbackInfo);
+							}
+						}
+						throw new FallbackWrapperException(t);
 					}
-					throw new IllegalStateException(t);
-				}
-		);
+			);
+		}
+		catch (FallbackWrapperException e) {
+			// unwrap And Rethrow
+			Throwable underlyingException = e.getCause();
+			if (underlyingException instanceof RuntimeException) {
+				throw (RuntimeException) underlyingException;
+			}
+			throw new IllegalStateException(underlyingException);
+		}
+
 	}
 
 }
