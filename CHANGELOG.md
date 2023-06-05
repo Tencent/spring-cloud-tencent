@@ -12,3 +12,4 @@
 - [feat:sct-all package is now available as a shaded uber-jar.](https://github.com/Tencent/spring-cloud-tencent/pull/1016)
 - [fix:fix custom fallback exception.](https://github.com/Tencent/spring-cloud-tencent/pull/1021)
 - [feat:sct-all package is now available as a shaded uber-jar.](https://github.com/Tencent/spring-cloud-tencent/pull/1026)
+- [fix:use path parameter in `@FeignClient` for circuit-breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1030)
