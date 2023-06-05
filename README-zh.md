@@ -10,53 +10,52 @@
 
 [English](./README.md) | 简体中文
 
----
+README:
+
+- [介绍](#介绍)
+- [如何构建](#如何构建)
+- [如何使用](#如何使用)
+- [使用示例](#使用示例)
+
+更多文档请查看[Wiki](https://github.com/Tencent/spring-cloud-tencent/wiki)
 
 ## 介绍
 
-> 欢迎各位同学点击右上角 Star 按钮，持续关注我们的项目，给予我们最大的支持~
+Spring Cloud Tencent 是基于 Spring Cloud SPI 实现的一站式微服务解决方案。通过集成 Spring Cloud
+和腾讯中间件，让分布式服务和微服务的开发、测试、发布和运维变得更加简单。
 
-Spring Cloud Tencent 是腾讯开源的一站式微服务解决方案。
+<img src="https://user-images.githubusercontent.com/4991116/170412323-ecaf544c-1d7b-45db-9cf0-591544e50c64.png" width="80%" />
 
-Spring Cloud Tencent 实现了Spring Cloud 标准微服务 SPI，开发者可以基于 Spring Cloud Tencent 快速开发 Spring Cloud
-云原生分布式应用。
+**服务发现和治理**
 
-Spring Cloud Tencent 的核心依托腾讯开源的一站式服务发现与治理平台 [PolarisMesh](https://polarismesh.cn/)
-，实现各种分布式微服务场景。
+Spring Cloud Tencent 集成 Spring Cloud 和北极星。北极星是一个支持多语言和多框架的服务发现和治理平台。
 
-- [Polaris Github home page](https://github.com/polarismesh/polaris)
-- [Polaris official website](https://polarismesh.cn/)
+- [北极星 Github](https://github.com/polarismesh/polaris)
 
-Spring Cloud Tencent提供的能力包括但不限于：
+Spring Cloud 集成北极星可以解决以下问题：
 
-<img width="1029" alt="image" src="https://user-images.githubusercontent.com/4991116/170412323-ecaf544c-1d7b-45db-9cf0-591544e50c64.png">
+- 服务管理：服务发现、服务发现、健康检查
+- 流量控制：可自定义的流量路由、负载均衡、限频限流、访问控制
+- 故障容错：服务和接口熔断和降级、实例熔断和切换
+- 配置管理：版本管理、灰度发布、动态更新
 
-- 服务注册和发现
-- 动态配置管理
-- 服务治理
-    - 服务限流
-    - 服务熔断
-    - 服务路由
-    - ...
-- 标签透传
+## 如何构建
 
-## 体验环境
+运行以下命令进行构建。
 
-- 管控台地址： http://14.116.241.63:8080/
-    - 账号：polaris
-    - 密码：polaris
-- 控制面地址： `grpc://183.47.111.80:8091`
--
+**Linux and Mac**
 
-`spring-cloud-tencent-example` 下 example 地址都默认指向了体验服务地址（`grpc://183.47.111.80:8091`），如果您只是体验
-Spring Cloud
-Tencent，可直接一键运行任何 example。
+```
+./mvnw clean package
+```
 
-## 管控台
+**Windows**
 
-<img width="1727" alt="sc" src="https://user-images.githubusercontent.com/4991116/197529819-78b20ba8-0e60-450c-a8e3-0c2bf04caa15.png">
+```
+.\mvnw.cmd clean package
+```
 
-## 使用指南
+## 如何使用
 
 Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要引入依赖即可。
 
@@ -79,7 +78,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.11.6-Hoxton.SR12</version>
+            <version>1.11.7-Hoxton.SR12</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -96,36 +95,25 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 
 ````
 
-## 开发入门
+## 使用示例
 
-You can build this project with command:
+北极星为开发者提供体验环境：
 
-```shell
-## MacOS or Linux
-./mvnw clean package
+- [北极星控制台](http://119.91.66.223:80)
+- 北极星服务端地址：`grpc://119.91.66.223:8091`
 
-## Win
-.\mvnw.cmd clean package
-```
-
-## 文档
-
-请阅读 [Wiki](https://github.com/Tencent/spring-cloud-tencent/wiki)
+在 spring-cloud-tencent-example 项目里，北极星服务端地址默认配置为`grpc://119.91.66.223:8091`。
 
 ## 交流群
 
-扫描下面的二维码加入 Spring Cloud Tencent 交流群。
+扫码二维码，加入 Spring Cloud Tencent 交流群。欢迎用户反馈使用问题和优化建议。
 
-<img src="https://user-images.githubusercontent.com/24446200/169198148-d4cc3494-3485-4515-9897-c8cb5504f706.png" width="30%" height="30%" />
+<img src="https://user-images.githubusercontent.com/24446200/169198148-d4cc3494-3485-4515-9897-c8cb5504f706.png" width="20%" height="20%" />
 
-## License
+如果上方二维码失效，请扫描下方二维码添加微信，并发送“Spring Cloud Tencent”申请加群。
 
-The spring-cloud-tencent is licensed under the BSD 3-Clause License. Copyright and license information can be found in
-the file [LICENSE](LICENSE)
+<img src="https://github.com/Tencent/spring-cloud-tencent/assets/24446200/77912670-aa7b-44ec-a312-42a05d59b109" width=20% height=20%>
 
 ## Stargazers over time
 
-如果您对 Spring Cloud Tencent 有兴趣，请关注我们的项目~
-
-[![Stargazers over time](https://starchart.cc/Tencent/spring-cloud-tencent.svg)](https://starchart.cc/Tencent/spring-cloud-tencent)
-
+[![](https://starchart.cc/Tencent/spring-cloud-tencent.svg)](https://starchart.cc/Tencent/spring-cloud-tencent)
