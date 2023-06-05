@@ -12,3 +12,4 @@
 - [docs:update Polaris test environment ip.](https://github.com/Tencent/spring-cloud-tencent/pull/1012)
 - [fix:fix custom fallback exception.](https://github.com/Tencent/spring-cloud-tencent/pull/1022)
 - [feat: sct-all package is now available as a shaded uber-jar.](https://github.com/Tencent/spring-cloud-tencent/pull/1025)
+- [fix:use path parameter in `@FeignClient` for circuit-breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1028)
