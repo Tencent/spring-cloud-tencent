@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.openfeign.CircuitBreakerNameResolver;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
@@ -46,15 +47,17 @@ public class PolarisCircuitBreakerNameResolver implements CircuitBreakerNameReso
 		String path = "";
 
 		// Get path in @FeignClient.
-		URI uri = null;
-		try {
-			uri = new URI(target.url());
-		}
-		catch (URISyntaxException e) {
-			LOG.warn("Generate URI from url({}) in @FeignClient. failed.", target.url());
-		}
-		if (uri != null) {
-			path += uri.getPath();
+		if (StringUtils.hasText(target.url())) {
+			URI uri = null;
+			try {
+				uri = new URI(target.url());
+			}
+			catch (URISyntaxException e) {
+				LOG.warn("Generate URI from url({}) in @FeignClient. failed.", target.url());
+			}
+			if (uri != null) {
+				path += uri.getPath();
+			}
 		}
 
 		// Get path in @RequestMapping.
