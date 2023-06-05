@@ -78,7 +78,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.11.4-2022.0.1</version>
+            <version>1.11.7-2022.0.1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -109,6 +109,10 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 扫码二维码，加入 Spring Cloud Tencent 交流群。欢迎用户反馈使用问题和优化建议。
 
 <img src="https://user-images.githubusercontent.com/24446200/169198148-d4cc3494-3485-4515-9897-c8cb5504f706.png" width="20%" height="20%" />
+
+如果上方二维码失效，请扫描下方二维码添加微信，并发送“Spring Cloud Tencent”申请加群。
+
+<img src="https://github.com/Tencent/spring-cloud-tencent/assets/24446200/77912670-aa7b-44ec-a312-42a05d59b109" width=20% height=20%>
 
 ## Stargazers over time
 
