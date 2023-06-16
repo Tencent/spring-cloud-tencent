@@ -74,7 +74,7 @@
 
 		<!-- Dependencies -->
 		<polaris.version>1.13.0-SNAPSHOT</polaris.version>
-		<guava.version>31.1-jre</guava.version>
+		<guava.version>32.0.0-jre</guava.version>
 		<mocktio.version>4.9.0</mocktio.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
