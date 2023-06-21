@@ -12,3 +12,4 @@
 - fix:fix custom fallback exception.
 - feat:sct-all package is now available as a shaded uber-jar.
 - fix:use path parameter in `@FeignClient` for circuit-breaker.
+- build(deps): bump guava in /spring-cloud-tencent-dependencies
