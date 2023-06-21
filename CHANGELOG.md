@@ -14,3 +14,4 @@
 - [feat: update sct-all package method by maven shaded plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1024)
 - [fix:use path parameter in `@FeignClient` for circuit-breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1029)
 - [build(deps): bump guava in /spring-cloud-tencent-dependencies](https://github.com/Tencent/spring-cloud-tencent/pull/1034)
+- [fix:fix reporting bug when port is -1.](https://github.com/Tencent/spring-cloud-tencent/pull/1038)
