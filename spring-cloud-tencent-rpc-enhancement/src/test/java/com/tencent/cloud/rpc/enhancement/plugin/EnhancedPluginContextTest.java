@@ -18,6 +18,7 @@
 package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -151,5 +152,24 @@ public class EnhancedPluginContextTest {
 
 		enhancedPluginRunner = new DefaultEnhancedPluginRunner(Collections.singletonList(enhancedPlugin2), null, sdkContext);
 		enhancedPluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+	}
+
+	@Test
+	public void testSetTargetServiceInstance() throws URISyntaxException {
+		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+
+		// targetServiceInstance != null
+		DefaultServiceInstance testDefaultServiceInstance = new DefaultServiceInstance();
+		testDefaultServiceInstance.setPort(1);
+		enhancedPluginContext.setTargetServiceInstance(testDefaultServiceInstance, null);
+		assertThat(enhancedPluginContext.getTargetServiceInstance().getPort()).isEqualTo(1);
+
+		// targetServiceInstance == null && url != null
+		enhancedPluginContext.setTargetServiceInstance(null, new URI("https://www.qq.com"));
+		assertThat(enhancedPluginContext.getTargetServiceInstance().getPort()).isEqualTo(443);
+
+		// targetServiceInstance == null && url == null
+		enhancedPluginContext.setTargetServiceInstance(null, null);
+		assertThat(enhancedPluginContext.getTargetServiceInstance().getPort()).isEqualTo(0);
 	}
 }
