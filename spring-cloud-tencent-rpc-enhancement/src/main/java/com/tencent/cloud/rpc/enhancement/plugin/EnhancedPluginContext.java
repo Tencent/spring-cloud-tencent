@@ -21,7 +21,6 @@ package com.tencent.cloud.rpc.enhancement.plugin;
 import java.net.URI;
 import java.util.Objects;
 
-import com.tencent.polaris.configuration.client.JustForTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,11 +93,6 @@ public class EnhancedPluginContext {
 
 	public ServiceInstance getTargetServiceInstance() {
 		return targetServiceInstance;
-	}
-
-	@JustForTest
-	public void setTargetServiceInstance(ServiceInstance targetServiceInstance) {
-		this.setTargetServiceInstance(targetServiceInstance, null);
 	}
 
 	public void setTargetServiceInstance(ServiceInstance targetServiceInstance, URI url) {
