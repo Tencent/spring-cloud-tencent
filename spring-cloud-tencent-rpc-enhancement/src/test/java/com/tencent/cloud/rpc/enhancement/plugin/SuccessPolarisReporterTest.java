@@ -122,7 +122,7 @@ public class SuccessPolarisReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setTargetServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
 
 		successPolarisReporter.run(pluginContext);
 		successPolarisReporter.getOrder();
