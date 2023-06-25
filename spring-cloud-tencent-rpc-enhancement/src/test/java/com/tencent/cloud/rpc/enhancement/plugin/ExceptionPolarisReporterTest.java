@@ -124,7 +124,7 @@ public class ExceptionPolarisReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setTargetServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
 		pluginContext.setThrowable(new RuntimeException());
 
 		exceptionPolarisReporter.run(pluginContext);

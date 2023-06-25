@@ -62,7 +62,10 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 		Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
 		if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
 			ServiceInstance instance = serviceInstanceResponse.getServer();
-			enhancedPluginContext.setTargetServiceInstance(instance);
+			enhancedPluginContext.setTargetServiceInstance(instance, exchange.getRequest().getURI());
+		}
+		else {
+			enhancedPluginContext.setTargetServiceInstance(null, exchange.getRequest().getURI());
 		}
 
 		// Run pre enhanced plugins.

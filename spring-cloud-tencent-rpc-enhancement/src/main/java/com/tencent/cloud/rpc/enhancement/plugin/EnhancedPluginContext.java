@@ -18,6 +18,13 @@
 package com.tencent.cloud.rpc.enhancement.plugin;
 
 
+import java.net.URI;
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 
 /**
@@ -26,6 +33,8 @@ import org.springframework.cloud.client.ServiceInstance;
  * @author Haotian Zhang
  */
 public class EnhancedPluginContext {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedPluginContext.class);
 
 	private EnhancedRequestContext request;
 
@@ -86,8 +95,25 @@ public class EnhancedPluginContext {
 		return targetServiceInstance;
 	}
 
-	public void setTargetServiceInstance(ServiceInstance targetServiceInstance) {
-		this.targetServiceInstance = targetServiceInstance;
+	public void setTargetServiceInstance(ServiceInstance targetServiceInstance, URI url) {
+		if (Objects.nonNull(targetServiceInstance)) {
+			this.targetServiceInstance = targetServiceInstance;
+		}
+		else if (Objects.nonNull(url)) {
+			DefaultServiceInstance defaultServiceInstance = new DefaultServiceInstance();
+			defaultServiceInstance.setUri(url);
+			if (defaultServiceInstance.isSecure()) {
+				defaultServiceInstance.setPort(443);
+			}
+			else {
+				defaultServiceInstance.setPort(80);
+			}
+			this.targetServiceInstance = defaultServiceInstance;
+		}
+		else {
+			this.targetServiceInstance = new DefaultServiceInstance();
+			LOGGER.warn("TargetServiceInstance is empty.");
+		}
 	}
 
 	@Override
