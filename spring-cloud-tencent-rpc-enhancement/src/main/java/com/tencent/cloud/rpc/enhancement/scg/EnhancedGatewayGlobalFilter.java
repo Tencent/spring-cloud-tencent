@@ -61,30 +61,27 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
-//		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
-//		Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
-//		if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
-//			ServiceInstance instance = serviceInstanceResponse.getServer();
-//			enhancedPluginContext.setTargetServiceInstance(instance);
-//		}
-
 		// Run pre enhanced plugins.
 		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
 
 		long startTime = System.currentTimeMillis();
 		return chain.filter(exchange)
 				.doOnSubscribe(v -> {
-					DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
 					Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
-					if (route != null) {
-						serviceInstance.setServiceId(route.getUri().getHost());
-					}
 					URI uri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
+					enhancedPluginContext.getRequest().setUrl(uri);
 					if (uri != null) {
-						serviceInstance.setHost(uri.getHost());
-						serviceInstance.setPort(uri.getPort());
+						if (route != null && route.getUri().getScheme().contains("lb")) {
+							DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+							serviceInstance.setServiceId(route.getUri().getHost());
+							serviceInstance.setHost(uri.getHost());
+							serviceInstance.setPort(uri.getPort());
+							enhancedPluginContext.setTargetServiceInstance(serviceInstance, null);
+						}
+						else {
+							enhancedPluginContext.setTargetServiceInstance(null, uri);
+						}
 					}
-					enhancedPluginContext.setTargetServiceInstance(serviceInstance);
 				})
 				.doOnSuccess(v -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);

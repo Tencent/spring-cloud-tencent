@@ -17,5 +17,6 @@ spring:
 zuul:
   routes:
     GatewayCalleeService:
-      serviceId: GatewayCalleeService
+      #      serviceId: GatewayCalleeService
+      url: http://www.baidu.com
       path: /GatewayCalleeService/**

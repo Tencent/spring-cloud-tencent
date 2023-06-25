@@ -112,7 +112,10 @@ public class EnhancedRouteZuulFilter extends ZuulFilter {
 				serviceInstance.setServiceId(ZuulFilterUtils.getServiceId(context));
 				serviceInstance.setHost(ribbonResponse.getRequestedURI().getHost());
 				serviceInstance.setPort(ribbonResponse.getRequestedURI().getPort());
-				enhancedPluginContext.setTargetServiceInstance(serviceInstance);
+				enhancedPluginContext.setTargetServiceInstance(serviceInstance, null);
+			}
+			else {
+				enhancedPluginContext.setTargetServiceInstance(null, uri);
 			}
 
 			// Run pre enhanced plugins.

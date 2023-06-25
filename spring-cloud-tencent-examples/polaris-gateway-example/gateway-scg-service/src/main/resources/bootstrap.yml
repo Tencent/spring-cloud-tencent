@@ -61,7 +61,7 @@ spring:
                 basedOnPreviousValue: false
       routes:
         - id: GatewayCalleeService
-          uri: lb://GatewayCalleeService
+          uri: http://www.baidu.com
           predicates:
             - Path=/GatewayCalleeService/**
           filters:

@@ -71,7 +71,7 @@ public class EnhancedFeignClient implements Client {
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 		DefaultServiceInstance serviceInstance = new DefaultServiceInstance(request.requestTemplate().feignTarget()
 				.name(), url.getHost(), url.getPort(), url.getScheme().equals("https"));
-		enhancedPluginContext.setTargetServiceInstance(serviceInstance);
+		enhancedPluginContext.setTargetServiceInstance(serviceInstance, url);
 
 		// Run pre enhanced plugins.
 		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);

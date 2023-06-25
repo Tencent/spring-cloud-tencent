@@ -121,7 +121,7 @@ public class ExceptionCircuitBreakerReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setTargetServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
 		pluginContext.setThrowable(new RuntimeException());
 
 		exceptionCircuitBreakerReporter.run(pluginContext);
