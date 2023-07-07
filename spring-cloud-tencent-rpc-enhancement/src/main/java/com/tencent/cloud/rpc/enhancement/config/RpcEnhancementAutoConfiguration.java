@@ -20,7 +20,6 @@ package com.tencent.cloud.rpc.enhancement.config;
 import java.util.Collections;
 import java.util.List;
 
-import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
@@ -54,6 +53,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -89,7 +89,7 @@ public class RpcEnhancementAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnClass(PolarisServiceInstance.class)
+	@ConditionalOnMissingClass("com.alibaba.cloud.nacos.NacosServiceInstance")
 	public InstanceTransformer instanceTransformer() {
 		return new PolarisInstanceTransformer();
 	}
