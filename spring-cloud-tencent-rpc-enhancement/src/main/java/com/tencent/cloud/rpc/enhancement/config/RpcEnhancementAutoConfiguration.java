@@ -188,6 +188,7 @@ public class RpcEnhancementAutoConfiguration {
 		public PolarisLoadBalancerRequestTransformer polarisLoadBalancerRequestTransformer() {
 			return new PolarisLoadBalancerRequestTransformer();
 		}
+
 	}
 
 	/**

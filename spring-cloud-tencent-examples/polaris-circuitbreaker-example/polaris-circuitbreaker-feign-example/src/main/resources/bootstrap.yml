@@ -12,7 +12,7 @@ spring:
         enabled: true
 
 feign:
-  circuitbreaker:
+  hystrix:
     enabled: true
 
 logging:

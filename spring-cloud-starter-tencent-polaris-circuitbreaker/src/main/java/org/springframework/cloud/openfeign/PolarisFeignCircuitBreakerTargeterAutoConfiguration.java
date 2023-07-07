@@ -23,6 +23,7 @@ import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisCircuitBreakerNameR
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,7 @@ import org.springframework.context.annotation.Primary;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({Targeter.class})
-@ConditionalOnProperty(value = "feign.circuitbreaker.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "feign.hystrix.enabled", havingValue = "true")
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 @ConditionalOnPolarisCircuitBreakerEnabled
 public class PolarisFeignCircuitBreakerTargeterAutoConfiguration {
@@ -44,6 +45,7 @@ public class PolarisFeignCircuitBreakerTargeterAutoConfiguration {
 	@Bean
 	@Primary
 	@ConditionalOnBean(CircuitBreakerFactory.class)
+	@ConditionalOnMissingBean(Targeter.class)
 	public Targeter polarisFeignCircuitBreakerTargeter(CircuitBreakerFactory circuitBreakerFactory, PolarisCircuitBreakerNameResolver circuitBreakerNameResolver) {
 		return new PolarisFeignCircuitBreakerTargeter(circuitBreakerFactory, circuitBreakerNameResolver);
 	}

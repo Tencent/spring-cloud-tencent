@@ -18,14 +18,20 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!--		<dependency>-->
-		<!--			<groupId>com.tencent.cloud</groupId>-->
-		<!--			<artifactId>spring-cloud-starter-tencent-polaris-circuitbreaker</artifactId>-->
-		<!--		</dependency>-->
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-router</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-discovery-adapter-plugin</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-circuitbreaker</artifactId>
 		</dependency>
 
 		<dependency>
