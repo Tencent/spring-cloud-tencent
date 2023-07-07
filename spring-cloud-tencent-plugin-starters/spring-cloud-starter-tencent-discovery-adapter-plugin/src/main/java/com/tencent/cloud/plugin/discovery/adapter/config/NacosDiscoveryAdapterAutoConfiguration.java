@@ -19,7 +19,6 @@
 package com.tencent.cloud.plugin.discovery.adapter.config;
 
 import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosInstanceTransformer;
-import com.tencent.cloud.polaris.router.config.ConditionalOnPolarisRouterEnabled;
 import com.tencent.cloud.polaris.router.config.LoadBalancerConfiguration;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 
@@ -43,7 +42,6 @@ public class NacosDiscoveryAdapterAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnPolarisRouterEnabled
 	@ConditionalOnClass(name = "com.alibaba.cloud.nacos.NacosServiceInstance")
 	public InstanceTransformer instanceTransformer() {
 		return new NacosInstanceTransformer();

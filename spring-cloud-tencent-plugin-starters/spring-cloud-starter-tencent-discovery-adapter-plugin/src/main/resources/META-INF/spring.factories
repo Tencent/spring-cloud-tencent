@@ -1,0 +1,2 @@
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+  com.tencent.cloud.plugin.discovery.adapter.config.NacosDiscoveryAdapterAutoConfiguration
