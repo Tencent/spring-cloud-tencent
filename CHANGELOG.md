@@ -16,3 +16,4 @@
 - [build(deps): bump guava in /spring-cloud-tencent-dependencies](https://github.com/Tencent/spring-cloud-tencent/pull/1034)
 - [fix:fix reporting bug when port is -1.](https://github.com/Tencent/spring-cloud-tencent/pull/1038)
 - [fix:update guava version.](https://github.com/Tencent/spring-cloud-tencent/pull/1041)
+- [fix:fix circuit breaker bean load order bug when using Nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1048)

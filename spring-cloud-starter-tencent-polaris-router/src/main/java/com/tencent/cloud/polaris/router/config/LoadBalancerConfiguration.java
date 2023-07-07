@@ -20,17 +20,13 @@ package com.tencent.cloud.polaris.router.config;
 
 import java.util.List;
 
-import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.router.PolarisRouterServiceInstanceListSupplier;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
-import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.ConditionalOnBlockingDiscoveryEnabled;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled;
@@ -55,13 +51,6 @@ public class LoadBalancerConfiguration {
 	 * Order of reactive discovery service instance supplier.
 	 */
 	private static final int REACTIVE_SERVICE_INSTANCE_SUPPLIER_ORDER = 193827465;
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnClass(PolarisServiceInstance.class)
-	public InstanceTransformer instanceTransformer() {
-		return new PolarisInstanceTransformer();
-	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnReactiveDiscoveryEnabled
