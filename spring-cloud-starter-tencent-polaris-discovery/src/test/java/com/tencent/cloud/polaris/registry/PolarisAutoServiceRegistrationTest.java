@@ -70,12 +70,11 @@ public class PolarisAutoServiceRegistrationTest {
 
 	@BeforeEach
 	void setUp() {
-		doReturn(polarisDiscoveryProperties).when(registration).getPolarisProperties();
-
 		doNothing().when(serviceRegistry).register(nullable(PolarisRegistration.class));
 
 		polarisAutoServiceRegistration =
-				new PolarisAutoServiceRegistration(serviceRegistry, autoServiceRegistrationProperties, registration, null);
+				new PolarisAutoServiceRegistration(serviceRegistry, autoServiceRegistrationProperties, registration,
+						polarisDiscoveryProperties, null);
 
 		doReturn(environment).when(applicationContext).getEnvironment();
 		polarisAutoServiceRegistration.setApplicationContext(applicationContext);
@@ -117,7 +116,7 @@ public class PolarisAutoServiceRegistrationTest {
 		doReturn("application").when(environment).getProperty(anyString(), anyString());
 		assertThat(polarisAutoServiceRegistration.getAppName()).isEqualTo("application");
 
-		doReturn(SERVICE_PROVIDER).when(polarisDiscoveryProperties).getService();
+		doReturn(SERVICE_PROVIDER).when(registration).getServiceId();
 		assertThat(polarisAutoServiceRegistration.getAppName()).isEqualTo(SERVICE_PROVIDER);
 	}
 }
