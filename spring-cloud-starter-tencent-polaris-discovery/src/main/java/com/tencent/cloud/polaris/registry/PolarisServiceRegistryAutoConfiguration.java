@@ -13,10 +13,11 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.registry;
+
+import java.util.List;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -72,10 +73,11 @@ public class PolarisServiceRegistryAutoConfiguration {
 			PolarisSDKContextManager polarisSDKContextManager, StaticMetadataManager staticMetadataManager,
 			NacosContextProperties nacosContextProperties,
 			@Autowired(required = false) ServletWebServerApplicationContext servletWebServerApplicationContext,
-			@Autowired(required = false) ReactiveWebServerApplicationContext reactiveWebServerApplicationContext) {
-		return new PolarisRegistration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties,
+			@Autowired(required = false) ReactiveWebServerApplicationContext reactiveWebServerApplicationContext,
+			@Autowired(required = false) List<PolarisRegistrationCustomizer> registrationCustomizers) {
+		return PolarisRegistration.registration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties,
 				polarisSDKContextManager.getSDKContext(), staticMetadataManager, nacosContextProperties,
-				servletWebServerApplicationContext, reactiveWebServerApplicationContext);
+				servletWebServerApplicationContext, reactiveWebServerApplicationContext, registrationCustomizers);
 	}
 
 	@Bean
@@ -84,9 +86,11 @@ public class PolarisServiceRegistryAutoConfiguration {
 			PolarisServiceRegistry registry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
 			PolarisRegistration registration,
+			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisSDKContextManager polarisSDKContextManager
 	) {
-		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration, polarisSDKContextManager.getAssemblyAPI());
+		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration,
+				polarisDiscoveryProperties, polarisSDKContextManager.getAssemblyAPI());
 	}
 
 	@Bean

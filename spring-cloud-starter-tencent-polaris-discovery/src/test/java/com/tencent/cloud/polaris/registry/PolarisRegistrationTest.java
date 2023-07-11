@@ -57,15 +57,12 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class PolarisRegistrationTest {
 
+	private static final int testLocalPort = 10086;
 	private NacosContextProperties nacosContextProperties;
 	private PolarisRegistration polarisRegistration1;
 	private PolarisRegistration polarisRegistration2;
-
 	private PolarisRegistration polarisRegistration3;
-
 	private PolarisRegistration polarisRegistration4;
-
-	private static int testLocalPort = 10086;
 
 	@BeforeEach
 	void setUp() {
@@ -123,21 +120,21 @@ public class PolarisRegistrationTest {
 		ReactiveWebServerApplicationContext reactiveWebServerApplicationContext = mock(ReactiveWebServerApplicationContext.class);
 		doReturn(reactiveWebServer).when(reactiveWebServerApplicationContext).getWebServer();
 
-		polarisRegistration1 = new PolarisRegistration(polarisDiscoveryProperties, null, consulContextProperties,
+		polarisRegistration1 = PolarisRegistration.registration(polarisDiscoveryProperties, null, consulContextProperties,
 				polarisContext, staticMetadataManager, nacosContextProperties,
-				servletWebServerApplicationContext, null);
+				servletWebServerApplicationContext, null, null);
 
-		polarisRegistration2 = new PolarisRegistration(polarisDiscoveryProperties, null, consulContextProperties,
+		polarisRegistration2 = PolarisRegistration.registration(polarisDiscoveryProperties, null, consulContextProperties,
 				polarisContext, staticMetadataManager, nacosContextProperties,
-				null, reactiveWebServerApplicationContext);
+				null, reactiveWebServerApplicationContext, null);
 
-		polarisRegistration3 = new PolarisRegistration(polarisDiscoveryProperties, null, consulContextProperties,
+		polarisRegistration3 = PolarisRegistration.registration(polarisDiscoveryProperties, null, consulContextProperties,
 				polarisContext, staticMetadataManager, nacosContextProperties,
-				null, null);
+				null, null, null);
 
-		polarisRegistration4 = new PolarisRegistration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties,
+		polarisRegistration4 = PolarisRegistration.registration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties,
 				polarisContext, staticMetadataManager, nacosContextProperties,
-				null, null);
+				null, null, null);
 	}
 
 	@Test
@@ -186,11 +183,6 @@ public class PolarisRegistrationTest {
 		assertThat(metadata).isNotEmpty();
 		assertThat(metadata.size()).isEqualTo(4);
 		assertThat(metadata.get("key1")).isEqualTo("value1");
-	}
-
-	@Test
-	public void testGetPolarisProperties() {
-		assertThat(polarisRegistration1.getPolarisProperties()).isNotNull();
 	}
 
 	@Test
