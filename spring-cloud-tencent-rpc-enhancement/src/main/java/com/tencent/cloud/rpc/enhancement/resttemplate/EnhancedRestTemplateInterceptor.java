@@ -60,8 +60,8 @@ public class EnhancedRestTemplateInterceptor implements ClientHttpRequestInterce
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
-		enhancedPluginContext.setTargetServiceInstance(
-				(ServiceInstance) MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE));
+		enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
+				.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), request.getURI());
 
 		// Run pre enhanced plugins.
 		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);

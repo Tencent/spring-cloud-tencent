@@ -117,7 +117,7 @@ public class AssemblyClientPreHookTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setTargetServiceInstance(targetServiceInstance);
+		pluginContext.setTargetServiceInstance(targetServiceInstance, null);
 		pluginContext.setLocalServiceInstance(localServiceInstance);
 		pluginContext.setThrowable(new RuntimeException());
 

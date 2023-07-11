@@ -13,13 +13,13 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.registry;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -55,24 +55,18 @@ public class PolarisRegistration implements Registration {
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
-	private final ConsulContextProperties consulContextProperties;
-
 	private final SDKContext polarisContext;
 
 	private final StaticMetadataManager staticMetadataManager;
 
-	private final NacosContextProperties nacosContextProperties;
-
-	private final ServletWebServerApplicationContext servletWebServerApplicationContext;
-
-	private final ReactiveWebServerApplicationContext reactiveWebServerApplicationContext;
-
-	private Map<String, String> metadata;
-
+	private final String serviceId;
 	private final String host;
-
+	private final boolean isSecure;
+	private final ServletWebServerApplicationContext servletWebServerApplicationContext;
+	private final ReactiveWebServerApplicationContext reactiveWebServerApplicationContext;
+	private boolean registerEnabled = false;
+	private Map<String, String> metadata;
 	private int port;
-
 	private String instanceId;
 
 	public PolarisRegistration(
@@ -84,32 +78,95 @@ public class PolarisRegistration implements Registration {
 			@Nullable ServletWebServerApplicationContext servletWebServerApplicationContext,
 			@Nullable ReactiveWebServerApplicationContext reactiveWebServerApplicationContext) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
-		this.consulContextProperties = consulContextProperties;
 		this.polarisContext = context;
 		this.staticMetadataManager = staticMetadataManager;
-		this.nacosContextProperties = nacosContextProperties;
 		this.servletWebServerApplicationContext = servletWebServerApplicationContext;
 		this.reactiveWebServerApplicationContext = reactiveWebServerApplicationContext;
+
+		// generate serviceId
+		if (Objects.isNull(nacosContextProperties)) {
+			serviceId = polarisDiscoveryProperties.getService();
+		}
+		else {
+			String group = nacosContextProperties.getGroup();
+			if (StringUtils.isNotBlank(group) && !DEFAULT_GROUP.equals(group)) {
+				serviceId = String.format(GROUP_SERVER_ID_FORMAT, group, polarisDiscoveryProperties.getService());
+			}
+			else {
+				serviceId = polarisDiscoveryProperties.getService();
+			}
+		}
+
+		// generate host
 		host = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
+
+		// generate port
 		if (polarisContextProperties != null) {
 			port = polarisContextProperties.getLocalPort();
+		}
+
+		// generate isSecure
+		isSecure = StringUtils.equalsIgnoreCase(polarisDiscoveryProperties.getProtocol(), "https");
+
+		// generate metadata
+		if (CollectionUtils.isEmpty(metadata)) {
+			Map<String, String> instanceMetadata = new HashMap<>();
+
+			// put internal metadata
+			instanceMetadata.put(METADATA_KEY_IP, host);
+			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + port);
+
+			// put internal-nacos-cluster if necessary
+			if (Objects.nonNull(nacosContextProperties)) {
+				String clusterName = nacosContextProperties.getClusterName();
+				if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER.equals(clusterName)) {
+					instanceMetadata.put(NACOS_CLUSTER, clusterName);
+				}
+			}
+
+			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
+
+			this.metadata = instanceMetadata;
+		}
+
+		// generate registerEnabled
+		if (null != polarisDiscoveryProperties) {
+			registerEnabled = polarisDiscoveryProperties.isRegisterEnabled();
+		}
+		if (null != consulContextProperties && consulContextProperties.isEnabled()) {
+			registerEnabled |= consulContextProperties.isRegister();
+		}
+		if (null != nacosContextProperties && nacosContextProperties.isEnabled()) {
+			registerEnabled |= nacosContextProperties.isRegisterEnabled();
+		}
+	}
+
+	public static PolarisRegistration registration(PolarisDiscoveryProperties polarisDiscoveryProperties,
+			@Nullable PolarisContextProperties polarisContextProperties,
+			@Nullable ConsulContextProperties consulContextProperties,
+			SDKContext context, StaticMetadataManager staticMetadataManager,
+			@Nullable NacosContextProperties nacosContextProperties,
+			@Nullable ServletWebServerApplicationContext servletWebServerApplicationContext,
+			@Nullable ReactiveWebServerApplicationContext reactiveWebServerApplicationContext,
+			@Nullable List<PolarisRegistrationCustomizer> registrationCustomizers) {
+		PolarisRegistration polarisRegistration = new PolarisRegistration(polarisDiscoveryProperties,
+				polarisContextProperties, consulContextProperties, context, staticMetadataManager,
+				nacosContextProperties, servletWebServerApplicationContext, reactiveWebServerApplicationContext);
+		customize(registrationCustomizers, polarisRegistration);
+		return polarisRegistration;
+	}
+
+	public static void customize(List<PolarisRegistrationCustomizer> registrationCustomizers, PolarisRegistration registration) {
+		if (registrationCustomizers != null) {
+			for (PolarisRegistrationCustomizer customizer : registrationCustomizers) {
+				customizer.customize(registration);
+			}
 		}
 	}
 
 	@Override
 	public String getServiceId() {
-		if (Objects.isNull(nacosContextProperties)) {
-			return polarisDiscoveryProperties.getService();
-		}
-		else {
-			String group = nacosContextProperties.getGroup();
-			if (StringUtils.isNotBlank(group) && !DEFAULT_GROUP.equals(group)) {
-				return String.format(GROUP_SERVER_ID_FORMAT, group, polarisDiscoveryProperties.getService());
-			}
-			else {
-				return polarisDiscoveryProperties.getService();
-			}
-		}
+		return serviceId;
 	}
 
 	@Override
@@ -135,7 +192,7 @@ public class PolarisRegistration implements Registration {
 
 	@Override
 	public boolean isSecure() {
-		return StringUtils.equalsIgnoreCase(polarisDiscoveryProperties.getProtocol(), "https");
+		return isSecure;
 	}
 
 	@Override
@@ -145,28 +202,7 @@ public class PolarisRegistration implements Registration {
 
 	@Override
 	public Map<String, String> getMetadata() {
-		if (CollectionUtils.isEmpty(metadata)) {
-			Map<String, String> instanceMetadata = new HashMap<>();
-
-			// put internal metadata
-			instanceMetadata.put(METADATA_KEY_IP, host);
-			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + port);
-
-			// put internal-nacos-cluster if necessary
-			String clusterName = nacosContextProperties.getClusterName();
-			if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER.equals(clusterName)) {
-				instanceMetadata.put(NACOS_CLUSTER, clusterName);
-			}
-
-			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
-
-			this.metadata = instanceMetadata;
-		}
 		return metadata;
-	}
-
-	public PolarisDiscoveryProperties getPolarisProperties() {
-		return polarisDiscoveryProperties;
 	}
 
 	@Override
@@ -179,18 +215,6 @@ public class PolarisRegistration implements Registration {
 	}
 
 	public boolean isRegisterEnabled() {
-
-		boolean registerEnabled = false;
-
-		if (null != polarisDiscoveryProperties) {
-			registerEnabled = polarisDiscoveryProperties.isRegisterEnabled();
-		}
-		if (null != consulContextProperties && consulContextProperties.isEnabled()) {
-			registerEnabled |= consulContextProperties.isRegister();
-		}
-		if (null != nacosContextProperties && nacosContextProperties.isEnabled()) {
-			registerEnabled |= nacosContextProperties.isRegisterEnabled();
-		}
 		return registerEnabled;
 	}
 

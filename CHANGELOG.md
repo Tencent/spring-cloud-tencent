@@ -14,4 +14,8 @@
 - [feat: update sct-all package method by maven shaded plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1024)
 - [fix:use path parameter in `@FeignClient` for circuit-breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1029)
 - [build(deps): bump guava in /spring-cloud-tencent-dependencies](https://github.com/Tencent/spring-cloud-tencent/pull/1034)
+- [fix:fix reporting bug when port is -1.](https://github.com/Tencent/spring-cloud-tencent/pull/1038)
+- [fix:update guava version.](https://github.com/Tencent/spring-cloud-tencent/pull/1041)
+- [fix:fix circuit breaker bean load order bug when using Nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1048)
 - [feat:added automatic optimization for dynamic config refresh type.](https://github.com/Tencent/spring-cloud-tencent/pull/1053)
+- [refactor:refactor Polaris registration.](https://github.com/Tencent/spring-cloud-tencent/pull/1055)

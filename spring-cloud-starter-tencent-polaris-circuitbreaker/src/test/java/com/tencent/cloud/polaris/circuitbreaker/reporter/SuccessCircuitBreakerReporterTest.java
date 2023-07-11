@@ -127,7 +127,7 @@ public class SuccessCircuitBreakerReporterTest {
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setTargetServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
 
 		successCircuitBreakerReporter.run(pluginContext);
 		successCircuitBreakerReporter.getOrder();
