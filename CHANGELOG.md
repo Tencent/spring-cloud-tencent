@@ -16,3 +16,4 @@
 - fix:fix reporting bug when port is -1.
 - fix:update guava version.
 - fix:fix circuit breaker bean load order bug when using Nacos discovery.
+- refactor:refactor Polaris registration.
