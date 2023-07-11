@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.registry;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import org.slf4j.Logger;
@@ -39,16 +40,20 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 
 	private final PolarisRegistration registration;
 
+	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
+
 	private final AssemblyAPI assemblyAPI;
 
 	public PolarisAutoServiceRegistration(
 			ServiceRegistry<PolarisRegistration> serviceRegistry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
 			PolarisRegistration registration,
+			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			AssemblyAPI assemblyAPI
 	) {
 		super(serviceRegistry, autoServiceRegistrationProperties);
 		this.registration = registration;
+		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.assemblyAPI = assemblyAPI;
 	}
 
@@ -84,7 +89,7 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 
 	@Override
 	protected Object getConfiguration() {
-		return this.registration.getPolarisProperties();
+		return this.polarisDiscoveryProperties;
 	}
 
 	@Override
@@ -95,7 +100,7 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 	@Override
 	@SuppressWarnings("deprecation")
 	protected String getAppName() {
-		String appName = registration.getPolarisProperties().getService();
+		String appName = registration.getServiceId();
 		return StringUtils.isEmpty(appName) ? super.getAppName() : appName;
 	}
 }

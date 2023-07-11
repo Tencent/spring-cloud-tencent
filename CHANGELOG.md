@@ -17,3 +17,4 @@
 - [fix:fix reporting bug when port is -1.](https://github.com/Tencent/spring-cloud-tencent/pull/1040)
 - [fix:update guava version.](https://github.com/Tencent/spring-cloud-tencent/pull/1043)
 - [fix:fix circuit breaker bean load order bug when using Nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1050)
+- [refactor:refactor Polaris registration.](https://github.com/Tencent/spring-cloud-tencent/pull/1057)
