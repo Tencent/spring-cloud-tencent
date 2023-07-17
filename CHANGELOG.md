@@ -18,3 +18,4 @@
 - [fix:update guava version.](https://github.com/Tencent/spring-cloud-tencent/pull/1043)
 - [fix:fix circuit breaker bean load order bug when using Nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1050)
 - [refactor:refactor Polaris registration.](https://github.com/Tencent/spring-cloud-tencent/pull/1057)
+- [feat:added automatic optimization for dynamic config refresh type.](https://github.com/Tencent/spring-cloud-tencent/pull/1058)
