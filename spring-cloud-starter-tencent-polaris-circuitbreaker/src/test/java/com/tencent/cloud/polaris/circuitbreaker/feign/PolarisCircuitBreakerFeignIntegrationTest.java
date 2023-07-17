@@ -50,6 +50,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
@@ -57,6 +58,7 @@ import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableExcept
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.PolarisFeignCircuitBreakerTargeter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -232,6 +234,18 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
 			customizers.forEach(customizer -> customizer.customize(factory));
 			return factory;
+		}
+
+		@Bean
+		public PolarisCircuitBreakerNameResolver polarisCircuitBreakerNameResolver() {
+			return new PolarisCircuitBreakerNameResolver();
+		}
+
+		@Bean
+		@Primary
+		@ConditionalOnBean(CircuitBreakerFactory.class)
+		public PolarisFeignCircuitBreakerTargeter polarisFeignCircuitBreakerTargeter(CircuitBreakerFactory circuitBreakerFactory, PolarisCircuitBreakerNameResolver circuitBreakerNameResolver) {
+			return new PolarisFeignCircuitBreakerTargeter(circuitBreakerFactory, circuitBreakerNameResolver);
 		}
 	}
 
