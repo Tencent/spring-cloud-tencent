@@ -67,6 +67,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -84,8 +86,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 		properties = {
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
-				"spring.cloud.polaris.namespace=default",
-				"spring.cloud.polaris.service=test"
+				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
+				"spring.cloud.polaris.service=" + SERVICE_CIRCUIT_BREAKER
 		})
 @DirtiesContext
 public class PolarisCircuitBreakerIntegrationTest {
@@ -93,6 +95,26 @@ public class PolarisCircuitBreakerIntegrationTest {
 	private static final String TEST_SERVICE_NAME = "test-service-callee";
 
 	private static NamingServer namingServer;
+	@Autowired
+	@Qualifier("defaultRestTemplate")
+	private RestTemplate defaultRestTemplate;
+	@Autowired
+	@Qualifier("restTemplateFallbackFromPolaris")
+	private RestTemplate restTemplateFallbackFromPolaris;
+	@Autowired
+	@Qualifier("restTemplateFallbackFromCode")
+	private RestTemplate restTemplateFallbackFromCode;
+	@Autowired
+	@Qualifier("restTemplateFallbackFromCode2")
+	private RestTemplate restTemplateFallbackFromCode2;
+	@Autowired
+	@Qualifier("restTemplateFallbackFromCode3")
+	private RestTemplate restTemplateFallbackFromCode3;
+	@Autowired
+	@Qualifier("restTemplateFallbackFromCode4")
+	private RestTemplate restTemplateFallbackFromCode4;
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	@AfterAll
 	public static void afterAll() {
@@ -100,34 +122,6 @@ public class PolarisCircuitBreakerIntegrationTest {
 			namingServer.terminate();
 		}
 	}
-
-	@Autowired
-	@Qualifier("defaultRestTemplate")
-	private RestTemplate defaultRestTemplate;
-
-	@Autowired
-	@Qualifier("restTemplateFallbackFromPolaris")
-	private RestTemplate restTemplateFallbackFromPolaris;
-
-	@Autowired
-	@Qualifier("restTemplateFallbackFromCode")
-	private RestTemplate restTemplateFallbackFromCode;
-
-	@Autowired
-	@Qualifier("restTemplateFallbackFromCode2")
-	private RestTemplate restTemplateFallbackFromCode2;
-
-	@Autowired
-	@Qualifier("restTemplateFallbackFromCode3")
-	private RestTemplate restTemplateFallbackFromCode3;
-
-	@Autowired
-	@Qualifier("restTemplateFallbackFromCode4")
-	private RestTemplate restTemplateFallbackFromCode4;
-
-	@Autowired
-	private ApplicationContext applicationContext;
-
 
 	@Test
 	public void testRestTemplate() throws URISyntaxException {
@@ -154,7 +148,8 @@ public class PolarisCircuitBreakerIntegrationTest {
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode2.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
 		Utils.sleepUninterrupted(2000);
-		assertThat(restTemplateFallbackFromCode3.getForEntity("/example/service/b/info", String.class).getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(restTemplateFallbackFromCode3.getForEntity("/example/service/b/info", String.class)
+				.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode4.getForObject("/example/service/b/info", String.class)).isEqualTo("fallback");
 		Utils.sleepUninterrupted(2000);
@@ -167,7 +162,7 @@ public class PolarisCircuitBreakerIntegrationTest {
 
 	@Configuration
 	@EnableAutoConfiguration
-	@ImportAutoConfiguration({ PolarisCircuitBreakerFeignClientAutoConfiguration.class })
+	@ImportAutoConfiguration({PolarisCircuitBreakerFeignClientAutoConfiguration.class})
 	@EnableFeignClients
 	public static class TestConfig {
 
@@ -251,14 +246,17 @@ public class PolarisCircuitBreakerIntegrationTest {
 			catch (IOException e) {
 
 			}
-			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
+			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
 
-			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
-			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
+			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
+			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader()
+					.getResourceAsStream("circuitBreakerRule.json");
+			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.joining(""));
 			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
 			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
-			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
+			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder()
+					.addRules(circuitBreakerRule).build();
 			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
 			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
 			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
@@ -312,6 +310,5 @@ public class PolarisCircuitBreakerIntegrationTest {
 			);
 		}
 	}
-
 
 }
