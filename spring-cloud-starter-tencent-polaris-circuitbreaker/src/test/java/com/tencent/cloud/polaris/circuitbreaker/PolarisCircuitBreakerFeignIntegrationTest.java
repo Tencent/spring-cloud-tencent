@@ -55,6 +55,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -69,27 +71,22 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		properties = {
 				"spring.cloud.gateway.enabled=false",
 				"spring.cloud.openfeign.circuitbreaker.enabled=true",
-				"spring.cloud.polaris.namespace=default",
-				"spring.cloud.polaris.service=Test"
+				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
+				"spring.cloud.polaris.service=" + SERVICE_CIRCUIT_BREAKER
 })
 @DirtiesContext
 public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	private static final String TEST_SERVICE_NAME = "test-service-callee";
-
+	private static NamingServer namingServer;
 	@Autowired
 	private EchoService echoService;
-
 	@Autowired
 	private FooService fooService;
-
 	@Autowired
 	private BarService barService;
-
 	@Autowired
 	private BazService bazService;
-
-	private static NamingServer namingServer;
 
 	@AfterAll
 	public static void afterAll() {
@@ -121,46 +118,6 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 		assertThat(fooService.toString()).isNotEqualTo(echoService.toString());
 		assertThat(fooService.hashCode()).isNotEqualTo(echoService.hashCode());
 		assertThat(echoService.equals(fooService)).isEqualTo(Boolean.FALSE);
-	}
-
-	@Configuration
-	@EnableAutoConfiguration
-	@ImportAutoConfiguration({ PolarisCircuitBreakerFeignClientAutoConfiguration.class })
-	@EnableFeignClients
-	public static class TestConfig {
-
-		@Bean
-		public EchoServiceFallback echoServiceFallback() {
-			return new EchoServiceFallback();
-		}
-
-		@Bean
-		public CustomFallbackFactory customFallbackFactory() {
-			return new CustomFallbackFactory();
-		}
-
-		@Bean
-		public CircuitBreakAPI circuitBreakAPI() throws InvalidProtocolBufferException {
-			try {
-				namingServer = NamingServer.startNamingServer(10081);
-				System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-			}
-			catch (IOException e) {
-
-			}
-			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
-
-			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
-			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
-			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
-			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
-			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
-			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
-			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
-			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
-		}
-
 	}
 
 	@FeignClient(value = TEST_SERVICE_NAME, contextId = "1", fallback = EchoServiceFallback.class)
@@ -199,6 +156,49 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 
 	}
 
+	@Configuration
+	@EnableAutoConfiguration
+	@ImportAutoConfiguration({PolarisCircuitBreakerFeignClientAutoConfiguration.class})
+	@EnableFeignClients
+	public static class TestConfig {
+
+		@Bean
+		public EchoServiceFallback echoServiceFallback() {
+			return new EchoServiceFallback();
+		}
+
+		@Bean
+		public CustomFallbackFactory customFallbackFactory() {
+			return new CustomFallbackFactory();
+		}
+
+		@Bean
+		public CircuitBreakAPI circuitBreakAPI() throws InvalidProtocolBufferException {
+			try {
+				namingServer = NamingServer.startNamingServer(10081);
+				System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
+			}
+			catch (IOException e) {
+
+			}
+			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
+
+			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
+			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader()
+					.getResourceAsStream("circuitBreakerRule.json");
+			String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.joining(""));
+			JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
+			CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
+			CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder()
+					.addRules(circuitBreakerRule).build();
+			namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
+			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
+			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		}
+
+	}
+
 	public static class EchoServiceFallback implements EchoService {
 
 		@Override
@@ -223,7 +223,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	public static class CustomFallbackFactory
 			implements FallbackFactory<FooService> {
 
-		private FooService fooService = new FooServiceFallback();
+		private final FooService fooService = new FooServiceFallback();
 
 		@Override
 		public FooService create(Throwable throwable) {
