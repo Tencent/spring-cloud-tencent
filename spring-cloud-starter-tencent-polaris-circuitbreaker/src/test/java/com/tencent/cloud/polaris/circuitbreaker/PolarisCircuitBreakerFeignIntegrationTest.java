@@ -55,6 +55,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -69,8 +71,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		properties = {
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
-				"spring.cloud.polaris.namespace=default",
-				"spring.cloud.polaris.service=Test",
+				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
+				"spring.cloud.polaris.service=" + SERVICE_CIRCUIT_BREAKER,
 				"spring.cloud.polaris.address=grpc://127.0.0.1:10081"
 		})
 @DirtiesContext
@@ -180,7 +182,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 			catch (IOException e) {
 
 			}
-			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
+			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
 
 			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
 			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader()

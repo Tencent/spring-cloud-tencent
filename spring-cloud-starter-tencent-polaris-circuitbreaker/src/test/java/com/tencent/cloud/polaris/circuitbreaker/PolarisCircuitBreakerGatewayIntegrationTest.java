@@ -47,7 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -60,6 +59,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,15 +73,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = {
 				"spring.cloud.gateway.enabled=true",
-				"spring.cloud.polaris.namespace=default",
-				"spring.cloud.polaris.service=Test",
+				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
+				"spring.cloud.polaris.service=" + SERVICE_CIRCUIT_BREAKER,
 				"spring.main.web-application-type=reactive",
-				"httpbin=http://localhost:${wiremock.server.port}",
 				"spring.cloud.polaris.address=grpc://127.0.0.1:10081"
 		},
 		classes = PolarisCircuitBreakerGatewayIntegrationTest.TestApplication.class
 )
-@AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test-gateway")
 @AutoConfigureWebTestClient(timeout = "1000000")
 public class PolarisCircuitBreakerGatewayIntegrationTest {
@@ -169,7 +168,7 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 			catch (IOException e) {
 
 			}
-			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
+			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
 
 			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
 			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader()
