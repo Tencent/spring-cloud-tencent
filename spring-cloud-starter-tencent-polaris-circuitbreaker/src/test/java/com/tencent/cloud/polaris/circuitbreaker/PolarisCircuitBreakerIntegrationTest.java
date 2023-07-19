@@ -67,6 +67,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -84,8 +86,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 		properties = {
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
-				"spring.cloud.polaris.namespace=default",
-				"spring.cloud.polaris.service=test",
+				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
+				"spring.cloud.polaris.service=" + SERVICE_CIRCUIT_BREAKER,
 				"spring.cloud.polaris.address=grpc://127.0.0.1:10081"
 		})
 @DirtiesContext
@@ -147,7 +149,8 @@ public class PolarisCircuitBreakerIntegrationTest {
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode2.getForObject("/example/service/b/info", String.class)).isEqualTo("\"this is a fallback class\"");
 		Utils.sleepUninterrupted(2000);
-		assertThat(restTemplateFallbackFromCode3.getForEntity("/example/service/b/info", String.class).getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(restTemplateFallbackFromCode3.getForEntity("/example/service/b/info", String.class)
+				.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Utils.sleepUninterrupted(2000);
 		assertThat(restTemplateFallbackFromCode4.getForObject("/example/service/b/info", String.class)).isEqualTo("fallback");
 		Utils.sleepUninterrupted(2000);
@@ -244,7 +247,7 @@ public class PolarisCircuitBreakerIntegrationTest {
 			catch (IOException e) {
 
 			}
-			ServiceKey serviceKey = new ServiceKey("default", TEST_SERVICE_NAME);
+			ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, TEST_SERVICE_NAME);
 
 			CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
 			InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader()
