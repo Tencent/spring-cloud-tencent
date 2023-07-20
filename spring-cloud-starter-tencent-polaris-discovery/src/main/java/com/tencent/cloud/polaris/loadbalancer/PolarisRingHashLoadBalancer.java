@@ -17,95 +17,38 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
-import com.tencent.polaris.api.pojo.DefaultServiceInstances;
-import com.tencent.polaris.api.pojo.Instance;
-import com.tencent.polaris.api.pojo.ServiceInstances;
-import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.Criteria;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
-import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.DefaultResponse;
-import org.springframework.cloud.client.loadbalancer.EmptyResponse;
-import org.springframework.cloud.client.loadbalancer.Request;
-import org.springframework.cloud.client.loadbalancer.Response;
-import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
-import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
+
+import java.util.Optional;
 
 /**
  * PolarisRingHashLoadBalancer.
  *
  * @author sean yu
+ * @author <a href="mailto:veteranchen@tencent.com">veteranchen</a>
  */
-public class PolarisRingHashLoadBalancer implements ReactorServiceInstanceLoadBalancer {
-
-	private static final Logger log = LoggerFactory.getLogger(PolarisWeightedRandomLoadBalancer.class);
-
-	private final String serviceId;
-
-	private final RouterAPI routerAPI;
-
-	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
+public class PolarisRingHashLoadBalancer extends PolarisAbstractLoadBalancer {
 
 	public PolarisRingHashLoadBalancer(String serviceId,
-			ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
-			RouterAPI routerAPI) {
-		this.serviceId = serviceId;
-		this.supplierObjectProvider = supplierObjectProvider;
-		this.routerAPI = routerAPI;
-	}
+									   ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
+									   RouterAPI routerAPI) {
+		super(serviceId, supplierObjectProvider, routerAPI);
 
-	private static ServiceInstances convertToPolarisServiceInstances(List<ServiceInstance> serviceInstances) {
-		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceInstances.get(0).getServiceId());
-		List<Instance> polarisInstances = serviceInstances.stream()
-				.map(serviceInstance -> ((PolarisServiceInstance) serviceInstance).getPolarisInstance())
-				.collect(Collectors.toList());
-		return new DefaultServiceInstances(serviceKey, polarisInstances);
 	}
 
 	@Override
-	public Mono<Response<ServiceInstance>> choose(Request request) {
-		ServiceInstanceListSupplier supplier = supplierObjectProvider
-				.getIfAvailable(NoopServiceInstanceListSupplier::new);
+	protected ProcessLoadBalanceRequest setProcessLoadBalanceRequest(ProcessLoadBalanceRequest req) {
 		String hashKey = Optional.ofNullable(PolarisLoadBalancerRingHashKeyProvider.getHashKey()).orElse("");
-		return supplier.get(request).next().map(serviceInstances -> getInstanceResponse(serviceInstances, hashKey));
-	}
-
-	private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> serviceInstances, String hashKey) {
-		if (serviceInstances.isEmpty()) {
-			log.warn("No servers available for service: " + this.serviceId);
-			return new EmptyResponse();
-		}
-
-		ProcessLoadBalanceRequest request = new ProcessLoadBalanceRequest();
-		request.setDstInstances(convertToPolarisServiceInstances(serviceInstances));
-		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_RING_HASH);
+		req.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_RING_HASH);
 		Criteria criteria = new Criteria();
 		criteria.setHashKey(hashKey);
-		request.setCriteria(criteria);
-
-		try {
-			ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(request);
-			return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
-		}
-		catch (Exception e) {
-			log.warn("PolarisRoutingLoadbalancer error", e);
-			return new EmptyResponse();
-		}
+		req.setCriteria(criteria);
+		return req;
 	}
 
 }

@@ -17,88 +17,29 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
-import com.tencent.polaris.api.pojo.DefaultServiceInstances;
-import com.tencent.polaris.api.pojo.Instance;
-import com.tencent.polaris.api.pojo.ServiceInstances;
-import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.rpc.Criteria;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
-import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.DefaultResponse;
-import org.springframework.cloud.client.loadbalancer.EmptyResponse;
-import org.springframework.cloud.client.loadbalancer.Request;
-import org.springframework.cloud.client.loadbalancer.Response;
-import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
-import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 
 /**
  * Loadbalancer of Polaris.
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
+ * @author <a href="mailto:veteranchen@tencent.com">veteranchen</a>
  */
-public class PolarisWeightedRandomLoadBalancer implements ReactorServiceInstanceLoadBalancer {
-
-	private static final Logger log = LoggerFactory.getLogger(PolarisWeightedRandomLoadBalancer.class);
-
-	private final String serviceId;
-
-	private final RouterAPI routerAPI;
-
-	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
+public class PolarisWeightedRandomLoadBalancer extends PolarisAbstractLoadBalancer {
 
 	public PolarisWeightedRandomLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
-		this.serviceId = serviceId;
-		this.supplierObjectProvider = supplierObjectProvider;
-		this.routerAPI = routerAPI;
-	}
-
-	private static ServiceInstances convertToPolarisServiceInstances(List<ServiceInstance> serviceInstances) {
-		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceInstances.get(0).getServiceId());
-		List<Instance> polarisInstances = serviceInstances.stream()
-				.map(serviceInstance -> ((PolarisServiceInstance) serviceInstance).getPolarisInstance())
-				.collect(Collectors.toList());
-		return new DefaultServiceInstances(serviceKey, polarisInstances);
+		super(serviceId, supplierObjectProvider, routerAPI);
 	}
 
 	@Override
-	public Mono<Response<ServiceInstance>> choose(Request request) {
-		ServiceInstanceListSupplier supplier = supplierObjectProvider
-				.getIfAvailable(NoopServiceInstanceListSupplier::new);
-		return supplier.get(request).next().map(this::getInstanceResponse);
-	}
-
-	private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> serviceInstances) {
-		if (serviceInstances.isEmpty()) {
-			log.warn("No servers available for service: " + this.serviceId);
-			return new EmptyResponse();
-		}
-
-		ProcessLoadBalanceRequest request = new ProcessLoadBalanceRequest();
-		request.setDstInstances(convertToPolarisServiceInstances(serviceInstances));
-		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_RANDOM);
-		request.setCriteria(new Criteria());
-
-		try {
-			ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(request);
-			return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
-		}
-		catch (Exception e) {
-			log.warn("PolarisRoutingLoadbalancer error", e);
-			return new EmptyResponse();
-		}
+	protected ProcessLoadBalanceRequest setProcessLoadBalanceRequest(ProcessLoadBalanceRequest req) {
+		req.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_RANDOM);
+		req.setCriteria(new Criteria());
+		return req;
 	}
 }
