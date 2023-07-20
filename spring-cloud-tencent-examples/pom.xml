@@ -26,6 +26,7 @@
 		<module>polaris-router-grayrelease-example</module>
 		<module>polaris-router-featureenv-example</module>
 		<module>quickstart-example</module>
+		<module>multiple-discovery-example</module>
 	</modules>
 
 	<properties>

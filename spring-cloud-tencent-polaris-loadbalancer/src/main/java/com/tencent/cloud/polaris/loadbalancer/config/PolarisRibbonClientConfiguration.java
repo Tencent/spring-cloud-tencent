@@ -29,9 +29,11 @@ import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.loadbalancer.PolarisRingHashRule;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRandomRule;
+import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.router.api.core.RouterAPI;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -46,9 +48,10 @@ public class PolarisRibbonClientConfiguration {
 	@Bean
 	public ILoadBalancer polarisLoadBalancer(IClientConfig iClientConfig, IRule iRule,
 			IPing iPing, ServerList<Server> serverList,
-			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
+			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties,
+			@Autowired(required = false) InstanceTransformer instanceTransformer) {
 		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
-				consumerAPI, polarisLoadBalancerProperties);
+				consumerAPI, polarisLoadBalancerProperties, instanceTransformer);
 	}
 
 	@Bean

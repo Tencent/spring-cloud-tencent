@@ -34,6 +34,7 @@ import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
+import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
@@ -58,11 +59,14 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 
 	private final PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 
+	private final InstanceTransformer instanceTransformer;
+
 	public PolarisLoadBalancer(IClientConfig config, IRule rule, IPing ping, ServerList<Server> serverList,
-			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties properties) {
+			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties properties, InstanceTransformer instanceTransformer) {
 		super(config, rule, ping, serverList, null, new PollingServerListUpdater());
 		this.consumerAPI = consumerAPI;
 		this.polarisLoadBalancerProperties = properties;
+		this.instanceTransformer = instanceTransformer;
 	}
 
 	@Override
@@ -114,6 +118,7 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 			throw new IllegalStateException(
 					"PolarisLoadBalancer only Server with AppName or ServiceIdForDiscovery attribute");
 		}
+
 		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, name);
 		List<Instance> instances = new ArrayList<>(8);
 		for (Server server : allServers) {
@@ -127,6 +132,9 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 			instance.setPort(server.getPort());
 			instance.setZone(server.getZone());
 			instance.setWeight(100);
+			if (instanceTransformer != null) {
+				instanceTransformer.transformCustom(instance, server);
+			}
 			instances.add(instance);
 		}
 		serviceInstances = new DefaultServiceInstances(serviceKey, instances);
