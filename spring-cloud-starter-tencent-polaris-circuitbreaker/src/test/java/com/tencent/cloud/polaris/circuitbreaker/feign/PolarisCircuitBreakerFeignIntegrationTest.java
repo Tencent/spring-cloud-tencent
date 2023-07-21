@@ -24,14 +24,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
 import com.tencent.polaris.client.util.Utils;
+import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
@@ -43,6 +51,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -55,7 +65,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
-import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -71,8 +80,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
-				"spring.cloud.polaris.service=" + SERVICE_CIRCUIT_BREAKER,
-				"spring.cloud.polaris.address=grpc://127.0.0.1:10081"
+				"spring.cloud.polaris.service=test"
 		})
 public class PolarisCircuitBreakerFeignIntegrationTest {
 
@@ -91,7 +99,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	private BazService bazService;
 
 	@Test
-	public void contextLoads() throws Exception {
+	public void contextLoads() {
 		assertThat(echoService).isNotNull();
 		assertThat(fooService).isNotNull();
 	}
@@ -158,6 +166,9 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 	@EnableFeignClients
 	public static class TestConfig {
 
+		@Autowired(required = false)
+		private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
+
 		@Bean
 		public EchoServiceFallback echoServiceFallback() {
 			return new EchoServiceFallback();
@@ -198,6 +209,30 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
 		}
 
+		@Bean
+		public ConsumerAPI consumerAPI(NamingServer namingServer) {
+			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
+			return DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
+		}
+
+		@Bean
+		public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
+			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+			customizers.forEach(customizer -> customizer.customize(factory));
+			return factory;
+		}
 	}
 
 	public static class EchoServiceFallback implements EchoService {
@@ -205,7 +240,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 		@Override
 		public String echo(@RequestParam("str") String param) throws InvocationTargetException {
 			if (param == null) {
-				throw new InvocationTargetException(new Exception());
+				throw new InvocationTargetException(new Exception(), "test InvocationTargetException");
 			}
 			return "echo fallback";
 		}

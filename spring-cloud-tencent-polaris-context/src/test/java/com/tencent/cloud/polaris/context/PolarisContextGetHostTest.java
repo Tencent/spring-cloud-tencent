@@ -43,14 +43,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolarisContextGetHostTest {
 
 	@Autowired
-	private SDKContext polarisContext;
+	private PolarisSDKContextManager polarisSDKContextManager;
 
 	@Autowired
 	private PolarisContextProperties polarisContextProperties;
 
 	@Test
 	public void testGetConfigHost() {
-		String bindIP = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
+		String bindIP = polarisSDKContextManager.getSDKContext().getConfig().getGlobal().getAPI().getBindIP();
 		assertThat(StringUtils.isBlank(bindIP)).isFalse();
 		assertThat(bindIP).isEqualTo("192.168.1.1");
 		assertThat(polarisContextProperties.getAddress()).isEqualTo("grpc://127.0.0.1:8091");

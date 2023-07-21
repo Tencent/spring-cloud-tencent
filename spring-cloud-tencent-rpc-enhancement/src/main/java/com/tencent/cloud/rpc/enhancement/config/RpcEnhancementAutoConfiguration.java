@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.netflix.zuul.ZuulFilter;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.filter.EnhancedReactiveFilter;
@@ -40,8 +41,6 @@ import com.tencent.cloud.rpc.enhancement.webclient.RibbonLoadBalancerClientAspec
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedErrorZuulFilter;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedPostZuulFilter;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedRouteZuulFilter;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,20 +88,20 @@ public class RpcEnhancementAutoConfiguration {
 	public EnhancedPluginRunner enhancedFeignPluginRunner(
 			@Autowired(required = false) List<EnhancedPlugin> enhancedPlugins,
 			@Autowired(required = false) Registration registration,
-			SDKContext sdkContext) {
-		return new DefaultEnhancedPluginRunner(enhancedPlugins, registration, sdkContext);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new DefaultEnhancedPluginRunner(enhancedPlugins, registration, polarisSDKContextManager.getSDKContext());
 	}
 
 	@Bean
 	public SuccessPolarisReporter successPolarisReporter(RpcEnhancementReporterProperties properties,
-			ConsumerAPI consumerAPI) {
-		return new SuccessPolarisReporter(properties, consumerAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new SuccessPolarisReporter(properties, polarisSDKContextManager.getConsumerAPI());
 	}
 
 	@Bean
 	public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
-			ConsumerAPI consumerAPI) {
-		return new ExceptionPolarisReporter(properties, consumerAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new ExceptionPolarisReporter(properties, polarisSDKContextManager.getConsumerAPI());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -243,7 +242,6 @@ public class RpcEnhancementAutoConfiguration {
 		public EnhancedGatewayGlobalFilter enhancedPolarisGatewayReporter(@Lazy EnhancedPluginRunner pluginRunner) {
 			return new EnhancedGatewayGlobalFilter(pluginRunner);
 		}
-
 	}
 
 	/**

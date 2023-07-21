@@ -23,16 +23,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
 import com.tencent.polaris.client.util.Utils;
+import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.test.common.TestUtils;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
@@ -43,8 +51,11 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -150,6 +161,9 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 	@EnableAutoConfiguration
 	public static class TestApplication {
 
+		@Autowired(required = false)
+		private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
+
 		@Bean
 		public PreDestroy preDestroy(NamingServer namingServer) {
 			return new PreDestroy(namingServer);
@@ -178,6 +192,34 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 		public CircuitBreakAPI circuitBreakAPI(NamingServer namingServer) throws IOException {
 			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
 			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		}
+
+		@Bean
+		public ConsumerAPI consumerAPI(NamingServer namingServer) {
+			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
+			return DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
+		public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
+		public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(CircuitBreakerFactory.class)
+		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
+			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+			customizers.forEach(customizer -> customizer.customize(factory));
+			return factory;
 		}
 
 		@Bean

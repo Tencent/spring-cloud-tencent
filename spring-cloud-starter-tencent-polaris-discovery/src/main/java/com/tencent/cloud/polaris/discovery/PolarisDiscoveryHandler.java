@@ -19,14 +19,13 @@
 package com.tencent.cloud.polaris.discovery;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.rpc.GetAllInstancesRequest;
 import com.tencent.polaris.api.rpc.GetHealthyInstancesRequest;
 import com.tencent.polaris.api.rpc.GetServicesRequest;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.api.rpc.ServicesResponse;
-import com.tencent.polaris.client.api.SDKContext;
 
 /**
  * Discovery Handler for Polaris.
@@ -37,18 +36,12 @@ public class PolarisDiscoveryHandler {
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
-	private final ProviderAPI providerAPI;
-
-	private final SDKContext sdkContext;
-
 	private final ConsumerAPI polarisConsumer;
 
 	public PolarisDiscoveryHandler(PolarisDiscoveryProperties polarisDiscoveryProperties,
-				ProviderAPI providerAPI, SDKContext sdkContext, ConsumerAPI polarisConsumer) {
+			PolarisSDKContextManager polarisSDKContextManager) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
-		this.providerAPI = providerAPI;
-		this.sdkContext = sdkContext;
-		this.polarisConsumer = polarisConsumer;
+		this.polarisConsumer = polarisSDKContextManager.getConsumerAPI();
 	}
 
 	/**
@@ -75,15 +68,7 @@ public class PolarisDiscoveryHandler {
 		GetAllInstancesRequest request = new GetAllInstancesRequest();
 		request.setNamespace(namespace);
 		request.setService(service);
-		return polarisConsumer.getAllInstance(request);
-	}
-
-	public ProviderAPI getProviderAPI() {
-		return providerAPI;
-	}
-
-	public SDKContext getSdkContext() {
-		return sdkContext;
+		return polarisConsumer.getAllInstances(request);
 	}
 
 	/**

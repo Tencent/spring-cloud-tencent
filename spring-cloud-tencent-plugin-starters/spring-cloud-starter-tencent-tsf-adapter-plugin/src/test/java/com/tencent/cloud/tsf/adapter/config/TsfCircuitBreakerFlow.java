@@ -15,25 +15,25 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.tsf.adapter.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import com.tencent.polaris.circuitbreak.api.flow.CircuitBreakerFlow;
+import com.tencent.polaris.client.api.SDKContext;
 
 /**
- * Autoconfiguration at bootstrap phase.
+ * TsfRouterFlow.
  *
- * @author lepdou 2022-03-29
+ * @author sean yu
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import({
-		PolarisCircuitBreakerAutoConfiguration.class,
-		ReactivePolarisCircuitBreakerAutoConfiguration.class,
-		PolarisCircuitBreakerFeignClientAutoConfiguration.class,
-		GatewayPolarisCircuitBreakerAutoConfiguration.class
-})
-public class PolarisCircuitBreakerBootstrapConfiguration {
+public class TsfCircuitBreakerFlow implements CircuitBreakerFlow {
 
+	@Override
+	public String getName() {
+		return PolarisTsfFlowConfigModifier.TSF_FLOW_NAME;
+	}
+
+	@Override
+	public void setSDKContext(SDKContext sdkContext) {
+
+	}
 }

@@ -15,23 +15,25 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.ratelimit.controller;
+package com.tencent.cloud.tsf.adapter.config;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.ratelimit.api.flow.LimitFlow;
 
 /**
- * Test controller.
+ * TsfRouterFlow.
  *
- * @author Haotian Zhang
+ * @author sean yu
  */
-@RestController
-@RequestMapping("/test")
-public class TestController {
+public class TsfLimitFlow implements LimitFlow {
 
-	@GetMapping("/info")
-	public String info() {
-		return "hello service info";
+	@Override
+	public String getName() {
+		return PolarisTsfFlowConfigModifier.TSF_FLOW_NAME;
+	}
+
+	@Override
+	public void setSDKContext(SDKContext sdkContext) {
+
 	}
 }

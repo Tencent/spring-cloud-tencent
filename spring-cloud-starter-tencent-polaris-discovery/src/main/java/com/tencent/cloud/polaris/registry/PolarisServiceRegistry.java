@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
@@ -33,6 +34,7 @@ import com.tencent.polaris.api.config.global.StatReporterConfig;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.plugin.common.PluginTypes;
+import com.tencent.polaris.api.plugin.stat.ReporterMetaInfo;
 import com.tencent.polaris.api.plugin.stat.StatReporter;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.rpc.InstanceDeregisterRequest;
@@ -47,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.http.HttpHeaders;
 
@@ -58,24 +61,25 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng, changjin wei(魏昌进)
  */
-public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistration> {
+public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistration>, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
+	private final PolarisSDKContextManager polarisSDKContextManager;
+
 	private final PolarisDiscoveryHandler polarisDiscoveryHandler;
 
 	private final StaticMetadataManager staticMetadataManager;
-
+	private final PolarisStatProperties polarisStatProperties;
 	private final ScheduledExecutorService heartbeatExecutor;
 
-	private final PolarisStatProperties polarisStatProperties;
-
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
-			PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler polarisDiscoveryHandler,
 			StaticMetadataManager staticMetadataManager, PolarisStatProperties polarisStatProperties) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
+		this.polarisSDKContextManager = polarisSDKContextManager;
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.staticMetadataManager = staticMetadataManager;
 
@@ -115,7 +119,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		instanceRegisterRequest.setInstanceId(polarisDiscoveryProperties.getInstanceId());
 		try {
-			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
+			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
 			if (StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
 				instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
@@ -133,10 +137,16 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 					staticMetadataManager.getMergedStaticMetadata());
 			if (Objects.nonNull(polarisStatProperties) && polarisStatProperties.isEnabled()) {
 				try {
-					StatReporter statReporter = (StatReporter) polarisDiscoveryHandler.getSdkContext().getPlugins()
+					StatReporter statReporter = (StatReporter) polarisSDKContextManager.getSDKContext().getPlugins()
 							.getPlugin(PluginTypes.STAT_REPORTER.getBaseType(), StatReporterConfig.DEFAULT_REPORTER_PROMETHEUS);
 					if (Objects.nonNull(statReporter)) {
-						LOGGER.info("Stat server started on port: " + statReporter.metaInfo().getPort() + " (http)");
+						ReporterMetaInfo reporterMetaInfo = statReporter.metaInfo();
+						if (reporterMetaInfo.getPort() != null) {
+							LOGGER.info("Stat server started on port: " + reporterMetaInfo.getPort() + " (http)");
+						}
+						else {
+							LOGGER.info("Stat server is set to type of Push gateway");
+						}
 					}
 					else {
 						LOGGER.warn("Plugin StatReporter not found");
@@ -147,10 +157,12 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 				}
 			}
 
-			ServiceConfigImpl serviceConfig = (ServiceConfigImpl) polarisDiscoveryHandler.getSdkContext().getConfig()
+			ServiceConfigImpl serviceConfig = (ServiceConfigImpl) polarisSDKContextManager.getSDKContext().getConfig()
 					.getProvider().getService();
 			serviceConfig.setNamespace(polarisDiscoveryProperties.getNamespace());
 			serviceConfig.setName(serviceId);
+
+			PolarisSDKContextManager.isRegistered = true;
 		}
 		catch (Exception e) {
 			LOGGER.error("polaris registry, {} register failed...{},", registration.getServiceId(), registration, e);
@@ -175,7 +187,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		deRegisterRequest.setPort(registration.getPort());
 
 		try {
-			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
+			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			providerClient.deRegister(deRegisterRequest);
 		}
 		catch (Exception e) {
@@ -185,8 +197,9 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			if (null != heartbeatExecutor) {
 				heartbeatExecutor.shutdown();
 			}
+			LOGGER.info("De-registration finished.");
+			PolarisSDKContextManager.isRegistered = false;
 		}
-		LOGGER.info("De-registration finished.");
 	}
 
 	@Override
@@ -241,7 +254,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 					return;
 				}
 
-				polarisDiscoveryHandler.getProviderAPI().heartbeat(heartbeatRequest);
+				polarisSDKContextManager.getProviderAPI().heartbeat(heartbeatRequest);
 				LOGGER.trace("Polaris heartbeat is sent");
 			}
 			catch (PolarisException e) {
@@ -251,5 +264,12 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 				LOGGER.error("polaris heartbeat runtime error", e);
 			}
 		}, polarisDiscoveryProperties.getHeartbeatInterval(), polarisDiscoveryProperties.getHeartbeatInterval(), SECONDS);
+	}
+
+	@Override
+	public void destroy() {
+		if (heartbeatExecutor != null) {
+			heartbeatExecutor.shutdown();
+		}
 	}
 }

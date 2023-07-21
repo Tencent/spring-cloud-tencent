@@ -15,25 +15,23 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.polaris.context;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Autoconfiguration at bootstrap phase.
+ * Test controller.
  *
- * @author lepdou 2022-03-29
+ * @author Haotian Zhang
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import({
-		PolarisCircuitBreakerAutoConfiguration.class,
-		ReactivePolarisCircuitBreakerAutoConfiguration.class,
-		PolarisCircuitBreakerFeignClientAutoConfiguration.class,
-		GatewayPolarisCircuitBreakerAutoConfiguration.class
-})
-public class PolarisCircuitBreakerBootstrapConfiguration {
+@RestController
+@RequestMapping("/test")
+public class TestController {
 
+	@GetMapping("/info")
+	public String info() {
+		return "hello service info";
+	}
 }

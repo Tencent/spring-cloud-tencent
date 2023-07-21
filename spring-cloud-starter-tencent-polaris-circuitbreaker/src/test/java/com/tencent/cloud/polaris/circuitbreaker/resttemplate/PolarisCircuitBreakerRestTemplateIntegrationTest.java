@@ -24,11 +24,18 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
@@ -45,6 +52,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
@@ -63,7 +72,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
-import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -82,7 +90,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
-				"spring.cloud.polaris.service=" + SERVICE_CIRCUIT_BREAKER
+				"spring.cloud.polaris.service=test"
 		})
 public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 
@@ -158,6 +166,13 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 	@ImportAutoConfiguration({PolarisCircuitBreakerFeignClientAutoConfiguration.class})
 	@EnableFeignClients
 	public static class TestConfig {
+
+		@Autowired(required = false)
+		private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
+
+		{
+			PolarisSDKContextManager.innerDestroy();
+		}
 
 		@Bean
 		@com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker(fallback = "fallback")
@@ -257,6 +272,27 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 		public CircuitBreakAPI circuitBreakAPI(NamingServer namingServer) {
 			com.tencent.polaris.api.config.Configuration configuration = TestUtils.configWithEnvAddress();
 			return CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
+		}
+
+		@Bean
+		public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
+				CircuitBreakAPI circuitBreakAPI) {
+			return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
+		}
+
+		@Bean
+		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI,
+				PolarisSDKContextManager polarisSDKContextManager) {
+			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(
+					circuitBreakAPI, polarisSDKContextManager.getConsumerAPI());
+			customizers.forEach(customizer -> customizer.customize(factory));
+			return factory;
 		}
 
 		@RestController

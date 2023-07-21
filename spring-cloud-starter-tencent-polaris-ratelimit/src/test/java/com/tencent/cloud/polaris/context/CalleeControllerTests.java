@@ -15,12 +15,17 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.ratelimit.controller;
+package com.tencent.cloud.polaris.context;
 
+import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
+import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
+import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentServletResolver;
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResultCode;
+import com.tencent.polaris.ratelimit.factory.LimitAPIFactory;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import com.tencent.polaris.test.mock.discovery.NamingService;
 import org.junit.jupiter.api.AfterAll;
@@ -36,6 +41,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException.TooManyRequests;
 import org.springframework.web.client.RestClientException;
@@ -144,5 +150,19 @@ public class CalleeControllerTests {
 			return new RestTemplate();
 		}
 
+		@Bean
+		public LimitAPI limitAPI(PolarisSDKContextManager polarisSDKContextManager) {
+			return LimitAPIFactory.createLimitAPIByContext(polarisSDKContextManager.getSDKContext());
+		}
+
+		@Bean
+		@Primary
+		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI,
+				PolarisRateLimitProperties polarisRateLimitProperties,
+				RateLimitRuleArgumentServletResolver rateLimitRuleArgumentResolver,
+				@Autowired(required = false) PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
+			return new QuotaCheckServletFilter(limitAPI, polarisRateLimitProperties,
+					rateLimitRuleArgumentResolver, polarisRateLimiterLimitedFallback);
+		}
 	}
 }

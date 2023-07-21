@@ -6,3 +6,4 @@
 - feat:adapt for nacos instance.
 - Refactoring: Refactor Circuitbreaker ut.
 - refactor:refactor rpc enhancement.
+- feat:refactor SDKContext as static.

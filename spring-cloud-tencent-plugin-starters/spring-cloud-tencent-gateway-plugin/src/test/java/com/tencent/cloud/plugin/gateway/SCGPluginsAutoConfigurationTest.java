@@ -23,7 +23,7 @@ import com.tencent.cloud.plugin.gateway.staining.rule.RuleStainingExecutor;
 import com.tencent.cloud.plugin.gateway.staining.rule.RuleStainingProperties;
 import com.tencent.cloud.plugin.gateway.staining.rule.RuleTrafficStainer;
 import com.tencent.cloud.plugin.gateway.staining.rule.StainingRuleManager;
-import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
 import org.junit.jupiter.api.Test;
@@ -65,8 +65,8 @@ public class SCGPluginsAutoConfigurationTest {
 	public static class TestApplication {
 
 		@Bean
-		public ConfigFileService configFileService(SDKContext sdkContext) {
-			return ConfigFileServiceFactory.createConfigFileService(sdkContext);
+		public ConfigFileService configFileService(PolarisSDKContextManager polarisSDKContextManager) {
+			return ConfigFileServiceFactory.createConfigFileService(polarisSDKContextManager.getSDKContext());
 		}
 	}
 }

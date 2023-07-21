@@ -26,12 +26,9 @@ import com.netflix.loadbalancer.NoOpPing;
 import com.netflix.loadbalancer.RandomRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.discovery.client.api.DefaultConsumerAPI;
-import com.tencent.polaris.router.api.core.RouterAPI;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -68,7 +65,6 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
-			assertThat(context).hasSingleBean(RouterAPI.class);
 			assertThat(context).hasSingleBean(PolarisLoadBalancerProperties.class);
 			assertThat(hasSinglePolarisLoadBalancer(context)).isTrue();
 		});
@@ -85,7 +81,7 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 	static class PolarisRibbonTest {
 
 		@Autowired
-		private SDKContext sdkContext;
+		private PolarisSDKContextManager polarisSDKContextManager;
 
 		@Bean
 		public IClientConfig iClientConfig() {
@@ -107,11 +103,6 @@ public class PolarisLoadBalancerAutoConfigurationTest {
 		@Bean
 		public ServerList<Server> serverList() {
 			return new StaticServerList<>();
-		}
-
-		@Bean
-		public ConsumerAPI consumerAPI() {
-			return new DefaultConsumerAPI(sdkContext);
 		}
 	}
 }

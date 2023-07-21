@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.netflix.loadbalancer.Server;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
@@ -29,6 +30,7 @@ import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -51,6 +53,12 @@ public class LoadBalancerUtilsTest {
 
 	private static final String TEST_NAMESPACE = "testNamespace";
 	private static final String TEST_SERVICE = "testService";
+
+	@BeforeEach
+	void setUp() {
+		MetadataContext.LOCAL_NAMESPACE = TEST_NAMESPACE;
+		MetadataContext.LOCAL_SERVICE = TEST_SERVICE;
+	}
 
 	@Test
 	public void testTransferServersToServiceInstances() {
