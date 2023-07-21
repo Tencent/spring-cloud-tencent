@@ -18,10 +18,15 @@
 package com.tencent.cloud.polaris.circuitbreaker.feign;
 
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import feign.Target;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
@@ -33,12 +38,30 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
  */
 public class PolarisCircuitBreakerNameResolver {
 
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisCircuitBreakerNameResolver.class);
+
 	public String resolveCircuitBreakerName(String feignClientName, Target<?> target, Method method) {
 		String serviceName = target.name();
-		RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
 		String path = "";
+
+		// Get path in @FeignClient.
+		if (StringUtils.hasText(target.url())) {
+			URI uri = null;
+			try {
+				uri = new URI(target.url());
+			}
+			catch (URISyntaxException e) {
+				LOG.warn("Generate URI from url({}) in @FeignClient. failed.", target.url());
+			}
+			if (uri != null) {
+				path += uri.getPath();
+			}
+		}
+
+		// Get path in @RequestMapping.
+		RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
 		if (requestMapping != null) {
-			path = requestMapping.path().length == 0 ?
+			path += requestMapping.path().length == 0 ?
 					requestMapping.value().length == 0 ? "" : requestMapping.value()[0] :
 					requestMapping.path()[0];
 		}
@@ -46,4 +69,5 @@ public class PolarisCircuitBreakerNameResolver {
 				MetadataContext.LOCAL_NAMESPACE + "#" + serviceName :
 				MetadataContext.LOCAL_NAMESPACE + "#" + serviceName + "#" + path;
 	}
+
 }
