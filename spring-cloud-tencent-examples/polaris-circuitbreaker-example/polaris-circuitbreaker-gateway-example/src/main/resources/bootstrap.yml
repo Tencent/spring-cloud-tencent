@@ -16,7 +16,7 @@ spring:
           feature-env:
             enabled: true
     polaris:
-      address: grpc://183.47.111.80:8091
+      address: grpc://119.91.66.223:8091
       namespace: default
       enabled: true
     gateway:
@@ -36,7 +36,7 @@ spring:
             name: CircuitBreaker
             args:
               # statusCodes 缺省时会自动识别 "5**" 为错误
-#              statusCodes: '''404,5**'''
+              #              statusCodes: '''404,5**'''
               # fallbackUri 缺省时会在熔断触发后拉取 plaris server 配置的降级作为 response
               fallbackUri: '''forward:/polaris-fallback'''
 #      routes:
