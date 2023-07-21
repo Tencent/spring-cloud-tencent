@@ -26,6 +26,7 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
+import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +51,7 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 @ConditionalOnPolarisRegisterEnabled
 @ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
-@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class,
-		AutoServiceRegistrationAutoConfiguration.class,
+@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class, AutoServiceRegistrationAutoConfiguration.class,
 		PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
@@ -82,8 +82,10 @@ public class PolarisServiceRegistryAutoConfiguration {
 	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
 			PolarisServiceRegistry registry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			PolarisRegistration registration) {
-		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
+			PolarisRegistration registration,
+			@Autowired(required = false) AssemblyAPI assemblyAPI
+	) {
+		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration, assemblyAPI);
 	}
 
 	@Bean

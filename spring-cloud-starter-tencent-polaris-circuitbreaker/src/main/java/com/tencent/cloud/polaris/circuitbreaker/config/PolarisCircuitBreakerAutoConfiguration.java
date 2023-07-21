@@ -94,15 +94,15 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
 	public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-			SDKContext polarisContext, CircuitBreakAPI circuitBreakAPI) {
-		return new SuccessCircuitBreakerReporter(properties, polarisContext, circuitBreakAPI);
+			CircuitBreakAPI circuitBreakAPI) {
+		return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
 	public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-			SDKContext polarisContext, CircuitBreakAPI circuitBreakAPI) {
-		return new ExceptionCircuitBreakerReporter(properties, polarisContext, circuitBreakAPI);
+			CircuitBreakAPI circuitBreakAPI) {
+		return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
 	}
 
 	@Bean

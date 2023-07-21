@@ -5,3 +5,4 @@
 - feature: Enhance default configuration to support `application*.yaml` and `bootstrap*.yaml`.
 - feat:adapt for nacos instance.
 - Refactoring: Refactor Circuitbreaker ut.
+- refactor:refactor rpc enhancement.

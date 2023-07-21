@@ -113,6 +113,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		instanceRegisterRequest.setMetadata(registration.getMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
+		instanceRegisterRequest.setInstanceId(polarisDiscoveryProperties.getInstanceId());
 		try {
 			ProviderAPI providerClient = polarisDiscoveryHandler.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;

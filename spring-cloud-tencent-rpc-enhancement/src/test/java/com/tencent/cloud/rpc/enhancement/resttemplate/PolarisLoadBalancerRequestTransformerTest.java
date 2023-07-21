@@ -15,19 +15,13 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.webclient;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+package com.tencent.cloud.rpc.enhancement.resttemplate;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
-import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,38 +31,30 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Mono;
 
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFunction;
+import org.springframework.http.HttpRequest;
 
+import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class EnhancedWebClientReporterTest {
-
+public class PolarisLoadBalancerRequestTransformerTest {
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
+
+	private PolarisLoadBalancerRequestTransformer transformer = new PolarisLoadBalancerRequestTransformer();
+
 	@Mock
-	private RpcEnhancementReporterProperties reporterProperties;
+	private HttpRequest clientRequest;
+
 	@Mock
-	private SDKContext sdkContext;
-	@Mock
-	private ClientRequest clientRequest;
-	@Mock
-	private ExchangeFunction exchangeFunction;
-	@Mock
-	private ClientResponse clientResponse;
+	private ServiceInstance serviceInstance;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -93,28 +79,11 @@ public class EnhancedWebClientReporterTest {
 		MetadataContext.LOCAL_NAMESPACE = NAMESPACE_TEST;
 		MetadataContext.LOCAL_SERVICE = SERVICE_PROVIDER;
 	}
+
 	@Test
-	public void testRun() throws URISyntaxException {
-
-		doReturn(new URI("http://0.0.0.0/")).when(clientRequest).url();
-		doReturn(new HttpHeaders()).when(clientRequest).headers();
-		doReturn(HttpMethod.GET).when(clientRequest).method();
-		ClientResponse.Headers headers = mock(ClientResponse.Headers.class);
-		doReturn(headers).when(clientResponse).headers();
-		doReturn(Mono.just(clientResponse)).when(exchangeFunction).exchange(any());
-
-		EnhancedWebClientReporter reporter = new EnhancedWebClientReporter(new DefaultEnhancedPluginRunner(new ArrayList<>()));
-		ClientResponse clientResponse1 = reporter.filter(clientRequest, exchangeFunction).block();
-		assertThat(clientResponse1).isEqualTo(clientResponse);
-
-		ClientResponse clientResponse2 = reporter.filter(clientRequest, exchangeFunction).block();
-		assertThat(clientResponse2).isEqualTo(clientResponse);
-
-		doReturn(Mono.error(new RuntimeException())).when(exchangeFunction).exchange(any());
-
-		assertThatThrownBy(() -> reporter.filter(clientRequest, exchangeFunction).block()).isInstanceOf(RuntimeException.class);
-
-
+	public void test() throws Throwable {
+		transformer.transformRequest(clientRequest, serviceInstance);
+		assertThat(MetadataContextHolder.get().getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE)).isEqualTo(serviceInstance);
 	}
-
 }
+

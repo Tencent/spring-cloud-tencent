@@ -17,15 +17,24 @@
 
 package com.tencent.cloud.polaris.loadbalancer.config;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
+import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
 import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 
 /**
  * Auto-configuration Ribbon for Polaris.
@@ -44,4 +53,24 @@ public class PolarisLoadBalancerAutoConfiguration {
 	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
 		return new PolarisLoadBalancerProperties();
 	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public RestTemplateCustomizer restTemplateCustomizer(@Autowired(required = false) LoadBalancerInterceptor loadBalancerInterceptor) {
+		return restTemplate -> {
+			List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
+			// LoadBalancerInterceptor must invoke before EnhancedRestTemplateInterceptor
+			if (loadBalancerInterceptor != null) {
+				int addIndex = list.size();
+				for (int i = 0; i < list.size(); i++) {
+					if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
+						addIndex = i;
+					}
+				}
+				list.add(addIndex, loadBalancerInterceptor);
+			}
+			restTemplate.setInterceptors(list);
+		};
+	}
+
 }

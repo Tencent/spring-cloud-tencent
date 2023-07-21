@@ -39,6 +39,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.context.ApplicationContext;
@@ -61,6 +62,8 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 public class EnhancedGatewayGlobalFilterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
+	@Mock
+	Registration registration;
 	@Mock
 	ServerWebExchange exchange;
 	@Mock
@@ -115,7 +118,7 @@ public class EnhancedGatewayGlobalFilterTest {
 		doReturn(request).when(exchange).getRequest();
 		doReturn(response).when(exchange).getResponse();
 
-		EnhancedGatewayGlobalFilter reporter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(new ArrayList<>()));
+		EnhancedGatewayGlobalFilter reporter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(new ArrayList<>(), registration, null));
 		reporter.getOrder();
 
 		reporter.filter(exchange, chain).block();

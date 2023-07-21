@@ -29,46 +29,48 @@ import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.util.ZuulFilterUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.netflix.ribbon.apache.RibbonApacheHttpResponse;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.StringUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.Zuul.POLARIS_PRE_ROUTE_TIME;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.PRE;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
 /**
  * Polaris circuit breaker implement in Zuul.
  *
  * @author Haotian Zhang
  */
-public class EnhancedPreZuulFilter extends ZuulFilter {
+public class EnhancedRouteZuulFilter extends ZuulFilter {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedPreZuulFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedRouteZuulFilter.class);
 
 	private final EnhancedPluginRunner pluginRunner;
 
 	private final Environment environment;
 
-	public EnhancedPreZuulFilter(EnhancedPluginRunner pluginRunner, Environment environment) {
+	public EnhancedRouteZuulFilter(EnhancedPluginRunner pluginRunner, Environment environment) {
 		this.pluginRunner = pluginRunner;
 		this.environment = environment;
 	}
 
 	@Override
 	public String filterType() {
-		return PRE_TYPE;
+		return ROUTE_TYPE;
 	}
 
 	@Override
 	public int filterOrder() {
-		return PRE_DECORATION_FILTER_ORDER + 1;
+		return RIBBON_ROUTING_FILTER_ORDER + 1;
 	}
 
 	@Override
@@ -100,9 +102,21 @@ public class EnhancedPreZuulFilter extends ZuulFilter {
 					.build();
 
 			enhancedPluginContext.setRequest(enhancedRequestContext);
+			enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
+
+			Object ribbonResponseObj = context.get("ribbonResponse");
+			RibbonApacheHttpResponse ribbonResponse;
+			DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+			if (ribbonResponseObj != null && ribbonResponseObj instanceof RibbonApacheHttpResponse) {
+				ribbonResponse = (RibbonApacheHttpResponse) ribbonResponseObj;
+				serviceInstance.setServiceId(ZuulFilterUtils.getServiceId(context));
+				serviceInstance.setHost(ribbonResponse.getRequestedURI().getHost());
+				serviceInstance.setPort(ribbonResponse.getRequestedURI().getPort());
+				enhancedPluginContext.setTargetServiceInstance(serviceInstance);
+			}
 
 			// Run pre enhanced plugins.
-			pluginRunner.run(PRE, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
 
 			Object startTimeMilliObject = context.get(POLARIS_PRE_ROUTE_TIME);
 			if (startTimeMilliObject == null || !(startTimeMilliObject instanceof Long)) {

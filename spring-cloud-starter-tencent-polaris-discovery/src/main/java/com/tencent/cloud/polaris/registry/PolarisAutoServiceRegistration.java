@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.polaris.api.pojo.ServiceKey;
+import com.tencent.polaris.assembly.api.AssemblyAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,15 +35,21 @@ import org.springframework.util.StringUtils;
  */
 public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistration<PolarisRegistration> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PolarisAutoServiceRegistration.class);
+	private static final Logger log = LoggerFactory.getLogger(PolarisAutoServiceRegistration.class);
 
 	private final PolarisRegistration registration;
 
-	public PolarisAutoServiceRegistration(ServiceRegistry<PolarisRegistration> serviceRegistry,
+	private final AssemblyAPI assemblyAPI;
+
+	public PolarisAutoServiceRegistration(
+			ServiceRegistry<PolarisRegistration> serviceRegistry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			PolarisRegistration registration) {
+			PolarisRegistration registration,
+			AssemblyAPI assemblyAPI
+	) {
 		super(serviceRegistry, autoServiceRegistrationProperties);
 		this.registration = registration;
+		this.assemblyAPI = assemblyAPI;
 	}
 
 	@Override
@@ -56,8 +65,11 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 	@Override
 	protected void register() {
 		if (!this.registration.isRegisterEnabled()) {
-			LOG.debug("Registration disabled.");
+			log.debug("Registration disabled.");
 			return;
+		}
+		if (assemblyAPI != null) {
+			assemblyAPI.initService(new ServiceKey(MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE));
 		}
 		super.register();
 	}
