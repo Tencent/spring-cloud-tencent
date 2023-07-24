@@ -19,3 +19,4 @@
 - [fix:fix circuit breaker bean load order bug when using Nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1049)
 - [refactor:refactor Polaris registration.](https://github.com/Tencent/spring-cloud-tencent/pull/1056)
 - [feat:added automatic optimization for dynamic config refresh type.](https://github.com/Tencent/spring-cloud-tencent/pull/1059)
+- [fix:fix SCG report wrong service bug when using IP routing.](https://github.com/Tencent/spring-cloud-tencent/pull/1064)
