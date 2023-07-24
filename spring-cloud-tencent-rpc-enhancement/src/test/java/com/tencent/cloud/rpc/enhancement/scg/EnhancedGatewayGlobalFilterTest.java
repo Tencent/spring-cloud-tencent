@@ -57,15 +57,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 
 @ExtendWith(MockitoExtension.class)
 public class EnhancedGatewayGlobalFilterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	@Mock
-	private RpcEnhancementReporterProperties reporterProperties;
-	@Mock
-	private SDKContext sdkContext;
 	@Mock
 	Registration registration;
 	@Mock
@@ -76,6 +73,10 @@ public class EnhancedGatewayGlobalFilterTest {
 	ServerHttpResponse response;
 	@Mock
 	ServerHttpRequest request;
+	@Mock
+	private RpcEnhancementReporterProperties reporterProperties;
+	@Mock
+	private SDKContext sdkContext;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -87,7 +88,8 @@ public class EnhancedGatewayGlobalFilterTest {
 		StaticMetadataManager staticMetadataManager = mock(StaticMetadataManager.class);
 		doReturn(metadataLocalProperties).when(applicationContext).getBean(MetadataLocalProperties.class);
 		doReturn(staticMetadataManager).when(applicationContext).getBean(StaticMetadataManager.class);
-		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext).thenReturn(applicationContext);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 	}
 
 	@AfterAll
@@ -123,6 +125,7 @@ public class EnhancedGatewayGlobalFilterTest {
 			}
 		};
 		doReturn(serviceInstanceResponse).when(exchange).getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
+		doReturn(new URI("http://0.0.0.0/")).when(exchange).getAttribute(GATEWAY_REQUEST_URL_ATTR);
 		doReturn(request).when(exchange).getRequest();
 		doReturn(response).when(exchange).getResponse();
 
