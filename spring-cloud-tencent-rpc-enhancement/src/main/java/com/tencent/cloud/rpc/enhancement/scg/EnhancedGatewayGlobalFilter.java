@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.rpc.enhancement.scg;
 
+import java.net.URI;
+
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -33,6 +35,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 
 /**
  * EnhancedGatewayGlobalFilter.
@@ -50,11 +53,11 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
-
+		URI uri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(exchange.getRequest().getHeaders())
 				.httpMethod(exchange.getRequest().getMethod())
-				.url(exchange.getRequest().getURI())
+				.url(uri)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
@@ -65,7 +68,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			enhancedPluginContext.setTargetServiceInstance(instance, exchange.getRequest().getURI());
 		}
 		else {
-			enhancedPluginContext.setTargetServiceInstance(null, exchange.getRequest().getURI());
+			enhancedPluginContext.setTargetServiceInstance(null, uri);
 		}
 
 		// Run pre enhanced plugins.
