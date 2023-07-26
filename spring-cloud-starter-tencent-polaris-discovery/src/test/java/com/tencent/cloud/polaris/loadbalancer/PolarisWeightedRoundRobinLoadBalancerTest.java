@@ -18,6 +18,9 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.api.pojo.Instance;
@@ -32,16 +35,14 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.Request;
 import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_NAMESPACE;
 import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_SERVICE;

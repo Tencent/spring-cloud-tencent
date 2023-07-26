@@ -21,6 +21,7 @@ import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
 import com.tencent.polaris.api.rpc.Criteria;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 
@@ -33,7 +34,6 @@ public class PolarisWeightedRoundRobinLoadBalancer extends PolarisAbstractLoadBa
 
 	public PolarisWeightedRoundRobinLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
 		super(serviceId, supplierObjectProvider, routerAPI);
-
 	}
 
 	@Override
@@ -42,5 +42,4 @@ public class PolarisWeightedRoundRobinLoadBalancer extends PolarisAbstractLoadBa
 		req.setCriteria(new Criteria());
 		return req;
 	}
-
 }

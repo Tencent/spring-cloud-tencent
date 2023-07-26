@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
@@ -28,6 +31,8 @@ import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.DefaultResponse;
@@ -37,10 +42,6 @@ import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Abstract Loadbalancer of Polaris.
@@ -88,7 +89,8 @@ public abstract class PolarisAbstractLoadBalancer implements ReactorServiceInsta
 			try {
 				ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(req);
 				return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				log.warn("PolarisRoutingLoadbalancer error", e);
 				return new EmptyResponse();
 			}
