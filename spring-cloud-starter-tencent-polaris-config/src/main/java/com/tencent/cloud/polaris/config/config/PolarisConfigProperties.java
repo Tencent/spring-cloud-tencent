@@ -20,9 +20,10 @@ package com.tencent.cloud.polaris.config.config;
 
 import java.util.List;
 
-import com.tencent.cloud.polaris.config.enums.RefreshType;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import com.tencent.cloud.polaris.config.enums.RefreshType;
 
 /**
  * polaris config module bootstrap configs.
@@ -35,22 +36,26 @@ public class PolarisConfigProperties {
 	/**
 	 * Whether to open the configuration center.
 	 */
+    @Value("${spring.cloud.polaris.config.enabled:#{'true'}}")
 	private boolean enabled = true;
 
 	/**
 	 * Configuration center service address list.
 	 */
+	@Value("${spring.cloud.polaris.config.address:}")
 	private String address;
 
 	/**
 	 * Polaris config grpc port.
 	 */
+	@Value("${spring.cloud.polaris.config.port:#{'8093'}}")
 	private int port = 8093;
 
 	/**
 	 * Whether to automatically update to the spring context when the configuration file.
 	 * is updated
 	 */
+	@Value("${spring.cloud.polaris.config.autoRefresh:#{'true'}}")
 	private boolean autoRefresh = true;
 
 	private boolean shutdownIfConnectToConfigServerFailed = true;

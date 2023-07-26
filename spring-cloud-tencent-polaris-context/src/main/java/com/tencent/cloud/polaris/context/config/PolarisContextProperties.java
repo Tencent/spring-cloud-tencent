@@ -24,15 +24,16 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.CollectionUtils;
+
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.ConfigProvider;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.factory.ConfigAPIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
-import org.apache.commons.lang.StringUtils;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Properties for Polaris {@link com.tencent.polaris.client.api.SDKContext}.
@@ -45,26 +46,31 @@ public class PolarisContextProperties {
 	/**
 	 * polaris server address.
 	 */
+    @Value("${spring.cloud.polaris.address:}")
 	private String address;
 
 	/**
 	 * current server local ip address.
 	 */
+    @Value("${spring.cloud.polaris.localIpAddress:}")
 	private String localIpAddress;
 
 	/**
 	 * current server local port.
 	 */
+	@Value("${spring.cloud.polaris.localPort:}")
 	private Integer localPort;
 
 	/**
 	 * If polaris enabled.
 	 */
+	@Value("${spring.cloud.polaris.enabled:#{'true'}}")
 	private Boolean enabled;
 
 	/**
 	 * polaris namespace.
 	 */
+	@Value("${spring.cloud.polaris.namespace:#{'default'}}")
 	private String namespace = "default";
 
 	/**
