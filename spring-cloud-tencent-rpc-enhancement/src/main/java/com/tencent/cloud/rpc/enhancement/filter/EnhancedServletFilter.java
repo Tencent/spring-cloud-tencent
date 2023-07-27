@@ -29,7 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -46,7 +46,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * @author sean yu
  */
-@Order(MetadataConstant.OrderConstant.WEB_FILTER_ORDER + 1)
+@Order(OrderConstant.Server.Servlet.ENHANCED_FILTER_ORDER)
 public class EnhancedServletFilter extends OncePerRequestFilter {
 
 	private final EnhancedPluginRunner pluginRunner;

@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
-import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
@@ -113,9 +113,11 @@ public class QuotaCheckReactiveFilterTest {
 
 		ServiceRuleManager serviceRuleManager = mock(ServiceRuleManager.class);
 
-		RateLimitProto.Rule.Builder ratelimitRuleBuilder =  RateLimitProto.Rule.newBuilder();
-		InputStream inputStream = QuotaCheckServletFilterTest.class.getClassLoader().getResourceAsStream("ratelimit.json");
-		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
+		RateLimitProto.Rule.Builder ratelimitRuleBuilder = RateLimitProto.Rule.newBuilder();
+		InputStream inputStream = QuotaCheckServletFilterTest.class.getClassLoader()
+				.getResourceAsStream("ratelimit.json");
+		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+				.collect(Collectors.joining(""));
 		JsonFormat.parser().ignoringUnknownFields().merge(json, ratelimitRuleBuilder);
 		RateLimitProto.Rule rateLimitRule = ratelimitRuleBuilder.build();
 		RateLimitProto.RateLimit rateLimit = RateLimitProto.RateLimit.newBuilder().addRules(rateLimitRule).build();
@@ -129,7 +131,7 @@ public class QuotaCheckReactiveFilterTest {
 
 	@Test
 	public void testGetOrder() {
-		assertThat(this.quotaCheckReactiveFilter.getOrder()).isEqualTo(RateLimitConstant.FILTER_ORDER);
+		assertThat(this.quotaCheckReactiveFilter.getOrder()).isEqualTo(OrderConstant.Server.Reactive.RATE_LIMIT_FILTER_ORDER);
 	}
 
 	@Test

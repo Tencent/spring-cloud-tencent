@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.filter;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -87,7 +87,7 @@ public class EnhancedReactiveFilter implements WebFilter, Ordered {
 
 	@Override
 	public int getOrder() {
-		return MetadataConstant.OrderConstant.WEB_FILTER_ORDER + 1;
+		return OrderConstant.Server.Reactive.ENHANCED_FILTER_ORDER;
 	}
 
 }

@@ -43,40 +43,4 @@ public final class ContextConstant {
 
 	private ContextConstant() {
 	}
-
-	/**
-	 * Order of configuration modifier.
-	 */
-	public static final class ModifierOrder {
-
-		/**
-		 * First modifier order.
-		 */
-		public static Integer FIRST = Integer.MIN_VALUE;
-
-		/**
-		 * Last modifier order.
-		 */
-		public static Integer LAST = Integer.MAX_VALUE;
-
-		/**
-		 * Order of circuit breaker configuration modifier.
-		 */
-		public static Integer CIRCUIT_BREAKER_ORDER = 2;
-
-		/**
-		 * Order of discovery configuration modifier.
-		 */
-		public static Integer DISCOVERY_ORDER = 0;
-
-		/**
-		 * Order of configuration modifier.
-		 */
-		public static Integer CONFIG_ORDER = 1;
-
-		/**
-		 * Order of stat reporter configuration modifier.
-		 */
-		public static Integer STAT_REPORTER_ORDER = 1;
-	}
 }

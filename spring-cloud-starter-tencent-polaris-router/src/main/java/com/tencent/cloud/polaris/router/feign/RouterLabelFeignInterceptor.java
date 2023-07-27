@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -77,7 +78,7 @@ public class RouterLabelFeignInterceptor implements RequestInterceptor, Ordered 
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return OrderConstant.Client.Feign.ROUTER_LABEL_INTERCEPTOR_ORDER;
 	}
 
 	@Override

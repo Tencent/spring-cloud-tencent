@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris.router;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -45,6 +45,6 @@ public class RouterConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public int getOrder() {
-		return ContextConstant.ModifierOrder.CONFIG_ORDER;
+		return OrderConstant.Modifier.ROUTER_ORDER;
 	}
 }

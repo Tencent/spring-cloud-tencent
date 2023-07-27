@@ -21,7 +21,7 @@ package com.tencent.cloud.metadata.core;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
@@ -51,7 +51,7 @@ public class EncodeTransferMedataFeignInterceptor implements RequestInterceptor,
 
 	@Override
 	public int getOrder() {
-		return MetadataConstant.OrderConstant.METADATA_2_HEADER_INTERCEPTOR_ORDER;
+		return OrderConstant.Client.Feign.ENCODE_TRANSFER_METADATA_INTERCEPTOR_ORDER;
 	}
 
 	@Override

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -128,6 +128,6 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public int getOrder() {
-		return ContextConstant.ModifierOrder.LAST;
+		return OrderConstant.Modifier.NACOS_DISCOVERY_CONFIG_ORDER;
 	}
 }

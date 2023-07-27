@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -86,7 +87,7 @@ public class RouterLabelRestTemplateInterceptor implements ClientHttpRequestInte
 
 	@Override
 	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE;
+		return OrderConstant.Client.RestTemplate.ROUTER_LABEL_INTERCEPTOR_ORDER;
 	}
 
 	@Override

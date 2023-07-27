@@ -170,12 +170,6 @@
 
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
-				<artifactId>spring-cloud-starter-tencent-tsf-adapter-plugin</artifactId>
-				<version>${revision}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-featureenv-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
