@@ -21,6 +21,7 @@ package com.tencent.cloud.polaris.router.grayrelease.middle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,11 +40,11 @@ public class MiddleController {
 	 * @return information of callee
 	 */
 	@GetMapping("/rest")
-	public String rest() {
+	public String rest(@RequestHeader("uid") int user) {
 		String env = System.getenv("SCT_METADATA_CONTENT_env");
 		String appName = environment.getProperty("spring.application.name");
 		String curName = appName + "[" + env + "]";
-		String resp = routerService.rest();
+		String resp = routerService.rest(user);
 		return curName + " -> " + resp;
 	}
 }

@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.router.grayrelease.middle;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * Router callee feign client.
@@ -30,6 +31,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface RouterService {
 
 	@GetMapping("/router/gray/rest")
-	String rest();
+	String rest(@RequestHeader("uid") int user);
 
 }
