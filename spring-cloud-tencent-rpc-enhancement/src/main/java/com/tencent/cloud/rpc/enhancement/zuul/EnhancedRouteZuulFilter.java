@@ -26,6 +26,7 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.util.ZuulFilterUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
@@ -42,7 +43,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.util.StringUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.Zuul.POLARIS_PRE_ROUTE_TIME;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
 /**
@@ -70,7 +70,7 @@ public class EnhancedRouteZuulFilter extends ZuulFilter {
 
 	@Override
 	public int filterOrder() {
-		return RIBBON_ROUTING_FILTER_ORDER + 1;
+		return OrderConstant.Client.Zuul.ENHANCED_ROUTE_FILTER_ORDER;
 	}
 
 	@Override

@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.common;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
@@ -57,6 +57,6 @@ public class CircuitBreakerConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public int getOrder() {
-		return ContextConstant.ModifierOrder.CIRCUIT_BREAKER_ORDER;
+		return OrderConstant.Modifier.CIRCUIT_BREAKER_ORDER;
 	}
 }

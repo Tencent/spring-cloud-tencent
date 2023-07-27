@@ -21,7 +21,7 @@ package com.tencent.cloud.polaris.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
@@ -105,7 +105,7 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 
 	@Override
 	public int getOrder() {
-		return ContextConstant.ModifierOrder.CONFIG_ORDER;
+		return OrderConstant.Modifier.CONFIG_ORDER;
 	}
 
 	/**

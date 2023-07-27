@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
@@ -33,7 +34,6 @@ import org.springframework.util.CollectionUtils;
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
 /**
@@ -50,7 +50,7 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 
 	@Override
 	public int filterOrder() {
-		return RIBBON_ROUTING_FILTER_ORDER - 1;
+		return OrderConstant.Client.Zuul.ENCODE_TRANSFER_METADATA_FILTER_ORDER;
 	}
 
 	@Override

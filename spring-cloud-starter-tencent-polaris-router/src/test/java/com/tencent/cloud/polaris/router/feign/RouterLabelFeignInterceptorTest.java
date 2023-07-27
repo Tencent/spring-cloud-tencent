@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -72,7 +73,7 @@ public class RouterLabelFeignInterceptorTest {
 				Collections.singletonList(routerLabelResolver),
 				staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
 
-		assertThat(routerLabelFeignInterceptor.getOrder()).isEqualTo(0);
+		assertThat(routerLabelFeignInterceptor.getOrder()).isEqualTo(OrderConstant.Client.Feign.ROUTER_LABEL_INTERCEPTOR_ORDER);
 
 		// mock request template
 		RequestTemplate requestTemplate = new RequestTemplate();

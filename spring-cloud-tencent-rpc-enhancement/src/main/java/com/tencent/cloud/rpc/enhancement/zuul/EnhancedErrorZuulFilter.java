@@ -24,12 +24,11 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -45,8 +44,6 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
  * @author Haotian Zhang
  */
 public class EnhancedErrorZuulFilter extends ZuulFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedErrorZuulFilter.class);
 
 	private final EnhancedPluginRunner pluginRunner;
 
@@ -64,7 +61,7 @@ public class EnhancedErrorZuulFilter extends ZuulFilter {
 
 	@Override
 	public int filterOrder() {
-		return Integer.MIN_VALUE;
+		return OrderConstant.Client.Zuul.ENHANCED_ERROR_FILTER_ORDER;
 	}
 
 	@Override
