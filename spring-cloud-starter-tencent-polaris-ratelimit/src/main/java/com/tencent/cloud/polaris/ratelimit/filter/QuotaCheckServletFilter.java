@@ -29,9 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tencent.cloud.common.constant.HeaderConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
-import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
 import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentServletResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
@@ -55,7 +55,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * @author Haotian Zhang, lepdou, cheese8
  */
-@Order(RateLimitConstant.FILTER_ORDER)
+@Order(OrderConstant.Server.Servlet.RATE_LIMIT_FILTER_ORDER)
 public class QuotaCheckServletFilter extends OncePerRequestFilter {
 
 	/**
@@ -115,7 +115,8 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				}
 				response.addHeader(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
 				if (Objects.nonNull(quotaResponse.getActiveRule())) {
-					response.addHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, quotaResponse.getActiveRule().getName().getValue());
+					response.addHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, quotaResponse.getActiveRule().getName()
+							.getValue());
 				}
 				return;
 			}

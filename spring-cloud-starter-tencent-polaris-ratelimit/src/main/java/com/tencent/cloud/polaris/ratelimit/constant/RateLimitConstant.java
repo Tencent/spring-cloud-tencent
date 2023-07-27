@@ -18,19 +18,12 @@
 
 package com.tencent.cloud.polaris.ratelimit.constant;
 
-import org.springframework.core.Ordered;
-
 /**
  * Constant for rate-limiter.
  *
  * @author Haotian Zhang
  */
 public final class RateLimitConstant {
-
-	/**
-	 * Order of filter.
-	 */
-	public static final int FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 	/**
 	 * Info of rate limit.
 	 */
