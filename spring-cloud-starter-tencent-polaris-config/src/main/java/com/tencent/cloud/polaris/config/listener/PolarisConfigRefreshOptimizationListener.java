@@ -18,16 +18,12 @@
 
 package com.tencent.cloud.polaris.config.listener;
 
+import static com.tencent.cloud.polaris.config.condition.ReflectRefreshTypeCondition.POLARIS_CONFIG_REFRESH_TYPE;
+
 import java.util.Collections;
 
-import com.tencent.cloud.polaris.config.adapter.PolarisConfigRefreshScopeAnnotationDetector;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
-import com.tencent.cloud.polaris.config.adapter.PolarisRefreshEntireContextRefresher;
-import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.config.enums.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -40,7 +36,11 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.lang.NonNull;
 
-import static com.tencent.cloud.polaris.config.condition.ReflectRefreshTypeCondition.POLARIS_CONFIG_REFRESH_TYPE;
+import com.tencent.cloud.polaris.config.adapter.PolarisConfigRefreshScopeAnnotationDetector;
+import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
+import com.tencent.cloud.polaris.config.adapter.PolarisRefreshEntireContextRefresher;
+import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.enums.RefreshType;
 
 /**
  * When {@link com.tencent.cloud.polaris.config.adapter.PolarisConfigRefreshScopeAnnotationDetector} detects that
@@ -72,10 +72,22 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 				.getBean(PolarisConfigRefreshScopeAnnotationDetector.class);
 		boolean isRefreshScopeAnnotationUsed = detector.isRefreshScopeAnnotationUsed();
 		String annotatedRefreshScopeBeanName = detector.getAnnotatedRefreshScopeBeanName();
+		
+		// using System.setProperty to set spring.cloud.polaris.config.refresh-type
+		String value = System.getProperty("spring.cloud.polaris.config.refresh-type");
+		boolean isSystemSetRefreshType = RefreshType.REFRESH_CONTEXT.toString().equalsIgnoreCase(value);
+		
 		// a bean is using @RefreshScope, but the config refresh type is still [reflect], switch automatically
-		if (isRefreshScopeAnnotationUsed) {
-			LOGGER.warn("Detected that the bean [{}] is using @RefreshScope annotation, but the config refresh type is still [reflect]. "
-					+ "[SCT] will automatically switch to [refresh_context].", annotatedRefreshScopeBeanName);
+		if (isRefreshScopeAnnotationUsed || isSystemSetRefreshType) {
+			if(isRefreshScopeAnnotationUsed) {
+			    LOGGER.warn("Detected that the bean [{}] is using @RefreshScope annotation, but the config refresh type is still [reflect]. "
+			            + "[SCT] will automatically switch to [refresh_context].", annotatedRefreshScopeBeanName);
+			}
+			
+			if(isSystemSetRefreshType) {
+			    LOGGER.warn("Detected that using System.setProperty to set spring.cloud.polaris.config.refresh-type = refresh_context, but the config refresh type is still [reflect]. "
+                        + "[SCT] will automatically switch to [refresh_context].");
+			}
 			switchConfigRefreshTypeProperty(applicationContext);
 			modifyPolarisConfigPropertiesBean(applicationContext);
 			// remove related bean of type [reflect]

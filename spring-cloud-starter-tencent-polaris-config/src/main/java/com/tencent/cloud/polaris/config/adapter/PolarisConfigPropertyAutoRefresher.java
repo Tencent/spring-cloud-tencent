@@ -22,16 +22,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
-import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
+
+import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerContext;
+import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
+import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 
 /**
  * 1. Listen to the Polaris server configuration publishing event 2. Write the changed
@@ -96,6 +97,18 @@ public abstract class PolarisConfigPropertyAutoRefresher
 
 							LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
 
+							// 新增动态改变日志级别的能力
+							try {
+    							if(changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
+    							    String loggerName = changedKey.substring(14);
+    							    String newValue = configPropertyChangeInfo.getNewValue();
+    							    LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
+    							    PolarisConfigLoggerContext.setLevel(loggerName, newValue);
+    							}
+							} catch(Exception e) {
+							    LOGGER.error("[SCT Config] set logging.level exception,", e);
+							}
+							
 							switch (configPropertyChangeInfo.getChangeType()) {
 							case MODIFIED:
 							case ADDED:

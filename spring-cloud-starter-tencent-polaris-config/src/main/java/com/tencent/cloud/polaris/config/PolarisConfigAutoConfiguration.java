@@ -18,6 +18,16 @@
 
 package com.tencent.cloud.polaris.config;
 
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.cloud.context.properties.ConfigurationPropertiesBeans;
+import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
+import org.springframework.cloud.context.refresh.ContextRefresher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
 import com.tencent.cloud.polaris.config.adapter.AffectedConfigurationPropertiesRebinder;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigPropertyRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigRefreshScopeAnnotationDetector;
@@ -29,19 +39,10 @@ import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshTyp
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigRefreshOptimizationListener;
+import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerApplicationListener;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
-
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.cloud.context.properties.ConfigurationPropertiesBeans;
-import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
-import org.springframework.cloud.context.refresh.ContextRefresher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 /**
  * polaris config module auto configuration at init application context phase.
@@ -61,6 +62,12 @@ public class PolarisConfigAutoConfiguration {
 	public PolarisConfigChangeEventListener polarisConfigChangeEventListener() {
 		return new PolarisConfigChangeEventListener();
 	}
+	
+	@Bean
+    public PolarisConfigLoggerApplicationListener polarisConfigLoggerApplicationListener() {
+        return new PolarisConfigLoggerApplicationListener();
+    }
+
 
 	@Bean
 	@Primary
