@@ -24,7 +24,7 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import jakarta.servlet.FilterChain;
@@ -49,7 +49,7 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  *
  * @author Haotian Zhang
  */
-@Order(MetadataConstant.OrderConstant.WEB_FILTER_ORDER)
+@Order(OrderConstant.Server.Servlet.DECODE_TRANSFER_METADATA_FILTER_ORDER)
 public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataServletFilter.class);

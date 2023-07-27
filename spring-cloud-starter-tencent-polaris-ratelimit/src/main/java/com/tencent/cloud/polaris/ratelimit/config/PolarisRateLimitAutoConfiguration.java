@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
@@ -38,7 +39,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 
-import static com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant.FILTER_ORDER;
 import static com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter.QUOTA_FILTER_BEAN_NAME;
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static jakarta.servlet.DispatcherType.ERROR;
@@ -86,7 +86,7 @@ public class PolarisRateLimitAutoConfiguration {
 					quotaCheckServletFilter);
 			registrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
 			registrationBean.setName(QUOTA_FILTER_BEAN_NAME);
-			registrationBean.setOrder(FILTER_ORDER);
+			registrationBean.setOrder(OrderConstant.Server.Servlet.RATE_LIMIT_FILTER_ORDER);
 			return registrationBean;
 		}
 
