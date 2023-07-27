@@ -18,7 +18,7 @@
 
 package com.tencent.cloud.polaris;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.consumer.DiscoveryConfigImpl;
@@ -54,6 +54,6 @@ public class PolarisDiscoveryConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public int getOrder() {
-		return ContextConstant.ModifierOrder.LAST;
+		return OrderConstant.Modifier.DISCOVERY_CONFIG_ORDER;
 	}
 }

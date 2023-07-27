@@ -19,6 +19,7 @@ package com.tencent.cloud.rpc.enhancement.scg;
 
 import java.net.URI;
 
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -33,7 +34,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.web.server.ServerWebExchange;
 
-import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 
@@ -102,6 +102,6 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 
 	@Override
 	public int getOrder() {
-		return LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
+		return OrderConstant.Client.Scg.ENHANCED_FILTER_ORDER;
 	}
 }
