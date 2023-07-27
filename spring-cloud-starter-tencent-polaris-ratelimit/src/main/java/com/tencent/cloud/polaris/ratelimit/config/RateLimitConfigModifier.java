@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 
@@ -43,6 +43,6 @@ public class RateLimitConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public int getOrder() {
-		return ContextConstant.ModifierOrder.CIRCUIT_BREAKER_ORDER;
+		return OrderConstant.Modifier.RATE_LIMIT_ORDER;
 	}
 }

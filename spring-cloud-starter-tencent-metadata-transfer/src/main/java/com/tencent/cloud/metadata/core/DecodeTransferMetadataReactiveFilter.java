@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 	@Override
 	public int getOrder() {
-		return MetadataConstant.OrderConstant.WEB_FILTER_ORDER;
+		return OrderConstant.Server.Reactive.DECODE_TRANSFER_METADATA_FILTER_ORDER;
 	}
 
 	@Override
