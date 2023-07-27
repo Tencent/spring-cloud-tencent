@@ -20,3 +20,4 @@
 - [refactor:refactor Polaris registration.](https://github.com/Tencent/spring-cloud-tencent/pull/1057)
 - [feat:added automatic optimization for dynamic config refresh type.](https://github.com/Tencent/spring-cloud-tencent/pull/1058)
 - [fix:fix SCG report wrong service bug when using IP routing.](https://github.com/Tencent/spring-cloud-tencent/pull/1065)
+- [fix:fix gray release examples bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1068)
