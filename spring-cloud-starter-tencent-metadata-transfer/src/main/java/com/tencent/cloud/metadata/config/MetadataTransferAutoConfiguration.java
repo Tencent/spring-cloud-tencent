@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
@@ -66,12 +66,10 @@ public class MetadataTransferAutoConfiguration {
 		@Bean
 		public FilterRegistrationBean<DecodeTransferMetadataServletFilter> metadataServletFilterRegistrationBean(
 				DecodeTransferMetadataServletFilter decodeTransferMetadataServletFilter) {
-			FilterRegistrationBean<DecodeTransferMetadataServletFilter> filterRegistrationBean = new FilterRegistrationBean<>(
-					decodeTransferMetadataServletFilter);
-			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE,
-					REQUEST);
-			filterRegistrationBean
-					.setOrder(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
+			FilterRegistrationBean<DecodeTransferMetadataServletFilter> filterRegistrationBean =
+					new FilterRegistrationBean<>(decodeTransferMetadataServletFilter);
+			filterRegistrationBean.setDispatcherTypes(ASYNC, ERROR, FORWARD, INCLUDE, REQUEST);
+			filterRegistrationBean.setOrder(OrderConstant.Server.Servlet.DECODE_TRANSFER_METADATA_FILTER_ORDER);
 			return filterRegistrationBean;
 		}
 
@@ -105,7 +103,6 @@ public class MetadataTransferAutoConfiguration {
 		public GlobalFilter encodeTransferMedataScgFilter() {
 			return new EncodeTransferMedataScgFilter();
 		}
-
 	}
 
 	/**
