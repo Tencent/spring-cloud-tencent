@@ -172,17 +172,17 @@ public class OrderConstant {
 		/**
 		 * Discovery config modifier order.
 		 */
-		public static Integer DISCOVERY_CONFIG_ORDER = Integer.MAX_VALUE;
+		public static Integer DISCOVERY_CONFIG_ORDER = Integer.MAX_VALUE - 10;
 
 		/**
 		 * Nacos discovery config modifier order.
 		 */
-		public static Integer NACOS_DISCOVERY_CONFIG_ORDER = Integer.MAX_VALUE;
+		public static Integer NACOS_DISCOVERY_CONFIG_ORDER = Integer.MAX_VALUE - 10;
 
 		/**
 		 * Consul discovery config modifier order.
 		 */
-		public static Integer CONSUL_DISCOVERY_CONFIG_ORDER = Integer.MAX_VALUE;
+		public static Integer CONSUL_DISCOVERY_CONFIG_ORDER = Integer.MAX_VALUE - 10;
 
 		/**
 		 * Order of discovery configuration modifier.
