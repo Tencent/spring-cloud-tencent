@@ -75,17 +75,17 @@ import static org.springframework.http.HttpStatus.VARIANT_ALSO_NEGOTIATES;
  */
 public final class PolarisEnhancedPluginUtils {
 
-	private PolarisEnhancedPluginUtils() {
-
-	}
-
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisEnhancedPluginUtils.class);
 	private static final List<HttpStatus> HTTP_STATUSES = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
 			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
 			INSUFFICIENT_STORAGE, LOOP_DETECTED, BANDWIDTH_LIMIT_EXCEEDED, NOT_EXTENDED, NETWORK_AUTHENTICATION_REQUIRED);
+	private PolarisEnhancedPluginUtils() {
+
+	}
 
 	/**
 	 * createServiceCallResult.
+	 * @param callerHost caller host ip
 	 * @param calleeServiceName will pick up url host when null
 	 * @param calleeHost will pick up url host when null
 	 * @param calleePort will pick up url port when null
@@ -168,7 +168,8 @@ public final class PolarisEnhancedPluginUtils {
 		}
 		RpcEnhancementReporterProperties reportProperties;
 		try {
-			reportProperties = ApplicationContextAwareUtils.getApplicationContext().getBean(RpcEnhancementReporterProperties.class);
+			reportProperties = ApplicationContextAwareUtils.getApplicationContext()
+					.getBean(RpcEnhancementReporterProperties.class);
 		}
 		catch (BeansException e) {
 			LOG.error("get RpcEnhancementReporterProperties bean err", e);
@@ -278,6 +279,5 @@ public final class PolarisEnhancedPluginUtils {
 		}
 		return null;
 	}
-
 
 }
