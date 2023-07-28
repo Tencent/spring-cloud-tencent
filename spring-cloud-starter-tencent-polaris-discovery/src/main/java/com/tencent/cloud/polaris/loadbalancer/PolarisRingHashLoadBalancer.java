@@ -33,7 +33,7 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  * @author sean yu
  * @author <a href="mailto:veteranchen@tencent.com">veteranchen</a>
  */
-public class PolarisRingHashLoadBalancer extends PolarisAbstractLoadBalancer {
+public class PolarisRingHashLoadBalancer extends AbstractPolarisLoadBalancer {
 
 	public PolarisRingHashLoadBalancer(String serviceId,
 			ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,

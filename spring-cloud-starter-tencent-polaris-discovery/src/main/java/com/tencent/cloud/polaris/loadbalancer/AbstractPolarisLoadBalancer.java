@@ -48,9 +48,9 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  *
  * @author <a href="mailto:veteranchen@tencent.com">veteranchen</a>
  */
-public abstract class PolarisAbstractLoadBalancer implements ReactorServiceInstanceLoadBalancer {
+public abstract class AbstractPolarisLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
-	private static final Logger log = LoggerFactory.getLogger(PolarisAbstractLoadBalancer.class);
+	private static final Logger log = LoggerFactory.getLogger(AbstractPolarisLoadBalancer.class);
 
 	private final String serviceId;
 
@@ -58,7 +58,7 @@ public abstract class PolarisAbstractLoadBalancer implements ReactorServiceInsta
 
 	private ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider;
 
-	public PolarisAbstractLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
+	public AbstractPolarisLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
 		this.serviceId = serviceId;
 		this.supplierObjectProvider = supplierObjectProvider;
 		this.routerAPI = routerAPI;

@@ -31,7 +31,7 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  * @author <a href="mailto:veteranchen@tencent.com">veteranchen</a>
  */
-public class PolarisWeightedRandomLoadBalancer extends PolarisAbstractLoadBalancer {
+public class PolarisWeightedRandomLoadBalancer extends AbstractPolarisLoadBalancer {
 
 	public PolarisWeightedRandomLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
 		super(serviceId, supplierObjectProvider, routerAPI);
