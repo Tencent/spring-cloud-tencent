@@ -23,6 +23,8 @@ import java.util.List;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.polaris.api.exception.ErrorCode;
+import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceResponse;
@@ -42,6 +44,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.Request;
 import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 
 import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_NAMESPACE;
@@ -115,6 +118,46 @@ public class PolarisWeightedRandomLoadBalancerTest {
 		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getService()).isEqualTo(LOCAL_SERVICE);
 		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getHost()).isEqualTo("host");
 		Assertions.assertThat(polarisServiceInstance.getPolarisInstance().getPort()).isEqualTo(8090);
+	}
+
+	@Test
+	public void chooseExceptionTest_thenReturnEmptyInstance() {
+
+		Request request = Mockito.mock(Request.class);
+		List<ServiceInstance> mockInstanceList = new ArrayList<>();
+		mockInstanceList.add(new PolarisServiceInstance(testInstance));
+
+		ServiceInstanceListSupplier serviceInstanceListSupplier = Mockito.mock(ServiceInstanceListSupplier.class);
+		when(serviceInstanceListSupplier.get(request)).thenReturn(Flux.just(mockInstanceList));
+
+		when(supplierObjectProvider.getIfAvailable(any())).thenReturn(serviceInstanceListSupplier);
+
+		when(routerAPI.processLoadBalance(any())).thenThrow(new PolarisException(ErrorCode.API_TIMEOUT));
+
+		// request construct and execute invoke
+		PolarisWeightedRandomLoadBalancer polarisWeightedRandomLoadBalancer = new PolarisWeightedRandomLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
+		Mono<Response<ServiceInstance>> responseMono = polarisWeightedRandomLoadBalancer.choose(request);
+		ServiceInstance serviceInstance = responseMono.block().getServer();
+
+		// verify method has invoked
+		verify(supplierObjectProvider).getIfAvailable(any());
+
+		//result assert
+		Assertions.assertThat(serviceInstance).isNull();
+	}
+
+	@Test
+	public void chooseEmptySupplierTest_thenReturnEmptyInstance() {
+		ServiceInstanceListSupplier noopSupplier = new NoopServiceInstanceListSupplier();
+		when(supplierObjectProvider.getIfAvailable(any())).thenReturn(noopSupplier);
+
+		// request construct and execute invoke
+		PolarisWeightedRandomLoadBalancer polarisWeightedRandomLoadBalancer = new PolarisWeightedRandomLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
+		Mono<Response<ServiceInstance>> responseMono = polarisWeightedRandomLoadBalancer.choose();
+		ServiceInstance serviceInstance = responseMono.block().getServer();
+
+		//result assert
+		Assertions.assertThat(serviceInstance).isNull();
 	}
 
 }
