@@ -91,6 +91,18 @@ public class PolarisWeightedRandomLoadBalancerAutoConfigurationTest {
 	}
 
 	@Test
+	public void testPolarisWeightedRoundRobinInitialization() {
+		this.contextRunner.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisWeightedRoundRobin")
+				.run(context -> {
+					assertThat(context).hasSingleBean(RestTemplate.class);
+					assertThatThrownBy(() -> {
+						context.getBean(RestTemplate.class).getForEntity("http://wrong.url", String.class);
+					}).isInstanceOf(Exception.class);
+				});
+	}
+
+
+	@Test
 	public void testPolarisRingHashInitialization() {
 		this.contextRunner
 				.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisRingHash").run(context -> {

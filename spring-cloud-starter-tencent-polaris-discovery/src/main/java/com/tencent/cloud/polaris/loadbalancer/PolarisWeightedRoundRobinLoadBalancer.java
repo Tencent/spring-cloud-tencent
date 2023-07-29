@@ -17,8 +17,6 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import java.util.Optional;
-
 import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
 import com.tencent.polaris.api.rpc.Criteria;
 import com.tencent.polaris.router.api.core.RouterAPI;
@@ -28,26 +26,20 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 
 /**
- * PolarisRingHashLoadBalancer.
+ * WeightedRoundRobin Loadbalancer of Polaris.
  *
- * @author sean yu
  * @author <a href="mailto:veteranchen@tencent.com">veteranchen</a>
  */
-public class PolarisRingHashLoadBalancer extends AbstractPolarisLoadBalancer {
+public class PolarisWeightedRoundRobinLoadBalancer extends AbstractPolarisLoadBalancer {
 
-	public PolarisRingHashLoadBalancer(String serviceId,
-			ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider,
-			RouterAPI routerAPI) {
+	public PolarisWeightedRoundRobinLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
 		super(serviceId, supplierObjectProvider, routerAPI);
 	}
 
 	@Override
 	protected ProcessLoadBalanceRequest setProcessLoadBalanceRequest(ProcessLoadBalanceRequest req) {
-		String hashKey = Optional.ofNullable(PolarisLoadBalancerRingHashKeyProvider.getHashKey()).orElse("");
-		req.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_RING_HASH);
-		Criteria criteria = new Criteria();
-		criteria.setHashKey(hashKey);
-		req.setCriteria(criteria);
+		req.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_ROUND_ROBIN);
+		req.setCriteria(new Criteria());
 		return req;
 	}
 }
