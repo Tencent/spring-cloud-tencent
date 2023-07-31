@@ -15,15 +15,15 @@
  * specific language governing permissions and limitations under the License.
  *
  */
-
 package com.tencent.cloud.polaris.config.config;
 
 import java.util.List;
 
+import com.tencent.cloud.polaris.config.enums.RefreshType;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.tencent.cloud.polaris.config.enums.RefreshType;
 
 /**
  * polaris config module bootstrap configs.
@@ -32,11 +32,10 @@ import com.tencent.cloud.polaris.config.enums.RefreshType;
  */
 @ConfigurationProperties("spring.cloud.polaris.config")
 public class PolarisConfigProperties {
-
 	/**
 	 * Whether to open the configuration center.
 	 */
-    @Value("${spring.cloud.polaris.config.enabled:#{'true'}}")
+	@Value("${spring.cloud.polaris.config.enabled:#{'true'}}")
 	private boolean enabled = true;
 
 	/**

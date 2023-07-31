@@ -5,25 +5,24 @@ package com.tencent.cloud.polaris.config.logger;
  */
 public enum Level {
 
-    TRACE("TRACE"), DEBUG("DEBUG"), INFO("INFO"), WARN("WARN"), ERROR("ERROR"),FATAL("FATAL"),OFF("OFF");
+	/** 日志级别. */
+	TRACE("TRACE"), DEBUG("DEBUG"), INFO("INFO"), WARN("WARN"), ERROR("ERROR"), FATAL("FATAL"), OFF("OFF");
 
-    private String level;
+	private String level;
 
-    Level(String level) {
-        this.level = level;
-    }
+	Level(String level) {
+		this.level = level;
+	}
+	public String getLevel() {
+		return level;
+	}
 
-    public String getLevel() {
-        return level;
-    }
-
-
-    public static Level levelOf(String level) {
-        for (Level l : Level.values()) {
-            if (l.level.equalsIgnoreCase(level)) {
-                return l;
-            }
-        }
-        return null;
-    }
+	public static Level levelOf(String level) {
+		for (Level l : Level.values()) {
+			if (l.level.equalsIgnoreCase(level)) {
+				return l;
+			}
+		}
+		return null;
+	}
 }
