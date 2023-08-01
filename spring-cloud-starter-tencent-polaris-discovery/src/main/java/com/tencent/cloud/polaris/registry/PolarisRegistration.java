@@ -44,7 +44,7 @@ import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFA
 /**
  * Registration object of Polaris.
  *
- * @author Haotian Zhang, Andrew Shan, Jie Cheng, changjin wei(魏昌进)
+ * @author Haotian Zhang, Andrew Shan, Jie Cheng, Palmer.Xu, changjin wei(魏昌进)
  */
 public class PolarisRegistration implements Registration {
 
@@ -64,6 +64,7 @@ public class PolarisRegistration implements Registration {
 	private final boolean isSecure;
 	private final ServletWebServerApplicationContext servletWebServerApplicationContext;
 	private final ReactiveWebServerApplicationContext reactiveWebServerApplicationContext;
+	private final List<PolarisRegistrationCustomizer> customizers;
 	private boolean registerEnabled = false;
 	private Map<String, String> metadata;
 	private int port;
@@ -76,12 +77,14 @@ public class PolarisRegistration implements Registration {
 			SDKContext context, StaticMetadataManager staticMetadataManager,
 			@Nullable NacosContextProperties nacosContextProperties,
 			@Nullable ServletWebServerApplicationContext servletWebServerApplicationContext,
-			@Nullable ReactiveWebServerApplicationContext reactiveWebServerApplicationContext) {
+			@Nullable ReactiveWebServerApplicationContext reactiveWebServerApplicationContext,
+			@Nullable List<PolarisRegistrationCustomizer> registrationCustomizers) {
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.polarisContext = context;
 		this.staticMetadataManager = staticMetadataManager;
 		this.servletWebServerApplicationContext = servletWebServerApplicationContext;
 		this.reactiveWebServerApplicationContext = reactiveWebServerApplicationContext;
+		this.customizers = registrationCustomizers;
 
 		// generate serviceId
 		if (Objects.isNull(nacosContextProperties)) {
@@ -151,15 +154,15 @@ public class PolarisRegistration implements Registration {
 			@Nullable List<PolarisRegistrationCustomizer> registrationCustomizers) {
 		PolarisRegistration polarisRegistration = new PolarisRegistration(polarisDiscoveryProperties,
 				polarisContextProperties, consulContextProperties, context, staticMetadataManager,
-				nacosContextProperties, servletWebServerApplicationContext, reactiveWebServerApplicationContext);
-		customize(registrationCustomizers, polarisRegistration);
+				nacosContextProperties, servletWebServerApplicationContext, reactiveWebServerApplicationContext,
+				registrationCustomizers);
 		return polarisRegistration;
 	}
 
-	public static void customize(List<PolarisRegistrationCustomizer> registrationCustomizers, PolarisRegistration registration) {
-		if (registrationCustomizers != null) {
-			for (PolarisRegistrationCustomizer customizer : registrationCustomizers) {
-				customizer.customize(registration);
+	public void customize() {
+		if (!CollectionUtils.isEmpty(this.customizers)) {
+			for (PolarisRegistrationCustomizer customizer : this.customizers) {
+				customizer.customize(this);
 			}
 		}
 	}
@@ -174,6 +177,11 @@ public class PolarisRegistration implements Registration {
 		return host;
 	}
 
+	/**
+	 * Should be call after web started.
+	 *
+	 * @return port
+	 */
 	@Override
 	public int getPort() {
 		if (port <= 0) {
@@ -188,6 +196,10 @@ public class PolarisRegistration implements Registration {
 			}
 		}
 		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	@Override
