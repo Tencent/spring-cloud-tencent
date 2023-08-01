@@ -60,6 +60,8 @@ public class PolarisRegistrationCustomizerTest {
 	@Test
 	public void testCustomize() {
 		this.contextRunner.run(context -> {
+			PolarisRegistration polarisRegistration = context.getBean(PolarisRegistration.class);
+			polarisRegistration.customize();
 			PolarisRegistrationCustomizer customizer = context.getBean(PolarisRegistrationCustomizer.class);
 			verify(customizer, times(1)).customize(any(PolarisRegistration.class));
 		});
