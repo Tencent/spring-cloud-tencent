@@ -71,6 +71,7 @@ public class PolarisAutoServiceRegistrationTest {
 	@BeforeEach
 	void setUp() {
 		doNothing().when(serviceRegistry).register(nullable(PolarisRegistration.class));
+		doNothing().when(serviceRegistry).deregister(nullable(PolarisRegistration.class));
 
 		polarisAutoServiceRegistration =
 				new PolarisAutoServiceRegistration(serviceRegistry, autoServiceRegistrationProperties, registration,
@@ -108,6 +109,32 @@ public class PolarisAutoServiceRegistrationTest {
 		doReturn(true).when(registration).isRegisterEnabled();
 		assertThatCode(() -> {
 			polarisAutoServiceRegistration.registerManagement();
+		}).doesNotThrowAnyException();
+	}
+
+	@Test
+	public void testDeregister() {
+		doReturn(false).when(registration).isRegisterEnabled();
+		assertThatCode(() -> {
+			polarisAutoServiceRegistration.registerManagement();
+		}).doesNotThrowAnyException();
+
+		doReturn(true).when(registration).isRegisterEnabled();
+		assertThatCode(() -> {
+			polarisAutoServiceRegistration.deregister();
+		}).doesNotThrowAnyException();
+	}
+
+	@Test
+	public void testDeregisterManagement() {
+		doReturn(false).when(registration).isRegisterEnabled();
+		assertThatCode(() -> {
+			polarisAutoServiceRegistration.registerManagement();
+		}).doesNotThrowAnyException();
+
+		doReturn(true).when(registration).isRegisterEnabled();
+		assertThatCode(() -> {
+			polarisAutoServiceRegistration.deregisterManagement();
 		}).doesNotThrowAnyException();
 	}
 
