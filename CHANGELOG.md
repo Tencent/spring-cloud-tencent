@@ -20,3 +20,5 @@
 - feat:added automatic optimization for dynamic config refresh type.
 - fix:fix gray release examples bug.
 - fix:fix router label feign interceptor order.
+- fix:fix web server wrong open bug.
+- fix:add deregister judgment.
