@@ -88,6 +88,22 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 	}
 
 	@Override
+	protected void deregister() {
+		if (!this.registration.isRegisterEnabled()) {
+			return;
+		}
+		super.deregister();
+	}
+
+	@Override
+	protected void deregisterManagement() {
+		if (!this.registration.isRegisterEnabled()) {
+			return;
+		}
+		super.deregisterManagement();
+	}
+
+	@Override
 	protected Object getConfiguration() {
 		return this.polarisDiscoveryProperties;
 	}
