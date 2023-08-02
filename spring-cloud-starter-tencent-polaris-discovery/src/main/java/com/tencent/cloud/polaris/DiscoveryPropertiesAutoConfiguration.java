@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Common configuration of discovery.
@@ -38,8 +37,25 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
-@Import({PolarisDiscoveryProperties.class, ConsulContextProperties.class, NacosContextProperties.class})
 public class DiscoveryPropertiesAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisDiscoveryProperties polarisDiscoveryProperties() {
+		return new PolarisDiscoveryProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ConsulContextProperties consulContextProperties() {
+		return new ConsulContextProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public NacosContextProperties nacosContextProperties() {
+		return new NacosContextProperties();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
