@@ -24,3 +24,4 @@
 - [fix:fix router label feign interceptor order.](https://github.com/Tencent/spring-cloud-tencent/pull/1069)
 - [feat:added polaris weighted round robin load balancer.](https://github.com/Tencent/spring-cloud-tencent/pull/1062)
 - [fix:add deregister judgment.](https://github.com/Tencent/spring-cloud-tencent/pull/1074)
+- [refactor:optimize discovery properties initialization.](https://github.com/Tencent/spring-cloud-tencent/pull/1077)
