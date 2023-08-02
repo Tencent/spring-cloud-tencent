@@ -22,4 +22,5 @@
 - [fix:fix SCG report wrong service bug when using IP routing.](https://github.com/Tencent/spring-cloud-tencent/pull/1065)
 - [fix:fix gray release examples bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1068)
 - [fix:fix router label feign interceptor order.](https://github.com/Tencent/spring-cloud-tencent/pull/1071)
+- [feat:added polaris weighted round robin load balancer.](https://github.com/Tencent/spring-cloud-tencent/pull/1073)
 - [fix:add deregister judgment.](https://github.com/Tencent/spring-cloud-tencent/pull/1075)
