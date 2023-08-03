@@ -20,9 +20,11 @@ package com.tencent.cloud.polaris.config.adapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
@@ -68,12 +70,20 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
 	private final Environment environment;
+	// 此类给一些客户定制化逻辑做一些特殊业务分组文件的配置处理
+	private PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer;
 
-	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
-			PolarisContextProperties polarisContextProperties,
-			ConfigFileService configFileService,
-			PolarisPropertySourceManager polarisPropertySourceManager,
-			Environment environment) {
+	{
+		ServiceLoader<PolarisConfigCustomExtensionLayer> polarisConfigCustomExtensionLayerLoader = ServiceLoader.load(PolarisConfigCustomExtensionLayer.class);
+		Iterator<PolarisConfigCustomExtensionLayer> polarisConfigCustomExtensionLayerIterator = polarisConfigCustomExtensionLayerLoader.iterator();
+		// 一般就一个实现类，如果有多个，那么加载的是最后一个
+		while (polarisConfigCustomExtensionLayerIterator.hasNext()) {
+			polarisConfigCustomExtensionLayer = polarisConfigCustomExtensionLayerIterator.next();
+			LOGGER.info("[SCT Config] PolarisConfigFileLocator init polarisConfigCustomExtensionLayer:{}", polarisConfigCustomExtensionLayer);
+		}
+	}
+
+	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties, PolarisContextProperties polarisContextProperties, ConfigFileService configFileService, PolarisPropertySourceManager polarisPropertySourceManager, Environment environment) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisContextProperties = polarisContextProperties;
 		this.configFileService = configFileService;
@@ -83,9 +93,10 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	@Override
 	public PropertySource<?> locate(Environment environment) {
-		CompositePropertySource compositePropertySource = new CompositePropertySource(
-				POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
+		CompositePropertySource compositePropertySource = new CompositePropertySource(POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
 
+		// load custom config extension files
+		initCustomPolarisConfigExtensionFiles(compositePropertySource);
 		// load spring boot default config files
 		initInternalConfigFiles(compositePropertySource);
 
@@ -99,12 +110,21 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		return compositePropertySource;
 	}
 
+	private void initCustomPolarisConfigExtensionFiles(CompositePropertySource compositePropertySource) {
+		if (polarisConfigCustomExtensionLayer == null) {
+			LOGGER.info("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			return;
+		}
+		String namespace = polarisContextProperties.getNamespace();
+		polarisConfigCustomExtensionLayer.execute(namespace, environment, compositePropertySource, polarisPropertySourceManager, configFileService);
+		LOGGER.info("[SCT Config] InitCustomPolarisConfigExtensionFiles finished, namespace:{}", namespace);
+	}
+
 	private void initInternalConfigFiles(CompositePropertySource compositePropertySource) {
 		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles();
 
 		for (ConfigFileMetadata configFile : internalConfigFiles) {
-			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(
-					configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
+			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
 
 			compositePropertySource.addPropertySource(polarisPropertySource);
 
@@ -141,8 +161,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		return internalConfigFiles;
 	}
 
-	private void buildInternalApplicationConfigFiles(
-			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
+	private void buildInternalApplicationConfigFiles(List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
 		for (String profile : profileList) {
 			if (!StringUtils.hasText(profile)) {
 				continue;
@@ -157,8 +176,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yaml"));
 	}
 
-	private void buildInternalBootstrapConfigFiles(
-			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
+	private void buildInternalBootstrapConfigFiles(List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
 		for (String profile : profileList) {
 			if (!StringUtils.hasText(profile)) {
 				continue;
@@ -173,8 +191,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yaml"));
 	}
 
-	private void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource,
-			List<ConfigFileGroup> configFileGroups) {
+	private void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource, List<ConfigFileGroup> configFileGroups) {
 		String namespace = polarisContextProperties.getNamespace();
 
 		for (ConfigFileGroup configFileGroup : configFileGroups) {
@@ -196,14 +213,12 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 				polarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
-				LOGGER.info("[SCT Config] Load and inject polaris config file success."
-						+ " namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
+				LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
 			}
 		}
 	}
 
-	private PolarisPropertySource loadPolarisPropertySource(String namespace,
-			String group, String fileName) {
+	private PolarisPropertySource loadPolarisPropertySource(String namespace, String group, String fileName) {
 		ConfigKVFile configKVFile;
 		// unknown extension is resolved as properties file
 		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
@@ -213,11 +228,9 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
 		}
 		else {
-			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}",
-					namespace, group, fileName);
+			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
 
-			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml"
-					+ " can be injected into the spring context");
+			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
 		}
 
 		Map<String, Object> map = new ConcurrentHashMap<>();

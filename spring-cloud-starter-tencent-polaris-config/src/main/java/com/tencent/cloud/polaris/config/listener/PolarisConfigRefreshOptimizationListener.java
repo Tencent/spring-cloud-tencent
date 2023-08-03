@@ -65,11 +65,11 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 
 	private static final String REFRESH_CONTEXT_REFRESHER_BEAN_NAME = "polarisRefreshContextPropertySourceAutoRefresher";
 
+
 	@Override
 	public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
 		ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event.getApplicationContext();
-		PolarisConfigRefreshScopeAnnotationDetector detector = applicationContext
-				.getBean(PolarisConfigRefreshScopeAnnotationDetector.class);
+		PolarisConfigRefreshScopeAnnotationDetector detector = applicationContext.getBean(PolarisConfigRefreshScopeAnnotationDetector.class);
 		boolean isRefreshScopeAnnotationUsed = detector.isRefreshScopeAnnotationUsed();
 		String annotatedRefreshScopeBeanName = detector.getAnnotatedRefreshScopeBeanName();
 		// using System.setProperty to set spring.cloud.polaris.config.refresh-type
@@ -78,12 +78,10 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 		// a bean is using @RefreshScope, but the config refresh type is still [reflect], switch automatically
 		if (isRefreshScopeAnnotationUsed || isSystemSetRefreshType) {
 			if (isRefreshScopeAnnotationUsed) {
-				LOGGER.warn("Detected that the bean [{}] is using @RefreshScope annotation, but the config refresh type is still [reflect]. "
-						+ "[SCT] will automatically switch to [refresh_context].", annotatedRefreshScopeBeanName);
+				LOGGER.warn("Detected that the bean [{}] is using @RefreshScope annotation, but the config refresh type is still [reflect]. " + "[SCT] will automatically switch to [refresh_context].", annotatedRefreshScopeBeanName);
 			}
 			if (isSystemSetRefreshType) {
-				LOGGER.warn("Detected that using System.setProperty to set spring.cloud.polaris.config.refresh-type = refresh_context, but the config refresh type is still [reflect]. "
-						+ "[SCT] will automatically switch to [refresh_context].");
+				LOGGER.warn("Detected that using System.setProperty to set spring.cloud.polaris.config.refresh-type = refresh_context, but the config refresh type is still [reflect]. " + "[SCT] will automatically switch to [refresh_context].");
 			}
 			switchConfigRefreshTypeProperty(applicationContext);
 			modifyPolarisConfigPropertiesBean(applicationContext);
@@ -98,8 +96,7 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 
 	private void switchConfigRefreshTypeProperty(ConfigurableApplicationContext applicationContext) {
 		MutablePropertySources propertySources = applicationContext.getEnvironment().getPropertySources();
-		propertySources.addFirst(new MapPropertySource(CONFIG_REFRESH_TYPE_PROPERTY,
-				Collections.singletonMap(POLARIS_CONFIG_REFRESH_TYPE, RefreshType.REFRESH_CONTEXT)));
+		propertySources.addFirst(new MapPropertySource(CONFIG_REFRESH_TYPE_PROPERTY, Collections.singletonMap(POLARIS_CONFIG_REFRESH_TYPE, RefreshType.REFRESH_CONTEXT)));
 	}
 
 	private void modifyPolarisConfigPropertiesBean(ConfigurableApplicationContext applicationContext) {
@@ -127,9 +124,9 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 		beanFactory.registerBeanDefinition(REFRESH_CONTEXT_REFRESHER_BEAN_NAME, beanDefinition);
 	}
 
+
 	private void addRefresherBeanAsListener(ConfigurableApplicationContext applicationContext) {
-		PolarisRefreshEntireContextRefresher refresher = (PolarisRefreshEntireContextRefresher) applicationContext
-				.getBean(REFRESH_CONTEXT_REFRESHER_BEAN_NAME);
+		PolarisRefreshEntireContextRefresher refresher = (PolarisRefreshEntireContextRefresher) applicationContext.getBean(REFRESH_CONTEXT_REFRESHER_BEAN_NAME);
 		applicationContext.addApplicationListener(refresher);
 	}
 }
