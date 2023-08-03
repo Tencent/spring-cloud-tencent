@@ -10,10 +10,10 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import com.tencent.polaris.configuration.api.core.ConfigFileService;
+
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.Environment;
-
-import com.tencent.polaris.configuration.api.core.ConfigFileService;
 
 
 /**
@@ -21,7 +21,6 @@ import com.tencent.polaris.configuration.api.core.ConfigFileService;
  * @author juanyinyang
  */
 public interface PolarisConfigCustomExtensionLayer {
-	void execute(String namespace, Environment environment, CompositePropertySource compositePropertySource,
-			PolarisPropertySourceManager polarisPropertySourceManager, ConfigFileService configFileService);
+	void execute(String namespace, Environment environment, CompositePropertySource compositePropertySource, PolarisPropertySourceManager polarisPropertySourceManager, ConfigFileService configFileService);
 
 }
