@@ -36,6 +36,10 @@
           "description": "polaris weighted random load balancer."
         },
         {
+          "value": "polarisWeightedRoundRobin",
+          "description": "polaris weighted round robin load balancer."
+        },
+        {
           "value": "polarisRingHash",
           "description": "polaris ring hash load balancer."
         }
