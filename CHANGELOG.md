@@ -22,3 +22,4 @@
 - fix:fix router label feign interceptor order.
 - fix:fix web server wrong open bug.
 - fix:add deregister judgment.
+- feat:added ribbon lb polaris weighted round robin rule.
