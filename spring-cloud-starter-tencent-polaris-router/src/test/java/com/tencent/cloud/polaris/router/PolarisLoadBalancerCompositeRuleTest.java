@@ -42,6 +42,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRandomRule;
+import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRoundRobinRule;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
@@ -141,6 +142,17 @@ public class PolarisLoadBalancerCompositeRuleTest {
 		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
 
 		assertThat(lbRule).isInstanceOf(PolarisWeightedRandomRule.class);
+	}
+
+	@Test
+	public void testWeightRRLB() {
+		when(polarisLoadBalancerProperties.getStrategy()).thenReturn(PolarisLoadBalancerCompositeRule.STRATEGY_WEIGHT_ROUND_ROBIN);
+		PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
+				polarisLoadBalancerProperties, config, requestInterceptors, null, null);
+
+		AbstractLoadBalancerRule lbRule = compositeRule.getRule();
+
+		assertThat(lbRule).isInstanceOf(PolarisWeightedRoundRobinRule.class);
 	}
 
 	@Test

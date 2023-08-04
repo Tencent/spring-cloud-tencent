@@ -30,6 +30,7 @@ import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.loadbalancer.PolarisRingHashRule;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRandomRule;
+import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRoundRobinRule;
 import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,13 @@ public class PolarisRibbonClientConfiguration {
 	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRandom")
 	public IRule polarisWeightedRandomRule(PolarisSDKContextManager polarisSDKContextManager) {
 		return new PolarisWeightedRandomRule(polarisSDKContextManager.getRouterAPI());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRoundRobin")
+	public IRule polarisWeightedRoundRobinRule(PolarisSDKContextManager polarisSDKContextManager) {
+		return new PolarisWeightedRoundRobinRule(polarisSDKContextManager.getRouterAPI());
 	}
 
 	@Bean

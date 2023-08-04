@@ -25,17 +25,17 @@ import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
 /**
  * Polaris weighted load balancer.
  *
- * @author lepdou 2022-05-17
+ * @author <a href="mailto:veteranchen@tencent.com">veteranchen</a>
  */
-public class PolarisWeightedRandomRule extends AbstractPolarisRule {
+public class PolarisWeightedRoundRobinRule extends AbstractPolarisRule {
 
-	public PolarisWeightedRandomRule(RouterAPI routerAPI) {
+	public PolarisWeightedRoundRobinRule(RouterAPI routerAPI) {
 		super(routerAPI);
 	}
 
 	@Override
 	protected ProcessLoadBalanceRequest setProcessLoadBalanceRequest(ProcessLoadBalanceRequest request) {
-		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_RANDOM);
+		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_ROUND_ROBIN);
 		return request;
 	}
 }
