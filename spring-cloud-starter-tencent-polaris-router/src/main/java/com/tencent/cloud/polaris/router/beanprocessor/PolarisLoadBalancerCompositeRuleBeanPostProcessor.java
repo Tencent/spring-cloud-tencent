@@ -23,6 +23,7 @@ import java.util.List;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
@@ -47,7 +48,8 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessor implements BeanPo
 	@Override
 	public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 		if (bean instanceof AbstractLoadBalancerRule) {
-			RouterAPI routerAPI = beanFactory.getBean(RouterAPI.class);
+			PolarisSDKContextManager polarisSDKContextManager = beanFactory.getBean(PolarisSDKContextManager.class);
+			RouterAPI routerAPI = polarisSDKContextManager.getRouterAPI();
 			PolarisLoadBalancerProperties polarisLoadBalancerProperties = beanFactory.getBean(PolarisLoadBalancerProperties.class);
 			IClientConfig iClientConfig = beanFactory.getBean(IClientConfig.class);
 			List<RouterRequestInterceptor> requestInterceptors = BeanFactoryUtils.getBeans(beanFactory, RouterRequestInterceptor.class);

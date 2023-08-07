@@ -98,7 +98,7 @@ public class PolarisLoadBalancerTest {
 			ServerList<Server> emptyServerList = new StaticServerList<>();
 
 			PolarisLoadBalancer balancer = new PolarisLoadBalancer(config, rule, new DummyPing(), emptyServerList,
-					consumerAPI, properties);
+					consumerAPI, properties, null);
 
 			String host = balancer.choose(null);
 
@@ -132,7 +132,7 @@ public class PolarisLoadBalancerTest {
 			ServerList<Server> staticServerList = assembleServerList();
 
 			PolarisLoadBalancer balancer = new PolarisLoadBalancer(config, rule, new DummyPing(), staticServerList,
-					consumerAPI, properties);
+					consumerAPI, properties, null);
 
 			String host = balancer.choose(null);
 			Assertions.assertThat(host).isEqualTo("127.0.0.1:8080");

@@ -16,9 +16,11 @@
  */
 package com.tencent.cloud.polaris.endpoint;
 
+import java.util.Collections;
 import java.util.Map;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
@@ -26,6 +28,7 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -38,6 +41,8 @@ import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test for polaris discovery endpoint.
@@ -48,7 +53,7 @@ public class PolarisDiscoveryEndpointTest {
 
 	private static NamingServer namingServer;
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
@@ -72,6 +77,11 @@ public class PolarisDiscoveryEndpointTest {
 		}
 	}
 
+	@BeforeEach
+	void setUp() {
+		PolarisSDKContextManager.innerDestroy();
+	}
+
 	@Test
 	public void testPolarisDiscoveryEndpoint() {
 		this.contextRunner.run(context -> {
@@ -79,12 +89,17 @@ public class PolarisDiscoveryEndpointTest {
 					.getBean(PolarisDiscoveryProperties.class);
 			DiscoveryClient discoveryClient = context
 					.getBean(PolarisDiscoveryClient.class);
+
 			PolarisDiscoveryHandler polarisDiscoveryHandler = context.getBean(PolarisDiscoveryHandler.class);
 			PolarisDiscoveryEndpoint polarisDiscoveryEndpoint = new PolarisDiscoveryEndpoint(polarisDiscoveryProperties, discoveryClient, polarisDiscoveryHandler);
-
 			Map<String, Object> mapInfo = polarisDiscoveryEndpoint.polarisDiscovery("java_provider_test");
-
 			assertThat(polarisDiscoveryProperties).isEqualTo(mapInfo.get("PolarisDiscoveryProperties"));
+
+			DiscoveryClient discoveryClient1 = mock(DiscoveryClient.class);
+			doReturn(Collections.singletonList("xx")).when(discoveryClient1).getServices();
+			PolarisDiscoveryEndpoint polarisDiscoveryEndpoint1 = new PolarisDiscoveryEndpoint(polarisDiscoveryProperties, discoveryClient1, polarisDiscoveryHandler);
+			Map<String, Object> mapInfo2 = polarisDiscoveryEndpoint1.polarisDiscovery(null);
+			assertThat(polarisDiscoveryProperties).isEqualTo(mapInfo2.get("PolarisDiscoveryProperties"));
 		});
 	}
 

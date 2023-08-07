@@ -23,9 +23,9 @@ import com.tencent.cloud.polaris.config.adapter.PolarisConfigFileLocator;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshType;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
 
@@ -60,8 +60,8 @@ public class PolarisConfigBootstrapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnConnectRemoteServerEnabled
-	public ConfigFileService configFileService(SDKContext sdkContext) {
-		return ConfigFileServiceFactory.createConfigFileService(sdkContext);
+	public ConfigFileService configFileService(PolarisSDKContextManager polarisSDKContextManager) {
+		return ConfigFileServiceFactory.createConfigFileService(polarisSDKContextManager.getSDKContext());
 	}
 
 	@Bean

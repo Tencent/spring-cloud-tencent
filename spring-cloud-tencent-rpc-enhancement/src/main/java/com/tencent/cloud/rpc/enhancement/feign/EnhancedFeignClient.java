@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import feign.Client;
@@ -34,10 +35,6 @@ import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.EXCEPTION;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.FINALLY;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.POST;
-import static com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType.PRE;
 import static feign.Util.checkNotNull;
 
 /**
@@ -66,13 +63,19 @@ public class EnhancedFeignClient implements Client {
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(requestHeaders)
-				.httpMethod(HttpMethod.resolve(request.httpMethod().name()))
+				.httpMethod(HttpMethod.valueOf(request.httpMethod().name()))
 				.url(url)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 
+		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance(request.requestTemplate().feignTarget()
+				.name(), url.getHost(), url.getPort(), url.getScheme().equals("https"));
+		enhancedPluginContext.setTargetServiceInstance(serviceInstance, url);
+
 		// Run pre enhanced plugins.
-		pluginRunner.run(PRE, enhancedPluginContext);
+		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+
 		long startMillis = System.currentTimeMillis();
 		try {
 			Response response = delegate.execute(request, options);
@@ -87,24 +90,20 @@ public class EnhancedFeignClient implements Client {
 					.build();
 			enhancedPluginContext.setResponse(enhancedResponseContext);
 
-			DefaultServiceInstance serviceInstance = new DefaultServiceInstance(request.requestTemplate().feignTarget()
-					.name(), url.getHost(), url.getPort(), url.getScheme().equals("https"));
-			enhancedPluginContext.setServiceInstance(serviceInstance);
-
 			// Run post enhanced plugins.
-			pluginRunner.run(POST, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 			return response;
 		}
 		catch (IOException origin) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 			enhancedPluginContext.setThrowable(origin);
 			// Run exception enhanced feign plugins.
-			pluginRunner.run(EXCEPTION, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
 			throw origin;
 		}
 		finally {
 			// Run finally enhanced plugins.
-			pluginRunner.run(FINALLY, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 		}
 	}
 }

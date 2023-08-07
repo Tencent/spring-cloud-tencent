@@ -18,13 +18,18 @@
 package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
+import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.config.global.APIConfig;
+import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
@@ -38,6 +43,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
@@ -65,6 +71,8 @@ public class EnhancedPluginContextTest {
 	private SDKContext sdkContext;
 	@Mock
 	private ConsumerAPI consumerAPI;
+	@Mock
+	private Registration registration;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -111,24 +119,57 @@ public class EnhancedPluginContextTest {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 		enhancedPluginContext.setRequest(requestContext);
 		enhancedPluginContext.setResponse(responseContext);
-		enhancedPluginContext.setServiceInstance(new DefaultServiceInstance());
+		enhancedPluginContext.setTargetServiceInstance(new DefaultServiceInstance(), null);
 		enhancedPluginContext.setThrowable(mock(Exception.class));
 		enhancedPluginContext.setDelay(0);
 		assertThat(enhancedPluginContext.getRequest()).isNotNull();
 		assertThat(enhancedPluginContext.getResponse()).isNotNull();
-		assertThat(enhancedPluginContext.getServiceInstance()).isNotNull();
+		assertThat(enhancedPluginContext.getTargetServiceInstance()).isNotNull();
 		assertThat(enhancedPluginContext.getThrowable()).isNotNull();
 		assertThat(enhancedPluginContext.getDelay()).isNotNull();
 
-		EnhancedPlugin enhancedPlugin = new SuccessPolarisReporter(reporterProperties, sdkContext, consumerAPI);
-		EnhancedPlugin enhancedPlugin1 = new ExceptionPolarisReporter(reporterProperties, sdkContext, consumerAPI);
-		EnhancedPluginRunner enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin, enhancedPlugin1));
-		enhancedPluginRunner.run(EnhancedPluginType.POST, enhancedPluginContext);
+		EnhancedPlugin enhancedPlugin = new SuccessPolarisReporter(reporterProperties, consumerAPI);
+		EnhancedPlugin enhancedPlugin1 = new ExceptionPolarisReporter(reporterProperties, consumerAPI);
+		EnhancedPluginRunner enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin, enhancedPlugin1), registration, sdkContext);
+		enhancedPluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+
+		assertThat(enhancedPluginRunner.getLocalServiceInstance()).isEqualTo(registration);
 
 		EnhancedPlugin enhancedPlugin2 = mock(EnhancedPlugin.class);
 		doThrow(new RuntimeException()).when(enhancedPlugin2).run(any());
-		doReturn(EnhancedPluginType.POST).when(enhancedPlugin2).getType();
-		enhancedPluginRunner = new DefaultEnhancedPluginRunner(Arrays.asList(enhancedPlugin2));
-		enhancedPluginRunner.run(EnhancedPluginType.POST, enhancedPluginContext);
+		doReturn(EnhancedPluginType.Client.POST).when(enhancedPlugin2).getType();
+
+		APIConfig apiConfig = mock(APIConfig.class);
+		doReturn("0.0.0.0").when(apiConfig).getBindIP();
+
+		GlobalConfig globalConfig = mock(GlobalConfig.class);
+		doReturn(apiConfig).when(globalConfig).getAPI();
+
+		Configuration configuration = mock(Configuration.class);
+		doReturn(globalConfig).when(configuration).getGlobal();
+
+		doReturn(configuration).when(sdkContext).getConfig();
+
+		enhancedPluginRunner = new DefaultEnhancedPluginRunner(Collections.singletonList(enhancedPlugin2), null, sdkContext);
+		enhancedPluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+	}
+
+	@Test
+	public void testSetTargetServiceInstance() throws URISyntaxException {
+		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+
+		// targetServiceInstance != null
+		DefaultServiceInstance testDefaultServiceInstance = new DefaultServiceInstance();
+		testDefaultServiceInstance.setPort(1);
+		enhancedPluginContext.setTargetServiceInstance(testDefaultServiceInstance, null);
+		assertThat(enhancedPluginContext.getTargetServiceInstance().getPort()).isEqualTo(1);
+
+		// targetServiceInstance == null && url != null
+		enhancedPluginContext.setTargetServiceInstance(null, new URI("https://www.qq.com"));
+		assertThat(enhancedPluginContext.getTargetServiceInstance().getPort()).isEqualTo(443);
+
+		// targetServiceInstance == null && url == null
+		enhancedPluginContext.setTargetServiceInstance(null, null);
+		assertThat(enhancedPluginContext.getTargetServiceInstance().getPort()).isEqualTo(0);
 	}
 }

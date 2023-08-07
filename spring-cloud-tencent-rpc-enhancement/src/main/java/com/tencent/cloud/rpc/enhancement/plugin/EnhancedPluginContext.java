@@ -18,6 +18,13 @@
 package com.tencent.cloud.rpc.enhancement.plugin;
 
 
+import java.net.URI;
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 
 /**
@@ -27,6 +34,8 @@ import org.springframework.cloud.client.ServiceInstance;
  */
 public class EnhancedPluginContext {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedPluginContext.class);
+
 	private EnhancedRequestContext request;
 
 	private EnhancedResponseContext response;
@@ -35,7 +44,12 @@ public class EnhancedPluginContext {
 
 	private long delay;
 
-	private ServiceInstance serviceInstance;
+	private ServiceInstance localServiceInstance;
+
+	/**
+	 * targetServiceInstance only exist in a client runner type.
+	 */
+	private ServiceInstance targetServiceInstance;
 
 	public EnhancedRequestContext getRequest() {
 		return request;
@@ -69,12 +83,37 @@ public class EnhancedPluginContext {
 		this.delay = delay;
 	}
 
-	public ServiceInstance getServiceInstance() {
-		return serviceInstance;
+	public ServiceInstance getLocalServiceInstance() {
+		return localServiceInstance;
 	}
 
-	public void setServiceInstance(ServiceInstance serviceInstance) {
-		this.serviceInstance = serviceInstance;
+	public void setLocalServiceInstance(ServiceInstance localServiceInstance) {
+		this.localServiceInstance = localServiceInstance;
+	}
+
+	public ServiceInstance getTargetServiceInstance() {
+		return targetServiceInstance;
+	}
+
+	public void setTargetServiceInstance(ServiceInstance targetServiceInstance, URI url) {
+		if (Objects.nonNull(targetServiceInstance)) {
+			this.targetServiceInstance = targetServiceInstance;
+		}
+		else if (Objects.nonNull(url)) {
+			DefaultServiceInstance defaultServiceInstance = new DefaultServiceInstance();
+			defaultServiceInstance.setUri(url);
+			if (defaultServiceInstance.isSecure()) {
+				defaultServiceInstance.setPort(443);
+			}
+			else {
+				defaultServiceInstance.setPort(80);
+			}
+			this.targetServiceInstance = defaultServiceInstance;
+		}
+		else {
+			this.targetServiceInstance = new DefaultServiceInstance();
+			LOGGER.warn("TargetServiceInstance is empty.");
+		}
 	}
 
 	@Override
@@ -84,7 +123,9 @@ public class EnhancedPluginContext {
 				", response=" + response +
 				", throwable=" + throwable +
 				", delay=" + delay +
-				", serviceInstance=" + serviceInstance +
+				", localServiceInstance=" + localServiceInstance +
+				", targetServiceInstance=" + targetServiceInstance +
 				'}';
 	}
+
 }

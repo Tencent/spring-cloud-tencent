@@ -17,10 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.config;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
-
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -30,8 +27,13 @@ import org.springframework.context.annotation.Import;
  * @author lepdou 2022-03-29
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisEnabled
-@Import({PolarisContextAutoConfiguration.class, RpcEnhancementAutoConfiguration.class, PolarisCircuitBreakerAutoConfiguration.class})
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
+@Import({
+		PolarisCircuitBreakerAutoConfiguration.class,
+		ReactivePolarisCircuitBreakerAutoConfiguration.class,
+		PolarisCircuitBreakerFeignClientAutoConfiguration.class,
+		GatewayPolarisCircuitBreakerAutoConfiguration.class
+})
 public class PolarisCircuitBreakerBootstrapConfiguration {
 
 }

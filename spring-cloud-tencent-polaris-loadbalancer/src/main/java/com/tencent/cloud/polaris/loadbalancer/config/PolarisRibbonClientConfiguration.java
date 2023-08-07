@@ -26,12 +26,13 @@ import com.netflix.loadbalancer.RandomRule;
 import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.loadbalancer.PolarisRingHashRule;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRandomRule;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.router.api.core.RouterAPI;
+import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -46,9 +47,10 @@ public class PolarisRibbonClientConfiguration {
 	@Bean
 	public ILoadBalancer polarisLoadBalancer(IClientConfig iClientConfig, IRule iRule,
 			IPing iPing, ServerList<Server> serverList,
-			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
+			PolarisSDKContextManager polarisSDKContextManager, PolarisLoadBalancerProperties polarisLoadBalancerProperties,
+			@Autowired(required = false) InstanceTransformer instanceTransformer) {
 		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
-				consumerAPI, polarisLoadBalancerProperties);
+				polarisSDKContextManager.getConsumerAPI(), polarisLoadBalancerProperties, instanceTransformer);
 	}
 
 	@Bean
@@ -68,14 +70,14 @@ public class PolarisRibbonClientConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRandom")
-	public IRule polarisWeightedRandomRule(RouterAPI routerAPI) {
-		return new PolarisWeightedRandomRule(routerAPI);
+	public IRule polarisWeightedRandomRule(PolarisSDKContextManager polarisSDKContextManager) {
+		return new PolarisWeightedRandomRule(polarisSDKContextManager.getRouterAPI());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisRingHash")
-	public IRule polarisRingHashRule(RouterAPI routerAPI) {
-		return new PolarisRingHashRule(routerAPI);
+	public IRule polarisRingHashRule(PolarisSDKContextManager polarisSDKContextManager) {
+		return new PolarisRingHashRule(polarisSDKContextManager.getRouterAPI());
 	}
 }

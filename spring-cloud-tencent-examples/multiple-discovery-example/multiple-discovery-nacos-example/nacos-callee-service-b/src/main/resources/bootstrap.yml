@@ -1,0 +1,17 @@
+server:
+  port: 48081
+spring:
+  application:
+    name: NacosCalleeService
+  cloud:
+    polaris:
+      address: grpc://119.91.66.223:8091
+      namespace: default
+      enabled: true
+      stat:
+        enabled: true
+        port: 28083
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+

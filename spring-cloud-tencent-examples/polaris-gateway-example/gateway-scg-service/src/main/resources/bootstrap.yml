@@ -21,7 +21,7 @@ spring:
         transitive:
           - a
     polaris:
-      address: grpc://183.47.111.80:8091
+      address: grpc://119.91.66.223:8091
       namespace: default
       enabled: true
     gateway:
@@ -61,7 +61,7 @@ spring:
                 basedOnPreviousValue: false
       routes:
         - id: GatewayCalleeService
-          uri: lb://GatewayCalleeService
+          uri: http://www.baidu.com
           predicates:
             - Path=/GatewayCalleeService/**
           filters:

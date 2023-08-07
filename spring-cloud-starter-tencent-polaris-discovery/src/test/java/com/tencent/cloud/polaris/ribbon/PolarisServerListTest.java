@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.Server;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
@@ -60,8 +61,7 @@ public class PolarisServerListTest {
 					PolarisContextAutoConfiguration.class,
 					PolarisServerListTest.PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
-					PolarisDiscoveryAutoConfiguration.class,
-					PolarisContextAutoConfiguration.class))
+					PolarisDiscoveryAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
@@ -78,6 +78,7 @@ public class PolarisServerListTest {
 		namingServer.getNamingService().addService(new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER));
 	}
 
+
 	@AfterAll
 	static void afterAll() {
 		if (null != namingServer) {
@@ -91,6 +92,7 @@ public class PolarisServerListTest {
 		iClientConfig = mock(IClientConfig.class);
 		when(iClientConfig.getClientName()).thenReturn(SERVICE_PROVIDER);
 
+		PolarisSDKContextManager.innerDestroy();
 	}
 
 	@Test

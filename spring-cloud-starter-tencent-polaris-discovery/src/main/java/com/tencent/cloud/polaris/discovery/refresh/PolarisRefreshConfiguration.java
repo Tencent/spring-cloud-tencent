@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.discovery.refresh;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -42,8 +42,8 @@ public class PolarisRefreshConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PolarisRefreshApplicationReadyEventListener polarisServiceStatusApplicationReadyEventListener(
-			PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisSDKContextManager polarisSDKContextManager,
 			PolarisServiceStatusChangeListener polarisServiceStatusChangeListener) {
-		return new PolarisRefreshApplicationReadyEventListener(polarisDiscoveryHandler, polarisServiceStatusChangeListener);
+		return new PolarisRefreshApplicationReadyEventListener(polarisSDKContextManager, polarisServiceStatusChangeListener);
 	}
 }

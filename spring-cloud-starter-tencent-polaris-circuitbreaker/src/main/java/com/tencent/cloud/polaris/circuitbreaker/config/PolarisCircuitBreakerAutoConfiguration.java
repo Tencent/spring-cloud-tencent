@@ -30,26 +30,20 @@ import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreak
 import com.tencent.cloud.polaris.circuitbreaker.zuul.PolarisCircuitBreakerPostZuulFilter;
 import com.tencent.cloud.polaris.circuitbreaker.zuul.PolarisCircuitBreakerZuulFilter;
 import com.tencent.cloud.polaris.circuitbreaker.zuul.PolarisZuulFallbackFactory;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
-import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
-import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;
-import org.springframework.cloud.openfeign.PolarisFeignCircuitBreakerTargeterAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
 
@@ -61,12 +55,6 @@ import org.springframework.core.env.Environment;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisCircuitBreakerEnabled
 @AutoConfigureAfter(RpcEnhancementAutoConfiguration.class)
-@Import({
-		ReactivePolarisCircuitBreakerAutoConfiguration.class,
-		PolarisFeignCircuitBreakerTargeterAutoConfiguration.class,
-		PolarisCircuitBreakerFeignClientAutoConfiguration.class,
-		GatewayPolarisCircuitBreakerAutoConfiguration.class
-})
 public class PolarisCircuitBreakerAutoConfiguration {
 
 	@Autowired(required = false)
@@ -86,35 +74,29 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(CircuitBreakAPI.class)
-	public CircuitBreakAPI circuitBreakAPI(SDKContext polarisContext) {
-		return CircuitBreakAPIFactory.createCircuitBreakAPIByContext(polarisContext);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
 	public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-			SDKContext polarisContext, CircuitBreakAPI circuitBreakAPI) {
-		return new SuccessCircuitBreakerReporter(properties, polarisContext, circuitBreakAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new SuccessCircuitBreakerReporter(properties, polarisSDKContextManager.getCircuitBreakAPI());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
 	public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
-			SDKContext polarisContext, CircuitBreakAPI circuitBreakAPI) {
-		return new ExceptionCircuitBreakerReporter(properties, polarisContext, circuitBreakAPI);
+			PolarisSDKContextManager polarisSDKContextManager) {
+		return new ExceptionCircuitBreakerReporter(properties, polarisSDKContextManager.getCircuitBreakAPI());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(CircuitBreakerFactory.class)
-	public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
-		PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+	public CircuitBreakerFactory polarisCircuitBreakerFactory(PolarisSDKContextManager polarisSDKContextManager) {
+		PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(
+				polarisSDKContextManager.getCircuitBreakAPI(), polarisSDKContextManager.getConsumerAPI());
 		customizers.forEach(customizer -> customizer.customize(factory));
 		return factory;
 	}
 
 	@Bean
-	@ConditionalOnBean(RpcEnhancementReporterProperties.class)
 	@ConditionalOnMissingBean(CircuitBreakerConfigModifier.class)
 	public CircuitBreakerConfigModifier circuitBreakerConfigModifier(RpcEnhancementReporterProperties properties) {
 		return new CircuitBreakerConfigModifier(properties);

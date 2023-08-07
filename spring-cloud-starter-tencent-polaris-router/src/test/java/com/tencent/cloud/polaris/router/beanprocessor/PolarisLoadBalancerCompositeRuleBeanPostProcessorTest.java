@@ -27,6 +27,8 @@ import com.netflix.loadbalancer.RandomRule;
 import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
 import com.tencent.cloud.common.util.ReflectionUtils;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.cloud.polaris.router.PolarisLoadBalancerCompositeRule;
 import com.tencent.cloud.polaris.router.config.RibbonConfiguration;
@@ -36,6 +38,7 @@ import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.client.api.DefaultRouterAPI;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -62,10 +65,16 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 
 	private static final String SERVICE_2 = "service2";
 
+	@BeforeEach
+	void setUp() {
+		PolarisSDKContextManager.innerDestroy();
+	}
+
 	@Test
 	public void test1() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(
+						PolarisContextAutoConfiguration.class,
 						RibbonDefaultConfig.class,
 						PolarisRibbonTest.class,
 						RibbonAutoConfiguration.class,
@@ -86,7 +95,8 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 	@Test
 	public void test2() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(RibbonDefaultConfig.class, PolarisRibbonTest.class, RibbonAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+						RibbonDefaultConfig.class, PolarisRibbonTest.class, RibbonAutoConfiguration.class))
 				.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy = random");
 		contextRunner.run(context -> {
 			SpringClientFactory springClientFactory = context.getBean(SpringClientFactory.class);
@@ -102,7 +112,8 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 	@Test
 	public void test3() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(RibbonDefaultConfig.class, PolarisRibbonTest.class, RibbonAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+						RibbonDefaultConfig.class, PolarisRibbonTest.class, RibbonAutoConfiguration.class))
 				.withPropertyValues("service1.ribbon.NFLoadBalancerRuleClassName=com.netflix.loadbalancer.RoundRobinRule");
 		contextRunner.run(context -> {
 			SpringClientFactory springClientFactory = context.getBean(SpringClientFactory.class);
@@ -125,7 +136,8 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessorTest {
 	@Test
 	public void test4() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(CustomRibbonConfig.class, PolarisRibbonTest.class, RibbonAutoConfiguration.class));
+				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+						CustomRibbonConfig.class, PolarisRibbonTest.class, RibbonAutoConfiguration.class));
 		contextRunner.run(context -> {
 			SpringClientFactory springClientFactory = context.getBean(SpringClientFactory.class);
 

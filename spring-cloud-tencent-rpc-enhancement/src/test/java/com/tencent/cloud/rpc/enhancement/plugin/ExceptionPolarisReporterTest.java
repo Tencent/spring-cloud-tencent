@@ -23,11 +23,7 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
-import com.tencent.polaris.api.config.Configuration;
-import com.tencent.polaris.api.config.global.APIConfig;
-import com.tencent.polaris.api.config.global.GlobalConfig;
 import com.tencent.polaris.api.core.ConsumerAPI;
-import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +36,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
@@ -63,8 +60,6 @@ public class ExceptionPolarisReporterTest {
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
 	private RpcEnhancementReporterProperties reporterProperties;
-	@Mock
-	private SDKContext sdkContext;
 	@InjectMocks
 	private ExceptionPolarisReporter exceptionPolarisReporter;
 	@Mock
@@ -75,6 +70,12 @@ public class ExceptionPolarisReporterTest {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		RpcEnhancementReporterProperties reporterProperties = mock(RpcEnhancementReporterProperties.class);
+		doReturn(reporterProperties)
+				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 	}
 
 	@AfterAll
@@ -95,7 +96,7 @@ public class ExceptionPolarisReporterTest {
 
 	@Test
 	public void testType() {
-		assertThat(exceptionPolarisReporter.getType()).isEqualTo(EnhancedPluginType.EXCEPTION);
+		assertThat(exceptionPolarisReporter.getType()).isEqualTo(EnhancedPluginType.Client.EXCEPTION);
 	}
 
 	@Test
@@ -107,32 +108,23 @@ public class ExceptionPolarisReporterTest {
 
 		doReturn(true).when(reporterProperties).isEnabled();
 
-		APIConfig apiConfig = mock(APIConfig.class);
-		doReturn("0.0.0.0").when(apiConfig).getBindIP();
-
-		GlobalConfig globalConfig = mock(GlobalConfig.class);
-		doReturn(apiConfig).when(globalConfig).getAPI();
-
-		Configuration configuration = mock(Configuration.class);
-		doReturn(globalConfig).when(configuration).getGlobal();
-
-		doReturn(configuration).when(sdkContext).getConfig();
-
 		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
 		EnhancedRequestContext request = EnhancedRequestContext.builder()
 				.httpMethod(HttpMethod.GET)
 				.url(URI.create("http://0.0.0.0/"))
 				.httpHeaders(new HttpHeaders())
 				.build();
+		request.toString();
 		EnhancedResponseContext response = EnhancedResponseContext.builder()
 				.httpStatus(200)
 				.build();
+		response.toString();
 		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
 		serviceInstance.setServiceId(SERVICE_PROVIDER);
 
 		pluginContext.setRequest(request);
 		pluginContext.setResponse(response);
-		pluginContext.setServiceInstance(serviceInstance);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
 		pluginContext.setThrowable(new RuntimeException());
 
 		exceptionPolarisReporter.run(pluginContext);

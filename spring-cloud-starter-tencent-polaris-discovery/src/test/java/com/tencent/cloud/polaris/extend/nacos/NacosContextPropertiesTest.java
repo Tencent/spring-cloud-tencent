@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
-import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ public class NacosContextPropertiesTest {
 	private NacosContextProperties nacosContextProperties;
 
 	@Autowired
-	private SDKContext sdkContext;
+	private PolarisSDKContextManager polarisSDKContextManager;
 
 	@Test
 	public void testDefaultInitialization() {
@@ -65,8 +65,9 @@ public class NacosContextPropertiesTest {
 
 	@Test
 	public void testModify() {
-		assertThat(sdkContext).isNotNull();
-		com.tencent.polaris.api.config.Configuration configuration = sdkContext.getConfig();
+		assertThat(polarisSDKContextManager).isNotNull();
+		com.tencent.polaris.api.config.Configuration configuration = polarisSDKContextManager.getSDKContext()
+				.getConfig();
 		List<ServerConnectorConfigImpl> serverConnectorConfigs = configuration.getGlobal().getServerConnectors();
 		Optional<ServerConnectorConfigImpl> optionalServerConnectorConfig = serverConnectorConfigs.stream().filter(
 				item -> "nacos".equals(item.getId())
@@ -87,5 +88,9 @@ public class NacosContextPropertiesTest {
 
 	@SpringBootApplication
 	protected static class TestApplication {
+
+		static {
+			PolarisSDKContextManager.innerDestroy();
+		}
 	}
 }

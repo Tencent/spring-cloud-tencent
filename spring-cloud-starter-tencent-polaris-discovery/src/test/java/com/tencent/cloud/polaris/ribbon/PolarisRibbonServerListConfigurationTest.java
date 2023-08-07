@@ -20,6 +20,8 @@ package com.tencent.cloud.polaris.ribbon;
 import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ServerList;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -39,6 +41,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolarisRibbonServerListConfigurationTest {
 
 	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner();
+
+	@BeforeAll
+	static void beforeAll() {
+		PolarisSDKContextManager.innerDestroy();
+	}
 
 	@Test
 	public void testDefaultInitialization() {

@@ -13,20 +13,21 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.registry;
 
+import java.util.List;
+
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
-import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -50,16 +51,16 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 @ConditionalOnPolarisRegisterEnabled
 @ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
-@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class,
-		AutoServiceRegistrationAutoConfiguration.class,
+@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class, AutoServiceRegistrationAutoConfiguration.class,
 		PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	public PolarisServiceRegistry polarisServiceRegistry(
-			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisDiscoveryHandler polarisDiscoveryHandler,
+			PolarisDiscoveryProperties polarisDiscoveryProperties, PolarisSDKContextManager polarisSDKContextManager,
+			PolarisDiscoveryHandler polarisDiscoveryHandler,
 			StaticMetadataManager staticMetadataManager, PolarisStatProperties polarisStatProperties) {
-		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisDiscoveryHandler,
+		return new PolarisServiceRegistry(polarisDiscoveryProperties, polarisSDKContextManager, polarisDiscoveryHandler,
 				staticMetadataManager, polarisStatProperties);
 	}
 
@@ -69,12 +70,14 @@ public class PolarisServiceRegistryAutoConfiguration {
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisContextProperties polarisContextProperties,
 			@Autowired(required = false) ConsulContextProperties consulContextProperties,
-			SDKContext context, StaticMetadataManager staticMetadataManager, NacosContextProperties nacosContextProperties,
+			PolarisSDKContextManager polarisSDKContextManager, StaticMetadataManager staticMetadataManager,
+			NacosContextProperties nacosContextProperties,
 			@Autowired(required = false) ServletWebServerApplicationContext servletWebServerApplicationContext,
-			@Autowired(required = false) ReactiveWebServerApplicationContext reactiveWebServerApplicationContext) {
-		return new PolarisRegistration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties, context,
-				staticMetadataManager, nacosContextProperties,
-				servletWebServerApplicationContext, reactiveWebServerApplicationContext);
+			@Autowired(required = false) ReactiveWebServerApplicationContext reactiveWebServerApplicationContext,
+			@Autowired(required = false) List<PolarisRegistrationCustomizer> registrationCustomizers) {
+		return PolarisRegistration.registration(polarisDiscoveryProperties, polarisContextProperties, consulContextProperties,
+				polarisSDKContextManager.getSDKContext(), staticMetadataManager, nacosContextProperties,
+				servletWebServerApplicationContext, reactiveWebServerApplicationContext, registrationCustomizers);
 	}
 
 	@Bean
@@ -82,8 +85,12 @@ public class PolarisServiceRegistryAutoConfiguration {
 	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
 			PolarisServiceRegistry registry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			PolarisRegistration registration) {
-		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
+			PolarisRegistration registration,
+			PolarisDiscoveryProperties polarisDiscoveryProperties,
+			PolarisSDKContextManager polarisSDKContextManager
+	) {
+		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration,
+				polarisDiscoveryProperties, polarisSDKContextManager.getAssemblyAPI());
 	}
 
 	@Bean
