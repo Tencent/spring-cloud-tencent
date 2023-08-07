@@ -108,14 +108,9 @@ The address of Polaris server in spring-cloud-tencent-example is `grpc://119.91.
 
 ## Chat Group
 
-Please scan the QR code to join the chat group.
-
-<img src="https://user-images.githubusercontent.com/24446200/169198148-d4cc3494-3485-4515-9897-c8cb5504f706.png" width="20%" height="20%" />
-
-If the above QR code fails, please scan the QR code to add WeChat, and send "Spring Cloud Tencent" to apply for joining the group.
+Please scan the QR code to add WeChat, and send "Spring Cloud Tencent" to apply for joining the group.
 
 <img src="https://github.com/Tencent/spring-cloud-tencent/assets/24446200/77912670-aa7b-44ec-a312-42a05d59b109" width=20% height=20%>
-
 
 ## Stargazers over time
 
