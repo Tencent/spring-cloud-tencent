@@ -19,10 +19,12 @@
 package com.tencent.cloud.polaris.config.adapter;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 
 import org.springframework.core.env.MapPropertySource;
+
 
 /**
  * a polaris config file will be wrapped as polaris property source.
@@ -39,8 +41,7 @@ public class PolarisPropertySource extends MapPropertySource {
 
 	private final ConfigKVFile configKVFile;
 
-	public PolarisPropertySource(String namespace, String group, String fileName,
-			ConfigKVFile configKVFile, Map<String, Object> source) {
+	public PolarisPropertySource(String namespace, String group, String fileName, ConfigKVFile configKVFile, Map<String, Object> source) {
 		super(namespace + "-" + group + "-" + fileName, source);
 
 		this.namespace = namespace;
@@ -70,8 +71,30 @@ public class PolarisPropertySource extends MapPropertySource {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(fileName, group, namespace);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		PolarisPropertySource other = (PolarisPropertySource) obj;
+		return Objects.equals(fileName, other.fileName) && Objects.equals(group, other.group) && Objects.equals(namespace, other.namespace);
+	}
+
+	@Override
 	public String toString() {
-		return "PolarisPropertySource{" + "namespace='" + namespace + '\'' + ", group='"
-				+ group + '\'' + ", fileName='" + fileName + '\'' + '}';
+		return "PolarisPropertySource{" + "namespace='" + namespace + '\'' + ", group='" + group + '\'' + ", fileName='" + fileName + '\'' + '}';
 	}
 }

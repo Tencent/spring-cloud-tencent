@@ -35,15 +35,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 
-
 /**
  * 1. Listen to the Polaris server configuration publishing event 2. Write the changed
  * configuration content to propertySource 3. Refresh the context through contextRefresher
  *
  * @author lepdou 2022-03-28
  */
-public abstract class PolarisConfigPropertyAutoRefresher
-		implements ApplicationListener<ApplicationReadyEvent>, PolarisConfigPropertyRefresher {
+public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationListener<ApplicationReadyEvent>, PolarisConfigPropertyRefresher {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigPropertyAutoRefresher.class);
 
@@ -53,9 +51,7 @@ public abstract class PolarisConfigPropertyAutoRefresher
 
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
-	public PolarisConfigPropertyAutoRefresher(
-			PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager) {
+	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisPropertySourceManager = polarisPropertySourceManager;
 	}
@@ -80,52 +76,75 @@ public abstract class PolarisConfigPropertyAutoRefresher
 		}
 
 		// register polaris config publish event
+		registerPolarisConfigPublishChangeListener(polarisPropertySources);
+
+		// 增加接收刷新事件，接收到事件以后就进行全量配置刷新，重新加载PolarisConfigFileLocator，同时添加Listener事件
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				for (; ; ) {
+					try {
+						List<PolarisPropertySource> polarisPropertySourcesList = PolarisContextRefreshUtil.getRegisterPolarisPropertySourceQueue()
+								.take();
+						LOGGER.info("[SCT Config] receive from register queue And start refresh All Config, polarisPropertySourcesList size:{}", polarisPropertySourcesList.size());
+						refreshConfigurationProperties(null);
+						LOGGER.info("[SCT Config] start to register configFile polarisPropertySourcesList:{}", polarisPropertySourcesList);
+						registerPolarisConfigPublishChangeListener(polarisPropertySourcesList);
+					}
+					catch (Exception e) {
+						LOGGER.error("[SCT Config] receive from register queue exception:", e);
+					}
+				}
+			}
+		}).start();
+	}
+
+	private void registerPolarisConfigPublishChangeListener(List<PolarisPropertySource> polarisPropertySources) {
 		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
-			polarisPropertySource.getConfigKVFile()
-					.addChangeListener((ConfigKVFileChangeListener) configKVFileChangeEvent -> {
+			ConfigKVFileChangeListener configKVFileChangeListener = configKVFileChangeEvent -> {
 
-						LOGGER.info(
-								"[SCT Config] received polaris config change event and will refresh spring context."
-										+ " namespace = {}, group = {}, fileName = {}",
-								polarisPropertySource.getNamespace(),
-								polarisPropertySource.getGroup(),
-								polarisPropertySource.getFileName());
+				LOGGER.info("[SCT Config] received polaris config change event and will refresh spring context." + " namespace = {}, group = {}, fileName = {}", polarisPropertySource.getNamespace(), polarisPropertySource.getGroup(), polarisPropertySource.getFileName());
 
-						Map<String, Object> source = polarisPropertySource.getSource();
+				Map<String, Object> source = polarisPropertySource.getSource();
 
-						for (String changedKey : configKVFileChangeEvent.changedKeys()) {
-							ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent
-									.getChangeInfo(changedKey);
+				for (String changedKey : configKVFileChangeEvent.changedKeys()) {
+					ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent.getChangeInfo(changedKey);
 
-							LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
+					LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
 
-							// 新增动态改变日志级别的能力
-							try {
-								if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
-    							    String loggerName = changedKey.substring(14);
-    							    String newValue = configPropertyChangeInfo.getNewValue();
-    							    LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
-    							    PolarisConfigLoggerContext.setLevel(loggerName, newValue);
-								}
-							}
-							catch (Exception e) {
-								LOGGER.error("[SCT Config] set logging.level exception,", e);
-							}
-							switch (configPropertyChangeInfo.getChangeType()) {
-							case MODIFIED:
-							case ADDED:
-								source.put(changedKey, configPropertyChangeInfo.getNewValue());
-								break;
-							case DELETED:
-								source.remove(changedKey);
-								break;
-							}
-							// update the attribute with @Value annotation
-							refreshSpringValue(changedKey);
+					// 新增动态改变日志级别的能力
+					try {
+						if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
+							String loggerName = changedKey.substring(14);
+							String newValue = configPropertyChangeInfo.getNewValue();
+							LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
+							PolarisConfigLoggerContext.setLevel(loggerName, newValue);
 						}
-						// update @ConfigurationProperties beans
-						refreshConfigurationProperties(configKVFileChangeEvent.changedKeys());
-					});
+					}
+					catch (Exception e) {
+						LOGGER.error("[SCT Config] set logging.level exception,", e);
+					}
+					switch (configPropertyChangeInfo.getChangeType()) {
+					case MODIFIED:
+					case ADDED:
+						source.put(changedKey, configPropertyChangeInfo.getNewValue());
+						break;
+					case DELETED:
+						source.remove(changedKey);
+						break;
+					}
+					// update the attribute with @Value annotation
+					refreshSpringValue(changedKey);
+				}
+				// update @ConfigurationProperties beans
+				refreshConfigurationProperties(configKVFileChangeEvent.changedKeys());
+			};
+			polarisPropertySource.getConfigKVFile().addChangeListener(configKVFileChangeListener);
+
+			// 保存最近添加的ChangeListener
+			PolarisContextRefreshUtil.getLastPolarisPropertyConfigKVFileMap()
+					.put(polarisPropertySource, configKVFileChangeListener);
 		}
 	}
 }
