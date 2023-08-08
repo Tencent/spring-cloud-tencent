@@ -54,4 +54,6 @@ public @interface PolarisConfigKVFileChangeListener {
 	 * @return interested key-prefixed in the listener
 	 */
 	String[] interestedKeyPrefixes() default {};
+
+	boolean async() default true;
 }

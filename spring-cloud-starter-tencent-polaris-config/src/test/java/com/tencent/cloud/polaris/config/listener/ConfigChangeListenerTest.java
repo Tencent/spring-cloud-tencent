@@ -18,14 +18,16 @@
 
 package com.tencent.cloud.polaris.config.listener;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.Sets;
+import com.tencent.cloud.polaris.config.annotation.PolarisConfigKVFileChangeListener;
+import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -36,9 +38,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.google.common.collect.Sets;
-import com.tencent.cloud.polaris.config.annotation.PolarisConfigKVFileChangeListener;
-import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
  * Integration testing for change listener.
@@ -104,7 +104,7 @@ public class ConfigChangeListenerTest {
 			@PolarisConfigKVFileChangeListener(interestedKeys = {"timeout"})
 			public void configChangedListener(ConfigChangeEvent event) {
 				ConfigPropertyChangeInfo changeInfo = event.getChange("timeout");
-				timeout = Integer.parseInt((String)changeInfo.getNewValue());
+				timeout = Integer.parseInt(changeInfo.getNewValue().toString());
 				changeCnt++;
 				hits.countDown();
 			}
@@ -112,7 +112,7 @@ public class ConfigChangeListenerTest {
 			@PolarisConfigKVFileChangeListener(interestedKeyPrefixes = {"timeout"})
 			public void configChangedListener2(ConfigChangeEvent event) {
 				ConfigPropertyChangeInfo changeInfo = event.getChange("timeout");
-				timeout = Integer.parseInt((String)changeInfo.getNewValue());
+				timeout = Integer.parseInt(changeInfo.getNewValue().toString());
 				changeCnt++;
 				hits.countDown();
 			}

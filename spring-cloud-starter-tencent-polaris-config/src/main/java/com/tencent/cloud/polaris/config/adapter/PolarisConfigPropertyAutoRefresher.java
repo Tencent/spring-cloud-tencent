@@ -117,7 +117,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					try {
 						if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
 							String loggerName = changedKey.substring(14);
-							String newValue = (String) configPropertyChangeInfo.getNewValue();
+							String newValue = (String) configPropertyChangeInfo.getNewValue().toString();
 							LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
 							PolarisConfigLoggerContext.setLevel(loggerName, newValue);
 						}
