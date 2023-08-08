@@ -23,3 +23,4 @@
 - fix:fix web server wrong open bug.
 - fix:add deregister judgment.
 - feat:added ribbon lb polaris weighted round robin rule.
+- fix:fix feign report -1 port bug.
