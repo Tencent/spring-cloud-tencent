@@ -89,6 +89,8 @@ public class EnhancedFeignClient implements Client {
 
 			DefaultServiceInstance serviceInstance = new DefaultServiceInstance(request.requestTemplate().feignTarget()
 					.name(), url.getHost(), url.getPort(), url.getScheme().equals("https"));
+			// -1 means access directly by url, and use http default port number 80
+			serviceInstance.setPort(serviceInstance.getPort() == -1 ? 80 : serviceInstance.getPort());
 			enhancedPluginContext.setServiceInstance(serviceInstance);
 
 			// Run post enhanced plugins.
