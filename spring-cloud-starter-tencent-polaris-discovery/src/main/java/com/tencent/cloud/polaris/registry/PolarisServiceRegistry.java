@@ -100,6 +100,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			LOGGER.warn("No service to register for polaris client...");
 			return;
 		}
+		registration.customize();
 		String serviceId = registration.getServiceId();
 
 		// Register instance.

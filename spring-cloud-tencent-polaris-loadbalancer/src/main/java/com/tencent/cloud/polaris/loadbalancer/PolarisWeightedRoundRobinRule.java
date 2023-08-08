@@ -13,27 +13,29 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.tsf.adapter.config;
+package com.tencent.cloud.polaris.loadbalancer;
 
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.ratelimit.api.flow.LimitFlow;
+import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
+import com.tencent.polaris.router.api.core.RouterAPI;
+import com.tencent.polaris.router.api.rpc.ProcessLoadBalanceRequest;
 
 /**
- * TsfRouterFlow.
+ * Polaris weighted load balancer.
  *
- * @author sean yu
+ * @author <a href="mailto:veteranchen@tencent.com">veteranchen</a>
  */
-public class TsfLimitFlow implements LimitFlow {
+public class PolarisWeightedRoundRobinRule extends AbstractPolarisRule {
 
-	@Override
-	public String getName() {
-		return PolarisTsfFlowConfigModifier.TSF_FLOW_NAME;
+	public PolarisWeightedRoundRobinRule(RouterAPI routerAPI) {
+		super(routerAPI);
 	}
 
 	@Override
-	public void setSDKContext(SDKContext sdkContext) {
-
+	protected ProcessLoadBalanceRequest setProcessLoadBalanceRequest(ProcessLoadBalanceRequest request) {
+		request.setLbPolicy(LoadBalanceConfig.LOAD_BALANCE_WEIGHTED_ROUND_ROBIN);
+		return request;
 	}
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.ZuulFilterUtils;
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
@@ -46,7 +47,6 @@ import org.springframework.util.StringUtils;
 import static com.tencent.cloud.common.constant.ContextConstant.Zuul.POLARIS_CIRCUIT_BREAKER;
 import static com.tencent.cloud.common.constant.ContextConstant.Zuul.POLARIS_IS_IN_ROUTING_STATE;
 import static com.tencent.cloud.common.constant.ContextConstant.Zuul.POLARIS_PRE_ROUTE_TIME;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 /**
@@ -85,7 +85,7 @@ public class PolarisCircuitBreakerZuulFilter extends ZuulFilter {
 	 */
 	@Override
 	public int filterOrder() {
-		return PRE_DECORATION_FILTER_ORDER + 2;
+		return OrderConstant.Client.Zuul.CIRCUIT_BREAKER_FILTER_ORDER;
 	}
 
 	@Override

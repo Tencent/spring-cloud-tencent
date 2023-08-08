@@ -26,6 +26,8 @@ import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.DummyPing;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerProperties;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -82,6 +84,12 @@ public class PolarisLoadBalancerTest {
 		PolarisWeightedRandomRule rule = new PolarisWeightedRandomRule(routerAPI);
 		rule.initWithNiwsConfig(new DefaultClientConfigImpl());
 
+		PolarisWeightedRoundRobinRule rrRule = new PolarisWeightedRoundRobinRule(routerAPI);
+		rule.initWithNiwsConfig(new DefaultClientConfigImpl());
+
+		PolarisRingHashRule hashRule = new PolarisRingHashRule(routerAPI);
+		hashRule.initWithNiwsConfig(new DefaultClientConfigImpl());
+
 		// clientConfig
 		IClientConfig config = new DefaultClientConfigImpl();
 		config.loadProperties(CLIENT_NAME);
@@ -102,6 +110,21 @@ public class PolarisLoadBalancerTest {
 
 			String host = balancer.choose(null);
 
+			Assertions.assertThat(host).isNotNull();
+			Assertions.assertThat(host).isEqualTo("127.0.0.1:8080");
+
+			balancer = new PolarisLoadBalancer(config, rrRule, new DummyPing(), emptyServerList,
+					consumerAPI, properties, null);
+			host = balancer.choose(null);
+			Assertions.assertThat(host).isNotNull();
+			Assertions.assertThat(host).isEqualTo("127.0.0.1:8080");
+
+			balancer = new PolarisLoadBalancer(config, hashRule, new DummyPing(), emptyServerList,
+					consumerAPI, properties, null);
+			MetadataContext context = new MetadataContext();
+			context.setLoadbalancer("LOAD_BALANCER_HASH_KEY", "hash_key_1");
+			MetadataContextHolder.set(context);
+			host = balancer.choose(null);
 			Assertions.assertThat(host).isNotNull();
 			Assertions.assertThat(host).isEqualTo("127.0.0.1:8080");
 		}

@@ -24,12 +24,11 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -37,7 +36,6 @@ import org.springframework.util.StringUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.Zuul.POLARIS_PRE_ROUTE_TIME;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.POST_TYPE;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.SEND_RESPONSE_FILTER_ORDER;
 
 /**
  * Polaris circuit breaker implement in Zuul.
@@ -45,8 +43,6 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
  * @author Haotian Zhang
  */
 public class EnhancedPostZuulFilter extends ZuulFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedPostZuulFilter.class);
 
 	private final EnhancedPluginRunner pluginRunner;
 
@@ -64,7 +60,7 @@ public class EnhancedPostZuulFilter extends ZuulFilter {
 
 	@Override
 	public int filterOrder() {
-		return SEND_RESPONSE_FILTER_ORDER + 1;
+		return OrderConstant.Client.Zuul.ENHANCED_POST_FILTER_ORDER;
 	}
 
 	@Override

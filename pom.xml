@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>3.0.5</version>
+		<version>2.3.5.RELEASE</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
 	<version>${revision}</version>
 	<name>Spring Cloud Tencent</name>
 	<description>Spring Cloud Tencent</description>
-	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2020.0</url>
+	<url>https://github.com/Tencent/spring-cloud-tencent/tree/hoxton</url>
 
 	<organization>
 		<name>Tencent</name>
@@ -26,7 +26,7 @@
 	<licenses>
 		<license>
 			<name>The BSD 3-Clause License (BSD3)</name>
-			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2020.0/LICENSE</url>
+			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/hoxton/LICENSE</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>

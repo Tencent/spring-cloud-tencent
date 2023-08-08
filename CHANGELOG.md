@@ -18,3 +18,9 @@
 - fix:fix circuit breaker bean load order bug when using Nacos discovery.
 - refactor:refactor Polaris registration.
 - feat:added automatic optimization for dynamic config refresh type.
+- fix:fix gray release examples bug.
+- fix:fix router label feign interceptor order.
+- fix:fix web server wrong open bug.
+- fix:add deregister judgment.
+- feat:added ribbon lb polaris weighted round robin rule.
+- fix:fix feign report -1 port bug.

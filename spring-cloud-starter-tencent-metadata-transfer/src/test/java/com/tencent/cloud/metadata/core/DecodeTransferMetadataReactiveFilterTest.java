@@ -18,6 +18,7 @@
 package com.tencent.cloud.metadata.core;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,7 @@ public class DecodeTransferMetadataReactiveFilterTest {
 	@Test
 	public void test1() {
 		assertThat(this.metadataReactiveFilter.getOrder())
-				.isEqualTo(MetadataConstant.OrderConstant.WEB_FILTER_ORDER);
+				.isEqualTo(OrderConstant.Server.Reactive.DECODE_TRANSFER_METADATA_FILTER_ORDER);
 	}
 
 	@Test

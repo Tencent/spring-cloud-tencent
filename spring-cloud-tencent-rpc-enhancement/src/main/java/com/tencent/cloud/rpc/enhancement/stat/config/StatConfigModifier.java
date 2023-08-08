@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.stat.prometheus.handler.PrometheusHandlerConfig;
@@ -80,6 +80,6 @@ public class StatConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public int getOrder() {
-		return ContextConstant.ModifierOrder.STAT_REPORTER_ORDER;
+		return OrderConstant.Modifier.STAT_REPORTER_ORDER;
 	}
 }
