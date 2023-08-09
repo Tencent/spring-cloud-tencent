@@ -330,12 +330,12 @@
 
 	<distributionManagement>
 		<snapshotRepository>
-			<id>sctt-dev</id>
-			<url>https://mirrors.tencent.com/repository/maven/ScttDev</url>
+			<id>nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</snapshotRepository>
 		<repository>
-			<id>sctt-dev</id>
-			<url>https://mirrors.tencent.com/repository/maven/ScttDev</url>
+			<id>nexus-releases</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 </project>
