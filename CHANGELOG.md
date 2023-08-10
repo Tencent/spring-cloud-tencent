@@ -25,3 +25,4 @@
 - [feat:added polaris weighted round robin load balancer.](https://github.com/Tencent/spring-cloud-tencent/pull/1072)
 - [fix:add deregister judgment.](https://github.com/Tencent/spring-cloud-tencent/pull/1076)
 - [refactor:optimize discovery properties initialization.](https://github.com/Tencent/spring-cloud-tencent/pull/1078)
+- [fix:upgrade spring version.](https://github.com/Tencent/spring-cloud-tencent/pull/1087)
