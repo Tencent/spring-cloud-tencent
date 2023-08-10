@@ -20,17 +20,13 @@ package com.tencent.cloud.polaris.config.adapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.config.config.cache.PolarisPropertyCache;
 import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
@@ -73,17 +69,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	private final Environment environment;
 	// 此类给一些客户定制化逻辑做一些特殊业务分组文件的配置处理
-	private PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer;
-
-	{
-		ServiceLoader<PolarisConfigCustomExtensionLayer> polarisConfigCustomExtensionLayerLoader = ServiceLoader.load(PolarisConfigCustomExtensionLayer.class);
-		Iterator<PolarisConfigCustomExtensionLayer> polarisConfigCustomExtensionLayerIterator = polarisConfigCustomExtensionLayerLoader.iterator();
-		// 一般就一个实现类，如果有多个，那么加载的是最后一个
-		while (polarisConfigCustomExtensionLayerIterator.hasNext()) {
-			polarisConfigCustomExtensionLayer = polarisConfigCustomExtensionLayerIterator.next();
-			LOGGER.info("[SCT Config] PolarisConfigFileLocator init polarisConfigCustomExtensionLayer:{}", polarisConfigCustomExtensionLayer);
-		}
-	}
+	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 
 	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties, PolarisContextProperties polarisContextProperties, ConfigFileService configFileService, PolarisPropertySourceManager polarisPropertySourceManager, Environment environment) {
 		this.polarisConfigProperties = polarisConfigProperties;
@@ -110,20 +96,25 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			return compositePropertySource;
 		}
 		finally {
-			PolarisPropertyCache.getInstance().clear();
-			PolarisPropertyCache.getInstance().getCache()
-					.addAll(new HashSet<>(Arrays.asList(compositePropertySource.getPropertyNames())));
+			afterLocatePolarisConfigExtension(compositePropertySource);
 		}
 	}
 
 	private void initCustomPolarisConfigExtensionFiles(CompositePropertySource compositePropertySource) {
 		if (polarisConfigCustomExtensionLayer == null) {
-			LOGGER.info("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
 			return;
 		}
 		String namespace = polarisContextProperties.getNamespace();
-		polarisConfigCustomExtensionLayer.execute(namespace, environment, compositePropertySource, polarisPropertySourceManager, configFileService);
-		LOGGER.info("[SCT Config] InitCustomPolarisConfigExtensionFiles finished, namespace:{}", namespace);
+		polarisConfigCustomExtensionLayer.initConfigFiles(namespace, environment, compositePropertySource, polarisPropertySourceManager, configFileService);
+	}
+
+	private void afterLocatePolarisConfigExtension(CompositePropertySource compositePropertySource) {
+		if (polarisConfigCustomExtensionLayer == null) {
+			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			return;
+		}
+		polarisConfigCustomExtensionLayer.executeAfterLocateConfigReturning(compositePropertySource);
 	}
 
 	private void initInternalConfigFiles(CompositePropertySource compositePropertySource) {

@@ -19,12 +19,10 @@
 package com.tencent.cloud.polaris.config.adapter;
 
 import java.util.Map;
-import java.util.Objects;
 
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 
 import org.springframework.core.env.MapPropertySource;
-
 
 /**
  * a polaris config file will be wrapped as polaris property source.
@@ -68,29 +66,6 @@ public class PolarisPropertySource extends MapPropertySource {
 
 	ConfigKVFile getConfigKVFile() {
 		return configKVFile;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Objects.hash(fileName, group, namespace);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		PolarisPropertySource other = (PolarisPropertySource) obj;
-		return Objects.equals(fileName, other.fileName) && Objects.equals(group, other.group) && Objects.equals(namespace, other.namespace);
 	}
 
 	@Override

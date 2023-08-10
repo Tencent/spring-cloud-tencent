@@ -34,7 +34,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
-
 /**
  * 1. Listen to the Polaris server configuration publishing event 2. Write the changed
  * configuration content to propertySource 3. Refresh the context through contextRefresher
@@ -50,6 +49,9 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
 	private final AtomicBoolean registered = new AtomicBoolean(false);
+
+	// 此类给一些客户定制化逻辑做一些特殊业务分组文件的配置处理
+	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 
 	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
 		this.polarisConfigProperties = polarisConfigProperties;
@@ -75,76 +77,71 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			return;
 		}
 
+		// custom register polaris config
+		customInitRegisterPolarisConfig(this);
+
 		// register polaris config publish event
-		registerPolarisConfigPublishChangeListener(polarisPropertySources);
-
-		// 增加接收刷新事件，接收到事件以后就进行全量配置刷新，重新加载PolarisConfigFileLocator，同时添加Listener事件
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				for (; ; ) {
-					try {
-						List<PolarisPropertySource> polarisPropertySourcesList = PolarisContextRefreshUtil.getRegisterPolarisPropertySourceQueue()
-								.take();
-						LOGGER.info("[SCT Config] receive from register queue And start refresh All Config, polarisPropertySourcesList size:{}", polarisPropertySourcesList.size());
-						refreshConfigurationProperties(null);
-						LOGGER.info("[SCT Config] start to register configFile polarisPropertySourcesList:{}", polarisPropertySourcesList);
-						registerPolarisConfigPublishChangeListener(polarisPropertySourcesList);
-					}
-					catch (Exception e) {
-						LOGGER.error("[SCT Config] receive from register queue exception:", e);
-					}
-				}
-			}
-		}).start();
+		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
+			registerPolarisConfigPublishChangeListener(polarisPropertySource);
+			customRegisterPolarisConfigPublishChangeListener(polarisPropertySource);
+		}
 	}
 
-	private void registerPolarisConfigPublishChangeListener(List<PolarisPropertySource> polarisPropertySources) {
-		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
-			ConfigKVFileChangeListener configKVFileChangeListener = configKVFileChangeEvent -> {
-
-				LOGGER.info("[SCT Config] received polaris config change event and will refresh spring context." + " namespace = {}, group = {}, fileName = {}", polarisPropertySource.getNamespace(), polarisPropertySource.getGroup(), polarisPropertySource.getFileName());
-
-				Map<String, Object> source = polarisPropertySource.getSource();
-
-				for (String changedKey : configKVFileChangeEvent.changedKeys()) {
-					ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent.getChangeInfo(changedKey);
-
-					LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
-
-					// 新增动态改变日志级别的能力
-					try {
-						if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
-							String loggerName = changedKey.substring(14);
-							String newValue = (String) configPropertyChangeInfo.getNewValue().toString();
-							LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
-							PolarisConfigLoggerContext.setLevel(loggerName, newValue);
-						}
-					}
-					catch (Exception e) {
-						LOGGER.error("[SCT Config] set logging.level exception,", e);
-					}
-					switch (configPropertyChangeInfo.getChangeType()) {
-					case MODIFIED:
-					case ADDED:
-						source.put(changedKey, configPropertyChangeInfo.getNewValue());
-						break;
-					case DELETED:
-						source.remove(changedKey);
-						break;
-					}
-					// update the attribute with @Value annotation
-					refreshSpringValue(changedKey);
-				}
-				// update @ConfigurationProperties beans
-				refreshConfigurationProperties(configKVFileChangeEvent.changedKeys());
-			};
-			polarisPropertySource.getConfigKVFile().addChangeListener(configKVFileChangeListener);
-
-			// 保存最近添加的ChangeListener
-			PolarisContextRefreshUtil.getLastPolarisPropertyConfigKVFileMap()
-					.put(polarisPropertySource, configKVFileChangeListener);
+	private void customInitRegisterPolarisConfig(PolarisConfigPropertyAutoRefresher polarisConfigPropertyAutoRefresher) {
+		if (polarisConfigCustomExtensionLayer == null) {
+			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			return;
 		}
+		polarisConfigCustomExtensionLayer.initRegisterConfig(polarisConfigPropertyAutoRefresher);
+	}
+
+	public void registerPolarisConfigPublishChangeListener(PolarisPropertySource polarisPropertySource) {
+		polarisPropertySource.getConfigKVFile()
+				.addChangeListener((ConfigKVFileChangeListener) configKVFileChangeEvent -> {
+
+					LOGGER.info("[SCT Config] received polaris config change event and will refresh spring context." + " namespace = {}, group = {}, fileName = {}", polarisPropertySource.getNamespace(), polarisPropertySource.getGroup(), polarisPropertySource.getFileName());
+
+					Map<String, Object> source = polarisPropertySource.getSource();
+
+					for (String changedKey : configKVFileChangeEvent.changedKeys()) {
+						ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent.getChangeInfo(changedKey);
+
+						LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
+
+						// 新增动态改变日志级别的能力
+						try {
+							if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
+								String loggerName = changedKey.substring(14);
+								String newValue = (String) configPropertyChangeInfo.getNewValue();
+								LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
+								PolarisConfigLoggerContext.setLevel(loggerName, newValue);
+							}
+						}
+						catch (Exception e) {
+							LOGGER.error("[SCT Config] set logging.level exception,", e);
+						}
+						switch (configPropertyChangeInfo.getChangeType()) {
+						case MODIFIED:
+						case ADDED:
+							source.put(changedKey, configPropertyChangeInfo.getNewValue());
+							break;
+						case DELETED:
+							source.remove(changedKey);
+							break;
+						}
+						// update the attribute with @Value annotation
+						refreshSpringValue(changedKey);
+					}
+					// update @ConfigurationProperties beans
+					refreshConfigurationProperties(configKVFileChangeEvent.changedKeys());
+				});
+	}
+
+	private void customRegisterPolarisConfigPublishChangeListener(PolarisPropertySource polarisPropertySource) {
+		if (polarisConfigCustomExtensionLayer == null) {
+			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			return;
+		}
+		polarisConfigCustomExtensionLayer.executeRegisterPublishChangeListener(polarisPropertySource);
 	}
 }
