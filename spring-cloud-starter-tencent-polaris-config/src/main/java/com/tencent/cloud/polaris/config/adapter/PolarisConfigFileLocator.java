@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.config.adapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.config.cache.PolarisPropertyCache;
 import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
@@ -94,20 +96,24 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	@Override
 	public PropertySource<?> locate(Environment environment) {
 		CompositePropertySource compositePropertySource = new CompositePropertySource(POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
-
-		// load custom config extension files
-		initCustomPolarisConfigExtensionFiles(compositePropertySource);
-		// load spring boot default config files
-		initInternalConfigFiles(compositePropertySource);
-
-		// load custom config files
-		List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
-		if (CollectionUtils.isEmpty(configFileGroups)) {
+		try {
+			// load custom config extension files
+			initCustomPolarisConfigExtensionFiles(compositePropertySource);
+			// load spring boot default config files
+			initInternalConfigFiles(compositePropertySource);
+			// load custom config files
+			List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
+			if (CollectionUtils.isEmpty(configFileGroups)) {
+				return compositePropertySource;
+			}
+			initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
 			return compositePropertySource;
 		}
-		initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
-
-		return compositePropertySource;
+		finally {
+			PolarisPropertyCache.getInstance().clear();
+			PolarisPropertyCache.getInstance().getCache()
+					.addAll(new HashSet<>(Arrays.asList(compositePropertySource.getPropertyNames())));
+		}
 	}
 
 	private void initCustomPolarisConfigExtensionFiles(CompositePropertySource compositePropertySource) {
