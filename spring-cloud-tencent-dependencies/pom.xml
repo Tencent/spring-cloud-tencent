@@ -92,8 +92,8 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<artifactId>polaris-dependencies</artifactId>
 				<groupId>com.tencent.polaris</groupId>
+				<artifactId>polaris-dependencies</artifactId>				
 				<version>${polaris.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
