@@ -28,6 +28,7 @@ import com.tencent.cloud.polaris.config.enums.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -105,9 +106,15 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 	}
 
 	private void removeRelatedBeansOfReflect(ConfigurableApplicationContext applicationContext) {
-		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getBeanFactory();
-		beanFactory.removeBeanDefinition(REFLECT_REFRESHER_BEAN_NAME);
-		beanFactory.removeBeanDefinition(REFLECT_REBINDER_BEAN_NAME);
+		try {
+			DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getBeanFactory();
+			beanFactory.removeBeanDefinition(REFLECT_REFRESHER_BEAN_NAME);
+			beanFactory.removeBeanDefinition(REFLECT_REBINDER_BEAN_NAME);
+		}
+		catch (BeansException e) {
+		    // 如果这段代码出现removeBean异常不要影响主进程启动，有些用户用法会导致polarisReflectPropertySourceAutoRefresher没加载，这时候removeBeanDefinition会报错
+			LOGGER.debug("removeRelatedBeansOfReflect occur error:", e);
+		}
 	}
 
 	private void registerRefresherBeanOfRefreshContext(ConfigurableApplicationContext applicationContext) {
