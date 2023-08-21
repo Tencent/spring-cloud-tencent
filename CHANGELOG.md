@@ -26,3 +26,4 @@
 - [fix:add deregister judgment.](https://github.com/Tencent/spring-cloud-tencent/pull/1074)
 - [refactor:optimize discovery properties initialization.](https://github.com/Tencent/spring-cloud-tencent/pull/1077)
 - [fix:upgrade spring version.](https://github.com/Tencent/spring-cloud-tencent/pull/1086)
+- [fix:Update README-zh.md](https://github.com/Tencent/spring-cloud-tencent/pull/1090).
