@@ -80,7 +80,7 @@ For example:
             <groupId>com.tencent.cloud</groupId>
             <artifactId>spring-cloud-tencent-dependencies</artifactId>
             <!--version number-->
-            <version>1.11.4-2022.0.1</version>
+            <version>1.11.9-2022.0.1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
