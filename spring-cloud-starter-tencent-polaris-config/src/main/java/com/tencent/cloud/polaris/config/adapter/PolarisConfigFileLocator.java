@@ -105,8 +105,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
 			return;
 		}
-		String namespace = polarisContextProperties.getNamespace();
-		polarisConfigCustomExtensionLayer.initConfigFiles(namespace, environment, compositePropertySource, polarisPropertySourceManager, configFileService);
+		polarisConfigCustomExtensionLayer.initConfigFiles(environment, compositePropertySource, polarisPropertySourceManager, configFileService);
 	}
 
 	private void afterLocatePolarisConfigExtension(CompositePropertySource compositePropertySource) {
