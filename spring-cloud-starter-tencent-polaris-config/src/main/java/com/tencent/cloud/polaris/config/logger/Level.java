@@ -5,7 +5,7 @@ package com.tencent.cloud.polaris.config.logger;
  */
 public enum Level {
 
-	/** 日志级别. */
+	/** log level. */
 	TRACE("TRACE"), DEBUG("DEBUG"), INFO("INFO"), WARN("WARN"), ERROR("ERROR"), FATAL("FATAL"), OFF("OFF");
 
 	private String level;

@@ -68,7 +68,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
 	private final Environment environment;
-	// 此类给一些客户定制化逻辑做一些特殊业务分组文件的配置处理
+	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 
 	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties, PolarisContextProperties polarisContextProperties, ConfigFileService configFileService, PolarisPropertySourceManager polarisPropertySourceManager, Environment environment) {

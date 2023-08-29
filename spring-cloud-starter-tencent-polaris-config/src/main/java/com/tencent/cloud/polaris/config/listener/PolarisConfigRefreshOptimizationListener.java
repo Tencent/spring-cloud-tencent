@@ -112,7 +112,7 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 			beanFactory.removeBeanDefinition(REFLECT_REBINDER_BEAN_NAME);
 		}
 		catch (BeansException e) {
-		    // 如果这段代码出现removeBean异常不要影响主进程启动，有些用户用法会导致polarisReflectPropertySourceAutoRefresher没加载，这时候removeBeanDefinition会报错
+		    // If there is a removeBean exception in this code, do not affect the main process startup. Some user usage may cause the polarisReflectPropertySourceAutoRefresher to not load, and the removeBeanDefinition will report an error
 			LOGGER.debug("removeRelatedBeansOfReflect occur error:", e);
 		}
 	}

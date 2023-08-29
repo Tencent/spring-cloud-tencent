@@ -50,7 +50,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
-	// 此类给一些客户定制化逻辑做一些特殊业务分组文件的配置处理
+	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 
 	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
@@ -108,7 +108,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 						LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
 
-						// 新增动态改变日志级别的能力
+						// new ability to dynamically change log levels
 						try {
 							if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
 								String loggerName = changedKey.substring(14);

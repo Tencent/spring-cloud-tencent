@@ -1,10 +1,19 @@
 /*
- * Copyright (c) 2023 www.tencent.com.
- * All Rights Reserved.
- * This program is the confidential and proprietary information of
- * www.tencent.com ("Confidential Information").  You shall not disclose such
- * Confidential Information and shall use it only in accordance with
- * the terms of the license agreement you entered into with www.tencent.com.
+ * Tencent is pleased to support the open source community by making Spring Cloud Tencent available.
+ *
+ * Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+ *
+ * Licensed under the BSD 3-Clause License (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://opensource.org/licenses/BSD-3-Clause
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ *
  */
 package com.tencent.cloud.polaris.config.adapter;
 
@@ -23,12 +32,12 @@ public final class PolarisServiceLoaderUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisServiceLoaderUtil.class);
 	private PolarisServiceLoaderUtil() {
 	}
-	// 此类给一些客户定制化逻辑做一些特殊业务分组文件的配置处理
+	// this class provides customized logic for some customers to configure special business group files
 	private static PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer;
 	static {
 		ServiceLoader<PolarisConfigCustomExtensionLayer> polarisConfigCustomExtensionLayerLoader = ServiceLoader.load(PolarisConfigCustomExtensionLayer.class);
 		Iterator<PolarisConfigCustomExtensionLayer> polarisConfigCustomExtensionLayerIterator = polarisConfigCustomExtensionLayerLoader.iterator();
-		// 一般就一个实现类，如果有多个，那么加载的是最后一个
+		// Generally, there is only one implementation class. If there are multiple, the last one is loaded
 		while (polarisConfigCustomExtensionLayerIterator.hasNext()) {
 			polarisConfigCustomExtensionLayer = polarisConfigCustomExtensionLayerIterator.next();
 			LOGGER.info("[SCT Config] PolarisConfigFileLocator init polarisConfigCustomExtensionLayer:{}", polarisConfigCustomExtensionLayer);
