@@ -18,13 +18,14 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import feign.Request;
 import feign.RequestTemplate;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -136,5 +137,25 @@ public class FeignExpressionLabelUtilsTest {
 
 		assertThat(result).isNotEmpty();
 		assertThat(result.get(labelKey1)).isEqualTo(uri);
+	}
+
+	@Test
+	public void testGetCookie() {
+		String uri = "/";
+		String cookieValue = "zhangsan";
+
+		RequestTemplate requestTemplate = new RequestTemplate();
+		requestTemplate.uri(uri);
+		requestTemplate.method(Request.HttpMethod.GET);
+		requestTemplate.target("http://localhost");
+		requestTemplate = requestTemplate.resolve(new HashMap<>());
+		requestTemplate.header("cookie", Collections.singleton("uid=zhangsan"));
+
+		String labelKey1 = "${http.cookie.uid}";
+		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate, Stream.of(labelKey1)
+				.collect(toSet()));
+
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(labelKey1)).isEqualTo(cookieValue);
 	}
 }

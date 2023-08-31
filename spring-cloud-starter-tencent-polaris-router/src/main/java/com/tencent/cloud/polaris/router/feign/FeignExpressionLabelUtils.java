@@ -18,18 +18,17 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
+import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
+import feign.RequestTemplate;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.util.CollectionUtils;
+
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
-import feign.RequestTemplate;
-import org.apache.commons.lang.StringUtils;
-
-import org.springframework.util.CollectionUtils;
 
 /**
  * Resolve rule expression label from feign request.
@@ -63,6 +62,13 @@ public final class FeignExpressionLabelUtils {
 				}
 				labels.put(labelKey, getQueryValue(request, queryKey));
 			}
+			else if (ExpressionLabelUtils.isCookieLabel(labelKey)) {
+				String cookieKey = ExpressionLabelUtils.parseCookieKey(labelKey);
+				if (StringUtils.isBlank(cookieKey)) {
+					continue;
+				}
+				labels.put(labelKey, getCookieValue(request, cookieKey));
+			}
 			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
 				labels.put(labelKey, request.method());
 			}
@@ -83,5 +89,10 @@ public final class FeignExpressionLabelUtils {
 
 	public static String getQueryValue(RequestTemplate request, String key) {
 		return ExpressionLabelUtils.getFirstValue(request.queries(), key);
+	}
+
+	public static String getCookieValue(RequestTemplate request, String key) {
+		Map<String, Collection<String>> headers = request.headers();
+		return ExpressionLabelUtils.getCookieFirstValue(headers, key);
 	}
 }

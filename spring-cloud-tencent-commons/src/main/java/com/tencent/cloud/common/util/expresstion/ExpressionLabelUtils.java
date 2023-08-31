@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
@@ -166,6 +167,33 @@ public final class ExpressionLabelUtils {
 
 		for (String value : values) {
 			return value;
+		}
+
+		return StringUtils.EMPTY;
+	}
+
+	public static String getCookieFirstValue(Map<String, Collection<String>> valueMaps, String key) {
+		if (CollectionUtils.isEmpty(valueMaps)) {
+			return StringUtils.EMPTY;
+		}
+
+		Collection<String> values = valueMaps.get(HttpHeaderNames.COOKIE.toString());
+
+		if (CollectionUtils.isEmpty(values)) {
+			return StringUtils.EMPTY;
+		}
+
+		for (String value : values) {
+			String[] split = value.split("=");
+			if (split.length == 0) {
+				return StringUtils.EMPTY;
+			}
+			if (StringUtils.isEmpty(split[0]) || StringUtils.isEmpty(split[1])) {
+                return StringUtils.EMPTY;
+            }
+			if (key.equals(split[0])) {
+				return split[1];
+			}
 		}
 
 		return StringUtils.EMPTY;
