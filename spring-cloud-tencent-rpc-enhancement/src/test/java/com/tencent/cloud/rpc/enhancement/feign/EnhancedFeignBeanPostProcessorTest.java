@@ -71,7 +71,6 @@ public class EnhancedFeignBeanPostProcessorTest {
 		Object bean = enhancedFeignBeanPostProcessor.postProcessBeforeInitialization(bean1, "bean1");
 		assertThat(bean).isNotInstanceOfAny(
 				EnhancedFeignClient.class,
-				EnhancedLoadBalancerFeignClient.class,
 				EnhancedFeignBlockingLoadBalancerClient.class);
 
 		// bean instanceOf Client.class
@@ -83,12 +82,14 @@ public class EnhancedFeignBeanPostProcessorTest {
 		LoadBalancerFeignClient bean3 = mock(LoadBalancerFeignClient.class);
 		doReturn(mock(Client.class)).when(bean3).getDelegate();
 		bean = enhancedFeignBeanPostProcessor.postProcessBeforeInitialization(bean3, "bean3");
-		assertThat(bean).isInstanceOf(EnhancedLoadBalancerFeignClient.class);
+		assertThat(bean).isInstanceOf(LoadBalancerFeignClient.class);
+		assertThat(((LoadBalancerFeignClient) bean).getDelegate()).isInstanceOf(EnhancedFeignClient.class);
 
 		// bean instanceOf FeignBlockingLoadBalancerClient.class
 		FeignBlockingLoadBalancerClient bean4 = mock(FeignBlockingLoadBalancerClient.class);
 		doReturn(mock(Client.class)).when(bean4).getDelegate();
 		bean = enhancedFeignBeanPostProcessor.postProcessBeforeInitialization(bean4, "bean4");
-		assertThat(bean).isInstanceOf(EnhancedFeignBlockingLoadBalancerClient.class);
+		assertThat(bean).isInstanceOf(FeignBlockingLoadBalancerClient.class);
+		assertThat(((FeignBlockingLoadBalancerClient) bean).getDelegate()).isInstanceOf(EnhancedFeignClient.class);
 	}
 }
