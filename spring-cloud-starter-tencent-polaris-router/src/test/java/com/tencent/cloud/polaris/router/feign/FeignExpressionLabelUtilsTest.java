@@ -149,7 +149,7 @@ public class FeignExpressionLabelUtilsTest {
 		requestTemplate.method(Request.HttpMethod.GET);
 		requestTemplate.target("http://localhost");
 		requestTemplate = requestTemplate.resolve(new HashMap<>());
-		requestTemplate.header("cookie", Collections.singleton("uid=zhangsan"));
+		requestTemplate.header("cookie", Collections.singleton("uid=zhangsan; auth-token=dfhuwshfy77"));
 
 		String labelKey1 = "${http.cookie.uid}";
 		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate, Stream.of(labelKey1)

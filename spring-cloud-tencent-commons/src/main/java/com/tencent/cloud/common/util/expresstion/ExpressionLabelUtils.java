@@ -184,18 +184,14 @@ public final class ExpressionLabelUtils {
 		}
 
 		for (String value : values) {
-			String[] split = value.split("=");
-			if (split.length == 0) {
-				return StringUtils.EMPTY;
-			}
-			if (StringUtils.isEmpty(split[0]) || StringUtils.isEmpty(split[1])) {
-                return StringUtils.EMPTY;
+			String[] cookieArray = StringUtils.split(value, ";");
+			for (String cookieValue : cookieArray) {
+                String[] cookieKV = StringUtils.split(cookieValue, "=");
+                if (cookieKV != null && cookieKV.length == 2 && StringUtils.equals(cookieKV[0], key)) {
+                    return cookieKV[1];
+                }
             }
-			if (key.equals(split[0])) {
-				return split[1];
-			}
 		}
-
 		return StringUtils.EMPTY;
 	}
 }
