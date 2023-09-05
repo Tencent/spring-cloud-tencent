@@ -27,3 +27,4 @@
 - [refactor:optimize discovery properties initialization.](https://github.com/Tencent/spring-cloud-tencent/pull/1078)
 - [fix:upgrade spring version.](https://github.com/Tencent/spring-cloud-tencent/pull/1087)
 - [fix:Update README-zh.md](https://github.com/Tencent/spring-cloud-tencent/pull/1093).
+- [feature: support Polaris configuration center extension plugin interface and support dynamic modification of log levels.](https://github.com/Tencent/spring-cloud-tencent/pull/1104).
