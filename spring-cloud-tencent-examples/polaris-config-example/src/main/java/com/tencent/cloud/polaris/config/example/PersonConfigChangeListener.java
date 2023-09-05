@@ -42,7 +42,25 @@ public final class PersonConfigChangeListener {
 		Set<String> changedKeys = event.changedKeys();
 
 		for (String changedKey : changedKeys) {
-			System.out.printf("%s = %s \n", changedKey, event.getChange(changedKey));
+			System.out.printf("%s = %s , ThreadId: %s\n", changedKey, event.getChange(changedKey), Thread.currentThread().getId());
+		}
+	}
+
+	@PolarisConfigKVFileChangeListener(interestedKeyPrefixes = "teacher", async = false)
+	public void syncListen(ConfigChangeEvent event) {
+		Set<String> changedKeys = event.changedKeys();
+
+		for (String changedKey : changedKeys) {
+			System.out.printf("%s = %s , ThreadId: %s\n", changedKey, event.getChange(changedKey), Thread.currentThread().getId());
+		}
+	}
+
+	@PolarisConfigKVFileChangeListener(interestedKeyPrefixes = "teacher", async = false)
+	public void syncListen2(ConfigChangeEvent event) {
+		Set<String> changedKeys = event.changedKeys();
+
+		for (String changedKey : changedKeys) {
+			System.out.printf("%s = %s , ThreadId: %s\n", changedKey, event.getChange(changedKey), Thread.currentThread().getId());
 		}
 	}
 }

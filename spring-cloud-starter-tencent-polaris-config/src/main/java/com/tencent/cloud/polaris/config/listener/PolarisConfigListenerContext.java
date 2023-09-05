@@ -72,11 +72,11 @@ public final class PolarisConfigListenerContext {
 	/**
 	 * All custom interested keys defined in application .
 	 */
-	private static final Map<ConfigChangeListener, Set<String>> interestedKeys = Maps.newHashMap();
+	private static final Map<ConfigChangeListener, Set<String>> interestedKeys = Maps.newConcurrentMap();
 	/**
 	 * All custom interested key prefixes defined in application .
 	 */
-	private static final Map<ConfigChangeListener, Set<String>> interestedKeyPrefixes = Maps.newHashMap();
+	private static final Map<ConfigChangeListener, Set<String>> interestedKeyPrefixes = Maps.newConcurrentMap();
 	/**
 	 * Cache all latest configuration information for users in the application environment .
 	 */
@@ -89,7 +89,7 @@ public final class PolarisConfigListenerContext {
 	 * Get or Created new execute server .
 	 * @return execute service instance of {@link ExecutorService}
 	 */
-	private static ExecutorService executor() {
+	public static ExecutorService executor() {
 		if (EAR.get() == null) {
 			synchronized (PolarisConfigListenerContext.class) {
 				int coreThreadSize = Runtime.getRuntime().availableProcessors();
@@ -187,6 +187,15 @@ public final class PolarisConfigListenerContext {
 			Map<String, ConfigPropertyChangeInfo> modifiedChanges = new HashMap<>(interestedChangedKeys.size());
 			interestedChangedKeys.parallelStream().forEach(key -> modifiedChanges.put(key, changes.get(key)));
 			ConfigChangeEvent event = new ConfigChangeEvent(modifiedChanges, interestedChangedKeys);
+
+			if (listener instanceof SyncConfigChangeListener) {
+				SyncConfigChangeListener l = (SyncConfigChangeListener) listener;
+				if (!l.isAsync()) {
+					listener.onChange(event);
+					continue;
+				}
+			}
+
 			PolarisConfigListenerContext.executor().execute(() -> listener.onChange(event));
 		}
 	}
