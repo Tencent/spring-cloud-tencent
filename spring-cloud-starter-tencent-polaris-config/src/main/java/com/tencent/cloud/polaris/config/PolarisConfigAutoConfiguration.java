@@ -29,6 +29,7 @@ import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshTyp
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigRefreshOptimizationListener;
+import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerApplicationListener;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
@@ -61,6 +62,12 @@ public class PolarisConfigAutoConfiguration {
 	public PolarisConfigChangeEventListener polarisConfigChangeEventListener() {
 		return new PolarisConfigChangeEventListener();
 	}
+
+	@Bean
+	public PolarisConfigLoggerApplicationListener polarisConfigLoggerApplicationListener() {
+		return new PolarisConfigLoggerApplicationListener();
+	}
+
 
 	@Bean
 	@Primary
