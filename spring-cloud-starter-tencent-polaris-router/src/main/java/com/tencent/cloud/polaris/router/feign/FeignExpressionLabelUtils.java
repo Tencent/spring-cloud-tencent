@@ -18,17 +18,18 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
-import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
-import feign.RequestTemplate;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.util.CollectionUtils;
-
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
+import feign.RequestTemplate;
+import org.apache.commons.lang.StringUtils;
+
+import org.springframework.util.CollectionUtils;
 
 /**
  * Resolve rule expression label from feign request.

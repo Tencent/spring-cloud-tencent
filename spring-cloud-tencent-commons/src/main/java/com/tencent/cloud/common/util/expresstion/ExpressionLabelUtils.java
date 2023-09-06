@@ -186,11 +186,11 @@ public final class ExpressionLabelUtils {
 		for (String value : values) {
 			String[] cookieArray = StringUtils.split(value, ";");
 			for (String cookieValue : cookieArray) {
-                String[] cookieKV = StringUtils.split(cookieValue, "=");
-                if (cookieKV != null && cookieKV.length == 2 && StringUtils.equals(cookieKV[0], key)) {
-                    return cookieKV[1];
-                }
-            }
+				String[] cookieKV = StringUtils.split(cookieValue, "=");
+				if (cookieKV != null && cookieKV.length == 2 && StringUtils.equals(cookieKV[0], key)) {
+					return cookieKV[1];
+				}
+			}
 		}
 		return StringUtils.EMPTY;
 	}

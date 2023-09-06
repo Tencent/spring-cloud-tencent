@@ -18,14 +18,14 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
-import feign.Request;
-import feign.RequestTemplate;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import feign.Request;
+import feign.RequestTemplate;
+import org.junit.jupiter.api.Test;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -18,14 +18,11 @@
 
 package com.tencent.cloud.common.util.expresstion;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.netty.handler.codec.http.HttpHeaderNames;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.http.HttpCookie;
@@ -115,11 +112,11 @@ public final class SpringWebExpressionLabelUtils {
 			}
 			else if (ExpressionLabelUtils.isCookieLabel(labelKey)) {
 				String cookieKey = ExpressionLabelUtils.parseCookieKey(labelKey);
-                if (StringUtils.isBlank(cookieKey)) {
-                    continue;
-                }
-                labels.put(labelKey, getCookieValue(request, cookieKey));
-            }
+				if (StringUtils.isBlank(cookieKey)) {
+					continue;
+				}
+				labels.put(labelKey, getCookieValue(request, cookieKey));
+			}
 			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
 				labels.put(labelKey, request.getMethodValue());
 			}
@@ -174,7 +171,7 @@ public final class SpringWebExpressionLabelUtils {
 		if (StringUtils.isEmpty(first)) {
 			return StringUtils.EMPTY;
 		}
-		String[] cookieArray = StringUtils.split(first,";");
+		String[] cookieArray = StringUtils.split(first, ";");
 		for (String cookieItem : cookieArray) {
 			String[] cookieKv = StringUtils.split(cookieItem, "=");
 			if (cookieKv != null && cookieKv.length == 2 && StringUtils.equals(cookieKv[0], key)) {
