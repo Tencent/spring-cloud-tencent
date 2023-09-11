@@ -104,7 +104,7 @@ public class ConfigChangeListenerTest {
 			@PolarisConfigKVFileChangeListener(interestedKeys = {"timeout"})
 			public void configChangedListener(ConfigChangeEvent event) {
 				ConfigPropertyChangeInfo changeInfo = event.getChange("timeout");
-				timeout = Integer.parseInt(changeInfo.getNewValue());
+				timeout = Integer.parseInt(changeInfo.getNewValue().toString());
 				changeCnt++;
 				hits.countDown();
 			}
@@ -112,7 +112,7 @@ public class ConfigChangeListenerTest {
 			@PolarisConfigKVFileChangeListener(interestedKeyPrefixes = {"timeout"})
 			public void configChangedListener2(ConfigChangeEvent event) {
 				ConfigPropertyChangeInfo changeInfo = event.getChange("timeout");
-				timeout = Integer.parseInt(changeInfo.getNewValue());
+				timeout = Integer.parseInt(changeInfo.getNewValue().toString());
 				changeCnt++;
 				hits.countDown();
 			}
