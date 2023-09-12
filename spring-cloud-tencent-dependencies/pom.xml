@@ -73,7 +73,7 @@
 		<revision>1.13.0-2022.0.4-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.14.0</polaris.version>
+		<polaris.version>1.15.0-SNAPSHOT</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<mocktio.version>4.9.0</mocktio.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
