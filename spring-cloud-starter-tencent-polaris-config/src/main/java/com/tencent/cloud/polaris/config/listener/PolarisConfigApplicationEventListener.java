@@ -16,7 +16,7 @@
  *
  */
 
-package com.tencent.cloud.polaris.context.listener;
+package com.tencent.cloud.polaris.config.listener;
 
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.configuration.client.internal.RemoteConfigFileRepo;
@@ -33,11 +33,11 @@ import org.springframework.lang.NonNull;
  * @author shuiqingliu
  * @since 2023/8/29
  **/
-public class PolarisContextApplicationEventListener implements ApplicationListener<ApplicationEvent> {
+public class PolarisConfigApplicationEventListener implements ApplicationListener<ApplicationEvent> {
 
 	private final PolarisSDKContextManager polarisSDKContextManager;
 
-	public PolarisContextApplicationEventListener(PolarisSDKContextManager polarisSDKContextManager) {
+	public PolarisConfigApplicationEventListener(PolarisSDKContextManager polarisSDKContextManager) {
 		this.polarisSDKContextManager = polarisSDKContextManager;
 	}
 
