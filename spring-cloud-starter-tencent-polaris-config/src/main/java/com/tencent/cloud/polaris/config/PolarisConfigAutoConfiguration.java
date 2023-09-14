@@ -28,13 +28,11 @@ import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProces
 import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshType;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
-import com.tencent.cloud.polaris.config.listener.PolarisConfigNonDaemonThreadStopListener;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigRefreshOptimizationListener;
 import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerApplicationListener;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
-import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -63,11 +61,6 @@ public class PolarisConfigAutoConfiguration {
 	@Bean
 	public PolarisConfigChangeEventListener polarisConfigChangeEventListener() {
 		return new PolarisConfigChangeEventListener();
-	}
-
-	@Bean
-	public PolarisConfigNonDaemonThreadStopListener polarisLongPullingStopListener(PolarisSDKContextManager polarisSDKContextManager) {
-		return new PolarisConfigNonDaemonThreadStopListener(polarisSDKContextManager);
 	}
 
 	@Bean
