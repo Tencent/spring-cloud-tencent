@@ -110,6 +110,13 @@ public final class SpringWebExpressionLabelUtils {
 				}
 				labels.put(labelKey, getQueryValue(request, queryKey));
 			}
+			else if (ExpressionLabelUtils.isCookieLabel(labelKey)) {
+				String cookieKey = ExpressionLabelUtils.parseCookieKey(labelKey);
+				if (StringUtils.isBlank(cookieKey)) {
+					continue;
+				}
+				labels.put(labelKey, getCookieValue(request, cookieKey));
+			}
 			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
 				labels.put(labelKey, request.getMethodValue());
 			}
@@ -157,5 +164,20 @@ public final class SpringWebExpressionLabelUtils {
 	public static String getQueryValue(HttpRequest request, String key) {
 		String query = request.getURI().getQuery();
 		return ExpressionLabelUtils.getQueryValue(query, key);
+	}
+
+	public static String getCookieValue(HttpRequest request, String key) {
+		String first = request.getHeaders().getFirst(HttpHeaders.COOKIE);
+		if (StringUtils.isEmpty(first)) {
+			return StringUtils.EMPTY;
+		}
+		String[] cookieArray = StringUtils.split(first, ";");
+		for (String cookieItem : cookieArray) {
+			String[] cookieKv = StringUtils.split(cookieItem, "=");
+			if (cookieKv != null && cookieKv.length == 2 && StringUtils.equals(cookieKv[0], key)) {
+				return cookieKv[1];
+			}
+		}
+		return StringUtils.EMPTY;
 	}
 }

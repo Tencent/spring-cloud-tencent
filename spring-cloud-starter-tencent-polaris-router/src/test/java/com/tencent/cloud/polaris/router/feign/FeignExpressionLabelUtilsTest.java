@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -137,5 +138,25 @@ public class FeignExpressionLabelUtilsTest {
 
 		assertThat(result).isNotEmpty();
 		assertThat(result.get(labelKey1)).isEqualTo(uri);
+	}
+
+	@Test
+	public void testGetCookie() {
+		String uri = "/";
+		String cookieValue = "zhangsan";
+
+		RequestTemplate requestTemplate = new RequestTemplate();
+		requestTemplate.uri(uri);
+		requestTemplate.method(Request.HttpMethod.GET);
+		requestTemplate.target("http://localhost");
+		requestTemplate = requestTemplate.resolve(new HashMap<>());
+		requestTemplate.header("cookie", Collections.singleton("uid=zhangsan; auth-token=dfhuwshfy77"));
+
+		String labelKey1 = "${http.cookie.uid}";
+		Map<String, String> result = FeignExpressionLabelUtils.resolve(requestTemplate, Stream.of(labelKey1)
+				.collect(toSet()));
+
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(labelKey1)).isEqualTo(cookieValue);
 	}
 }
