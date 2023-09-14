@@ -63,6 +63,13 @@ public final class FeignExpressionLabelUtils {
 				}
 				labels.put(labelKey, getQueryValue(request, queryKey));
 			}
+			else if (ExpressionLabelUtils.isCookieLabel(labelKey)) {
+				String cookieKey = ExpressionLabelUtils.parseCookieKey(labelKey);
+				if (StringUtils.isBlank(cookieKey)) {
+					continue;
+				}
+				labels.put(labelKey, getCookieValue(request, cookieKey));
+			}
 			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
 				labels.put(labelKey, request.method());
 			}
@@ -83,5 +90,10 @@ public final class FeignExpressionLabelUtils {
 
 	public static String getQueryValue(RequestTemplate request, String key) {
 		return ExpressionLabelUtils.getFirstValue(request.queries(), key);
+	}
+
+	public static String getCookieValue(RequestTemplate request, String key) {
+		Map<String, Collection<String>> headers = request.headers();
+		return ExpressionLabelUtils.getCookieFirstValue(headers, key);
 	}
 }
