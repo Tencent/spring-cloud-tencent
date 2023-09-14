@@ -68,7 +68,6 @@ public class PolarisConfigAutoConfiguration {
 		return new PolarisConfigLoggerApplicationListener();
 	}
 
-
 	@Bean
 	@Primary
 	@ConditionalOnReflectRefreshType
