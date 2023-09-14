@@ -25,7 +25,6 @@ import com.tencent.cloud.polaris.context.ModifyAddress;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.cloud.polaris.context.listener.PolarisContextApplicationEventListener;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
 
@@ -58,10 +57,5 @@ public class PolarisContextAutoConfiguration {
 	@Bean
 	public ServiceRuleManager serviceRuleManager(PolarisSDKContextManager polarisSDKContextManager) {
 		return new ServiceRuleManager(polarisSDKContextManager.getSDKContext(), polarisSDKContextManager.getConsumerAPI());
-	}
-
-	@Bean
-	public PolarisContextApplicationEventListener polarisContextApplicationEventListener(PolarisSDKContextManager polarisSDKContextManager) {
-		return new PolarisContextApplicationEventListener(polarisSDKContextManager);
 	}
 }
