@@ -55,6 +55,10 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 	 * nacos contextPath.
 	 */
 	public static final String CONTEXT_PATH = "contextPath";
+	/**
+	 * nacos namespace.
+	 */
+	public static final String NAMESPACE = "namespace";
 	private static final Logger LOGGER = LoggerFactory.getLogger(NacosConfigModifier.class);
 	private static final String ID = "nacos";
 	private final NacosContextProperties nacosContextProperties;
@@ -113,6 +117,10 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 
 		if (StringUtils.isNotBlank(nacosContextProperties.getContextPath())) {
 			metadata.put(CONTEXT_PATH, nacosContextProperties.getContextPath());
+		}
+
+		if (StringUtils.isNotBlank(nacosContextProperties.getNamespace())) {
+			metadata.put(NAMESPACE, nacosContextProperties.getNamespace());
 		}
 
 		configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
