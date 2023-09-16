@@ -62,7 +62,7 @@ public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFa
 					delegate = ((FeignBlockingLoadBalancerClient) bean).getDelegate();
 				}
 				if (delegate != null) {
-					return new EnhancedFeignBlockingLoadBalancerClient(createPolarisFeignClient(delegate),
+					return new FeignBlockingLoadBalancerClient(createPolarisFeignClient(delegate),
 							factory.getBean(BlockingLoadBalancerClient.class),
 							factory.getBean(LoadBalancerClientFactory.class),
 							factory.getBeanProvider(LoadBalancerFeignRequestTransformer.class).stream().toList()
@@ -75,8 +75,7 @@ public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFa
 	}
 
 	private boolean isNeedWrap(Object bean) {
-		return bean instanceof Client && !(bean instanceof EnhancedFeignClient)
-				&& !(bean instanceof EnhancedFeignBlockingLoadBalancerClient);
+		return bean instanceof Client && !(bean instanceof EnhancedFeignClient);
 	}
 
 	private EnhancedFeignClient createPolarisFeignClient(Client delegate) {
