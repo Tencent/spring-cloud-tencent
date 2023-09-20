@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = PolarisLoggingApplication.class,
 		properties = {"spring.config.location=classpath:bootstrap.yml"})
-public class PolarisLoggingSystemPropertyTest {
+public class PolarisLoggingPathSystemPropertyTest {
 
 	@Test
 	public void testSystemProperty() {
