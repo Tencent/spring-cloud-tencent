@@ -16,6 +16,8 @@
  */
 package com.tencent.cloud.polaris.context.logging;
 
+import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.logging.LoggingConsts;
 import com.tencent.polaris.logging.PolarisLogging;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -24,6 +26,7 @@ import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.lang.NonNull;
 
 /**
@@ -52,6 +55,22 @@ public class PolarisLoggingApplicationListener implements GenericApplicationList
 
 	@Override
 	public void onApplicationEvent(@NonNull ApplicationEvent applicationEvent) {
+		ConfigurableEnvironment environment = null;
+
+		if (ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(applicationEvent.getClass())) {
+			environment = ((ApplicationEnvironmentPreparedEvent) applicationEvent).getEnvironment();
+		}
+		else if (ApplicationFailedEvent.class.isAssignableFrom(applicationEvent.getClass())) {
+			environment = ((ApplicationFailedEvent) applicationEvent).getApplicationContext().getEnvironment();
+		}
+
+		if (environment != null) {
+			String loggingPath = environment.getProperty("spring.cloud.polaris.logging.path");
+			if (StringUtils.isNotBlank(loggingPath)) {
+				System.setProperty(LoggingConsts.LOGGING_PATH_PROPERTY, loggingPath);
+			}
+		}
+
 		PolarisLogging.getInstance().loadConfiguration();
 	}
 }
