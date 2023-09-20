@@ -45,6 +45,12 @@
       "type": "java.lang.Integer",
       "defaultValue": "",
       "description": "current server local port to be registered."
+    },
+    {
+      "name": "spring.cloud.polaris.logging.path",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "polaris log storage path."
     }
   ],
   "hints": []
