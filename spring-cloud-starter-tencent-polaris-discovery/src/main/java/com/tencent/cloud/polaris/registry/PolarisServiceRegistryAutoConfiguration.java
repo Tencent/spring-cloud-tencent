@@ -31,14 +31,14 @@ import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration;
-import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationConfiguration;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
+import org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -49,10 +49,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
+@ConditionalOnBean(AutoServiceRegistrationProperties.class)
 @ConditionalOnPolarisRegisterEnabled
-@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
-@AutoConfigureAfter({AutoServiceRegistrationConfiguration.class, AutoServiceRegistrationAutoConfiguration.class,
-		PolarisDiscoveryAutoConfiguration.class})
+@AutoConfigureBefore(ServiceRegistryAutoConfiguration.class)
+@AutoConfigureAfter({AutoServiceRegistrationAutoConfiguration.class, PolarisDiscoveryAutoConfiguration.class})
 public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
@@ -65,7 +65,6 @@ public class PolarisServiceRegistryAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
 	public PolarisRegistration polarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisContextProperties polarisContextProperties,
@@ -81,7 +80,6 @@ public class PolarisServiceRegistryAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
 	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
 			PolarisServiceRegistry registry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
