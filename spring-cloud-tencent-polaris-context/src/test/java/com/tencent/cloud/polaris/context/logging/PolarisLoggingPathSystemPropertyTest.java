@@ -15,9 +15,9 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context;
+package com.tencent.cloud.polaris.context.logging;
 
-import com.tencent.cloud.polaris.context.logging.PolarisLoggingApplicationListener;
+import com.tencent.cloud.polaris.context.PolarisContextApplication;
 import com.tencent.polaris.logging.LoggingConsts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author wenxuan70
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = PolarisLoggingApplication.class,
+@SpringBootTest(classes = PolarisContextApplication.class,
 		properties = {"spring.config.location=classpath:bootstrap.yml"})
 public class PolarisLoggingPathSystemPropertyTest {
 

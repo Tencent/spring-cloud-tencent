@@ -49,7 +49,7 @@
     {
       "name": "spring.cloud.polaris.logging.path",
       "type": "java.lang.String",
-      "defaultValue": "",
+      "defaultValue": "./polaris/logs",
       "description": "polaris log storage path."
     }
   ],
