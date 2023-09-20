@@ -1,9 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration,\
-  com.tencent.cloud.polaris.context.config.PolarisContextPostConfiguration,\
-  com.tencent.cloud.polaris.context.logging.PolarisLoggingAutoConfiguration
+  com.tencent.cloud.polaris.context.config.PolarisContextPostConfiguration
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.tencent.cloud.polaris.context.config.PolarisContextBootstrapAutoConfiguration,\
-  com.tencent.cloud.polaris.context.logging.PolarisLoggingBootstrapAutoConfiguration
+  com.tencent.cloud.polaris.context.config.PolarisContextBootstrapAutoConfiguration
 org.springframework.context.ApplicationListener=\
   com.tencent.cloud.polaris.context.logging.PolarisLoggingApplicationListener

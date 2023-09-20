@@ -18,14 +18,10 @@
 package com.tencent.cloud.polaris.context;
 
 import com.tencent.cloud.polaris.context.logging.PolarisLoggingApplicationListener;
-import com.tencent.cloud.polaris.context.logging.PolarisLoggingAutoConfiguration;
-import com.tencent.cloud.polaris.context.logging.PolarisLoggingProperties;
 import com.tencent.polaris.logging.LoggingConsts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -39,15 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = PolarisLoggingApplication.class,
 		properties = {"spring.config.location=classpath:bootstrap.yml"})
-@ImportAutoConfiguration(PolarisLoggingAutoConfiguration.class)
 public class PolarisLoggingSystemPropertyTest {
-
-	@Autowired
-	private PolarisLoggingProperties polarisLoggingProperties;
 
 	@Test
 	public void testSystemProperty() {
-		assertThat(polarisLoggingProperties.getPath()).isEqualTo("/tmp/polaris/logs");
 		assertThat(System.getProperty(LoggingConsts.LOGGING_PATH_PROPERTY)).isEqualTo("/tmp/polaris/logs");
 	}
 }
