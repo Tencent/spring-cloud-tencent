@@ -45,7 +45,7 @@ public class DiscoveryCallerController {
 	 * @param value2 value 2
 	 * @return sum
 	 */
-	@GetMapping("/feign")
+	@RequestMapping("/feign")
 	public int feign(@RequestParam int value1, @RequestParam int value2) {
 		return discoveryCalleeService.sum(value1, value2);
 	}
