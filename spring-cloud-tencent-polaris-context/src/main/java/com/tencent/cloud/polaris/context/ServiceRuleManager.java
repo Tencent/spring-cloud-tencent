@@ -92,7 +92,7 @@ public class ServiceRuleManager {
 	public CircuitBreakerProto.CircuitBreaker getServiceCircuitBreakerRule(String namespace, String service) {
 		LOG.debug("Get service circuit breaker rules with namespace:{} and service:{}.", namespace, service);
 
-		ServiceRule serviceRule = getServiceRule("", "", ServiceEventKey.EventType.CIRCUIT_BREAKING);
+		ServiceRule serviceRule = getServiceRule(namespace, service, ServiceEventKey.EventType.CIRCUIT_BREAKING);
 		if (serviceRule != null) {
 			Object rule = serviceRule.getRule();
 			if (rule instanceof CircuitBreakerProto.CircuitBreaker) {
