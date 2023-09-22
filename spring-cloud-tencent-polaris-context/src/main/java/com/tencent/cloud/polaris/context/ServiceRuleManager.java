@@ -27,13 +27,14 @@ import com.tencent.polaris.api.pojo.ServiceRule;
 import com.tencent.polaris.api.rpc.GetServiceRuleRequest;
 import com.tencent.polaris.api.rpc.ServiceRuleResponse;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * the manager of service governance rules. for example: rate limit rule, router rules.
+ * the manager of service governance rules. for example: rate limit rule, router rules, circuit breaker rules.
  *
  * @author lepdou 2022-05-13
  */
@@ -86,6 +87,20 @@ public class ServiceRuleManager {
 		}
 
 		return rules;
+	}
+
+	public CircuitBreakerProto.CircuitBreaker getServiceCircuitBreakerRule(String namespace, String service) {
+		LOG.debug("Get service circuit breaker rules with namespace:{} and service:{}.", namespace, service);
+
+		ServiceRule serviceRule = getServiceRule("", "", ServiceEventKey.EventType.CIRCUIT_BREAKING);
+		if (serviceRule != null) {
+			Object rule = serviceRule.getRule();
+			if (rule instanceof CircuitBreakerProto.CircuitBreaker) {
+				return (CircuitBreakerProto.CircuitBreaker) rule;
+			}
+		}
+
+		return null;
 	}
 
 	private ServiceRule getServiceRule(String namespace, String service, ServiceEventKey.EventType eventType) {
