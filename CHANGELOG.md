@@ -4,4 +4,4 @@
 - [fix:the polaris config relation non-daemon thread should stop when application fails to start.](https://github.com/Tencent/spring-cloud-tencent/pull/1110)
 - [Refactoring:remove invalid @AutoConfigureAfter and @AutoConfigureBefore from discovery client automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1118)
 - [fix:fix feign url bug when using sleuth.](https://github.com/Tencent/spring-cloud-tencent/pull/1119)
-- [refactor:optimize the order and condition matching of service registration automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1129)
+- [refactor:optimize the order and condition matching of service registration automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1133)
