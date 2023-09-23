@@ -6,3 +6,4 @@
 - [fix: dynamic routing using cookies.](https://github.com/Tencent/spring-cloud-tencent/pull/1097)
 - [Refactoring:remove invalid @AutoConfigureAfter and @AutoConfigureBefore from discovery client automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1115)
 - [feat: support log path configuration parameters.](https://github.com/Tencent/spring-cloud-tencent/pull/1128)
+- [feat: add metadata transfer for http header via spring.cloud.tencent.metadata.headers.](https://github.com/Tencent/spring-cloud-tencent/pull/1137)
