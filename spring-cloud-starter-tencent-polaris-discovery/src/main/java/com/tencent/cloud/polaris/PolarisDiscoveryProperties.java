@@ -64,7 +64,7 @@ public class PolarisDiscoveryProperties {
 	/**
 	 * Version number.
 	 */
-	private String version;
+	private String version = "1.0.0";
 
 	/**
 	 * Protocol name such as http, https.

@@ -102,7 +102,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	private void initCustomPolarisConfigExtensionFiles(CompositePropertySource compositePropertySource) {
 		if (polarisConfigCustomExtensionLayer == null) {
-			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			LOGGER.debug("[SCT Config] PolarisConfigCustomExtensionLayer is not init, ignore the following execution steps");
 			return;
 		}
 		polarisConfigCustomExtensionLayer.initConfigFiles(environment, compositePropertySource, polarisPropertySourceManager, configFileService);
@@ -110,7 +110,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	private void afterLocatePolarisConfigExtension(CompositePropertySource compositePropertySource) {
 		if (polarisConfigCustomExtensionLayer == null) {
-			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			LOGGER.debug("[SCT Config] PolarisConfigCustomExtensionLayer is not init, ignore the following execution steps");
 			return;
 		}
 		polarisConfigCustomExtensionLayer.executeAfterLocateConfigReturning(compositePropertySource);
