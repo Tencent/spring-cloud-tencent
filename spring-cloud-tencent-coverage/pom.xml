@@ -66,8 +66,12 @@
 
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-contract</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-discovery-adapter-plugin</artifactId>
-			<version>${revision}</version>
 		</dependency>
 
 		<dependency>

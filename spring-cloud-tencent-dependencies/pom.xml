@@ -76,6 +76,8 @@
 		<polaris.version>1.15.0-SNAPSHOT</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.11</logback.version>
+		<springfox.swagger2.version>3.0.0</springfox.swagger2.version>
+		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<jackson.version>2.12.7</jackson.version>
@@ -157,6 +159,12 @@
 
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-polaris-contract</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-all</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -229,6 +237,24 @@
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-boot-starter</artifactId>
+				<version>${springfox.swagger2.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-models</artifactId>
+				<version>${io.swagger.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-annotations</artifactId>
+				<version>${io.swagger.version}</version>
 			</dependency>
 
 			<dependency>

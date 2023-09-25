@@ -44,27 +44,5 @@ public class PluginOrderConstant {
 		 * {@link com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter}.
 		 */
 		public static final int CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 2;
-
-		/**
-		 * order for
-		 * {@link com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientPreHook}
-		 * and
-		 * {@link com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientPostHook}
-		 * and
-		 * {@link com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientExceptionHook}.
-		 */
-		public static final int ASSEMBLY_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 3;
-	}
-
-	public static class ServerPluginOrder {
-		/**
-		 * order for
-		 * {@link com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerPreHook}
-		 * and
-		 * {@link com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerPostHook}
-		 * and
-		 * {@link com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerExceptionHook}.
-		 */
-		public static final int ASSEMBLY_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 }
