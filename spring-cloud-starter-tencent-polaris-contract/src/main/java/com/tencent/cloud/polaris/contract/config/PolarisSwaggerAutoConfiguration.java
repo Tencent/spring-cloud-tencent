@@ -22,6 +22,8 @@ import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.contract.PolarisContractReporter;
 import com.tencent.cloud.polaris.contract.PolarisSwaggerApplicationListener;
+import com.tencent.cloud.polaris.contract.filter.ApiDocServletFilter;
+import com.tencent.cloud.polaris.contract.filter.ApiDocWebFluxFilter;
 import com.tencent.cloud.polaris.contract.utils.PackageUtil;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -43,6 +45,11 @@ import org.springframework.util.StringUtils;
 
 import static com.tencent.cloud.polaris.contract.utils.PackageUtil.SPLITTER;
 
+/**
+ * Auto configuration for Polaris swagger.
+ *
+ * @author Haotian Zhang
+ */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(name = "spring.cloud.polaris.contract.enabled", havingValue = "true", matchIfMissing = true)
@@ -108,7 +115,10 @@ public class PolarisSwaggerAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	protected static class SwaggerServletConfig {
-
+		@Bean
+		public ApiDocServletFilter apiDocServletFilter(PolarisContractProperties polarisContractProperties) {
+			return new ApiDocServletFilter(polarisContractProperties);
+		}
 	}
 
 	/**
@@ -118,6 +128,9 @@ public class PolarisSwaggerAutoConfiguration {
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	protected static class SwaggerReactiveConfig {
 
-
+		@Bean
+		public ApiDocWebFluxFilter apiDocWebFluxFilter(PolarisContractProperties polarisContractProperties) {
+			return new ApiDocWebFluxFilter(polarisContractProperties);
+		}
 	}
 }

@@ -44,6 +44,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
+/**
+ * Polaris contract reporter.
+ *
+ * @author Haotian Zhang
+ */
 public class PolarisContractReporter implements ApplicationListener<ApplicationReadyEvent> {
 
 	private final Logger LOG = LoggerFactory.getLogger(PolarisContractReporter.class);

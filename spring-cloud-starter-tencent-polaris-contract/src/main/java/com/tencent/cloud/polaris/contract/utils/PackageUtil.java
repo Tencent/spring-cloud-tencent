@@ -35,9 +35,11 @@ import org.springframework.util.StringUtils;
  */
 public final class PackageUtil {
 
+	/**
+	 * splitter for property.
+	 */
 	public static final String SPLITTER = ",";
 	private static final Logger LOG = LoggerFactory.getLogger(PackageUtil.class);
-
 
 	private PackageUtil() {
 	}
