@@ -95,6 +95,11 @@ public class PolarisServiceInstance implements ServiceInstance {
 		return this.scheme;
 	}
 
+	/**
+	 * To fix loadbalancer not working bug when importing spring-retry.
+	 * @param o object
+	 * @return if equals
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
