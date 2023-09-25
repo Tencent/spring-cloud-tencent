@@ -41,6 +41,9 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import static java.util.Optional.ofNullable;
 
+/**
+ * Modified to be compatible with spring-boot-actuator.
+ */
 public class WebMvcRequestHandler implements RequestHandler {
 	private final String contextPath;
 	private final HandlerMethodResolver methodResolver;

@@ -34,12 +34,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnPolarisEnabled
 public class PolarisContractPropertiesAutoConfiguration {
 
-	static {
-		// After springboot2.6.x, the default path matching strategy of spring MVC is changed from ANT_PATH_MATCHER
-		// mode to PATH_PATTERN_PARSER mode, causing an error. The solution is to switch to the original ANT_PATH_MATCHER mode.
-		System.setProperty("spring.mvc.pathmatch.matching-strategy", "ant-path-matcher");
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	public PolarisContractProperties polarisContractProperties(@Nullable ExtendedContractProperties extendedContractProperties) {

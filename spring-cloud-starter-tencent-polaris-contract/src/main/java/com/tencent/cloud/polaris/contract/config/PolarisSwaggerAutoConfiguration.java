@@ -51,6 +51,11 @@ import org.springframework.context.annotation.Import;
 @Import(OpenApiAutoConfiguration.class)
 public class PolarisSwaggerAutoConfiguration {
 
+	static {
+		// After springboot2.6.x, the default path matching strategy of spring MVC is changed from ANT_PATH_MATCHER
+		// mode to PATH_PATTERN_PARSER mode, causing an error. The solution is to switch to the original ANT_PATH_MATCHER mode.
+		System.setProperty("spring.mvc.pathmatch.matching-strategy", "ant-path-matcher");
+	}
 
 	@Bean
 	public Docket polarisDocket(PolarisContractProperties polarisContractProperties) {
