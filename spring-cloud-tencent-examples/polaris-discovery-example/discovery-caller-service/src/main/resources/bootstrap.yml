@@ -23,7 +23,7 @@ spring:
           enabled: true
         health-check-url: /discovery/service/caller/healthCheck
       contract:
-        exposure: false
+        exposure: true
       stat:
         enabled: true
         port: 28081
