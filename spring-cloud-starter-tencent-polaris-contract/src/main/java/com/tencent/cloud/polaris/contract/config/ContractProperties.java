@@ -47,4 +47,8 @@ public interface ContractProperties {
 	boolean isExposure();
 
 	void setExposure(boolean exposure);
+
+	boolean isReportEnabled();
+
+	void setReportEnabled(boolean reportEnabled);
 }
