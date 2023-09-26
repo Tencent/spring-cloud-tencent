@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.plugin.server.InterfaceDescriptor;
 import com.tencent.polaris.api.plugin.server.ReportServiceContractRequest;
@@ -55,7 +56,7 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 
 	private final org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource;
 	private final org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource;
-	private final String groupName;
+	private final PolarisContractProperties polarisContractProperties;
 
 	private final ProviderAPI providerAPI;
 
@@ -63,53 +64,55 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 
 	public PolarisContractReporter(org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource,
 			org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource,
-			String groupName, ProviderAPI providerAPI,
+			PolarisContractProperties polarisContractProperties, ProviderAPI providerAPI,
 			PolarisDiscoveryProperties polarisDiscoveryProperties) {
 		this.multipleOpenApiWebMvcResource = multipleOpenApiWebMvcResource;
 		this.multipleOpenApiWebFluxResource = multipleOpenApiWebFluxResource;
-		this.groupName = groupName;
+		this.polarisContractProperties = polarisContractProperties;
 		this.providerAPI = providerAPI;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 	}
 
 	@Override
 	public void onApplicationEvent(@NonNull ApplicationReadyEvent applicationReadyEvent) {
-		try {
-			AbstractOpenApiResource openApiResource = null;
-			if (multipleOpenApiWebMvcResource != null) {
-				openApiResource = OpenApiWebMvcUtil.getOpenApiResourceOrThrow(multipleOpenApiWebMvcResource, groupName);
-			}
-			else if (multipleOpenApiWebFluxResource != null) {
-				openApiResource = OpenApiWebFluxUtil.getOpenApiResourceOrThrow(multipleOpenApiWebFluxResource, groupName);
-			}
-			OpenAPI openAPI = null;
-			if (openApiResource != null) {
-				openAPI = AbstractOpenApiResourceUtil.getOpenApi(openApiResource);
-			}
-			if (openAPI != null) {
-				ReportServiceContractRequest request = new ReportServiceContractRequest();
-				request.setName(polarisDiscoveryProperties.getService());
-				request.setNamespace(polarisDiscoveryProperties.getNamespace());
-				request.setService(polarisDiscoveryProperties.getService());
-				request.setProtocol("http");
-				request.setVersion(polarisDiscoveryProperties.getVersion());
-				List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(openAPI);
-				request.setInterfaceDescriptors(interfaceDescriptorList);
-				ReportServiceContractResponse response = providerAPI.reportServiceContract(request);
-				LOG.info("Service contract [Namespace: {}. Name: {}. Service: {}. Protocol:{}. Version: {}. API counter: {}] is reported.",
-						request.getNamespace(), request.getName(), request.getService(), request.getProtocol(),
-						request.getVersion(), request.getInterfaceDescriptors().size());
-				if (LOG.isDebugEnabled()) {
-					String jsonValue = JacksonUtils.serialize2Json(openAPI);
-					LOG.debug("OpenApi json data: {}", jsonValue);
+		if (polarisContractProperties.isReportEnabled()) {
+			try {
+				AbstractOpenApiResource openApiResource = null;
+				if (multipleOpenApiWebMvcResource != null) {
+					openApiResource = OpenApiWebMvcUtil.getOpenApiResourceOrThrow(multipleOpenApiWebMvcResource, polarisContractProperties.getGroup());
+				}
+				else if (multipleOpenApiWebFluxResource != null) {
+					openApiResource = OpenApiWebFluxUtil.getOpenApiResourceOrThrow(multipleOpenApiWebFluxResource, polarisContractProperties.getGroup());
+				}
+				OpenAPI openAPI = null;
+				if (openApiResource != null) {
+					openAPI = AbstractOpenApiResourceUtil.getOpenApi(openApiResource);
+				}
+				if (openAPI != null) {
+					ReportServiceContractRequest request = new ReportServiceContractRequest();
+					request.setName(polarisDiscoveryProperties.getService());
+					request.setNamespace(polarisDiscoveryProperties.getNamespace());
+					request.setService(polarisDiscoveryProperties.getService());
+					request.setProtocol("http");
+					request.setVersion(polarisDiscoveryProperties.getVersion());
+					List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(openAPI);
+					request.setInterfaceDescriptors(interfaceDescriptorList);
+					ReportServiceContractResponse response = providerAPI.reportServiceContract(request);
+					LOG.info("Service contract [Namespace: {}. Name: {}. Service: {}. Protocol:{}. Version: {}. API counter: {}] is reported.",
+							request.getNamespace(), request.getName(), request.getService(), request.getProtocol(),
+							request.getVersion(), request.getInterfaceDescriptors().size());
+					if (LOG.isDebugEnabled()) {
+						String jsonValue = JacksonUtils.serialize2Json(openAPI);
+						LOG.debug("OpenApi json data: {}", jsonValue);
+					}
+				}
+				else {
+					LOG.warn("OpenAPI or json is null, group:{}", polarisContractProperties.getGroup());
 				}
 			}
-			else {
-				LOG.warn("OpenAPI or json is null, group:{}", groupName);
+			catch (Throwable t) {
+				LOG.error("Report contract failed.", t);
 			}
-		}
-		catch (Throwable t) {
-			LOG.error("Report contract failed.", t);
 		}
 	}
 
