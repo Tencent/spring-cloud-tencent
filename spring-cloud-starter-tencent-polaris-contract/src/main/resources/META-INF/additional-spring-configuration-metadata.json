@@ -1,0 +1,46 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.polaris.contract.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable polaris record contract or not."
+    },
+    {
+      "name": "spring.cloud.polaris.contract.basePackage",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "Packages to be scanned. Split by \",\"."
+    },
+    {
+      "name": "spring.cloud.polaris.contract.excludePath",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "Paths to be excluded. Split by \",\"."
+    },
+    {
+      "name": "spring.cloud.polaris.contract.group",
+      "type": "java.lang.String",
+      "defaultValue": "default",
+      "description": "Group to create swagger docket."
+    },
+    {
+      "name": "spring.cloud.polaris.contract.basePath",
+      "type": "java.lang.String",
+      "defaultValue": "/**",
+      "description": "Base paths to be scanned. Split by \",\"."
+    },
+    {
+      "name": "spring.cloud.polaris.contract.exposure",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "Enable polaris contract exposure or not."
+    },
+    {
+      "name": "spring.cloud.polaris.contract.report.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "Enable polaris contract report or not."
+    }
+  ]
+}
