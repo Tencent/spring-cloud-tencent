@@ -121,7 +121,7 @@ public class PolarisSwaggerAutoConfiguration {
 	public PolarisContractReporter polarisContractReporter(DocumentationCache documentationCache,
 			ServiceModelToSwagger2Mapper swagger2Mapper, PolarisContractProperties polarisContractProperties,
 			PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryProperties polarisDiscoveryProperties) {
-		return new PolarisContractReporter(documentationCache, swagger2Mapper, polarisContractProperties.getGroup(),
+		return new PolarisContractReporter(documentationCache, swagger2Mapper, polarisContractProperties,
 				polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties);
 	}
 
