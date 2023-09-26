@@ -21,6 +21,7 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -52,6 +53,9 @@ public class PolarisContractProperties implements ContractProperties {
 	private String basePath = "/**";
 
 	private boolean exposure = true;
+
+	@Value("${spring.cloud.polaris.contract.report.enabled:true}")
+	private boolean reportEnabled = true;
 
 	public PolarisContractProperties(@Nullable ExtendedContractProperties extendContractProperties) {
 		this.extendContractProperties = extendContractProperties;
@@ -133,5 +137,15 @@ public class PolarisContractProperties implements ContractProperties {
 	@Override
 	public void setExposure(boolean exposure) {
 		this.exposure = exposure;
+	}
+
+	@Override
+	public boolean isReportEnabled() {
+		return reportEnabled;
+	}
+
+	@Override
+	public void setReportEnabled(boolean reportEnabled) {
+		this.reportEnabled = reportEnabled;
 	}
 }

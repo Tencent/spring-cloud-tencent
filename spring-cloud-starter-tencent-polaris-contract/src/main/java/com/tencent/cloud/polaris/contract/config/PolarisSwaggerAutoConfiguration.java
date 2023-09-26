@@ -100,7 +100,7 @@ public class PolarisSwaggerAutoConfiguration {
 			PolarisContractProperties polarisContractProperties, PolarisSDKContextManager polarisSDKContextManager,
 			PolarisDiscoveryProperties polarisDiscoveryProperties) {
 		return new PolarisContractReporter(multipleOpenApiWebMvcResource, multipleOpenApiWebFluxResource,
-				polarisContractProperties.getGroup(), polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties);
+				polarisContractProperties, polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties);
 	}
 
 	@Bean
