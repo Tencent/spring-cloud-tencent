@@ -35,9 +35,14 @@ public final class FilterConstant {
 	public static final String SWAGGER_V3_API_DOC_URL = "/v3/api-docs";
 
 	/**
-	 * Swagger UI url.
+	 * Swagger UI V2 url.
 	 */
-	public static final String SWAGGER_UI_URL = "/swagger-ui.html";
+	public static final String SWAGGER_UI_V2_URL = "/swagger-ui.html";
+
+	/**
+	 * Swagger UI V3 url.
+	 */
+	public static final String SWAGGER_UI_V3_URL = "/swagger-ui/index.html";
 
 	/**
 	 * Swagger resource url prefix.

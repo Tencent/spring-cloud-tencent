@@ -29,7 +29,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_RESOURCE_PREFIX;
-import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_UI_URL;
+import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_UI_V2_URL;
+import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_UI_V3_URL;
 import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_V2_API_DOC_URL;
 import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_V3_API_DOC_URL;
 import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_WEBJARS_V2_PREFIX;
@@ -54,9 +55,10 @@ public class ApiDocServletFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		if (!polarisContractProperties.isExposure()) {
 			String path = httpServletRequest.getServletPath();
-			if (path.equals(SWAGGER_V2_API_DOC_URL) ||
+			if (path.startsWith(SWAGGER_V2_API_DOC_URL) ||
 					path.startsWith(SWAGGER_V3_API_DOC_URL) ||
-					path.equals(SWAGGER_UI_URL) ||
+					path.startsWith(SWAGGER_UI_V2_URL) ||
+					path.startsWith(SWAGGER_UI_V3_URL) ||
 					path.startsWith(SWAGGER_RESOURCE_PREFIX) ||
 					path.startsWith(SWAGGER_WEBJARS_V2_PREFIX) ||
 					path.startsWith(SWAGGER_WEBJARS_V3_PREFIX)) {
