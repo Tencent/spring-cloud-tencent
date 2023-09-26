@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.plugin.server.InterfaceDescriptor;
 import com.tencent.polaris.api.plugin.server.ReportServiceContractRequest;
@@ -53,51 +54,53 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 	private final Logger LOG = LoggerFactory.getLogger(PolarisContractReporter.class);
 	private final ServiceModelToSwagger2Mapper swagger2Mapper;
 	private final DocumentationCache documentationCache;
-	private final String groupName;
+	private final PolarisContractProperties polarisContractProperties;
 
 	private final ProviderAPI providerAPI;
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
 	public PolarisContractReporter(DocumentationCache documentationCache, ServiceModelToSwagger2Mapper swagger2Mapper,
-			String groupName, ProviderAPI providerAPI, PolarisDiscoveryProperties polarisDiscoveryProperties) {
+			PolarisContractProperties polarisContractProperties, ProviderAPI providerAPI, PolarisDiscoveryProperties polarisDiscoveryProperties) {
 		this.swagger2Mapper = swagger2Mapper;
 		this.documentationCache = documentationCache;
-		this.groupName = groupName;
+		this.polarisContractProperties = polarisContractProperties;
 		this.providerAPI = providerAPI;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 	}
 
 	@Override
 	public void onApplicationEvent(@NonNull ApplicationReadyEvent applicationReadyEvent) {
-		try {
-			Documentation documentation = documentationCache.documentationByGroup(groupName);
-			Swagger swagger = swagger2Mapper.mapDocumentation(documentation);
-			if (swagger != null) {
-				ReportServiceContractRequest request = new ReportServiceContractRequest();
-				request.setName(polarisDiscoveryProperties.getService());
-				request.setNamespace(polarisDiscoveryProperties.getNamespace());
-				request.setService(polarisDiscoveryProperties.getService());
-				request.setProtocol("http");
-				request.setVersion(polarisDiscoveryProperties.getVersion());
-				List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(swagger);
-				request.setInterfaceDescriptors(interfaceDescriptorList);
-				ReportServiceContractResponse response = providerAPI.reportServiceContract(request);
-				LOG.info("Service contract [Namespace: {}. Name: {}. Service: {}. Protocol:{}. Version: {}. API counter: {}] is reported.",
-						request.getNamespace(), request.getName(), request.getService(), request.getProtocol(),
-						request.getVersion(), request.getInterfaceDescriptors().size());
-				if (LOG.isDebugEnabled()) {
-					String jsonValue = JacksonUtils.serialize2Json(swagger);
-					LOG.debug("OpenApi json data: {}", jsonValue);
+		if (polarisContractProperties.isReportEnabled()) {
+			try {
+				Documentation documentation = documentationCache.documentationByGroup(polarisContractProperties.getGroup());
+				Swagger swagger = swagger2Mapper.mapDocumentation(documentation);
+				if (swagger != null) {
+					ReportServiceContractRequest request = new ReportServiceContractRequest();
+					request.setName(polarisDiscoveryProperties.getService());
+					request.setNamespace(polarisDiscoveryProperties.getNamespace());
+					request.setService(polarisDiscoveryProperties.getService());
+					request.setProtocol("http");
+					request.setVersion(polarisDiscoveryProperties.getVersion());
+					List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(swagger);
+					request.setInterfaceDescriptors(interfaceDescriptorList);
+					ReportServiceContractResponse response = providerAPI.reportServiceContract(request);
+					LOG.info("Service contract [Namespace: {}. Name: {}. Service: {}. Protocol:{}. Version: {}. API counter: {}] is reported.",
+							request.getNamespace(), request.getName(), request.getService(), request.getProtocol(),
+							request.getVersion(), request.getInterfaceDescriptors().size());
+					if (LOG.isDebugEnabled()) {
+						String jsonValue = JacksonUtils.serialize2Json(swagger);
+						LOG.debug("OpenApi json data: {}", jsonValue);
+					}
+				}
+				else {
+					LOG.warn("Swagger or json is null, documentationCache keys:{}, group:{}", documentationCache.all()
+							.keySet(), polarisContractProperties.getGroup());
 				}
 			}
-			else {
-				LOG.warn("Swagger or json is null, documentationCache keys:{}, group:{}", documentationCache.all()
-						.keySet(), groupName);
+			catch (Throwable t) {
+				LOG.error("Report contract failed.", t);
 			}
-		}
-		catch (Throwable t) {
-			LOG.error("Report contract failed.", t);
 		}
 	}
 
