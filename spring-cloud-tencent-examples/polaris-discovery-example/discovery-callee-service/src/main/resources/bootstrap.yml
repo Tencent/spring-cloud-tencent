@@ -11,6 +11,8 @@ spring:
       discovery:
         enabled: true
         register: true
+      contract:
+        exposure: true
       stat:
         enabled: true
         port: 28082

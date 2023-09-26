@@ -48,7 +48,6 @@ public final class PackageUtil {
 
 	private static final String SPLITTER = ",";
 
-
 	private PackageUtil() {
 	}
 

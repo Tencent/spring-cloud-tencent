@@ -9,3 +9,4 @@
 - [refactor:optimize the order and condition matching of service registration automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1129)
 - [feat: add circuit breaker actuator.](https://github.com/Tencent/spring-cloud-tencent/pull/1136)
 - [feat:support service contract reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1139)
+- [feat:add swagger exposure filters.](https://github.com/Tencent/spring-cloud-tencent/pull/1146)
