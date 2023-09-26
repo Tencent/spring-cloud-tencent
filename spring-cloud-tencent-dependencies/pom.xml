@@ -75,6 +75,7 @@
 		<!-- Dependencies -->
 		<polaris.version>1.15.0-SNAPSHOT</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
+		<springdoc.version>2.2.0</springdoc.version>
 		<mocktio.version>4.9.0</mocktio.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
@@ -153,6 +154,12 @@
 
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-polaris-contract</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-all</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -195,6 +202,18 @@
 						<groupId>com.google.errorprone</groupId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+				<version>${springdoc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+				<version>${springdoc.version}</version>
 			</dependency>
 
 			<dependency>

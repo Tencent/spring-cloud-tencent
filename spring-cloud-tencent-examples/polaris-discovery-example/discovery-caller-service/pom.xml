@@ -24,6 +24,11 @@
 			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-contract</artifactId>
+		</dependency>
+
 		<!--		<dependency>-->
 		<!--			<groupId>com.tencent.polaris</groupId>-->
 		<!--			<artifactId>connector-consul</artifactId>-->
