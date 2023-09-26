@@ -51,6 +51,8 @@ public class PolarisContractProperties implements ContractProperties {
 	 */
 	private String basePath = "/**";
 
+	private boolean exposure = true;
+
 	public PolarisContractProperties(@Nullable ExtendedContractProperties extendContractProperties) {
 		this.extendContractProperties = extendContractProperties;
 	}
@@ -118,5 +120,18 @@ public class PolarisContractProperties implements ContractProperties {
 	@Override
 	public void setBasePath(String basePath) {
 		this.basePath = basePath;
+	}
+
+	@Override
+	public boolean isExposure() {
+		if (Objects.nonNull(extendContractProperties)) {
+			return extendContractProperties.isExposure();
+		}
+		return exposure;
+	}
+
+	@Override
+	public void setExposure(boolean exposure) {
+		this.exposure = exposure;
 	}
 }

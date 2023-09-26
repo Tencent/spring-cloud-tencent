@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import springfox.documentation.service.Documentation;
 import springfox.documentation.spring.web.DocumentationCache;
-import springfox.documentation.spring.web.json.JsonSerializer;
 import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -44,12 +43,16 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
+/**
+ * Polaris contract reporter.
+ *
+ * @author Haotian Zhang
+ */
 public class PolarisContractReporter implements ApplicationListener<ApplicationReadyEvent> {
 
 	private final Logger LOG = LoggerFactory.getLogger(PolarisContractReporter.class);
 	private final ServiceModelToSwagger2Mapper swagger2Mapper;
 	private final DocumentationCache documentationCache;
-	private final JsonSerializer jsonSerializer;
 	private final String groupName;
 
 	private final ProviderAPI providerAPI;
@@ -57,11 +60,9 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
 	public PolarisContractReporter(DocumentationCache documentationCache, ServiceModelToSwagger2Mapper swagger2Mapper,
-			JsonSerializer jsonSerializer, String groupName, ProviderAPI providerAPI,
-			PolarisDiscoveryProperties polarisDiscoveryProperties) {
+			String groupName, ProviderAPI providerAPI, PolarisDiscoveryProperties polarisDiscoveryProperties) {
 		this.swagger2Mapper = swagger2Mapper;
 		this.documentationCache = documentationCache;
-		this.jsonSerializer = jsonSerializer;
 		this.groupName = groupName;
 		this.providerAPI = providerAPI;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;

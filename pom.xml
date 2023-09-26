@@ -92,7 +92,7 @@
 		<revision>1.13.0-2020.0.6-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>5.3.29</spring.framework.version>
+		<spring.framework.version>5.3.25</spring.framework.version>
 
 		<!-- Spring Boot -->
 		<spring.boot.version>2.4.13</spring.boot.version>
