@@ -6,3 +6,5 @@ spring:
       namespace: dev
       service: TestApp
       enabled: true
+      logging:
+        path: /tmp/polaris/logs
