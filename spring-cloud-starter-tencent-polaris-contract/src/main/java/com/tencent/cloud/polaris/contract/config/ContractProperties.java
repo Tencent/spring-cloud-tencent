@@ -43,4 +43,8 @@ public interface ContractProperties {
 	String getBasePath();
 
 	void setBasePath(String basePath);
+
+	boolean isExposure();
+
+	void setExposure(boolean exposure);
 }
