@@ -10,3 +10,4 @@
 - [feat: add circuit breaker actuator.](https://github.com/Tencent/spring-cloud-tencent/pull/1136)
 - [feat:support service contract reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1139)
 - [feat:add swagger exposure filters.](https://github.com/Tencent/spring-cloud-tencent/pull/1146)
+- [feat:add swagger report switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1148)
