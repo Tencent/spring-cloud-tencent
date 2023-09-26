@@ -7,3 +7,4 @@
 - [refactor:optimize the order and condition matching of service registration automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1133)
 - [feat:support service contract reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1135)
 - [feat: support log path configuration parameters.](https://github.com/Tencent/spring-cloud-tencent/pull/1143)
+- [feat:add swagger exposure filters.](https://github.com/Tencent/spring-cloud-tencent/pull/1144)
