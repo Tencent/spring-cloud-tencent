@@ -56,6 +56,12 @@ public class MetadataLocalPropertiesTest {
 				.isTrue();
 	}
 
+	@Test
+	public void test3() {
+		Assertions.assertThat(metadataLocalProperties.getHeaders().contains("c")).isTrue();
+		Assertions.assertThat(metadataLocalProperties.getHeaders().contains("d")).isTrue();
+	}
+
 	@SpringBootApplication
 	protected static class TestApplication {
 
