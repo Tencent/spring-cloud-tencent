@@ -12,3 +12,4 @@
 - [fix:fix retry loadbalancer not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1155)
 - [fix:fix header validation when using Chinese char.](https://github.com/Tencent/spring-cloud-tencent/pull/1169)
 - [feat: add circuit breaker actuator.](https://github.com/Tencent/spring-cloud-tencent/pull/1170)
+- [feat: add metadata transfer for http header via spring.cloud.tencent.metadata.headers.](https://github.com/Tencent/spring-cloud-tencent/pull/1176)
