@@ -52,6 +52,10 @@ public class MetadataContextHolderTest {
 		Assertions.assertThat(customMetadata.get("a")).isEqualTo("1");
 		Assertions.assertThat(customMetadata.get("b")).isEqualTo("2");
 
+		Map<String, String> transHeaders = MetadataContextHolder.get().getTransHeaders();
+		Assertions.assertThat(transHeaders.size()).isEqualTo(1);
+		Assertions.assertThat(transHeaders.keySet().iterator().next()).isEqualTo("c,d");
+
 		MetadataContextHolder.remove();
 
 		customMetadata = new HashMap<>();
@@ -65,6 +69,10 @@ public class MetadataContextHolderTest {
 		Assertions.assertThat(customMetadata.get("b")).isEqualTo("22");
 		Assertions.assertThat(customMetadata.get("c")).isEqualTo("3");
 		Assertions.assertThat(MetadataContext.LOCAL_NAMESPACE).isEqualTo("default");
+
+		transHeaders = MetadataContextHolder.get().getTransHeaders();
+		Assertions.assertThat(transHeaders.size()).isEqualTo(1);
+		Assertions.assertThat(transHeaders.keySet().iterator().next()).isEqualTo("c,d");
 	}
 
 	@Test

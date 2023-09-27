@@ -17,8 +17,11 @@
 
 package com.tencent.cloud.common.metadata;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,6 +74,7 @@ public class StaticMetadataManager {
 	private Map<String, String> configMetadata;
 	private Map<String, String> configTransitiveMetadata;
 	private Map<String, String> configDisposableMetadata;
+	private String configTransHeaders;
 	private Map<String, String> customSPIMetadata;
 	private Map<String, String> customSPITransitiveMetadata;
 	private Map<String, String> customSPIDisposableMetadata;
@@ -162,6 +166,7 @@ public class StaticMetadataManager {
 		Map<String, String> allMetadata = metadataLocalProperties.getContent();
 		List<String> transitiveKeys = metadataLocalProperties.getTransitive();
 		List<String> disposableKeys = metadataLocalProperties.getDisposable();
+		List<String> headers = metadataLocalProperties.getHeaders();
 
 		Map<String, String> transitiveResult = new HashMap<>();
 		for (String key : transitiveKeys) {
@@ -179,6 +184,7 @@ public class StaticMetadataManager {
 
 		configTransitiveMetadata = Collections.unmodifiableMap(transitiveResult);
 		configDisposableMetadata = Collections.unmodifiableMap(disposableResult);
+		configTransHeaders = CollectionUtils.isEmpty(headers) ? null : String.join(",", headers);
 		configMetadata = Collections.unmodifiableMap(allMetadata);
 	}
 
@@ -313,6 +319,29 @@ public class StaticMetadataManager {
 		return envNotReportMetadata.get(ENV_TRAFFIC_CONTENT_RAW_TRANSHEADERS);
 	}
 
+	public String getTransHeaderFromConfig() {
+		return configTransHeaders;
+	}
+
+	public String getTransHeader() {
+		Set<String> transHeaderSet = new HashSet<>();
+
+		String transHeaderFromEnv = getTransHeaderFromEnv();
+		String transHeaderFromConfig = getTransHeaderFromConfig();
+
+		Set<String> transHeaderFromEnvSet = StringUtils.isNotBlank(transHeaderFromEnv)
+				? Arrays.stream(transHeaderFromEnv.split(",")).collect(Collectors.toSet())
+				: Collections.emptySet();
+		Set<String> transHeaderFromConfigSet = StringUtils.isNotBlank(transHeaderFromConfig)
+				? Arrays.stream(transHeaderFromConfig.split(",")).collect(Collectors.toSet())
+				: Collections.emptySet();
+
+		transHeaderSet.addAll(transHeaderFromEnvSet);
+		transHeaderSet.addAll(transHeaderFromConfigSet);
+
+		return new ArrayList<>(transHeaderSet).stream().sorted().collect(Collectors.joining(","));
+	}
+
 	public Map<String, String> getEnvTransitiveMetadata() {
 		return envTransitiveMetadata;
 	}
@@ -390,6 +419,7 @@ public class StaticMetadataManager {
 				", envTransitiveMetadata=" + envTransitiveMetadata +
 				", configMetadata=" + configMetadata +
 				", configTransitiveMetadata=" + configTransitiveMetadata +
+				", configTransHeaders='" + configTransHeaders + '\'' +
 				", customSPIMetadata=" + customSPIMetadata +
 				", customSPITransitiveMetadata=" + customSPITransitiveMetadata +
 				", mergedStaticMetadata=" + mergedStaticMetadata +

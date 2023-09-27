@@ -97,6 +97,7 @@ public class StaticMetadataManagerTest {
 		when(metadataLocalProperties.getContent()).thenReturn(content);
 		when(metadataLocalProperties.getTransitive()).thenReturn(Collections.singletonList("k1"));
 		when(metadataLocalProperties.getDisposable()).thenReturn(Collections.singletonList("k1"));
+		when(metadataLocalProperties.getHeaders()).thenReturn(Arrays.asList("a", "d"));
 
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties, null);
 
@@ -119,6 +120,9 @@ public class StaticMetadataManagerTest {
 		Map<String, String> locationInfo = metadataManager.getLocationMetadata();
 		assertThat(locationInfo.get("zone")).isEqualTo("zone1");
 		assertThat(locationInfo.get("region")).isEqualTo("region1");
+
+		String transHeaderFromConfig = metadataManager.getTransHeaderFromConfig();
+		assertThat(transHeaderFromConfig).isEqualTo("a,d");
 	}
 
 	@Test
@@ -161,6 +165,9 @@ public class StaticMetadataManagerTest {
 
 	@Test
 	public void testMergedMetadata() {
+		// set environment variables
+		environmentVariables.set("SCT_TRAFFIC_CONTENT_RAW_TRANSHEADERS", "a,b,c,e");
+
 		Map<String, String> content = new HashMap<>();
 		content.put("k1", "v1");
 		content.put("k2", "v2");
@@ -170,6 +177,7 @@ public class StaticMetadataManagerTest {
 
 		when(metadataLocalProperties.getContent()).thenReturn(content);
 		when(metadataLocalProperties.getTransitive()).thenReturn(Collections.singletonList("k1"));
+		when(metadataLocalProperties.getHeaders()).thenReturn(Arrays.asList("b", "d"));
 
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties,
 				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider(null)));
@@ -204,6 +212,9 @@ public class StaticMetadataManagerTest {
 		assertThat(locationInfo.get("zone")).isEqualTo("zone2");
 		assertThat(locationInfo.get("region")).isEqualTo("region1");
 		assertThat(locationInfo.get("campus")).isEqualTo("campus2");
+
+		String transHeader = metadataManager.getTransHeader();
+		assertThat(transHeader).isEqualTo("a,b,c,d,e");
 	}
 
 	@Test
