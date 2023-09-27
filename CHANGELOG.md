@@ -9,4 +9,4 @@
 - [feat:support service contract reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1140)
 - [feat:add swagger exposure filters.](https://github.com/Tencent/spring-cloud-tencent/pull/1145)
 - [feat:add swagger report switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1149)
-- [fix: dynamic routing using cookies.](https://github.com/Tencent/spring-cloud-tencent/pull/1097)
+- [fix: dynamic routing using cookies.](https://github.com/Tencent/spring-cloud-tencent/pull/1151)
