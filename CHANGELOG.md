@@ -12,3 +12,4 @@
 - [feat:support service contract reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1139)
 - [feat:add swagger exposure filters.](https://github.com/Tencent/spring-cloud-tencent/pull/1146)
 - [feat:add swagger report switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1148)
+- [fix:fix retry loadbalancer not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1154)
