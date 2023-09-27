@@ -10,3 +10,4 @@
 - [feat:add swagger exposure filters.](https://github.com/Tencent/spring-cloud-tencent/pull/1145)
 - [feat:add swagger report switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1149)
 - [fix: dynamic routing using cookies.](https://github.com/Tencent/spring-cloud-tencent/pull/1151)
+- [fix:fix retry loadbalancer not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1156)
