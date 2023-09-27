@@ -25,12 +25,12 @@ import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterc
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
+import org.springframework.cloud.client.loadbalancer.RetryLoadBalancerInterceptor;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -52,19 +52,23 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 public class PolarisLoadBalancerAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public RestTemplateCustomizer restTemplateCustomizer(@Autowired(required = false) LoadBalancerInterceptor loadBalancerInterceptor) {
+	public RestTemplateCustomizer restTemplateCustomizer(
+			@Autowired(required = false) RetryLoadBalancerInterceptor retryLoadBalancerInterceptor,
+			@Autowired(required = false) LoadBalancerInterceptor loadBalancerInterceptor) {
 		return restTemplate -> {
 			List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
 			// LoadBalancerInterceptor must invoke before EnhancedRestTemplateInterceptor
-			if (loadBalancerInterceptor != null) {
+			if (retryLoadBalancerInterceptor != null || loadBalancerInterceptor != null) {
 				int addIndex = list.size();
 				for (int i = 0; i < list.size(); i++) {
 					if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
 						addIndex = i;
 					}
 				}
-				list.add(addIndex, loadBalancerInterceptor);
+				list.add(addIndex,
+						retryLoadBalancerInterceptor != null
+								? retryLoadBalancerInterceptor
+								: loadBalancerInterceptor);
 			}
 			restTemplate.setInterceptors(list);
 		};
