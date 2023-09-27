@@ -197,12 +197,13 @@ public class ExpressionLabelUtilsTest {
 		request.setMethod(HttpMethod.GET);
 		request.setURI(URI.create("http://calleeService/user/get?uid=zhangsan"));
 		request.getHeaders().add("uid", "zhangsan");
+		request.getHeaders().add("cookie", "uid=zhangsan; auth-token=hauigdfu8esgf8");
 
 		Map<String, String> result = SpringWebExpressionLabelUtils.resolve(request, labelKeys);
 
 		assertThat(result.get(validLabel1)).isEqualTo("zhangsan");
 		assertThat(result.get(validLabel2)).isEqualTo("zhangsan");
-		assertThat(result.get(validLabel3)).isNull();
+		assertThat(result.get(validLabel3)).isEqualTo("zhangsan");
 		assertThat(result.get(validLabel4)).isEqualTo("GET");
 		assertThat(result.get(validLabel5)).isEqualTo("/user/get");
 		assertThat(result.get(invalidLabel1)).isNull();
