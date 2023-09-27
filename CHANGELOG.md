@@ -8,3 +8,4 @@
 - [feat:support service contract reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1141)
 - [feat: support log path configuration parameters,](https://github.com/Tencent/spring-cloud-tencent/pull/1142)
 - [feat:add swagger report switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1150)
+- [fix: dynamic routing using cookies.](https://github.com/Tencent/spring-cloud-tencent/pull/1153)
