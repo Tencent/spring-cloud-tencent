@@ -89,7 +89,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 	private void customInitRegisterPolarisConfig(PolarisConfigPropertyAutoRefresher polarisConfigPropertyAutoRefresher) {
 		if (polarisConfigCustomExtensionLayer == null) {
-			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			LOGGER.debug("[SCT Config] PolarisConfigCustomExtensionLayer is not init, ignore the following execution steps");
 			return;
 		}
 		polarisConfigCustomExtensionLayer.initRegisterConfig(polarisConfigPropertyAutoRefresher);
@@ -139,7 +139,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 	private void customRegisterPolarisConfigPublishChangeListener(PolarisPropertySource polarisPropertySource) {
 		if (polarisConfigCustomExtensionLayer == null) {
-			LOGGER.debug("[SCT Config] PolarisAdaptorTsfConfigExtensionLayer is not init, ignore the following execution steps");
+			LOGGER.debug("[SCT Config] PolarisConfigCustomExtensionLayer is not init, ignore the following execution steps");
 			return;
 		}
 		polarisConfigCustomExtensionLayer.executeRegisterPublishChangeListener(polarisPropertySource);

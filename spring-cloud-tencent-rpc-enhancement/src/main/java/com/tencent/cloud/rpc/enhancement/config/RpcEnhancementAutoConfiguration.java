@@ -30,12 +30,6 @@ import com.tencent.cloud.rpc.enhancement.filter.EnhancedServletFilter;
 import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
-import com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientExceptionHook;
-import com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientPostHook;
-import com.tencent.cloud.rpc.enhancement.plugin.assembly.client.AssemblyClientPreHook;
-import com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerExceptionHook;
-import com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerPostHook;
-import com.tencent.cloud.rpc.enhancement.plugin.assembly.server.AssemblyServerPreHook;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
@@ -113,36 +107,6 @@ public class RpcEnhancementAutoConfiguration {
 	public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
 			PolarisSDKContextManager polarisSDKContextManager) {
 		return new ExceptionPolarisReporter(properties, polarisSDKContextManager.getConsumerAPI());
-	}
-
-	@Bean
-	public AssemblyClientExceptionHook assemblyClientExceptionHook(PolarisSDKContextManager polarisSDKContextManager, InstanceTransformer instanceTransformer) {
-		return new AssemblyClientExceptionHook(polarisSDKContextManager.getAssemblyAPI(), instanceTransformer);
-	}
-
-	@Bean
-	public AssemblyClientPostHook assemblyClientPostHook(PolarisSDKContextManager polarisSDKContextManager, InstanceTransformer instanceTransformer) {
-		return new AssemblyClientPostHook(polarisSDKContextManager.getAssemblyAPI(), instanceTransformer);
-	}
-
-	@Bean
-	public AssemblyClientPreHook assemblyClientPreHook(PolarisSDKContextManager polarisSDKContextManager) {
-		return new AssemblyClientPreHook(polarisSDKContextManager.getAssemblyAPI());
-	}
-
-	@Bean
-	public AssemblyServerExceptionHook assemblyServerExceptionHook(PolarisSDKContextManager polarisSDKContextManager) {
-		return new AssemblyServerExceptionHook(polarisSDKContextManager.getAssemblyAPI());
-	}
-
-	@Bean
-	public AssemblyServerPostHook assemblyServerPostHook(PolarisSDKContextManager polarisSDKContextManager) {
-		return new AssemblyServerPostHook(polarisSDKContextManager.getAssemblyAPI());
-	}
-
-	@Bean
-	public AssemblyServerPreHook assemblyServerPreHook(PolarisSDKContextManager polarisSDKContextManager) {
-		return new AssemblyServerPreHook(polarisSDKContextManager.getAssemblyAPI());
 	}
 
 	@Configuration(proxyBeanMethods = false)

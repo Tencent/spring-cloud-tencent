@@ -22,6 +22,10 @@ spring:
         heartbeat:
           enabled: true
         health-check-url: /discovery/service/caller/healthCheck
+      contract:
+        exposure: true
+        report:
+          enabled: true
       stat:
         enabled: true
         port: 28081

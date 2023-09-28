@@ -14,3 +14,6 @@ spring:
           b: 2
         transitive:
           - b
+        headers:
+          - c
+          - d

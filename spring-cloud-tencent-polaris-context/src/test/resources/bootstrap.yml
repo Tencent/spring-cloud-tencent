@@ -7,3 +7,5 @@ spring:
       service: TestApp
       enabled: true
       local-port: 9090
+      logging:
+        path: /tmp/polaris/logs
