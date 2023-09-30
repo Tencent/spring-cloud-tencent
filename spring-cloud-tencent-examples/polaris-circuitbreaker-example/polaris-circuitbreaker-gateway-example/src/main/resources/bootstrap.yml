@@ -57,3 +57,9 @@ logging:
     com.tencent.polaris.plugins.registry: off
     com.tencent.cloud: debug
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-circuit-breaker

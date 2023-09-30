@@ -89,18 +89,30 @@ public class ServiceRuleManager {
 		return rules;
 	}
 
-	public CircuitBreakerProto.CircuitBreaker getServiceCircuitBreakerRule(String namespace, String service) {
-		LOG.debug("Get service circuit breaker rules with namespace:{} and service:{}.", namespace, service);
+	public List<CircuitBreakerProto.CircuitBreakerRule> getServiceCircuitBreakerRule(String namespace, String sourceService, String dstService) {
+		LOG.debug("Get service circuit breaker rules with namespace:{} and sourceService:{} and dstService:{}.", namespace, sourceService, dstService);
 
-		ServiceRule serviceRule = getServiceRule(namespace, service, ServiceEventKey.EventType.CIRCUIT_BREAKING);
-		if (serviceRule != null) {
-			Object rule = serviceRule.getRule();
+		List<CircuitBreakerProto.CircuitBreakerRule> rules = new ArrayList<>();
+
+		// get source service circuit breaker rules.
+		ServiceRule sourceServiceRule = getServiceRule(namespace, sourceService, ServiceEventKey.EventType.CIRCUIT_BREAKING);
+		if (sourceServiceRule != null) {
+			Object rule = sourceServiceRule.getRule();
 			if (rule instanceof CircuitBreakerProto.CircuitBreaker) {
-				return (CircuitBreakerProto.CircuitBreaker) rule;
+				rules.addAll(((CircuitBreakerProto.CircuitBreaker) rule).getRulesList());
 			}
 		}
 
-		return null;
+		// get peer service circuit breaker rules.
+		ServiceRule dstServiceRule = getServiceRule(namespace, dstService, ServiceEventKey.EventType.CIRCUIT_BREAKING);
+		if (dstServiceRule != null) {
+			Object rule = dstServiceRule.getRule();
+			if (rule instanceof CircuitBreakerProto.CircuitBreaker) {
+				rules.addAll(((CircuitBreakerProto.CircuitBreaker) rule).getRulesList());
+			}
+		}
+
+		return rules;
 	}
 
 	private ServiceRule getServiceRule(String namespace, String service, ServiceEventKey.EventType eventType) {
