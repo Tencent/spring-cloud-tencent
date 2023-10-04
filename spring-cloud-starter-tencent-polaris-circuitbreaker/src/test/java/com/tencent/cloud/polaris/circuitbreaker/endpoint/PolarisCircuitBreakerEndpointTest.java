@@ -66,7 +66,7 @@ public class PolarisCircuitBreakerEndpointTest {
 					ModelProto.MatchString.newBuilder().setValue(StringValue.newBuilder().setValue("*").build()).build()).build());
 			rmBuilder.setSource(CircuitBreakerProto.RuleMatcher.SourceService.newBuilder().setNamespace("*").setService("*").build());
 			ruleBuilder.setRuleMatcher(rmBuilder.build());
-			return CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(ruleBuilder.build()).build();
+			return CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(ruleBuilder.build()).build().getRulesList();
 		});
 	}
 
