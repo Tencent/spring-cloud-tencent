@@ -56,7 +56,7 @@ public class PolarisCircuitBreakerEndpointTest {
 	@BeforeEach
 	void setUp() {
 		serviceRuleManager = mock(ServiceRuleManager.class);
-		when(serviceRuleManager.getServiceCircuitBreakerRule(anyString(), anyString())).thenAnswer(invocation -> {
+		when(serviceRuleManager.getServiceCircuitBreakerRule(anyString(), anyString(), anyString())).thenAnswer(invocation -> {
 			CircuitBreakerProto.CircuitBreakerRule.Builder ruleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
 			ruleBuilder.setName("test_for_circuit_breaker");
 			ruleBuilder.setEnable(true);
@@ -66,7 +66,7 @@ public class PolarisCircuitBreakerEndpointTest {
 					ModelProto.MatchString.newBuilder().setValue(StringValue.newBuilder().setValue("*").build()).build()).build());
 			rmBuilder.setSource(CircuitBreakerProto.RuleMatcher.SourceService.newBuilder().setNamespace("*").setService("*").build());
 			ruleBuilder.setRuleMatcher(rmBuilder.build());
-			return CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(ruleBuilder.build()).build();
+			return CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(ruleBuilder.build()).build().getRulesList();
 		});
 	}
 
@@ -74,7 +74,7 @@ public class PolarisCircuitBreakerEndpointTest {
 	public void testPolarisCircuitBreaker() {
 		contextRunner.run(context -> {
 			PolarisCircuitBreakerEndpoint endpoint = new PolarisCircuitBreakerEndpoint(serviceRuleManager);
-			Map<String, Object> circuitBreakerInfo = endpoint.circuitBreaker();
+			Map<String, Object> circuitBreakerInfo = endpoint.circuitBreaker("test");
 			assertThat(circuitBreakerInfo).isNotNull();
 			assertThat(circuitBreakerInfo.get("namespace")).isNotNull();
 			assertThat(circuitBreakerInfo.get("service")).isNotNull();
