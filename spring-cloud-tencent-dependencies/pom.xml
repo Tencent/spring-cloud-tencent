@@ -70,7 +70,7 @@
 	</developers>
 
 	<properties>
-		<revision>1.12.1-2022.0.4</revision>
+		<revision>1.12.2-2022.0.4</revision>
 
 		<!-- Dependencies -->
 		<polaris.version>1.14.1</polaris.version>
