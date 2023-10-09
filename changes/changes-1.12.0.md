@@ -27,4 +27,5 @@
 - fix:upgrade spring version.
 - fix:Update README-zh.md
 - feature: support Polaris configuration center extension plugin interface and support dynamic modification of log
-  levels. 
+  levels.
+- fix:fix system env variable read bug.
