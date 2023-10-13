@@ -20,3 +20,9 @@ logging:
     root: info
     com.tencent.cloud: debug
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-circuit-breaker
