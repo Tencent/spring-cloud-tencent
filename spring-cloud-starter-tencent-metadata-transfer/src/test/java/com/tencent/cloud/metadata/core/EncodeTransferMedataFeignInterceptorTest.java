@@ -47,8 +47,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT,
 		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
-		properties = {"server.port=18081",
-				"spring.config.location = classpath:application-test.yml",
+		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml",
 				"spring.main.web-application-type = servlet",
 				"spring.cloud.gateway.enabled = false"})
 public class EncodeTransferMedataFeignInterceptorTest {
@@ -77,7 +76,7 @@ public class EncodeTransferMedataFeignInterceptorTest {
 			return MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b");
 		}
 
-		@FeignClient(name = "test-feign", url = "http://localhost:18081")
+		@FeignClient(name = "test-feign", url = "http://localhost:48081")
 		public interface TestFeign {
 
 			@RequestMapping("/test")
