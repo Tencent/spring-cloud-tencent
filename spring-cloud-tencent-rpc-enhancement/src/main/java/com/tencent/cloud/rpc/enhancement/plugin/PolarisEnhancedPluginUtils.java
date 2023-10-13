@@ -79,6 +79,7 @@ public final class PolarisEnhancedPluginUtils {
 	private static final List<HttpStatus> HTTP_STATUSES = toList(NOT_IMPLEMENTED, BAD_GATEWAY,
 			SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, HTTP_VERSION_NOT_SUPPORTED, VARIANT_ALSO_NEGOTIATES,
 			INSUFFICIENT_STORAGE, LOOP_DETECTED, BANDWIDTH_LIMIT_EXCEEDED, NOT_EXTENDED, NETWORK_AUTHENTICATION_REQUIRED);
+
 	private PolarisEnhancedPluginUtils() {
 
 	}
@@ -216,7 +217,15 @@ public final class PolarisEnhancedPluginUtils {
 		if (headers != null && headers.containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
 			Collection<String> values = headers.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
 			if (CollectionUtils.isNotEmpty(values)) {
-				return com.tencent.polaris.api.utils.StringUtils.defaultString(new ArrayList<>(values).get(0));
+				String decodedActiveRuleName = "";
+				try {
+					decodedActiveRuleName = URLDecoder.decode(new ArrayList<>(values).get(0), UTF_8);
+				}
+				catch (UnsupportedEncodingException e) {
+					LOG.error("Cannot decode {} from header internal-callee-activerule.",
+							headers.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME).get(0), e);
+				}
+				return com.tencent.polaris.api.utils.StringUtils.defaultString(decodedActiveRuleName);
 			}
 		}
 		return "";

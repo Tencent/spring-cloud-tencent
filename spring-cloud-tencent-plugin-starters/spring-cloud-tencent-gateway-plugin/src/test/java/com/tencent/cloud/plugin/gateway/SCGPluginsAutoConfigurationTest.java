@@ -45,7 +45,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = SCGPluginsAutoConfigurationTest.TestApplication.class,
-		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml",
+		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml",
 				"spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled = true"})
 public class SCGPluginsAutoConfigurationTest {
 
