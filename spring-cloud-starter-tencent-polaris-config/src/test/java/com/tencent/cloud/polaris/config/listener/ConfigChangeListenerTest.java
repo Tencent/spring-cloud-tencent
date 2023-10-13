@@ -47,7 +47,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = ConfigChangeListenerTest.TestApplication.class,
-		properties = {"server.port=8081", "spring.config.location = classpath:application-test.yml"})
+		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml"})
 public class ConfigChangeListenerTest {
 
 	private static final CountDownLatch hits = new CountDownLatch(2);
