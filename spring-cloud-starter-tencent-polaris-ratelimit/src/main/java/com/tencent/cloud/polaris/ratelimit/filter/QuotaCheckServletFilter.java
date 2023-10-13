@@ -19,6 +19,8 @@
 package com.tencent.cloud.polaris.ratelimit.filter;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.Set;
 
@@ -49,6 +51,8 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Servlet filter to check quota.
@@ -115,8 +119,15 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				}
 				response.addHeader(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
 				if (Objects.nonNull(quotaResponse.getActiveRule())) {
-					response.addHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, quotaResponse.getActiveRule().getName()
-							.getValue());
+					try {
+						String encodedActiveRuleName = URLEncoder.encode(
+								quotaResponse.getActiveRule().getName().getValue(), UTF_8);
+						response.addHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, encodedActiveRuleName);
+					}
+					catch (UnsupportedEncodingException e) {
+						LOG.error("Cannot encode {} for header internal-callee-activerule.",
+								quotaResponse.getActiveRule().getName().getValue(), e);
+					}
 				}
 				return;
 			}

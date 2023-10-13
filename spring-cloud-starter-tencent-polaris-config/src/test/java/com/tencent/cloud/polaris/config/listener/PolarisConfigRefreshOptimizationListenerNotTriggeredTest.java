@@ -58,7 +58,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = PolarisConfigRefreshOptimizationListenerNotTriggeredTest.TestApplication.class,
 		properties = {
-				"server.port=8081",
+				"server.port=48081",
 				"spring.cloud.polaris.address=grpc://127.0.0.1:10081",
 				"spring.cloud.polaris.config.connect-remote-server=false",
 				"spring.cloud.polaris.config.refresh-type=reflect",
