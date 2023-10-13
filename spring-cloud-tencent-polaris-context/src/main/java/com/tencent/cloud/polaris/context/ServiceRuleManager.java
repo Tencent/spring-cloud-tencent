@@ -27,13 +27,14 @@ import com.tencent.polaris.api.pojo.ServiceRule;
 import com.tencent.polaris.api.rpc.GetServiceRuleRequest;
 import com.tencent.polaris.api.rpc.ServiceRuleResponse;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * the manager of service governance rules. for example: rate limit rule, router rules.
+ * the manager of service governance rules. for example: rate limit rule, router rules, circuit breaker rules.
  *
  * @author lepdou 2022-05-13
  */
@@ -82,6 +83,32 @@ public class ServiceRuleManager {
 			Object rule = dstServiceRule.getRule();
 			if (rule instanceof RoutingProto.Routing) {
 				rules.addAll(((RoutingProto.Routing) rule).getInboundsList());
+			}
+		}
+
+		return rules;
+	}
+
+	public List<CircuitBreakerProto.CircuitBreakerRule> getServiceCircuitBreakerRule(String namespace, String sourceService, String dstService) {
+		LOG.debug("Get service circuit breaker rules with namespace:{} and sourceService:{} and dstService:{}.", namespace, sourceService, dstService);
+
+		List<CircuitBreakerProto.CircuitBreakerRule> rules = new ArrayList<>();
+
+		// get source service circuit breaker rules.
+		ServiceRule sourceServiceRule = getServiceRule(namespace, sourceService, ServiceEventKey.EventType.CIRCUIT_BREAKING);
+		if (sourceServiceRule != null) {
+			Object rule = sourceServiceRule.getRule();
+			if (rule instanceof CircuitBreakerProto.CircuitBreaker) {
+				rules.addAll(((CircuitBreakerProto.CircuitBreaker) rule).getRulesList());
+			}
+		}
+
+		// get peer service circuit breaker rules.
+		ServiceRule dstServiceRule = getServiceRule(namespace, dstService, ServiceEventKey.EventType.CIRCUIT_BREAKING);
+		if (dstServiceRule != null) {
+			Object rule = dstServiceRule.getRule();
+			if (rule instanceof CircuitBreakerProto.CircuitBreaker) {
+				rules.addAll(((CircuitBreakerProto.CircuitBreaker) rule).getRulesList());
 			}
 		}
 

@@ -12,3 +12,4 @@
 - [fix: dynamic routing using cookies.](https://github.com/Tencent/spring-cloud-tencent/pull/1152)
 - [fix:fix retry loadbalancer not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1157)
 - [fix:fix header validation when using Chinese char.](https://github.com/Tencent/spring-cloud-tencent/pull/1167)
+- [feat: add circuit breaker actuator.](https://github.com/Tencent/spring-cloud-tencent/pull/1172)
