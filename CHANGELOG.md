@@ -10,3 +10,4 @@
 - [feat:add swagger report switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1150)
 - [fix: dynamic routing using cookies.](https://github.com/Tencent/spring-cloud-tencent/pull/1153)
 - [fix:fix retry loadbalancer not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1155)
+- [fix:fix header validation when using Chinese char.](https://github.com/Tencent/spring-cloud-tencent/pull/1169)

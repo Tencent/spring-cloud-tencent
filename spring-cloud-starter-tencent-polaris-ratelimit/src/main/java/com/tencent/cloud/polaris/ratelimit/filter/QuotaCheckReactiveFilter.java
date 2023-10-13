@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.polaris.ratelimit.filter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Objects;
@@ -50,6 +52,8 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+
 /**
  * Reactive filter to check quota.
  *
@@ -57,7 +61,7 @@ import org.springframework.web.server.WebFilterChain;
  */
 public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(QuotaCheckReactiveFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(QuotaCheckReactiveFilter.class);
 
 	private final LimitAPI limitAPI;
 
@@ -121,22 +125,28 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 				response.getHeaders()
 						.add(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
 				if (Objects.nonNull(quotaResponse.getActiveRule())) {
-					response.getHeaders()
-							.add(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, quotaResponse.getActiveRule().getName()
-									.getValue());
+					try {
+						String encodedActiveRuleName = URLEncoder.encode(
+								quotaResponse.getActiveRule().getName().getValue(), UTF_8);
+						response.getHeaders().add(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, encodedActiveRuleName);
+					}
+					catch (UnsupportedEncodingException e) {
+						LOG.error("Cannot encode {} for header internal-callee-activerule.",
+								quotaResponse.getActiveRule().getName().getValue(), e);
+					}
 				}
 				return response.writeWith(Mono.just(dataBuffer));
 			}
 			// Unirate
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultOk && quotaResponse.getWaitMs() > 0) {
-				LOGGER.debug("The request of [{}] will waiting for {}ms.", path, quotaResponse.getWaitMs());
+				LOG.debug("The request of [{}] will waiting for {}ms.", path, quotaResponse.getWaitMs());
 				waitMs = quotaResponse.getWaitMs();
 			}
 		}
 		catch (Throwable t) {
 			// An exception occurs in the rate limiting API call,
 			// which should not affect the call of the business process.
-			LOGGER.error("fail to invoke getQuota, service is " + localService, t);
+			LOG.error("fail to invoke getQuota, service is " + localService, t);
 		}
 
 		if (waitMs > 0) {
