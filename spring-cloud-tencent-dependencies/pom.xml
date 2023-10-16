@@ -82,7 +82,6 @@
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<jackson.version>2.12.7</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
-		<bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
 		<!-- Maven Plugin Versions -->
@@ -261,12 +260,6 @@
 				<groupId>com.google.protobuf</groupId>
 				<artifactId>protobuf-java</artifactId>
 				<version>${protobuf-java.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk15on</artifactId>
-				<version>${bcprov-jdk15on.version}</version>
 			</dependency>
 
 			<dependency>
