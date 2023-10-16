@@ -19,14 +19,17 @@
 package com.tencent.cloud.polaris.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.factory.config.configuration.ConfigFilterConfigImpl;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +49,15 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
+	private final PolarisCryptoConfigProperties polarisCryptoConfigProperties;
+
 	private final PolarisContextProperties polarisContextProperties;
 
 	public ConfigurationModifier(PolarisConfigProperties polarisConfigProperties,
+			PolarisCryptoConfigProperties polarisCryptoConfigProperties,
 			PolarisContextProperties polarisContextProperties) {
 		this.polarisConfigProperties = polarisConfigProperties;
+		this.polarisCryptoConfigProperties = polarisCryptoConfigProperties;
 		this.polarisContextProperties = polarisContextProperties;
 	}
 
@@ -64,6 +71,13 @@ public class ConfigurationModifier implements PolarisConfigModifier {
 		}
 		else {
 			throw new RuntimeException("Unsupported config data source");
+		}
+
+		ConfigFilterConfigImpl configFilterConfig = configuration.getConfigFile().getConfigFilterConfig();
+		configFilterConfig.setEnable(polarisCryptoConfigProperties.isEnabled());
+		if (polarisCryptoConfigProperties.isEnabled()) {
+			configFilterConfig.getChain().add("crypto");
+			configFilterConfig.getPlugin().put("crypto", Collections.singletonMap("type", "AES"));
 		}
 	}
 

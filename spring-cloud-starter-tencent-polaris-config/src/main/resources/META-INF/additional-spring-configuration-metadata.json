@@ -64,7 +64,14 @@
       "name": "spring.cloud.polaris.config.local-file-root-path",
       "type": "java.lang.String",
       "defaultValue": "./polaris/backup/config",
-      "description": "The root path of config files, only used in local mode."
+      "description": "Where to load config file, polaris or local."
+    },
+    {
+      "name": "spring.cloud.polaris.config.crypto.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "Whether to open the configuration crypto.",
+      "sourceType": "com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties"
     }
   ]
 }
