@@ -68,8 +68,8 @@ public final class MetadataContextHolder {
 		metadataContext.setTransitiveMetadata(staticMetadataManager.getMergedStaticTransitiveMetadata());
 		metadataContext.setDisposableMetadata(staticMetadataManager.getMergedStaticDisposableMetadata());
 
-		if (StringUtils.hasText(staticMetadataManager.getTransHeaderFromEnv())) {
-			metadataContext.setTransHeaders(staticMetadataManager.getTransHeaderFromEnv(), "");
+		if (StringUtils.hasText(staticMetadataManager.getTransHeader())) {
+			metadataContext.setTransHeaders(staticMetadataManager.getTransHeader(), "");
 		}
 
 		METADATA_CONTEXT.set(metadataContext);
