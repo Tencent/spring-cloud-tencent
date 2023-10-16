@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.config.configdata;
 import java.util.Objects;
 
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 
 import org.springframework.boot.context.config.ConfigData;
@@ -35,6 +36,8 @@ public class PolarisConfigDataResource extends ConfigDataResource {
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
+	private final PolarisCryptoConfigProperties polarisCryptoConfigProperties;
+
 	private final PolarisContextProperties polarisContextProperties;
 
 	private final Profiles profiles;
@@ -48,10 +51,12 @@ public class PolarisConfigDataResource extends ConfigDataResource {
 	private final String serviceName;
 
 	public PolarisConfigDataResource(PolarisConfigProperties polarisConfigProperties,
+			PolarisCryptoConfigProperties polarisCryptoConfigProperties,
 			PolarisContextProperties polarisContextProperties,
 			Profiles profiles, boolean optional,
 			String fileName, String groupName, String serviceName) {
 		this.polarisConfigProperties = polarisConfigProperties;
+		this.polarisCryptoConfigProperties = polarisCryptoConfigProperties;
 		this.polarisContextProperties = polarisContextProperties;
 		this.profiles = profiles;
 		this.optional = optional;
@@ -62,6 +67,10 @@ public class PolarisConfigDataResource extends ConfigDataResource {
 
 	public PolarisConfigProperties getPolarisConfigProperties() {
 		return polarisConfigProperties;
+	}
+
+	public PolarisCryptoConfigProperties getPolarisCryptoConfigProperties() {
+		return polarisCryptoConfigProperties;
 	}
 
 	public PolarisContextProperties getPolarisContextProperties() {
@@ -99,6 +108,7 @@ public class PolarisConfigDataResource extends ConfigDataResource {
 		PolarisConfigDataResource that = (PolarisConfigDataResource) o;
 		return optional == that.optional &&
 				polarisConfigProperties.equals(that.polarisConfigProperties) &&
+				polarisCryptoConfigProperties.equals(that.polarisCryptoConfigProperties) &&
 				polarisContextProperties.equals(that.polarisContextProperties) &&
 				profiles.equals(that.profiles) &&
 				fileName.equals(that.fileName) &&
@@ -108,6 +118,7 @@ public class PolarisConfigDataResource extends ConfigDataResource {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(polarisConfigProperties, polarisContextProperties, profiles, optional, fileName, groupName, serviceName);
+		return Objects.hash(polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties, profiles,
+				optional, fileName, groupName, serviceName);
 	}
 }
