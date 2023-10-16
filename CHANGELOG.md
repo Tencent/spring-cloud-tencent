@@ -14,3 +14,4 @@
 - [feat:add swagger report switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1148)
 - [fix:fix retry loadbalancer not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1154)
 - [fix:fix header validation when using Chinese char.](https://github.com/Tencent/spring-cloud-tencent/pull/1166)
+- [fix:remove bcprov-jdk15on dependency.](https://github.com/Tencent/spring-cloud-tencent/pull/1177)
