@@ -62,7 +62,7 @@ public class QuickstartCallerController {
 	 * @return sum
 	 */
 	@GetMapping("/feign")
-	public int feign(@RequestParam int value1, @RequestParam int value2) {
+	public String feign(@RequestParam int value1, @RequestParam int value2) {
 		return quickstartCalleeService.sum(value1, value2);
 	}
 
