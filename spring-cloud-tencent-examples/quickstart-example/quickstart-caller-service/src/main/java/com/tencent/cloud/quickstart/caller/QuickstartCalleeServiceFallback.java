@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class QuickstartCalleeServiceFallback implements QuickstartCalleeService {
 
 	@Override
-	public int sum(int value1, int value2) {
-		return 0;
+	public String sum(int value1, int value2) {
+		return "sum is 0.";
 	}
 }
