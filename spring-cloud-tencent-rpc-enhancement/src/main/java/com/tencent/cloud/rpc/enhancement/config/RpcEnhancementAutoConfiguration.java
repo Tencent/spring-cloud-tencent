@@ -40,6 +40,7 @@ import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequ
 import com.tencent.cloud.rpc.enhancement.webclient.RibbonLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedErrorZuulFilter;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedPostZuulFilter;
+import com.tencent.cloud.rpc.enhancement.zuul.EnhancedPreZuulFilter;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedRouteZuulFilter;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -252,6 +253,12 @@ public class RpcEnhancementAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "com.netflix.zuul.http.ZuulServlet")
 	protected static class PolarisCircuitBreakerZuulFilterConfig {
+
+		@Bean
+		public EnhancedPreZuulFilter enhancedPreZuulFilter(@Lazy EnhancedPluginRunner pluginRunner, Environment environment) {
+			return new EnhancedPreZuulFilter(pluginRunner, environment);
+		}
+
 		@Bean
 		public EnhancedRouteZuulFilter enhancedZuulRouteFilter(@Lazy EnhancedPluginRunner pluginRunner, Environment environment) {
 			return new EnhancedRouteZuulFilter(pluginRunner, environment);

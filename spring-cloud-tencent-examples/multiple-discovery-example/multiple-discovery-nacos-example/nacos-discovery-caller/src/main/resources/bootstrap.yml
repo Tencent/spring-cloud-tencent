@@ -16,7 +16,30 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-
+#    consul:
+#      port: 8500
+#      host: 127.0.0.1
+#      enabled: true
+#      discovery:
+#        enabled: true
+#        register: true
+#        health-check-path: /actuator/health
+#        health-check-interval: 10s
+#        instance-id: ${spring.application.name}:${server.port}
+#        service-name: ${spring.application.name}
+#        ip-address: localhost
+#        prefer-ip-address: true
+#    nacos:
+#      enabled: true
+#      password: nacos
+#      username: nacos
+#      context-path: /nacos
+#      discovery:
+#        enabled: true
+#        register-enabled: true
+#        group: polaris
+#        server-addr: 127.0.0.1:8848
+#        cluster-name: polaris
 feign:
   hystrix:
     enabled: true

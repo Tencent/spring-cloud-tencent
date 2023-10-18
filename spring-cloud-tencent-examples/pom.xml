@@ -16,31 +16,14 @@
 	<description>Examples of Spring Cloud Tencent</description>
 
 	<modules>
-		<module>polaris-discovery-example</module>
-		<module>polaris-ratelimit-example</module>
-		<module>polaris-circuitbreaker-example</module>
-		<module>polaris-gateway-example</module>
-		<module>polaris-config-example</module>
-		<module>polaris-router-example</module>
+		<module>multiple-discovery-example</module>
 		<module>metadata-transfer-example</module>
 		<module>polaris-router-grayrelease-example</module>
 		<module>polaris-router-featureenv-example</module>
 		<module>quickstart-example</module>
-		<module>multiple-discovery-example</module>
 	</modules>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.owasp.esapi</groupId>
-				<artifactId>esapi</artifactId>
-				<version>2.3.0.0</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 </project>

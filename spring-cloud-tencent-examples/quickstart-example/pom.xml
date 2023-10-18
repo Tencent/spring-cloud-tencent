@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>quickstart-gateway-service</module>
+		<module>quickstart-zuul-service</module>
 		<module>quickstart-caller-service</module>
 		<module>quickstart-callee-service-a</module>
 		<module>quickstart-callee-service-b</module>

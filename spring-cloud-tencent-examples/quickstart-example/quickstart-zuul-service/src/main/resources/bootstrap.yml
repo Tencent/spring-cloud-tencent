@@ -1,0 +1,25 @@
+server:
+  session-timeout: 1800
+  port: 48080
+spring:
+  application:
+    name: QuickStartZuulService
+  cloud:
+    polaris:
+      address: grpc://119.91.66.223:8091
+      namespace: default
+      circuitbreaker:
+        enabled: true
+      enabled: true
+      contract:
+        exposure: true
+        report:
+          enabled: false
+      stat:
+        enabled: true
+        port: 28080
+zuul:
+  routes:
+    QuickstartCallerService:
+      serviceId: QuickstartCallerService
+      path: /QuickstartCallerService/**

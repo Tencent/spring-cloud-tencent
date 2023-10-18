@@ -10,8 +10,8 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>quickstart-caller-service</artifactId>
-	<name>Quickstart Caller Service</name>
+	<artifactId>quickstart-zuul-service</artifactId>
+	<name>Quickstart Zuul Service</name>
 
 	<dependencies>
 		<dependency>
@@ -20,23 +20,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-openfeign</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
+			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -68,4 +53,5 @@
 			</plugin>
 		</plugins>
 	</build>
+
 </project>
