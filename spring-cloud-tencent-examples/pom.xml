@@ -17,12 +17,6 @@
 
 	<modules>
 		<module>multiple-discovery-example</module>
-		<module>polaris-discovery-example</module>
-		<module>polaris-ratelimit-example</module>
-		<module>polaris-circuitbreaker-example</module>
-		<module>polaris-gateway-example</module>
-		<module>polaris-config-example</module>
-		<module>polaris-router-example</module>
 		<module>metadata-transfer-example</module>
 		<module>polaris-router-grayrelease-example</module>
 		<module>polaris-router-featureenv-example</module>

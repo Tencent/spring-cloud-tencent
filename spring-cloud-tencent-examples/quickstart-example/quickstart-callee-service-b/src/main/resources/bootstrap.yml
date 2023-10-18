@@ -11,6 +11,16 @@ spring:
       discovery:
         enabled: true
         register: true
+      contract:
+        exposure: true
+        report:
+          enabled: false
+      stat:
+        enabled: true
+        port: 28084
+      #        pushgateway:
+      #          enabled: true
+      #          address: 127.0.0.1:9091
       config:
         address: grpc://119.91.66.223:8093
         auto-refresh: true
@@ -23,4 +33,15 @@ spring:
     tencent:
       metadata:
         content:
+          label1: value2
           region: huanan
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-discovery
+          - polaris-ratelimit
+          - polaris-config
+label:
+  key-value: user2:lisi

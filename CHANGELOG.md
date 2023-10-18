@@ -15,3 +15,4 @@
 - [feat: add metadata transfer for http header via spring.cloud.tencent.metadata.headers.](https://github.com/Tencent/spring-cloud-tencent/pull/1176)
 - [fix:remove bcprov-jdk15on dependency.](https://github.com/Tencent/spring-cloud-tencent/pull/1180)
 - [feat:support configuration encryption.](https://github.com/Tencent/spring-cloud-tencent/pull/1184)
+- [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1188)
