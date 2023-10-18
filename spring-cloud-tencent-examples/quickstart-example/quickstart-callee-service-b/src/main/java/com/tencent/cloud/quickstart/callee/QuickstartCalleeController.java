@@ -69,9 +69,9 @@ public class QuickstartCalleeController {
 	 * @return sum
 	 */
 	@GetMapping("/sum")
-	public int sum(@RequestParam int value1, @RequestParam int value2) {
+	public String sum(@RequestParam int value1, @RequestParam int value2) {
 		LOG.info("Quickstart Callee Service [{}:{}] is called and sum is [{}].", ip, port, value1 + value2);
-		return value1 + value2;
+		return String.format("Quickstart Callee Service [%s:%s] is called and sum is [%s].", ip, port, value1 + value2);
 	}
 
 	/**
