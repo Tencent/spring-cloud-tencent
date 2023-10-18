@@ -16,3 +16,4 @@
 - [fix:fix header validation when using Chinese char.](https://github.com/Tencent/spring-cloud-tencent/pull/1166)
 - [fix:remove bcprov-jdk15on dependency.](https://github.com/Tencent/spring-cloud-tencent/pull/1177)
 - [feat:support configuration encryption.](https://github.com/Tencent/spring-cloud-tencent/pull/1181)
+- [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1185)
