@@ -17,12 +17,17 @@
 
 package com.tencent.cloud.quickstart.caller;
 
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
+import com.tencent.cloud.quickstart.caller.circuitbreaker.CustomFallback;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 /**
  * Quickstart caller application.
@@ -41,5 +46,40 @@ public class QuickstartCallerApplication {
 	@LoadBalanced
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
+	}
+
+	@Bean
+	@LoadBalanced
+	public RestTemplate defaultRestTemplate() {
+		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://QuickstartCalleeService");
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setUriTemplateHandler(uriBuilderFactory);
+		return restTemplate;
+	}
+
+	@Bean
+	@LoadBalanced
+	@PolarisCircuitBreaker
+	public RestTemplate restTemplateFallbackFromPolaris() {
+		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://QuickstartCalleeService");
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setUriTemplateHandler(uriBuilderFactory);
+		return restTemplate;
+	}
+
+	@Bean
+	@LoadBalanced
+	@PolarisCircuitBreaker(fallbackClass = CustomFallback.class)
+	public RestTemplate restTemplateFallbackFromCode() {
+		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://QuickstartCalleeService");
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setUriTemplateHandler(uriBuilderFactory);
+		return restTemplate;
+	}
+
+	@LoadBalanced
+	@Bean
+	WebClient.Builder webClientBuilder() {
+		return WebClient.builder().baseUrl("http://QuickstartCalleeService");
 	}
 }
