@@ -15,20 +15,27 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.quickstart.caller;
+package com.tencent.cloud.quickstart.callee.ratelimit;
 
+import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
+
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /**
- * Quickstart callee feign client fallback.
+ * JsonPolarisRateLimiterLimitedFallback.
  *
- * @author Haotian Zhang
+ * @author Lingxiao.Wu
  */
 @Component
-public class QuickstartCalleeServiceFallback implements QuickstartCalleeService {
+public class JsonPolarisRateLimiterLimitedFallback implements PolarisRateLimiterLimitedFallback {
+	@Override
+	public MediaType mediaType() {
+		return MediaType.APPLICATION_JSON;
+	}
 
 	@Override
-	public int sum(int value1, int value2) {
-		return 0;
+	public String rejectTips() {
+		return "{\"success\":false,\"code\":429,\"msg\":\"RejectRequestTips提示消息\",\"timestamp\":1673415310479}";
 	}
 }

@@ -11,6 +11,16 @@ spring:
       discovery:
         enabled: true
         register: true
+      contract:
+        exposure: true
+        report:
+          enabled: false
+      stat:
+        enabled: true
+        port: 28083
+      #        pushgateway:
+      #          enabled: true
+      #          address: 127.0.0.1:9091
       config:
         address: grpc://119.91.66.223:8093
         auto-refresh: true
@@ -19,8 +29,20 @@ spring:
             files: [ "config/callee.properties" ]
       ratelimit:
         enabled: true
+        rejectRequestTipsFilePath: reject-tips.html
         maxQueuingTime: 500
     tencent:
       metadata:
         content:
+          label1: value1
           region: huanan
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-discovery
+          - polaris-ratelimit
+          - polaris-config
+label:
+  key-value: user:zhangsan
