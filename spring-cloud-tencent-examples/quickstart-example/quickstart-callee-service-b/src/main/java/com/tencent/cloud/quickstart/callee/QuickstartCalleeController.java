@@ -107,34 +107,56 @@ public class QuickstartCalleeController {
 	@GetMapping("/circuitBreak")
 	public ResponseEntity<String> circuitBreak() throws InterruptedException {
 		if (ifBadGateway) {
+			LOG.info("Quickstart Callee Service [{}:{}] is called wrong.", ip, port);
 			return new ResponseEntity<>("failed for call quickstart callee service.", HttpStatus.BAD_GATEWAY);
 		}
 		if (ifDelay) {
-			Thread.sleep(100);
+			Thread.sleep(200);
+			LOG.info("Quickstart Callee Service [{}:{}] is called slow.", ip, port);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called slow.", ip, port), HttpStatus.OK);
 		}
-		LOG.info("Quickstart Callee Service [{}:{}] is called wrong.", ip, port);
-		return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called wrong.", ip, port), HttpStatus.OK);
+		LOG.info("Quickstart Callee Service [{}:{}] is called right.", ip, port);
+		return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port), HttpStatus.OK);
 	}
 
 	@GetMapping("/setBadGateway")
-	public void setBadGateway(@RequestParam boolean param) {
+	public String setBadGateway(@RequestParam boolean param) {
+		this.ifBadGateway = param;
 		if (param) {
 			LOG.info("info is set to return HttpStatus.BAD_GATEWAY.");
+			return "info is set to return HttpStatus.BAD_GATEWAY.";
 		}
 		else {
 			LOG.info("info is set to return HttpStatus.OK.");
+			return "info is set to return HttpStatus.OK.";
 		}
-		this.ifBadGateway = param;
 	}
 
 	@GetMapping("/setDelay")
-	public void setDelay(@RequestParam boolean param) {
+	public String setDelay(@RequestParam boolean param) {
+		this.ifDelay = param;
 		if (param) {
-			LOG.info("info is set to delay 100ms.");
+			LOG.info("info is set to delay 200ms.");
+			return "info is set to delay 200ms.";
 		}
 		else {
 			LOG.info("info is set to no delay.");
+			return "info is set to no delay.";
 		}
-		this.ifDelay = param;
+	}
+
+	@GetMapping("/faultDetect")
+	public ResponseEntity<String> health() throws InterruptedException {
+		if (ifBadGateway) {
+			LOG.info("Quickstart Callee Service [{}:{}] is detected wrong.", ip, port);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected wrong.", ip, port), HttpStatus.BAD_GATEWAY);
+		}
+		if (ifDelay) {
+			Thread.sleep(200);
+			LOG.info("Quickstart Callee Service [{}:{}] is detected slow.", ip, port);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected slow.", ip, port), HttpStatus.OK);
+		}
+		LOG.info("Quickstart Callee Service [{}:{}] is detected right.", ip, port);
+		return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port), HttpStatus.OK);
 	}
 }
