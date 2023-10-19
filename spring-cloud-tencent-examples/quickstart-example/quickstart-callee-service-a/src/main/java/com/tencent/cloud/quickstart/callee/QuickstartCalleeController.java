@@ -105,4 +105,10 @@ public class QuickstartCalleeController {
 		LOG.info("Quickstart Callee Service [{}:{}] is called right.", ip, port);
 		return String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port);
 	}
+
+	@GetMapping("/faultDetect")
+	public String health() {
+		LOG.info("Quickstart Callee Service [{}:{}] is detected right.", ip, port);
+		return String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port);
+	}
 }
