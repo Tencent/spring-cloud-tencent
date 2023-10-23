@@ -29,3 +29,4 @@
 - feature: support Polaris configuration center extension plugin interface and support dynamic modification of log
   levels.
 - fix:fix system env variable read bug.
+- fix:fix report bug after circuit breaker rule being deleted.
