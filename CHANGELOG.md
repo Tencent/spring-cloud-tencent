@@ -17,3 +17,4 @@
 - [fix:remove bcprov-jdk15on dependency.](https://github.com/Tencent/spring-cloud-tencent/pull/1178)
 - [feat:support configuration encryption.](https://github.com/Tencent/spring-cloud-tencent/pull/1182)
 - [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1186)
+- [feat: support nacos namespace mapping](https://github.com/Tencent/spring-cloud-tencent/pull/1191)
