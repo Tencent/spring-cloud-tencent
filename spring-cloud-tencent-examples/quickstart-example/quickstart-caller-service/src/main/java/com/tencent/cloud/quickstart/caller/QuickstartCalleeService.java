@@ -37,13 +37,5 @@ public interface QuickstartCalleeService {
 	 * @return sum
 	 */
 	@GetMapping("/quickstart/callee/sum")
-	int sum(@RequestParam("value1") int value1, @RequestParam("value2") int value2);
-
-	/**
-	 * Check circuit break.
-	 *
-	 * @return circuit break info
-	 */
-	@GetMapping("/quickstart/callee/circuitBreak")
-	String circuitBreak();
+	String sum(@RequestParam("value1") int value1, @RequestParam("value2") int value2);
 }

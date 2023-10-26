@@ -17,9 +17,11 @@
 
 package com.tencent.cloud.rpc.enhancement.plugin;
 
+import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -46,6 +48,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -324,13 +327,14 @@ public class PolarisEnhancedPluginUtilsTest {
 	}
 
 	@Test
-	public void testGetActiveRuleNameFromRequest() {
+	public void testGetActiveRuleNameFromRequest() throws UnsupportedEncodingException {
 
 		HttpHeaders headers = new HttpHeaders();
 		String ruleName = PolarisEnhancedPluginUtils.getActiveRuleNameFromRequest(headers);
 		assertThat(ruleName).isEqualTo("");
 
-		headers.set(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, "mock_rule");
+		String encodedRuleName = URLEncoder.encode("mock_rule", UTF_8);
+		headers.set(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, encodedRuleName);
 		ruleName = PolarisEnhancedPluginUtils.getActiveRuleNameFromRequest(headers);
 		assertThat(ruleName).isEqualTo("mock_rule");
 	}

@@ -17,15 +17,23 @@
 
 package com.tencent.cloud.quickstart.callee;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.quickstart.callee.config.DataSourceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Quickstart callee controller.
@@ -41,7 +49,10 @@ public class QuickstartCalleeController {
 	@Value("${server.port:0}")
 	private int port;
 
-	@Value("${appName:Callee}")
+	@Value("${spring.cloud.client.ip-address:127.0.0.1}")
+	private String ip;
+
+	@Value("${appName:${spring.application.name}}")
 	private String appName;
 
 	@Autowired
@@ -54,9 +65,9 @@ public class QuickstartCalleeController {
 	 * @return sum
 	 */
 	@GetMapping("/sum")
-	public int sum(@RequestParam int value1, @RequestParam int value2) {
-		LOG.info("Quickstart Callee Service is called and sum is {}.", value1 + value2);
-		return value1 + value2;
+	public String sum(@RequestParam int value1, @RequestParam int value2) {
+		LOG.info("Quickstart Callee Service [{}:{}] is called and sum is [{}].", ip, port, value1 + value2);
+		return String.format("Quickstart Callee Service [%s:%s] is called and sum is [%s].", ip, port, value1 + value2);
 	}
 
 	/**
@@ -65,8 +76,23 @@ public class QuickstartCalleeController {
 	 */
 	@GetMapping("/info")
 	public String info() {
-		LOG.info("Quickstart [{}] Service [{}] is called. datasource = {}", appName, port, dataSourceProperties);
-		return String.format("Quickstart [%s] Service [%s] is called. datasource = [%s]", appName, port, dataSourceProperties);
+		LOG.info("Quickstart [{}] Service [{}:{}] is called. datasource = [{}].", appName, ip, port, dataSourceProperties);
+		return String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, dataSourceProperties);
+	}
+
+	/**
+	 * Get metadata in HTTP header.
+	 *
+	 * @param metadataStr metadata string
+	 * @return metadata in HTTP header
+	 * @throws UnsupportedEncodingException encoding exception
+	 */
+	@RequestMapping("/echo")
+	public String echoHeader(@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String metadataStr)
+			throws UnsupportedEncodingException {
+		LOG.info(URLDecoder.decode(metadataStr, UTF_8));
+		metadataStr = URLDecoder.decode(metadataStr, UTF_8);
+		return metadataStr;
 	}
 
 	/**
@@ -76,7 +102,13 @@ public class QuickstartCalleeController {
 	 */
 	@GetMapping("/circuitBreak")
 	public String circuitBreak() {
-		LOG.info("Quickstart Callee Service is called right.");
-		return "Quickstart Callee Service is called right.";
+		LOG.info("Quickstart Callee Service [{}:{}] is called right.", ip, port);
+		return String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port);
+	}
+
+	@GetMapping("/faultDetect")
+	public String health() {
+		LOG.info("Quickstart Callee Service [{}:{}] is detected right.", ip, port);
+		return String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port);
 	}
 }

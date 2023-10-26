@@ -15,20 +15,23 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.quickstart.caller;
+package com.tencent.cloud.quickstart.gateway;
 
-import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Quickstart callee feign client fallback.
+ * FallbackController.
  *
- * @author Haotian Zhang
+ * sean yu
  */
-@Component
-public class QuickstartCalleeServiceFallback implements QuickstartCalleeService {
+@RestController
+public class FallbackController {
 
-	@Override
-	public String sum(int value1, int value2) {
-		return "sum is 0.";
+	@GetMapping("/polaris-fallback")
+	Mono<String> getFallback() {
+		return Mono.just("fallback: trigger the refuse for service caller.");
 	}
 }

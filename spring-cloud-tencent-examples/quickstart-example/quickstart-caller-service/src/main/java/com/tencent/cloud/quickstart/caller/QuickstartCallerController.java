@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Quickstart caller controller.
@@ -43,10 +45,15 @@ import org.springframework.web.client.RestTemplate;
 public class QuickstartCallerController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(QuickstartCallerController.class);
+
 	@Autowired
 	private RestTemplate restTemplate;
+
 	@Autowired
 	private QuickstartCalleeService quickstartCalleeService;
+
+	@Autowired
+	private WebClient.Builder webClientBuilder;
 
 	/**
 	 * Get sum of two value.
@@ -55,7 +62,7 @@ public class QuickstartCallerController {
 	 * @return sum
 	 */
 	@GetMapping("/feign")
-	public int feign(@RequestParam int value1, @RequestParam int value2) {
+	public String feign(@RequestParam int value1, @RequestParam int value2) {
 		return quickstartCalleeService.sum(value1, value2);
 	}
 
@@ -72,9 +79,14 @@ public class QuickstartCallerController {
 	 * Get information of callee.
 	 * @return information of callee
 	 */
-	@GetMapping("/circuitBreak")
-	public String circuitBreak() {
-		return quickstartCalleeService.circuitBreak();
+	@GetMapping("/webclient")
+	public Mono<String> webclient() {
+		return webClientBuilder
+				.build()
+				.get()
+				.uri("/quickstart/callee/echo")
+				.retrieve()
+				.bodyToMono(String.class);
 	}
 
 	/**
@@ -150,8 +162,8 @@ public class QuickstartCallerController {
 	}
 
 	/**
-	 * Get information of callee.
-	 * @return information of callee
+	 * Get information of caller.
+	 * @return information of caller
 	 */
 	@GetMapping("/info")
 	public String info() {

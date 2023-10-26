@@ -27,12 +27,14 @@ import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Selector;
 
 /**
  * Endpoint of polaris circuit breaker, include circuit breaker rules.
@@ -51,36 +53,38 @@ public class PolarisCircuitBreakerEndpoint {
 	}
 
 	@ReadOperation
-	public Map<String, Object> circuitBreaker() {
-		CircuitBreakerProto.CircuitBreaker circuitBreaker = serviceRuleManager.getServiceCircuitBreakerRule(
+	public Map<String, Object> circuitBreaker(@Selector String dstService) {
+		List<CircuitBreakerProto.CircuitBreakerRule> rules = serviceRuleManager.getServiceCircuitBreakerRule(
 				MetadataContext.LOCAL_NAMESPACE,
-				MetadataContext.LOCAL_SERVICE
+				MetadataContext.LOCAL_SERVICE,
+				dstService
 		);
 
 		Map<String, Object> polarisCircuitBreakerInfo = new HashMap<>();
 
 		polarisCircuitBreakerInfo.put("namespace", MetadataContext.LOCAL_NAMESPACE);
 		polarisCircuitBreakerInfo.put("service", MetadataContext.LOCAL_SERVICE);
-		polarisCircuitBreakerInfo.put("circuitBreakerRules", parseCircuitBreakerRule(circuitBreaker));
 
+		List<Object> circuitBreakerRules = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(rules)) {
+			for (CircuitBreakerProto.CircuitBreakerRule rule : rules) {
+				circuitBreakerRules.add(parseCircuitBreakerRule(rule));
+
+			}
+		}
+		polarisCircuitBreakerInfo.put("circuitBreakerRules", circuitBreakerRules);
 		return polarisCircuitBreakerInfo;
 	}
 
-	private List<Object> parseCircuitBreakerRule(CircuitBreakerProto.CircuitBreaker circuitBreaker) {
-		List<Object> circuitBreakerRuleList = new ArrayList<>();
-
-		for (CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule : circuitBreaker.getRulesList()) {
-			String ruleJson;
-			try {
-				ruleJson = JsonFormat.printer().print(circuitBreakerRule);
-			}
-			catch (InvalidProtocolBufferException e) {
-				LOG.error("rule to Json failed. check rule {}.", circuitBreakerRule, e);
-				throw new RuntimeException("Json failed.", e);
-			}
-			circuitBreakerRuleList.add(JacksonUtils.deserialize2Map(ruleJson));
+	private Object parseCircuitBreakerRule(CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule) {
+		String ruleJson;
+		try {
+			ruleJson = JsonFormat.printer().print(circuitBreakerRule);
 		}
-
-		return circuitBreakerRuleList;
+		catch (InvalidProtocolBufferException e) {
+			LOG.error("rule to Json failed. check rule {}.", circuitBreakerRule, e);
+			throw new RuntimeException("Json failed.", e);
+		}
+		return JacksonUtils.deserialize2Map(ruleJson);
 	}
 }

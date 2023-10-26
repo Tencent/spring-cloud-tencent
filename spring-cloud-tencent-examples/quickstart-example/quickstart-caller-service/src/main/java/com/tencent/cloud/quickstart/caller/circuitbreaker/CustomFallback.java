@@ -15,20 +15,29 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.quickstart.caller;
+package com.tencent.cloud.quickstart.caller.circuitbreaker;
+
+import java.util.HashMap;
+
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerFallback;
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerHttpResponse;
 
 import org.springframework.stereotype.Component;
 
 /**
- * Quickstart callee feign client fallback.
+ * CustomFallback.
  *
- * @author Haotian Zhang
+ * @author sean yu
  */
 @Component
-public class QuickstartCalleeServiceFallback implements QuickstartCalleeService {
-
+public class CustomFallback implements PolarisCircuitBreakerFallback {
 	@Override
-	public String sum(int value1, int value2) {
-		return "sum is 0.";
+	public PolarisCircuitBreakerHttpResponse fallback() {
+		return new PolarisCircuitBreakerHttpResponse(
+				200,
+				new HashMap<String, String>() {{
+					put("Content-Type", "application/json");
+				}},
+				"{\"msg\": \"this is a fallback class\"}");
 	}
 }

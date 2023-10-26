@@ -18,7 +18,33 @@ spring:
       address: grpc://119.91.66.223:8091
       namespace: default
       enabled: true
+      contract:
+        exposure: true
+        report:
+          enabled: false
+      stat:
+        enabled: true
+        port: 28081
     gateway:
+      discovery:
+        locator:
+          enabled: true
+          'predicates[0]':
+            name: Path
+            args:
+              patterns: '''/'' + serviceId + ''/**'''
+          'filters[0]':
+            name: RewritePath
+            args:
+              regexp: '''/'' + serviceId + ''/(?<remaining>.*)'''
+              replacement: '''/$\{remaining}'''
+          'filters[1]':
+            name: CircuitBreaker
+            args:
+              # statusCodes 缺省时会自动识别 "5**" 为错误
+              #              statusCodes: '''404,5**'''
+              # fallbackUri 缺省时会在熔断触发后拉取 plaris server 配置的降级作为 response
+              fallbackUri: '''forward:/polaris-fallback'''
       routes:
         - id: QuickstartCallerService
           uri: lb://QuickstartCallerService

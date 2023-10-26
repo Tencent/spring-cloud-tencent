@@ -17,17 +17,25 @@
 
 package com.tencent.cloud.quickstart.callee;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.quickstart.callee.config.DataSourceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
 /**
  * Quickstart callee controller.
@@ -43,11 +51,16 @@ public class QuickstartCalleeController {
 	@Value("${server.port:0}")
 	private int port;
 
-	@Value("${appName:Callee}")
+	@Value("${spring.cloud.client.ip-address:127.0.0.1}")
+	private String ip;
+
+	@Value("${appName:${spring.application.name}}")
 	private String appName;
 
 	@Autowired
 	private DataSourceProperties dataSourceProperties;
+	private boolean ifBadGateway = true;
+	private boolean ifDelay = true;
 
 	/**
 	 * Get sum of two value.
@@ -56,9 +69,9 @@ public class QuickstartCalleeController {
 	 * @return sum
 	 */
 	@GetMapping("/sum")
-	public int sum(@RequestParam int value1, @RequestParam int value2) {
-		LOG.info("Quickstart Callee Service is called and sum is {}.", value1 + value2);
-		return value1 + value2;
+	public String sum(@RequestParam int value1, @RequestParam int value2) {
+		LOG.info("Quickstart Callee Service [{}:{}] is called and sum is [{}].", ip, port, value1 + value2);
+		return String.format("Quickstart Callee Service [%s:%s] is called and sum is [%s].", ip, port, value1 + value2);
 	}
 
 	/**
@@ -67,8 +80,23 @@ public class QuickstartCalleeController {
 	 */
 	@GetMapping("/info")
 	public String info() {
-		LOG.info("Quickstart [{}] Service [{}] is called. datasource = {}", appName, port, dataSourceProperties);
-		return String.format("Quickstart [%s] Service [%s] is called. datasource = [%s]", appName, port, dataSourceProperties);
+		LOG.info("Quickstart [{}] Service [{}:{}] is called. datasource = [{}].", appName, ip, port, dataSourceProperties);
+		return String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, dataSourceProperties);
+	}
+
+	/**
+	 * Get metadata in HTTP header.
+	 *
+	 * @param metadataStr metadata string
+	 * @return metadata in HTTP header
+	 * @throws UnsupportedEncodingException encoding exception
+	 */
+	@RequestMapping("/echo")
+	public String echoHeader(@RequestHeader(MetadataConstant.HeaderName.CUSTOM_METADATA) String metadataStr)
+			throws UnsupportedEncodingException {
+		LOG.info(URLDecoder.decode(metadataStr, UTF_8));
+		metadataStr = URLDecoder.decode(metadataStr, UTF_8);
+		return metadataStr;
 	}
 
 	/**
@@ -77,9 +105,58 @@ public class QuickstartCalleeController {
 	 * @return circuit break info
 	 */
 	@GetMapping("/circuitBreak")
-	@ResponseStatus(value = HttpStatus.BAD_GATEWAY, reason = "failed for call quickstart callee service")
-	public String circuitBreak() {
-		LOG.info("Quickstart Callee Service [{}] is called wrong.", port);
-		return String.format("Quickstart Callee Service [%s] is called wrong.", port);
+	public ResponseEntity<String> circuitBreak() throws InterruptedException {
+		if (ifBadGateway) {
+			LOG.info("Quickstart Callee Service [{}:{}] is called wrong.", ip, port);
+			return new ResponseEntity<>("failed for call quickstart callee service.", HttpStatus.BAD_GATEWAY);
+		}
+		if (ifDelay) {
+			Thread.sleep(200);
+			LOG.info("Quickstart Callee Service [{}:{}] is called slow.", ip, port);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called slow.", ip, port), HttpStatus.OK);
+		}
+		LOG.info("Quickstart Callee Service [{}:{}] is called right.", ip, port);
+		return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port), HttpStatus.OK);
+	}
+
+	@GetMapping("/setBadGateway")
+	public String setBadGateway(@RequestParam boolean param) {
+		this.ifBadGateway = param;
+		if (param) {
+			LOG.info("info is set to return HttpStatus.BAD_GATEWAY.");
+			return "info is set to return HttpStatus.BAD_GATEWAY.";
+		}
+		else {
+			LOG.info("info is set to return HttpStatus.OK.");
+			return "info is set to return HttpStatus.OK.";
+		}
+	}
+
+	@GetMapping("/setDelay")
+	public String setDelay(@RequestParam boolean param) {
+		this.ifDelay = param;
+		if (param) {
+			LOG.info("info is set to delay 200ms.");
+			return "info is set to delay 200ms.";
+		}
+		else {
+			LOG.info("info is set to no delay.");
+			return "info is set to no delay.";
+		}
+	}
+
+	@GetMapping("/faultDetect")
+	public ResponseEntity<String> health() throws InterruptedException {
+		if (ifBadGateway) {
+			LOG.info("Quickstart Callee Service [{}:{}] is detected wrong.", ip, port);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected wrong.", ip, port), HttpStatus.BAD_GATEWAY);
+		}
+		if (ifDelay) {
+			Thread.sleep(200);
+			LOG.info("Quickstart Callee Service [{}:{}] is detected slow.", ip, port);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected slow.", ip, port), HttpStatus.OK);
+		}
+		LOG.info("Quickstart Callee Service [{}:{}] is detected right.", ip, port);
+		return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port), HttpStatus.OK);
 	}
 }

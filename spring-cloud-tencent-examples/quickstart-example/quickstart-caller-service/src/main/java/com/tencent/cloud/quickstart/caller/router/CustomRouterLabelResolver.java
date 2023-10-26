@@ -13,22 +13,42 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package com.tencent.cloud.quickstart.caller;
+package com.tencent.cloud.quickstart.caller.router;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.gson.Gson;
+import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
+import feign.RequestTemplate;
 
 import org.springframework.stereotype.Component;
 
 /**
- * Quickstart callee feign client fallback.
  *
- * @author Haotian Zhang
+ * Customize the business tag information obtained from the request
+ *
+ *@author lepdou 2022-05-12
  */
 @Component
-public class QuickstartCalleeServiceFallback implements QuickstartCalleeService {
+public class CustomRouterLabelResolver implements FeignRouterLabelResolver {
+	private final Gson gson = new Gson();
 
 	@Override
-	public String sum(int value1, int value2) {
-		return "sum is 0.";
+	public Map<String, String> resolve(RequestTemplate requestTemplate, Set<String> expressionLabelKeys) {
+		Map<String, String> labels = new HashMap<>();
+
+		labels.put("label1", "value1");
+
+		return labels;
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 }

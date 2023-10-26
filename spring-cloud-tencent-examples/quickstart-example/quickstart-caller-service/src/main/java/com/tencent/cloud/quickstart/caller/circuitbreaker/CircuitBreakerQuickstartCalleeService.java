@@ -15,20 +15,24 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.quickstart.caller;
+package com.tencent.cloud.quickstart.caller.circuitbreaker;
 
-import org.springframework.stereotype.Component;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Quickstart callee feign client fallback.
+ * Circuit breaker example callee provider.
  *
- * @author Haotian Zhang
+ * @author sean yu
  */
-@Component
-public class QuickstartCalleeServiceFallback implements QuickstartCalleeService {
+@FeignClient(name = "QuickstartCalleeService", contextId = "fallback-from-polaris")
+public interface CircuitBreakerQuickstartCalleeService {
 
-	@Override
-	public String sum(int value1, int value2) {
-		return "sum is 0.";
-	}
+	/**
+	 * Check circuit break.
+	 *
+	 * @return circuit break info
+	 */
+	@GetMapping("/quickstart/callee/circuitBreak")
+	String circuitBreak();
 }

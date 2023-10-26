@@ -13,22 +13,29 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
+package com.tencent.cloud.polaris.config.config;
 
-package com.tencent.cloud.quickstart.caller;
-
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Quickstart callee feign client fallback.
+ * polaris config module bootstrap configs.
  *
- * @author Haotian Zhang
+ * @author lepdou 2022-03-10
  */
-@Component
-public class QuickstartCalleeServiceFallback implements QuickstartCalleeService {
+@ConfigurationProperties("spring.cloud.polaris.config.crypto")
+public class PolarisCryptoConfigProperties {
+	/**
+	 * Whether to open the configuration crypto.
+	 */
+	private boolean enabled = true;
 
-	@Override
-	public String sum(int value1, int value2) {
-		return "sum is 0.";
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }

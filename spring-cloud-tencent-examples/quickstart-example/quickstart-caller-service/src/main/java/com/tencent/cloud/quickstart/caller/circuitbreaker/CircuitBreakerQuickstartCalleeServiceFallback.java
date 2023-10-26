@@ -15,20 +15,20 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.quickstart.caller;
+package com.tencent.cloud.quickstart.caller.circuitbreaker;
 
 import org.springframework.stereotype.Component;
 
 /**
- * Quickstart callee feign client fallback.
+ * Circuit breaker example callee fallback.
  *
- * @author Haotian Zhang
+ * @author sean yu
  */
 @Component
-public class QuickstartCalleeServiceFallback implements QuickstartCalleeService {
+public class CircuitBreakerQuickstartCalleeServiceFallback implements CircuitBreakerQuickstartCalleeServiceWithFallback {
 
 	@Override
-	public String sum(int value1, int value2) {
-		return "sum is 0.";
+	public String circuitBreak() {
+		return "fallback: trigger the refuse for service callee.";
 	}
 }
