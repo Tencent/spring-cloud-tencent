@@ -88,7 +88,7 @@ public class MetadataContext {
 			throw new RuntimeException("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
 					+ "spring.cloud.polaris.discovery.namespace");
 		}
-
+		namespace = DiscoveryUtil.rewriteNamespace(namespace);
 		LOCAL_NAMESPACE = namespace;
 
 		String serviceName = ApplicationContextAwareUtils

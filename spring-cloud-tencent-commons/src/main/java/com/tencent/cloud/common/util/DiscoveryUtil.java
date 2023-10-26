@@ -32,6 +32,8 @@ public final class DiscoveryUtil {
 
 	private static String NACOS_GROUP;
 
+	private static String NACOS_NAMESPACE;
+
 	private static final Object MUTEX = new Object();
 
 	private static boolean INITIALIZE = false;
@@ -62,6 +64,29 @@ public final class DiscoveryUtil {
 		return serviceId;
 	}
 
+	/**
+	 * rewrite namespace when open double registry and discovery by nacos and polaris.
+	 *
+	 * @param namespace namespace
+	 * @return new namespace
+	 */
+	public static String rewriteNamespace(String namespace) {
+		init();
+		if (Boolean.parseBoolean(ENABLE_NACOS)) {
+			boolean rewrite = false;
+			if (Boolean.parseBoolean(ENABLE_NACOS_REGISTRY) && Boolean.parseBoolean(ENABLE_POLARIS_DISCOVERY)) {
+				rewrite = true;
+			}
+			if (Boolean.parseBoolean(ENABLE_NACOS_DISCOVERY) || Boolean.parseBoolean(ENABLE_POLARIS_DISCOVERY)) {
+				rewrite = true;
+			}
+			if (rewrite) {
+				namespace = NACOS_NAMESPACE;
+			}
+		}
+		return namespace;
+	}
+
 	private static void init() {
 		if (INITIALIZE) {
 			return;
@@ -75,6 +100,7 @@ public final class DiscoveryUtil {
 			ENABLE_NACOS_REGISTRY = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.register-enabled");
 			ENABLE_POLARIS_DISCOVERY = ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.discovery.enabled");
 			NACOS_GROUP = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.group", "DEFAULT_GROUP");
+			NACOS_NAMESPACE = ApplicationContextAwareUtils.getProperties("spring.cloud.nacos.discovery.namespace", "public");
 			INITIALIZE = true;
 		}
 	}
