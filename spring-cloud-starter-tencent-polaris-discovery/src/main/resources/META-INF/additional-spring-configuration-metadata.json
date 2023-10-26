@@ -94,7 +94,7 @@
     {
       "name": "spring.cloud.nacos.discovery.namespace",
       "type": "java.lang.String",
-      "description": "namespace for nacos.",
+      "description": "namespace id for nacos.",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
       "defaultValue": "public"
     },
