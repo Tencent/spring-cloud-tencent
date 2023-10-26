@@ -87,6 +87,7 @@ public class NacosContextPropertiesTest {
 		assertThat(metadata.get(NacosConfigModifier.PASSWORD)).isEqualTo(nacosContextProperties.getPassword());
 		assertThat(metadata.get(NacosConfigModifier.CONTEXT_PATH)).isEqualTo(nacosContextProperties.getContextPath());
 		assertThat(metadata.get(NacosConfigModifier.NAMESPACE)).isEqualTo(nacosContextProperties.getNamespace());
+		assertThat(metadata.get(NacosConfigModifier.GROUP)).isEqualTo(nacosContextProperties.getGroup());
 	}
 
 	@SpringBootApplication

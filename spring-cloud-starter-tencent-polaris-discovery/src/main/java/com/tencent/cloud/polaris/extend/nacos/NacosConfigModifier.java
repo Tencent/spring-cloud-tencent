@@ -59,6 +59,10 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 	 * nacos namespace.
 	 */
 	public static final String NAMESPACE = "namespace";
+	/**
+	 * nacos group.
+	 */
+	public static final String GROUP = "group";
 	private static final Logger LOGGER = LoggerFactory.getLogger(NacosConfigModifier.class);
 	private static final String ID = "nacos";
 	private final NacosContextProperties nacosContextProperties;
@@ -121,6 +125,10 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 
 		if (StringUtils.isNotBlank(nacosContextProperties.getNamespace())) {
 			metadata.put(NAMESPACE, nacosContextProperties.getNamespace());
+		}
+
+		if (StringUtils.isNotBlank(nacosContextProperties.getGroup())) {
+			metadata.put(GROUP, nacosContextProperties.getGroup());
 		}
 
 		configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
