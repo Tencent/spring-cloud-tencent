@@ -62,6 +62,7 @@ public class NacosContextPropertiesTest {
 		assertThat(nacosContextProperties.isDiscoveryEnabled()).isTrue();
 		assertThat(nacosContextProperties.getGroup()).isNotBlank();
 		assertThat(nacosContextProperties.getClusterName()).isNotBlank();
+		assertThat(nacosContextProperties.getNamespace()).isNotBlank();
 	}
 
 	@Test
@@ -85,6 +86,8 @@ public class NacosContextPropertiesTest {
 		assertThat(metadata.get(NacosConfigModifier.USERNAME)).isEqualTo(nacosContextProperties.getUsername());
 		assertThat(metadata.get(NacosConfigModifier.PASSWORD)).isEqualTo(nacosContextProperties.getPassword());
 		assertThat(metadata.get(NacosConfigModifier.CONTEXT_PATH)).isEqualTo(nacosContextProperties.getContextPath());
+		assertThat(metadata.get(NacosConfigModifier.NAMESPACE)).isEqualTo(nacosContextProperties.getNamespace());
+		assertThat(metadata.get(NacosConfigModifier.GROUP)).isEqualTo(nacosContextProperties.getGroup());
 	}
 
 	@SpringBootApplication
