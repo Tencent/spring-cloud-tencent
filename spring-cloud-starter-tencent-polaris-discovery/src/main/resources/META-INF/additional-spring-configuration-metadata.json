@@ -80,6 +80,13 @@
       "defaultValue": "DEFAULT_GROUP"
     },
     {
+      "name": "spring.cloud.nacos.discovery.namespace",
+      "type": "java.lang.String",
+      "description": "namespace id for nacos.",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
+      "defaultValue": "public"
+    },
+    {
       "name": "spring.cloud.nacos.discovery.password",
       "type": "java.lang.String",
       "description": "the nacos authentication password.",
@@ -109,6 +116,29 @@
       "type": "java.lang.String",
       "description": "the nacos authentication cluster-name.",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties"
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.cloud.polaris.loadbalancer.strategy",
+      "values": [
+        {
+          "value": "roundRobin",
+          "description": "round robin load balancer."
+        },
+        {
+          "value": "random",
+          "description": "random load balancer."
+        },
+        {
+          "value": "polarisWeightedRandom",
+          "description": "polaris weighted random load balancer."
+        },
+        {
+          "value": "polarisRingHash",
+          "description": "polaris ring hash load balancer."
+        }
+      ]
     }
   ]
 }
