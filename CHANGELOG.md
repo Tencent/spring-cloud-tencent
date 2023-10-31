@@ -30,3 +30,4 @@
 - [feature: support Polaris configuration center extension plugin interface and support dynamic modification of log levels.](https://github.com/Tencent/spring-cloud-tencent/pull/1105)
 - fix:fix system env variable read bug.
 - fix:fix report bug after circuit breaker rule being deleted.
+- fix:reset circuit-breaker status when rule being deleted.
