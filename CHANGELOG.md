@@ -30,3 +30,4 @@
   levels.
 - fix:fix system env variable read bug.
 - fix:fix report bug after circuit breaker rule being deleted.
+- fix:reset circuit-breaker status when rule being deleted.
