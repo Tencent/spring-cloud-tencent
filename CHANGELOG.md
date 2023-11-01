@@ -1,6 +1,7 @@
 # Change Log
 ---
 
+- [fix: fix the logging problem open at #1189.](https://github.com/Tencent/spring-cloud-tencent/pull/1196)
 - [fix:the polaris config relation non-daemon thread should stop when application fails to start.](https://github.com/Tencent/spring-cloud-tencent/pull/1102)
 - [Refactoring:remove invalid @AutoConfigureAfter and @AutoConfigureBefore from discovery client automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1116)
 - [fix:fix feign url bug when using sleuth.](https://github.com/Tencent/spring-cloud-tencent/pull/1120)
