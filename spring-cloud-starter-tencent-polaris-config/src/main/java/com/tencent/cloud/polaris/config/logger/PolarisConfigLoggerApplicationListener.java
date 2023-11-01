@@ -17,6 +17,7 @@
  */
 package com.tencent.cloud.polaris.config.logger;
 
+import com.tencent.polaris.logging.PolarisLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,7 @@ public class PolarisConfigLoggerApplicationListener implements ApplicationListen
 				LoggingSystem loggingSystem = LoggingSystem.get(classLoader);
 				LOGGER.info("PolarisConfigLoggerApplicationListener onApplicationEvent init loggingSystem:{}", loggingSystem);
 				PolarisConfigLoggerContext.setLogSystem(loggingSystem);
+				PolarisLogging.getInstance().loadConfiguration();
 			}
 		}
 		catch (Exception e) {
