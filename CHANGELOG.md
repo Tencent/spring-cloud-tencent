@@ -19,3 +19,4 @@
 - [feat:support configuration encryption.](https://github.com/Tencent/spring-cloud-tencent/pull/1183)
 - [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1187)
 - [feat: support nacos namespace mapping](https://github.com/Tencent/spring-cloud-tencent/pull/1192)
+- [fix:fix rule-based router when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/1201)
