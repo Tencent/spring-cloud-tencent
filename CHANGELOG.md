@@ -19,3 +19,4 @@
 - [feat:support configuration encryption.](https://github.com/Tencent/spring-cloud-tencent/pull/1182)
 - [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1186)
 - [feat: support nacos namespace mapping](https://github.com/Tencent/spring-cloud-tencent/pull/1191)
+- [fix:fix sct-all wrong spring boot version obtain.](https://github.com/Tencent/spring-cloud-tencent/pull/1204)
