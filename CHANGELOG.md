@@ -20,3 +20,4 @@
 - [feat:support configuration encryption.](https://github.com/Tencent/spring-cloud-tencent/pull/1181)
 - [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1185)
 - [fix:fix rule-based router when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/1200)
+- [fix:fix sct-all wrong spring boot version obtain.](https://github.com/Tencent/spring-cloud-tencent/pull/1203)
