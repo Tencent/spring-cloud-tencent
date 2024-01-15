@@ -31,6 +31,7 @@ import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.BootstrapRegistry;
@@ -267,6 +268,10 @@ public class PolarisConfigDataLocationResolver implements
 		if (!bootstrapContext.isRegistered(SDKContext.class)) {
 			SDKContext sdkContext = sdkContext(resolverContext,
 					polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+			// not init reporter when creating config data temp SDK context.
+			if (sdkContext.getConfig() instanceof ConfigurationImpl) {
+				((ConfigurationImpl) sdkContext.getConfig()).getGlobal().getStatReporter().setEnable(false);
+			}
 			sdkContext.init();
 			bootstrapContext.register(SDKContext.class, BootstrapRegistry.InstanceSupplier.of(sdkContext));
 		}
