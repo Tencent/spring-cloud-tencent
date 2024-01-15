@@ -20,3 +20,4 @@
 - [feat: support nacos namespace mapping](https://github.com/Tencent/spring-cloud-tencent/pull/1190)
 - [fix:fix rule-based router when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/1202)
 - [fix:fix sct-all wrong spring boot version obtain.](https://github.com/Tencent/spring-cloud-tencent/pull/1206)
+- [fix:fix reporter wrong initialization when using config data.](https://github.com/Tencent/spring-cloud-tencent/pull/1220)
