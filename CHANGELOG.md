@@ -21,3 +21,4 @@
 - [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1185)
 - [fix:fix rule-based router when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/1200)
 - [fix:fix sct-all wrong spring boot version obtain.](https://github.com/Tencent/spring-cloud-tencent/pull/1203)
+- [fix:fix reporter wrong initialization when using config data.](https://github.com/Tencent/spring-cloud-tencent/pull/1221)
