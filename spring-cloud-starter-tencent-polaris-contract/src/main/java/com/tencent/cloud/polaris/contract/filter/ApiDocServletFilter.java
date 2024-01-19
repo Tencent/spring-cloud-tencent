@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
 
-import org.springframework.lang.NonNull;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_RESOURCE_PREFIX;
@@ -51,11 +50,9 @@ public class ApiDocServletFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	public void doFilterInternal(@NonNull HttpServletRequest httpServletRequest,
-			@NonNull HttpServletResponse httpServletResponse, @NonNull FilterChain filterChain)
-			throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		if (!polarisContractProperties.isExposure()) {
-			String path = httpServletRequest.getServletPath();
+			String path = request.getServletPath();
 			if (path.startsWith(SWAGGER_V2_API_DOC_URL) ||
 					path.startsWith(SWAGGER_V3_API_DOC_URL) ||
 					path.startsWith(SWAGGER_UI_V2_URL) ||
@@ -63,11 +60,11 @@ public class ApiDocServletFilter extends OncePerRequestFilter {
 					path.startsWith(SWAGGER_RESOURCE_PREFIX) ||
 					path.startsWith(SWAGGER_WEBJARS_V2_PREFIX) ||
 					path.startsWith(SWAGGER_WEBJARS_V3_PREFIX)) {
-				httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				return;
 			}
 		}
-		filterChain.doFilter(httpServletRequest, httpServletResponse);
+		filterChain.doFilter(request, response);
 	}
 }
 
