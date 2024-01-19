@@ -17,7 +17,7 @@ spring:
       contract:
         exposure: true
         report:
-          enabled: false
+          enabled: true
       circuitbreaker:
         enabled: true
       stat:

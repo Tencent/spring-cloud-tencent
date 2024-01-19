@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration;
@@ -71,7 +72,9 @@ public class SpringValueProcessorTest {
 
 	@AfterAll
 	static void afterAll() throws IOException {
-		serverSocket.close();
+		if (Objects.nonNull(serverSocket)) {
+			serverSocket.close();
+		}
 	}
 
 	@Test
