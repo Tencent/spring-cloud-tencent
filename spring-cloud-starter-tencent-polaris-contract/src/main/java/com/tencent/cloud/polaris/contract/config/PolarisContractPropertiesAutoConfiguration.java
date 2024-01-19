@@ -17,13 +17,12 @@
 
 package com.tencent.cloud.polaris.contract.config;
 
-import javax.annotation.Nullable;
-
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 
 /**
  * Auto configuration for Polaris contract properties.

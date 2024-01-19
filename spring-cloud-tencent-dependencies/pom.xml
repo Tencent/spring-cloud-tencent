@@ -76,7 +76,7 @@
 		<polaris.version>1.15.0-SNAPSHOT</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
-		<springfox.swagger2.version>3.0.0</springfox.swagger2.version>
+		<springdoc.version>1.7.0</springdoc.version>
 		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
@@ -239,21 +239,16 @@
 			</dependency>
 
 			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-boot-starter</artifactId>
-				<version>${springfox.swagger2.version}</version>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-ui</artifactId>
+				<version>${springdoc.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>io.swagger</groupId>
-				<artifactId>swagger-models</artifactId>
-				<version>${io.swagger.version}</version>
-			</dependency>
 
 			<dependency>
-				<groupId>io.swagger</groupId>
-				<artifactId>swagger-annotations</artifactId>
-				<version>${io.swagger.version}</version>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-webflux-ui</artifactId>
+				<version>${springdoc.version}</version>
 			</dependency>
 
 			<dependency>
