@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.config.condition;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.Objects;
 
 import com.tencent.cloud.polaris.config.PolarisConfigAutoConfiguration;
 import com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration;
@@ -67,7 +68,9 @@ public class ConditionalOnReflectRefreshTypeTest {
 
 	@AfterAll
 	static void afterAll() throws IOException {
-		serverSocket.close();
+		if (Objects.nonNull(serverSocket)) {
+			serverSocket.close();
+		}
 	}
 
 	@Test
