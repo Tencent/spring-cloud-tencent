@@ -17,25 +17,16 @@
 
 package com.tencent.cloud.polaris.contract.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.tencent.cloud.polaris.contract.SwaggerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import springfox.documentation.RequestHandler;
-import springfox.documentation.builders.PathSelectors;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.StringUtils;
-
-import static com.google.common.base.Optional.fromNullable;
 
 /**
  * Util for package processing.
@@ -44,85 +35,13 @@ import static com.google.common.base.Optional.fromNullable;
  */
 public final class PackageUtil {
 
+	/**
+	 * splitter for property.
+	 */
+	public static final String SPLITTER = ",";
 	private static final Logger LOG = LoggerFactory.getLogger(PackageUtil.class);
 
-	private static final String SPLITTER = ",";
-
 	private PackageUtil() {
-	}
-
-	public static Predicate<RequestHandler> basePackage(String basePackage) {
-		return input -> declaringClass(input).transform(handlerPackage(basePackage, SPLITTER)).or(false);
-	}
-
-	public static Optional<Class<?>> declaringClass(RequestHandler input) {
-		if (input == null) {
-			return Optional.absent();
-		}
-		return fromNullable(input.declaringClass());
-	}
-
-	public static Function<Class<?>, Boolean> handlerPackage(String basePackage, String splitter) {
-		return input -> {
-			try {
-				if (StringUtils.isEmpty(basePackage)) {
-					return false;
-				}
-				String[] packages = basePackage.trim().split(splitter);
-				// Loop to determine matching
-				for (String strPackage : packages) {
-					if (input == null) {
-						continue;
-					}
-					Package pkg = input.getPackage();
-					if (pkg == null) {
-						continue;
-					}
-					String name = pkg.getName();
-					if (StringUtils.isEmpty(name)) {
-						continue;
-					}
-					boolean isMatch = name.startsWith(strPackage);
-					if (isMatch) {
-						return true;
-					}
-				}
-			}
-			catch (Exception e) {
-				LOG.error("handler package error", e);
-			}
-			return false;
-		};
-	}
-
-	public static List<Predicate<String>> getExcludePathPredicates(String excludePath) {
-		List<Predicate<String>> excludePathList = new ArrayList<>();
-		if (StringUtils.isEmpty(excludePath)) {
-			return excludePathList;
-		}
-		String[] exs = excludePath.split(SPLITTER);
-		for (String ex : exs) {
-			if (!StringUtils.isEmpty(ex)) {
-				excludePathList.add(PathSelectors.ant(ex));
-			}
-		}
-		return excludePathList;
-	}
-
-	public static List<Predicate<String>> getBasePathPredicates(String basePath) {
-		List<Predicate<String>> basePathList = new ArrayList<>();
-		if (!StringUtils.isEmpty(basePath)) {
-			String[] bps = basePath.split(SPLITTER);
-			for (String bp : bps) {
-				if (!StringUtils.isEmpty(bp)) {
-					basePathList.add(PathSelectors.ant(bp));
-				}
-			}
-		}
-		if (basePathList.isEmpty()) {
-			basePathList.add(PathSelectors.ant("/**"));
-		}
-		return basePathList;
 	}
 
 	public static String scanPackage(String configBasePackage) {

@@ -29,15 +29,16 @@ import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.plugin.server.InterfaceDescriptor;
 import com.tencent.polaris.api.plugin.server.ReportServiceContractRequest;
 import com.tencent.polaris.api.plugin.server.ReportServiceContractResponse;
-import io.swagger.models.HttpMethod;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import springfox.documentation.service.Documentation;
-import springfox.documentation.spring.web.DocumentationCache;
-import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
+import org.springdoc.api.AbstractOpenApiResource;
+import org.springdoc.api.AbstractOpenApiResourceUtil;
+import org.springdoc.webflux.api.OpenApiWebFluxUtil;
+import org.springdoc.webmvc.api.OpenApiWebMvcUtil;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -52,18 +53,21 @@ import org.springframework.util.CollectionUtils;
 public class PolarisContractReporter implements ApplicationListener<ApplicationReadyEvent> {
 
 	private final Logger LOG = LoggerFactory.getLogger(PolarisContractReporter.class);
-	private final ServiceModelToSwagger2Mapper swagger2Mapper;
-	private final DocumentationCache documentationCache;
+
+	private final org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource;
+	private final org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource;
 	private final PolarisContractProperties polarisContractProperties;
 
 	private final ProviderAPI providerAPI;
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
-	public PolarisContractReporter(DocumentationCache documentationCache, ServiceModelToSwagger2Mapper swagger2Mapper,
-			PolarisContractProperties polarisContractProperties, ProviderAPI providerAPI, PolarisDiscoveryProperties polarisDiscoveryProperties) {
-		this.swagger2Mapper = swagger2Mapper;
-		this.documentationCache = documentationCache;
+	public PolarisContractReporter(org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource,
+			org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource,
+			PolarisContractProperties polarisContractProperties, ProviderAPI providerAPI,
+			PolarisDiscoveryProperties polarisDiscoveryProperties) {
+		this.multipleOpenApiWebMvcResource = multipleOpenApiWebMvcResource;
+		this.multipleOpenApiWebFluxResource = multipleOpenApiWebFluxResource;
 		this.polarisContractProperties = polarisContractProperties;
 		this.providerAPI = providerAPI;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
@@ -73,29 +77,37 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 	public void onApplicationEvent(@NonNull ApplicationReadyEvent applicationReadyEvent) {
 		if (polarisContractProperties.isReportEnabled()) {
 			try {
-				Documentation documentation = documentationCache.documentationByGroup(polarisContractProperties.getGroup());
-				Swagger swagger = swagger2Mapper.mapDocumentation(documentation);
-				if (swagger != null) {
+				AbstractOpenApiResource openApiResource = null;
+				if (multipleOpenApiWebMvcResource != null) {
+					openApiResource = OpenApiWebMvcUtil.getOpenApiResourceOrThrow(multipleOpenApiWebMvcResource, polarisContractProperties.getGroup());
+				}
+				else if (multipleOpenApiWebFluxResource != null) {
+					openApiResource = OpenApiWebFluxUtil.getOpenApiResourceOrThrow(multipleOpenApiWebFluxResource, polarisContractProperties.getGroup());
+				}
+				OpenAPI openAPI = null;
+				if (openApiResource != null) {
+					openAPI = AbstractOpenApiResourceUtil.getOpenApi(openApiResource);
+				}
+				if (openAPI != null) {
 					ReportServiceContractRequest request = new ReportServiceContractRequest();
 					request.setName(polarisDiscoveryProperties.getService());
 					request.setNamespace(polarisDiscoveryProperties.getNamespace());
 					request.setService(polarisDiscoveryProperties.getService());
 					request.setProtocol("http");
 					request.setVersion(polarisDiscoveryProperties.getVersion());
-					List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(swagger);
+					List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(openAPI);
 					request.setInterfaceDescriptors(interfaceDescriptorList);
 					ReportServiceContractResponse response = providerAPI.reportServiceContract(request);
 					LOG.info("Service contract [Namespace: {}. Name: {}. Service: {}. Protocol:{}. Version: {}. API counter: {}] is reported.",
 							request.getNamespace(), request.getName(), request.getService(), request.getProtocol(),
 							request.getVersion(), request.getInterfaceDescriptors().size());
 					if (LOG.isDebugEnabled()) {
-						String jsonValue = JacksonUtils.serialize2Json(swagger);
+						String jsonValue = JacksonUtils.serialize2Json(openAPI);
 						LOG.debug("OpenApi json data: {}", jsonValue);
 					}
 				}
 				else {
-					LOG.warn("Swagger or json is null, documentationCache keys:{}, group:{}", documentationCache.all()
-							.keySet(), polarisContractProperties.getGroup());
+					LOG.warn("OpenAPI or json is null, group:{}", polarisContractProperties.getGroup());
 				}
 			}
 			catch (Throwable t) {
@@ -104,11 +116,11 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 		}
 	}
 
-	private List<InterfaceDescriptor> getInterfaceDescriptorFromSwagger(Swagger swagger) {
+	private List<InterfaceDescriptor> getInterfaceDescriptorFromSwagger(OpenAPI openAPI) {
 		List<InterfaceDescriptor> interfaceDescriptorList = new ArrayList<>();
-		Map<String, Path> paths = swagger.getPaths();
-		for (Map.Entry<String, Path> p : paths.entrySet()) {
-			Path path = p.getValue();
+		Paths paths = openAPI.getPaths();
+		for (Map.Entry<String, PathItem> p : paths.entrySet()) {
+			PathItem path = p.getValue();
 			Map<String, Operation> operationMap = getOperationMapFromPath(path);
 			if (CollectionUtils.isEmpty(operationMap)) {
 				continue;
@@ -124,29 +136,29 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 		return interfaceDescriptorList;
 	}
 
-	private Map<String, Operation> getOperationMapFromPath(Path path) {
+	private Map<String, Operation> getOperationMapFromPath(PathItem path) {
 		Map<String, Operation> operationMap = new HashMap<>();
 
 		if (path.getGet() != null) {
-			operationMap.put(HttpMethod.GET.name(), path.getGet());
+			operationMap.put(PathItem.HttpMethod.GET.name(), path.getGet());
 		}
 		if (path.getPut() != null) {
-			operationMap.put(HttpMethod.PUT.name(), path.getPut());
+			operationMap.put(PathItem.HttpMethod.PUT.name(), path.getPut());
 		}
 		if (path.getPost() != null) {
-			operationMap.put(HttpMethod.POST.name(), path.getPost());
+			operationMap.put(PathItem.HttpMethod.POST.name(), path.getPost());
 		}
 		if (path.getHead() != null) {
-			operationMap.put(HttpMethod.HEAD.name(), path.getHead());
+			operationMap.put(PathItem.HttpMethod.HEAD.name(), path.getHead());
 		}
 		if (path.getDelete() != null) {
-			operationMap.put(HttpMethod.DELETE.name(), path.getDelete());
+			operationMap.put(PathItem.HttpMethod.DELETE.name(), path.getDelete());
 		}
 		if (path.getPatch() != null) {
-			operationMap.put(HttpMethod.PATCH.name(), path.getPatch());
+			operationMap.put(PathItem.HttpMethod.PATCH.name(), path.getPatch());
 		}
 		if (path.getOptions() != null) {
-			operationMap.put(HttpMethod.OPTIONS.name(), path.getOptions());
+			operationMap.put(PathItem.HttpMethod.OPTIONS.name(), path.getOptions());
 		}
 
 		return operationMap;

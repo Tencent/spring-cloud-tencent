@@ -17,13 +17,13 @@
 
 package com.tencent.cloud.polaris.contract.filter;
 
-
 import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
 import reactor.core.publisher.Mono;
 
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -42,6 +42,7 @@ import static com.tencent.cloud.polaris.contract.filter.FilterConstant.SWAGGER_W
  * @author Haotian Zhang
  */
 public class ApiDocWebFluxFilter implements WebFilter {
+
 	private final PolarisContractProperties polarisContractProperties;
 
 	public ApiDocWebFluxFilter(PolarisContractProperties polarisContractProperties) {
@@ -49,7 +50,7 @@ public class ApiDocWebFluxFilter implements WebFilter {
 	}
 
 	@Override
-	public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
+	public Mono<Void> filter(ServerWebExchange serverWebExchange, @NonNull WebFilterChain webFilterChain) {
 		if (!polarisContractProperties.isExposure()) {
 			String path = serverWebExchange.getRequest().getURI().getPath();
 			if (path.startsWith(SWAGGER_V2_API_DOC_URL) ||
