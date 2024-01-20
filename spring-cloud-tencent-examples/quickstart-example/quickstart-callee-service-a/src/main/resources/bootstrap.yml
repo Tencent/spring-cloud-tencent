@@ -14,7 +14,7 @@ spring:
       contract:
         exposure: true
         report:
-          enabled: false
+          enabled: true
       stat:
         enabled: true
         port: 28083

@@ -139,6 +139,11 @@ public class MockedConfigKVFile implements ConfigKVFile {
 	}
 
 	@Override
+	public String getMd5() {
+		return null;
+	}
+
+	@Override
 	public void addChangeListener(ConfigFileChangeListener configFileChangeListener) {
 
 	}
