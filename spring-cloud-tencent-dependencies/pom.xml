@@ -70,10 +70,10 @@
 	</developers>
 
 	<properties>
-		<revision>1.13.0-2022.0.4-SNAPSHOT</revision>
+		<revision>1.13.0-2022.0.4</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.15.0-SNAPSHOT</polaris.version>
+		<polaris.version>1.15.0</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<springdoc.version>2.2.0</springdoc.version>
 		<mocktio.version>4.9.0</mocktio.version>
