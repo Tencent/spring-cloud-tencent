@@ -70,10 +70,10 @@
 	</developers>
 
 	<properties>
-		<revision>1.13.0-2021.0.9-SNAPSHOT</revision>
+		<revision>1.13.0-2021.0.9</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.15.0-SNAPSHOT</polaris.version>
+		<polaris.version>1.15.0</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
 		<springdoc.version>1.7.0</springdoc.version>
