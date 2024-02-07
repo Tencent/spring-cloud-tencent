@@ -90,7 +90,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.13.0-Hoxton.SR12</revision>
+		<revision>1.14.0-Hoxton.SR12-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
 		<spring.framework.version>5.2.25.RELEASE</spring.framework.version>
