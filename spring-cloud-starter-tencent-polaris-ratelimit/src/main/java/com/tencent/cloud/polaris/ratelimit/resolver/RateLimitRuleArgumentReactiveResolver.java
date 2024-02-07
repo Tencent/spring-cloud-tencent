@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
@@ -78,29 +77,35 @@ public class RateLimitRuleArgumentReactiveResolver {
 					switch (matchArgument.getType()) {
 					case CUSTOM:
 						argument = StringUtils.isBlank(matchKey) ? null :
-								Argument.buildCustom(matchKey, Optional.ofNullable(getCustomResolvedLabels(request).get(matchKey)).orElse(StringUtils.EMPTY));
+								Argument.buildCustom(matchKey, Optional.ofNullable(getCustomResolvedLabels(request).get(matchKey))
+										.orElse(StringUtils.EMPTY));
 						break;
 					case METHOD:
-						argument = Argument.buildMethod(request.getRequest().getMethodValue());
+						argument = Argument.buildMethod(request.getRequest().getMethod().name());
 						break;
 					case HEADER:
 						argument = StringUtils.isBlank(matchKey) ? null :
-								Argument.buildHeader(matchKey, Optional.ofNullable(request.getRequest().getHeaders().getFirst(matchKey)).orElse(StringUtils.EMPTY));
+								Argument.buildHeader(matchKey, Optional.ofNullable(request.getRequest().getHeaders()
+										.getFirst(matchKey)).orElse(StringUtils.EMPTY));
 						break;
 					case QUERY:
 						argument = StringUtils.isBlank(matchKey) ? null :
-								Argument.buildQuery(matchKey, Optional.ofNullable(request.getRequest().getQueryParams().getFirst(matchKey)).orElse(StringUtils.EMPTY));
+								Argument.buildQuery(matchKey, Optional.ofNullable(request.getRequest().getQueryParams()
+										.getFirst(matchKey)).orElse(StringUtils.EMPTY));
 						break;
 					case CALLER_SERVICE:
-						String sourceServiceNamespace = MetadataContextHolder.getDisposableMetadata(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE, true).orElse(StringUtils.EMPTY);
-						String sourceServiceName = MetadataContextHolder.getDisposableMetadata(DEFAULT_METADATA_SOURCE_SERVICE_NAME, true).orElse(StringUtils.EMPTY);
+						String sourceServiceNamespace = MetadataContextHolder.getDisposableMetadata(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE, true)
+								.orElse(StringUtils.EMPTY);
+						String sourceServiceName = MetadataContextHolder.getDisposableMetadata(DEFAULT_METADATA_SOURCE_SERVICE_NAME, true)
+								.orElse(StringUtils.EMPTY);
 						if (!StringUtils.isEmpty(sourceServiceNamespace) && !StringUtils.isEmpty(sourceServiceName)) {
 							argument = Argument.buildCallerService(sourceServiceNamespace, sourceServiceName);
 						}
 						break;
 					case CALLER_IP:
 						InetSocketAddress remoteAddress = request.getRequest().getRemoteAddress();
-						argument = Argument.buildCallerIP(remoteAddress != null ? remoteAddress.getAddress().getHostAddress() : StringUtils.EMPTY);
+						argument = Argument.buildCallerIP(remoteAddress != null ? remoteAddress.getAddress()
+								.getHostAddress() : StringUtils.EMPTY);
 						break;
 					default:
 						break;

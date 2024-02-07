@@ -6,9 +6,11 @@ name: Test with Junit 2022.0
 on:
   push:
     branches:
+      - 2023.0
       - 2022.0
   pull_request:
     branches:
+      - 2023.0
       - 2022.0
 
 jobs:

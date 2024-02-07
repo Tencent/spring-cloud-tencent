@@ -75,7 +75,7 @@ public final class SpringWebExpressionLabelUtils {
 				labels.put(labelKey, getCookieValue(exchange.getRequest(), cookieKey));
 			}
 			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
-				labels.put(labelKey, exchange.getRequest().getMethodValue());
+				labels.put(labelKey, exchange.getRequest().getMethod().name());
 			}
 			else if (ExpressionLabelUtils.isUriLabel(labelKey)) {
 				labels.put(labelKey, exchange.getRequest().getURI().getPath());
@@ -118,7 +118,7 @@ public final class SpringWebExpressionLabelUtils {
 				labels.put(labelKey, getCookieValue(request, cookieKey));
 			}
 			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
-				labels.put(labelKey, request.getMethodValue());
+				labels.put(labelKey, request.getMethod().name());
 			}
 			else if (ExpressionLabelUtils.isUriLabel(labelKey)) {
 				labels.put(labelKey, request.getURI().getPath());

@@ -5,8 +5,8 @@
 [![Contributors](https://img.shields.io/github/contributors/Tencent/spring-cloud-tencent)](https://github.com/Tencent/spring-cloud-tencent/graphs/contributors)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-[![Test with Junit 2022.0](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test17.yml/badge.svg?branch=2022.0)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test17.yml)
-[![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2022.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2022.0)
+[![Test with Junit](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test17.yml/badge.svg?branch=2023.0)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit_test17.yml)
+[![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2023.0/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2023.0)
 
 [English](./README.md) | 简体中文
 
@@ -61,7 +61,7 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 
 > 注意：
 >
-> 支持Spring Cloud 版本：2022.0、2021.0、2020.0、Hoxton。
+> 支持Spring Cloud 版本：2023.0、2022.0、2021.0、2020.0、Hoxton。
 >
 > Spring Cloud Tencent
 > 的版本列表可以查看

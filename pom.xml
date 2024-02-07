@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>4.0.5</version>
+		<version>4.1.0</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
 	<version>${revision}</version>
 	<name>Spring Cloud Tencent</name>
 	<description>Spring Cloud Tencent</description>
-	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2022.0</url>
+	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2023.0</url>
 
 	<organization>
 		<name>Tencent</name>
@@ -26,7 +26,7 @@
 	<licenses>
 		<license>
 			<name>The BSD 3-Clause License (BSD3)</name>
-			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2022.0/LICENSE</url>
+			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2023.0/LICENSE</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -89,16 +89,16 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.13.0-2022.0.4</revision>
+		<revision>1.13.0-2023.0.0-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>6.0.16</spring.framework.version>
+		<spring.framework.version>6.1.3</spring.framework.version>
 
 		<!-- Spring Boot -->
-		<spring.boot.version>3.1.7</spring.boot.version>
+		<spring.boot.version>3.2.2</spring.boot.version>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2022.0.4</spring.cloud.version>
+		<spring.cloud.version>2023.0.0</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
@@ -113,6 +113,14 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- This will be deleted later with the version upgrade of Spring Cloud. https://github.com/spring-cloud/spring-cloud-commons/issues/1315 -->
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-commons</artifactId>
+				<version>4.1.1</version>
+				<scope>compile</scope>
+			</dependency>
+			
 			<!-- Spring Cloud Tencent Dependencies -->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
