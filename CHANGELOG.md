@@ -21,4 +21,4 @@
 - [feat: support nacos namespace mapping](https://github.com/Tencent/spring-cloud-tencent/pull/1192)
 - [fix:fix rule-based router when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/1201)
 - [fix:fix sct-all wrong spring boot version obtain.](https://github.com/Tencent/spring-cloud-tencent/pull/1205)
-- [fix:fix swagger not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1125)
+- [fix:fix swagger not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1225)
