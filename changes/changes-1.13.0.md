@@ -1,0 +1,23 @@
+# Change Log
+---
+
+- [fix: fix the logging problem open at #1189.](https://github.com/Tencent/spring-cloud-tencent/pull/1196)
+- [fix:the polaris config relation non-daemon thread should stop when application fails to start.](https://github.com/Tencent/spring-cloud-tencent/pull/1102)
+- [Refactoring:remove invalid @AutoConfigureAfter and @AutoConfigureBefore from discovery client automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1116)
+- [fix:fix feign url bug when using sleuth.](https://github.com/Tencent/spring-cloud-tencent/pull/1120)
+- [refactor:optimize the order and condition matching of service registration automatic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1131)
+- [feat:support service contract reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1141)
+- [feat: support log path configuration parameters,](https://github.com/Tencent/spring-cloud-tencent/pull/1142)
+- [feat:add swagger report switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1150)
+- [fix: dynamic routing using cookies.](https://github.com/Tencent/spring-cloud-tencent/pull/1153)
+- [fix:fix retry loadbalancer not working bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1155)
+- [fix:fix header validation when using Chinese char.](https://github.com/Tencent/spring-cloud-tencent/pull/1169)
+- [feat: add circuit breaker actuator.](https://github.com/Tencent/spring-cloud-tencent/pull/1170)
+- [feat: add metadata transfer for http header via spring.cloud.tencent.metadata.headers.](https://github.com/Tencent/spring-cloud-tencent/pull/1176)
+- [fix:remove bcprov-jdk15on dependency.](https://github.com/Tencent/spring-cloud-tencent/pull/1180)
+- [feat:support configuration encryption.](https://github.com/Tencent/spring-cloud-tencent/pull/1184)
+- [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1188)
+- [feat: support nacos namespace mapping](https://github.com/Tencent/spring-cloud-tencent/pull/1190)
+- [fix:fix rule-based router when using RestTemplate.](https://github.com/Tencent/spring-cloud-tencent/pull/1202)
+- [fix:fix sct-all wrong spring boot version obtain.](https://github.com/Tencent/spring-cloud-tencent/pull/1206)
+- [fix:fix reporter wrong initialization when using config data.](https://github.com/Tencent/spring-cloud-tencent/pull/1220)
