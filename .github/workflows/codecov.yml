@@ -3,6 +3,7 @@ name: Codecov
 on:
   push:
     branches:
+      - 2023.0
       - 2022.0
       - 2021.0
       - 2020.0
@@ -10,6 +11,7 @@ on:
       - greenwich
   pull_request:
     branches:
+      - 2023.0
       - 2022.0
       - 2021.0
       - 2020.0
