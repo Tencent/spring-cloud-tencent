@@ -3,6 +3,7 @@ name: Snapshot
 on:
   push:
     branches:
+      - 2023.0
       - 2022.0
       - 2021.0
       - 2020.0
