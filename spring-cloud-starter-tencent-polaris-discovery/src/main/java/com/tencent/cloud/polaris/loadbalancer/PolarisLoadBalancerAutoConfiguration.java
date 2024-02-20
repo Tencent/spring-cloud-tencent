@@ -53,7 +53,7 @@ import org.springframework.util.CollectionUtils;
 public class PolarisLoadBalancerAutoConfiguration {
 
 	@Bean
-	public RestTemplateCustomizer restTemplateCustomizer(
+	public RestTemplateCustomizer polarisRestTemplateCustomizer(
 			@Autowired(required = false) RetryLoadBalancerInterceptor retryLoadBalancerInterceptor,
 			@Autowired(required = false) LoadBalancerInterceptor loadBalancerInterceptor) {
 		return restTemplate -> {
