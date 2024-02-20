@@ -89,16 +89,16 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>1.14.0-2022.0.4-SNAPSHOT</revision>
+		<revision>1.14.0-2022.0.5-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>6.0.16</spring.framework.version>
+		<spring.framework.version>6.0.17</spring.framework.version>
 
 		<!-- Spring Boot -->
-		<spring.boot.version>3.1.7</spring.boot.version>
+		<spring.boot.version>3.1.8</spring.boot.version>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2022.0.4</spring.cloud.version>
+		<spring.cloud.version>2022.0.5</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
