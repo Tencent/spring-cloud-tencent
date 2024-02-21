@@ -35,6 +35,7 @@ import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Auto-configuration Ribbon for Polaris.
@@ -55,23 +56,38 @@ public class PolarisLoadBalancerAutoConfiguration {
 	}
 
 	@Bean
-	public RestTemplateCustomizer restTemplateCustomizer(
+	public RestTemplateCustomizer polarisRestTemplateCustomizer(
 			@Autowired(required = false) RetryLoadBalancerInterceptor retryLoadBalancerInterceptor,
 			@Autowired(required = false) LoadBalancerInterceptor loadBalancerInterceptor) {
 		return restTemplate -> {
 			List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
 			// LoadBalancerInterceptor must invoke before EnhancedRestTemplateInterceptor
-			if (retryLoadBalancerInterceptor != null || loadBalancerInterceptor != null) {
-				int addIndex = list.size();
+			int addIndex = list.size();
+			if (CollectionUtils.containsInstance(list, retryLoadBalancerInterceptor) || CollectionUtils.containsInstance(list, loadBalancerInterceptor)) {
+				ClientHttpRequestInterceptor enhancedRestTemplateInterceptor = null;
 				for (int i = 0; i < list.size(); i++) {
 					if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
+						enhancedRestTemplateInterceptor = list.get(i);
 						addIndex = i;
 					}
 				}
-				list.add(addIndex,
-						retryLoadBalancerInterceptor != null
-								? retryLoadBalancerInterceptor
-								: loadBalancerInterceptor);
+				if (enhancedRestTemplateInterceptor != null) {
+					list.remove(addIndex);
+					list.add(enhancedRestTemplateInterceptor);
+				}
+			}
+			else {
+				if (retryLoadBalancerInterceptor != null || loadBalancerInterceptor != null) {
+					for (int i = 0; i < list.size(); i++) {
+						if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
+							addIndex = i;
+						}
+					}
+					list.add(addIndex,
+							retryLoadBalancerInterceptor != null
+									? retryLoadBalancerInterceptor
+									: loadBalancerInterceptor);
+				}
 			}
 			restTemplate.setInterceptors(list);
 		};
