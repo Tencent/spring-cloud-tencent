@@ -20,3 +20,4 @@
 - [feat:optimize examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1186)
 - [feat: support nacos namespace mapping](https://github.com/Tencent/spring-cloud-tencent/pull/1191)
 - [fix:fix sct-all wrong spring boot version obtain.](https://github.com/Tencent/spring-cloud-tencent/pull/1204)
+- fix:fix restTemplateCustomizer bean conflict causing service to fail to start properly.
