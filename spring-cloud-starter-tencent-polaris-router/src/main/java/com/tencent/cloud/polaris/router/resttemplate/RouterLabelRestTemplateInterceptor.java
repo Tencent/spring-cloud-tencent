@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -104,7 +105,8 @@ public class RouterLabelRestTemplateInterceptor implements ClientHttpRequestInte
 		ClientHttpResponse response = clientHttpRequestExecution.execute(request, body);
 
 		if (!CollectionUtils.isEmpty(request.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER))) {
-			response.getHeaders().addAll(RouterConstant.ROUTER_LABEL_HEADER, Objects.requireNonNull(request.getHeaders()
+			HttpHeaders responseHeaders = HttpHeaders.writableHttpHeaders(response.getHeaders());
+			responseHeaders.addAll(RouterConstant.ROUTER_LABEL_HEADER, Objects.requireNonNull(request.getHeaders()
 					.get(RouterConstant.ROUTER_LABEL_HEADER)));
 		}
 
