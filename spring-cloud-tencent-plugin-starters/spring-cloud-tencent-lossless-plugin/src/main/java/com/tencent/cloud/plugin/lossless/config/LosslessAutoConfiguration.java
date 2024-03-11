@@ -18,12 +18,13 @@
 
 package com.tencent.cloud.plugin.lossless.config;
 
-import com.tencent.cloud.plugin.lossless.LosslessBeanPostProcessor;
+import com.tencent.cloud.plugin.lossless.LosslessRegistryAspect;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.serviceregistry.Registration;
+import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -34,18 +35,14 @@ import org.springframework.context.annotation.Import;
  * @author Shedfree Wu
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisEnabled
 @Import(LosslessPropertiesAutoConfiguration.class)
 public class LosslessAutoConfiguration {
 
-	@Value("${server.port:8080}")
-	private Integer port;
-
 	@Bean
 	@ConditionalOnMissingBean
-	public LosslessBeanPostProcessor losslessBeanPostProcessor(Registration registration,
-							PolarisSDKContextManager polarisSDKContextManager,
-							LosslessProperties losslessProperties) {
-		return new LosslessBeanPostProcessor(polarisSDKContextManager, losslessProperties,
-				registration, port);
+	public LosslessRegistryAspect losslessRegistryAspect(ServiceRegistry serviceRegistry, Registration registration,
+							LosslessProperties losslessProperties, PolarisSDKContextManager polarisSDKContextManager) {
+		return new LosslessRegistryAspect(serviceRegistry, registration, losslessProperties, polarisSDKContextManager);
 	}
 }

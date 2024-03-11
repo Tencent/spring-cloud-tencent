@@ -83,7 +83,7 @@ public class PolarisSDKContextManager {
 					providerAPI = null;
 				}
 
-				// destroy ProviderAPI
+				// destroy LosslessAPI
 				if (Objects.nonNull(losslessAPI)) {
 					((AutoCloseable) losslessAPI).close();
 					losslessAPI = null;

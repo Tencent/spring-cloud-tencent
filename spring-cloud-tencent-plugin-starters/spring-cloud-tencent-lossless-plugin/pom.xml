@@ -26,11 +26,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>lossless-register</artifactId>
 		</dependency>
@@ -54,6 +49,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 			<scope>test</scope>
 		</dependency>
 

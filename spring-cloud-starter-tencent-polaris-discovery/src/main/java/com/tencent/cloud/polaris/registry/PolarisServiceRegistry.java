@@ -25,10 +25,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
 import com.tencent.polaris.api.config.global.StatReporterConfig;
 import com.tencent.polaris.api.core.ProviderAPI;

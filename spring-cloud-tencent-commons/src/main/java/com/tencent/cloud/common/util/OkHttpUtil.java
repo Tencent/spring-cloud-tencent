@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.util;
+package com.tencent.cloud.common.util;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

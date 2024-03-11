@@ -18,8 +18,6 @@
 package com.tencent.cloud.common.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import org.springframework.util.ClassUtils;
 
@@ -69,103 +67,5 @@ public final class ReflectionUtils extends org.springframework.util.ReflectionUt
 			field.setAccessible(false);
 		}
 		return null;
-	}
-
-	/**
-	 * get property of class object by property name.
-	 *
-	 * @param target    object
-	 * @param fieldName property name of class object
-	 * @return value
-	 */
-	public static Object getObjectByFieldName(Object target, String fieldName) {
-		try {
-			Field field = target.getClass().getDeclaredField(fieldName);
-			field.setAccessible(true);
-			return field.get(target);
-		}
-		catch (Exception e) {
-			throw new RuntimeException("getObjectByFieldName", e);
-		}
-	}
-
-	/**
-	 * get property of parent class object by property name.
-	 *
-	 * @param target    object
-	 * @param fieldName property name of parent class object
-	 * @return value
-	 */
-	public static Object getSuperObjectByFieldName(Object target, String fieldName) {
-		try {
-			Field field = target.getClass().getSuperclass().getDeclaredField(fieldName);
-			field.setAccessible(true);
-			return field.get(target);
-		}
-		catch (Exception e) {
-			throw new RuntimeException("getSuperObjectByFieldName", e);
-		}
-	}
-
-
-	/**
-	 * set property of class object by property name.
-	 *
-	 * @param target    object
-	 * @param fieldName property name of class object
-	 * @param value     new value
-	 */
-	public static void setValueByFieldName(Object target, String fieldName, Object value) {
-		try {
-			Field field = target.getClass().getDeclaredField(fieldName);
-			setValue(target, field, value);
-		}
-		catch (Exception e) {
-			throw new RuntimeException("setValueByFieldName", e);
-		}
-	}
-
-	/**
-	 * set property of parent class object by property name.
-	 *
-	 * @param target    object
-	 * @param fieldName property name of parent class object
-	 * @param value     new value
-	 */
-	public static void setSuperValueByFieldName(Object target, String fieldName, Object value) {
-		try {
-			Field field = target.getClass().getSuperclass().getDeclaredField(fieldName);
-			setValue(target, field, value);
-		}
-		catch (Exception e) {
-			throw new RuntimeException("setSuperValueByFieldName", e);
-		}
-	}
-
-	private static void setValue(Object target, Field field, Object value) {
-		try {
-			Field modifiers = getModifiersField();
-			modifiers.setAccessible(true);
-			modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			field.setAccessible(true);
-			field.set(target, value);
-		}
-		catch (Exception e) {
-			throw new RuntimeException("setValue", e);
-		}
-	}
-
-	private static Field getModifiersField() throws Exception {
-		Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-		getDeclaredFields0.setAccessible(true);
-		Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
-		Field modifierField = null;
-		for (Field f : fields) {
-			if ("modifiers".equals(f.getName())) {
-				modifierField = f;
-				break;
-			}
-		}
-		return modifierField;
 	}
 }

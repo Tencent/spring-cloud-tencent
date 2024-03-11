@@ -19,15 +19,17 @@ package com.tencent.cloud.plugin.lossless;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
+import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.plugin.lossless.config.LosslessProperties;
-import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.polaris.api.plugin.lossless.InstanceProperties;
 import com.tencent.polaris.api.plugin.lossless.LosslessActionProvider;
+import com.tencent.polaris.api.pojo.BaseInstance;
+import com.tencent.polaris.api.pojo.DefaultBaseInstance;
 import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.cloud.client.serviceregistry.Registration;
+import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.http.HttpHeaders;
 
 /**
@@ -36,22 +38,20 @@ import org.springframework.http.HttpHeaders;
  * @author Shedfree Wu
  */
 public class SpringCloudLosslessActionProvider implements LosslessActionProvider {
-
-	private LosslessProxyServiceRegistry losslessProxyServiceRegistry;
+	private ServiceRegistry<Registration> serviceRegistry;
 
 	private LosslessProperties losslessProperties;
 
-	private Consumer<Registration> registrationConsumer;
+	private Runnable originalRegisterAction;
 
 	private Registration registration;
 
-	public SpringCloudLosslessActionProvider(
-			LosslessProxyServiceRegistry losslessProxyServiceRegistry,
-			LosslessProperties losslessProperties) {
-		this.losslessProxyServiceRegistry = losslessProxyServiceRegistry;
+	public SpringCloudLosslessActionProvider(ServiceRegistry<Registration> serviceRegistry, Registration registration,
+												LosslessProperties losslessProperties, Runnable originalRegisterAction) {
+		this.serviceRegistry = serviceRegistry;
+		this.registration = registration;
 		this.losslessProperties = losslessProperties;
-		this.registrationConsumer = losslessProxyServiceRegistry.getTarget()::register;
-		this.registration = losslessProxyServiceRegistry.getRegistration();
+		this.originalRegisterAction = originalRegisterAction;
 	}
 
 	@Override
@@ -61,12 +61,13 @@ public class SpringCloudLosslessActionProvider implements LosslessActionProvider
 
 	@Override
 	public void doRegister(InstanceProperties instanceProperties) {
-		registrationConsumer.accept(registration);
+		// use lambda to do original register
+		originalRegisterAction.run();
 	}
 
 	@Override
 	public void doDeregister() {
-		losslessProxyServiceRegistry.deregister();
+		serviceRegistry.deregister(registration);
 	}
 
 	/**
@@ -85,5 +86,19 @@ public class SpringCloudLosslessActionProvider implements LosslessActionProvider
 
 		return OkHttpUtil.checkUrl("localhost", registration.getPort(),
 				losslessProperties.getHealthCheckPath(), headers);
+	}
+
+	public static BaseInstance getBaseInstance(Registration registration) {
+		return getBaseInstance(registration, registration.getPort());
+	}
+
+	public static BaseInstance getBaseInstance(Registration registration, Integer port) {
+		// for common spring cloud registration, not set namespace
+		DefaultBaseInstance baseInstance = new DefaultBaseInstance();
+		baseInstance.setService(registration.getServiceId());
+		// before web start, port in registration not init
+		baseInstance.setPort(port);
+		baseInstance.setHost(registration.getHost());
+		return baseInstance;
 	}
 }

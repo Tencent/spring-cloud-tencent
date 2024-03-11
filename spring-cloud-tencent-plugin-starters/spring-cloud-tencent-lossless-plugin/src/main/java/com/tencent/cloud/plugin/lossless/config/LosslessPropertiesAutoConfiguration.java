@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.plugin.lossless.config;
 
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Shedfree Wu
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisEnabled
 @EnableConfigurationProperties(LosslessProperties.class)
 public class LosslessPropertiesAutoConfiguration {
 

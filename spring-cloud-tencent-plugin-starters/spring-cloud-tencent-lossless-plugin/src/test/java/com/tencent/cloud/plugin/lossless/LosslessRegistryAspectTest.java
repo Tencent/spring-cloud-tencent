@@ -19,6 +19,7 @@ package com.tencent.cloud.plugin.lossless;
 
 import java.util.Collections;
 
+import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.plugin.lossless.config.LosslessAutoConfiguration;
 import com.tencent.cloud.plugin.lossless.config.LosslessPropertiesBootstrapConfiguration;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
@@ -27,7 +28,6 @@ import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
 import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisServiceRegistry;
-import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.jupiter.api.AfterAll;
@@ -46,11 +46,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 /**
- * Test for {@link LosslessProxyServiceRegistry}.
+ * Test for {@link LosslessRegistryAspect}.
  *
  * @author Shedfree Wu
  */
-public class LosslessServiceRegistryTest {
+public class LosslessRegistryAspectTest {
 
 	private static String NAMESPACE_TEST = "Test";
 
@@ -60,7 +60,7 @@ public class LosslessServiceRegistryTest {
 
 	private static int APPLICATION_PORT = 19091;
 
-	private static int LOSSLESS_PORT_1 = 28081;
+	private static int LOSSLESS_PORT_1 = 28083;
 
 	private static NamingServer namingServer;
 
