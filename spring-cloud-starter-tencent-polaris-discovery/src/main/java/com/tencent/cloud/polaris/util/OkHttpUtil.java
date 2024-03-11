@@ -87,4 +87,12 @@ public final class OkHttpUtil {
 		}
 		return false;
 	}
+
+	public static boolean checkUrl(String host, Integer port, String endpoint, Map<String, String> headers) {
+		if (!endpoint.startsWith("/")) {
+			endpoint = "/" + endpoint;
+		}
+		String checkUrl = String.format("http://%s:%s%s", host, port, endpoint);
+		return get(checkUrl, headers);
+	}
 }

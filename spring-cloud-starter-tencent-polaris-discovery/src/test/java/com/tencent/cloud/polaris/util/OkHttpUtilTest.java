@@ -46,6 +46,7 @@ public class OkHttpUtilTest {
 	@Test
 	public void testGet() {
 		assertThat(OkHttpUtil.get("http://localhost:" + port + "/test", Maps.newHashMap("key", "value"))).isTrue();
+		assertThat(OkHttpUtil.checkUrl("localhost", port, "/test", Maps.newHashMap("key", "value"))).isTrue();
 		assertThat(OkHttpUtil.get("http://localhost:" + port + "/error", Maps.newHashMap("key", "value"))).isFalse();
 		assertThat(OkHttpUtil.get("http://localhost:55555/error", Maps.newHashMap("key", "value"))).isFalse();
 	}
