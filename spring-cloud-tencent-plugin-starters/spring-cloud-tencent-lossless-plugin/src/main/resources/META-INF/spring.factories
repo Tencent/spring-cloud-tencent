@@ -1,0 +1,4 @@
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+  com.tencent.cloud.plugin.lossless.config.LosslessPropertiesBootstrapConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.tencent.cloud.plugin.lossless.config.LosslessAutoConfiguration

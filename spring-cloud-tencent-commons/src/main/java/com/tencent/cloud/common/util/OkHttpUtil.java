@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.util;
+package com.tencent.cloud.common.util;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -86,5 +86,13 @@ public final class OkHttpUtil {
 			}
 		}
 		return false;
+	}
+
+	public static boolean checkUrl(String host, Integer port, String endpoint, Map<String, String> headers) {
+		if (!endpoint.startsWith("/")) {
+			endpoint = "/" + endpoint;
+		}
+		String checkUrl = String.format("http://%s:%s%s", host, port, endpoint);
+		return get(checkUrl, headers);
 	}
 }

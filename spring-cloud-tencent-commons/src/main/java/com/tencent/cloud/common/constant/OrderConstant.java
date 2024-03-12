@@ -215,6 +215,11 @@ public class OrderConstant {
 		public static Integer STAT_REPORTER_ORDER = 1;
 
 		/**
+		 * Order of lossless configuration modifier.
+		 */
+		public static Integer LOSSLESS_ORDER = 2;
+
+		/**
 		 * Order of service contract configuration modifier.
 		 */
 		public static Integer SERVICE_CONTRACT_ORDER = Integer.MAX_VALUE - 9;

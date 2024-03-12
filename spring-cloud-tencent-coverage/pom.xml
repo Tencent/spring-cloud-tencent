@@ -88,6 +88,11 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-discovery-adapter-plugin</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-lossless-plugin</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

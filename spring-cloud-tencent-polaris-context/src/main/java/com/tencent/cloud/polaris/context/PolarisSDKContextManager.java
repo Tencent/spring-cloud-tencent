@@ -23,6 +23,7 @@ import java.util.Objects;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.control.Destroyable;
 import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.core.LosslessAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.factory.AssemblyAPIFactory;
@@ -55,6 +56,7 @@ public class PolarisSDKContextManager {
 	private volatile static SDKContext sdkContext;
 	private volatile static ProviderAPI providerAPI;
 	private volatile static ConsumerAPI consumerAPI;
+	private volatile static LosslessAPI losslessAPI;
 	private volatile static RouterAPI routerAPI;
 	private volatile static CircuitBreakAPI circuitBreakAPI;
 	private volatile static LimitAPI limitAPI;
@@ -79,6 +81,12 @@ public class PolarisSDKContextManager {
 				if (Objects.nonNull(providerAPI)) {
 					((AutoCloseable) providerAPI).close();
 					providerAPI = null;
+				}
+
+				// destroy LosslessAPI
+				if (Objects.nonNull(losslessAPI)) {
+					((AutoCloseable) losslessAPI).close();
+					losslessAPI = null;
 				}
 
 				// destroy ConsumerAPI
@@ -135,6 +143,9 @@ public class PolarisSDKContextManager {
 				// init ProviderAPI
 				providerAPI = DiscoveryAPIFactory.createProviderAPIByContext(sdkContext);
 
+				// init losslessAPI
+				losslessAPI = DiscoveryAPIFactory.createLosslessAPIByContext(sdkContext);
+
 				// init ConsumerAPI
 				consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
 
@@ -181,6 +192,11 @@ public class PolarisSDKContextManager {
 	public ProviderAPI getProviderAPI() {
 		init();
 		return providerAPI;
+	}
+
+	public LosslessAPI getLosslessAPI() {
+		init();
+		return losslessAPI;
 	}
 
 	public ConsumerAPI getConsumerAPI() {

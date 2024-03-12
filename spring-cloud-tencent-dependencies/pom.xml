@@ -73,7 +73,7 @@
 		<revision>1.14.0-Hoxton.SR12-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.15.0</polaris.version>
+		<polaris.version>1.15.2-SNAPSHOT</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
 		<springfox.swagger2.version>3.0.0</springfox.swagger2.version>
@@ -190,6 +190,12 @@
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-gateway-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-lossless-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 

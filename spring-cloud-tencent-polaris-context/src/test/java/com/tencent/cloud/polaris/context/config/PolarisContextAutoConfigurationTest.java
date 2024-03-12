@@ -46,4 +46,12 @@ public class PolarisContextAutoConfigurationTest {
 			assertThat(polarisSDKContextManager).isNotNull();
 		});
 	}
+
+	@Test
+	public void testLosslessAPIProperties() {
+		contextRunner.run(context -> {
+			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
+			assertThat(polarisSDKContextManager.getLosslessAPI()).isNotNull();
+		});
+	}
 }

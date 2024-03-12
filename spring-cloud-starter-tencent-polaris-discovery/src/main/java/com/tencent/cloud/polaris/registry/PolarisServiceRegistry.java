@@ -25,10 +25,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import com.tencent.cloud.polaris.util.OkHttpUtil;
 import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
 import com.tencent.polaris.api.config.global.StatReporterConfig;
 import com.tencent.polaris.api.core.ProviderAPI;
@@ -237,21 +237,14 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 	public void heartbeat(InstanceHeartbeatRequest heartbeatRequest) {
 		heartbeatExecutor.scheduleWithFixedDelay(() -> {
 			try {
-				String healthCheckEndpoint = polarisDiscoveryProperties.getHealthCheckUrl();
 				// If the health check passes, the heartbeat will be reported.
 				// If it does not pass, the heartbeat will not be reported.
-				if (!healthCheckEndpoint.startsWith("/")) {
-					healthCheckEndpoint = "/" + healthCheckEndpoint;
-				}
-
-				String healthCheckUrl = String.format("http://%s:%s%s", heartbeatRequest.getHost(),
-						heartbeatRequest.getPort(), healthCheckEndpoint);
-
 				Map<String, String> headers = new HashMap<>(1);
 				headers.put(HttpHeaders.USER_AGENT, "polaris");
-				if (!OkHttpUtil.get(healthCheckUrl, headers)) {
+				if (!OkHttpUtil.checkUrl(heartbeatRequest.getHost(), heartbeatRequest.getPort(),
+						polarisDiscoveryProperties.getHealthCheckUrl(), headers)) {
 					LOGGER.error("backend service health check failed. health check endpoint = {}",
-							healthCheckEndpoint);
+							polarisDiscoveryProperties.getHealthCheckUrl());
 					return;
 				}
 

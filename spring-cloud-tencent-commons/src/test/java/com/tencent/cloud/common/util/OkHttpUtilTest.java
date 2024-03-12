@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.util;
+package com.tencent.cloud.common.util;
 
 import org.assertj.core.util.Maps;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = OkHttpUtilTest.TestApplication.class, properties = {"spring.application.name=test", "spring.cloud.polaris.discovery.register=false"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = OkHttpUtilTest.TestApplication.class,
+		properties = {
+			"spring.application.name=test",
+			"spring.cloud.polaris.discovery.register=false",
+			"spring.cloud.gateway.enabled=false"
+		})
 public class OkHttpUtilTest {
 
 	@LocalServerPort
@@ -46,6 +52,8 @@ public class OkHttpUtilTest {
 	@Test
 	public void testGet() {
 		assertThat(OkHttpUtil.get("http://localhost:" + port + "/test", Maps.newHashMap("key", "value"))).isTrue();
+		assertThat(OkHttpUtil.checkUrl("localhost", port, "/test", Maps.newHashMap("key", "value"))).isTrue();
+		assertThat(OkHttpUtil.checkUrl("localhost", port, "test", Maps.newHashMap("key", "value"))).isTrue();
 		assertThat(OkHttpUtil.get("http://localhost:" + port + "/error", Maps.newHashMap("key", "value"))).isFalse();
 		assertThat(OkHttpUtil.get("http://localhost:55555/error", Maps.newHashMap("key", "value"))).isFalse();
 	}
