@@ -63,7 +63,7 @@ dependencies.
 
 > Notice:
 >
-> Support Spring Cloud 2022.0, 2021.0, 2020.0, Hoxton.
+> Support Spring Cloud 2023.0, 2022.0, 2021.0, 2020.0, Hoxton.
 >
 > The version list of Spring Cloud Tencent can be found
 > in
