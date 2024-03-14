@@ -17,8 +17,6 @@
 
 package com.tencent.cloud.plugin.lossless;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.tencent.cloud.plugin.lossless.config.LosslessProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.pojo.BaseInstance;
@@ -45,9 +43,6 @@ public class LosslessRegistryAspect {
 	private LosslessProperties losslessProperties;
 
 	private PolarisSDKContextManager polarisSDKContextManager;
-
-	private final AtomicBoolean doneDeregister = new AtomicBoolean(false);
-
 
 	public LosslessRegistryAspect(ServiceRegistry serviceRegistry, Registration registration,
 					LosslessProperties losslessProperties, PolarisSDKContextManager polarisSDKContextManager) {
@@ -86,12 +81,7 @@ public class LosslessRegistryAspect {
 
 	@Around("deregisterPointcut()")
 	public Object invokeDeregister(ProceedingJoinPoint joinPoint) throws Throwable {
-		if (doneDeregister.compareAndSet(false, true)) {
-			return joinPoint.proceed();
-		}
-		else {
-			return null;
-		}
+		return joinPoint.proceed();
 	}
 
 	public void executeJoinPoint(ProceedingJoinPoint joinPoint) {
