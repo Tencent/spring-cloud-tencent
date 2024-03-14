@@ -175,7 +175,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 	public void deregister(PolarisRegistration registration) {
 		LOGGER.info("De-registering from Polaris Server now...");
 
-		if (StringUtils.isEmpty(registration.getServiceId())) {
+		if (StringUtils.isEmpty(registration.getServiceId()) || !PolarisSDKContextManager.isRegistered) {
 			LOGGER.warn("No dom to de-register for polaris client...");
 			return;
 		}
@@ -190,6 +190,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		try {
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			providerClient.deRegister(deRegisterRequest);
+			PolarisSDKContextManager.isRegistered = false;
+			LOGGER.info("De-registration finished.");
 		}
 		catch (Exception e) {
 			LOGGER.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
@@ -198,8 +200,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			if (null != heartbeatExecutor) {
 				heartbeatExecutor.shutdown();
 			}
-			LOGGER.info("De-registration finished.");
-			PolarisSDKContextManager.isRegistered = false;
 		}
 	}
 
