@@ -72,6 +72,8 @@ public class LosslessRegistryAspectTest {
 
 	private static int LOSSLESS_PORT_1 = 28083;
 
+	private static int NACOS_LOSSLESS_PORT = 28093;
+
 	private static NamingServer namingServer;
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
@@ -131,7 +133,7 @@ public class LosslessRegistryAspectTest {
 			.withPropertyValues("spring.cloud.polaris.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=5000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=")
-			.withPropertyValues("spring.cloud.polaris.lossless.port=" + LOSSLESS_PORT_1)
+			.withPropertyValues("spring.cloud.polaris.lossless.port=" + NACOS_LOSSLESS_PORT)
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + APPLICATION_PORT)
 			.withPropertyValues("spring.cloud.polaris.localIpAddress=" + HOST)
