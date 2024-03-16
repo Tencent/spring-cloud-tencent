@@ -70,10 +70,10 @@
 	</developers>
 
 	<properties>
-		<revision>1.14.0-Hoxton.SR12-SNAPSHOT</revision>
+		<revision>1.14.0-Hoxton.SR12-RC1</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.15.2-SNAPSHOT</polaris.version>
+		<polaris.version>1.15.2</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
 		<springfox.swagger2.version>3.0.0</springfox.swagger2.version>
