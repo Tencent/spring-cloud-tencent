@@ -18,10 +18,20 @@
 
 package com.tencent.cloud.plugin.lossless.config;
 
+import com.alibaba.cloud.nacos.ConditionalOnNacosDiscoveryEnabled;
+import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.tencent.cloud.plugin.lossless.LosslessRegistryAspect;
+import com.tencent.cloud.plugin.lossless.transfomer.DiscoveryNamespaceGetter;
+import com.tencent.cloud.plugin.lossless.transfomer.NacosDiscoveryNamespaceGetter;
+import com.tencent.cloud.plugin.lossless.transfomer.PolarisDiscoveryNamespaceGetter;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
@@ -42,7 +52,33 @@ public class LosslessAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public LosslessRegistryAspect losslessRegistryAspect(ServiceRegistry serviceRegistry, Registration registration,
-							LosslessProperties losslessProperties, PolarisSDKContextManager polarisSDKContextManager) {
-		return new LosslessRegistryAspect(serviceRegistry, registration, losslessProperties, polarisSDKContextManager);
+							LosslessProperties losslessProperties, PolarisSDKContextManager polarisSDKContextManager,
+							@Autowired(required = false) DiscoveryNamespaceGetter discoveryNamespaceGetter) {
+		return new LosslessRegistryAspect(serviceRegistry, registration, losslessProperties, polarisSDKContextManager, discoveryNamespaceGetter);
+	}
+
+	@ConditionalOnClass(name = "com.alibaba.cloud.nacos.NacosDiscoveryProperties")
+	static class Nacos {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnNacosDiscoveryEnabled
+		@ConditionalOnBean(NacosDiscoveryProperties.class)
+		public NacosDiscoveryNamespaceGetter nacosDiscoveryNamespaceGetter(
+				NacosDiscoveryProperties nacosDiscoveryProperties) {
+			return new NacosDiscoveryNamespaceGetter(nacosDiscoveryProperties);
+		}
+	}
+
+	@ConditionalOnClass(name = "com.tencent.cloud.polaris.PolarisDiscoveryProperties")
+	static class Polaris {
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnPolarisDiscoveryEnabled
+		@ConditionalOnBean(PolarisDiscoveryProperties.class)
+		public PolarisDiscoveryNamespaceGetter polarisDiscoveryNamespaceGetter(
+				PolarisDiscoveryProperties polarisDiscoveryProperties) {
+			return new PolarisDiscoveryNamespaceGetter(polarisDiscoveryProperties);
+		}
 	}
 }

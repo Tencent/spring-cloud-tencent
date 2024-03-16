@@ -19,15 +19,22 @@ package com.tencent.cloud.plugin.lossless;
 
 import java.util.Collections;
 
+import com.alibaba.cloud.nacos.NacosServiceAutoConfiguration;
+import com.alibaba.cloud.nacos.discovery.NacosDiscoveryAutoConfiguration;
+import com.alibaba.cloud.nacos.registry.NacosRegistration;
+import com.alibaba.cloud.nacos.registry.NacosServiceRegistryAutoConfiguration;
+import com.alibaba.cloud.nacos.util.UtilIPv6AutoConfiguration;
 import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.plugin.lossless.config.LosslessAutoConfiguration;
 import com.tencent.cloud.plugin.lossless.config.LosslessPropertiesBootstrapConfiguration;
+import com.tencent.cloud.plugin.lossless.transfomer.DiscoveryNamespaceGetter;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
 import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisServiceRegistry;
+import com.tencent.polaris.api.pojo.BaseInstance;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import org.junit.jupiter.api.AfterAll;
@@ -39,7 +46,10 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration;
+import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationUtils;
+import org.springframework.cloud.client.serviceregistry.Registration;
+import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,6 +82,7 @@ public class LosslessRegistryAspectTest {
 					PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class))
+			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=5000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=")
 			.withPropertyValues("spring.cloud.polaris.lossless.port=" + LOSSLESS_PORT_1)
@@ -91,6 +102,7 @@ public class LosslessRegistryAspectTest {
 					PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class))
+			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckInterval=1000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=/test")
 			.withPropertyValues("spring.cloud.polaris.lossless.port=28082")
@@ -100,6 +112,31 @@ public class LosslessRegistryAspectTest {
 			.withPropertyValues("spring.cloud.polaris.localPort=" + APPLICATION_PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
+			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
+
+	private final WebApplicationContextRunner nacosContextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(
+					AutoServiceRegistrationProperties.class,
+					UtilAutoConfiguration.class,
+					UtilIPv6AutoConfiguration.class,
+					NacosDiscoveryAutoConfiguration.class,
+					NacosServiceAutoConfiguration.class,
+					NacosServiceRegistryAutoConfiguration.class,
+					LosslessAutoConfiguration.class,
+					LosslessPropertiesBootstrapConfiguration.class,
+					PolarisContextAutoConfiguration.class)
+			)
+			.withPropertyValues("spring.cloud.nacos.discovery.enabled=true")
+			.withPropertyValues("spring.cloud.nacos.discovery.namespace=" + NAMESPACE_TEST)
+			.withPropertyValues("spring.cloud.polaris.discovery.enabled=false")
+			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=5000")
+			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=")
+			.withPropertyValues("spring.cloud.polaris.lossless.port=" + LOSSLESS_PORT_1)
+			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
+			.withPropertyValues("server.port=" + APPLICATION_PORT)
+			.withPropertyValues("spring.cloud.polaris.localIpAddress=" + HOST)
+			.withPropertyValues("spring.cloud.polaris.localPort=" + APPLICATION_PORT)
+			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
 	@BeforeAll
@@ -178,6 +215,21 @@ public class LosslessRegistryAspectTest {
 			assertThatCode(() -> {
 				AutoServiceRegistrationUtils.deRegister(autoServiceRegistration);
 			}).doesNotThrowAnyException();
+		});
+	}
+
+	@Test
+	public void testNaocsRegister() {
+		this.nacosContextRunner.run(context -> {
+
+			DiscoveryNamespaceGetter discoveryNamespaceGetter = context.getBean(DiscoveryNamespaceGetter.class);
+			Registration registration = context.getBean(Registration.class);
+
+			assertThat(registration instanceof NacosRegistration).isTrue();
+			assertThat(discoveryNamespaceGetter.getNamespace()).isEqualTo(NAMESPACE_TEST);
+
+			BaseInstance baseInstance = SpringCloudLosslessActionProvider.getBaseInstance(registration, discoveryNamespaceGetter);
+			assertThat(baseInstance.getNamespace()).isEqualTo(NAMESPACE_TEST);
 		});
 	}
 
