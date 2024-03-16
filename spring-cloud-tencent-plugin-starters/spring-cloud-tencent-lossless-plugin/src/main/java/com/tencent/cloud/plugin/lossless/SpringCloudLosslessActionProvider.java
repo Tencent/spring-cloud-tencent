@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.plugin.lossless.config.LosslessProperties;
+import com.tencent.cloud.plugin.lossless.transfomer.DiscoveryNamespaceGetter;
 import com.tencent.polaris.api.plugin.lossless.InstanceProperties;
 import com.tencent.polaris.api.plugin.lossless.LosslessActionProvider;
 import com.tencent.polaris.api.pojo.BaseInstance;
@@ -88,13 +89,16 @@ public class SpringCloudLosslessActionProvider implements LosslessActionProvider
 				losslessProperties.getHealthCheckPath(), headers);
 	}
 
-	public static BaseInstance getBaseInstance(Registration registration) {
-		return getBaseInstance(registration, registration.getPort());
+	public static BaseInstance getBaseInstance(Registration registration, DiscoveryNamespaceGetter namespaceGetter) {
+		return getBaseInstance(registration, registration.getPort(), namespaceGetter);
 	}
 
-	public static BaseInstance getBaseInstance(Registration registration, Integer port) {
-		// for common spring cloud registration, not set namespace
+	public static BaseInstance getBaseInstance(Registration registration, Integer port,
+												DiscoveryNamespaceGetter namespaceGetter) {
 		DefaultBaseInstance baseInstance = new DefaultBaseInstance();
+		if (namespaceGetter != null) {
+			baseInstance.setNamespace(namespaceGetter.getNamespace());
+		}
 		baseInstance.setService(registration.getServiceId());
 		// before web start, port in registration not init
 		baseInstance.setPort(port);

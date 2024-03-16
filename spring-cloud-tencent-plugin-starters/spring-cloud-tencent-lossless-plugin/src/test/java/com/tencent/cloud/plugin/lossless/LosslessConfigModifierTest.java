@@ -38,6 +38,7 @@ public class LosslessConfigModifierTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
+			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.port=20000")
@@ -48,6 +49,7 @@ public class LosslessConfigModifierTest {
 			.withPropertyValues("spring.cloud.gateway.enabled=false");
 	private final ApplicationContextRunner disabledContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
+			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.enabled=false")
 			.withPropertyValues("spring.application.name=test")
