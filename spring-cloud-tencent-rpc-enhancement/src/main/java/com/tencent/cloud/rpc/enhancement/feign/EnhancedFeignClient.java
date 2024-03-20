@@ -67,6 +67,7 @@ public class EnhancedFeignClient implements Client {
 				.url(url)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
+		enhancedPluginContext.setOriginRequest(request);
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 		DefaultServiceInstance serviceInstance = new DefaultServiceInstance(request.requestTemplate().feignTarget()

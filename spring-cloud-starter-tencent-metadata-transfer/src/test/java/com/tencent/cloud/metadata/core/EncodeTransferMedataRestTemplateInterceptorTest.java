@@ -17,8 +17,14 @@
 
 package com.tencent.cloud.metadata.core;
 
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Map;
+
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -26,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataRestTemplateInterceptor}.
+ * Test for {@link EncodeTransferMedataRestTemplateEnhancedPlugin}.
  *
  * @author Haotian Zhang
  */
@@ -72,12 +79,51 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 
 		@Bean
 		public RestTemplate restTemplate() {
-			return new RestTemplate();
+
+			EncodeTransferMedataRestTemplateEnhancedPlugin plugin = new EncodeTransferMedataRestTemplateEnhancedPlugin();
+			EnhancedRestTemplateInterceptor interceptor = new EnhancedRestTemplateInterceptor(
+					new DefaultEnhancedPluginRunner(Arrays.asList(plugin), new MockRegistration(), null));
+			RestTemplate template = new RestTemplate();
+			template.setInterceptors(Arrays.asList(interceptor));
+			return template;
 		}
 
 		@RequestMapping("/test")
 		public String test() {
 			return MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_TRANSITIVE, "b");
+		}
+	}
+
+	static class MockRegistration implements Registration {
+
+		@Override
+		public String getServiceId() {
+			return "test";
+		}
+
+		@Override
+		public String getHost() {
+			return "localhost";
+		}
+
+		@Override
+		public int getPort() {
+			return 0;
+		}
+
+		@Override
+		public boolean isSecure() {
+			return false;
+		}
+
+		@Override
+		public URI getUri() {
+			return null;
+		}
+
+		@Override
+		public Map<String, String> getMetadata() {
+			return null;
 		}
 	}
 }

@@ -68,4 +68,20 @@ public final class ReflectionUtils extends org.springframework.util.ReflectionUt
 		}
 		return null;
 	}
+
+	public static void setFieldValue(Object instance, String fieldName, Object value) {
+		Field field = org.springframework.util.ReflectionUtils.findField(instance.getClass(), fieldName);
+		if (field == null) {
+			return;
+		}
+
+		field.setAccessible(true);
+
+		try {
+			setField(field, instance, value);
+		}
+		finally {
+			field.setAccessible(false);
+		}
+	}
 }

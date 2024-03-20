@@ -129,29 +129,41 @@ public final class SpringWebExpressionLabelUtils {
 	}
 
 	public static String getHeaderValue(ServerHttpRequest request, String key) {
+		return getHeaderValue(request, key, StringUtils.EMPTY);
+	}
+
+	public static String getHeaderValue(ServerHttpRequest request, String key, String defaultValue) {
 		String value = request.getHeaders().getFirst(key);
 		if (value == null) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		return value;
 	}
 
 	public static String getQueryValue(ServerHttpRequest request, String key) {
+		return getQueryValue(request, key, StringUtils.EMPTY);
+	}
+
+	public static String getQueryValue(ServerHttpRequest request, String key, String defaultValue) {
 		MultiValueMap<String, String> queries = request.getQueryParams();
 		if (CollectionUtils.isEmpty(queries)) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		String value = queries.getFirst(key);
 		if (value == null) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		return value;
 	}
 
 	public static String getCookieValue(ServerHttpRequest request, String key) {
+		return getCookieValue(request, key, StringUtils.EMPTY);
+	}
+
+	public static String getCookieValue(ServerHttpRequest request, String key, String defaultValue) {
 		HttpCookie cookie = request.getCookies().getFirst(key);
 		if (cookie == null) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		return cookie.getValue();
 	}

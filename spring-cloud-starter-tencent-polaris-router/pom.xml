@@ -48,6 +48,10 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>router-nearby</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>router-lane</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>

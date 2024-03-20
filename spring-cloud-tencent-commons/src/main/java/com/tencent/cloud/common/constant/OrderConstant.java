@@ -36,10 +36,6 @@ public class OrderConstant {
 		 * Order constant for Feign.
 		 */
 		public static class Feign {
-			/**
-			 * Order of encode transfer metadata interceptor.
-			 */
-			public static final int ENCODE_TRANSFER_METADATA_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE - 1;
 
 			/**
 			 * Order of encode router label interceptor.
@@ -51,10 +47,6 @@ public class OrderConstant {
 		 * Order constant for RestTemplate.
 		 */
 		public static class RestTemplate {
-			/**
-			 * Order of encode transfer metadata interceptor.
-			 */
-			public static final int ENCODE_TRANSFER_METADATA_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE - 1;
 
 			/**
 			 * Order of encode router label interceptor.
@@ -68,12 +60,6 @@ public class OrderConstant {
 		public static class Scg {
 
 			/**
-			 * Order of encode transfer metadata filter.
-			 * {@link ReactiveLoadBalancerClientFilter}.LOAD_BALANCER_CLIENT_FILTER_ORDER = 10150.
-			 */
-			public static final int ENCODE_TRANSFER_METADATA_FILTER_ORDER = 10150 + 1;
-
-			/**
 			 * Order of enhanced filter.
 			 * {@link ReactiveLoadBalancerClientFilter}.LOAD_BALANCER_CLIENT_FILTER_ORDER = 10150.
 			 */
@@ -84,11 +70,6 @@ public class OrderConstant {
 		 * Order constant for Zuul.
 		 */
 		public static class Zuul {
-
-			/**
-			 * Order of encode transfer metadata filter.
-			 */
-			public static final int ENCODE_TRANSFER_METADATA_FILTER_ORDER = RIBBON_ROUTING_FILTER_ORDER - 1;
 
 			/**
 			 * Order of enhanced ROUTE filter.

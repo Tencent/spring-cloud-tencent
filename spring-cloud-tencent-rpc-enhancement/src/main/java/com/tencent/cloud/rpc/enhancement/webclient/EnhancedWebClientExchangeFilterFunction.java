@@ -46,23 +46,25 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 	}
 
 	@Override
-	public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
+	public Mono<ClientResponse> filter(ClientRequest originRequest, ExchangeFunction next) {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
-				.httpHeaders(request.headers())
-				.httpMethod(request.method())
-				.url(request.url())
+				.httpHeaders(originRequest.headers())
+				.httpMethod(originRequest.method())
+				.url(originRequest.url())
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
+		enhancedPluginContext.setOriginRequest(originRequest);
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 		enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
-				.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), request.url());
+				.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), originRequest.url());
 
 		// Run post enhanced plugins.
 		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
-
+		// request may be changed by plugin
+		ClientRequest request = (ClientRequest) enhancedPluginContext.getOriginRequest();
 		long startTime = System.currentTimeMillis();
 		return next.exchange(request)
 				.doOnSuccess(response -> {

@@ -18,63 +18,65 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Map;
 
-import com.netflix.zuul.ZuulFilter;
+import com.google.common.collect.ImmutableMap;
 import com.netflix.zuul.context.RequestContext;
-import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.UrlUtils;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
+import com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant;
+import com.tencent.polaris.metadata.core.MessageMetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
 
 import org.springframework.util.CollectionUtils;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
 /**
- * Zuul filter used for writing metadata in HTTP request header.
+ * Pre EnhancedPlugin for zuul to encode transfer metadata.
  *
- * @author Haotian Zhang
+ * @author Shedfree Wu
  */
-public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
-
+public class EncodeTransferMetadataZuulEnhancedPlugin implements EnhancedPlugin {
 	@Override
-	public String filterType() {
-		return ROUTE_TYPE;
+	public EnhancedPluginType getType() {
+		return EnhancedPluginType.Client.PRE;
 	}
 
 	@Override
-	public int filterOrder() {
-		return OrderConstant.Client.Zuul.ENCODE_TRANSFER_METADATA_FILTER_ORDER;
-	}
-
-	@Override
-	public boolean shouldFilter() {
-		return true;
-	}
-
-	@Override
-	public Object run() {
-		// get request context
-		RequestContext requestContext = RequestContext.getCurrentContext();
+	public void run(EnhancedPluginContext context) throws Throwable {
+		if (!(context.getOriginRequest() instanceof RequestContext)) {
+			return;
+		}
+		RequestContext requestContext = (RequestContext) context.getOriginRequest();
 
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
 
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
+		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
+		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
 
+		// currently only support transitive header from calleeMessageMetadataContainer
+		this.buildHeaderMap(requestContext, calleeTransitiveHeaders);
 		// Rebuild Metadata Header
 		this.buildMetadataHeader(requestContext, customMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(requestContext, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
 		TransHeadersTransfer.transfer(requestContext.getRequest());
-		return null;
+	}
+
+	private void buildHeaderMap(RequestContext context, Map<String, String> headerMap) {
+		if (!CollectionUtils.isEmpty(headerMap)) {
+			headerMap.forEach((key, value) -> context.addZuulRequestHeader(key, UrlUtils.encode(value)));
+		}
 	}
 
 	/**
@@ -86,13 +88,12 @@ public class EncodeTransferMetadataZuulFilter extends ZuulFilter {
 	 */
 	private void buildMetadataHeader(RequestContext context, Map<String, String> metadata, String headerName) {
 		if (!CollectionUtils.isEmpty(metadata)) {
-			String encodedMetadata = JacksonUtils.serialize2Json(metadata);
-			try {
-				context.addZuulRequestHeader(headerName, URLEncoder.encode(encodedMetadata, UTF_8));
-			}
-			catch (UnsupportedEncodingException e) {
-				context.addZuulRequestHeader(headerName, encodedMetadata);
-			}
+			buildHeaderMap(context, ImmutableMap.of(headerName, JacksonUtils.serialize2Json(metadata)));
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return PluginOrderConstant.ClientPluginOrder.CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER;
 	}
 }

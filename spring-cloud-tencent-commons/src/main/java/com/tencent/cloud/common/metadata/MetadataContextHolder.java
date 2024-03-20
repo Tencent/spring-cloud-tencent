@@ -24,7 +24,9 @@ import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataProvider;
 import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.TransitiveType;
 
@@ -129,8 +131,10 @@ public final class MetadataContextHolder {
 	 *
 	 * @param dynamicTransitiveMetadata custom metadata collection
 	 * @param dynamicDisposableMetadata custom disposable metadata connection
+	 * @param callerMetadataProvider caller metadata provider
 	 */
-	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata) {
+	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata,
+			MetadataProvider callerMetadataProvider) {
 		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.refresh(MetadataContextHolder::createMetadataManager, metadataManager -> {
 			MetadataContainer metadataContainerUpstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
 			if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
@@ -143,6 +147,10 @@ public final class MetadataContextHolder {
 				for (Map.Entry<String, String> entry : dynamicDisposableMetadata.entrySet()) {
 					metadataContainerDownstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 				}
+			}
+			if (callerMetadataProvider != null) {
+				MessageMetadataContainer callerMessageContainer = metadataManager.getMetadataContainer(MetadataType.MESSAGE, true);
+				callerMessageContainer.setMetadataProvider(callerMetadataProvider);
 			}
 		});
 	}

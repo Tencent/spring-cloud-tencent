@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataFeignInterceptor}.
+ * Test for {@link EncodeTransferMedataFeignEnhancedPlugin}.
  *
  * @author Haotian Zhang
  */
