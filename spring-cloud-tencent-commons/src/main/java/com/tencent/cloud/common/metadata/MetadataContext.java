@@ -22,24 +22,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataMapValue;
+import com.tencent.polaris.metadata.core.MetadataObjectValue;
 import com.tencent.polaris.metadata.core.MetadataStringValue;
 import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.MetadataValue;
 import com.tencent.polaris.metadata.core.TransitiveType;
-import com.tencent.polaris.metadata.core.manager.MetadataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.util.StringUtils;
 
-public class MetadataContext extends MetadataManager {
+public class MetadataContext extends com.tencent.polaris.metadata.core.manager.MetadataContext {
 
 	/**
 	 * transitive context.
@@ -65,6 +64,11 @@ public class MetadataContext extends MetadataManager {
 	 * the key of the header(key-value) list needed to be transmitted from upstream to downstream.
 	 */
 	public static final String FRAGMENT_RAW_TRANSHEADERS_KV = "trans-headers-kv";
+
+	/**
+	 * the key of the header(key-value) list needed to be store as loadbalance data.
+	 */
+	public static final String FRAGMENT_LB_METADATA = "load-balance-metadata";
 
 	private static final Logger LOG = LoggerFactory.getLogger(MetadataContext.class);
 	/**
@@ -111,11 +115,8 @@ public class MetadataContext extends MetadataManager {
 		LOCAL_SERVICE = serviceName;
 	}
 
-	private final Map<String, Object> loadbalancerMetadata;
-
 	public MetadataContext(List<String> transitivePrefixes) {
 		super(transitivePrefixes);
-		this.loadbalancerMetadata = new ConcurrentHashMap<>();
 	}
 
 	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean downstream) {
@@ -150,11 +151,14 @@ public class MetadataContext extends MetadataManager {
 			return values;
 		}
 		MetadataMapValue metadataMapValue = (MetadataMapValue) metadataValue;
-		metadataMapValue.iterateMapValues(new BiConsumer<String, MetadataStringValue>() {
+		metadataMapValue.iterateMapValues(new BiConsumer<String, MetadataValue>() {
 			@Override
-			public void accept(String s, MetadataStringValue metadataStringValue) {
-				if (metadataStringValue.getTransitiveType() == transitiveType) {
-					values.put(s, metadataStringValue.getStringValue());
+			public void accept(String s, MetadataValue metadataValue) {
+				if (metadataValue instanceof MetadataStringValue) {
+					MetadataStringValue metadataStringValue = (MetadataStringValue) metadataValue;
+					if (metadataStringValue.getTransitiveType() == transitiveType) {
+						values.put(s, metadataStringValue.getStringValue());
+					}
 				}
 			}
 		});
@@ -199,11 +203,26 @@ public class MetadataContext extends MetadataManager {
 	}
 
 	public Map<String, Object> getLoadbalancerMetadata() {
-		return this.loadbalancerMetadata;
+		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.APPLICATION, false);
+		MetadataValue metadataValue = metadataContainer.getMetadataValue(FRAGMENT_LB_METADATA);
+		Map<String, Object> values = new HashMap<>();
+		if (metadataValue instanceof MetadataMapValue) {
+			MetadataMapValue metadataMapValue = (MetadataMapValue) metadataValue;
+			metadataMapValue.iterateMapValues(new BiConsumer<String, MetadataValue>() {
+				@Override
+				public void accept(String s, MetadataValue metadataValue) {
+					if (metadataValue instanceof MetadataObjectValue) {
+						values.put(s, ((MetadataObjectValue<?>) metadataValue).getObjectValue());
+					}
+				}
+			});
+		}
+		return values;
 	}
 
 	public void setLoadbalancer(String key, Object value) {
-		this.loadbalancerMetadata.put(key, value);
+		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.APPLICATION, false);
+		metadataContainer.putMetadataMapObjectValue(key, FRAGMENT_LB_METADATA, value);
 	}
 
 	public void setTransitiveMetadata(Map<String, String> transitiveMetadata) {

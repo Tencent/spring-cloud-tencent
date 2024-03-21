@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
@@ -31,8 +30,6 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.TransitiveType;
-import com.tencent.polaris.metadata.core.manager.MetadataManager;
-import com.tencent.polaris.metadata.core.manager.MetadataManagerHolder;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -55,7 +52,8 @@ public final class MetadataContextHolder {
 	}
 
 	public static MetadataContext get() {
-		return (MetadataContext) MetadataManagerHolder.getOrCreate(MetadataContextHolder::createMetadataManager);
+		return (MetadataContext) com.tencent.polaris.metadata.core.manager.MetadataContextHolder.getOrCreate(
+				MetadataContextHolder::createMetadataManager);
 	}
 
 	private static MetadataContext createMetadataManager() {
@@ -129,7 +127,7 @@ public final class MetadataContextHolder {
 	 * @param metadataContext metadata context
 	 */
 	public static void set(MetadataContext metadataContext) {
-		MetadataManagerHolder.set(metadataContext);
+		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.set(metadataContext);
 	}
 
 	/**
@@ -139,20 +137,17 @@ public final class MetadataContextHolder {
 	 * @param dynamicDisposableMetadata custom disposable metadata connection
 	 */
 	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata) {
-		MetadataManagerHolder.refresh(MetadataContextHolder::createMetadataManager, new Consumer<MetadataManager>() {
-			@Override
-			public void accept(MetadataManager metadataManager) {
-				MetadataContainer metadataContainerUpstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
-				if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
-					for (Map.Entry<String, String> entry : dynamicTransitiveMetadata.entrySet()) {
-						metadataContainerUpstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.PASS_THROUGH);
-					}
+		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.refresh(MetadataContextHolder::createMetadataManager, metadataManager -> {
+			MetadataContainer metadataContainerUpstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
+			if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
+				for (Map.Entry<String, String> entry : dynamicTransitiveMetadata.entrySet()) {
+					metadataContainerUpstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.PASS_THROUGH);
 				}
-				MetadataContainer metadataContainerDownstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, true);
-				if (!CollectionUtils.isEmpty(dynamicDisposableMetadata)) {
-					for (Map.Entry<String, String> entry : dynamicDisposableMetadata.entrySet()) {
-						metadataContainerDownstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
-					}
+			}
+			MetadataContainer metadataContainerDownstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, true);
+			if (!CollectionUtils.isEmpty(dynamicDisposableMetadata)) {
+				for (Map.Entry<String, String> entry : dynamicDisposableMetadata.entrySet()) {
+					metadataContainerDownstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 				}
 			}
 		});
@@ -162,6 +157,6 @@ public final class MetadataContextHolder {
 	 * Remove metadata context.
 	 */
 	public static void remove() {
-		MetadataManagerHolder.remove();
+		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.remove();
 	}
 }
