@@ -17,14 +17,11 @@
 
 package com.tencent.cloud.common.metadata;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.metadata.core.MetadataContainer;
@@ -57,10 +54,7 @@ public final class MetadataContextHolder {
 	}
 
 	private static MetadataContext createMetadataManager() {
-		List<String> prefixes = new ArrayList<>();
-		prefixes.add(MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX);
-		prefixes.add(MetadataConstant.SCT_TRANSITIVE_HEADER_PREFIX);
-		MetadataContext metadataManager = new MetadataContext(prefixes);
+		MetadataContext metadataManager = new MetadataContext();
 		if (metadataLocalProperties == null) {
 			metadataLocalProperties = ApplicationContextAwareUtils.getApplicationContext()
 					.getBean(MetadataLocalProperties.class);

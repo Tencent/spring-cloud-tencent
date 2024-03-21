@@ -18,13 +18,14 @@
 
 package com.tencent.cloud.common.metadata;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.polaris.metadata.core.MetadataContainer;
@@ -116,8 +117,8 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		LOCAL_SERVICE = serviceName;
 	}
 
-	public MetadataContext(List<String> transitivePrefixes) {
-		super(transitivePrefixes);
+	public MetadataContext() {
+		super(Arrays.asList(MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX, MetadataConstant.SCT_TRANSITIVE_HEADER_PREFIX));
 	}
 
 	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean downstream) {
