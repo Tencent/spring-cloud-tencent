@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
@@ -212,7 +213,8 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 				@Override
 				public void accept(String s, MetadataValue metadataValue) {
 					if (metadataValue instanceof MetadataObjectValue) {
-						values.put(s, ((MetadataObjectValue<?>) metadataValue).getObjectValue());
+						Optional<?> objectValue = ((MetadataObjectValue<?>) metadataValue).getObjectValue();
+						objectValue.ifPresent(o -> values.put(s, o));
 					}
 				}
 			});
@@ -222,7 +224,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 
 	public void setLoadbalancer(String key, Object value) {
 		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.APPLICATION, false);
-		metadataContainer.putMetadataMapObjectValue(key, FRAGMENT_LB_METADATA, value);
+		metadataContainer.putMetadataMapObjectValue(FRAGMENT_LB_METADATA, key, value);
 	}
 
 	public void setTransitiveMetadata(Map<String, String> transitiveMetadata) {
