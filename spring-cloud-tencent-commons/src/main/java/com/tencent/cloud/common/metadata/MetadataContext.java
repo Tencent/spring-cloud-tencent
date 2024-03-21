@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.common.metadata;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,7 +117,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	}
 
 	public MetadataContext() {
-		super(Arrays.asList(MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX, MetadataConstant.SCT_TRANSITIVE_HEADER_PREFIX));
+		super(MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX);
 	}
 
 	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean downstream) {
