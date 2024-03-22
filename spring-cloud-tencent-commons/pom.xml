@@ -24,6 +24,10 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-model</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-metadata</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>
