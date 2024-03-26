@@ -83,14 +83,18 @@ public final class ServletExpressionLabelUtils {
 	}
 
 	public static String getCookieValue(Cookie[] cookies, String key) {
+		return getCookieValue(cookies, key, StringUtils.EMPTY);
+	}
+
+	public static String getCookieValue(Cookie[] cookies, String key, String defaultValue) {
 		if (cookies == null || cookies.length == 0) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		for (Cookie cookie : cookies) {
 			if (StringUtils.equals(cookie.getName(), key)) {
 				return cookie.getValue();
 			}
 		}
-		return StringUtils.EMPTY;
+		return defaultValue;
 	}
 }

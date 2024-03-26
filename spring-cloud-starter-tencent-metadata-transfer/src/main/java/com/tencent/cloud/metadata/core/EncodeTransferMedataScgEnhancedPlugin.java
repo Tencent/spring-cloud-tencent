@@ -18,42 +18,46 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
 import com.tencent.cloud.common.constant.MetadataConstant;
-import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
-import reactor.core.publisher.Mono;
+import com.tencent.cloud.common.util.UrlUtils;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
+import com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant;
+import com.tencent.polaris.metadata.core.MessageMetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
 
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
 /**
- * Scg filter used for writing metadata in HTTP request header.
+ * Pre EnhancedPlugin for scg to encode transfer metadata.
  *
- * @author Haotian Zhang
+ * @author Shedfree Wu
  */
-public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
-
+public class EncodeTransferMedataScgEnhancedPlugin implements EnhancedPlugin {
 	@Override
-	public int getOrder() {
-		return OrderConstant.Client.Scg.ENCODE_TRANSFER_METADATA_FILTER_ORDER;
+	public EnhancedPluginType getType() {
+		return EnhancedPluginType.Client.PRE;
 	}
 
 	@Override
-	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+	public void run(EnhancedPluginContext context) throws Throwable {
+		if (!(context.getOriginRequest() instanceof ServerWebExchange)) {
+			return;
+		}
+		ServerWebExchange exchange = (ServerWebExchange) context.getOriginRequest();
+
 		// get request builder
 		ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
 
@@ -66,11 +70,22 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 
+		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
+		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
+		// currently only support transitive header from calleeMessageMetadataContainer
+		this.buildHeaderMap(builder, calleeTransitiveHeaders);
+
 		this.buildMetadataHeader(builder, customMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
-
 		TransHeadersTransfer.transfer(exchange.getRequest());
-		return chain.filter(exchange.mutate().request(builder.build()).build());
+
+		context.setOriginRequest(exchange.mutate().request(builder.build()).build());
+	}
+
+	private void buildHeaderMap(ServerHttpRequest.Builder builder, Map<String, String> headerMap) {
+		if (!CollectionUtils.isEmpty(headerMap)) {
+			headerMap.forEach((key, value) -> builder.header(key, UrlUtils.encode(value)));
+		}
 	}
 
 	/**
@@ -81,13 +96,12 @@ public class EncodeTransferMedataScgFilter implements GlobalFilter, Ordered {
 	 */
 	private void buildMetadataHeader(ServerHttpRequest.Builder builder, Map<String, String> metadata, String headerName) {
 		if (!CollectionUtils.isEmpty(metadata)) {
-			String encodedMetadata = JacksonUtils.serialize2Json(metadata);
-			try {
-				builder.header(headerName, URLEncoder.encode(encodedMetadata, UTF_8));
-			}
-			catch (UnsupportedEncodingException e) {
-				builder.header(headerName, encodedMetadata);
-			}
+			buildHeaderMap(builder, ImmutableMap.of(headerName, JacksonUtils.serialize2Json(metadata)));
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return PluginOrderConstant.ClientPluginOrder.CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER;
 	}
 }

@@ -138,12 +138,16 @@ public final class ExpressionLabelUtils {
 	}
 
 	public static String getQueryValue(String queryString, String queryKey) {
+		return getQueryValue(queryString, queryKey, StringUtils.EMPTY);
+	}
+
+	public static String getQueryValue(String queryString, String queryKey, String defaultValue) {
 		if (StringUtils.isBlank(queryString)) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		String[] queries = StringUtils.split(queryString, "&");
 		if (queries == null || queries.length == 0) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		for (String query : queries) {
 			String[] queryKV = StringUtils.split(query, "=");
@@ -151,7 +155,7 @@ public final class ExpressionLabelUtils {
 				return queryKV[1];
 			}
 		}
-		return StringUtils.EMPTY;
+		return defaultValue;
 	}
 
 	public static String getFirstValue(Map<String, Collection<String>> valueMaps, String key) {

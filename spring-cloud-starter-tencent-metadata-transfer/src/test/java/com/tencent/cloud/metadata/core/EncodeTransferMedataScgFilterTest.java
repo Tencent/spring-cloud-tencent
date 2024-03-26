@@ -18,59 +18,129 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
-import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
+import org.assertj.core.util.Maps;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.route.Route;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.server.ServerWebExchange;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
+import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 /**
- * @author quan
+ * Test for {@link EncodeTransferMedataScgEnhancedPlugin}.
+ * @author quan, Shedfree Wu
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = EncodeTransferMedataScgFilterTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml",
-				"spring.main.web-application-type = reactive"})
+@ExtendWith(MockitoExtension.class)
 public class EncodeTransferMedataScgFilterTest {
 
-	@Autowired
-	private ApplicationContext applicationContext;
-
+	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
-	private GatewayFilterChain chain;
+	Registration registration;
+	@Mock
+	GatewayFilterChain chain;
 
-	@Test
-	public void testTransitiveMetadataFromApplicationConfig() throws UnsupportedEncodingException {
-		EncodeTransferMedataScgFilter filter = applicationContext.getBean(EncodeTransferMedataScgFilter.class);
-		MockServerHttpRequest.BaseBuilder<?> builder = MockServerHttpRequest.get("");
-		MockServerWebExchange exchange = MockServerWebExchange.from(builder);
-		filter.filter(exchange, chain);
-		String metadataStr = exchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.CUSTOM_METADATA);
-		String decode = URLDecoder.decode(metadataStr, UTF_8);
-		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
-		assertThat(transitiveMap.size()).isEqualTo(1);
-		assertThat(transitiveMap.get("b")).isEqualTo("2");
+	@BeforeAll
+	static void beforeAll() {
+		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
+		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
+				.thenReturn("unit-test");
+		ApplicationContext applicationContext = mock(ApplicationContext.class);
+		MetadataLocalProperties metadataLocalProperties = mock(MetadataLocalProperties.class);
+		StaticMetadataManager staticMetadataManager = mock(StaticMetadataManager.class);
+		doReturn(metadataLocalProperties).when(applicationContext).getBean(MetadataLocalProperties.class);
+		doReturn(staticMetadataManager).when(applicationContext).getBean(StaticMetadataManager.class);
+		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
+				.thenReturn(applicationContext);
 	}
 
-	@SpringBootApplication
-	protected static class TestApplication {
+	@AfterAll
+	static void afterAll() {
+		mockedApplicationContextAwareUtils.close();
+	}
+
+	@BeforeEach
+	void setUp() {
+		MetadataContext.LOCAL_NAMESPACE = NAMESPACE_TEST;
+		MetadataContext.LOCAL_SERVICE = SERVICE_PROVIDER;
+	}
+
+	@Test
+	public void testRun() throws URISyntaxException {
+
+		Route route = mock(Route.class);
+		URI uri = new URI("http://TEST/");
+		doReturn(uri).when(route).getUri();
+
+		MetadataContext metadataContext = MetadataContextHolder.get();
+		metadataContext.setTransitiveMetadata(Maps.newHashMap("t-key", "t-value"));
+		metadataContext.setDisposableMetadata(Maps.newHashMap("d-key", "d-value"));
+
+		MockServerHttpRequest mockServerHttpRequest = MockServerHttpRequest.get("/test").build();
+
+		EncodeTransferMedataScgEnhancedPlugin plugin = new EncodeTransferMedataScgEnhancedPlugin();
+		plugin.getOrder();
+		EnhancedGatewayGlobalFilter filter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(Arrays.asList(plugin), registration, null));
+		filter.getOrder();
+
+		MockServerWebExchange mockServerWebExchange = MockServerWebExchange.builder(mockServerHttpRequest).build();
+		mockServerWebExchange.getAttributes().put(GATEWAY_ROUTE_ATTR, route);
+		mockServerWebExchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, new URI("http://0.0.0.0/"));
+		mockServerWebExchange.getAttributes().put(MetadataConstant.HeaderName.METADATA_CONTEXT, metadataContext);
+		doReturn(Mono.empty()).when(chain).filter(any());
+
+
+		filter.filter(mockServerWebExchange, chain).block();
+
+
+		ArgumentCaptor<ServerWebExchange> captor = ArgumentCaptor.forClass(ServerWebExchange.class);
+		// capture the result exchange
+		Mockito.verify(chain).filter(captor.capture());
+		ServerWebExchange filteredExchange = captor.getValue();
+
+		assertThat(filteredExchange.getRequest().getHeaders().get(CUSTOM_METADATA)).isNotNull();
+		assertThat(filteredExchange.getRequest().getHeaders().get(CUSTOM_DISPOSABLE_METADATA)).isNotNull();
+
+		// test metadataContext init in EnhancedPlugin
+		mockServerWebExchange.getAttributes().remove(MetadataConstant.HeaderName.METADATA_CONTEXT);
+		assertThatCode(() -> filter.filter(mockServerWebExchange, chain).block()).doesNotThrowAnyException();
 
 	}
 }

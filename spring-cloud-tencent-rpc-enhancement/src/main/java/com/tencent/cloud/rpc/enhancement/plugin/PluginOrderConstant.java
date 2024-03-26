@@ -44,5 +44,19 @@ public class PluginOrderConstant {
 		 * {@link com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter}.
 		 */
 		public static final int CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 2;
+
+		/**
+		 * order for
+		 * {@link com.tencent.cloud.metadata.core.EncodeTransferMedataFeignEnhancedPlugin}
+		 * and
+		 * {@link com.tencent.cloud.metadata.core.EncodeTransferMedataScgEnhancedPlugin}
+		 * and
+		 * {@link com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientEnhancedPlugin}
+		 * and
+		 * {@link com.tencent.cloud.metadata.core.EncodeTransferMedataZuulEnhancedPlugin}
+		 * and
+		 * {@link com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateEnhancedPlugin}.
+		 */
+		public static final int CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 	}
 }

@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataWebClientFilter}.
+ * Test for {@link EncodeTransferMedataWebClientEnhancedPlugin}.
  *
  * @author sean yu
  */

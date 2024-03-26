@@ -51,19 +51,21 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 	}
 
 	@Override
-	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+	public Mono<Void> filter(ServerWebExchange originExchange, GatewayFilterChain chain) {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
-				.httpHeaders(exchange.getRequest().getHeaders())
-				.httpMethod(exchange.getRequest().getMethod())
-				.url(exchange.getRequest().getURI())
+				.httpHeaders(originExchange.getRequest().getHeaders())
+				.httpMethod(originExchange.getRequest().getMethod())
+				.url(originExchange.getRequest().getURI())
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
+		enhancedPluginContext.setOriginRequest(originExchange);
 
 		// Run pre enhanced plugins.
 		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
-
+		// Exchange may be changed in plugin
+		ServerWebExchange exchange = (ServerWebExchange) enhancedPluginContext.getOriginRequest();
 		long startTime = System.currentTimeMillis();
 		return chain.filter(exchange)
 				.doOnSubscribe(v -> {

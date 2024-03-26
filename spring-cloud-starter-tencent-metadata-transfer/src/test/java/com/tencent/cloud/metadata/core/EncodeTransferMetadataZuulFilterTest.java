@@ -23,9 +23,13 @@ import java.net.URLDecoder;
 import java.util.Map;
 
 import com.netflix.zuul.context.RequestContext;
-import com.tencent.cloud.common.constant.MetadataConstant;
+import com.netflix.zuul.exception.ZuulException;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.rpc.enhancement.zuul.EnhancedPreZuulFilter;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.util.Maps;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,12 +42,16 @@ import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.SERVICE_ID_KEY;
 
 /**
- * Test for {@link EncodeTransferMetadataZuulFilter}.
+ * Test for {@link EncodeTransferMetadataZuulEnhancedPlugin}.
  *
- * @author quan
+ * @author quan, Shedfree Wu
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
@@ -64,17 +72,30 @@ public class EncodeTransferMetadataZuulFilterTest {
 	}
 
 	@Test
-	public void multiplePartNamesWithMultipleParts() throws UnsupportedEncodingException {
-		EncodeTransferMetadataZuulFilter filter = applicationContext.getBean(EncodeTransferMetadataZuulFilter.class);
+	public void testRun() throws ZuulException, UnsupportedEncodingException {
+		EnhancedPreZuulFilter filter = applicationContext.getBean(EnhancedPreZuulFilter.class);
+		RequestContext context = RequestContext.getCurrentContext();
+		context.set(SERVICE_ID_KEY, "test-service");
+
+		MetadataContext metadataContext = MetadataContextHolder.get();
+		metadataContext.setTransitiveMetadata(Maps.newHashMap("t-key", "t-value"));
+		metadataContext.setDisposableMetadata(Maps.newHashMap("d-key", "d-value"));
 		filter.run();
+
 		final RequestContext ctx = RequestContext.getCurrentContext();
 		Map<String, String> zuulRequestHeaders = ctx.getZuulRequestHeaders();
-		String metadata = zuulRequestHeaders.get(MetadataConstant.HeaderName.CUSTOM_METADATA.toLowerCase());
+		// convert header to lower case in com.netflix.zuul.context.RequestContext.addZuulRequestHeader
+		assertThat(zuulRequestHeaders.get(CUSTOM_METADATA.toLowerCase())).isNotNull();
+		assertThat(zuulRequestHeaders.get(CUSTOM_DISPOSABLE_METADATA.toLowerCase())).isNotNull();
+
+		String metadata = zuulRequestHeaders.get(CUSTOM_METADATA.toLowerCase());
+
 		Assertions.assertThat(metadata).isNotNull();
 
 		String decode = URLDecoder.decode(metadata, UTF_8);
 		Map<String, String> transitiveMap = JacksonUtils.deserialize2Map(decode);
-		Assertions.assertThat(transitiveMap.size()).isEqualTo(1);
+		// expect {"b":"2","t-key":"t-value"}
+		Assertions.assertThat(transitiveMap.size()).isEqualTo(2);
 		Assertions.assertThat(transitiveMap.get("b")).isEqualTo("2");
 	}
 

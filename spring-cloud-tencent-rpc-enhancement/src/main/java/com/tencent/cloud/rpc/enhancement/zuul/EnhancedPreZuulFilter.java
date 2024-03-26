@@ -99,6 +99,7 @@ public class EnhancedPreZuulFilter extends ZuulFilter {
 					.build();
 
 			enhancedPluginContext.setRequest(enhancedRequestContext);
+			enhancedPluginContext.setOriginRequest(context);
 			enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 
 			// Run pre enhanced plugins.

@@ -18,8 +18,6 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +25,8 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.UrlUtils;
+import com.tencent.cloud.metadata.provider.ReactiveMetadataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -34,12 +34,10 @@ import reactor.core.publisher.Mono;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
@@ -62,19 +60,16 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 	public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
 		// Get metadata string from http header.
 		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
-
 		Map<String, String> internalTransitiveMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_METADATA);
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(serverWebExchange);
 
 		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
-
 		Map<String, String> internalDisposableMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
 		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
-
-		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata);
-
+		ReactiveMetadataProvider metadataProvider = new ReactiveMetadataProvider(serverHttpRequest);
+		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, metadataProvider);
 		// Save to ServerWebExchange.
 		serverWebExchange.getAttributes().put(
 				MetadataConstant.HeaderName.METADATA_CONTEXT,
@@ -89,15 +84,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 	private Map<String, String> getIntervalMetadata(ServerHttpRequest serverHttpRequest, String headerName) {
 		HttpHeaders httpHeaders = serverHttpRequest.getHeaders();
-		String customMetadataStr = httpHeaders.getFirst(headerName);
-		try {
-			if (StringUtils.hasText(customMetadataStr)) {
-				customMetadataStr = URLDecoder.decode(customMetadataStr, UTF_8);
-			}
-		}
-		catch (UnsupportedEncodingException e) {
-			LOG.error("Runtime system does not support utf-8 coding.", e);
-		}
+		String customMetadataStr = UrlUtils.decode(httpHeaders.getFirst(headerName));
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
 		return JacksonUtils.deserialize2Map(customMetadataStr);

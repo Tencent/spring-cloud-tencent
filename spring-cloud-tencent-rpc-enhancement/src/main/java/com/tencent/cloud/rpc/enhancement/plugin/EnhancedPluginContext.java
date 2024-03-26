@@ -36,6 +36,8 @@ public class EnhancedPluginContext {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedPluginContext.class);
 
+	private Object originRequest;
+
 	private EnhancedRequestContext request;
 
 	private EnhancedResponseContext response;
@@ -50,6 +52,14 @@ public class EnhancedPluginContext {
 	 * targetServiceInstance only exist in a client runner type.
 	 */
 	private ServiceInstance targetServiceInstance;
+
+	public Object getOriginRequest() {
+		return originRequest;
+	}
+
+	public void setOriginRequest(Object originRequest) {
+		this.originRequest = originRequest;
+	}
 
 	public EnhancedRequestContext getRequest() {
 		return request;
