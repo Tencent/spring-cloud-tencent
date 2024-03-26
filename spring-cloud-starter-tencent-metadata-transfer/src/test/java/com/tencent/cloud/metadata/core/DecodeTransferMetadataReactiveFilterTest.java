@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +55,7 @@ public class DecodeTransferMetadataReactiveFilterTest {
 
 	@BeforeEach
 	public void setUp() {
-		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter();
+		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter(new PolarisContextProperties());
 	}
 
 	@Test

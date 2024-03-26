@@ -34,8 +34,11 @@ public class ReactiveMetadataProvider implements MetadataProvider {
 
 	private ServerHttpRequest serverHttpRequest;
 
-	public ReactiveMetadataProvider(ServerHttpRequest serverHttpRequest) {
+	private String callerIp;
+
+	public ReactiveMetadataProvider(ServerHttpRequest serverHttpRequest, String callerIp) {
 		this.serverHttpRequest = serverHttpRequest;
+		this.callerIp = callerIp;
 	}
 
 	@Override
@@ -45,6 +48,8 @@ public class ReactiveMetadataProvider implements MetadataProvider {
 			return serverHttpRequest.getMethodValue();
 		case MessageMetadataContainer.LABEL_KEY_PATH:
 			return UrlUtils.decode(serverHttpRequest.getPath().toString());
+		case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
+			return callerIp;
 		default:
 			return null;
 		}

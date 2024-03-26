@@ -35,8 +35,11 @@ public class ServletMetadataProvider implements MetadataProvider {
 
 	private HttpServletRequest httpServletRequest;
 
-	public ServletMetadataProvider(HttpServletRequest httpServletRequest) {
+	private String callerIp;
+
+	public ServletMetadataProvider(HttpServletRequest httpServletRequest, String callerIp) {
 		this.httpServletRequest = httpServletRequest;
+		this.callerIp = callerIp;
 	}
 
 	@Override
@@ -46,6 +49,8 @@ public class ServletMetadataProvider implements MetadataProvider {
 				return httpServletRequest.getMethod();
 			case MessageMetadataContainer.LABEL_KEY_PATH:
 				return UrlUtils.decode(httpServletRequest.getRequestURI());
+			case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
+				return callerIp;
 			default:
 				return null;
 		}
