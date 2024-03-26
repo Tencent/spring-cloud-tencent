@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.metadata.provider;
 
+import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import org.junit.Test;
 
@@ -40,64 +41,95 @@ public class MetadataProviderTest {
 
 	@Test
 	public void testReactiveMetadataProvider() {
-		String header1 = "header1";
-		String value1 = "value1";
-		String queryKey = "qk1";
-		String queryValue = "qv1";
-		String cookieKey = "ck1";
-		String cookieValue = "cv1";
+		String headerKey1 = "header1";
+		String headerKey2 = "header2";
+		String headerValue1 = "value1";
+		String headerValue2 = "value2/test";
+		String queryKey1 = "qk1";
+		String queryKey2 = "qk2";
+		String queryValue1 = "qv1";
+		String queryValue2 = "qv2/test";
+		String cookieKey1 = "ck1";
+		String cookieKey2 = "ck2";
+		String cookieValue1 = "cv1";
+		String cookieValue2 = "cv2/test";
 		String path = "/echo/test";
 		MockServerHttpRequest request = MockServerHttpRequest.get(path)
-				.header(header1, value1)
-				.queryParam(queryKey, queryValue)
-				.cookie(new HttpCookie(cookieKey, cookieValue))
+				.header(headerKey1, headerValue1)
+				.header(headerKey2, UrlUtils.encode(headerValue2))
+				.queryParam(queryKey1, queryValue1)
+				.queryParam(queryKey2, UrlUtils.encode(queryValue2))
+				.cookie(new HttpCookie(cookieKey1, cookieValue1))
+				.cookie(new HttpCookie(cookieKey2, UrlUtils.encode(cookieValue2)))
 				.build();
 
 		ReactiveMetadataProvider reactiveMetadataProvider = new ReactiveMetadataProvider(request);
-		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, header1)).isEqualTo(value1);
+		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerKey1)).isEqualTo(headerValue1);
+		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerKey2)).isEqualTo(headerValue2);
 		// com.tencent.polaris.metadata.core.manager.ComposeMetadataProvider.getRawMetadataMapValue need return null when key don't exist
 		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, notExistKey)).isNull();
-		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, cookieKey)).isEqualTo(cookieValue);
+
+		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, cookieKey1)).isEqualTo(cookieValue1);
+		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, cookieKey2)).isEqualTo(cookieValue2);
 		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, notExistKey)).isNull();
-		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, queryKey)).isEqualTo(queryValue);
+
+		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, queryKey1)).isEqualTo(queryValue1);
+		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, queryKey2)).isEqualTo(queryValue2);
 		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, notExistKey)).isNull();
-		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(notExistKey, queryKey)).isNull();
+		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(notExistKey, queryKey1)).isNull();
 
 		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_METHOD)).isEqualTo("GET");
 		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo(path);
 		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(notExistKey)).isNull();
+
+		request = MockServerHttpRequest.get("/echo/" + UrlUtils.decode("a@b")).build();
+		reactiveMetadataProvider = new ReactiveMetadataProvider(request);
+		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo("/echo/a@b");
 	}
 
 	@Test
 	public void testServletMetadataProvider() {
-		String notExistKey = "empty";
-
-		String header1 = "header1";
-		String value1 = "value1";
-		String queryKey = "qk1";
-		String queryValue = "qv1";
-		String cookieKey = "ck1";
-		String cookieValue = "cv1";
+		String headerKey1 = "header1";
+		String headerKey2 = "header2";
+		String headerValue1 = "value1";
+		String headerValue2 = "value2/test";
+		String queryKey1 = "qk1";
+		String queryKey2 = "qk2";
+		String queryValue1 = "qv1";
+		String queryValue2 = "qv2/test";
+		String cookieKey1 = "ck1";
+		String cookieKey2 = "ck2";
+		String cookieValue1 = "cv1";
+		String cookieValue2 = "cv2/test";
 		String path = "/echo/test";
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.addHeader(header1, value1);
-		request.setCookies(new MockCookie(cookieKey, cookieValue));
+		request.addHeader(headerKey1, headerValue1);
+		request.addHeader(headerKey2, UrlUtils.encode(headerValue2));
+		request.setCookies(new MockCookie(cookieKey1, cookieValue1), new MockCookie(cookieKey2, UrlUtils.encode(cookieValue2)));
 		request.setMethod(HttpMethod.GET.name());
 		request.setRequestURI(path);
-		request.setQueryString(queryKey + "=" + queryValue);
+		request.setQueryString(queryKey1 + "=" + queryValue1 + "&" + queryKey2 + "=" + UrlUtils.encode(queryValue2));
 
 		ServletMetadataProvider servletMetadataProvider = new ServletMetadataProvider(request);
-		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, header1)).isEqualTo(value1);
+		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerKey1)).isEqualTo(headerValue1);
+		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerKey2)).isEqualTo(headerValue2);
 		// com.tencent.polaris.metadata.core.manager.ComposeMetadataProvider.getRawMetadataMapValue need return null when key don't exist
 		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, notExistKey)).isNull();
-		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, cookieKey)).isEqualTo(cookieValue);
+
+		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, cookieKey1)).isEqualTo(cookieValue1);
+		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, cookieKey2)).isEqualTo(cookieValue2);
 		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, notExistKey)).isNull();
-		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, queryKey)).isEqualTo(queryValue);
+
+		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, queryKey1)).isEqualTo(queryValue1);
+		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, queryKey2)).isEqualTo(queryValue2);
 		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, notExistKey)).isNull();
-		assertThat(servletMetadataProvider.getRawMetadataMapValue(notExistKey, queryKey)).isNull();
+		assertThat(servletMetadataProvider.getRawMetadataMapValue(notExistKey, queryKey1)).isNull();
 
 		assertThat(servletMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_METHOD)).isEqualTo("GET");
 		assertThat(servletMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo(path);
 		assertThat(servletMetadataProvider.getRawMetadataStringValue(notExistKey)).isNull();
+
+		request.setRequestURI("/echo/" + UrlUtils.decode("a@b"));
+		assertThat(servletMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo("/echo/a@b");
 	}
 }

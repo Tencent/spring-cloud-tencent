@@ -44,7 +44,7 @@ public class ReactiveMetadataProvider implements MetadataProvider {
 		case MessageMetadataContainer.LABEL_KEY_METHOD:
 			return serverHttpRequest.getMethodValue();
 		case MessageMetadataContainer.LABEL_KEY_PATH:
-			return serverHttpRequest.getPath().toString();
+			return UrlUtils.decode(serverHttpRequest.getPath().toString());
 		default:
 			return null;
 		}

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,6 +90,16 @@ public class QuickstartCalleeController {
 	public Boolean saveValue(@RequestParam int value) {
 		LOG.info("Quickstart [{}] Service [{}:{}] is called. Mock save value = [{}].", appName, ip, port, value);
 		return true;
+	}
+
+	/**
+	 * Get path echo of callee.
+	 * @return information of callee
+	 */
+	@GetMapping("/path/echo/{param}")
+	public String pathEcho(@PathVariable String param) {
+		LOG.info("Quickstart [{}] Service [{}:{}] is called. param = [{}].", appName, ip, port, param);
+		return String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, param);
 	}
 
 	/**

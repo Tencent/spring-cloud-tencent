@@ -45,7 +45,7 @@ public class ServletMetadataProvider implements MetadataProvider {
 			case MessageMetadataContainer.LABEL_KEY_METHOD:
 				return httpServletRequest.getMethod();
 			case MessageMetadataContainer.LABEL_KEY_PATH:
-				return httpServletRequest.getRequestURI();
+				return UrlUtils.decode(httpServletRequest.getRequestURI());
 			default:
 				return null;
 		}
@@ -57,9 +57,9 @@ public class ServletMetadataProvider implements MetadataProvider {
 			case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
 				return UrlUtils.decode(httpServletRequest.getHeader(mapKey));
 			case MessageMetadataContainer.LABEL_MAP_KEY_COOKIE:
-				return ServletExpressionLabelUtils.getCookieValue(httpServletRequest.getCookies(), mapKey, null);
+				return UrlUtils.decode(ServletExpressionLabelUtils.getCookieValue(httpServletRequest.getCookies(), mapKey, null));
 			case MessageMetadataContainer.LABEL_MAP_KEY_QUERY:
-				return ExpressionLabelUtils.getQueryValue(httpServletRequest.getQueryString(), mapKey, null);
+				return UrlUtils.decode(ExpressionLabelUtils.getQueryValue(httpServletRequest.getQueryString(), mapKey, null));
 			default:
 				return null;
 		}
