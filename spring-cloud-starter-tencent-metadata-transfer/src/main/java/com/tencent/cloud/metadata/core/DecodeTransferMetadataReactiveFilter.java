@@ -27,6 +27,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.metadata.provider.ReactiveMetadataProvider;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -49,7 +50,13 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  */
 public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered {
 
+	private PolarisContextProperties polarisContextProperties;
+
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataReactiveFilter.class);
+
+	public DecodeTransferMetadataReactiveFilter(PolarisContextProperties polarisContextProperties) {
+		this.polarisContextProperties = polarisContextProperties;
+	}
 
 	@Override
 	public int getOrder() {
@@ -68,7 +75,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 		Map<String, String> internalDisposableMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
 		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
-		ReactiveMetadataProvider metadataProvider = new ReactiveMetadataProvider(serverHttpRequest);
+		ReactiveMetadataProvider metadataProvider = new ReactiveMetadataProvider(serverHttpRequest, polarisContextProperties.getLocalIpAddress());
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, metadataProvider);
 		// Save to ServerWebExchange.
 		serverWebExchange.getAttributes().put(

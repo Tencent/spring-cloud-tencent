@@ -47,12 +47,15 @@ public final class MetadataContextHolder {
 
 	private static StaticMetadataManager staticMetadataManager;
 
+	static {
+		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.setInitializer(MetadataContextHolder::createMetadataManager);
+	}
+
 	private MetadataContextHolder() {
 	}
 
 	public static MetadataContext get() {
-		return (MetadataContext) com.tencent.polaris.metadata.core.manager.MetadataContextHolder.getOrCreate(
-				MetadataContextHolder::createMetadataManager);
+		return (MetadataContext) com.tencent.polaris.metadata.core.manager.MetadataContextHolder.getOrCreate();
 	}
 
 	private static MetadataContext createMetadataManager() {
@@ -135,7 +138,7 @@ public final class MetadataContextHolder {
 	 */
 	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata,
 			MetadataProvider callerMetadataProvider) {
-		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.refresh(MetadataContextHolder::createMetadataManager, metadataManager -> {
+		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.refresh(metadataManager -> {
 			MetadataContainer metadataContainerUpstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
 			if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicTransitiveMetadata.entrySet()) {

@@ -54,6 +54,7 @@ public class MetadataProviderTest {
 		String cookieValue1 = "cv1";
 		String cookieValue2 = "cv2/test";
 		String path = "/echo/test";
+		String callerIp = "localhost";
 		MockServerHttpRequest request = MockServerHttpRequest.get(path)
 				.header(headerKey1, headerValue1)
 				.header(headerKey2, UrlUtils.encode(headerValue2))
@@ -63,7 +64,7 @@ public class MetadataProviderTest {
 				.cookie(new HttpCookie(cookieKey2, UrlUtils.encode(cookieValue2)))
 				.build();
 
-		ReactiveMetadataProvider reactiveMetadataProvider = new ReactiveMetadataProvider(request);
+		ReactiveMetadataProvider reactiveMetadataProvider = new ReactiveMetadataProvider(request, callerIp);
 		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerKey1)).isEqualTo(headerValue1);
 		assertThat(reactiveMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerKey2)).isEqualTo(headerValue2);
 		// com.tencent.polaris.metadata.core.manager.ComposeMetadataProvider.getRawMetadataMapValue need return null when key don't exist
@@ -80,10 +81,11 @@ public class MetadataProviderTest {
 
 		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_METHOD)).isEqualTo("GET");
 		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo(path);
+		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_CALLER_IP)).isEqualTo(callerIp);
 		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(notExistKey)).isNull();
 
 		request = MockServerHttpRequest.get("/echo/" + UrlUtils.decode("a@b")).build();
-		reactiveMetadataProvider = new ReactiveMetadataProvider(request);
+		reactiveMetadataProvider = new ReactiveMetadataProvider(request, callerIp);
 		assertThat(reactiveMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo("/echo/a@b");
 	}
 
@@ -102,6 +104,7 @@ public class MetadataProviderTest {
 		String cookieValue1 = "cv1";
 		String cookieValue2 = "cv2/test";
 		String path = "/echo/test";
+		String callerIp = "localhost";
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader(headerKey1, headerValue1);
 		request.addHeader(headerKey2, UrlUtils.encode(headerValue2));
@@ -110,7 +113,7 @@ public class MetadataProviderTest {
 		request.setRequestURI(path);
 		request.setQueryString(queryKey1 + "=" + queryValue1 + "&" + queryKey2 + "=" + UrlUtils.encode(queryValue2));
 
-		ServletMetadataProvider servletMetadataProvider = new ServletMetadataProvider(request);
+		ServletMetadataProvider servletMetadataProvider = new ServletMetadataProvider(request, callerIp);
 		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerKey1)).isEqualTo(headerValue1);
 		assertThat(servletMetadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerKey2)).isEqualTo(headerValue2);
 		// com.tencent.polaris.metadata.core.manager.ComposeMetadataProvider.getRawMetadataMapValue need return null when key don't exist
@@ -127,6 +130,7 @@ public class MetadataProviderTest {
 
 		assertThat(servletMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_METHOD)).isEqualTo("GET");
 		assertThat(servletMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo(path);
+		assertThat(servletMetadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_CALLER_IP)).isEqualTo(callerIp);
 		assertThat(servletMetadataProvider.getRawMetadataStringValue(notExistKey)).isNull();
 
 		request.setRequestURI("/echo/" + UrlUtils.decode("a@b"));
