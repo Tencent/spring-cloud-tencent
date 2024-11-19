@@ -131,9 +131,14 @@ public class OrderConstant {
 			public static final int ENHANCED_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 			/**
+			 * Order of auth filter.
+			 */
+			public static final int AUTH_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 11;
+
+			/**
 			 * Order of rate-limit filter.
 			 */
-			public static final int RATE_LIMIT_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+			public static final int RATE_LIMIT_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 12;
 		}
 
 		/**
@@ -151,9 +156,14 @@ public class OrderConstant {
 			public static final int ENHANCED_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 			/**
+			 * Order of auth filter.
+			 */
+			public static final int AUTH_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 11;
+
+			/**
 			 * Order of rate-limit filter.
 			 */
-			public static final int RATE_LIMIT_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+			public static final int RATE_LIMIT_FILTER_ORDER = Ordered.HIGHEST_PRECEDENCE + 12;
 		}
 	}
 
@@ -196,6 +206,11 @@ public class OrderConstant {
 		 * Order of rate-limit configuration modifier.
 		 */
 		public static Integer RATE_LIMIT_ORDER = 2;
+
+		/**
+		 * Order of auth configuration modifier.
+		 */
+		public static Integer AUTH_ORDER = 2;
 
 		/**
 		 * Order of config configuration modifier.
