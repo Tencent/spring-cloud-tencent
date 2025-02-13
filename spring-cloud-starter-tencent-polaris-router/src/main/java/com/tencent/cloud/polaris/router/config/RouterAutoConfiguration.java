@@ -27,6 +27,7 @@ import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterPro
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 import com.tencent.cloud.polaris.router.instrument.resttemplate.RouterLabelRestTemplateInterceptor;
 import com.tencent.cloud.polaris.router.instrument.scg.RouterLabelGlobalFilter;
+import com.tencent.cloud.polaris.router.instrument.scgmvc.RouterLabelMvcFilter;
 import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NamespaceRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
@@ -87,6 +88,20 @@ public class RouterAutoConfiguration {
 		@Bean
 		public RouterLabelGlobalFilter routerLabelGlobalFilter() {
 			return new RouterLabelGlobalFilter();
+		}
+
+	}
+
+	/**
+	 * Create when gateway application is SCG MVC.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.server.mvc.filter.FormFilter")
+	protected static class RouterLabelScgMvcFilterConfig {
+
+		@Bean
+		public RouterLabelMvcFilter routerLabelMvcFilter() {
+			return new RouterLabelMvcFilter();
 		}
 
 	}
