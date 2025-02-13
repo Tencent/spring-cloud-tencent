@@ -74,7 +74,7 @@
 		<revision>2.0.0.0-2023.0.3-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>2.0.0.0-SNAPSHOT</polaris.version>
+		<polaris.version>2.0.0.0</polaris.version>
 
 		<!-- Dependencies -->
 		<guava.version>32.0.1-jre</guava.version>
