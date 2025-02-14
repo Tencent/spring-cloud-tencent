@@ -45,7 +45,7 @@ import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClien
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RouterLabelGlobalFilterTest.TestApplication.class,
-		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.main.web-application-type=reactive"})
+		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.main.web-application-type=reactive", "spring.cloud.gateway.mvc.enabled=false"})
 public class RouterLabelGlobalFilterTest {
 
 	@Test

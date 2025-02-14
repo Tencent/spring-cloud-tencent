@@ -47,7 +47,7 @@ import static org.springframework.cloud.gateway.server.mvc.filter.FormFilter.FOR
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RouterLabelMvcFilterTest.TestApplication.class,
-		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.main.web-application-type=servlet"})
+		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.main.web-application-type=servlet", "spring.cloud.gateway.enabled=false"})
 public class RouterLabelMvcFilterTest {
 
 	@Test
