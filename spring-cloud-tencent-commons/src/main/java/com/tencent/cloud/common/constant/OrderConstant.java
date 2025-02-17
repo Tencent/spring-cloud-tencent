@@ -206,5 +206,10 @@ public class OrderConstant {
 		 * Order of trace configuration modifier.
 		 */
 		public static Integer TRACE_ORDER = 2;
+
+		/**
+		 * Order of push gateway event reporter modifier.
+		 */
+		public static Integer PUSH_GATEWAY_EVENT_ORDER = 2;
 	}
 }
