@@ -52,10 +52,10 @@ public class PolarisStatProperties {
 
 	/**
 	 * Push metrics interval.
-	 * unit: milliseconds default 30s.
+	 * unit: milliseconds default 60s.
 	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.push-interval:#{30000}}")
-	private Long pushGatewayPushInterval = 30 * 1000L;
+	@Value("${spring.cloud.polaris.stat.pushgateway.push-interval:#{60000}}")
+	private Long pushGatewayPushInterval = 60 * 1000L;
 
 	/**
 	 * If push gateway gzip open. default false.
