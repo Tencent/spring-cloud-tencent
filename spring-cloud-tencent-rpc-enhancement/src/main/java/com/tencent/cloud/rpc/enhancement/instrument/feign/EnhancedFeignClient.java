@@ -115,6 +115,7 @@ public class EnhancedFeignClient implements Client {
 			return response;
 		}
 		catch (CallAbortedException callAbortedException) {
+			// TODO: shedfree 是否需要执行 exception 插件
 			// circuit breaker fallback, not need to run post/exception enhanced plugins.
 			if (callAbortedException.getFallbackInfo() != null) {
 				return getFallbackResponse(callAbortedException.getFallbackInfo());

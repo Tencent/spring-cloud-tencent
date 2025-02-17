@@ -25,7 +25,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
@@ -72,7 +75,10 @@ public final class RouterUtils {
 			serviceMetadata = instanceList.get(0).getServiceMetadata();
 		}
 
-		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
+		String namespace = MetadataContextUtils.getCallerApplicationMetadataStringValue(
+				MetadataContextHolder.get(), ContextConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
+		ServiceKey serviceKey = new ServiceKey(namespace, serviceName);
 
 		return new DefaultServiceInstances(serviceKey, instanceList, serviceMetadata);
 	}

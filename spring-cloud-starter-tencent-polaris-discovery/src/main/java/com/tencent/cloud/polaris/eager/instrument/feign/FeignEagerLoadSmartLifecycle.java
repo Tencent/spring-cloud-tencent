@@ -17,13 +17,17 @@
 
 package com.tencent.cloud.polaris.eager.instrument.feign;
 
-import com.tencent.cloud.common.util.FeignUtil;
+import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
+
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClient;
 import com.tencent.polaris.api.utils.StringUtils;
+import feign.Target;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
 
@@ -47,34 +51,57 @@ public class FeignEagerLoadSmartLifecycle implements SmartLifecycle {
 	@Override
 	public void start() {
 		LOG.info("feign eager-load start");
-		for (String name : applicationContext.getBeanDefinitionNames()) {
+		for (Object bean : applicationContext.getBeansWithAnnotation(FeignClient.class).values()) {
 			try {
-				if (name.contains(FeignUtil.FEIGN_CLIENT_SPECIF) && !name.startsWith(FeignUtil.FEIGN_CLIENT_DEFAULT)) {
-					String feignName = FeignUtil.analysisFeignName(name, applicationContext);
-					if (StringUtils.isNotBlank(feignName)) {
-						LOG.info("[{}] eager-load start", feignName);
-						if (polarisDiscoveryClient != null) {
-							polarisDiscoveryClient.getInstances(feignName);
+				if (Proxy.isProxyClass(bean.getClass())) {
+					Target.HardCodedTarget<?> hardCodedTarget = getHardCodedTarget(bean);
+					if (hardCodedTarget != null) {
+						FeignClient feignClient = hardCodedTarget.type().getAnnotation(FeignClient.class);
+						// if feignClient contains url, it doesn't need to eager load.
+						if (StringUtils.isEmpty(feignClient.url())) {
+							// support variables and default values.
+							String feignName = hardCodedTarget.name();
+							LOG.info("[{}] eager-load start", feignName);
+							if (polarisDiscoveryClient != null) {
+								polarisDiscoveryClient.getInstances(feignName);
+							}
+							else if (polarisReactiveDiscoveryClient != null) {
+								polarisReactiveDiscoveryClient.getInstances(feignName).subscribe();
+							}
+							else {
+								LOG.warn("[{}] no discovery client found.", feignName);
+							}
+							LOG.info("[{}] eager-load end", feignName);
 						}
-						else if (polarisReactiveDiscoveryClient != null) {
-							polarisReactiveDiscoveryClient.getInstances(feignName).subscribe();
-						}
-						else {
-							LOG.warn("[{}] no discovery client found.", feignName);
-						}
-						LOG.info("[{}] eager-load end", feignName);
-					}
-					else {
-						LOG.warn("feign name is blank.");
 					}
 				}
 			}
 			catch (Exception e) {
-				LOG.error("[{}] eager-load failed.", name, e);
+				LOG.debug("[{}] eager-load failed.", bean, e);
 			}
 		}
 		LOG.info("feign eager-load end");
 
+	}
+
+	public static Target.HardCodedTarget<?> getHardCodedTarget(Object proxy) {
+		try {
+			Object invocationHandler = Proxy.getInvocationHandler(proxy);
+
+			for (Field field : invocationHandler.getClass().getDeclaredFields()) {
+				field.setAccessible(true);
+				Object fieldValue = field.get(invocationHandler);
+				if (fieldValue instanceof Target.HardCodedTarget) {
+					return (Target.HardCodedTarget<?>) fieldValue;
+				}
+			}
+		}
+		catch (Exception e) {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("proxy:{}, getTarget failed.", proxy, e);
+			}
+		}
+		return null;
 	}
 
 	@Override

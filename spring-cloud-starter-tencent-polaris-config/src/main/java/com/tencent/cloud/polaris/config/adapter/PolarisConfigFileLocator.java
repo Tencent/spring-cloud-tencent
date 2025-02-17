@@ -213,13 +213,17 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		String tsfNamespaceName = environment.getProperty("tsf_namespace_name");
 		String tsfGroupName = environment.getProperty("tsf_group_name");
 
-		if (StringUtils.isEmpty(tsfId) || StringUtils.isEmpty(tsfNamespaceName) || StringUtils.isEmpty(tsfGroupName)) {
+		if (StringUtils.isEmpty(tsfNamespaceName) || StringUtils.isEmpty(tsfGroupName)) {
 			return;
 		}
 		String namespace = polarisContextProperties.getNamespace();
-		List<String> tsfConfigGroups = Arrays.asList(
-				tsfId + "." + tsfGroupName + ".application_config_group",
-				tsfId + "." + tsfNamespaceName + ".global_config_group");
+		List<String> tsfConfigGroups = new ArrayList<>();
+		tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfGroupName + ".application_config_group");
+		tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfNamespaceName + ".global_config_group");
+
+		if (isGatewayEnabled()) {
+			tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfGroupName + ".gateway_config_group");
+		}
 		for (String tsfConfigGroup : tsfConfigGroups) {
 			PolarisPropertySource polarisPropertySource = loadGroupPolarisPropertySource(configFileService, namespace, tsfConfigGroup);
 			if (polarisPropertySource == null) {
@@ -327,5 +331,15 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
 		}
 		return configKVFile;
+	}
+
+	public static boolean isGatewayEnabled() {
+		try {
+			Class.forName("org.springframework.cloud.gateway.filter.GlobalFilter");
+			return true;
+		}
+		catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 }

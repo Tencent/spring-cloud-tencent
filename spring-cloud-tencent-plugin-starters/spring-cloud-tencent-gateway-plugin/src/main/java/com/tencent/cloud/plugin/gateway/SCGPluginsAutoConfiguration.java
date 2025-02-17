@@ -17,21 +17,28 @@
 
 package com.tencent.cloud.plugin.gateway;
 
-import java.util.List;
-
-import com.tencent.cloud.plugin.gateway.staining.TrafficStainer;
-import com.tencent.cloud.plugin.gateway.staining.TrafficStainingGatewayFilter;
-import com.tencent.cloud.plugin.gateway.staining.rule.RuleStainingExecutor;
-import com.tencent.cloud.plugin.gateway.staining.rule.RuleStainingProperties;
-import com.tencent.cloud.plugin.gateway.staining.rule.RuleTrafficStainer;
-import com.tencent.cloud.plugin.gateway.staining.rule.StainingRuleManager;
+import com.tencent.cloud.plugin.gateway.context.ContextGatewayFilterFactory;
+import com.tencent.cloud.plugin.gateway.context.ContextGatewayProperties;
+import com.tencent.cloud.plugin.gateway.context.ContextGatewayPropertiesManager;
+import com.tencent.cloud.plugin.gateway.context.ContextPropertiesRouteDefinitionLocator;
+import com.tencent.cloud.plugin.gateway.context.ContextRoutePredicateFactory;
+import com.tencent.cloud.plugin.gateway.context.GatewayConfigChangeListener;
 import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.polaris.configuration.api.core.ConfigFileService;
+import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
+import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClient;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 
 /**
  * Auto configuration for spring cloud gateway plugins.
@@ -43,33 +50,60 @@ import org.springframework.context.annotation.Configuration;
 public class SCGPluginsAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnProperty("spring.cloud.tencent.plugin.scg.staining.rule-staining.enabled")
+	@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.context.enabled", matchIfMissing = true)
 	@ConditionalOnPolarisConfigEnabled
-	public static class RuleStainingPluginConfiguration {
+	@ConditionalOnClass(GlobalFilter.class)
+	@Import(ContextGatewayProperties.class)
+	public static class ContextPluginConfiguration {
+
+		@Value("${spring.cloud.polaris.discovery.eager-load.enabled:#{'true'}}")
+		private boolean commonEagerLoadEnabled;
+
+		@Value("${spring.cloud.polaris.discovery.eager-load.gateway.enabled:#{'true'}}")
+		private boolean gatewayEagerLoadEnabled;
 
 		@Bean
-		public RuleStainingProperties ruleStainingProperties() {
-			return new RuleStainingProperties();
+		public ContextGatewayFilterFactory contextGatewayFilterFactory(ContextGatewayPropertiesManager contextGatewayPropertiesManager) {
+			return new ContextGatewayFilterFactory(contextGatewayPropertiesManager);
 		}
 
 		@Bean
-		public StainingRuleManager stainingRuleManager(RuleStainingProperties stainingProperties, ConfigFileService configFileService) {
-			return new StainingRuleManager(stainingProperties, configFileService);
+		public ContextPropertiesRouteDefinitionLocator contextPropertiesRouteDefinitionLocator(ContextGatewayProperties properties) {
+			return new ContextPropertiesRouteDefinitionLocator(properties);
 		}
 
 		@Bean
-		public TrafficStainingGatewayFilter trafficStainingGatewayFilter(List<TrafficStainer> trafficStainer) {
-			return new TrafficStainingGatewayFilter(trafficStainer);
+		public ContextRoutePredicateFactory contextServiceRoutePredicateFactory() {
+			return new ContextRoutePredicateFactory();
 		}
 
 		@Bean
-		public RuleStainingExecutor ruleStainingExecutor() {
-			return new RuleStainingExecutor();
+		public ContextGatewayPropertiesManager contextGatewayPropertiesManager(ContextGatewayProperties properties,
+				@Autowired(required = false) PolarisDiscoveryClient polarisDiscoveryClient,
+				@Autowired(required = false) PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient) {
+			ContextGatewayPropertiesManager contextGatewayPropertiesManager = new ContextGatewayPropertiesManager();
+			contextGatewayPropertiesManager.setGroupRouteMap(properties.getGroups());
+			if (commonEagerLoadEnabled && gatewayEagerLoadEnabled) {
+				contextGatewayPropertiesManager.eagerLoad(polarisDiscoveryClient, polarisReactiveDiscoveryClient);
+			}
+			return contextGatewayPropertiesManager;
 		}
 
 		@Bean
-		public RuleTrafficStainer ruleTrafficStainer(StainingRuleManager stainingRuleManager, RuleStainingExecutor ruleStainingExecutor) {
-			return new RuleTrafficStainer(stainingRuleManager, ruleStainingExecutor);
+		public GatewayRegistrationCustomizer gatewayRegistrationCustomizer() {
+			return new GatewayRegistrationCustomizer();
+		}
+
+		@Bean
+		public GatewayConfigChangeListener gatewayConfigChangeListener(ContextGatewayPropertiesManager manager,
+				ApplicationEventPublisher publisher, Environment environment)  {
+			return new GatewayConfigChangeListener(manager, publisher, environment);
+		}
+
+		@Bean
+		public PolarisReactiveLoadBalancerClientFilterBeanPostProcessor polarisReactiveLoadBalancerClientFilterBeanPostProcessor(
+				ApplicationContext applicationContext) {
+			return new PolarisReactiveLoadBalancerClientFilterBeanPostProcessor(applicationContext);
 		}
 	}
 }

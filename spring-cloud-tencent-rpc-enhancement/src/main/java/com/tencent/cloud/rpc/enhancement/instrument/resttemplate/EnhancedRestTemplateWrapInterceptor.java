@@ -79,30 +79,11 @@ public class EnhancedRestTemplateWrapInterceptor {
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 
-
-		// Run pre enhanced plugins.
-		try {
-			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
-		}
-		catch (CallAbortedException callAbortedException) {
-			MetadataObjectValue<Object> fallbackResponseValue = MetadataContextHolder.get().
-					getMetadataContainer(MetadataType.APPLICATION, true).
-					getMetadataValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE);
-
-			boolean existFallback = Optional.ofNullable(fallbackResponseValue).
-					map(MetadataObjectValue::getObjectValue).map(Optional::isPresent).orElse(false);
-
-			if (existFallback) {
-				Object fallbackResponse = fallbackResponseValue.getObjectValue().orElse(null);
-				if (fallbackResponse instanceof ClientHttpResponse) {
-					return (ClientHttpResponse) fallbackResponse;
-				}
-			}
-			throw callAbortedException;
-		}
-
 		long startMillis = System.currentTimeMillis();
 		try {
+			// Run pre enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+
 			ClientHttpResponse response = delegate.execute(serviceId, loadBalancerRequest);
 			// get target instance after execute
 			enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
@@ -120,6 +101,23 @@ public class EnhancedRestTemplateWrapInterceptor {
 
 
 			return response;
+		}
+		catch (CallAbortedException callAbortedException) {
+			// TODO: shedfree 是否需要执行 exception 插件
+			MetadataObjectValue<Object> fallbackResponseValue = MetadataContextHolder.get().
+					getMetadataContainer(MetadataType.APPLICATION, true).
+					getMetadataValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE);
+
+			boolean existFallback = Optional.ofNullable(fallbackResponseValue).
+					map(MetadataObjectValue::getObjectValue).map(Optional::isPresent).orElse(false);
+
+			if (existFallback) {
+				Object fallbackResponse = fallbackResponseValue.getObjectValue().orElse(null);
+				if (fallbackResponse instanceof ClientHttpResponse) {
+					return (ClientHttpResponse) fallbackResponse;
+				}
+			}
+			throw callAbortedException;
 		}
 		catch (IOException e) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);

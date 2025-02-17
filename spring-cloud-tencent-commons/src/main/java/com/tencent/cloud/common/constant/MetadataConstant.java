@@ -70,6 +70,10 @@ public final class MetadataConstant {
 		 * Metadata context.
 		 */
 		public static final String METADATA_CONTEXT = "SCT-METADATA-CONTEXT";
+		/**
+		 * Namespace context.
+		 */
+		public static final String NAMESPACE = "SCT-NAMESPACE";
 	}
 
 	public static class DefaultMetadata {

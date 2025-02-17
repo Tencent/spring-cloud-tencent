@@ -17,7 +17,10 @@
 
 package com.tencent.cloud.rpc.enhancement.transformer;
 
+import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.utils.CollectionUtils;
 
@@ -42,6 +45,10 @@ public class PolarisInstanceTransformer implements InstanceTransformer {
 			if (CollectionUtils.isNotEmpty(polarisServiceInstance.getServiceMetadata())) {
 				instance.setServiceMetadata(polarisServiceInstance.getServiceMetadata());
 			}
+
+			String namespace = MetadataContextUtils.getCallerApplicationMetadataStringValue(
+					MetadataContextHolder.get(), ContextConstant.POLARIS_TARGET_NAMESPACE, instance.getNamespace());
+			instance.setNamespace(namespace);
 		}
 	}
 
