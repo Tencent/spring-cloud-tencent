@@ -76,6 +76,14 @@
 		</dependency>
 		<!-- spring cloud gateway dependencies end -->
 
+		<!-- spring cloud gateway mvc dependencies start -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-gateway-server-mvc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<!-- spring cloud gateway mvc dependencies end -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-actuator</artifactId>
