@@ -83,6 +83,7 @@ public class EnhancedRestTemplateWrapInterceptor {
 		try {
 			// Run pre enhanced plugins.
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+			startMillis = System.currentTimeMillis();
 
 			ClientHttpResponse response = delegate.execute(serviceId, loadBalancerRequest);
 			// get target instance after execute
@@ -103,7 +104,6 @@ public class EnhancedRestTemplateWrapInterceptor {
 			return response;
 		}
 		catch (CallAbortedException callAbortedException) {
-			// TODO: shedfree 是否需要执行 exception 插件
 			MetadataObjectValue<Object> fallbackResponseValue = MetadataContextHolder.get().
 					getMetadataContainer(MetadataType.APPLICATION, true).
 					getMetadataValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE);

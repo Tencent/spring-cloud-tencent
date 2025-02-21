@@ -17,9 +17,9 @@
 
 package com.tencent.cloud.polaris.discovery;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -52,8 +52,8 @@ public class PolarisDiscoveryHandler {
 	 * @return list of healthy instances
 	 */
 	public InstancesResponse getHealthyInstances(String service) {
-		String namespace = MetadataContextUtils.getCallerApplicationMetadataStringValue(
-				MetadataContextHolder.get(), ContextConstant.POLARIS_TARGET_NAMESPACE, polarisDiscoveryProperties.getNamespace());
+		String namespace = MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, polarisDiscoveryProperties.getNamespace());
 
 		GetHealthyInstancesRequest getHealthyInstancesRequest = new GetHealthyInstancesRequest();
 		getHealthyInstancesRequest.setNamespace(namespace);

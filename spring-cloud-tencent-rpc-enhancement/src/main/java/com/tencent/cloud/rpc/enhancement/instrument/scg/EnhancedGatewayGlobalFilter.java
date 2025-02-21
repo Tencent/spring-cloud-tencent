@@ -21,12 +21,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -81,8 +79,8 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			metadataContext = MetadataContextHolder.get();
 		}
 
-		String governanceNamespace = MetadataContextUtils.getCallerApplicationMetadataStringValue(
-				metadataContext, ContextConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+		String governanceNamespace = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
 
 
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
@@ -102,8 +100,8 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
 		}
 		catch (CallAbortedException e) {
-			// TODO: shedfree 是否需要执行 exception 插件
-			pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
+			// Run finally enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 			if (e.getFallbackInfo() == null) {
 				throw e;
 			}
@@ -116,11 +114,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			}
 			String body = Optional.of(e.getFallbackInfo().getBody()).orElse("");
 			DataBuffer dataBuffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
-			return response.writeWith(Mono.just(dataBuffer)).doFinally(v -> {
-				// TODO: shedfree 是在外层的 finally 中执行吗？
-				// Run finally enhanced plugins.
-				pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
-			});
+			return response.writeWith(Mono.just(dataBuffer));
 		}
 		// Exchange may be changed in plugin
 		ServerWebExchange exchange = (ServerWebExchange) enhancedPluginContext.getOriginRequest();

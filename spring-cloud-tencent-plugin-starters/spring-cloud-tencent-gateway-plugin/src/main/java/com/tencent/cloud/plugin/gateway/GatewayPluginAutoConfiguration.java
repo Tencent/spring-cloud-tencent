@@ -47,7 +47,7 @@ import org.springframework.core.env.Environment;
 @Configuration
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.enabled", matchIfMissing = true)
-public class SCGPluginsAutoConfiguration {
+public class GatewayPluginAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.context.enabled", matchIfMissing = true)

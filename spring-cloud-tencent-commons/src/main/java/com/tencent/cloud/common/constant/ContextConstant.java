@@ -40,10 +40,6 @@ public final class ContextConstant {
 	 * Default registry heartbeat time interval: 5 (s).
 	 */
 	public static final Integer DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL = 5;
-	/**
-	 * Name of polaris target namespace.
-	 */
-	public static final String POLARIS_TARGET_NAMESPACE = "POLARIS_TARGET_NAMESPACE";
 
 	private ContextConstant() {
 	}

@@ -74,7 +74,9 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
 		}
 		catch (CallAbortedException e) {
-			// TODO: shedfree 是否需要执行 exception 插件
+			// Run finally enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+
 			if (e.getFallbackInfo() == null) {
 				throw e;
 			}
@@ -84,11 +86,7 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 			if (CollectionUtils.isNotEmpty(e.getFallbackInfo().getHeaders())) {
 				e.getFallbackInfo().getHeaders().forEach(responseBuilder::header);
 			}
-			return Mono.just(responseBuilder.build()).doFinally(v -> {
-				// TODO: shedfree 是在外层的 finally 中执行吗？
-				// Run finally enhanced plugins.
-				pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
-			});
+			return Mono.just(responseBuilder.build());
 		}
 		// request may be changed by plugin
 		ClientRequest request = (ClientRequest) enhancedPluginContext.getOriginRequest();

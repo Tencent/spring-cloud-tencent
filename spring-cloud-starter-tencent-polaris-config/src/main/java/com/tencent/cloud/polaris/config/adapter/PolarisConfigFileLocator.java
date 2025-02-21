@@ -28,6 +28,7 @@ import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.utils.ClassUtils;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
@@ -221,7 +222,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfGroupName + ".application_config_group");
 		tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfNamespaceName + ".global_config_group");
 
-		if (isGatewayEnabled()) {
+		if (ClassUtils.isClassPresent("org.springframework.cloud.gateway.filter.GlobalFilter")) {
 			tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfGroupName + ".gateway_config_group");
 		}
 		for (String tsfConfigGroup : tsfConfigGroups) {
@@ -331,15 +332,5 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
 		}
 		return configKVFile;
-	}
-
-	public static boolean isGatewayEnabled() {
-		try {
-			Class.forName("org.springframework.cloud.gateway.filter.GlobalFilter");
-			return true;
-		}
-		catch (ClassNotFoundException e) {
-			return false;
-		}
 	}
 }

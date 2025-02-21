@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.tencent.cloud.plugin.gateway.SCGPluginsAutoConfiguration
+  com.tencent.cloud.plugin.gateway.GatewayPluginAutoConfiguration

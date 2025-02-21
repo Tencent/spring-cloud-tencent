@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClient;
 import com.tencent.polaris.api.utils.StringUtils;
@@ -121,7 +121,9 @@ public class ContextGatewayPropertiesManager {
 		String service = contextRoute.getService();
 		if (StringUtils.isNotEmpty(namespace) && StringUtils.isNotEmpty(service)) {
 			logger.info("[{},{}] eager-load start", namespace, service);
-			MetadataContextUtils.putCallerApplicationMetadataStringValue(MetadataContextHolder.get(), ContextConstant.POLARIS_TARGET_NAMESPACE, namespace);
+			MetadataContextHolder.get().putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+					MetadataConstant.POLARIS_TARGET_NAMESPACE, namespace);
+
 			if (polarisDiscoveryClient != null) {
 				polarisDiscoveryClient.getInstances(service);
 			}

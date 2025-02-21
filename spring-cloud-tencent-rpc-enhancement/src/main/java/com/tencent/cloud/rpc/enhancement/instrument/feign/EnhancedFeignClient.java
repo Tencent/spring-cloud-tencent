@@ -97,6 +97,7 @@ public class EnhancedFeignClient implements Client {
 		try {
 			// Run pre enhanced plugins.
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+			startMillis = System.currentTimeMillis();
 
 			Response response = delegate.execute(request, options);
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
@@ -115,7 +116,6 @@ public class EnhancedFeignClient implements Client {
 			return response;
 		}
 		catch (CallAbortedException callAbortedException) {
-			// TODO: shedfree 是否需要执行 exception 插件
 			// circuit breaker fallback, not need to run post/exception enhanced plugins.
 			if (callAbortedException.getFallbackInfo() != null) {
 				return getFallbackResponse(callAbortedException.getFallbackInfo());

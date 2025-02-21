@@ -21,10 +21,8 @@ import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.util.HashMap;
 
-import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +66,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 
 	private Mono<Void> externalFilter(ServerWebExchange exchange, GatewayFilterChain chain, GroupContext groupContext) {
 		ServerHttpRequest request = exchange.getRequest();
-		String[] apis = rebuildExternalApi(request, groupContext, request.getPath().value());
+		String[] apis = rebuildExternalApi(request, request.getPath().value());
 		GroupContext.ContextRoute contextRoute = manager.getGroupPathRoute(config.getGroup(), apis[0]);
 		if (contextRoute == null) {
 			throw new RuntimeException(String.format("Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], request.getPath()));
@@ -94,7 +92,9 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 
 		MetadataContext metadataContext = (MetadataContext) exchange.getAttributes().get(
 				MetadataConstant.HeaderName.METADATA_CONTEXT);
-		MetadataContextUtils.putCallerApplicationMetadataStringValue(metadataContext, ContextConstant.POLARIS_TARGET_NAMESPACE, contextRoute.getNamespace());
+
+		metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, contextRoute.getNamespace());
 
 		URI requestUri = URI.create("lb://" + contextRoute.getService() + apis[1]);
 		exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUri);
@@ -103,7 +103,10 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		return chain.filter(exchange.mutate().request(newRequest).build());
 	}
 
-	private String[] rebuildExternalApi(ServerHttpRequest request, GroupContext groupContext, String path) {
+	/**
+	 * e.g. "/context/api/test" → [ "GET|/api/test", "/api/test"]
+	 */
+	private String[] rebuildExternalApi(ServerHttpRequest request, String path) {
 		String[] pathSegments = path.split("/");
 		StringBuilder matchPath = new StringBuilder();
 		StringBuilder realPath = new StringBuilder();
@@ -122,6 +125,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 
 	/**
 	 * returns an array of two strings, the first is the match path, the second is the real path.
+	 * e.g. "/context/namespace/svc/api/test" → [ "GET|/namespace/svc/api/test", "/api/test"]
 	 */
 	private String[] rebuildMsApi(ServerHttpRequest request, GroupContext groupContext, String path) {
 		String[] pathSegments = path.split("/");
