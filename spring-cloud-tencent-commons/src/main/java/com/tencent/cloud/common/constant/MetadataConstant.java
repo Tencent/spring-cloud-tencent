@@ -41,6 +41,10 @@ public final class MetadataConstant {
 	 * polaris transitive header prefix length.
 	 */
 	public static final int POLARIS_TRANSITIVE_HEADER_PREFIX_LENGTH = POLARIS_TRANSITIVE_HEADER_PREFIX.length();
+	/**
+	 * Name of polaris target namespace.
+	 */
+	public static final String POLARIS_TARGET_NAMESPACE = "POLARIS_TARGET_NAMESPACE";
 
 	private MetadataConstant() {
 
@@ -70,6 +74,10 @@ public final class MetadataConstant {
 		 * Metadata context.
 		 */
 		public static final String METADATA_CONTEXT = "SCT-METADATA-CONTEXT";
+		/**
+		 * Namespace context.
+		 */
+		public static final String NAMESPACE = "SCT-NAMESPACE";
 	}
 
 	public static class DefaultMetadata {

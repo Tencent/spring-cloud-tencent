@@ -173,7 +173,7 @@ class EnhancedRestTemplateWrapInterceptorTest {
 		when(pluginRunner.getLocalServiceInstance()).thenReturn(localServiceInstance);
 		doThrow(abortedException)
 				.when(pluginRunner)
-				.run(any(), any());
+				.run(eq(EnhancedPluginType.Client.PRE), any(EnhancedPluginContext.class));
 
 		Object fallbackResponse = new MockClientHttpResponse();
 		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).

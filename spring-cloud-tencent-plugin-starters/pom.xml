@@ -16,7 +16,7 @@
 
 	<modules>
 		<module>spring-cloud-tencent-featureenv-plugin</module>
-		<module>spring-cloud-tencent-gateway-plugin</module>
+		<module>spring-cloud-starter-tencent-gateway-plugin</module>
 		<module>spring-cloud-starter-tencent-discovery-adapter-plugin</module>
 		<module>spring-cloud-tencent-lossless-plugin</module>
 		<module>spring-cloud-starter-tencent-threadlocal-plugin</module>
