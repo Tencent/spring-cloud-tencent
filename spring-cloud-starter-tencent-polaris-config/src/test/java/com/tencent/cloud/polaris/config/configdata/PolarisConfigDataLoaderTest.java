@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
@@ -109,7 +108,7 @@ public class PolarisConfigDataLoaderTest {
 
 			when(polarisConfigProperties.getGroups()).thenReturn(null);
 			when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
-			when(profiles.getActive()).thenReturn(Lists.newArrayList());
+			when(profiles.getActive()).thenReturn(new ArrayList<>());
 
 			PolarisConfigDataLoader polarisConfigDataLoader = new PolarisConfigDataLoader(new DeferredLogs());
 			if (INTERNAL_CONFIG_FILES_LOADED.get()) {
@@ -244,7 +243,7 @@ public class PolarisConfigDataLoaderTest {
 
 			when(polarisConfigProperties.getGroups()).thenReturn(null);
 			when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
-			when(profiles.getActive()).thenReturn(Lists.newArrayList());
+			when(profiles.getActive()).thenReturn(new ArrayList<>());
 
 			// file1.properties
 			Map<String, Object> file1Map = new HashMap<>();
@@ -260,7 +259,7 @@ public class PolarisConfigDataLoaderTest {
 			when(polarisContextProperties.getService()).thenReturn(testServiceName);
 
 			when(polarisConfigProperties.getGroups()).thenReturn(null);
-			when(profiles.getActive()).thenReturn(Lists.newArrayList());
+			when(profiles.getActive()).thenReturn(new ArrayList<>());
 
 			PolarisConfigDataLoader polarisConfigDataLoader = new PolarisConfigDataLoader(new DeferredLogs());
 

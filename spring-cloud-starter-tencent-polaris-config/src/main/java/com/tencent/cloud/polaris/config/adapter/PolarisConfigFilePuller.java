@@ -28,17 +28,16 @@ import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader;
 import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.env.CompositePropertySource;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * PolarisConfigFilePuller pull configFile from Polaris.
@@ -113,11 +112,11 @@ public final class PolarisConfigFilePuller {
 	public void initCustomPolarisConfigFile(CompositePropertySource compositePropertySource,
 			ConfigFileGroup configFileGroup) {
 		String groupNamespace = configFileGroup.getNamespace();
-		if (!StringUtils.hasText(groupNamespace)) {
+		if (StringUtils.isBlank(groupNamespace)) {
 			groupNamespace = polarisContextProperties.getNamespace();
 		}
 		String group = configFileGroup.getName();
-		if (!StringUtils.hasText(group)) {
+		if (StringUtils.isBlank(group)) {
 			throw new IllegalArgumentException("polaris config group name cannot be empty.");
 		}
 		List<String> files = configFileGroup.getFiles();
@@ -160,7 +159,7 @@ public final class PolarisConfigFilePuller {
 	private List<ConfigFileMetadata> getInternalConfigFiles(
 			String[] activeProfiles, String[] defaultProfiles, String serviceName) {
 		String namespace = polarisContextProperties.getNamespace();
-		if (StringUtils.hasText(polarisContextProperties.getService())) {
+		if (StringUtils.isNotBlank(polarisContextProperties.getService())) {
 			serviceName = polarisContextProperties.getService();
 		}
 		// priority: application-${profile} > application > boostrap-${profile} > boostrap
@@ -170,10 +169,10 @@ public final class PolarisConfigFilePuller {
 	private List<ConfigFileMetadata> getInternalConfigFiles(
 			String[] activeProfiles, String[] defaultProfiles, String namespace, String serviceName) {
 		List<String> profileList = new ArrayList<>();
-		if (ArrayUtils.isNotEmpty(activeProfiles)) {
+		if (CollectionUtils.isNotEmpty(activeProfiles)) {
 			profileList.addAll(Arrays.asList(activeProfiles));
 		}
-		else if (ArrayUtils.isNotEmpty(defaultProfiles)) {
+		else if (CollectionUtils.isNotEmpty(defaultProfiles)) {
 			profileList.addAll(Arrays.asList(defaultProfiles));
 		}
 
@@ -189,7 +188,7 @@ public final class PolarisConfigFilePuller {
 	private void buildInternalApplicationConfigFiles(
 			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profiles) {
 		for (String profile : profiles) {
-			if (!StringUtils.hasText(profile)) {
+			if (StringUtils.isBlank(profile)) {
 				continue;
 			}
 			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + profile + ".properties"));
@@ -205,7 +204,7 @@ public final class PolarisConfigFilePuller {
 	private void buildInternalBootstrapConfigFiles(
 			List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profiles) {
 		for (String profile : profiles) {
-			if (!StringUtils.hasText(profile)) {
+			if (StringUtils.isBlank(profile)) {
 				continue;
 			}
 			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + profile + ".properties"));

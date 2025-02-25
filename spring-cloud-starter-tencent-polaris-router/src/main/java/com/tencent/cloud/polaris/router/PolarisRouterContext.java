@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.tencent.cloud.common.constant.RouterConstant;
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 /**

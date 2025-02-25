@@ -79,12 +79,8 @@
 		<!-- Dependencies -->
 		<bcpkix-jdk18on.version>1.78.1</bcpkix-jdk18on.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
-		<commons-codec.version>1.17.1</commons-codec.version>
-		<guava.version>32.1.3-jre</guava.version>
 		<jackson.version>2.15.3</jackson.version>
 		<mocktio.version>4.9.0</mocktio.version>
-		<joda-time.version>2.9.9</joda-time.version>
-		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 		<snakeyaml.version>2.0</snakeyaml.version>
 		<springdoc.version>1.7.0</springdoc.version>
@@ -188,12 +184,6 @@
 
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
-				<artifactId>spring-cloud-tencent-featureenv-plugin</artifactId>
-				<version>${revision}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-gateway-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -230,26 +220,6 @@
 
 			<!-- third part framework dependencies -->
 			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>jsr305</artifactId>
-						<groupId>com.google.code.findbugs</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>animal-sniffer-annotations</artifactId>
-						<groupId>org.codehaus.mojo</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>error_prone_annotations</artifactId>
-						<groupId>com.google.errorprone</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
 				<groupId>org.springdoc</groupId>
 				<artifactId>springdoc-openapi-webflux-ui</artifactId>
 				<version>${springdoc.version}</version>
@@ -262,21 +232,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>${protobuf-java.version}</version>
-			</dependency>
-
-			<dependency>
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
 				<version>${byte-buddy.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>${joda-time.version}</version>
 			</dependency>
 
 			<dependency>
@@ -295,12 +253,6 @@
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>commons-codec</groupId>
-				<artifactId>commons-codec</artifactId>
-				<version>${commons-codec.version}</version>
 			</dependency>
 
 			<dependency>
@@ -326,11 +278,34 @@
 
 			<!-- polaris SDK-->
 			<dependency>
-				<artifactId>polaris-dependencies</artifactId>
+				<artifactId>polaris-all</artifactId>
 				<groupId>com.tencent.polaris</groupId>
 				<version>${polaris.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<artifactId>polaris-threadlocal</artifactId>
+				<groupId>com.tencent.polaris</groupId>
+				<version>${polaris.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.polaris</groupId>
+				<artifactId>connector-nacos</artifactId>
+				<version>${polaris.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.polaris</groupId>
+				<artifactId>polaris-test-common</artifactId>
+				<version>${polaris.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.tencent.polaris</groupId>
+				<artifactId>polaris-test-mock-discovery</artifactId>
+				<version>${polaris.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

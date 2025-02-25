@@ -17,10 +17,10 @@
 
 package com.tencent.cloud.polaris.config.endpoint;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySource;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
@@ -67,6 +67,6 @@ public class PolarisConfigEndpointTest {
 		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(polarisConfigProperties);
 		Map<String, Object> info = endpoint.polarisConfig();
 		assertThat(polarisConfigProperties).isEqualTo(info.get("PolarisConfigProperties"));
-		assertThat(Lists.newArrayList(polarisPropertySource)).isEqualTo(info.get("PolarisPropertySource"));
+		assertThat(Collections.singletonList(polarisPropertySource)).isEqualTo(info.get("PolarisPropertySource"));
 	}
 }

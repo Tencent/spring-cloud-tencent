@@ -19,7 +19,6 @@ package com.tencent.cloud.polaris.circuitbreaker.endpoint;
 
 import java.util.Map;
 
-import com.google.protobuf.StringValue;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
@@ -28,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import shade.polaris.com.google.protobuf.StringValue;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 

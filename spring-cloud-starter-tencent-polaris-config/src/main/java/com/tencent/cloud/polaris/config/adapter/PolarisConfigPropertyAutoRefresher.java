@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Sets;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerContext;
 import com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils;
@@ -39,6 +38,7 @@ import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import com.tencent.polaris.configuration.client.internal.CompositeConfigFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.com.google.common.collect.Sets;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -55,16 +55,11 @@ import org.springframework.util.CollectionUtils;
 public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationListener<ApplicationReadyEvent>, PolarisConfigPropertyRefresher {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigPropertyAutoRefresher.class);
-
+	private static final Set<String> registeredPolarisPropertySets = Sets.newConcurrentHashSet();
 	private final PolarisConfigProperties polarisConfigProperties;
-
 	private final AtomicBoolean registered = new AtomicBoolean(false);
-
 	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
-
-	private static final Set<String> registeredPolarisPropertySets = Sets.newConcurrentHashSet();
-
 	private final ConfigFileService configFileService;
 
 	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties,

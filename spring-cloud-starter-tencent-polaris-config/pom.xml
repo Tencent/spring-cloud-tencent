@@ -27,64 +27,10 @@
 		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
 
-		<!-- Polaris dependencies start -->
 		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>polaris-configuration-factory</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-rule</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-nearby</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-namespace</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-metadata</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-canary</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-set</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-isolated</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-healthy</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- Polaris dependencies end -->
-
-		<!-- Spring cloud dependencies start -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-context</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-security-crypto</artifactId>
-					<groupId>org.springframework.security</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- Spring cloud dependencies start -->
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -97,24 +43,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
 			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-inline</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>net.bytebuddy</groupId>
-			<artifactId>byte-buddy</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

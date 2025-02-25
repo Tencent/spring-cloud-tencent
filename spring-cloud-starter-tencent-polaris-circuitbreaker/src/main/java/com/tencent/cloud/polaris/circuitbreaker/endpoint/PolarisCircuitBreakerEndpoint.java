@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
@@ -31,6 +29,8 @@ import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.com.google.protobuf.InvalidProtocolBufferException;
+import shade.polaris.com.google.protobuf.util.JsonFormat;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;

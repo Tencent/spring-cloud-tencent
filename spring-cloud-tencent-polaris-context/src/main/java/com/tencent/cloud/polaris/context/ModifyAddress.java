@@ -23,10 +23,9 @@ import java.util.List;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
-import org.apache.commons.lang.StringUtils;
-
-import org.springframework.util.CollectionUtils;
 
 /**
  * Modify polaris server address.
