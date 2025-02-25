@@ -17,17 +17,16 @@
 
 package com.tencent.cloud.polaris.config.spring.property;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
-import org.springframework.util.StringUtils;
 
 /**
  * Placeholder helper functions.
@@ -89,7 +88,7 @@ public class PlaceholderHelper {
 	 * </ul>
 	 */
 	public Set<String> extractPlaceholderKeys(String propertyString) {
-		Set<String> placeholderKeys = Sets.newHashSet();
+		Set<String> placeholderKeys = new HashSet<>();
 
 		if (!isPlaceholder(propertyString)) {
 			return placeholderKeys;
@@ -128,7 +127,7 @@ public class PlaceholderHelper {
 					stack.push(placeholderCandidate.substring(0, separatorIndex));
 					String defaultValuePart =
 							normalizeToPlaceholder(placeholderCandidate.substring(separatorIndex + VALUE_SEPARATOR.length()));
-					if (!Strings.isNullOrEmpty(defaultValuePart)) {
+					if (StringUtils.isNotBlank(defaultValuePart)) {
 						stack.push(defaultValuePart);
 					}
 				}
@@ -137,7 +136,7 @@ public class PlaceholderHelper {
 			// has remaining part, e.g. ${a}.${b}
 			if (endIndex + PLACEHOLDER_SUFFIX.length() < strVal.length() - 1) {
 				String remainingPart = normalizeToPlaceholder(strVal.substring(endIndex + PLACEHOLDER_SUFFIX.length()));
-				if (!Strings.isNullOrEmpty(remainingPart)) {
+				if (StringUtils.isNotBlank(remainingPart)) {
 					stack.push(remainingPart);
 				}
 			}
@@ -147,7 +146,7 @@ public class PlaceholderHelper {
 	}
 
 	private boolean isPlaceholder(String propertyString) {
-		return !Strings.isNullOrEmpty(propertyString) &&
+		return StringUtils.isNotBlank(propertyString) &&
 				(isNormalizedPlaceholder(propertyString) || isExpressionWithPlaceholder(propertyString));
 	}
 

@@ -17,17 +17,14 @@
 
 package com.tencent.cloud.polaris.extend.consul;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import org.joda.time.Period;
+import java.time.Duration;
+
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.style.ToStringCreator;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * Copy from org.springframework.cloud.consul.discovery.HeartbeatProperties.
@@ -37,7 +34,6 @@ import org.springframework.validation.annotation.Validated;
  * @author Chris Bono
  */
 @ConfigurationProperties(prefix = "spring.cloud.consul.discovery.heartbeat")
-@Validated
 public class ConsulHeartbeatProperties {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConsulHeartbeatProperties.class);
@@ -45,26 +41,22 @@ public class ConsulHeartbeatProperties {
 	// [WARN] agent: Check 'service:testConsulApp:xtest:8080' missed TTL, is now critical
 	boolean enabled = true;
 
-	@Min(1)
 	private int ttlValue = 30;
 
-	@NotNull
 	private String ttlUnit = "s";
 
-	@DecimalMin("0.1")
-	@DecimalMax("0.9")
 	private double intervalRatio = 2.0 / 3.0;
 
 	//TODO: did heartbeatInterval need to be a field?
 
-	protected Period computeHeartbeatInterval() {
+	protected Duration computeHeartbeatInterval() {
 		// heartbeat rate at ratio * ttl, but no later than ttl -1s and, (under lesser
 		// priority), no sooner than 1s from now
 		double interval = ttlValue * intervalRatio;
 		double max = Math.max(interval, 1);
 		int ttlMinus1 = ttlValue - 1;
 		double min = Math.min(ttlMinus1, max);
-		Period heartbeatInterval = new Period(Math.round(1000 * min));
+		Duration heartbeatInterval = Duration.ofMillis(Math.round(1000 * min));
 		LOGGER.debug("Computed heartbeatInterval: " + heartbeatInterval);
 		return heartbeatInterval;
 	}
@@ -81,27 +73,39 @@ public class ConsulHeartbeatProperties {
 		this.enabled = enabled;
 	}
 
-	public @Min(1) int getTtlValue() {
+	public int getTtlValue() {
 		return this.ttlValue;
 	}
 
-	public void setTtlValue(@Min(1) int ttlValue) {
+	public void setTtlValue(int ttlValue) {
+		if (ttlValue < 1) {
+			LOGGER.error("ttlValue must be at least 1, invalid value: {}", ttlValue);
+			throw new IllegalArgumentException("ttlValue must be at least 1");
+		}
 		this.ttlValue = ttlValue;
 	}
 
-	public @NotNull String getTtlUnit() {
+	public String getTtlUnit() {
 		return this.ttlUnit;
 	}
 
-	public void setTtlUnit(@NotNull String ttlUnit) {
+	public void setTtlUnit(String ttlUnit) {
+		if (StringUtils.isEmpty(ttlUnit)) {
+			LOGGER.error("ttlUnit cannot be null or empty");
+			throw new IllegalArgumentException("ttlUnit cannot be null or empty");
+		}
 		this.ttlUnit = ttlUnit;
 	}
 
-	public @DecimalMin("0.1") @DecimalMax("0.9") double getIntervalRatio() {
+	public double getIntervalRatio() {
 		return this.intervalRatio;
 	}
 
-	public void setIntervalRatio(@DecimalMin("0.1") @DecimalMax("0.9") double intervalRatio) {
+	public void setIntervalRatio(double intervalRatio) {
+		if (intervalRatio < 0.1 || intervalRatio > 0.9) {
+			LOGGER.error("intervalRatio must be between 0.1 and 0.9, invalid value: {}", intervalRatio);
+			throw new IllegalArgumentException("intervalRatio must be between 0.1 and 0.9");
+		}
 		this.intervalRatio = intervalRatio;
 	}
 

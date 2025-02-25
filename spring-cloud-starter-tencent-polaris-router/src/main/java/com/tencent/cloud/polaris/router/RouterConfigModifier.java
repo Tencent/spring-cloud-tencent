@@ -21,11 +21,11 @@ import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouterConfig;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * RouterConfigModifier.

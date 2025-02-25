@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.common.util.expresstion;
 
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 
 /**
  * New custom expression resolver like $query.key、$header.key.

@@ -26,7 +26,7 @@ import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.rpc.InstancesResponse;
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
