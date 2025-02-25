@@ -29,7 +29,6 @@ import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisRegistrationCustomizer;
 import com.tencent.polaris.plugins.connector.common.constant.ConsulConstant;
 
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.util.StringUtils;
 
