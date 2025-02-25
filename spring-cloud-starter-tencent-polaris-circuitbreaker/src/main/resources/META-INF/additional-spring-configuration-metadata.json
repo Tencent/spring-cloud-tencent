@@ -11,6 +11,36 @@
       "type": "java.lang.Long",
       "defaultValue": "300000",
       "description": "Interval to clean up PolarisCircuitBreakerConfiguration, unit millisecond."
+    },
+    {
+      "name": "spring.cloud.polaris.circuitbreaker.default-rule-enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "If default circuit breaker rule is enabled."
+    },
+    {
+      "name": "spring.cloud.polaris.circuitbreaker.default-error-count",
+      "type": "java.lang.Integer",
+      "defaultValue": 10,
+      "description": "Consecutive error count circuit-breaker default error count."
+    },
+    {
+      "name": "spring.cloud.polaris.circuitbreaker.default-error-percent",
+      "type": "java.lang.Integer",
+      "defaultValue": 50,
+      "description": "Error rate circuit-breaker default error rate percent."
+    },
+    {
+      "name": "spring.cloud.polaris.circuitbreaker.default-interval",
+      "type": "java.lang.Integer",
+      "defaultValue": 60000,
+      "description": "Error rate circuit-breaker default interval(ms)."
+    },
+    {
+      "name": "spring.cloud.polaris.circuitbreaker.default-minimum-request",
+      "type": "java.lang.Integer",
+      "defaultValue": 10,
+      "description": "Error rate circuit-breaker default minimum request."
     }
   ],
   "hints": []

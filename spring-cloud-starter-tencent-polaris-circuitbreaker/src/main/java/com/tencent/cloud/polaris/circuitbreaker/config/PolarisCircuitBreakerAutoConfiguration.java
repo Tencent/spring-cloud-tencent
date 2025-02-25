@@ -87,8 +87,9 @@ public class PolarisCircuitBreakerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(CircuitBreakerConfigModifier.class)
-	public CircuitBreakerConfigModifier circuitBreakerConfigModifier(RpcEnhancementReporterProperties properties) {
-		return new CircuitBreakerConfigModifier(properties);
+	public CircuitBreakerConfigModifier circuitBreakerConfigModifier(RpcEnhancementReporterProperties properties,
+			PolarisCircuitBreakerProperties polarisCircuitBreakerProperties) {
+		return new CircuitBreakerConfigModifier(properties, polarisCircuitBreakerProperties);
 	}
 
 	@Bean
