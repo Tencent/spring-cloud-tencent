@@ -31,7 +31,7 @@ public class PolarisStatProperties {
 	/**
 	 * If state reporter enabled.
 	 */
-	private boolean enabled = true;
+	private boolean enabled = false;
 
 	/**
 	 * Path for prometheus to pull.

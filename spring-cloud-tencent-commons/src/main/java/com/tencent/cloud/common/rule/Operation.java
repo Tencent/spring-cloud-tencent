@@ -20,9 +20,9 @@ package com.tencent.cloud.common.rule;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 
-import org.springframework.util.CollectionUtils;
 
 /**
  * The condition operation.

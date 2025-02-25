@@ -25,9 +25,9 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 
-import org.springframework.util.CollectionUtils;
 
 /**
  * Parse labels from HttpServletRequest.

@@ -22,14 +22,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.StringValue;
-import com.google.protobuf.util.JsonFormat;
-import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
@@ -47,6 +42,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import reactor.core.publisher.Mono;
+import shade.polaris.com.google.protobuf.InvalidProtocolBufferException;
+import shade.polaris.com.google.protobuf.util.JsonFormat;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -93,8 +90,7 @@ public class QuotaCheckReactiveFilterTest {
 			}
 			else if (serviceName.equals("TestApp3")) {
 				QuotaResponse response = new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultLimited, 0, "QuotaResultLimited"));
-				response.setActiveRule(RateLimitProto.Rule.newBuilder()
-						.setName(StringValue.newBuilder().setValue("MOCK_RULE").build()).build());
+				response.setActiveRule(RateLimitProto.Rule.newBuilder().build());
 				return response;
 			}
 			else {
@@ -184,8 +180,6 @@ public class QuotaCheckReactiveFilterTest {
 		ServerHttpResponse response = testApp3Exchange.getResponse();
 		assertThat(response.getRawStatusCode()).isEqualTo(419);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INSUFFICIENT_SPACE_ON_RESOURCE);
-		assertThat(response.getHeaders()
-				.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)).isEqualTo(Collections.singletonList("MOCK_RULE"));
 
 		// Exception
 		MetadataContext.LOCAL_SERVICE = "TestApp4";

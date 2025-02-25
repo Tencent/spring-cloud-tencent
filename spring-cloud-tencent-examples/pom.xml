@@ -19,7 +19,6 @@
 		<module>multiple-discovery-example</module>
 		<module>metadata-transfer-example</module>
 		<module>polaris-router-grayrelease-example</module>
-		<module>polaris-router-featureenv-example</module>
 		<module>quickstart-example</module>
 		<module>lossless-example</module>
 		<module>polaris-router-grayrelease-lane-example</module>
@@ -29,4 +28,27 @@
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.collect.Maps;
 import com.tencent.cloud.polaris.config.spring.event.ConfigChangeSpringEvent;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.slf4j.Logger;
@@ -96,7 +95,7 @@ public final class PolarisConfigChangeEventListener implements ApplicationListen
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> loadEnvironmentProperties(ConfigurableEnvironment environment) {
-		Map<String, Object> ret = Maps.newHashMap();
+		Map<String, Object> ret = new HashMap<>();
 		MutablePropertySources sources = environment.getPropertySources();
 		sources.iterator().forEachRemaining(propertySource -> {
 			// Don't read system env variable.

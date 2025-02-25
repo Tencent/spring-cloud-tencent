@@ -26,17 +26,9 @@
 			<version>2.2.9.RELEASE</version>
 			<optional>true</optional>
 		</dependency>
-
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-inline</artifactId>
-			<scope>test</scope>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-polaris-loadbalancer</artifactId>
 		</dependency>
 	</dependencies>
 </project>

@@ -23,7 +23,8 @@ import java.util.Objects;
 import com.netflix.loadbalancer.Server;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.StringUtils;
+
 
 /**
  * Polaris' implementation of {@link Server}.

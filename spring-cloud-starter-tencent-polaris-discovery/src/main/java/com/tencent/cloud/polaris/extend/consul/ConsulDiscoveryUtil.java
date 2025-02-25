@@ -116,7 +116,7 @@ public final class ConsulDiscoveryUtil {
 			Assert.notNull(checkPort, "checkPort may not be null");
 
 			for (ServerConnectorConfigImpl config : configuration.getGlobal().getServerConnectors()) {
-				if (org.apache.commons.lang.StringUtils.equals(config.getId(), ID)) {
+				if (StringUtils.equals(config.getId(), ID)) {
 					Map<String, String> metadata = config.getMetadata();
 					NewService.Check check = createCheck(checkPort, consulHeartbeatProperties, properties, tsfCoreProperties);
 					String checkJson = JacksonUtils.serialize2Json(check);

@@ -22,6 +22,7 @@ import com.netflix.loadbalancer.Server;
 import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 
+
 /**
  * NacosInstanceTransformer.
  *
@@ -38,4 +39,5 @@ public class NacosInstanceTransformer implements InstanceTransformer {
 			instance.setMetadata(nacosServer.getMetadata());
 		}
 	}
+
 }

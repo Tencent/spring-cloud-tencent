@@ -19,9 +19,9 @@ package com.tencent.cloud.polaris.context;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.polaris.api.plugin.common.ValueContext;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * After all configurations are loaded, post-initialize SDKContext.

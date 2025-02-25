@@ -8,6 +8,7 @@
 		<version>${revision}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>spring-cloud-tencent-coverage</artifactId>
@@ -86,17 +87,7 @@
 
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-featureenv-plugin</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-gateway-plugin</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-discovery-adapter-plugin</artifactId>
 		</dependency>
 
 		<dependency>

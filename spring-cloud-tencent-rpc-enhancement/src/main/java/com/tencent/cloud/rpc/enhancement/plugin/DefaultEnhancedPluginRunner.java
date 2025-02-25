@@ -20,11 +20,11 @@ package com.tencent.cloud.rpc.enhancement.plugin;
 import java.util.Comparator;
 import java.util.List;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.client.api.SDKContext;
+import shade.polaris.com.google.common.collect.ArrayListMultimap;
+import shade.polaris.com.google.common.collect.Multimap;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;

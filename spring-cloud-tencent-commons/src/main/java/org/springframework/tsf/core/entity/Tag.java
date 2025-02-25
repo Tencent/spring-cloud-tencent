@@ -22,9 +22,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Tag implements Serializable {
 
 	/**
@@ -32,55 +29,10 @@ public class Tag implements Serializable {
 	 */
 	public static final int VERSION = 1;
 
-	public enum ControlFlag {
-
-		/**
-		 * tag transitive by all services.
-		 */
-		@SerializedName("0")
-		TRANSITIVE,
-
-		/**
-		 * tag not used in auth.
-		 */
-		@SerializedName("1")
-		NOT_IN_AUTH,
-
-		/**
-		 * tag not used in route.
-		 */
-		@SerializedName("2")
-		NOT_IN_ROUTE,
-
-		/**
-		 * tag not used in trace.
-		 */
-		@SerializedName("3")
-		NOT_IN_SLEUTH,
-
-		/**
-		 * tag not used in lane.
-		 */
-		@SerializedName("4")
-		NOT_IN_LANE,
-
-		/**
-		 * tag not used in unit.
-		 */
-		@SerializedName("5")
-		IN_UNIT
-	}
-
-	@SerializedName("k")
-	@Expose
 	private String key;
 
-	@SerializedName("v")
-	@Expose
 	private String value;
 
-	@SerializedName("f")
-	@Expose
 	private Set<ControlFlag> flags = new HashSet<>();
 
 	public Tag(String key, String value, ControlFlag... flags) {
@@ -131,7 +83,6 @@ public class Tag implements Serializable {
 		return (key == null ? 0 : key.hashCode()) + (flags == null ? 0 : flags.hashCode());
 	}
 
-
 	@Override
 	public String toString() {
 		return "Tag{" +
@@ -139,5 +90,39 @@ public class Tag implements Serializable {
 				", value='" + value + '\'' +
 				", flags=" + flags +
 				'}';
+	}
+
+
+	public enum ControlFlag {
+
+		/**
+		 * tag transitive by all services.
+		 */
+		TRANSITIVE,
+
+		/**
+		 * tag not used in auth.
+		 */
+		NOT_IN_AUTH,
+
+		/**
+		 * tag not used in route.
+		 */
+		NOT_IN_ROUTE,
+
+		/**
+		 * tag not used in trace.
+		 */
+		NOT_IN_SLEUTH,
+
+		/**
+		 * tag not used in lane.
+		 */
+		NOT_IN_LANE,
+
+		/**
+		 * tag not used in unit.
+		 */
+		IN_UNIT
 	}
 }

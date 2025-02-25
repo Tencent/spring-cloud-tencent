@@ -24,11 +24,11 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * okhttp util.
@@ -61,7 +61,7 @@ public final class OkHttpUtil {
 			conn.setRequestMethod("GET");
 			conn.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(2));
 			conn.setReadTimeout((int) TimeUnit.SECONDS.toMillis(2));
-			if (!CollectionUtils.isEmpty(headers)) {
+			if (CollectionUtils.isNotEmpty(headers)) {
 				headers.forEach(conn::setRequestProperty);
 			}
 			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -71,7 +71,7 @@ public final class OkHttpUtil {
 				buffer.append(str);
 			}
 			String responseBody = buffer.toString();
-			if (conn.getResponseCode() == 200 && StringUtils.hasText(responseBody)) {
+			if (conn.getResponseCode() == 200 && StringUtils.isNotBlank(responseBody)) {
 				LOGGER.debug("exec get request, url: {} success, response data: {}", url, responseBody);
 				return true;
 			}
