@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,10 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class NacosDiscoveryAdapterAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					NacosDiscoveryAdapterAutoConfiguration.class,
-					LoadBalancerAutoConfiguration.class
-			));
+			.withConfiguration(AutoConfigurations.of(NacosDiscoveryAdapterAutoConfiguration.class));
 
 	@Test
 	public void testDefaultInitialization() {
