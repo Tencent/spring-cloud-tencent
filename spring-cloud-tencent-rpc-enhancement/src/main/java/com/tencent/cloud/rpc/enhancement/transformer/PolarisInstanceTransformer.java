@@ -46,7 +46,7 @@ public class PolarisInstanceTransformer implements InstanceTransformer {
 				instance.setServiceMetadata(polarisServiceInstance.getServiceMetadata());
 			}
 
-			String namespace = MetadataContextHolder.get().getFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+			String namespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 					MetadataConstant.POLARIS_TARGET_NAMESPACE, instance.getNamespace());
 
 			instance.setNamespace(namespace);

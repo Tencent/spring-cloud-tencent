@@ -79,7 +79,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			metadataContext = MetadataContextHolder.get();
 		}
 
-		String governanceNamespace = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+		String governanceNamespace = metadataContext.getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
 
 
@@ -125,7 +125,8 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 					URI uri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
 					enhancedPluginContext.getRequest().setUrl(uri);
 					if (uri != null) {
-						if (route != null && route.getUri().getScheme().contains("lb") && StringUtils.isNotEmpty(serviceId)) {
+						if (route != null && route.getUri().getScheme()
+								.contains("lb") && StringUtils.isNotEmpty(serviceId)) {
 							DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
 							serviceInstance.setServiceId(serviceId);
 							serviceInstance.setHost(uri.getHost());
