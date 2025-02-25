@@ -129,6 +129,10 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		super(MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX);
 	}
 
+	public static void setLocalService(String service) {
+		LOCAL_SERVICE = service;
+	}
+
 	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean caller) {
 		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
 		Map<String, String> values = new HashMap<>();
@@ -283,7 +287,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		}
 	}
 
-	public String getFragmentContext(String fragment, String key, String defaultValue) {
+	public String getContext(String fragment, String key, String defaultValue) {
 		return getFragmentContext(fragment).getOrDefault(key, defaultValue);
 	}
 
@@ -337,9 +341,5 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		Map<String, String> context = new HashMap<>(1);
 		context.put(key, value);
 		putFragmentContext(fragment, context);
-	}
-
-	public static void setLocalService(String service) {
-		LOCAL_SERVICE = service;
 	}
 }
