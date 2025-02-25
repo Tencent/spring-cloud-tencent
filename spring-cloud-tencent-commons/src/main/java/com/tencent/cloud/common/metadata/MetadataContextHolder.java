@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataProvider;
@@ -30,9 +32,6 @@ import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.TransitiveType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_DISPOSABLE;
 import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_UPSTREAM_DISPOSABLE;
@@ -88,7 +87,7 @@ public final class MetadataContextHolder {
 			metadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 		}
 		// local trans header
-		if (StringUtils.hasText(staticMetadataManager.getTransHeader())) {
+		if (StringUtils.isNotBlank(staticMetadataManager.getTransHeader())) {
 			String transHeader = staticMetadataManager.getTransHeader();
 			metadataContainer.putMetadataMapValue(MetadataContext.FRAGMENT_RAW_TRANSHEADERS, transHeader, "", TransitiveType.NONE);
 		}
@@ -159,14 +158,14 @@ public final class MetadataContextHolder {
 		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.refresh(metadataManager -> {
 			// caller transitive metadata to local custom transitive metadata
 			MetadataContainer calleeCustomMetadataContainer = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
-			if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
+			if (CollectionUtils.isNotEmpty(dynamicTransitiveMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicTransitiveMetadata.entrySet()) {
 					calleeCustomMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.PASS_THROUGH);
 				}
 			}
 			// caller disposable metadata to caller custom disposable metadata
 			MetadataContainer callerCustomMetadataContainer = metadataManager.getMetadataContainer(MetadataType.CUSTOM, true);
-			if (!CollectionUtils.isEmpty(dynamicDisposableMetadata)) {
+			if (CollectionUtils.isNotEmpty(dynamicDisposableMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicDisposableMetadata.entrySet()) {
 					calleeCustomMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.NONE);
 					callerCustomMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
@@ -174,7 +173,7 @@ public final class MetadataContextHolder {
 			}
 			// caller application metadata to caller application disposable metadata
 			MetadataContainer callerApplicationMetadataContainer = metadataManager.getMetadataContainer(MetadataType.APPLICATION, true);
-			if (!CollectionUtils.isEmpty(dynamicApplicationMetadata)) {
+			if (CollectionUtils.isNotEmpty(dynamicApplicationMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicApplicationMetadata.entrySet()) {
 					callerApplicationMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 				}

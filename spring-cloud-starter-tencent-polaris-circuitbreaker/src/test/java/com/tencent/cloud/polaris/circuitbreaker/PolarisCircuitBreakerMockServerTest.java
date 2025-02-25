@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
@@ -49,6 +48,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import shade.polaris.com.google.protobuf.util.JsonFormat;
 
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 

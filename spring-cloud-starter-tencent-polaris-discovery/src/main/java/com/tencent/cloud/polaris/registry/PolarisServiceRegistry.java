@@ -43,12 +43,12 @@ import com.tencent.polaris.api.rpc.InstanceHeartbeatRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterResponse;
 import com.tencent.polaris.api.rpc.InstancesResponse;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.util.NamedThreadFactory;
 import com.tencent.polaris.factory.config.provider.ServiceConfigImpl;
 import com.tencent.polaris.metadata.core.TransitiveType;
 import com.tencent.polaris.metadata.core.constant.MetadataConstants;
 import com.tencent.polaris.metadata.core.manager.CalleeMetadataContainerGroup;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
