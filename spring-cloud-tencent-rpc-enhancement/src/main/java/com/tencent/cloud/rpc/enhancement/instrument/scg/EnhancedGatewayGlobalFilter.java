@@ -22,7 +22,10 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -61,6 +64,19 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 	@Override
 	public Mono<Void> filter(ServerWebExchange originExchange, GatewayFilterChain chain) {
 
+		MetadataContext metadataContext = (MetadataContext) originExchange.getAttributes().get(
+				MetadataConstant.HeaderName.METADATA_CONTEXT);
+		if (metadataContext != null) {
+			MetadataContextHolder.set(metadataContext);
+		}
+		else {
+			metadataContext = MetadataContextHolder.get();
+		}
+
+		String governanceNamespace = metadataContext.getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
+
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
@@ -68,6 +84,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 				.httpMethod(originExchange.getRequest().getMethod())
 				.url(originExchange.getRequest().getURI())
 				.serviceUrl(getServiceUri(originExchange))
+				.governanceNamespace(governanceNamespace)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(originExchange);
@@ -77,6 +94,8 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
 		}
 		catch (CallAbortedException e) {
+			// Run finally enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 			if (e.getFallbackInfo() == null) {
 				throw e;
 			}

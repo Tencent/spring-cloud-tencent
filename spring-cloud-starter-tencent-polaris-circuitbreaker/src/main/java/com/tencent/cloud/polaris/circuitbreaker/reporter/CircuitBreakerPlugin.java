@@ -28,9 +28,9 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.metadata.core.MetadataType;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,13 +70,10 @@ public class CircuitBreakerPlugin implements EnhancedPlugin {
 		EnhancedRequestContext request = context.getRequest();
 		EnhancedResponseContext response = context.getResponse();
 
-		String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_NAMESPACE);
-		if (StringUtils.isEmpty(governanceNamespace)) {
-			governanceNamespace = MetadataContext.LOCAL_NAMESPACE;
-		}
-
 		String host = request.getServiceUrl() != null ? request.getServiceUrl().getHost() : request.getUrl().getHost();
 		String path = request.getServiceUrl() != null ? request.getServiceUrl().getPath() : request.getUrl().getPath();
+		String governanceNamespace = StringUtils.isNotEmpty(request.getGovernanceNamespace()) ? request.getGovernanceNamespace() : MetadataContext.LOCAL_NAMESPACE;
+
 		String httpMethod = request.getHttpMethod().name();
 
 		CircuitBreaker circuitBreaker = circuitBreakerFactory.create(governanceNamespace + "#" + host + "#" + path + "#http#" + httpMethod);

@@ -28,6 +28,7 @@ import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.utils.ClassUtils;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
@@ -91,6 +92,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			if (compositePropertySourceCache != null) {
 				return compositePropertySourceCache;
 			}
+
 			CompositePropertySource compositePropertySource = new CompositePropertySource(POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
 			compositePropertySourceCache = compositePropertySource;
 			try {
@@ -100,13 +102,11 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 				initInternalConfigFiles(compositePropertySource);
 				// load custom config files
 				List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
-
 				if (!CollectionUtils.isEmpty(configFileGroups)) {
 					initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
 				}
 				// load tsf default config group
 				initTsfConfigGroups(compositePropertySource);
-
 				return compositePropertySource;
 			}
 			finally {
@@ -214,13 +214,17 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		String tsfNamespaceName = environment.getProperty("tsf_namespace_name");
 		String tsfGroupName = environment.getProperty("tsf_group_name");
 
-		if (StringUtils.isEmpty(tsfId) || StringUtils.isEmpty(tsfNamespaceName) || StringUtils.isEmpty(tsfGroupName)) {
+		if (StringUtils.isEmpty(tsfNamespaceName) || StringUtils.isEmpty(tsfGroupName)) {
 			return;
 		}
 		String namespace = polarisContextProperties.getNamespace();
-		List<String> tsfConfigGroups = Arrays.asList(
-				tsfId + "." + tsfGroupName + ".application_config_group",
-				tsfId + "." + tsfNamespaceName + ".global_config_group");
+		List<String> tsfConfigGroups = new ArrayList<>();
+		tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfGroupName + ".application_config_group");
+		tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfNamespaceName + ".global_config_group");
+
+		if (ClassUtils.isClassPresent("org.springframework.cloud.gateway.filter.GlobalFilter")) {
+			tsfConfigGroups.add((StringUtils.hasText(tsfId) ? tsfId + "." : "") + tsfGroupName + ".gateway_config_group");
+		}
 		for (String tsfConfigGroup : tsfConfigGroups) {
 			PolarisPropertySource polarisPropertySource = loadGroupPolarisPropertySource(configFileService, namespace, tsfConfigGroup);
 			if (polarisPropertySource == null) {
@@ -315,12 +319,12 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	public static ConfigKVFile loadConfigKVFile(ConfigFileService configFileService, String namespace, String group, String fileName) {
 		ConfigKVFile configKVFile;
-		// unknown extension is resolved as yaml file
-		if (ConfigFileFormat.isYamlFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
-			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
-		}
-		else if (ConfigFileFormat.isPropertyFile(fileName)) {
+		// unknown extension is resolved as properties file
+		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
 			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
+		}
+		else if (ConfigFileFormat.isYamlFile(fileName)) {
+			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
 		}
 		else {
 			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
