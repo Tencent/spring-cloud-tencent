@@ -19,18 +19,17 @@ package com.tencent.cloud.polaris.config;
 
 import com.tencent.cloud.polaris.config.adapter.AffectedConfigurationPropertiesRebinder;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigPropertyRefresher;
-import com.tencent.cloud.polaris.config.adapter.PolarisConfigRefreshScopeAnnotationDetector;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshAffectedContextRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshEntireContextRefresher;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProcessor;
 import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshType;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.listener.PolarisConfigChangeEventListener;
-import com.tencent.cloud.polaris.config.listener.PolarisConfigRefreshOptimizationListener;
 import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerApplicationListener;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.polaris.configuration.api.core.ConfigFileService;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -77,8 +76,26 @@ public class PolarisConfigAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public PolarisConfigPropertyRefresher polarisRefreshContextPropertySourceAutoRefresher(
-			PolarisConfigProperties polarisConfigProperties, ContextRefresher contextRefresher) {
-		return new PolarisRefreshEntireContextRefresher(polarisConfigProperties, contextRefresher);
+			PolarisConfigProperties polarisConfigProperties, SpringValueRegistry springValueRegistry,
+			ConfigFileService configFileService, ContextRefresher contextRefresher) {
+		return new PolarisRefreshEntireContextRefresher(polarisConfigProperties,
+				springValueRegistry, configFileService, contextRefresher);
+	}
+
+	@Bean
+	public SpringValueRegistry springValueRegistry() {
+		return new SpringValueRegistry();
+	}
+
+	@Bean
+	public PlaceholderHelper placeholderHelper() {
+		return new PlaceholderHelper();
+	}
+
+	@Bean
+	public SpringValueProcessor springValueProcessor(PlaceholderHelper placeholderHelper,
+			SpringValueRegistry springValueRegistry, PolarisConfigProperties polarisConfigProperties) {
+		return new SpringValueProcessor(placeholderHelper, springValueRegistry, polarisConfigProperties);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -86,37 +103,11 @@ public class PolarisConfigAutoConfiguration {
 	@AutoConfigureBefore(PolarisConfigAutoConfiguration.class)
 	public static class PolarisReflectRefresherAutoConfiguration {
 		@Bean
-		public SpringValueRegistry springValueRegistry() {
-			return new SpringValueRegistry();
-		}
-
-		@Bean
-		public PlaceholderHelper placeholderHelper() {
-			return new PlaceholderHelper();
-		}
-
-		@Bean
-		public SpringValueProcessor springValueProcessor(PlaceholderHelper placeholderHelper,
-				SpringValueRegistry springValueRegistry, PolarisConfigProperties polarisConfigProperties) {
-			return new SpringValueProcessor(placeholderHelper, springValueRegistry, polarisConfigProperties);
-		}
-
-		@Bean
 		public PolarisConfigPropertyRefresher polarisReflectPropertySourceAutoRefresher(
 				PolarisConfigProperties polarisConfigProperties, SpringValueRegistry springValueRegistry,
-				PlaceholderHelper placeholderHelper) {
+				PlaceholderHelper placeholderHelper, ConfigFileService configFileService, ContextRefresher contextRefresher) {
 			return new PolarisRefreshAffectedContextRefresher(polarisConfigProperties,
-					springValueRegistry, placeholderHelper);
-		}
-
-		@Bean
-		public PolarisConfigRefreshScopeAnnotationDetector polarisConfigRefreshScopeAnnotationDetector() {
-			return new PolarisConfigRefreshScopeAnnotationDetector();
-		}
-
-		@Bean
-		public PolarisConfigRefreshOptimizationListener polarisConfigRefreshOptimizationListener() {
-			return new PolarisConfigRefreshOptimizationListener();
+					springValueRegistry, placeholderHelper, configFileService, contextRefresher);
 		}
 	}
 }

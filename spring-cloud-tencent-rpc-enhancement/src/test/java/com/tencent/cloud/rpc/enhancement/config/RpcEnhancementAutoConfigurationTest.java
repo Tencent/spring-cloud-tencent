@@ -19,7 +19,6 @@ package com.tencent.cloud.rpc.enhancement.config;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.instrument.feign.EnhancedFeignBeanPostProcessor;
-import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
@@ -58,7 +57,6 @@ public class RpcEnhancementAutoConfigurationTest {
 			assertThat(context).hasSingleBean(EnhancedFeignBeanPostProcessor.class);
 			assertThat(context).hasSingleBean(SuccessPolarisReporter.class);
 			assertThat(context).hasSingleBean(ExceptionPolarisReporter.class);
-			assertThat(context).hasSingleBean(EnhancedRestTemplateInterceptor.class);
 			assertThat(context).hasSingleBean(RestTemplate.class);
 		});
 	}

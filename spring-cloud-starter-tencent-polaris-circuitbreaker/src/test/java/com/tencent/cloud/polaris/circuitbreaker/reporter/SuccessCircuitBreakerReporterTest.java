@@ -17,10 +17,16 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.reporter;
 
+import java.lang.reflect.Field;
 import java.net.URI;
 
+import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -28,6 +34,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.metadata.core.MetadataType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,16 +69,18 @@ public class SuccessCircuitBreakerReporterTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	@Mock
-	private SDKContext sdkContext;
-	@Mock
 	private RpcEnhancementReporterProperties reporterProperties;
+	@Mock
+	private SDKContext sdkContext;
 	@InjectMocks
 	private SuccessCircuitBreakerReporter successCircuitBreakerReporter;
 	@Mock
 	private CircuitBreakAPI circuitBreakAPI;
+	@Mock
+	private PolarisCircuitBreaker polarisCircuitBreaker;
 
 	@BeforeAll
-	static void beforeAll() {
+	static void beforeAll() throws Exception {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
@@ -81,6 +90,12 @@ public class SuccessCircuitBreakerReporterTest {
 				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
 		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
 				.thenReturn(applicationContext);
+
+		StaticMetadataManager metadataManager = new StaticMetadataManager(new MetadataLocalProperties(), null);
+
+		Field field = MetadataContextHolder.class.getDeclaredField("staticMetadataManager");
+		field.setAccessible(true);
+		field.set(null, metadataManager);
 	}
 
 	@AfterAll
@@ -146,5 +161,65 @@ public class SuccessCircuitBreakerReporterTest {
 		context.setRequest(request);
 		context.setResponse(response);
 		successCircuitBreakerReporter.handlerThrowable(context, new RuntimeException("Mock exception."));
+	}
+
+	@Test
+	public void testExistCircuitBreaker() throws Throwable {
+
+		doReturn(true).when(reporterProperties).isEnabled();
+
+		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
+		EnhancedRequestContext request = EnhancedRequestContext.builder()
+				.httpMethod(HttpMethod.GET)
+				.url(URI.create("http://0.0.0.0/"))
+				.build();
+		EnhancedResponseContext response = EnhancedResponseContext.builder()
+				.httpStatus(300)
+				.build();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+		serviceInstance.setServiceId(SERVICE_PROVIDER);
+
+		pluginContext.setRequest(request);
+		pluginContext.setResponse(response);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
+
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+				putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+				putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME, System.currentTimeMillis());
+
+		successCircuitBreakerReporter.run(pluginContext);
+
+		response = EnhancedResponseContext.builder()
+				.httpStatus(500)
+				.build();
+		pluginContext.setResponse(response);
+		successCircuitBreakerReporter.run(pluginContext);
+	}
+
+	@Test
+	public void testExistCircuitBreaker2() throws Throwable {
+
+		doReturn(true).when(reporterProperties).isEnabled();
+
+		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
+		EnhancedRequestContext request = EnhancedRequestContext.builder()
+				.httpMethod(HttpMethod.GET)
+				.url(URI.create("http://0.0.0.0/"))
+				.build();
+		EnhancedResponseContext response = EnhancedResponseContext.builder()
+				.httpStatus(300)
+				.build();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+		serviceInstance.setServiceId(SERVICE_PROVIDER);
+
+		pluginContext.setRequest(request);
+		pluginContext.setResponse(response);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
+		// not exist circuit CIRCUIT_BREAKER_START_TIME
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+				putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
+
+		successCircuitBreakerReporter.run(pluginContext);
 	}
 }

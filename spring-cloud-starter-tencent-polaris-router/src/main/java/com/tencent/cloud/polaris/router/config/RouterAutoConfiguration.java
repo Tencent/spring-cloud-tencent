@@ -31,7 +31,6 @@ import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterce
 import com.tencent.cloud.polaris.router.interceptor.NamespaceRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
-import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,13 +111,7 @@ public class RouterAutoConfiguration {
 		public SmartInitializingSingleton addRouterLabelInterceptorForRestTemplate(RouterLabelRestTemplateInterceptor interceptor) {
 			return () -> restTemplates.forEach(restTemplate -> {
 				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
-				int addIndex = list.size();
-				for (int i = 0; i < list.size(); i++) {
-					if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
-						addIndex = i;
-					}
-				}
-				list.add(addIndex, interceptor);
+				list.add(interceptor);
 				restTemplate.setInterceptors(list);
 			});
 		}

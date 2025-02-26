@@ -54,7 +54,6 @@ public class PolarisCircuitBreakerBootstrapConfigurationTest {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(PolarisCircuitBreakerAutoConfiguration.class);
 			assertThat(context).hasSingleBean(PolarisCircuitBreakerFeignClientAutoConfiguration.class);
-			assertThat(context).hasSingleBean(ReactivePolarisCircuitBreakerAutoConfiguration.class);
 		});
 	}
 }

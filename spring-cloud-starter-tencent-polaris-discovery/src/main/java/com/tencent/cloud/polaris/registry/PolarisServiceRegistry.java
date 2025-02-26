@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.common.util.OtUtils;
@@ -106,6 +107,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		}
 		registration.customize();
 		String serviceId = registration.getServiceId();
+		MetadataContext.setLocalService(serviceId);
 
 		// Register instance.
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
