@@ -39,6 +39,31 @@ public class PolarisCircuitBreakerProperties {
 	@Value("${spring.cloud.polaris.circuitbreaker.configuration-cleanup-interval:#{300000}}")
 	private long configurationCleanupInterval = 300000;
 
+	/**
+	 * If default circuit breaker rule is enabled. Default is true.
+	 */
+	private boolean defaultRuleEnabled = true;
+
+	/**
+	 * Consecutive error count circuit-breaker default error count. Default is 10.
+	 */
+	private int defaultErrorCount = 10;
+
+	/**
+	 * Error rate circuit-breaker default error rate percent. Default is 50.
+	 */
+	private int defaultErrorPercent = 50;
+
+	/**
+	 * Error rate circuit-breaker default interval(ms). Default is 60000.
+	 */
+	private int defaultInterval = 60000;
+
+	/**
+	 * Error rate circuit-breaker default minimum request. Default is 10.
+	 */
+	private int defaultMinimumRequest = 10;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -53,5 +78,58 @@ public class PolarisCircuitBreakerProperties {
 
 	public void setConfigurationCleanupInterval(long configurationCleanupInterval) {
 		this.configurationCleanupInterval = configurationCleanupInterval;
+	}
+
+	public boolean isDefaultRuleEnabled() {
+		return defaultRuleEnabled;
+	}
+
+	public void setDefaultRuleEnabled(boolean defaultRuleEnabled) {
+		this.defaultRuleEnabled = defaultRuleEnabled;
+	}
+
+	public int getDefaultErrorCount() {
+		return defaultErrorCount;
+	}
+
+	public void setDefaultErrorCount(int defaultErrorCount) {
+		this.defaultErrorCount = defaultErrorCount;
+	}
+
+	public int getDefaultErrorPercent() {
+		return defaultErrorPercent;
+	}
+
+	public void setDefaultErrorPercent(int defaultErrorPercent) {
+		this.defaultErrorPercent = defaultErrorPercent;
+	}
+
+	public int getDefaultInterval() {
+		return defaultInterval;
+	}
+
+	public void setDefaultInterval(int defaultInterval) {
+		this.defaultInterval = defaultInterval;
+	}
+
+	public int getDefaultMinimumRequest() {
+		return defaultMinimumRequest;
+	}
+
+	public void setDefaultMinimumRequest(int defaultMinimumRequest) {
+		this.defaultMinimumRequest = defaultMinimumRequest;
+	}
+
+	@Override
+	public String toString() {
+		return "PolarisCircuitBreakerProperties{" +
+				"enabled=" + enabled +
+				", configurationCleanupInterval=" + configurationCleanupInterval +
+				", defaultRuleEnabled=" + defaultRuleEnabled +
+				", defaultErrorCount=" + defaultErrorCount +
+				", defaultErrorPercent=" + defaultErrorPercent +
+				", defaultInterval=" + defaultInterval +
+				", defaultMinimumRequest=" + defaultMinimumRequest +
+				'}';
 	}
 }

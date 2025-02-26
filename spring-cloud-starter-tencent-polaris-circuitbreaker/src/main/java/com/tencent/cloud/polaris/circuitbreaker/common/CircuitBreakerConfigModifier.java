@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.circuitbreaker.common;
 
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
@@ -33,8 +34,12 @@ public class CircuitBreakerConfigModifier implements PolarisConfigModifier {
 
 	private final RpcEnhancementReporterProperties properties;
 
-	public CircuitBreakerConfigModifier(RpcEnhancementReporterProperties properties) {
+	private final PolarisCircuitBreakerProperties polarisCircuitBreakerProperties;
+
+	public CircuitBreakerConfigModifier(RpcEnhancementReporterProperties properties,
+			PolarisCircuitBreakerProperties polarisCircuitBreakerProperties) {
 		this.properties = properties;
+		this.polarisCircuitBreakerProperties = polarisCircuitBreakerProperties;
 	}
 
 	@Override
@@ -53,6 +58,17 @@ public class CircuitBreakerConfigModifier implements PolarisConfigModifier {
 		// Update modified config to source properties
 		configuration.getConsumer().getServiceRouter()
 				.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
+
+		configuration.getConsumer().getCircuitBreaker()
+				.setDefaultRuleEnable(polarisCircuitBreakerProperties.isDefaultRuleEnabled());
+		configuration.getConsumer().getCircuitBreaker()
+				.setDefaultErrorCount(polarisCircuitBreakerProperties.getDefaultErrorCount());
+		configuration.getConsumer().getCircuitBreaker()
+				.setDefaultErrorPercent(polarisCircuitBreakerProperties.getDefaultErrorPercent());
+		configuration.getConsumer().getCircuitBreaker()
+				.setDefaultInterval(polarisCircuitBreakerProperties.getDefaultInterval());
+		configuration.getConsumer().getCircuitBreaker()
+				.setDefaultMinimumRequest(polarisCircuitBreakerProperties.getDefaultMinimumRequest());
 	}
 
 	@Override
