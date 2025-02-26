@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(name = "spring.cloud.polaris.discovery.eager-load.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "spring.cloud.polaris.discovery.eager-load.enabled", havingValue = "true", matchIfMissing = true)
 public class PolarisEagerLoadAutoConfiguration {
 
 	@Bean

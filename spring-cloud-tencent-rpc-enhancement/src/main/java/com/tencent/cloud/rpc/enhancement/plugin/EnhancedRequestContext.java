@@ -37,6 +37,8 @@ public class EnhancedRequestContext {
 
 	private URI serviceUrl;
 
+	private String governanceNamespace;
+
 	public HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
@@ -69,6 +71,14 @@ public class EnhancedRequestContext {
 		this.serviceUrl = serviceUrl;
 	}
 
+	public String getGovernanceNamespace() {
+		return governanceNamespace;
+	}
+
+	public void setGovernanceNamespace(String governanceNamespace) {
+		this.governanceNamespace = governanceNamespace;
+	}
+
 	public static EnhancedContextRequestBuilder builder() {
 		return new EnhancedContextRequestBuilder();
 	}
@@ -87,8 +97,8 @@ public class EnhancedRequestContext {
 		private HttpMethod httpMethod;
 		private HttpHeaders httpHeaders;
 		private URI url;
-
 		private URI serviceUrl;
+		private String governanceNamespace;
 
 		private EnhancedContextRequestBuilder() {
 		}
@@ -113,12 +123,18 @@ public class EnhancedRequestContext {
 			return this;
 		}
 
+		public EnhancedContextRequestBuilder governanceNamespace(String governanceNamespace) {
+			this.governanceNamespace = governanceNamespace;
+			return this;
+		}
+
 		public EnhancedRequestContext build() {
 			EnhancedRequestContext enhancedRequestContext = new EnhancedRequestContext();
 			enhancedRequestContext.httpMethod = this.httpMethod;
 			enhancedRequestContext.url = this.url;
 			enhancedRequestContext.httpHeaders = this.httpHeaders;
 			enhancedRequestContext.serviceUrl = this.serviceUrl;
+			enhancedRequestContext.governanceNamespace = this.governanceNamespace;
 			return enhancedRequestContext;
 		}
 	}

@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.UrlUtils;
@@ -95,6 +96,11 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				MetadataConstant.HeaderName.METADATA_CONTEXT,
 				MetadataContextHolder.get());
 
+		String targetNamespace = serverWebExchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.NAMESPACE);
+		if (StringUtils.isNotBlank(targetNamespace)) {
+			MetadataContextHolder.get().putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+					MetadataConstant.POLARIS_TARGET_NAMESPACE, targetNamespace);
+		}
 		TransHeadersTransfer.transfer(serverHttpRequest);
 		return webFilterChain.filter(serverWebExchange)
 				.doFinally((type) -> MetadataContextHolder.remove());
