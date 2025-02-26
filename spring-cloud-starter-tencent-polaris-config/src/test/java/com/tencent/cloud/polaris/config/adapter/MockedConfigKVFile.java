@@ -36,10 +36,30 @@ import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 public class MockedConfigKVFile implements ConfigKVFile {
 
 	private final Map<String, Object> properties;
+
+	private String fileName;
+
+	private String fileGroup;
+
+	private String namespace;
+
 	private final List<ConfigKVFileChangeListener> listeners = new ArrayList<>();
 
 	public MockedConfigKVFile(Map<String, Object> properties) {
 		this.properties = properties;
+	}
+
+	public MockedConfigKVFile(Map<String, Object> properties, String fileName) {
+		this.properties = properties;
+		this.fileName = fileName;
+	}
+
+	public MockedConfigKVFile(Map<String, Object> properties, String fileName, String fileGroup, String namespace) {
+		this.properties = properties;
+		this.fileName = fileName;
+		this.fileGroup = fileGroup;
+		this.namespace = namespace;
+
 	}
 
 	@Override
@@ -160,16 +180,16 @@ public class MockedConfigKVFile implements ConfigKVFile {
 
 	@Override
 	public String getNamespace() {
-		return null;
+		return namespace;
 	}
 
 	@Override
 	public String getFileGroup() {
-		return null;
+		return fileGroup;
 	}
 
 	@Override
 	public String getFileName() {
-		return null;
+		return fileName;
 	}
 }

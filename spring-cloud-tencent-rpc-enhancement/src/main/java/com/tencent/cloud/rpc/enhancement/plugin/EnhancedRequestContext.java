@@ -35,6 +35,8 @@ public class EnhancedRequestContext {
 
 	private URI url;
 
+	private URI serviceUrl;
+
 	public HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
@@ -59,6 +61,14 @@ public class EnhancedRequestContext {
 		this.url = url;
 	}
 
+	public URI getServiceUrl() {
+		return serviceUrl;
+	}
+
+	public void setServiceUrl(URI serviceUrl) {
+		this.serviceUrl = serviceUrl;
+	}
+
 	public static EnhancedContextRequestBuilder builder() {
 		return new EnhancedContextRequestBuilder();
 	}
@@ -69,6 +79,7 @@ public class EnhancedRequestContext {
 				"httpMethod=" + httpMethod +
 				", httpHeaders=" + httpHeaders +
 				", url=" + url +
+				", serviceUrl=" + serviceUrl +
 				'}';
 	}
 
@@ -76,6 +87,8 @@ public class EnhancedRequestContext {
 		private HttpMethod httpMethod;
 		private HttpHeaders httpHeaders;
 		private URI url;
+
+		private URI serviceUrl;
 
 		private EnhancedContextRequestBuilder() {
 		}
@@ -95,11 +108,17 @@ public class EnhancedRequestContext {
 			return this;
 		}
 
+		public EnhancedContextRequestBuilder serviceUrl(URI serviceUrl) {
+			this.serviceUrl = serviceUrl;
+			return this;
+		}
+
 		public EnhancedRequestContext build() {
 			EnhancedRequestContext enhancedRequestContext = new EnhancedRequestContext();
 			enhancedRequestContext.httpMethod = this.httpMethod;
 			enhancedRequestContext.url = this.url;
 			enhancedRequestContext.httpHeaders = this.httpHeaders;
+			enhancedRequestContext.serviceUrl = this.serviceUrl;
 			return enhancedRequestContext;
 		}
 	}

@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
+import com.tencent.cloud.polaris.circuitbreaker.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
-import com.tencent.cloud.polaris.circuitbreaker.instrument.resttemplate.PolarisCircuitBreakerRestTemplateBeanPostProcessor;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.CircuitBreakerPlugin;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
@@ -36,7 +37,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -56,10 +56,9 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	private List<Customizer<PolarisCircuitBreakerFactory>> customizers = new ArrayList<>();
 
 	@Bean
-	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-	public static PolarisCircuitBreakerRestTemplateBeanPostProcessor polarisCircuitBreakerRestTemplateBeanPostProcessor(
-			ApplicationContext applicationContext) {
-		return new PolarisCircuitBreakerRestTemplateBeanPostProcessor(applicationContext);
+	@ConditionalOnMissingBean(CircuitBreakerPlugin.class)
+	public CircuitBreakerPlugin circuitBreakerPlugin(CircuitBreakerFactory circuitBreakerFactory) {
+		return new CircuitBreakerPlugin(circuitBreakerFactory);
 	}
 
 	@Bean
@@ -90,6 +89,12 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	@ConditionalOnMissingBean(CircuitBreakerConfigModifier.class)
 	public CircuitBreakerConfigModifier circuitBreakerConfigModifier(RpcEnhancementReporterProperties properties) {
 		return new CircuitBreakerConfigModifier(properties);
+	}
+
+	@Bean
+	@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
+	public LoadBalancerInterceptorBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
+		return new LoadBalancerInterceptorBeanPostProcessor();
 	}
 
 }

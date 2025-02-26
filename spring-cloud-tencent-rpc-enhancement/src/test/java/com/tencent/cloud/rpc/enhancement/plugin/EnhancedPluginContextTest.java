@@ -19,6 +19,7 @@ package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -97,6 +98,7 @@ public class EnhancedPluginContextTest {
 		EnhancedRequestContext requestContext = new EnhancedRequestContext();
 		requestContext.setHttpHeaders(new HttpHeaders());
 		requestContext.setUrl(new URI("/"));
+		requestContext.setServiceUrl(new URI("http://test-service/path"));
 		requestContext.setHttpMethod(HttpMethod.GET);
 
 		EnhancedRequestContext requestContext1 = EnhancedRequestContext.builder()
@@ -150,7 +152,7 @@ public class EnhancedPluginContextTest {
 
 		doReturn(configuration).when(sdkContext).getConfig();
 
-		enhancedPluginRunner = new DefaultEnhancedPluginRunner(Collections.singletonList(enhancedPlugin2), null, sdkContext);
+		enhancedPluginRunner = new DefaultEnhancedPluginRunner(Collections.singletonList(enhancedPlugin2), new ArrayList<>(), sdkContext);
 		enhancedPluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 	}
 

@@ -52,8 +52,8 @@ public class PolarisCircuitBreakerFeignClientAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(CircuitBreakerFactory.class)
 	@ConditionalOnMissingBean(Targeter.class)
-	public Targeter polarisFeignCircuitBreakerTargeter(CircuitBreakerFactory circuitBreakerFactory, CircuitBreakerNameResolver circuitBreakerNameResolver) {
-		return new PolarisFeignCircuitBreakerTargeter(circuitBreakerFactory, circuitBreakerNameResolver);
+	public Targeter polarisFeignCircuitBreakerTargeter() {
+		return new PolarisFeignCircuitBreakerTargeter();
 	}
 
 	@Bean

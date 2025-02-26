@@ -71,10 +71,10 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.0.0.0-2023.0.3-SNAPSHOT</revision>
+		<revision>2.0.1.0-2023.0.3-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>2.0.0.0</polaris.version>
+		<polaris.version>2.0.0.1</polaris.version>
 
 		<!-- Dependencies -->
 		<guava.version>32.0.1-jre</guava.version>
@@ -214,6 +214,12 @@
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-fault-tolerance</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-security-protection-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 

@@ -17,15 +17,22 @@
 
 package com.tencent.cloud.rpc.enhancement.instrument.webclient;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
+
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -53,6 +60,7 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 				.httpHeaders(originRequest.headers())
 				.httpMethod(originRequest.method())
 				.url(originRequest.url())
+				.serviceUrl(getServiceUri(originRequest))
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(originRequest);
@@ -62,7 +70,21 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 				.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), originRequest.url());
 
 		// Run post enhanced plugins.
-		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+		try {
+			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+		}
+		catch (CallAbortedException e) {
+			if (e.getFallbackInfo() == null) {
+				throw e;
+			}
+			HttpStatus httpStatus = HttpStatus.resolve(e.getFallbackInfo().getCode());
+			ClientResponse.Builder responseBuilder = ClientResponse.create(httpStatus != null ? httpStatus : HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Optional.of(e.getFallbackInfo().getBody()).orElse(""));
+			if (CollectionUtils.isNotEmpty(e.getFallbackInfo().getHeaders())) {
+				e.getFallbackInfo().getHeaders().forEach(responseBuilder::header);
+			}
+			return Mono.just(responseBuilder.build());
+		}
 		// request may be changed by plugin
 		ClientRequest request = (ClientRequest) enhancedPluginContext.getOriginRequest();
 		long startTime = System.currentTimeMillis();
@@ -90,5 +112,22 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 					// Run finally enhanced plugins.
 					pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 				});
+	}
+
+	private URI getServiceUri(ClientRequest clientRequest) {
+		Object instance = MetadataContextHolder.get()
+				.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE);
+		if (!(instance instanceof ServiceInstance)) {
+			return null;
+		}
+		ServiceInstance serviceInstance = (ServiceInstance) instance;
+		URI uri = clientRequest.url();
+
+		try {
+			return new URI(uri.getScheme(), serviceInstance.getServiceId(), uri.getPath(), uri.getRawQuery());
+		}
+		catch (URISyntaxException e) {
+			return null;
+		}
 	}
 }

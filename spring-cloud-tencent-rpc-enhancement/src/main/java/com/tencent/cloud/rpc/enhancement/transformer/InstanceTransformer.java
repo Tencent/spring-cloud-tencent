@@ -20,6 +20,7 @@ package com.tencent.cloud.rpc.enhancement.transformer;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
+import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.cloud.client.ServiceInstance;
 
@@ -41,10 +42,18 @@ public interface InstanceTransformer {
 		instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		instance.setService(serviceInstance.getServiceId());
 		instance.setProtocol(serviceInstance.getScheme());
-		instance.setId(serviceInstance.getInstanceId());
 		instance.setHost(serviceInstance.getHost());
 		instance.setPort(serviceInstance.getPort());
 		instance.setMetadata(serviceInstance.getMetadata());
+		instance.setWeight(100);
+		instance.setHealthy(true);
+
+		if (StringUtils.isNotEmpty(serviceInstance.getInstanceId())) {
+			instance.setId(serviceInstance.getInstanceId());
+		}
+		else {
+			instance.setId(serviceInstance.getHost() + ":" + serviceInstance.getPort());
+		}
 	}
 
 	void transformCustom(DefaultInstance instance, ServiceInstance serviceInstance);

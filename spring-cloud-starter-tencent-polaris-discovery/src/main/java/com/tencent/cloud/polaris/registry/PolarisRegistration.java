@@ -57,7 +57,7 @@ public class PolarisRegistration implements Registration {
 
 	private final StaticMetadataManager staticMetadataManager;
 
-	private final String serviceId;
+	private String serviceId;
 	private final String host;
 	private final boolean isSecure;
 	private final ServletWebServerApplicationContext servletWebServerApplicationContext;
@@ -162,6 +162,10 @@ public class PolarisRegistration implements Registration {
 				customizer.customize(this);
 			}
 		}
+	}
+
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
 	}
 
 	@Override
