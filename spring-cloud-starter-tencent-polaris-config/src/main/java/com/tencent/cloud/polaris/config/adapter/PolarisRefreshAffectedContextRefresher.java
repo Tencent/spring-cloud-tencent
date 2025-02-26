@@ -24,6 +24,7 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
+import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -57,11 +59,15 @@ public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropert
 
 	private TypeConverter typeConverter;
 
+	private ContextRefresher contextRefresher;
+
 	public PolarisRefreshAffectedContextRefresher(PolarisConfigProperties polarisConfigProperties,
-			SpringValueRegistry springValueRegistry, PlaceholderHelper placeholderHelper) {
-		super(polarisConfigProperties);
+			SpringValueRegistry springValueRegistry, PlaceholderHelper placeholderHelper,
+			ConfigFileService configFileService, ContextRefresher contextRefresher) {
+		super(polarisConfigProperties, configFileService);
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
+		this.contextRefresher = contextRefresher;
 	}
 
 	@Override
@@ -78,7 +84,20 @@ public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropert
 
 	@Override
 	public void refreshConfigurationProperties(Set<String> changeKeys) {
-		context.publishEvent(new EnvironmentChangeEvent(context, changeKeys));
+		boolean needRefreshContext = false;
+		for (String changedKey : changeKeys) {
+			boolean inRefreshScope = springValueRegistry.isRefreshScopeKey(changedKey);
+			if (inRefreshScope) {
+				needRefreshContext = true;
+				break;
+			}
+		}
+		if (needRefreshContext) {
+			contextRefresher.refresh();
+		}
+		else {
+			context.publishEvent(new EnvironmentChangeEvent(context, changeKeys));
+		}
 	}
 
 	private void updateSpringValue(SpringValue springValue) {

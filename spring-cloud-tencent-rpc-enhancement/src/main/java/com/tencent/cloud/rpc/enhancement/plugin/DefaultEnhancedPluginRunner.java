@@ -23,6 +23,7 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -40,6 +41,16 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 	private final Multimap<EnhancedPluginType, EnhancedPlugin> pluginMap = ArrayListMultimap.create();
 
 	private final ServiceInstance localServiceInstance;
+
+	public DefaultEnhancedPluginRunner(
+			List<EnhancedPlugin> enhancedPlugins,
+			List<Registration> registration,
+			SDKContext sdkContext
+	) {
+		this(enhancedPlugins,
+				getPolarisRegistration(registration),
+				sdkContext);
+	}
 
 	public DefaultEnhancedPluginRunner(
 			List<EnhancedPlugin> enhancedPlugins,
@@ -74,6 +85,9 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 			try {
 				plugin.run(context);
 			}
+			catch (CallAbortedException callAbortedException) {
+				throw callAbortedException;
+			}
 			catch (Throwable throwable) {
 				plugin.handlerThrowable(context, throwable);
 			}
@@ -85,4 +99,16 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 		return this.localServiceInstance;
 	}
 
+	static Registration getPolarisRegistration(List<Registration> registration) {
+
+		if (CollectionUtils.isEmpty(registration)) {
+			return null;
+		}
+		for (Registration reg : registration) {
+			if ("com.tencent.cloud.polaris.registry.PolarisRegistration".equals(reg.getClass().getName())) {
+				return reg;
+			}
+		}
+		return registration.get(0);
+	}
 }

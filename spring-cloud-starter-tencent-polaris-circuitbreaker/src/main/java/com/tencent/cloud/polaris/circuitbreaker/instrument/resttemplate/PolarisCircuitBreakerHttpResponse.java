@@ -54,7 +54,7 @@ public class PolarisCircuitBreakerHttpResponse implements ClientHttpResponse {
 		this(new CircuitBreakerStatus.FallbackInfo(code, headers, body));
 	}
 
-	PolarisCircuitBreakerHttpResponse(CircuitBreakerStatus.FallbackInfo fallbackInfo) {
+	public PolarisCircuitBreakerHttpResponse(CircuitBreakerStatus.FallbackInfo fallbackInfo) {
 		this.fallbackInfo = fallbackInfo;
 		if (fallbackInfo.getHeaders() != null) {
 			fallbackInfo.getHeaders().forEach(headers::add);

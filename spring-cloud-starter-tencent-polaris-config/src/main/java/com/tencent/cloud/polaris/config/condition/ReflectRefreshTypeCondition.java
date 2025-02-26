@@ -36,7 +36,7 @@ public class ReflectRefreshTypeCondition extends SpringBootCondition {
 	 */
 	public static final String POLARIS_CONFIG_REFRESH_TYPE = "spring.cloud.polaris.config.refresh-type";
 
-	private static final RefreshType DEFAULT_REFRESH_TYPE = RefreshType.REFLECT;
+	private static final RefreshType DEFAULT_REFRESH_TYPE = RefreshType.REFRESH_CONTEXT;
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {

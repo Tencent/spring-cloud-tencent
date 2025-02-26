@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.GzipUtil;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
@@ -100,7 +101,7 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 					ReportServiceContractRequest request = new ReportServiceContractRequest();
 					String name = polarisContractProperties.getName();
 					if (StringUtils.isBlank(name)) {
-						name = polarisDiscoveryProperties.getService();
+						name = MetadataContext.LOCAL_SERVICE;
 					}
 					request.setName(name);
 					request.setNamespace(polarisDiscoveryProperties.getNamespace());

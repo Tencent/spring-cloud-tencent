@@ -18,13 +18,10 @@
 package com.tencent.cloud.metadata.core;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
-import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -79,13 +76,7 @@ public class EncodeTransferMedataRestTemplateInterceptorTest {
 
 		@Bean
 		public RestTemplate restTemplate() {
-
-			EncodeTransferMedataRestTemplateEnhancedPlugin plugin = new EncodeTransferMedataRestTemplateEnhancedPlugin();
-			EnhancedRestTemplateInterceptor interceptor = new EnhancedRestTemplateInterceptor(
-					new DefaultEnhancedPluginRunner(Arrays.asList(plugin), new MockRegistration(), null));
-			RestTemplate template = new RestTemplate();
-			template.setInterceptors(Arrays.asList(interceptor));
-			return template;
+			return new RestTemplate();
 		}
 
 		@RequestMapping("/test")

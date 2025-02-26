@@ -19,8 +19,11 @@ package com.tencent.cloud.polaris.circuitbreaker.reporter;
 
 import java.net.URI;
 
+import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -28,6 +31,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.metadata.core.MetadataType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +73,8 @@ public class ExceptionCircuitBreakerReporterTest {
 	private ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter;
 	@Mock
 	private CircuitBreakAPI circuitBreakAPI;
+	@Mock
+	private PolarisCircuitBreaker polarisCircuitBreaker;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -141,5 +147,67 @@ public class ExceptionCircuitBreakerReporterTest {
 		context.setRequest(request);
 		context.setResponse(response);
 		exceptionCircuitBreakerReporter.handlerThrowable(context, new RuntimeException("Mock exception."));
+	}
+
+	@Test
+	public void testExistCircuitBreaker() throws Throwable {
+
+		doReturn(true).when(reporterProperties).isEnabled();
+
+		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
+		EnhancedRequestContext request = EnhancedRequestContext.builder()
+				.httpMethod(HttpMethod.GET)
+				.url(URI.create("http://0.0.0.0/"))
+				.build();
+		EnhancedResponseContext response = EnhancedResponseContext.builder()
+				.httpStatus(300)
+				.build();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+		serviceInstance.setServiceId(SERVICE_PROVIDER);
+
+		pluginContext.setRequest(request);
+		pluginContext.setResponse(response);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
+		pluginContext.setThrowable(new RuntimeException());
+
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+				putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+				putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME, System.currentTimeMillis());
+
+		exceptionCircuitBreakerReporter.run(pluginContext);
+
+		response = EnhancedResponseContext.builder()
+				.httpStatus(500)
+				.build();
+		pluginContext.setResponse(response);
+		exceptionCircuitBreakerReporter.run(pluginContext);
+	}
+
+	@Test
+	public void testExistCircuitBreaker2() throws Throwable {
+
+		doReturn(true).when(reporterProperties).isEnabled();
+
+		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
+		EnhancedRequestContext request = EnhancedRequestContext.builder()
+				.httpMethod(HttpMethod.GET)
+				.url(URI.create("http://0.0.0.0/"))
+				.build();
+		EnhancedResponseContext response = EnhancedResponseContext.builder()
+				.httpStatus(300)
+				.build();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+		serviceInstance.setServiceId(SERVICE_PROVIDER);
+
+		pluginContext.setRequest(request);
+		pluginContext.setResponse(response);
+		pluginContext.setTargetServiceInstance(serviceInstance, null);
+		pluginContext.setThrowable(new RuntimeException());
+		// not exist circuit CIRCUIT_BREAKER_START_TIME
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+				putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
+
+		exceptionCircuitBreakerReporter.run(pluginContext);
 	}
 }

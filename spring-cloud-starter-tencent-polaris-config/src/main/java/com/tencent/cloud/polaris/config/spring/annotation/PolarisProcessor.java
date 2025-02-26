@@ -23,7 +23,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.lang.NonNull;
@@ -34,17 +38,32 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author weihubeats 2022-7-10
  */
-public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrdered {
+public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware {
+
+	private ConfigurableListableBeanFactory beanFactory;
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, @NonNull String beanName)
 			throws BeansException {
 		Class<?> clazz = bean.getClass();
+
+		boolean isRefreshScope = false;
+
+		try {
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+			if ("refresh".equals(beanDefinition.getScope())) {
+				isRefreshScope = true;
+			}
+		}
+		catch (Exception ignored) {
+			// ignore
+		}
+
 		for (Field field : findAllField(clazz)) {
-			processField(bean, beanName, field);
+			processField(bean, beanName, field, isRefreshScope);
 		}
 		for (Method method : findAllMethod(clazz)) {
-			processMethod(bean, beanName, method);
+			processMethod(bean, beanName, method, isRefreshScope);
 		}
 		return bean;
 	}
@@ -60,7 +79,7 @@ public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrd
 	 * @param beanName beanName
 	 * @param field field
 	 */
-	protected abstract void processField(Object bean, String beanName, Field field);
+	protected abstract void processField(Object bean, String beanName, Field field, boolean isRefreshScope);
 
 	/**
 	 * subclass should implement this method to process method.
@@ -68,7 +87,7 @@ public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrd
 	 * @param beanName beanName
 	 * @param method method
 	 */
-	protected abstract void processMethod(Object bean, String beanName, Method method);
+	protected abstract void processMethod(Object bean, String beanName, Method method, boolean isRefreshScope);
 
 
 	@Override
@@ -77,15 +96,20 @@ public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrd
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
-	private List<Field> findAllField(Class<?> clazz) {
+	protected List<Field> findAllField(Class<?> clazz) {
 		final List<Field> res = new LinkedList<>();
 		ReflectionUtils.doWithFields(clazz, res::add);
 		return res;
 	}
 
-	private List<Method> findAllMethod(Class<?> clazz) {
+	protected List<Method> findAllMethod(Class<?> clazz) {
 		final List<Method> res = new LinkedList<>();
 		ReflectionUtils.doWithMethods(clazz, res::add);
 		return res;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.beanFactory = (ConfigurableListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
 	}
 }

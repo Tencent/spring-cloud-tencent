@@ -18,6 +18,12 @@
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-polaris-context</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-security-crypto</artifactId>
+					<groupId>org.springframework.security</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
 
@@ -66,6 +72,12 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-context</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-security-crypto</artifactId>
+					<groupId>org.springframework.security</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Spring cloud dependencies start -->
 

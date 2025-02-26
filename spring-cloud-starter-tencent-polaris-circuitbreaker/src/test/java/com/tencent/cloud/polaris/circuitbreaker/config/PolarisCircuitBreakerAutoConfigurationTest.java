@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
-import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration;
 import org.springframework.cloud.openfeign.CircuitBreakerNameResolver;
 
@@ -46,14 +45,6 @@ public class PolarisCircuitBreakerAutoConfigurationTest {
 					PolarisCircuitBreakerAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
-	private final ApplicationContextRunner reactiveContextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					PolarisContextAutoConfiguration.class,
-					RpcEnhancementAutoConfiguration.class,
-					LoadBalancerAutoConfiguration.class,
-					ReactivePolarisCircuitBreakerAutoConfiguration.class))
-			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
-
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
@@ -61,15 +52,6 @@ public class PolarisCircuitBreakerAutoConfigurationTest {
 			assertThat(context).hasSingleBean(CircuitBreakerFactory.class);
 			assertThat(context).hasSingleBean(CircuitBreakerConfigModifier.class);
 			assertThat(context).hasSingleBean(CircuitBreakerNameResolver.class);
-		});
-	}
-
-	@Test
-	public void testReactiveInitialization() {
-		this.reactiveContextRunner.run(context -> {
-			assertThat(context).hasSingleBean(ReactivePolarisCircuitBreakerAutoConfiguration.class);
-			assertThat(context).hasSingleBean(ReactiveCircuitBreakerFactory.class);
-			assertThat(context).hasSingleBean(CircuitBreakerConfigModifier.class);
 		});
 	}
 

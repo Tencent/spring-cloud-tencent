@@ -82,7 +82,7 @@ public class PolarisServiceDiscovery {
 			return Collections.emptyList();
 		}
 		return polarisDiscoveryHandler.getServices().getServices().stream()
-				.map(ServiceInfo::getService).collect(Collectors.toList());
+				.map(ServiceInfo::getService).distinct().collect(Collectors.toList());
 	}
 
 }
