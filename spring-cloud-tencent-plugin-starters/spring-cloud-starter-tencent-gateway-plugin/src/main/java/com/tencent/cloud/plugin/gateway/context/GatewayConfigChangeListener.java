@@ -46,8 +46,10 @@ public class GatewayConfigChangeListener {
 	public void onChangeTencentGatewayProperties(ConfigChangeEvent event) {
 		Binder binder = Binder.get(environment);
 		BindResult<ContextGatewayProperties> result = binder.bind(ContextGatewayProperties.PREFIX, ContextGatewayProperties.class);
-		manager.setGroupRouteMap(result.get().getGroups());
-		this.publisher.publishEvent(new RefreshRoutesEvent(event));
+		if (result.isBound()) {
+			manager.setGroupRouteMap(result.get().getGroups());
+			this.publisher.publishEvent(new RefreshRoutesEvent(event));
+		}
 	}
 
 	@PolarisConfigKVFileChangeListener(interestedKeyPrefixes = GatewayProperties.PREFIX)

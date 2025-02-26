@@ -53,6 +53,4 @@ public class ContextGatewayFilterFactory extends AbstractGatewayFilterFactory<Co
 			this.group = group;
 		}
 	}
-
-
 }
