@@ -17,8 +17,15 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import java.time.LocalDateTime;
+
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
+import com.tencent.polaris.api.plugin.compose.Extensions;
+import com.tencent.polaris.api.plugin.event.FlowEvent;
+import com.tencent.polaris.api.plugin.event.FlowEventConstants;
+import com.tencent.polaris.api.pojo.ServiceEventKey;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
+import com.tencent.polaris.client.flow.BaseFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +91,25 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 
 	@Override
 	protected void deregister() {
+		// report thread end event.
+		if (this.registration.getPolarisContext() != null
+				&& this.registration.getPolarisContext().getExtensions() != null) {
+			Extensions extensions = this.registration.getPolarisContext().getExtensions();
+			FlowEvent.Builder flowEventBuilder = new FlowEvent.Builder()
+					.withEventType(ServiceEventKey.EventType.INSTANCE)
+					.withEventName(FlowEventConstants.EventName.InstanceThreadEnd)
+					.withTimestamp(LocalDateTime.now())
+					.withClientId(extensions.getValueContext().getClientId())
+					.withClientIp(extensions.getValueContext().getHost())
+					.withNamespace(polarisDiscoveryProperties.getNamespace())
+					.withService(registration.getServiceId())
+					.withHost(registration.getHost())
+					.withPort(registration.getPort());
+
+			FlowEvent flowEvent = flowEventBuilder.build();
+			BaseFlow.reportFlowEvent(extensions, flowEvent);
+		}
+
 		if (!this.registration.isRegisterEnabled()) {
 			return;
 		}
