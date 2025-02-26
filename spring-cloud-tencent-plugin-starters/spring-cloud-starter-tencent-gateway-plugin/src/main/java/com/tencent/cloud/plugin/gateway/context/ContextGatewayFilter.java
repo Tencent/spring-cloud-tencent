@@ -111,7 +111,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		StringBuilder matchPath = new StringBuilder();
 		StringBuilder realPath = new StringBuilder();
 		int index = 2;
-		matchPath.append(request.getMethodValue()).append("|");
+		matchPath.append(request.getMethod().name()).append("|");
 		for (int i = index; i < pathSegments.length; i++) {
 			matchPath.append("/").append(pathSegments[i]);
 			realPath.append("/").append(pathSegments[i]);
@@ -131,32 +131,36 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		String[] pathSegments = path.split("/");
 		StringBuilder matchPath = new StringBuilder();
 		int index = 2;
-		matchPath.append(request.getMethodValue()).append("|");
+		matchPath.append(request.getMethod().name()).append("|");
 
 		Position namespacePosition = groupContext.getPredicate().getNamespace().getPosition();
 		switch (namespacePosition) {
-			case QUERY:
-				matchPath.append("/").append(request.getQueryParams().getFirst(groupContext.getPredicate().getNamespace().getKey()));
-				break;
-			case HEADER:
-				matchPath.append("/").append(request.getHeaders().getFirst(groupContext.getPredicate().getNamespace().getKey()));
-				break;
-			case PATH:
-			default:
-				matchPath.append("/").append(pathSegments[index++]);
-				break;
+		case QUERY:
+			matchPath.append("/")
+					.append(request.getQueryParams().getFirst(groupContext.getPredicate().getNamespace().getKey()));
+			break;
+		case HEADER:
+			matchPath.append("/")
+					.append(request.getHeaders().getFirst(groupContext.getPredicate().getNamespace().getKey()));
+			break;
+		case PATH:
+		default:
+			matchPath.append("/").append(pathSegments[index++]);
+			break;
 		}
 		Position servicePosition = groupContext.getPredicate().getService().getPosition();
 		switch (servicePosition) {
-			case QUERY:
-				matchPath.append("/").append(request.getQueryParams().getFirst(groupContext.getPredicate().getService().getKey()));
-				break;
-			case HEADER:
-				matchPath.append("/").append(request.getHeaders().getFirst(groupContext.getPredicate().getService().getKey()));
-				break;
-			case PATH:
-			default:
-				matchPath.append("/").append(pathSegments[index++]);
+		case QUERY:
+			matchPath.append("/")
+					.append(request.getQueryParams().getFirst(groupContext.getPredicate().getService().getKey()));
+			break;
+		case HEADER:
+			matchPath.append("/")
+					.append(request.getHeaders().getFirst(groupContext.getPredicate().getService().getKey()));
+			break;
+		case PATH:
+		default:
+			matchPath.append("/").append(pathSegments[index++]);
 		}
 		StringBuilder realPath = new StringBuilder();
 		for (int i = index; i < pathSegments.length; i++) {
