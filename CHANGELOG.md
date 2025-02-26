@@ -3,3 +3,4 @@
 
 - [feat: implement circuit breaker in enhance plugin, support listen config group, support refresh single config in refresh_context mode.](https://github.com/Tencent/spring-cloud-tencent/pull/1500)
 - [feat:support polaris event.](https://github.com/Tencent/spring-cloud-tencent/pull/1523)
+- [feat:support circuit breaker metrics reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1524)

@@ -69,9 +69,9 @@
     {
       "name": "spring.cloud.polaris.stat.pushgateway.push-interval",
       "type": "java.lang.Long",
-      "description": "Push metrics interval. unit: milliseconds default 30s.",
+      "description": "Push metrics interval. unit: milliseconds default 60000ms.",
       "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties",
-      "defaultValue": 30000
+      "defaultValue": 60000
     },
     {
       "name": "spring.cloud.polaris.stat.pushgateway.open-gzip",

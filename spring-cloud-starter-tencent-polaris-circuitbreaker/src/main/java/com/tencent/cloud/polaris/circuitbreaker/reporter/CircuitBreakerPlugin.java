@@ -86,6 +86,7 @@ public class CircuitBreakerPlugin implements EnhancedPlugin {
 			}
 			catch (CallAbortedException e) {
 				LOG.debug("[CircuitBreakerPlugin] request is aborted. request service url=[{}]", request.getServiceUrl());
+				polarisCircuitBreaker.reportStatus(e);
 				if (e.getFallbackInfo() != null) {
 					Object fallbackResponse = new PolarisCircuitBreakerHttpResponse(e.getFallbackInfo());
 					putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE, fallbackResponse);
