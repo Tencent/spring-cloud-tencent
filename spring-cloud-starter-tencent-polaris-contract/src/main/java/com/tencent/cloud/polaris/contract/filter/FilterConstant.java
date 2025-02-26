@@ -47,7 +47,7 @@ public final class FilterConstant {
 	/**
 	 * Swagger resource url prefix.
 	 */
-	public static final String SWAGGER_RESOURCE_PREFIX = "/swagger-resource/";
+	public static final String SWAGGER_RESOURCE_PREFIX = "/swagger-resource";
 
 	/**
 	 * Swagger webjars V2 url prefix.

@@ -31,6 +31,7 @@ import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
+import com.tencent.polaris.configuration.client.internal.CompositeConfigFile;
 import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -68,6 +69,8 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 
+	private volatile static CompositePropertySource compositePropertySourceCache = null;
+
 	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties, ConfigFileService configFileService, Environment environment) {
 		this.polarisConfigProperties = polarisConfigProperties;
@@ -76,10 +79,21 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		this.environment = environment;
 	}
 
+	/**
+	 *  order: spring boot default config files > custom config files > tsf default config group.
+	 *  @param environment The current Environment.
+	 *  @return The PropertySource to be added to the Environment.
+	 */
 	@Override
 	public PropertySource<?> locate(Environment environment) {
 		if (polarisConfigProperties.isEnabled()) {
+			// use cache when refreshing context
+			if (compositePropertySourceCache != null) {
+				return compositePropertySourceCache;
+			}
+
 			CompositePropertySource compositePropertySource = new CompositePropertySource(POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
+			compositePropertySourceCache = compositePropertySource;
 			try {
 				// load custom config extension files
 				initCustomPolarisConfigExtensionFiles(compositePropertySource);
@@ -87,10 +101,11 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 				initInternalConfigFiles(compositePropertySource);
 				// load custom config files
 				List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
-				if (CollectionUtils.isEmpty(configFileGroups)) {
-					return compositePropertySource;
+				if (!CollectionUtils.isEmpty(configFileGroups)) {
+					initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
 				}
-				initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
+				// load tsf default config group
+				initTsfConfigGroups(compositePropertySource);
 				return compositePropertySource;
 			}
 			finally {
@@ -123,7 +138,10 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles();
 
 		for (ConfigFileMetadata configFile : internalConfigFiles) {
-			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
+			if (StringUtils.isEmpty(configFile.getFileGroup())) {
+				continue;
+			}
+			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService, configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
 
 			compositePropertySource.addPropertySource(polarisPropertySource);
 
@@ -190,6 +208,29 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yaml"));
 	}
 
+	void initTsfConfigGroups(CompositePropertySource compositePropertySource) {
+		String tsfId = environment.getProperty("tsf_id");
+		String tsfNamespaceName = environment.getProperty("tsf_namespace_name");
+		String tsfGroupName = environment.getProperty("tsf_group_name");
+
+		if (StringUtils.isEmpty(tsfId) || StringUtils.isEmpty(tsfNamespaceName) || StringUtils.isEmpty(tsfGroupName)) {
+			return;
+		}
+		String namespace = polarisContextProperties.getNamespace();
+		List<String> tsfConfigGroups = Arrays.asList(
+				tsfId + "." + tsfGroupName + ".application_config_group",
+				tsfId + "." + tsfNamespaceName + ".global_config_group");
+		for (String tsfConfigGroup : tsfConfigGroups) {
+			PolarisPropertySource polarisPropertySource = loadGroupPolarisPropertySource(configFileService, namespace, tsfConfigGroup);
+			if (polarisPropertySource == null) {
+				// not register to polaris
+				continue;
+			}
+			compositePropertySource.addPropertySource(polarisPropertySource);
+			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+		}
+	}
+
 	private void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource, List<ConfigFileGroup> configFileGroups) {
 		String namespace = polarisContextProperties.getNamespace();
 
@@ -201,40 +242,36 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 			String group = configFileGroup.getName();
 			if (!StringUtils.hasText(group)) {
-				throw new IllegalArgumentException("polaris config group name cannot be empty.");
+				continue;
 			}
 
 			List<String> files = configFileGroup.getFiles();
+
 			if (CollectionUtils.isEmpty(files)) {
-				return;
-			}
-
-			for (String fileName : files) {
-				PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(groupNamespace, group, fileName);
-
+				PolarisPropertySource polarisPropertySource = loadGroupPolarisPropertySource(configFileService, namespace, group);
+				if (polarisPropertySource == null) {
+					continue;
+				}
 				compositePropertySource.addPropertySource(polarisPropertySource);
-
 				PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+				LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}", namespace, group);
+			}
+			else {
+				for (String fileName : files) {
+					PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService, groupNamespace, group, fileName);
 
-				LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}", groupNamespace, group, fileName);
+					compositePropertySource.addPropertySource(polarisPropertySource);
+
+					PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+
+					LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}", groupNamespace, group, fileName);
+				}
 			}
 		}
 	}
 
-	private PolarisPropertySource loadPolarisPropertySource(String namespace, String group, String fileName) {
-		ConfigKVFile configKVFile;
-		// unknown extension is resolved as yaml file
-		if (ConfigFileFormat.isYamlFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
-			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
-		}
-		else if (ConfigFileFormat.isPropertyFile(fileName)) {
-			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
-		}
-		else {
-			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
-
-			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
-		}
+	public static PolarisPropertySource loadPolarisPropertySource(ConfigFileService configFileService, String namespace, String group, String fileName) {
+		ConfigKVFile configKVFile = loadConfigKVFile(configFileService, namespace, group, fileName);
 
 		Map<String, Object> map = new ConcurrentHashMap<>();
 		for (String key : configKVFile.getPropertyNames()) {
@@ -242,5 +279,53 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		}
 
 		return new PolarisPropertySource(namespace, group, fileName, configKVFile, map);
+	}
+
+	public static PolarisPropertySource loadGroupPolarisPropertySource(ConfigFileService configFileService, String namespace, String group) {
+		List<ConfigKVFile> configKVFiles = new ArrayList<>();
+
+		com.tencent.polaris.configuration.api.core.ConfigFileGroup remoteGroup = configFileService.getConfigFileGroup(namespace, group);
+		if (remoteGroup == null) {
+			return null;
+		}
+
+		for (ConfigFileMetadata configFile : remoteGroup.getConfigFileMetadataList()) {
+			String fileName = configFile.getFileName();
+			ConfigKVFile configKVFile = loadConfigKVFile(configFileService, namespace, group, fileName);
+			configKVFiles.add(configKVFile);
+		}
+
+		CompositeConfigFile compositeConfigFile = new CompositeConfigFile(configKVFiles);
+
+		Map<String, Object> map = new ConcurrentHashMap<>();
+		for (String key : compositeConfigFile.getPropertyNames()) {
+			String value = compositeConfigFile.getProperty(key, null);
+			map.put(key, value);
+		}
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("namespace='" + namespace + '\''
+					+ ", group='" + group + '\'' + ", fileName='" + compositeConfigFile + '\''
+					+ ", map='" + map + '\'');
+		}
+
+		return new PolarisPropertySource(namespace, group, "", compositeConfigFile, map);
+	}
+
+	public static ConfigKVFile loadConfigKVFile(ConfigFileService configFileService, String namespace, String group, String fileName) {
+		ConfigKVFile configKVFile;
+		// unknown extension is resolved as properties file
+		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
+			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
+		}
+		else if (ConfigFileFormat.isYamlFile(fileName)) {
+			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
+		}
+		else {
+			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
+
+			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
+		}
+		return configKVFile;
 	}
 }

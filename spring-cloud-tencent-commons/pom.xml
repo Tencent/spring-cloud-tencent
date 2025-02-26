@@ -15,7 +15,7 @@
 
 	<properties>
 		<commons.lang.version>2.6</commons.lang.version>
-		<commons.io.version>2.11.0</commons.io.version>
+		<commons.io.version>2.14.0</commons.io.version>
 	</properties>
 
 	<dependencies>
@@ -53,11 +53,23 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>tomcat-embed-el</artifactId>
+					<groupId>org.apache.tomcat.embed</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-security-rsa</artifactId>
+					<groupId>org.springframework.security</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>

@@ -27,7 +27,6 @@ import com.tencent.cloud.rpc.enhancement.instrument.feign.EnhancedFeignBeanPostP
 import com.tencent.cloud.rpc.enhancement.instrument.feign.PolarisLoadBalancerFeignRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.instrument.filter.EnhancedReactiveFilter;
 import com.tencent.cloud.rpc.enhancement.instrument.filter.EnhancedServletFilter;
-import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.PolarisLoadBalancerRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.instrument.scg.EnhancedGatewayGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.instrument.webclient.EnhancedWebClientExchangeFilterFunction;
@@ -89,7 +88,6 @@ public class RpcEnhancementAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = "com.tencent.cloud.polaris.registry.PolarisRegistration")
 	public RegistrationTransformer registrationTransformer() {
 		return new PolarisRegistrationTransformer();
@@ -99,9 +97,9 @@ public class RpcEnhancementAutoConfiguration {
 	@Lazy
 	public EnhancedPluginRunner enhancedFeignPluginRunner(
 			@Autowired(required = false) List<EnhancedPlugin> enhancedPlugins,
-			@Autowired(required = false) Registration registration,
+			@Autowired(required = false) List<Registration> registrations,
 			PolarisSDKContextManager polarisSDKContextManager) {
-		return new DefaultEnhancedPluginRunner(enhancedPlugins, registration, polarisSDKContextManager.getSDKContext());
+		return new DefaultEnhancedPluginRunner(enhancedPlugins, registrations, polarisSDKContextManager.getSDKContext());
 	}
 
 	@Bean
@@ -182,23 +180,6 @@ public class RpcEnhancementAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
 	protected static class PolarisRestTemplateAutoConfiguration {
-
-		@Autowired(required = false)
-		private List<RestTemplate> restTemplates = Collections.emptyList();
-
-		@Bean
-		public EnhancedRestTemplateInterceptor enhancedPolarisRestTemplateReporter(@Lazy EnhancedPluginRunner pluginRunner) {
-			return new EnhancedRestTemplateInterceptor(pluginRunner);
-		}
-
-		@Bean
-		public SmartInitializingSingleton setPolarisReporterForRestTemplate(EnhancedRestTemplateInterceptor reporter) {
-			return () -> {
-				for (RestTemplate restTemplate : restTemplates) {
-					restTemplate.getInterceptors().add(reporter);
-				}
-			};
-		}
 
 		@Bean
 		@ConditionalOnMissingBean

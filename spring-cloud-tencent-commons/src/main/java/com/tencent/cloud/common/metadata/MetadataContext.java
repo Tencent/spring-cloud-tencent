@@ -319,4 +319,8 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 			break;
 		}
 	}
+
+	public static void setLocalService(String service) {
+		LOCAL_SERVICE = service;
+	}
 }

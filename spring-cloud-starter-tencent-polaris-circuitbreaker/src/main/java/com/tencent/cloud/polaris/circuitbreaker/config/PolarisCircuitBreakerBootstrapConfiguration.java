@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnProperty("spring.cloud.polaris.enabled")
 @Import({
 		PolarisCircuitBreakerAutoConfiguration.class,
-		ReactivePolarisCircuitBreakerAutoConfiguration.class,
 		PolarisCircuitBreakerFeignClientAutoConfiguration.class,
 		GatewayPolarisCircuitBreakerAutoConfiguration.class
 })

@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.config.spring.property;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +30,9 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
+import com.tencent.polaris.api.pojo.TrieNode;
+import com.tencent.polaris.api.utils.TrieUtil;
 import com.tencent.polaris.client.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +58,10 @@ public class SpringValueRegistry implements DisposableBean {
 	private final Object LOCK = new Object();
 	private ScheduledExecutorService executor;
 
+	private final TrieNode<String> refreshScopePrefixRoot = new TrieNode<>(TrieNode.ROOT_PATH);
+
+	private final Set<String> refreshScopeKeys = Sets.newConcurrentHashSet();
+
 	public void register(BeanFactory beanFactory, String key, SpringValue springValue) {
 		if (!registry.containsKey(beanFactory)) {
 			synchronized (LOCK) {
@@ -63,7 +71,16 @@ public class SpringValueRegistry implements DisposableBean {
 			}
 		}
 
-		registry.get(beanFactory).put(key, springValue);
+		Multimap<String, SpringValue> multimap = registry.get(beanFactory);
+		for (SpringValue existingValue : multimap.get(key)) {
+			// if the spring value is already registered, remove it
+			if (existingValue.getBeanName().equals(springValue.getBeanName())) {
+				multimap.remove(key, existingValue);
+				break;
+			}
+
+		}
+		multimap.put(key, springValue);
 
 		// lazy initialize
 		if (initialized.compareAndSet(false, true)) {
@@ -100,6 +117,30 @@ public class SpringValueRegistry implements DisposableBean {
 			// clear unused spring values
 			springValues.entries().removeIf(springValue -> !springValue.getValue().isTargetBeanValid());
 		}
+	}
+
+	public void putRefreshScopePrefixKey(String key) {
+		TrieUtil.buildConfigTrieNode(key, refreshScopePrefixRoot);
+	}
+
+	public void putRefreshScopeKey(String key) {
+		refreshScopeKeys.add(key);
+	}
+
+	public void putRefreshScopeKeys(Set<String> keys) {
+		refreshScopeKeys.addAll(keys);
+	}
+
+	/**
+	 * first check if the key is in refreshScopeKeys, if not, check the key by TrieUtil.
+	 * @param key changed key.
+	 * @return true if the key is refresh scope key, otherwise false.
+	 */
+	public boolean isRefreshScopeKey(String key) {
+		if (refreshScopeKeys.contains(key)) {
+			return true;
+		}
+		return TrieUtil.checkConfig(refreshScopePrefixRoot, key);
 	}
 
 	@Override
