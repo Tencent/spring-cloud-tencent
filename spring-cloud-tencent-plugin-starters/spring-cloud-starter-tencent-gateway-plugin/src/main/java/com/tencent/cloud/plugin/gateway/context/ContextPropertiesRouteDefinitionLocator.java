@@ -15,23 +15,23 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.gateway.staining;
+package com.tencent.cloud.plugin.gateway.context;
 
-import java.util.Map;
+import reactor.core.publisher.Flux;
 
-import org.springframework.core.Ordered;
-import org.springframework.web.server.ServerWebExchange;
+import org.springframework.cloud.gateway.route.RouteDefinition;
+import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
 
-/**
- * Staining according to request parameters. for example, when the request parameter uid=0, staining env=blue.
- * @author lepdou 2022-07-06
- */
-public interface TrafficStainer extends Ordered {
+public class ContextPropertiesRouteDefinitionLocator implements RouteDefinitionLocator {
 
-	/**
-	 * get stained labels from request.
-	 * @param exchange the request.
-	 * @return stained labels.
-	 */
-	Map<String, String> apply(ServerWebExchange exchange);
+	private final ContextGatewayProperties properties;
+
+	public ContextPropertiesRouteDefinitionLocator(ContextGatewayProperties properties) {
+		this.properties = properties;
+	}
+
+	@Override
+	public Flux<RouteDefinition> getRouteDefinitions() {
+		return Flux.fromIterable(this.properties.getRoutes().values());
+	}
 }
