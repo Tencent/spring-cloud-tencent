@@ -47,3 +47,4 @@
 - [feat:support polaris route for gateway mvc.](https://github.com/Tencent/spring-cloud-tencent/pull/1493)
 - [feat: implement circuit breaker in enhance plugin, support listen config group, support refresh single config in refresh_context mode.](https://github.com/Tencent/spring-cloud-tencent/pull/1501)
 - [feat:support polaris event.](https://github.com/Tencent/spring-cloud-tencent/pull/1502)
+- [feat:support circuit breaker metrics reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1503)
