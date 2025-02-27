@@ -28,15 +28,15 @@ import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.lang.Nullable;
-import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_CLUSTER;
 import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_GROUP;

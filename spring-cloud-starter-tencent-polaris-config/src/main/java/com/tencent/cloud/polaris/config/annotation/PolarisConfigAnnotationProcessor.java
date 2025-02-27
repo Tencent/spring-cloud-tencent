@@ -18,15 +18,16 @@
 package com.tencent.cloud.polaris.config.annotation;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import com.tencent.cloud.polaris.config.listener.ConfigChangeEvent;
 import com.tencent.cloud.polaris.config.listener.ConfigChangeListener;
 import com.tencent.cloud.polaris.config.listener.SyncConfigChangeListener;
+import shade.polaris.com.google.common.base.Preconditions;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -104,11 +105,14 @@ public class PolarisConfigAnnotationProcessor implements BeanPostProcessor, Prio
 			}
 		};
 
-		Set<String> interestedKeys =
-				annotatedInterestedKeys.length > 0 ? Sets.newHashSet(annotatedInterestedKeys) : null;
-		Set<String> interestedKeyPrefixes =
-				annotatedInterestedKeyPrefixes.length > 0 ? Sets.newHashSet(annotatedInterestedKeyPrefixes)
-						: null;
+		Set<String> interestedKeys = new HashSet<>();
+		if (annotatedInterestedKeys.length > 0) {
+			Collections.addAll(interestedKeys, annotatedInterestedKeys);
+		}
+		Set<String> interestedKeyPrefixes = new HashSet<>();
+		if (annotatedInterestedKeyPrefixes.length > 0) {
+			Collections.addAll(interestedKeyPrefixes, annotatedInterestedKeyPrefixes);
+		}
 
 		addChangeListener(configChangeListener, interestedKeys, interestedKeyPrefixes);
 	}

@@ -22,10 +22,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import org.apache.commons.lang.StringUtils;
-
-import org.springframework.util.CollectionUtils;
 
 /**
  * the utils for parse label expression.

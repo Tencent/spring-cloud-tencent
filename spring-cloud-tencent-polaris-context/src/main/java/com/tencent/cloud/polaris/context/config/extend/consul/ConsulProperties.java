@@ -17,11 +17,8 @@
 
 package com.tencent.cloud.polaris.context.config.extend.consul;
 
-import jakarta.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * Copy from org.springframework.cloud.consul.ConsulProperties.
@@ -29,7 +26,6 @@ import org.springframework.validation.annotation.Validated;
  * @author Spencer Gibb
  */
 @ConfigurationProperties(ConsulProperties.PREFIX)
-@Validated
 public class ConsulProperties {
 
 	/**
@@ -38,7 +34,6 @@ public class ConsulProperties {
 	public static final String PREFIX = "spring.cloud.consul";
 
 	/** Consul agent hostname. Defaults to 'localhost'. */
-	@NotNull
 	private String host = "localhost";
 
 	/**
@@ -48,7 +43,6 @@ public class ConsulProperties {
 	private String scheme;
 
 	/** Consul agent port. Defaults to '8500'. */
-	@NotNull
 	private int port = 8500;
 
 	/** Is spring cloud consul enabled. */

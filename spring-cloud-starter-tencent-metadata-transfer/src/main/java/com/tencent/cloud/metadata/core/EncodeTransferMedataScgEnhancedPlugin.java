@@ -19,7 +19,6 @@ package com.tencent.cloud.metadata.core;
 
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -31,6 +30,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataType;
+import shade.polaris.com.google.common.collect.ImmutableMap;
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
