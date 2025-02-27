@@ -6,3 +6,4 @@
 - [feat:support circuit breaker metrics reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1573)
 - [feat: support gateway context, feign eager-load support default value.](https://github.com/Tencent/spring-cloud-tencent/pull/1576)
 - [feat:use polaris-all for shading third-party dependencies.](https://github.com/Tencent/spring-cloud-tencent/pull/1579)
+- [feat:support default instance circuit breaker rule.](https://github.com/Tencent/spring-cloud-tencent/pull/1580)
