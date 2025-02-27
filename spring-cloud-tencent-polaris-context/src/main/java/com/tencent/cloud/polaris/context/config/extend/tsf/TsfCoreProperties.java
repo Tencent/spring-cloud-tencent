@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Haotian Zhang
  */
-@ConfigurationProperties("tsf")
+@ConfigurationProperties("tsf.discovery")
 public class TsfCoreProperties {
 
 	@Value("${tsf_app_id:}")

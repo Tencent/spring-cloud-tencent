@@ -18,11 +18,11 @@
 package com.tencent.cloud.tsf.demo.provider.swagger.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.tencent.cloud.tsf.demo.provider.swagger.model.MessageBox;
 import com.tencent.cloud.tsf.demo.provider.swagger.model.MessageModel;
 import com.tencent.cloud.tsf.demo.provider.swagger.model.MessageUser;
@@ -66,7 +66,7 @@ public class SwaggerApiController {
 		messageReceiver.setName("拜登");
 		messageReceiver.setOfficeAddress("华盛顿白宫");
 		messageReceiver.setPhoneNum("911911911");
-		messageModel.setReceiveUsers(Lists.newArrayList(messageReceiver));
+		messageModel.setReceiveUsers(Collections.singletonList(messageReceiver));
 		messageModels.add(messageModel);
 		return messageModels;
 	}
@@ -103,7 +103,7 @@ public class SwaggerApiController {
 		messageReceiver.setName("拜登");
 		messageReceiver.setOfficeAddress("华盛顿白宫");
 		messageReceiver.setPhoneNum("911911911");
-		messageModel.setReceiveUsers(Lists.newArrayList(messageReceiver));
+		messageModel.setReceiveUsers(Collections.singletonList(messageReceiver));
 		return messageModel;
 	}
 

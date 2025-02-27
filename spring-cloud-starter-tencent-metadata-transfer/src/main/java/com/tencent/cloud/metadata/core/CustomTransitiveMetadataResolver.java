@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 /**

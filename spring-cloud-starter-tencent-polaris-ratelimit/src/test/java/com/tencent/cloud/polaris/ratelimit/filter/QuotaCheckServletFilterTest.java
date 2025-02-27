@@ -25,9 +25,6 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.StringValue;
-import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
@@ -43,6 +40,9 @@ import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import shade.polaris.com.google.protobuf.InvalidProtocolBufferException;
+import shade.polaris.com.google.protobuf.StringValue;
+import shade.polaris.com.google.protobuf.util.JsonFormat;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;

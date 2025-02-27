@@ -24,7 +24,7 @@ import java.util.Objects;
 
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.utils.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;

@@ -28,10 +28,10 @@ import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigurationConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.configuration.ConfigFilterConfigImpl;
 import com.tencent.polaris.factory.config.configuration.ConnectorConfigImpl;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,8 +139,15 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		List<String> configAddresses = new ArrayList<>(polarisAddresses.size());
 
 		for (String address : polarisAddresses) {
-			String ip = StringUtils.substringBeforeLast(address, ":");
-			configAddresses.add(ip + ":" + polarisConfigProperties.getPort());
+			if (StringUtils.isNotBlank(address)) {
+				int pos = address.lastIndexOf(":");
+				if (pos != -1) {
+					configAddresses.add(address.substring(0, pos) + ":" + polarisConfigProperties.getPort());
+				}
+				else {
+					configAddresses.add(address);
+				}
+			}
 		}
 
 		return configAddresses;

@@ -20,11 +20,11 @@ package com.tencent.cloud.rpc.enhancement.plugin;
 import java.util.Comparator;
 import java.util.List;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.client.api.SDKContext;
+import shade.polaris.com.google.common.collect.ArrayListMultimap;
+import shade.polaris.com.google.common.collect.Multimap;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
@@ -73,6 +73,19 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 		}
 	}
 
+	static Registration getPolarisRegistration(List<Registration> registration) {
+
+		if (CollectionUtils.isEmpty(registration)) {
+			return null;
+		}
+		for (Registration reg : registration) {
+			if ("com.tencent.cloud.polaris.registry.PolarisRegistration".equals(reg.getClass().getName())) {
+				return reg;
+			}
+		}
+		return registration.get(0);
+	}
+
 	/**
 	 * run the plugin.
 	 *
@@ -97,18 +110,5 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 	@Override
 	public ServiceInstance getLocalServiceInstance() {
 		return this.localServiceInstance;
-	}
-
-	static Registration getPolarisRegistration(List<Registration> registration) {
-
-		if (CollectionUtils.isEmpty(registration)) {
-			return null;
-		}
-		for (Registration reg : registration) {
-			if ("com.tencent.cloud.polaris.registry.PolarisRegistration".equals(reg.getClass().getName())) {
-				return reg;
-			}
-		}
-		return registration.get(0);
 	}
 }

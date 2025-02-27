@@ -17,15 +17,11 @@
 
 package com.tencent.cloud.polaris.registry.tsf;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisRegistrationCustomizer;
-import com.tencent.polaris.plugins.connector.common.constant.ConsulConstant;
 import jakarta.servlet.ServletContext;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -52,14 +48,11 @@ public class TsfServletRegistrationCustomizer implements PolarisRegistrationCust
 		if (sc != null
 				&& StringUtils.hasText(sc.getContextPath())
 				&& StringUtils.hasText(sc.getContextPath().replaceAll("/", ""))) {
-			Map<String, String> metadata = registration.getMetadata();
+			Map<String, String> metadata = registration.getExtendedMetadata()
+					.computeIfAbsent(TAGS_KEY, k -> new HashMap<>());
 
-			List<String> tags = Arrays.asList(JacksonUtils.deserialize(metadata.get(TAGS_KEY), String[].class));
-			if (tags == null) {
-				tags = new ArrayList<>();
-			}
-			tags.add("contextPath=" + sc.getContextPath());
-			metadata.put(ConsulConstant.MetadataMapKey.TAGS_KEY, JacksonUtils.serialize2Json(tags));
+			String value = "contextPath=" + sc.getContextPath();
+			metadata.put(value, value);
 		}
 	}
 }
