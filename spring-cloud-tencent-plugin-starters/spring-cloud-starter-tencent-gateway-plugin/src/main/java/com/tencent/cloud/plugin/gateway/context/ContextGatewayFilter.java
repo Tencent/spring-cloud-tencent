@@ -187,7 +187,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		}
 
 		Route route = (Route) exchange.getAttributes().get(GATEWAY_ROUTE_ATTR);
-		Constructor constructor = Route.class.getDeclaredConstructors()[1];
+		Constructor constructor = Route.class.getDeclaredConstructors()[0];
 		constructor.setAccessible(true);
 		try {
 			HashMap<String, Object> metadata = new HashMap<>(route.getMetadata());
