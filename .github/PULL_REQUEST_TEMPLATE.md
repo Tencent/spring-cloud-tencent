@@ -23,11 +23,3 @@ closes #
 
 - [ ] Add information of this PR to CHANGELOG.md in root of project.
 - [ ] Add documentation in javadoc or comment below the PR if necessary.
-
-## Checklist (Optional)
-
-- [ ] Will pull request to branch of 2023.
-- [ ] Will pull request to branch of 2022.
-- [ ] Will pull request to branch of 2021.
-- [ ] Will pull request to branch of 2020.
-- [ ] Will pull request to branch of hoxton.

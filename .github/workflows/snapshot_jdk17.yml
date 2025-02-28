@@ -1,14 +1,11 @@
-name: Snapshot
+name: Snapshot with JDK 17
 
 on:
   push:
     branches:
+      - 2024
       - 2023
       - 2022
-      - 2021
-      - 2020
-      - hoxton
-      - greenwich
 
 jobs:
   check-snapshot:
