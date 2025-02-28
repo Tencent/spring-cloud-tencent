@@ -79,7 +79,7 @@
 		<!-- Dependencies -->
 		<springdoc.version>2.2.0</springdoc.version>
 		<mocktio.version>4.9.0</mocktio.version>
-		<byte-buddy.version>1.12.19</byte-buddy.version>
+		<byte-buddy.version>1.14.19</byte-buddy.version>
 		<jackson.version>2.15.4</jackson.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
