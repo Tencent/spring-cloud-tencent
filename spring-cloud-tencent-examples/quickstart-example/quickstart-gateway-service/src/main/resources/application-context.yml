@@ -1,0 +1,31 @@
+spring:
+  cloud:
+    tencent:
+      gateway:
+        groups:
+          group-scg2p:
+            predicate:
+              apiType: ms
+              context: /group1
+              namespace:
+                key: null
+                position: PATH
+              service:
+                key: null
+                position: PATH
+            routes:
+              - host: null
+                metadata: {}
+                method: GET
+                namespace: default
+                path: /echo/{param}
+                service: provider-demo
+        routes:
+          group1:
+            filters:
+              - Context=group1
+            order: -1
+            predicates:
+              - Context=group1
+              - Path=/group1/**
+            uri: lb://group1

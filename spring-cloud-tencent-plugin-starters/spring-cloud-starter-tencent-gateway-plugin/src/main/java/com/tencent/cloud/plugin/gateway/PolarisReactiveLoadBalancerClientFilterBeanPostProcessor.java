@@ -26,6 +26,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 
 public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessor implements BeanPostProcessor, Ordered {
+	/**
+	 * Order of this bean post processor.
+	 */
+	public static final int ORDER = 0;
 
 	private ApplicationContext applicationContext;
 
@@ -46,6 +50,6 @@ public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessor implements
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return ORDER;
 	}
 }
