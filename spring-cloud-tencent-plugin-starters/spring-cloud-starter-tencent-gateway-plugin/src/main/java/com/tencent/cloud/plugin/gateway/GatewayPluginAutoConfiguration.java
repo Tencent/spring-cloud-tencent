@@ -59,7 +59,7 @@ public class GatewayPluginAutoConfiguration {
 		@Value("${spring.cloud.polaris.discovery.eager-load.enabled:#{'true'}}")
 		private boolean commonEagerLoadEnabled;
 
-		@Value("${spring.cloud.polaris.discovery.eager-load.gateway.enabled:#{'true'}}")
+		@Value("${spring.cloud.polaris.discovery.eager-load.gateway.enabled:#{'false'}}")
 		private boolean gatewayEagerLoadEnabled;
 
 		@Bean

@@ -32,12 +32,14 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter;
 import org.springframework.cloud.gateway.route.Route;
+import org.springframework.cloud.gateway.support.NotFoundException;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
+
 
 public class ContextGatewayFilter implements GatewayFilter, Ordered {
 
@@ -69,13 +71,15 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		String[] apis = rebuildExternalApi(request, request.getPath().value());
 		GroupContext.ContextRoute contextRoute = manager.getGroupPathRoute(config.getGroup(), apis[0]);
 		if (contextRoute == null) {
-			throw new RuntimeException(String.format("Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], request.getPath()));
+			String msg = String.format("[externalFilter] Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], request.getPath());
+			logger.warn(msg);
+			throw NotFoundException.create(true, msg);
 		}
 		updateRouteMetadata(exchange, contextRoute);
 
 		URI requestUri = URI.create(contextRoute.getHost() + apis[1]);
 		exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUri);
-		// 调整为正确路径
+		// to correct path
 		ServerHttpRequest newRequest = request.mutate().path(apis[1]).build();
 		return chain.filter(exchange.mutate().request(newRequest).build());
 	}
@@ -83,22 +87,24 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 	private Mono<Void> msFilter(ServerWebExchange exchange, GatewayFilterChain chain, GroupContext groupContext) {
 		ServerHttpRequest request = exchange.getRequest();
 		String[] apis = rebuildMsApi(request, groupContext, request.getPath().value());
-		// 判断 api 是否匹配
+		// check api
 		GroupContext.ContextRoute contextRoute = manager.getGroupPathRoute(config.getGroup(), apis[0]);
 		if (contextRoute == null) {
-			throw new RuntimeException(String.format("Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], request.getPath()));
+			String msg = String.format("[msFilter] Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], request.getPath());
+			logger.warn(msg);
+			throw NotFoundException.create(true, msg);
 		}
 		updateRouteMetadata(exchange, contextRoute);
 
-		MetadataContext metadataContext = (MetadataContext) exchange.getAttributes().get(
+		MetadataContext metadataContext = exchange.getAttribute(
 				MetadataConstant.HeaderName.METADATA_CONTEXT);
-
-		metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
-				MetadataConstant.POLARIS_TARGET_NAMESPACE, contextRoute.getNamespace());
-
+		if (metadataContext != null) {
+			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+					MetadataConstant.POLARIS_TARGET_NAMESPACE, contextRoute.getNamespace());
+		}
 		URI requestUri = URI.create("lb://" + contextRoute.getService() + apis[1]);
 		exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUri);
-		// 调整为正确路径
+		// to correct path
 		ServerHttpRequest newRequest = request.mutate().path(apis[1]).build();
 		return chain.filter(exchange.mutate().request(newRequest).build());
 	}
@@ -106,7 +112,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 	/**
 	 * e.g. "/context/api/test" → [ "GET|/api/test", "/api/test"]
 	 */
-	private String[] rebuildExternalApi(ServerHttpRequest request, String path) {
+	String[] rebuildExternalApi(ServerHttpRequest request, String path) {
 		String[] pathSegments = path.split("/");
 		StringBuilder matchPath = new StringBuilder();
 		StringBuilder realPath = new StringBuilder();
@@ -127,7 +133,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 	 * returns an array of two strings, the first is the match path, the second is the real path.
 	 * e.g. "/context/namespace/svc/api/test" → [ "GET|/namespace/svc/api/test", "/api/test"]
 	 */
-	private String[] rebuildMsApi(ServerHttpRequest request, GroupContext groupContext, String path) {
+	String[] rebuildMsApi(ServerHttpRequest request, GroupContext groupContext, String path) {
 		String[] pathSegments = path.split("/");
 		StringBuilder matchPath = new StringBuilder();
 		int index = 2;
@@ -181,7 +187,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		}
 
 		Route route = (Route) exchange.getAttributes().get(GATEWAY_ROUTE_ATTR);
-		Constructor constructor = Route.class.getDeclaredConstructors()[1];
+		Constructor constructor = Route.class.getDeclaredConstructors()[0];
 		constructor.setAccessible(true);
 		try {
 			HashMap<String, Object> metadata = new HashMap<>(route.getMetadata());
