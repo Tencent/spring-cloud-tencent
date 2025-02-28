@@ -46,7 +46,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		// restore context from exchange
-		MetadataContext metadataContext = (MetadataContext) exchange.getAttributes().get(
+		MetadataContext metadataContext = exchange.getAttribute(
 				MetadataConstant.HeaderName.METADATA_CONTEXT);
 		if (metadataContext != null) {
 			MetadataContextHolder.set(metadataContext);

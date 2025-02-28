@@ -24,8 +24,6 @@ public class GroupContext {
 
 	private String comment;
 
-	private ApiType apiType;
-
 	private ContextPredicate predicate;
 
 	private List<ContextRoute> routes;
@@ -36,14 +34,6 @@ public class GroupContext {
 
 	public void setComment(String comment) {
 		this.comment = comment;
-	}
-
-	public ApiType getApiType() {
-		return apiType;
-	}
-
-	public void setApiType(ApiType apiType) {
-		this.apiType = apiType;
 	}
 
 	public ContextPredicate getPredicate() {
