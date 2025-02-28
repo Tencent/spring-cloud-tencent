@@ -7,3 +7,4 @@
 - [feat: support gateway context, feign eager-load support default value.](https://github.com/Tencent/spring-cloud-tencent/pull/1525)
 - [feat:use polaris-all for shading third-party dependencies.](https://github.com/Tencent/spring-cloud-tencent/pull/1526)
 - [feat:support default instance circuit breaker rule.](https://github.com/Tencent/spring-cloud-tencent/pull/1527)
+- [docs:update JDK version configuration in GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1528)

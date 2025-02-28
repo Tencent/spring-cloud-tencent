@@ -50,6 +50,12 @@ spring:
             - Path=/QuickstartCallerService/**
           filters:
             - StripPrefix=1
+        - id: QuickstartCalleeService
+          uri: lb://QuickstartCalleeService
+          predicates:
+            - Path=/QuickstartCalleeService/**
+          filters:
+            - StripPrefix=1
 logging:
   file:
     name: /sct-demo-logs/${spring.application.name}/root.log
