@@ -78,7 +78,7 @@
 
 		<!-- Dependencies -->
 		<bcpkix-jdk18on.version>1.78.1</bcpkix-jdk18on.version>
-		<byte-buddy.version>1.12.19</byte-buddy.version>
+		<byte-buddy.version>1.14.19</byte-buddy.version>
 		<jackson.version>2.15.3</jackson.version>
 		<mocktio.version>4.9.0</mocktio.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>

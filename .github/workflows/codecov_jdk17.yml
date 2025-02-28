@@ -1,22 +1,16 @@
-name: Codecov
+name: Codecov with JDK 17
 
 on:
   push:
     branches:
+      - 2024
       - 2023
       - 2022
-      - 2021
-      - 2020
-      - hoxton
-      - greenwich
   pull_request:
     branches:
+      - 2024
       - 2023
       - 2022
-      - 2021
-      - 2020
-      - hoxton
-      - greenwich
 
 jobs:
   codecov:
