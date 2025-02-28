@@ -139,6 +139,12 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 					}
 				})
 				.doOnSuccess(v -> {
+					MetadataContext metadataContextOnSuccess = originExchange.getAttribute(
+							MetadataConstant.HeaderName.METADATA_CONTEXT);
+					if (metadataContextOnSuccess != null) {
+						MetadataContextHolder.set(metadataContextOnSuccess);
+					}
+
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
 							.httpStatus(exchange.getResponse().getRawStatusCode())
@@ -150,6 +156,12 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 					pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 				})
 				.doOnError(t -> {
+					MetadataContext metadataContextOnError = originExchange.getAttribute(
+							MetadataConstant.HeaderName.METADATA_CONTEXT);
+					if (metadataContextOnError != null) {
+						MetadataContextHolder.set(metadataContextOnError);
+					}
+
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 					enhancedPluginContext.setThrowable(t);
 
@@ -157,6 +169,12 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 					pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
 				})
 				.doFinally(v -> {
+					MetadataContext metadataContextOnFinally = originExchange.getAttribute(
+							MetadataConstant.HeaderName.METADATA_CONTEXT);
+					if (metadataContextOnFinally != null) {
+						MetadataContextHolder.set(metadataContextOnFinally);
+					}
+
 					// Run finally enhanced plugins.
 					pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 				});
