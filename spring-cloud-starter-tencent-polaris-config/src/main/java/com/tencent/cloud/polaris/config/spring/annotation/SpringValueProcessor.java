@@ -136,6 +136,14 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 	}
 
 	@Override
+	protected void processClass(Object bean, String beanName, Class<?> clazz, boolean isRefreshScope) {
+		ConfigurationProperties configurationProperties = clazz.getAnnotation(ConfigurationProperties.class);
+		if (configurationProperties != null && isRefreshScope) {
+			parseConfigurationPropertiesKeys(configurationProperties, clazz);
+		}
+	}
+
+	@Override
 	protected void processField(Object bean, String beanName, Field field, boolean isRefreshScope) {
 		// register @Value on field
 		Value value = field.getAnnotation(Value.class);
