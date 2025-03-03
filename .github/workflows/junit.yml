@@ -30,6 +30,7 @@ jobs:
         id: set-matrix
         run: |
           shopt -s nocasematch
+          echo "${{ github.ref_name }}"
           if [[ "${{ github.ref_name }}" == "2024" ]]; then
             echo "matrix=[17,21]" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "2023" ]]; then
