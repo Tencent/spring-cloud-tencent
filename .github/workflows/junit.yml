@@ -30,20 +30,24 @@ jobs:
         id: set-matrix
         run: |
           shopt -s nocasematch
-          echo "${{ github.ref_name }}"
-          if [[ "${{ github.ref_name }}" == "2024" ]]; then
+          branch_name=${{ github.ref_name }
+          if [ -n "${{ github.base_ref }}" ]; then
+             branch_name=${{ github.base_ref }}
+          fi
+          echo $branch_name
+          if [[ "$branch_name" == "2024" ]]; then
             echo "matrix=[17,21]" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "2023" ]]; then
+          elif [[ "$branch_name" == "2023" ]]; then
             echo "matrix=[17,21]" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "2022" ]]; then
+          elif [[ "$branch_name" == "2022" ]]; then
             echo "matrix=[17,21]" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "2021" ]]; then
+          elif [[ "$branch_name" == "2021" ]]; then
             echo "matrix=[8,11,17,21]" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "2020" ]]; then
+          elif [[ "$branch_name" == "2020" ]]; then
             echo "matrix=[8,11,17,21]" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "hoxton" ]]; then
+          elif [[ "$branch_name" == "hoxton" ]]; then
             echo "matrix=[8,11,17,21]" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "greenwich" ]]; then
+          elif [[ "$branch_name" == "greenwich" ]]; then
             echo "matrix=[8,11,17,21]" >> $GITHUB_OUTPUT
           else
             echo "matrix=[17]" >> $GITHUB_OUTPUT
