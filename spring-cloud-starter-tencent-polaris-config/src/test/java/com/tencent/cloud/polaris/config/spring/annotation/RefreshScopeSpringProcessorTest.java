@@ -87,6 +87,7 @@ public class RefreshScopeSpringProcessorTest {
 				.withConfiguration(AutoConfigurations.of(TestConfig5.class))
 				.withConfiguration(AutoConfigurations.of(TestBeanProperties1.class))
 				.withConfiguration(AutoConfigurations.of(TestBeanProperties2.class))
+				.withConfiguration(AutoConfigurations.of(TestBeanProperties3.class))
 				.withConfiguration(AutoConfigurations.of(PolarisConfigAutoConfiguration.class))
 				.withAllowBeanDefinitionOverriding(true)
 				.withPropertyValues("spring.application.name=" + "conditionalOnConfigReflectEnabledTest")
@@ -124,6 +125,9 @@ public class RefreshScopeSpringProcessorTest {
 			assertThat(springValueRegistry.isRefreshScopeKey("test.properties2.map.key")).isTrue();
 
 			assertThat(springValueRegistry.isRefreshScopeKey("test.properties2.notExist")).isFalse();
+			// @RefreshScope and @ConfigurationProperties on @Component bean
+			assertThat(springValueRegistry.isRefreshScopeKey("test.properties3.name")).isTrue();
+			assertThat(springValueRegistry.isRefreshScopeKey("test.properties3.notExist")).isFalse();
 			// @RefreshScope and @Bean on method, @Value bean in class
 			assertThat(springValueRegistry.isRefreshScopeKey("test.bean5.name")).isTrue();
 		});
@@ -316,6 +320,21 @@ public class RefreshScopeSpringProcessorTest {
 
 		public void setInner(InnerProperties inner) {
 			this.inner = inner;
+		}
+	}
+
+	@Component
+	@RefreshScope
+	@ConfigurationProperties(prefix = "test.properties3")
+	static class TestBeanProperties3 {
+		private String name;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 	}
 

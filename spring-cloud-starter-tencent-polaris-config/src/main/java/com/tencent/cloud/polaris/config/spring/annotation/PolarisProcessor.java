@@ -58,6 +58,7 @@ public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrd
 		catch (Exception ignored) {
 			// ignore
 		}
+		processClass(bean, beanName, clazz, isRefreshScope);
 
 		for (Field field : findAllField(clazz)) {
 			processField(bean, beanName, field, isRefreshScope);
@@ -72,6 +73,11 @@ public abstract class PolarisProcessor implements BeanPostProcessor, PriorityOrd
 	public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 		return bean;
 	}
+
+	/**
+	 * subclass should implement this method to process class.
+	 */
+	protected abstract void processClass(Object bean, String beanName, Class<?> clazz, boolean isRefreshScope);
 
 	/**
 	 * subclass should implement this method to process field.
