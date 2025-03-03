@@ -55,6 +55,7 @@ jobs:
           else
             echo "jdk=17" >> $GITHUB_OUTPUT
           fi
+          shopt -u nocasematch
   snapshot:
     runs-on: ubuntu-latest
     needs: check-snapshot
