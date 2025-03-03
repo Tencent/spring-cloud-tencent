@@ -31,19 +31,19 @@ jobs:
         run: |
           shopt -s nocasematch
           if [[ "${{ github.ref_name }}" == "2024" ]]; then
-            echo "matrix=[17, 21]" >> $GITHUB_OUTPUT
+            echo "matrix=[17,21]" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "2023" ]]; then
-            echo "matrix=[17, 21]" >> $GITHUB_OUTPUT
+            echo "matrix=[17,21]" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "2022" ]]; then
-            echo "matrix=[17, 21]" >> $GITHUB_OUTPUT
+            echo "matrix=[17,21]" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "2021" ]]; then
-            echo "matrix=[8, 11, 17, 21]" >> $GITHUB_OUTPUT
+            echo "matrix=[8,11,17,21]" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "2020" ]]; then
-            echo "matrix=[8, 11, 17, 21]" >> $GITHUB_OUTPUT
+            echo "matrix=[8,11,17,21]" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "hoxton" ]]; then
-            echo "matrix=[8, 11, 17, 21]" >> $GITHUB_OUTPUT
+            echo "matrix=[8,11,17,21]" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "greenwich" ]]; then
-            echo "matrix=[8, 11, 17, 21]" >> $GITHUB_OUTPUT
+            echo "matrix=[8,11,17,21]" >> $GITHUB_OUTPUT
           else
             echo "matrix=[17]" >> $GITHUB_OUTPUT
           fi
