@@ -33,3 +33,4 @@
 - [feat:support default instance circuit breaker rule.](https://github.com/Tencent/spring-cloud-tencent/pull/1551)
 - [fix: fix count circuit breaker in gateway & return 404 when context api does not match.](https://github.com/Tencent/spring-cloud-tencent/pull/1552)
 - [docs:simplify GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1553)
+- [fix:fix watch tsf config, fix bean refresh with RefreshScope and ConfigurationProperties.](https://github.com/Tencent/spring-cloud-tencent/pull/1554)
