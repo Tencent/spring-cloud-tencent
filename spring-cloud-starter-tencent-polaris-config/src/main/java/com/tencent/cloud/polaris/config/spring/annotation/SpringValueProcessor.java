@@ -136,6 +136,15 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 	}
 
 	@Override
+	protected void processClass(Object bean, String beanName, Class<?> clazz, boolean isRefreshScope) {
+		ConfigurationProperties configurationProperties = clazz.getAnnotation(ConfigurationProperties.class);
+		if (configurationProperties != null && isRefreshScope) {
+			// A bean with RefreshScope and ConfigurationProperties can't be refreshed by reflection, because it's proxied by Spring AOP. Related keys needs to be registered
+			parseConfigurationPropertiesKeys(configurationProperties, clazz);
+		}
+	}
+
+	@Override
 	protected void processField(Object bean, String beanName, Field field, boolean isRefreshScope) {
 		// register @Value on field
 		Value value = field.getAnnotation(Value.class);
