@@ -59,7 +59,7 @@ jobs:
       - name: Check JDK matrix based on branch
         id: check-matrix
         run: |
-          echo ${{ needs.set-matrix.outputs.matrix }}
+          echo "${{ needs.set-matrix.outputs.matrix }}"
   junit:
     strategy:
       matrix:
