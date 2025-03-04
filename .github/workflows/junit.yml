@@ -52,6 +52,7 @@ jobs:
           else
             echo "matrix=[17]" >> $GITHUB_OUTPUT
           fi
+          echo $GITHUB_OUTPUT
           shopt -u nocasematch
   check-matrix:
     runs-on: ubuntu-latest
