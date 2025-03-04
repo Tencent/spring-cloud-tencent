@@ -30,7 +30,7 @@ jobs:
         id: set-matrix
         run: |
           shopt -s nocasematch
-          branch_name=${{ github.ref_name }
+          branch_name=${{ github.ref_name }}
           if [ -n "${{ github.base_ref }}" ]; then
              branch_name=${{ github.base_ref }}
           fi
