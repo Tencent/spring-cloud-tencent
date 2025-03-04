@@ -24,7 +24,7 @@ jobs:
   set-matrix:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      jdks: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Set JDK matrix based on branch
         id: set-matrix
@@ -60,11 +60,11 @@ jobs:
       - name: Check JDK matrix based on branch
         id: check-matrix
         run: |
-          echo "${{ needs.set-matrix.outputs.matrix }}"
+          echo "${{ needs.set-matrix.outputs.jdks }}"
   junit:
     strategy:
       matrix:
-        java: ${{ fromJson(needs.set-matrix.outputs.matrix) }}
+        java: ${{ fromJson(needs.set-matrix.outputs.jdks) }}
         os: [ 'windows-latest', 'ubuntu-latest' ]
     runs-on: ${{ matrix.os }}
     steps:
