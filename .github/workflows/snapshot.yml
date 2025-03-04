@@ -1,0 +1,78 @@
+name: Snapshot
+
+on:
+  push:
+    branches:
+      - 2024
+      - 2023
+      - 2022
+      - 2021
+      - 2020
+      - hoxton
+      - greenwich
+
+jobs:
+  check-snapshot:
+    runs-on: ubuntu-latest
+    outputs:
+      IS_SNAPSHOT: ${{ steps.check-deploy-type.outputs.IS_SNAPSHOT }}
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v4
+      - name: Check deploy type
+        id: check-deploy-type
+        run: |
+          line="$(grep SNAPSHOT pom.xml || true)"
+          echo $line
+          if [ -n "$line" ]; then
+            echo "IS_SNAPSHOT=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_SNAPSHOT=false" >> $GITHUB_OUTPUT
+          fi
+  set-jdk:
+    runs-on: ubuntu-latest
+    outputs:
+      jdk: ${{ steps.set-jdk.outputs.jdk }}
+    steps:
+      - name: Set JDK based on branch
+        id: set-jdk
+        run: |
+          shopt -s nocasematch
+          if [[ "${{ github.ref_name }}" == "2024" ]]; then
+            echo "jdk=17" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "2023" ]]; then
+            echo "jdk=17" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "2022" ]]; then
+            echo "jdk=17" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "2021" ]]; then
+            echo "jdk=8" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "2020" ]]; then
+            echo "jdk=8" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "hoxton" ]]; then
+            echo "jdk=8" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "greenwich" ]]; then
+            echo "jdk=8" >> $GITHUB_OUTPUT
+          else
+            echo "jdk=17" >> $GITHUB_OUTPUT
+          fi
+          shopt -u nocasematch
+  snapshot:
+    runs-on: ubuntu-latest
+    needs: [ check-snapshot, set-jdk ]
+    if: ${{ needs.check-snapshot.outputs.IS_SNAPSHOT == 'true' }}
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v4
+      - name: Set up JDK ${{ needs.set-jdk.outputs.jdk }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ needs.set-jdk.outputs.jdk }}
+          distribution: 'temurin'
+          server-id: nexus-snapshots
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+      - name: Publish package
+        run: mvn clean deploy -B -U -Psonatype
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
