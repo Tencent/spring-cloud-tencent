@@ -24,10 +24,10 @@ jobs:
   set-matrix:
     runs-on: ubuntu-latest
     outputs:
-      jdks: ${{ steps.set-matrix.outputs.matrix }}
+      jdks: ${{ steps.set-jdks.outputs.jdks }}
     steps:
       - name: Set JDK matrix based on branch
-        id: set-matrix
+        id: set-jdks
         run: |
           shopt -s nocasematch
           branch_name=${{ github.ref_name }}
