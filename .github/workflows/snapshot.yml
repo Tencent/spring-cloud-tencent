@@ -15,12 +15,12 @@ jobs:
   check-snapshot:
     runs-on: ubuntu-latest
     outputs:
-      IS_SNAPSHOT: ${{ steps.check_deploy_type.outputs.IS_SNAPSHOT }}
+      IS_SNAPSHOT: ${{ steps.check-deploy-type.outputs.IS_SNAPSHOT }}
     steps:
       - name: Checkout codes
         uses: actions/checkout@v4
       - name: Check deploy type
-        id: check_deploy_type
+        id: check-deploy-type
         run: |
           line="$(grep SNAPSHOT pom.xml || true)"
           echo $line
@@ -58,7 +58,7 @@ jobs:
           shopt -u nocasematch
   snapshot:
     runs-on: ubuntu-latest
-    needs: check-snapshot
+    needs: [ check-snapshot, set-jdk ]
     if: ${{ needs.check-snapshot.outputs.IS_SNAPSHOT == 'true' }}
     steps:
       - name: Checkout codes

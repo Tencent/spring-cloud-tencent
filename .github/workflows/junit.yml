@@ -21,7 +21,7 @@ on:
       - greenwich
 
 jobs:
-  set-matrix:
+  set-jdks:
     runs-on: ubuntu-latest
     outputs:
       jdks: ${{ steps.set-jdks.outputs.jdks }}
@@ -52,21 +52,14 @@ jobs:
           else
             echo "jdks=[17]" >> $GITHUB_OUTPUT
           fi
-          cat $GITHUB_OUTPUT
           shopt -u nocasematch
-  check-matrix:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check JDK matrix based on branch
-        id: check-matrix
-        run: |
-          echo "${{ needs.set-matrix.outputs.jdks }}"
   junit:
     strategy:
       matrix:
-        java: ${{ fromJson(needs.set-matrix.outputs.jdks) }}
+        java: ${{ fromJson(needs.set-jdks.outputs.jdks) }}
         os: [ 'windows-latest', 'ubuntu-latest' ]
     runs-on: ${{ matrix.os }}
+    needs: set-jdks
     steps:
       - name: Checkout codes
         uses: actions/checkout@v4
