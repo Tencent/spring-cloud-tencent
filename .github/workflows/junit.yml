@@ -53,6 +53,13 @@ jobs:
             echo "matrix=[17]" >> $GITHUB_OUTPUT
           fi
           shopt -u nocasematch
+  check-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check JDK matrix based on branch
+        id: check-matrix
+        run: |
+          echo ${{ needs.set-matrix.outputs.matrix }}
   junit:
     strategy:
       matrix:
