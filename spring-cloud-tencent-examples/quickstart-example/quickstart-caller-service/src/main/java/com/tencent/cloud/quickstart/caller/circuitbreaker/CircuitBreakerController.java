@@ -18,12 +18,10 @@
 package com.tencent.cloud.quickstart.caller.circuitbreaker;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
-import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
-import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,9 +61,6 @@ public class CircuitBreakerController {
 
 	@Autowired
 	private CircuitBreakerFactory circuitBreakerFactory;
-
-	@Autowired
-	private ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory;
 
 	@Autowired
 	private WebClient.Builder webClientBuilder;
@@ -165,24 +160,5 @@ public class CircuitBreakerController {
 		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
 			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
 		}
-	}
-
-	/**
-	 * Get information of callee.
-	 * @return information of callee
-	 */
-	@GetMapping("/webclient")
-	public Mono<String> webclient() {
-		return webClientBuilder
-				.build()
-				.get()
-				.uri("/quickstart/callee/circuitBreak")
-				.retrieve()
-				.bodyToMono(String.class)
-				.transform(it ->
-						reactiveCircuitBreakerFactory
-								.create(MetadataContext.LOCAL_NAMESPACE + "QuickstartCalleeService#/quickstart/callee/circuitBreak#http#GET")
-								.run(it, throwable -> Mono.just("fallback: trigger the refuse for service callee"))
-				);
 	}
 }

@@ -10,12 +10,14 @@ on:
       - 2021.0
       - 2020.0
       - greenwich
+      - release/*
   pull_request:
     branches:
       - hoxton
       - 2021.0
       - 2020.0
       - greenwich
+      - release/*
 
 jobs:
   junit:

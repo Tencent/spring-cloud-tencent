@@ -23,3 +23,6 @@ zuul:
     QuickstartCallerService:
       serviceId: QuickstartCallerService
       path: /QuickstartCallerService/**
+    QuickstartCalleeService:
+      serviceId: QuickstartCalleeService
+      path: /QuickstartCalleeService/**

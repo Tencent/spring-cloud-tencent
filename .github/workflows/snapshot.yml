@@ -9,6 +9,7 @@ on:
       - 2020.0
       - hoxton
       - greenwich
+      - release/*
 
 jobs:
   check-snapshot:
