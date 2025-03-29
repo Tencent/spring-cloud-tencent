@@ -20,3 +20,4 @@
 - [feat: support 2.0.0 config](https://github.com/Tencent/spring-cloud-tencent/pull/1463)
 - [feat:upgrade trace plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1467)
 - [feat:upgrade 2.0.0 service.](https://github.com/Tencent/spring-cloud-tencent/pull/1471)
+- [fix:fix zuul delay circuit breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1519)
