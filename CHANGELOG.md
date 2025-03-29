@@ -21,3 +21,4 @@
 - [feat:upgrade trace plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1467)
 - [feat:upgrade 2.0.0 service.](https://github.com/Tencent/spring-cloud-tencent/pull/1471)
 - [fix:fix zuul delay circuit breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1519)
+- [fix:fix watch tsf config, fix bean refresh with RefreshScope and ConfigurationProperties.](https://github.com/Tencent/spring-cloud-tencent/pull/1520)
