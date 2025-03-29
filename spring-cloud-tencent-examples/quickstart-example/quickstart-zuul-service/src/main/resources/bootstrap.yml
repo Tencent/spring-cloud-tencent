@@ -26,3 +26,7 @@ zuul:
     QuickstartCalleeService:
       serviceId: QuickstartCalleeService
       path: /QuickstartCalleeService/**
+
+ribbon:
+  ConnectTimeout: 10000
+  ReadTimeout: 10000
