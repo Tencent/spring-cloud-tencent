@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
+import static com.tencent.cloud.common.constant.ContextConstant.Zuul.POLARIS_PRE_ROUTE_TIME;
+
 /**
  * Polaris circuit breaker implement in Zuul.
  *
@@ -75,6 +77,7 @@ public class EnhancedZuulPluginRunner {
 			enhancedPluginContext.setRequest(enhancedRequestContext);
 			enhancedPluginContext.setOriginRequest(context);
 			enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
+			context.set(POLARIS_PRE_ROUTE_TIME, System.currentTimeMillis());
 
 			// Run pre enhanced plugins.
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
