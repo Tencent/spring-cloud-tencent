@@ -199,6 +199,7 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements B
 
 	@Override
 	public Object run() {
+		RequestContext context = RequestContext.getCurrentContext();
 		// Run pre enhanced plugins.
 		try {
 			enhancedZuulPluginRunner.run();
@@ -208,8 +209,7 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements B
 				throw e;
 			}
 			// circuit breaker fallback, not need to run post/exception enhanced plugins.
-			RequestContext context = RequestContext.getCurrentContext();
-			// s
+			// set sendZuulResponse to false
 			context.setSendZuulResponse(false);
 			// set response status code
 			HttpStatus httpStatus = HttpStatus.resolve(e.getFallbackInfo().getCode());
@@ -224,6 +224,9 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements B
 				e.getFallbackInfo().getHeaders().forEach(context.getResponse()::addHeader);
 			}
 		}
-		return super.run();
+		if (context.sendZuulResponse()) {
+			return super.run();
+		}
+		return null;
 	}
 }
