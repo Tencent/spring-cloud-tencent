@@ -75,7 +75,7 @@ public class PolarisCircuitBreaker implements CircuitBreaker, InvokeHandler {
 		}
 		catch (CallAbortedException e) {
 			LOGGER.debug("PolarisCircuitBreaker CallAbortedException: {}", e.getMessage());
-			PolarisCircuitBreakerUtils.reportStatus(consumerAPI, conf, e);
+			reportStatus(e);
 			return fallback.apply(e);
 		}
 		catch (Exception e) {
@@ -96,5 +96,9 @@ public class PolarisCircuitBreaker implements CircuitBreaker, InvokeHandler {
 	@Override
 	public void onError(InvokeContext.ResponseContext responseContext) {
 		invokeHandler.onError(responseContext);
+	}
+
+	public void reportStatus(CallAbortedException e) {
+		PolarisCircuitBreakerUtils.reportStatus(consumerAPI, conf, e);
 	}
 }
