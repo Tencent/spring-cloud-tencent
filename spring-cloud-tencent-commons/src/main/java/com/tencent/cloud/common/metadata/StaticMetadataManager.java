@@ -29,11 +29,10 @@ import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.util.CollectionUtils;
 
 /**
  * manage metadata from env/config file/custom spi.

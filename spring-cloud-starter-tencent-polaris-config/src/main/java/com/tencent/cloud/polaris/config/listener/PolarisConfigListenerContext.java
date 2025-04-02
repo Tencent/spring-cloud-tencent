@@ -17,26 +17,28 @@
 
 package com.tencent.cloud.polaris.config.listener;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.com.google.common.cache.Cache;
+import shade.polaris.com.google.common.cache.CacheBuilder;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -65,15 +67,15 @@ public final class PolarisConfigListenerContext {
 	/**
 	 * All custom {@link ConfigChangeListener} instance defined in application .
 	 */
-	private static final List<ConfigChangeListener> listeners = Lists.newCopyOnWriteArrayList();
+	private static final List<ConfigChangeListener> listeners = new CopyOnWriteArrayList<>();
 	/**
 	 * All custom interested keys defined in application .
 	 */
-	private static final Map<ConfigChangeListener, Set<String>> interestedKeys = Maps.newConcurrentMap();
+	private static final Map<ConfigChangeListener, Set<String>> interestedKeys = new ConcurrentHashMap<>();
 	/**
 	 * All custom interested key prefixes defined in application .
 	 */
-	private static final Map<ConfigChangeListener, Set<String>> interestedKeyPrefixes = Maps.newConcurrentMap();
+	private static final Map<ConfigChangeListener, Set<String>> interestedKeyPrefixes = new ConcurrentHashMap<>();
 	/**
 	 * Cache all latest configuration information for users in the application environment .
 	 */
@@ -129,11 +131,11 @@ public final class PolarisConfigListenerContext {
 	 * @return merged properties result map
 	 */
 	static Map<String, ConfigPropertyChangeInfo> merge(Map<String, Object> ret) {
-		Map<String, ConfigPropertyChangeInfo> changes = Maps.newHashMap();
+		Map<String, ConfigPropertyChangeInfo> changes = new HashMap<>();
 		if (!ret.isEmpty()) {
 
-			Map<String, Object> origin = Maps.newHashMap(properties.asMap());
-			Map<String, ConfigPropertyChangeInfo> deleted = Maps.newHashMap();
+			Map<String, Object> origin = new HashMap<>(properties.asMap());
+			Map<String, ConfigPropertyChangeInfo> deleted = new HashMap<>();
 
 			origin.keySet().parallelStream().forEach(key -> {
 				if (!ret.containsKey(key)) {
@@ -175,8 +177,8 @@ public final class PolarisConfigListenerContext {
 			@Nullable Set<String> interestedKeys, @Nullable Set<String> interestedKeyPrefixes) {
 		if (!listeners.contains(listener)) {
 			listeners.add(listener);
-			PolarisConfigListenerContext.interestedKeys.put(listener, interestedKeys == null ? Sets.newHashSet() : interestedKeys);
-			PolarisConfigListenerContext.interestedKeyPrefixes.put(listener, interestedKeyPrefixes == null ? Sets.newHashSet() : interestedKeyPrefixes);
+			PolarisConfigListenerContext.interestedKeys.put(listener, CollectionUtils.isEmpty(interestedKeys) ? new HashSet<>() : interestedKeys);
+			PolarisConfigListenerContext.interestedKeyPrefixes.put(listener, CollectionUtils.isEmpty(interestedKeyPrefixes) ? new HashSet<>() : interestedKeyPrefixes);
 		}
 	}
 
@@ -211,7 +213,7 @@ public final class PolarisConfigListenerContext {
 	 * @return list of matched {@link ConfigChangeListener}
 	 */
 	private static List<ConfigChangeListener> findMatchedConfigChangeListeners(Set<String> changedKeys) {
-		final List<ConfigChangeListener> configChangeListeners = Lists.newArrayList();
+		final List<ConfigChangeListener> configChangeListeners = new ArrayList<>();
 		for (ConfigChangeListener listener : listeners) {
 			if (isConfigChangeListenerInterested(listener, changedKeys)) {
 				configChangeListeners.add(listener);
@@ -262,7 +264,7 @@ public final class PolarisConfigListenerContext {
 	 * @return set of all interested keys in listener
 	 */
 	private static Set<String> resolveInterestedChangedKeys(ConfigChangeListener listener, Set<String> changedKeys) {
-		Set<String> interestedChangedKeys = Sets.newHashSet();
+		Set<String> interestedChangedKeys = new HashSet<>();
 
 		if (interestedKeys.containsKey(listener)) {
 			Set<String> interestedKeys = PolarisConfigListenerContext.interestedKeys.get(listener);

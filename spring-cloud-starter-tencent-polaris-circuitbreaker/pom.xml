@@ -15,6 +15,12 @@
 	<dependencies>
 		<!-- Spring Cloud Tencent dependencies start -->
 		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
+		</dependency>
+		<!-- Spring Cloud Tencent dependencies end -->
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<optional>true</optional>
@@ -39,68 +45,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
-		</dependency>
-		<!-- Spring Cloud Tencent dependencies end -->
-
-		<!-- Polaris dependencies start -->
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>polaris-circuitbreaker-factory</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-rule</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-nearby</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-namespace</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-metadata</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-canary</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-set</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-isolated</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.tencent.polaris</groupId>
-					<artifactId>router-healthy</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>healthchecker-http</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>healthchecker-udp</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>healthchecker-tcp</artifactId>
-		</dependency>
-		<!-- Polaris dependencies end -->
-
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-actuator</artifactId>
 			<optional>true</optional>
@@ -110,36 +54,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
 			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>polaris-test-common</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>polaris-test-mock-discovery</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-inline</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-test</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

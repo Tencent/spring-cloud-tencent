@@ -24,6 +24,7 @@ import com.tencent.tsf.consul.config.watch.TsfConsulConfigRefreshEventListener;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -51,6 +52,7 @@ public class PolarisAdaptorTsfConfigAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnWebApplication
 	@ConditionalOnProperty(name = "tsf.config.instance.released-config.lookup.enabled", matchIfMissing = true)
 	public PolarisAdaptorTsfConfigController polarisAdaptorTsfConfigController() {
 		return new PolarisAdaptorTsfConfigController();
