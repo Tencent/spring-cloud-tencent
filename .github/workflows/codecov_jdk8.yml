@@ -1,0 +1,36 @@
+name: Codecov with JDK 8
+
+on:
+  push:
+    branches:
+      - 2021
+      - 2020
+      - hoxton
+      - greenwich
+  pull_request:
+    branches:
+      - 2021
+      - 2020
+      - hoxton
+      - greenwich
+
+jobs:
+  codecov:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v4
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Test with Maven
+        run: mvn clean test -B -U -Psonatype
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: ${{ github.workspace }}/target/site/jacoco/jacoco.xml

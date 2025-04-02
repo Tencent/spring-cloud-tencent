@@ -1,0 +1,48 @@
+name: Snapshot with JDK 8
+
+on:
+  push:
+    branches:
+      - 2021
+      - 2020
+      - hoxton
+      - greenwich
+
+jobs:
+  check-snapshot:
+    runs-on: ubuntu-latest
+    outputs:
+      IS_SNAPSHOT: ${{ steps.set_output_1.outputs.IS_SNAPSHOT }}
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v4
+      - name: Check deploy type
+        id: set_output_1
+        run: |
+          line="$(grep SNAPSHOT pom.xml || true)"
+          echo $line
+          if [ -n "$line" ]; then
+            echo "IS_SNAPSHOT=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_SNAPSHOT=false" >> $GITHUB_OUTPUT
+          fi
+  snapshot:
+    runs-on: ubuntu-latest
+    needs: check-snapshot
+    if: ${{ needs.check-snapshot.outputs.IS_SNAPSHOT == 'true' }}
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v4
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          server-id: nexus-snapshots
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+      - name: Publish package
+        run: mvn clean deploy -B -U -Psonatype
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}

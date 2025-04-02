@@ -1,23 +1,24 @@
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: Test with Junit (JDK17)
+name: Junit Test with JDK from 8 to 21
 
 on:
   push:
     branches:
-      - 2023
-      - 2022
+      - 2021
+      - 2020
+      - hoxton
+      - greenwich
   pull_request:
     branches:
-      - 2023
-      - 2022
+      - 2021
+      - 2020
+      - hoxton
+      - greenwich
 
 jobs:
-  build:
+  junit:
     strategy:
       matrix:
-        java: [ 17 ]
+        java: [ 8, 11, 17, 21 ]
         os: [ 'windows-latest', 'ubuntu-latest' ]
 
     runs-on: ${{ matrix.os }}
@@ -38,4 +39,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Test with Maven
-        run: mvn clean test -f pom.xml -B -P sonatype -U
+        run: mvn clean test -B -U -Psonatype
+
