@@ -1,0 +1,86 @@
+name: Junit Test
+
+on:
+  push:
+    branches:
+      - 2024
+      - 2023
+      - 2022
+      - 2021
+      - 2020
+      - hoxton
+      - greenwich
+  pull_request:
+    branches:
+      - 2024
+      - 2023
+      - 2022
+      - 2021
+      - 2020
+      - hoxton
+      - greenwich
+
+jobs:
+  set-jdks:
+    runs-on: ubuntu-latest
+    outputs:
+      jdks: ${{ steps.set-jdks.outputs.jdks }}
+    steps:
+      - name: Set JDK matrix based on branch
+        id: set-jdks
+        run: |
+          shopt -s nocasematch
+          branch_name=${{ github.ref_name }}
+          if [ -n "${{ github.base_ref }}" ]; then
+             branch_name=${{ github.base_ref }}
+          fi
+          echo $branch_name
+          if [[ "$branch_name" == "2024" ]]; then
+            echo "jdks=[17,21]" >> $GITHUB_OUTPUT
+          elif [[ "$branch_name" == "2023" ]]; then
+            echo "jdks=[17,21]" >> $GITHUB_OUTPUT
+          elif [[ "$branch_name" == "2022" ]]; then
+            echo "jdks=[17,21]" >> $GITHUB_OUTPUT
+          elif [[ "$branch_name" == "2021" ]]; then
+            echo "jdks=[8,11,17,21]" >> $GITHUB_OUTPUT
+          elif [[ "$branch_name" == "2020" ]]; then
+            echo "jdks=[8,11,17,21]" >> $GITHUB_OUTPUT
+          elif [[ "$branch_name" == "hoxton" ]]; then
+            echo "jdks=[8,11,17,21]" >> $GITHUB_OUTPUT
+          elif [[ "$branch_name" == "greenwich" ]]; then
+            echo "jdks=[8,11,17,21]" >> $GITHUB_OUTPUT
+          else
+            echo "jdks=[17]" >> $GITHUB_OUTPUT
+          fi
+          shopt -u nocasematch
+  junit:
+    strategy:
+      matrix:
+        java: ${{ fromJson(needs.set-jdks.outputs.jdks) }}
+        os: [ 'windows-latest', 'ubuntu-latest' ]
+    runs-on: ${{ matrix.os }}
+    needs: set-jdks
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v4
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Test with Maven
+        run: mvn clean test -B -U -Psonatype
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.java == 17
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: ${{ github.workspace }}/target/site/jacoco/jacoco.xml

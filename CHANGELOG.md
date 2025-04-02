@@ -10,3 +10,4 @@
 - [docs:update JDK version configuration in GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1528)
 - [fix: fix count circuit breaker in gateway & return 404 when context api does not match.](https://github.com/Tencent/spring-cloud-tencent/pull/1529)
 - [fix:fix watch tsf config, fix bean refresh with RefreshScope and ConfigurationProperties.](https://github.com/Tencent/spring-cloud-tencent/pull/1530)
+- [docs:simplify GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1531)
