@@ -74,6 +74,9 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
 		}
 		catch (CallAbortedException e) {
+			// Run finally enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+
 			if (e.getFallbackInfo() == null) {
 				throw e;
 			}
