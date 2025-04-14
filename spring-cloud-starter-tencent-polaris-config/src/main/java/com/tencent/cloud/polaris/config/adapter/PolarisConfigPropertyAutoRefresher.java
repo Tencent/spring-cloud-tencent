@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,10 +30,16 @@ import java.util.stream.Collectors;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerContext;
 import com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils;
+import com.tencent.polaris.api.plugin.configuration.ConfigFile;
+import com.tencent.polaris.api.plugin.event.ConfigEvent;
+import com.tencent.polaris.api.plugin.event.EventConstants;
+import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.client.flow.BaseFlow;
 import com.tencent.polaris.configuration.api.core.ConfigFileGroup;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
+import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import com.tencent.polaris.configuration.client.internal.CompositeConfigFile;
@@ -61,11 +68,13 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 	private final ConfigFileService configFileService;
+	private final SDKContext context;
 
 	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties,
-			ConfigFileService configFileService) {
+			ConfigFileService configFileService, SDKContext context) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.configFileService = configFileService;
+		this.context = context;
 	}
 
 	@Override
@@ -157,6 +166,8 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					}
 				}
 				refreshConfigurationProperties(changedKeys);
+
+				reportEvent(added);
 			}
 			catch (Exception e) {
 				LOGGER.error("[SCT Config] receive onChange exception,", e);
@@ -235,6 +246,9 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					}
 					// update @ConfigurationProperties beans
 					refreshConfigurationProperties(configKVFileChangeEvent.changedKeys());
+
+					reportEvent(listenPolarisPropertySource, configKVFileChangeEvent);
+
 				});
 	}
 
@@ -276,6 +290,38 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			}
 		}
 		return added;
+	}
+
+	private void reportEvent(PolarisPropertySource polarisPropertySource, ConfigKVFileChangeEvent configKVFileChangeEvent) {
+		ConfigEvent.Builder builder = new ConfigEvent.Builder()
+				.withTimestamp(LocalDateTime.now())
+				.withEventType(EventConstants.EventType.CONFIG)
+				.withEventName(EventConstants.EventName.ConfigUpdated)
+				.withClientId(context.getExtensions().getValueContext().getClientId())
+				.withClientIp(context.getExtensions().getValueContext().getHost())
+				.withNamespace(polarisPropertySource.getNamespace())
+				.withConfigGroup(polarisPropertySource.getGroup())
+				.withConfigVersion(Optional.ofNullable(configKVFileChangeEvent.getConfigFile()).map(ConfigFile::getName).orElse(null))
+				.withConfigFileName(polarisPropertySource.getFileName());
+
+		BaseFlow.reportConfigEvent(context.getExtensions(), builder.build());
+	}
+
+	private void reportEvent(Map<String, ConfigFileMetadata> added) {
+		for (ConfigFileMetadata configFileMetadata : added.values()) {
+			ConfigEvent.Builder builder = new ConfigEvent.Builder()
+					.withTimestamp(LocalDateTime.now())
+					.withEventType(EventConstants.EventType.CONFIG)
+					.withEventName(EventConstants.EventName.ConfigUpdated)
+					.withClientId(context.getExtensions().getValueContext().getClientId())
+					.withClientIp(context.getExtensions().getValueContext().getHost())
+					.withNamespace(configFileMetadata.getNamespace())
+					.withConfigGroup(configFileMetadata.getFileGroup())
+					.withConfigVersion(configFileMetadata.getFileVersion())
+					.withConfigFileName(configFileMetadata.getFileName());
+
+			BaseFlow.reportConfigEvent(context.getExtensions(), builder.build());
+		}
 	}
 
 	/**
