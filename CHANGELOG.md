@@ -11,3 +11,4 @@
 - [docs:update JDK version configuration in GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1510)
 - [fix:fix watch tsf config, fix bean refresh with RefreshScope and ConfigurationProperties.](https://github.com/Tencent/spring-cloud-tencent/pull/1511)
 - [docs:simplify GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1514)
+- [feat: support config event.](https://github.com/Tencent/spring-cloud-tencent/pull/1532)
