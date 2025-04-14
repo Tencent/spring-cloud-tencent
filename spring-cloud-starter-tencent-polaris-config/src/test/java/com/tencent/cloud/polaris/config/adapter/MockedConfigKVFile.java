@@ -192,4 +192,9 @@ public class MockedConfigKVFile implements ConfigKVFile {
 	public String getFileName() {
 		return fileName;
 	}
+
+	@Override
+	public String getFileVersion() {
+		return "";
+	}
 }

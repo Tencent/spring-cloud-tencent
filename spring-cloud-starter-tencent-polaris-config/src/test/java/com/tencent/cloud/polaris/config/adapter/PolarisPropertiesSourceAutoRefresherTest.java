@@ -31,6 +31,9 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.polaris.api.plugin.common.ValueContext;
+import com.tencent.polaris.api.plugin.compose.Extensions;
+import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
@@ -80,6 +83,15 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Mock
 	private ContextRefresher contextRefresher;
 
+	@Mock
+	private SDKContext sdkContext;
+
+	@Mock
+	private Extensions extensions;
+
+	@Mock
+	private ValueContext valueContext;
+
 	@BeforeEach
 	public void setUp() {
 		PolarisPropertySourceManager.clearPropertySources();
@@ -88,7 +100,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Test
 	public void testConfigFileChanged() throws Exception {
 		PolarisRefreshAffectedContextRefresher refresher = new PolarisRefreshAffectedContextRefresher(
-				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService, contextRefresher);
+				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService, contextRefresher, sdkContext);
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
 		TypeConverter typeConverter = mock(TypeConverter.class);
@@ -107,6 +119,10 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		when(springValueRegistry.get(any(), any())).thenReturn(springValues);
 
 		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
+		when(sdkContext.getExtensions()).thenReturn(extensions);
+		when(extensions.getValueContext()).thenReturn(valueContext);
+		when(valueContext.getClientId()).thenReturn("mockClientId");
+		when(valueContext.getHost()).thenReturn("mockHost");
 
 		Map<String, Object> content = new HashMap<>();
 		content.put("k1", "v1");
@@ -126,7 +142,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		changeInfos.put("k2", changeInfo3);
 		changeInfos.put("k4", changeInfo2);
 
-		ConfigKVFileChangeEvent event = new ConfigKVFileChangeEvent(changeInfos);
+		ConfigKVFileChangeEvent event = new ConfigKVFileChangeEvent(changeInfos, null);
 		refresher.onApplicationEvent(null);
 
 		file.fireChangeListener(event);
@@ -140,7 +156,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Test
 	public void testConfigFileGroupChanged() throws Exception {
 		PolarisRefreshAffectedContextRefresher refresher = new PolarisRefreshAffectedContextRefresher(
-				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService, contextRefresher);
+				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService, contextRefresher, sdkContext);
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
 		TypeConverter typeConverter = mock(TypeConverter.class);
@@ -186,6 +202,8 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 
 		when(configFileService.getConfigPropertiesFile(testNamespace, testFileGroup, "file2.properties"))
 				.thenReturn(file2);
+		when(sdkContext.getExtensions()).thenReturn(extensions);
+		when(extensions.getValueContext()).thenReturn(valueContext);
 
 		revisableConfigFileGroup.updateConfigFileList(Arrays.asList(file, file2), "v2");
 		Thread.sleep(5000);
@@ -203,7 +221,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		changeInfos.put("k1", changeInfo);
 		changeInfos.put("k3.1", changeInfo2);
 		changeInfos.put("k4", changeInfo3);
-		ConfigKVFileChangeEvent event = new ConfigKVFileChangeEvent(changeInfos);
+		ConfigKVFileChangeEvent event = new ConfigKVFileChangeEvent(changeInfos, null);
 		file2.fireChangeListener(event);
 		Thread.sleep(5000);
 

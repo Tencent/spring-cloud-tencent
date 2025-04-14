@@ -29,6 +29,7 @@ import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerApplicationLis
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -77,9 +78,9 @@ public class PolarisConfigAutoConfiguration {
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public PolarisConfigPropertyRefresher polarisRefreshContextPropertySourceAutoRefresher(
 			PolarisConfigProperties polarisConfigProperties, SpringValueRegistry springValueRegistry,
-			ConfigFileService configFileService, ContextRefresher contextRefresher) {
+			ConfigFileService configFileService, ContextRefresher contextRefresher, PolarisSDKContextManager polarisSDKContextManager) {
 		return new PolarisRefreshEntireContextRefresher(polarisConfigProperties,
-				springValueRegistry, configFileService, contextRefresher);
+				springValueRegistry, configFileService, contextRefresher, polarisSDKContextManager.getSDKContext());
 	}
 
 	@Bean
@@ -105,9 +106,10 @@ public class PolarisConfigAutoConfiguration {
 		@Bean
 		public PolarisConfigPropertyRefresher polarisReflectPropertySourceAutoRefresher(
 				PolarisConfigProperties polarisConfigProperties, SpringValueRegistry springValueRegistry,
-				PlaceholderHelper placeholderHelper, ConfigFileService configFileService, ContextRefresher contextRefresher) {
+				PlaceholderHelper placeholderHelper, ConfigFileService configFileService,
+				ContextRefresher contextRefresher, PolarisSDKContextManager polarisSDKContextManager) {
 			return new PolarisRefreshAffectedContextRefresher(polarisConfigProperties,
-					springValueRegistry, placeholderHelper, configFileService, contextRefresher);
+					springValueRegistry, placeholderHelper, configFileService, contextRefresher, polarisSDKContextManager.getSDKContext());
 		}
 	}
 }
