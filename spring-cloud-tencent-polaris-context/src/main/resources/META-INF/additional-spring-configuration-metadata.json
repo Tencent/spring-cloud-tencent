@@ -74,6 +74,18 @@
       "type": "java.lang.Integer",
       "description": "Max batch size for push gateway event. Default is 100.",
       "default": 100
+    },
+    {
+      "name": "spring.cloud.polaris.event.pushgateway.namespace",
+      "type": "java.lang.String",
+      "description": "Namespace for push gateway event. Default is Polaris.",
+      "defaultValue": "Polaris"
+    },
+    {
+      "name": "spring.cloud.polaris.event.pushgateway.service",
+      "type": "java.lang.String",
+      "description": "Service for push gateway event. Default is polaris.pushgateway.",
+      "defaultValue": "polaris.pushgateway"
     }
   ],
   "hints": []

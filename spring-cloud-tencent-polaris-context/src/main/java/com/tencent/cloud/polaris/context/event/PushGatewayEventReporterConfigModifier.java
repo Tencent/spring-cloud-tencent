@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.context.event;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
-import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.event.pushgateway.PushGatewayEventReporterConfig;
 
@@ -43,7 +42,7 @@ public class PushGatewayEventReporterConfigModifier implements PolarisConfigModi
 				.add(DefaultPlugins.PUSH_GATEWAY_EVENT_REPORTER_TYPE);
 
 		PushGatewayEventReporterConfig pushGatewayEventReporterConfig = new PushGatewayEventReporterConfig();
-		if (!properties.isEnabled() || StringUtils.isBlank(properties.getAddress())) {
+		if (!properties.isEnabled()) {
 			pushGatewayEventReporterConfig.setEnable(false);
 			return;
 		}
@@ -53,6 +52,8 @@ public class PushGatewayEventReporterConfigModifier implements PolarisConfigModi
 		pushGatewayEventReporterConfig.setAddress(properties.getAddress());
 		pushGatewayEventReporterConfig.setEventQueueSize(properties.getEventQueueSize());
 		pushGatewayEventReporterConfig.setMaxBatchSize(properties.getMaxBatchSize());
+		pushGatewayEventReporterConfig.setNamespace(properties.getNamespace());
+		pushGatewayEventReporterConfig.setService(properties.getService());
 
 		configuration.getGlobal().getEventReporter()
 				.setPluginConfig(DefaultPlugins.PUSH_GATEWAY_EVENT_REPORTER_TYPE, pushGatewayEventReporterConfig);
