@@ -47,6 +47,16 @@ public class PushGatewayEventReporterProperties {
 	 */
 	private int maxBatchSize = 100;
 
+	/**
+	 * Namespace for push gateway event. Default is Polaris.
+	 */
+	private String namespace = "Polaris";
+
+	/**
+	 * Service for push gateway event. Default is polaris.pushgateway.
+	 */
+	private String service = "polaris.pushgateway";
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -79,6 +89,22 @@ public class PushGatewayEventReporterProperties {
 		this.maxBatchSize = maxBatchSize;
 	}
 
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
+
+	public String getService() {
+		return service;
+	}
+
+	public void setService(String service) {
+		this.service = service;
+	}
+
 	@Override
 	public String toString() {
 		return "PushGatewayEventReporterProperties{" +
@@ -86,6 +112,8 @@ public class PushGatewayEventReporterProperties {
 				", address='" + address + '\'' +
 				", eventQueueSize=" + eventQueueSize +
 				", maxBatchSize=" + maxBatchSize +
+				", namespace='" + namespace + '\'' +
+				", service='" + service + '\'' +
 				'}';
 	}
 }
