@@ -39,7 +39,9 @@ public class PushGatewayEventReporterPropertiesTest {
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.address=1.2.3.4:9091")
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.eventQueueSize=123")
-			.withPropertyValues("spring.cloud.polaris.event.pushgateway.maxBatchSize=456");
+			.withPropertyValues("spring.cloud.polaris.event.pushgateway.maxBatchSize=456")
+			.withPropertyValues("spring.cloud.polaris.event.pushgateway.namespace=test-namespace")
+			.withPropertyValues("spring.cloud.polaris.event.pushgateway.service=test-service");
 
 	@BeforeEach
 	void setUp() {
@@ -54,6 +56,8 @@ public class PushGatewayEventReporterPropertiesTest {
 			assertThat(properties.getAddress()).isEqualTo("1.2.3.4:9091");
 			assertThat(properties.getEventQueueSize()).isEqualTo(123);
 			assertThat(properties.getMaxBatchSize()).isEqualTo(456);
+			assertThat(properties.getNamespace()).isEqualTo("test-namespace");
+			assertThat(properties.getService()).isEqualTo("test-service");
 		});
 	}
 }

@@ -51,6 +51,18 @@ public class PolarisStatProperties {
 	private String pushGatewayAddress;
 
 	/**
+	 * PushGateway namespace.
+	 */
+	@Value("${spring.cloud.polaris.stat.pushgateway.namespace:Polaris}")
+	private String statNamespace = "Polaris";
+
+	/**
+	 * PushGateway service.
+	 */
+	@Value("${spring.cloud.polaris.stat.pushgateway.service:polaris.pushgateway}")
+	private String statService = "polaris.pushgateway";
+
+	/**
 	 * Push metrics interval.
 	 * unit: milliseconds default 60s.
 	 */
@@ -95,6 +107,22 @@ public class PolarisStatProperties {
 		this.pushGatewayAddress = pushGatewayAddress;
 	}
 
+	public String getStatNamespace() {
+		return statNamespace;
+	}
+
+	public void setStatNamespace(String statNamespace) {
+		this.statNamespace = statNamespace;
+	}
+
+	public String getStatService() {
+		return statService;
+	}
+
+	public void setStatService(String statService) {
+		this.statService = statService;
+	}
+
 	public Long getPushGatewayPushInterval() {
 		return pushGatewayPushInterval;
 	}
@@ -109,5 +137,19 @@ public class PolarisStatProperties {
 
 	public void setOpenGzip(Boolean openGzip) {
 		this.openGzip = openGzip;
+	}
+
+	@Override
+	public String toString() {
+		return "PolarisStatProperties{" +
+				"enabled=" + enabled +
+				", path='" + path + '\'' +
+				", pushGatewayEnabled=" + pushGatewayEnabled +
+				", pushGatewayAddress='" + pushGatewayAddress + '\'' +
+				", statNamespace='" + statNamespace + '\'' +
+				", statService='" + statService + '\'' +
+				", pushGatewayPushInterval=" + pushGatewayPushInterval +
+				", openGzip=" + openGzip +
+				'}';
 	}
 }
