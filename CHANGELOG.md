@@ -56,3 +56,4 @@
 - [fix:fix watch tsf config, fix bean refresh with RefreshScope and ConfigurationProperties.](https://github.com/Tencent/spring-cloud-tencent/pull/1512)
 - [docs:simplify GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1513)
 - [feat: support config event.](https://github.com/Tencent/spring-cloud-tencent/pull/1535)
+- [feat:support stat and event report with service discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1537)

@@ -79,6 +79,18 @@
       "description": "If push gateway gzip open. default false.",
       "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties",
       "defaultValue": false
+    },
+    {
+      "name": "spring.cloud.polaris.stat.pushgateway.namespace",
+      "type": "java.lang.String",
+      "description": "PushGateway namespace.",
+      "defaultValue": "Polaris"
+    },
+    {
+      "name": "spring.cloud.polaris.stat.pushgateway.service",
+      "type": "java.lang.String",
+      "description": "PushGateway service.",
+      "defaultValue": "polaris.pushgateway"
     }
   ]
 }
