@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 
 import org.springframework.beans.BeansException;
@@ -46,9 +47,10 @@ public class PolarisRefreshEntireContextRefresher extends PolarisConfigPropertyA
 	private ConfigurableApplicationContext context;
 
 	public PolarisRefreshEntireContextRefresher(PolarisConfigProperties polarisConfigProperties,
-			SpringValueRegistry springValueRegistry, ConfigFileService configFileService, ContextRefresher contextRefresher) {
+			SpringValueRegistry springValueRegistry, ConfigFileService configFileService,
+			ContextRefresher contextRefresher, SDKContext context) {
 
-		super(polarisConfigProperties, configFileService);
+		super(polarisConfigProperties, configFileService, context);
 		this.springValueRegistry = springValueRegistry;
 		this.contextRefresher = contextRefresher;
 	}
