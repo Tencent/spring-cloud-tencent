@@ -21,9 +21,8 @@ import java.time.LocalDateTime;
 
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.polaris.api.plugin.compose.Extensions;
+import com.tencent.polaris.api.plugin.event.EventConstants;
 import com.tencent.polaris.api.plugin.event.FlowEvent;
-import com.tencent.polaris.api.plugin.event.FlowEventConstants;
-import com.tencent.polaris.api.pojo.ServiceEventKey;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.client.flow.BaseFlow;
 import org.slf4j.Logger;
@@ -96,8 +95,8 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 				&& this.registration.getPolarisContext().getExtensions() != null) {
 			Extensions extensions = this.registration.getPolarisContext().getExtensions();
 			FlowEvent.Builder flowEventBuilder = new FlowEvent.Builder()
-					.withEventType(ServiceEventKey.EventType.INSTANCE)
-					.withEventName(FlowEventConstants.EventName.InstanceThreadEnd)
+					.withEventType(EventConstants.EventType.INSTANCE)
+					.withEventName(EventConstants.EventName.InstanceThreadEnd)
 					.withTimestamp(LocalDateTime.now())
 					.withClientId(extensions.getValueContext().getClientId())
 					.withClientIp(extensions.getValueContext().getHost())
