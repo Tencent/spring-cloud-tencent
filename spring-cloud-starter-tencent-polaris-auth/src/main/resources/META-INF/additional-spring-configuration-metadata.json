@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.polaris.auth.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable polaris auth or not."
+    }
+  ]
+}

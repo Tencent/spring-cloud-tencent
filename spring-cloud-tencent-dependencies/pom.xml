@@ -185,6 +185,12 @@
 
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-polaris-auth</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-all</artifactId>
 				<version>${revision}</version>
 			</dependency>

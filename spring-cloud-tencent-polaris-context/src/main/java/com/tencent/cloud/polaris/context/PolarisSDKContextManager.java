@@ -30,6 +30,8 @@ import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.factory.AssemblyAPIFactory;
+import com.tencent.polaris.auth.api.core.AuthAPI;
+import com.tencent.polaris.auth.factory.AuthAPIFactory;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
 import com.tencent.polaris.client.api.SDKContext;
@@ -64,6 +66,7 @@ public class PolarisSDKContextManager {
 	private volatile static RouterAPI routerAPI;
 	private volatile static CircuitBreakAPI circuitBreakAPI;
 	private volatile static LimitAPI limitAPI;
+	private volatile static AuthAPI authAPI;
 	private volatile static AssemblyAPI assemblyAPI;
 	private final PolarisContextProperties properties;
 	private final Environment environment;
@@ -115,6 +118,12 @@ public class PolarisSDKContextManager {
 				if (Objects.nonNull(limitAPI)) {
 					((AutoCloseable) limitAPI).close();
 					limitAPI = null;
+				}
+
+				// destroy AuthAPI
+				if (Objects.nonNull(authAPI)) {
+					((AutoCloseable) authAPI).close();
+					authAPI = null;
 				}
 
 				// destroy AssemblyAPI
@@ -199,6 +208,11 @@ public class PolarisSDKContextManager {
 		return limitAPI;
 	}
 
+	public AuthAPI getAuthAPI() {
+		initService();
+		return authAPI;
+	}
+
 	public AssemblyAPI getAssemblyAPI() {
 		return assemblyAPI;
 	}
@@ -255,6 +269,9 @@ public class PolarisSDKContextManager {
 
 				// init LimitAPI
 				limitAPI = LimitAPIFactory.createLimitAPIByContext(serviceSdkContext);
+
+				// init AuthAPI
+				authAPI = AuthAPIFactory.createAuthAPIByContext(serviceSdkContext);
 
 				// init AssemblyAPI
 				assemblyAPI = AssemblyAPIFactory.createAssemblyAPIByContext(serviceSdkContext);

@@ -1,0 +1,2 @@
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+  com.tencent.cloud.polaris.auth.config.PolarisAuthPropertiesBootstrapConfiguration

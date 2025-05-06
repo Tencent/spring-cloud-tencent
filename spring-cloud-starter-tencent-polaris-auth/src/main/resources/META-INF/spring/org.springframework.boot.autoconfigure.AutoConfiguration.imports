@@ -1,0 +1,2 @@
+com.tencent.cloud.polaris.auth.config.PolarisAuthPropertiesAutoConfiguration
+com.tencent.cloud.polaris.auth.config.PolarisAuthAutoConfiguration
