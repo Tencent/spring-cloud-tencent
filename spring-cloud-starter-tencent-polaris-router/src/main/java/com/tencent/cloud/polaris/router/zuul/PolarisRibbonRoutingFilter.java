@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +39,7 @@ import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedZuulPluginRunner;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,7 @@ import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.route.RibbonCommandFactory;
 import org.springframework.cloud.netflix.zuul.filters.route.RibbonRoutingFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
@@ -196,7 +199,34 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements B
 
 	@Override
 	public Object run() {
-		enhancedZuulPluginRunner.run();
-		return super.run();
+		RequestContext context = RequestContext.getCurrentContext();
+		// Run pre enhanced plugins.
+		try {
+			enhancedZuulPluginRunner.run();
+		}
+		catch (CallAbortedException e) {
+			if (e.getFallbackInfo() == null) {
+				throw e;
+			}
+			// circuit breaker fallback, not need to run post/exception enhanced plugins.
+			// set sendZuulResponse to false
+			context.setSendZuulResponse(false);
+			// set response status code
+			HttpStatus httpStatus = HttpStatus.resolve(e.getFallbackInfo().getCode());
+			context.setResponseStatusCode(httpStatus != null ? httpStatus.value() : HttpStatus.INTERNAL_SERVER_ERROR.value());
+			// set response body
+			String body = Optional.of(e.getFallbackInfo().getBody()).orElse("");
+			context.setResponseBody(body);
+			// set response content type
+			context.getResponse().setContentType("text/plain;charset=UTF-8");
+			// set response headers
+			if (com.tencent.polaris.api.utils.CollectionUtils.isNotEmpty(e.getFallbackInfo().getHeaders())) {
+				e.getFallbackInfo().getHeaders().forEach(context.getResponse()::addHeader);
+			}
+		}
+		if (context.sendZuulResponse()) {
+			return super.run();
+		}
+		return null;
 	}
 }
