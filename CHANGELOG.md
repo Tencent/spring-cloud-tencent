@@ -23,4 +23,5 @@
 - [fix:fix zuul delay circuit breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1519)
 - [fix:fix watch tsf config, fix bean refresh with RefreshScope and ConfigurationProperties.](https://github.com/Tencent/spring-cloud-tencent/pull/1520)
 - [docs:update circuit breaker examples.](https://github.com/Tencent/spring-cloud-tencent/pull/1521)
+- [feat:support zuul circuit breaker fallback response.](https://github.com/Tencent/spring-cloud-tencent/pull/1522)
 - [feat:support auth.](https://github.com/Tencent/spring-cloud-tencent/pull/1541)
