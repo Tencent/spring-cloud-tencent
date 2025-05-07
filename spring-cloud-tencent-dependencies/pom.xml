@@ -232,6 +232,12 @@
 				<version>${revision}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-fault-tolerance</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
 			<!-- third part framework dependencies -->
 			<dependency>
 				<groupId>com.google.guava</groupId>

@@ -17,8 +17,8 @@
 
 package com.tencent.cloud.polaris.discovery.refresh;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -30,13 +30,19 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisEnabled
+@ConditionalOnPolarisDiscoveryEnabled
 public class PolarisRefreshConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisServiceStatusChangeListener polarisServiceChangeListener() {
-		return new PolarisServiceStatusChangeListener();
+	public PolarisServiceStatusChangeListener polarisServiceChangeListener(ServiceInstanceChangeCallbackManager serviceInstanceChangeCallbackManager) {
+		return new PolarisServiceStatusChangeListener(serviceInstanceChangeCallbackManager);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ServiceInstanceChangeCallbackManager serviceInstanceChangeCallbackManager() {
+		return new ServiceInstanceChangeCallbackManager();
 	}
 
 	@Bean

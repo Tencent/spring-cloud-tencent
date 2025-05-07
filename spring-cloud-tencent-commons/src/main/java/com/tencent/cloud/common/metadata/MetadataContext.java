@@ -142,8 +142,8 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		return values;
 	}
 
-	public void putMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean downstream, Map<String, String> values) {
-		MetadataContainer metadataContainer = getMetadataContainer(metadataType, downstream);
+	public void putMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean caller, Map<String, String> values) {
+		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
 		for (Map.Entry<String, String> entry : values.entrySet()) {
 			metadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), transitiveType);
 		}

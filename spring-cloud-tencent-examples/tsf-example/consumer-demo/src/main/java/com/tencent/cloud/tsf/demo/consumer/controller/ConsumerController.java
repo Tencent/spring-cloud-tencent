@@ -19,14 +19,17 @@ package com.tencent.cloud.tsf.demo.consumer.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import com.tencent.cloud.common.util.PolarisCompletableFutureUtils;
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderDemoService;
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderService;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.tsf.core.context.TsfContext;
+import org.springframework.tsf.core.TsfContext;
 import org.springframework.tsf.core.entity.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,7 +65,30 @@ public class ConsumerController {
 		catch (CallAbortedException callAbortedException) {
 			return callAbortedException.getMessage();
 		}
+	}
 
+
+	@RequestMapping(value = "/echo-rest-async/{str}", method = RequestMethod.GET)
+	public String restAsync(@PathVariable String str,
+			@RequestParam(required = false) String tagName,
+			@RequestParam(required = false) String tagValue) throws ExecutionException, InterruptedException {
+		if (StringUtils.isNotBlank(tagName)) {
+			TsfContext.putTag(tagName, tagValue);
+		}
+		TsfContext.putTag("operation", "rest");
+		Map<String, String> mTags = new HashMap<>();
+		mTags.put("rest-trace-key1", "value1");
+		mTags.put("rest-trace-key2", "value2");
+		TsfContext.putTags(mTags, Tag.ControlFlag.TRANSITIVE);
+		CompletableFuture<String> echoFuture = PolarisCompletableFutureUtils.supplyAsync(() -> {
+			try {
+				return restTemplate.getForObject("http://provider-demo/echo/" + str, String.class);
+			}
+			catch (CallAbortedException callAbortedException) {
+				return callAbortedException.getMessage();
+			}
+		});
+		return echoFuture.get();
 	}
 
 	@RequestMapping(value = "/echo-feign/{str}", method = RequestMethod.GET)

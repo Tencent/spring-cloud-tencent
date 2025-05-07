@@ -23,7 +23,7 @@ import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.BeanFactoryUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.scg.PolarisLoadBalancerClientFilter;
+import com.tencent.cloud.polaris.router.instrument.scg.PolarisLoadBalancerClientFilter;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 
 import org.springframework.beans.BeansException;

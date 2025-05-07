@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.tencent.cloud.plugin.faulttolerance.config.FaultToleranceAutoConfiguration
+

@@ -17,8 +17,8 @@
 
 package com.tencent.cloud.polaris.router.config;
 
-import com.tencent.cloud.polaris.router.feign.PolarisCachingSpringLoadBalanceFactory;
-import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
+import com.tencent.cloud.polaris.router.instrument.feign.PolarisCachingSpringLoadBalanceFactory;
+import com.tencent.cloud.polaris.router.instrument.feign.RouterLabelFeignInterceptor;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;

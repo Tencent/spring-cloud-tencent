@@ -57,7 +57,7 @@ import org.springframework.util.CollectionUtils;
  */
 public class PolarisContractReporter implements ApplicationListener<ApplicationReadyEvent> {
 
-	private final Logger LOG = LoggerFactory.getLogger(PolarisContractReporter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisContractReporter.class);
 
 	private final org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource;
 	private final org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource;

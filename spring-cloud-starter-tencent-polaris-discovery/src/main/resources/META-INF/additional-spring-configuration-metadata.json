@@ -79,6 +79,18 @@
       "description": "Zero protection test connectivity switch. Default: false."
     },
     {
+      "name": "spring.cloud.polaris.discovery.eager-load.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Eager load switch. Default: false."
+    },
+    {
+      "name": "spring.cloud.polaris.discovery.eager-load.feign.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Feign eager load switch. Default: true."
+    },
+    {
       "name": "spring.cloud.nacos.discovery.enabled",
       "type": "java.lang.Boolean",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
