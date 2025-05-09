@@ -37,7 +37,7 @@ import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedZuulPluginRunner;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedZuulPluginRunner;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

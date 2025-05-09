@@ -104,6 +104,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			quotaResponse = QuotaCheckUtils.getQuota(limitAPI, localNamespace, localService, 1, path);
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
+				LOG.info("block by ratelimit rule, uri:{}", exchange.getRequest().getURI());
 				ServerHttpResponse response = exchange.getResponse();
 				DataBuffer dataBuffer;
 				if (Objects.nonNull(quotaResponse.getActiveRule())

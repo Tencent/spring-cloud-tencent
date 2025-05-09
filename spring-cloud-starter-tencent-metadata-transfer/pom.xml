@@ -15,7 +15,6 @@
 
 	<dependencies>
 		<!-- Spring Cloud Tencent dependencies start -->
-
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>

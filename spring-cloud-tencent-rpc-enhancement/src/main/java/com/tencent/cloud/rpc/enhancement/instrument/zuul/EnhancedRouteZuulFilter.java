@@ -15,52 +15,56 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.zuul;
+package com.tencent.cloud.rpc.enhancement.instrument.zuul;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.util.ZuulFilterUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
-import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
-import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.netflix.ribbon.apache.RibbonApacheHttpResponse;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.Zuul.POLARIS_PRE_ROUTE_TIME;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.POST_TYPE;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 
 /**
  * Polaris circuit breaker implement in Zuul.
  *
  * @author Haotian Zhang
  */
-public class EnhancedPostZuulFilter extends ZuulFilter {
+public class EnhancedRouteZuulFilter extends ZuulFilter {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedRouteZuulFilter.class);
 
 	private final EnhancedPluginRunner pluginRunner;
 
 	private final Environment environment;
 
-	public EnhancedPostZuulFilter(EnhancedPluginRunner pluginRunner, Environment environment) {
+	public EnhancedRouteZuulFilter(EnhancedPluginRunner pluginRunner, Environment environment) {
 		this.pluginRunner = pluginRunner;
 		this.environment = environment;
 	}
 
 	@Override
 	public String filterType() {
-		return POST_TYPE;
+		return ROUTE_TYPE;
 	}
 
 	@Override
 	public int filterOrder() {
-		return OrderConstant.Client.Zuul.ENHANCED_POST_FILTER_ORDER;
+		return OrderConstant.Client.Zuul.ENHANCED_ROUTE_FILTER_ORDER;
 	}
 
 	@Override
@@ -80,27 +84,31 @@ public class EnhancedPostZuulFilter extends ZuulFilter {
 		else {
 			enhancedPluginContext = (EnhancedPluginContext) enhancedPluginContextObj;
 		}
-
-		Object startTimeMilliObject = context.get(POLARIS_PRE_ROUTE_TIME);
-		if (startTimeMilliObject instanceof Long) {
-			HttpHeaders responseHeaders = new HttpHeaders();
-			Collection<String> names = context.getResponse().getHeaderNames();
-			for (String name : names) {
-				responseHeaders.put(name, new ArrayList<>(context.getResponse().getHeaders(name)));
+		try {
+			Object ribbonResponseObj = context.get("ribbonResponse");
+			RibbonApacheHttpResponse ribbonResponse;
+			DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+			if (ribbonResponseObj != null && ribbonResponseObj instanceof RibbonApacheHttpResponse) {
+				ribbonResponse = (RibbonApacheHttpResponse) ribbonResponseObj;
+				serviceInstance.setServiceId(ZuulFilterUtils.getServiceId(context));
+				serviceInstance.setHost(ribbonResponse.getRequestedURI().getHost());
+				serviceInstance.setPort(ribbonResponse.getRequestedURI().getPort());
+				enhancedPluginContext.setTargetServiceInstance(serviceInstance, null);
 			}
-			EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-					.httpStatus(context.getResponse().getStatus())
-					.httpHeaders(responseHeaders)
-					.build();
-			enhancedPluginContext.setResponse(enhancedResponseContext);
-			Long startTimeMilli = (Long) startTimeMilliObject;
-			enhancedPluginContext.setDelay(System.currentTimeMillis() - startTimeMilli);
+			else {
+				URI uri = new URI(context.getRequest()
+						.getScheme(), ZuulFilterUtils.getServiceId(context), ZuulFilterUtils.getPath(context), context.getRequest()
+						.getQueryString(), null);
+				enhancedPluginContext.setTargetServiceInstance(null, uri);
+			}
 
-			// Run post enhanced plugins.
-			pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
-
-			// Run finally enhanced plugins.
-			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+			Object startTimeMilliObject = context.get(POLARIS_PRE_ROUTE_TIME);
+			if (startTimeMilliObject == null || !(startTimeMilliObject instanceof Long)) {
+				context.set(POLARIS_PRE_ROUTE_TIME, Long.valueOf(System.currentTimeMillis()));
+			}
+		}
+		catch (URISyntaxException e) {
+			LOGGER.error("Generate URI failed.", e);
 		}
 		return null;
 	}

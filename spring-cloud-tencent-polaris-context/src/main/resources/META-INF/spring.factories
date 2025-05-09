@@ -6,7 +6,8 @@ org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.polaris.context.config.PolarisContextBootstrapAutoConfiguration,\
   com.tencent.cloud.polaris.context.config.extend.tsf.TsfContextBootstrapConfiguration
 org.springframework.context.ApplicationListener=\
-  com.tencent.cloud.polaris.context.logging.PolarisLoggingApplicationListener
+  com.tencent.cloud.polaris.context.logging.PolarisLoggingApplicationListener,\
+  com.tencent.cloud.polaris.context.listener.FailedEventApplicationListener
 org.springframework.boot.env.EnvironmentPostProcessor=\
   com.tencent.cloud.polaris.context.config.PolarisContextEnvironmentPostProcessor,\
   com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreEnvironmentPostProcessor

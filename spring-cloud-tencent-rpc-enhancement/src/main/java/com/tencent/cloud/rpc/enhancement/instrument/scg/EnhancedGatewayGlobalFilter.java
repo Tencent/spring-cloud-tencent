@@ -145,7 +145,8 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 		Route routeAttr = originExchange.getAttribute(GATEWAY_ROUTE_ATTR);
 		try {
 			return new URI(originExchange.getRequest().getURI().getScheme(),
-					routeAttr.getUri().getHost(), originExchange.getRequest().getURI().getPath(), originExchange.getRequest().getURI().getRawQuery());
+					routeAttr.getUri().getHost(), originExchange.getRequest().getURI()
+					.getPath(), originExchange.getRequest().getURI().getRawQuery());
 		}
 		catch (URISyntaxException e) {
 			return null;

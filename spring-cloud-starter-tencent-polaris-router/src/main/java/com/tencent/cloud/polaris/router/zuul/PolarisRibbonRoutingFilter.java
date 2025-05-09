@@ -38,7 +38,7 @@ import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedZuulPluginRunner;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedZuulPluginRunner;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

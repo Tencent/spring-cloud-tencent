@@ -43,8 +43,8 @@ import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import com.tencent.cloud.polaris.router.zuul.PolarisRibbonRoutingFilter;
 import com.tencent.cloud.polaris.router.zuul.RouterLabelZuulFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedZuulPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedZuulPluginRunner;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;

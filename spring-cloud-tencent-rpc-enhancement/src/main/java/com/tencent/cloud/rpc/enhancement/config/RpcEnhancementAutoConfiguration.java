@@ -56,7 +56,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -179,11 +178,6 @@ public class RpcEnhancementAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
 	protected static class PolarisRestTemplateAutoConfiguration {
-
-		@LoadBalanced
-		@Autowired(required = false)
-		private List<RestTemplate> restTemplates = Collections.emptyList();
-
 
 		@Bean
 		@ConditionalOnMissingBean
