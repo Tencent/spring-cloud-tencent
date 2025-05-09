@@ -32,6 +32,9 @@ import com.tencent.cloud.rpc.enhancement.instrument.scg.EnhancedGatewayGlobalFil
 import com.tencent.cloud.rpc.enhancement.instrument.webclient.EnhancedWebClientExchangeFilterFunction;
 import com.tencent.cloud.rpc.enhancement.instrument.webclient.PolarisLoadBalancerClientRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.instrument.webclient.RibbonLoadBalancerClientAspect;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedErrorZuulFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedPostZuulFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedRouteZuulFilter;
 import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
@@ -41,9 +44,6 @@ import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.PolarisRegistrationTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedErrorZuulFilter;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedPostZuulFilter;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedRouteZuulFilter;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
