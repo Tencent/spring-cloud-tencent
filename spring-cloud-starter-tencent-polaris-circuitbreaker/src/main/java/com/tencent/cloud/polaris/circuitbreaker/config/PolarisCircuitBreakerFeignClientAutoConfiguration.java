@@ -17,8 +17,8 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.config;
 
-import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisCircuitBreakerNameResolver;
-import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignCircuitBreaker;
+import com.tencent.cloud.polaris.circuitbreaker.instrument.feign.PolarisCircuitBreakerNameResolver;
+import com.tencent.cloud.polaris.circuitbreaker.instrument.feign.PolarisFeignCircuitBreaker;
 import feign.Feign;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

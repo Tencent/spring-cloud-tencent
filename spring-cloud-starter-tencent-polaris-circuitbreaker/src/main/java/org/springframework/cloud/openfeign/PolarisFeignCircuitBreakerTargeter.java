@@ -17,7 +17,7 @@
 
 package org.springframework.cloud.openfeign;
 
-import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignCircuitBreaker;
+import com.tencent.cloud.polaris.circuitbreaker.instrument.feign.PolarisFeignCircuitBreaker;
 import feign.Feign;
 import feign.Target;
 

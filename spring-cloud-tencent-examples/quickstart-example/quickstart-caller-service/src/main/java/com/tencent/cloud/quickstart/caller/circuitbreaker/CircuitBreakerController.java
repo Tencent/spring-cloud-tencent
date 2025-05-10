@@ -49,16 +49,8 @@ public class CircuitBreakerController {
 	private CircuitBreakerQuickstartCalleeServiceWithFallback circuitBreakerQuickstartCalleeServiceWithFallback;
 
 	@Autowired
-	@Qualifier("defaultRestTemplate")
-	private RestTemplate defaultRestTemplate;
-
-	@Autowired
-	@Qualifier("restTemplateFallbackFromPolaris")
-	private RestTemplate restTemplateFallbackFromPolaris;
-
-	@Autowired
-	@Qualifier("restTemplateFallbackFromCode")
-	private RestTemplate restTemplateFallbackFromCode;
+	@Qualifier("calleeRestTemplate")
+	private RestTemplate calleeRestTemplate;
 
 	@Autowired
 	private CircuitBreakerFactory circuitBreakerFactory;
@@ -110,7 +102,7 @@ public class CircuitBreakerController {
 	public String circuitBreakRestTemplate() {
 		return circuitBreakerFactory
 				.create(MetadataContext.LOCAL_NAMESPACE + "#QuickstartCalleeService#/quickstart/callee/circuitBreak#http#GET")
-				.run(() -> defaultRestTemplate.getForObject("/quickstart/callee/circuitBreak", String.class),
+				.run(() -> calleeRestTemplate.getForObject("/quickstart/callee/circuitBreak", String.class),
 						throwable -> "trigger the refuse for service callee."
 				);
 	}
@@ -122,17 +114,7 @@ public class CircuitBreakerController {
 	@GetMapping("/rest/fallbackFromPolaris/wildcard/{uid}")
 	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromPolarisWildcard(@PathVariable String uid) {
 		String path = String.format("/quickstart/callee/circuitBreak/wildcard/%s", uid);
-		return restTemplateFallbackFromPolaris.getForEntity(path, String.class);
-	}
-
-	/**
-	 * RestTemplate wildcard circuit breaker with fallback from code.
-	 * @return circuit breaker information of callee
-	 */
-	@GetMapping("/rest/fallbackFromCode/wildcard/{uid}")
-	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromCodeWildcard(@PathVariable String uid) {
-		String path = String.format("/quickstart/callee/circuitBreak/wildcard/%s", uid);
-		return restTemplateFallbackFromCode.getForEntity(path, String.class);
+		return calleeRestTemplate.getForEntity(path, String.class);
 	}
 
 	/**
@@ -142,21 +124,7 @@ public class CircuitBreakerController {
 	@GetMapping("/rest/fallbackFromPolaris")
 	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromPolaris() {
 		try {
-			return restTemplateFallbackFromPolaris.getForEntity("/quickstart/callee/circuitBreak", String.class);
-		}
-		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
-			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
-		}
-	}
-
-	/**
-	 * RestTemplate circuit breaker with fallback from code.
-	 * @return circuit breaker information of callee
-	 */
-	@GetMapping("/rest/fallbackFromCode")
-	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromCode() {
-		try {
-			return restTemplateFallbackFromCode.getForEntity("/quickstart/callee/circuitBreak", String.class);
+			return calleeRestTemplate.getForEntity("/quickstart/callee/circuitBreak", String.class);
 		}
 		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
 			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());

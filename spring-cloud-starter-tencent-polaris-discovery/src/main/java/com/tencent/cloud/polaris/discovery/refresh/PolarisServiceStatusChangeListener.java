@@ -17,14 +17,18 @@
 
 package com.tencent.cloud.polaris.discovery.refresh;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
 import com.tencent.polaris.api.plugin.registry.AbstractResourceEventListener;
+import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.RegistryCacheValue;
 import com.tencent.polaris.api.pojo.ServiceEventKey;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.client.pojo.ServiceInstancesByProto;
 import com.tencent.polaris.client.pojo.ServicesByProto;
 import org.slf4j.Logger;
@@ -34,7 +38,6 @@ import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Change listener of Polaris service info. When service info is created or deleted, or, instance of service is from
@@ -42,7 +45,8 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Haotian Zhang
  */
-public class PolarisServiceStatusChangeListener extends AbstractResourceEventListener implements ApplicationEventPublisherAware {
+public class PolarisServiceStatusChangeListener extends AbstractResourceEventListener
+		implements ApplicationEventPublisherAware {
 
 	/**
 	 * Index of service info status.
@@ -50,8 +54,12 @@ public class PolarisServiceStatusChangeListener extends AbstractResourceEventLis
 	public static final AtomicLong INDEX = new AtomicLong(0);
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisServiceStatusChangeListener.class);
-
+	private final ServiceInstanceChangeCallbackManager serviceInstanceChangeCallbackManager;
 	private ApplicationEventPublisher publisher;
+
+	public PolarisServiceStatusChangeListener(ServiceInstanceChangeCallbackManager serviceInstanceChangeCallbackManager) {
+		this.serviceInstanceChangeCallbackManager = serviceInstanceChangeCallbackManager;
+	}
 
 	@Override
 	public void onResourceUpdated(ServiceEventKey svcEventKey, RegistryCacheValue oldValue,
@@ -87,6 +95,22 @@ public class PolarisServiceStatusChangeListener extends AbstractResourceEventLis
 
 					// Trigger reload of gateway route cache.
 					this.publisher.publishEvent(new HeartbeatEvent(this, INDEX.getAndIncrement()));
+				}
+
+				List<Instance> oldInstances = new ArrayList<>();
+				List<Instance> newInstances = new ArrayList<>();
+				if (CollectionUtils.isNotEmpty(oldIns.getInstances())) {
+					oldInstances.addAll(oldIns.getInstances());
+				}
+				if (CollectionUtils.isNotEmpty(newIns.getInstances())) {
+					newInstances.addAll(newIns.getInstances());
+				}
+
+				try {
+					this.serviceInstanceChangeCallbackManager.handle(svcEventKey.getService(), oldInstances, newInstances);
+				}
+				catch (Throwable throwable) {
+					LOG.error("Service[{}] instance status change callback failed.", svcEventKey.getService(), throwable);
 				}
 			}
 		}

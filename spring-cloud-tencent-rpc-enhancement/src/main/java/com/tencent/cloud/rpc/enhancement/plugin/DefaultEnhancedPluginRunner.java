@@ -73,6 +73,19 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 		}
 	}
 
+	static Registration getPolarisRegistration(List<Registration> registration) {
+
+		if (CollectionUtils.isEmpty(registration)) {
+			return null;
+		}
+		for (Registration reg : registration) {
+			if ("com.tencent.cloud.polaris.registry.PolarisRegistration".equals(reg.getClass().getName())) {
+				return reg;
+			}
+		}
+		return registration.get(0);
+	}
+
 	/**
 	 * run the plugin.
 	 *
@@ -97,18 +110,5 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 	@Override
 	public ServiceInstance getLocalServiceInstance() {
 		return this.localServiceInstance;
-	}
-
-	private static Registration getPolarisRegistration(List<Registration> registration) {
-
-		if (CollectionUtils.isEmpty(registration)) {
-			return null;
-		}
-		for (Registration reg : registration) {
-			if ("com.tencent.cloud.polaris.registry.PolarisRegistration".equals(reg.getClass().getName())) {
-				return reg;
-			}
-		}
-		return registration.get(0);
 	}
 }

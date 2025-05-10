@@ -158,24 +158,25 @@ public final class MetadataContextHolder {
 			Map<String, String> dynamicApplicationMetadata, MetadataProvider callerMetadataProvider) {
 		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.refresh(metadataManager -> {
 			// caller transitive metadata to local custom transitive metadata
-			MetadataContainer metadataContainerUpstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
+			MetadataContainer calleeCustomMetadataContainer = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
 			if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicTransitiveMetadata.entrySet()) {
-					metadataContainerUpstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.PASS_THROUGH);
+					calleeCustomMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.PASS_THROUGH);
 				}
 			}
 			// caller disposable metadata to caller custom disposable metadata
-			MetadataContainer metadataContainerDownstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
+			MetadataContainer callerCustomMetadataContainer = metadataManager.getMetadataContainer(MetadataType.CUSTOM, true);
 			if (!CollectionUtils.isEmpty(dynamicDisposableMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicDisposableMetadata.entrySet()) {
-					metadataContainerDownstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.NONE);
+					calleeCustomMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.NONE);
+					callerCustomMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 				}
 			}
 			// caller application metadata to caller application disposable metadata
-			MetadataContainer applicationMetadataContainerDownstream = metadataManager.getMetadataContainer(MetadataType.APPLICATION, true);
+			MetadataContainer callerApplicationMetadataContainer = metadataManager.getMetadataContainer(MetadataType.APPLICATION, true);
 			if (!CollectionUtils.isEmpty(dynamicApplicationMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicApplicationMetadata.entrySet()) {
-					applicationMetadataContainerDownstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
+					callerApplicationMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 				}
 			}
 

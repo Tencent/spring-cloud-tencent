@@ -19,6 +19,12 @@
       "name": "spring.cloud.tencent.metadata.headers",
       "type": "java.util.List",
       "description": "Custom transitive http header key list."
+    },
+    {
+      "name": "spring.cloud.tencent.async.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Async support switch. Default: false."
     }
   ]
 }

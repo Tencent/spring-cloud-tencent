@@ -61,7 +61,7 @@ public class PolarisServiceStatusChangeListenerTest {
 
 	@Test
 	public void testOnResourceUpdated() {
-		PolarisServiceStatusChangeListener polarisServiceStatusChangeListener = new PolarisServiceStatusChangeListener();
+		PolarisServiceStatusChangeListener polarisServiceStatusChangeListener = new PolarisServiceStatusChangeListener(mock(ServiceInstanceChangeCallbackManager.class));
 		polarisServiceStatusChangeListener.setApplicationEventPublisher(publisher);
 
 		// Service update event

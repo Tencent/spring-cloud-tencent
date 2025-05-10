@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.circuitbreaker.config;
 
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
-import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisCircuitBreakerNameResolver;
+import com.tencent.cloud.polaris.circuitbreaker.instrument.feign.PolarisCircuitBreakerNameResolver;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import org.junit.jupiter.api.Test;

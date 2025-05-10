@@ -126,6 +126,10 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 				defaultProperties.put("spring.cloud.polaris.discovery.zero-protection.enabled", "true");
 				defaultProperties.put("spring.cloud.polaris.discovery.zero-protection.is-need-test-connectivity", "true");
 				defaultProperties.put("spring.cloud.discovery.client.health-indicator.enabled", "false");
+				String warmupEnabled = environment.getProperty("spring.cloud.polaris.warmup.enabled");
+				if (StringUtils.isBlank(warmupEnabled)) {
+					defaultProperties.put("spring.cloud.polaris.warmup.enabled", true);
+				}
 
 				// contract
 				defaultProperties.put("spring.cloud.polaris.contract.enabled", environment.getProperty("tsf.swagger.enabled", "true"));

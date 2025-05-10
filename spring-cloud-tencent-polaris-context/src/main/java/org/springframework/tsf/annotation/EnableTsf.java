@@ -24,22 +24,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-
 /**
- * Compatible with old versions TSF SDK.
+ * Empty annotation. Compatible with old versions TSF SDK.
+ * <p>
+ * Deprecated since 2.0.0.0.
  *
  * @author Haotian Zhang
  */
-
+@Deprecated
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@EnableAutoConfiguration
-@EnableDiscoveryClient // 服务注册发现
-@EnableConfigurationProperties // 分布式配置
 public @interface EnableTsf {
 }

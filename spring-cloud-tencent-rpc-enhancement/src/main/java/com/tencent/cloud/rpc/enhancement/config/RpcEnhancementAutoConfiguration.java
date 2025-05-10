@@ -24,26 +24,26 @@ import com.netflix.zuul.ZuulFilter;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
-import com.tencent.cloud.rpc.enhancement.filter.EnhancedReactiveFilter;
-import com.tencent.cloud.rpc.enhancement.filter.EnhancedServletFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.feign.EnhancedFeignBeanPostProcessor;
+import com.tencent.cloud.rpc.enhancement.instrument.filter.EnhancedReactiveFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.filter.EnhancedServletFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.PolarisLoadBalancerRequestTransformer;
+import com.tencent.cloud.rpc.enhancement.instrument.scg.EnhancedGatewayGlobalFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.webclient.EnhancedWebClientExchangeFilterFunction;
+import com.tencent.cloud.rpc.enhancement.instrument.webclient.PolarisLoadBalancerClientRequestTransformer;
+import com.tencent.cloud.rpc.enhancement.instrument.webclient.RibbonLoadBalancerClientAspect;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedErrorZuulFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedPostZuulFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedRouteZuulFilter;
 import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer;
-import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.PolarisRegistrationTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
-import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientExchangeFilterFunction;
-import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
-import com.tencent.cloud.rpc.enhancement.webclient.RibbonLoadBalancerClientAspect;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedErrorZuulFilter;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedPostZuulFilter;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedRouteZuulFilter;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -179,11 +178,6 @@ public class RpcEnhancementAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
 	protected static class PolarisRestTemplateAutoConfiguration {
-
-		@LoadBalanced
-		@Autowired(required = false)
-		private List<RestTemplate> restTemplates = Collections.emptyList();
-
 
 		@Bean
 		@ConditionalOnMissingBean

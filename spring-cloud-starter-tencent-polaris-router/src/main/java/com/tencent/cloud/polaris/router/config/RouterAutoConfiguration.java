@@ -32,19 +32,19 @@ import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterP
 import com.tencent.cloud.polaris.router.config.properties.PolarisNamespaceRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
+import com.tencent.cloud.polaris.router.instrument.resttemplate.RouterContextFactory;
+import com.tencent.cloud.polaris.router.instrument.resttemplate.RouterLabelRestTemplateInterceptor;
+import com.tencent.cloud.polaris.router.instrument.scg.RouterLabelGlobalFilter;
 import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NamespaceRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
-import com.tencent.cloud.polaris.router.resttemplate.RouterContextFactory;
-import com.tencent.cloud.polaris.router.resttemplate.RouterLabelRestTemplateInterceptor;
-import com.tencent.cloud.polaris.router.scg.RouterLabelGlobalFilter;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import com.tencent.cloud.polaris.router.zuul.PolarisRibbonRoutingFilter;
 import com.tencent.cloud.polaris.router.zuul.RouterLabelZuulFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.zuul.EnhancedZuulPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedZuulPluginRunner;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;

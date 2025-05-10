@@ -19,7 +19,7 @@ package com.tencent.cloud.polaris.router.config;
 
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
-import com.tencent.cloud.polaris.router.feign.PolarisFeignLoadBalancer;
+import com.tencent.cloud.polaris.router.instrument.feign.PolarisFeignLoadBalancer;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;

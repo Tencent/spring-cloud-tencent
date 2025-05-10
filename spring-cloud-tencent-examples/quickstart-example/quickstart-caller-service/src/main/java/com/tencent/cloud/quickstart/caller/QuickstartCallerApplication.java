@@ -17,9 +17,6 @@
 
 package com.tencent.cloud.quickstart.caller;
 
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
-import com.tencent.cloud.quickstart.caller.circuitbreaker.CustomFallback;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -50,27 +47,7 @@ public class QuickstartCallerApplication {
 
 	@Bean
 	@LoadBalanced
-	public RestTemplate defaultRestTemplate() {
-		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://QuickstartCalleeService");
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setUriTemplateHandler(uriBuilderFactory);
-		return restTemplate;
-	}
-
-	@Bean
-	@LoadBalanced
-	@PolarisCircuitBreaker
-	public RestTemplate restTemplateFallbackFromPolaris() {
-		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://QuickstartCalleeService");
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setUriTemplateHandler(uriBuilderFactory);
-		return restTemplate;
-	}
-
-	@Bean
-	@LoadBalanced
-	@PolarisCircuitBreaker(fallbackClass = CustomFallback.class)
-	public RestTemplate restTemplateFallbackFromCode() {
+	public RestTemplate calleeRestTemplate() {
 		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://QuickstartCalleeService");
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setUriTemplateHandler(uriBuilderFactory);

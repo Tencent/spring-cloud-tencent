@@ -21,6 +21,7 @@ import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.event.tsf.TsfEventReporterConfig;
 
@@ -45,6 +46,13 @@ public class TsfContextConfigModifier implements PolarisConfigModifier {
 		configuration.getGlobal().getEventReporter().getReporters().add(DefaultPlugins.TSF_EVENT_REPORTER_TYPE);
 
 		TsfEventReporterConfig tsfEventReporterConfig = new TsfEventReporterConfig();
+		if (StringUtils.isNotBlank(tsfCoreProperties.getEventMasterIp())) {
+			tsfEventReporterConfig.setEnable(true);
+		}
+		else {
+			tsfEventReporterConfig.setEnable(false);
+			return;
+		}
 		tsfEventReporterConfig.setEventMasterIp(tsfCoreProperties.getEventMasterIp());
 		tsfEventReporterConfig.setEventMasterPort(tsfCoreProperties.getEventMasterPort());
 		tsfEventReporterConfig.setAppId(tsfCoreProperties.getAppId());

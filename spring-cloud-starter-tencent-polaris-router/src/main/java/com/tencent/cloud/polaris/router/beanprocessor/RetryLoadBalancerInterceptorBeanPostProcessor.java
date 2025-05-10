@@ -17,8 +17,8 @@
 
 package com.tencent.cloud.polaris.router.beanprocessor;
 
-import com.tencent.cloud.polaris.router.resttemplate.PolarisRetryLoadBalancerInterceptor;
-import com.tencent.cloud.polaris.router.resttemplate.RouterContextFactory;
+import com.tencent.cloud.polaris.router.instrument.resttemplate.PolarisRetryLoadBalancerInterceptor;
+import com.tencent.cloud.polaris.router.instrument.resttemplate.RouterContextFactory;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 
 import org.springframework.beans.BeansException;

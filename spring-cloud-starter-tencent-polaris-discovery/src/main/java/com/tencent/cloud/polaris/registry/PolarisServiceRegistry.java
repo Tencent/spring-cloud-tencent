@@ -237,7 +237,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		InstancesResponse instancesResponse = polarisDiscoveryHandler.getInstances(serviceName);
 		Instance[] instances = instancesResponse.getInstances();
 		if (null == instances) {
-			return null;
+			return "DOWN";
 		}
 		for (Instance instance : instances) {
 			if (instance.getHost().equalsIgnoreCase(registration.getHost())
@@ -245,7 +245,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 				return instance.isHealthy() ? "UP" : "DOWN";
 			}
 		}
-		return null;
+		return "DOWN";
 	}
 
 	/**

@@ -98,6 +98,7 @@ public class EnhancedPluginContextTest {
 		EnhancedRequestContext requestContext = new EnhancedRequestContext();
 		requestContext.setHttpHeaders(new HttpHeaders());
 		requestContext.setUrl(new URI("/"));
+		requestContext.setServiceUrl(new URI("http://test-service/path"));
 		requestContext.setHttpMethod(HttpMethod.GET);
 
 		EnhancedRequestContext requestContext1 = EnhancedRequestContext.builder()

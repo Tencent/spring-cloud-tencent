@@ -22,6 +22,7 @@ import java.net.URLDecoder;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.quickstart.callee.config.DataSourceProperties;
+import com.tencent.cloud.quickstart.callee.service.FaultToleranceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,9 @@ public class QuickstartCalleeController {
 
 	@Autowired
 	private DataSourceProperties dataSourceProperties;
+
+	@Autowired
+	private FaultToleranceService faultToleranceService;
 
 	/**
 	 * Get sum of two value.
@@ -126,7 +130,22 @@ public class QuickstartCalleeController {
 
 	@GetMapping("/test/{num}/echo")
 	public String test(@PathVariable int num) {
-		LOG.info("Quickstart Callee Service [%s] is detected right.", num);
+		LOG.info("Quickstart Callee Service [{}] is detected right.", num);
 		return String.format("Quickstart Callee Service [%s] is detected right.", num);
+	}
+
+	@GetMapping("/faultTolerance/failFast")
+	public String faultToleranceFailFast() {
+		return faultToleranceService.failFast();
+	}
+
+	@GetMapping("/faultTolerance/failOver")
+	public String faultToleranceFailOver() {
+		return faultToleranceService.failOver();
+	}
+
+	@GetMapping("/faultTolerance/forking")
+	public String faultToleranceForking() {
+		return faultToleranceService.forking();
 	}
 }

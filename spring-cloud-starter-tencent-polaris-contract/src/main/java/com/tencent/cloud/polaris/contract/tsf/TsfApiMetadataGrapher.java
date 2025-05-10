@@ -38,13 +38,13 @@ import org.springframework.util.StringUtils;
 
 public class TsfApiMetadataGrapher implements SmartLifecycle {
 
+	private static final Logger logger = LoggerFactory.getLogger(TsfApiMetadataGrapher.class);
 	private final AtomicBoolean isRunning = new AtomicBoolean(false);
 	private final org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource;
 	private final org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource;
 	private final ObjectMapperProvider springdocObjectMapperProvider;
-	private Logger logger = LoggerFactory.getLogger(TsfApiMetadataGrapher.class);
-	private ApplicationContext applicationContext;
-	private String groupName;
+	private final ApplicationContext applicationContext;
+	private final String groupName;
 
 	public TsfApiMetadataGrapher(org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource,
 			org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource,
