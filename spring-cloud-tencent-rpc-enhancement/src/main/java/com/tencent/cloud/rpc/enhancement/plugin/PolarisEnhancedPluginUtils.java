@@ -32,8 +32,8 @@ import java.util.Objects;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.constant.HeaderConstant;
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -136,10 +136,9 @@ public final class PolarisEnhancedPluginUtils {
 			@Nullable String calleeServiceName, @Nullable String calleeHost, @Nullable Integer calleePort,
 			URI uri, @Nullable Integer statusCode, long delay, @Nullable Throwable exception) {
 
-		String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_NAMESPACE);
-		if (StringUtils.isBlank(governanceNamespace)) {
-			governanceNamespace = MetadataContext.LOCAL_NAMESPACE;
-		}
+		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
 		ServiceKey calleeServiceKey = new ServiceKey(governanceNamespace, StringUtils.isBlank(calleeServiceName) ? uri.getHost() : calleeServiceName);
 		ServiceKey callerServiceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE);
 		Resource resource = new InstanceResource(

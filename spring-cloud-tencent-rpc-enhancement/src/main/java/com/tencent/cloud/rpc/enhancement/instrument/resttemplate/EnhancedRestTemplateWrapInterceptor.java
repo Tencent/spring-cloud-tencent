@@ -28,6 +28,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.metadata.core.MetadataObjectValue;
 import com.tencent.polaris.metadata.core.MetadataType;
 
@@ -57,6 +58,7 @@ public class EnhancedRestTemplateWrapInterceptor {
 		this.delegate = delegate;
 	}
 
+
 	public ClientHttpResponse intercept(HttpRequest request, String serviceId,
 			LoadBalancerRequest<ClientHttpResponse> loadBalancerRequest, Object hint) throws IOException {
 
@@ -78,12 +80,12 @@ public class EnhancedRestTemplateWrapInterceptor {
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 
-
-		// Run pre enhanced plugins.
-		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
-
 		long startMillis = System.currentTimeMillis();
 		try {
+			// Run pre enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+			startMillis = System.currentTimeMillis();
+
 			ClientHttpResponse response = delegate.execute(serviceId, loadBalancerRequest, hint);
 			// get target instance after execute
 			enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
@@ -113,6 +115,22 @@ public class EnhancedRestTemplateWrapInterceptor {
 				}
 			}
 			return response;
+		}
+		catch (CallAbortedException callAbortedException) {
+			MetadataObjectValue<Object> fallbackResponseValue = MetadataContextHolder.get().
+					getMetadataContainer(MetadataType.APPLICATION, true).
+					getMetadataValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE);
+
+			boolean existFallback = Optional.ofNullable(fallbackResponseValue).
+					map(MetadataObjectValue::getObjectValue).map(Optional::isPresent).orElse(false);
+
+			if (existFallback) {
+				Object fallbackResponse = fallbackResponseValue.getObjectValue().orElse(null);
+				if (fallbackResponse instanceof ClientHttpResponse) {
+					return (ClientHttpResponse) fallbackResponse;
+				}
+			}
+			throw callAbortedException;
 		}
 		catch (IOException e) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
