@@ -13,3 +13,5 @@
 - [docs:simplify GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1514)
 - [feat: support config event.](https://github.com/Tencent/spring-cloud-tencent/pull/1532)
 - [feat:support stat and event report with service discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1533)
+- [fix: update EnhancedRequestContext toString method.](https://github.com/Tencent/spring-cloud-tencent/pull/1547)
+- 
