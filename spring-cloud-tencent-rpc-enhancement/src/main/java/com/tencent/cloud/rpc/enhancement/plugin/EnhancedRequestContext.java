@@ -90,6 +90,7 @@ public class EnhancedRequestContext {
 				", httpHeaders=" + httpHeaders +
 				", url=" + url +
 				", serviceUrl=" + serviceUrl +
+				", governanceNamespace='" + governanceNamespace + '\'' +
 				'}';
 	}
 
