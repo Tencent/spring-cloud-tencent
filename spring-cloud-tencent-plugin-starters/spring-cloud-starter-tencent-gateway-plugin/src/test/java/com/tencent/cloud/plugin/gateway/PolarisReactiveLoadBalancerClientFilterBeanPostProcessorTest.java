@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
+import org.springframework.cloud.gateway.config.LoadBalancerProperties;
 import org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.ApplicationContext;
@@ -46,7 +46,7 @@ public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 	private LoadBalancerClientFactory loadBalancerClientFactory;
 
 	@Mock
-	private GatewayLoadBalancerProperties gatewayLoadBalancerProperties;
+	private LoadBalancerProperties gatewayLoadBalancerProperties;
 
 	private PolarisReactiveLoadBalancerClientFilterBeanPostProcessor processor;
 
@@ -55,7 +55,7 @@ public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 		MockitoAnnotations.openMocks(this);
 		processor = new PolarisReactiveLoadBalancerClientFilterBeanPostProcessor(applicationContext);
 
-		when(applicationContext.getBean(GatewayLoadBalancerProperties.class)).thenReturn(gatewayLoadBalancerProperties);
+		when(applicationContext.getBean(LoadBalancerProperties.class)).thenReturn(gatewayLoadBalancerProperties);
 		when(applicationContext.getBean(LoadBalancerClientFactory.class)).thenReturn(loadBalancerClientFactory);
 	}
 
@@ -75,7 +75,7 @@ public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 		Object result = processor.postProcessAfterInitialization(originalInterceptor, beanName);
 
 		// Assert
-		Assertions.assertInstanceOf(PolarisReactiveLoadBalancerClientFilter.class, result);
+		Assertions.assertTrue(result instanceof PolarisReactiveLoadBalancerClientFilter);
 	}
 
 	@Test

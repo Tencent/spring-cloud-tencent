@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
-import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
+import org.springframework.cloud.gateway.config.LoadBalancerProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
@@ -47,7 +47,7 @@ class PolarisReactiveLoadBalancerClientFilterTest {
 	@Mock
 	private LoadBalancerClientFactory clientFactory;
 	@Mock
-	private GatewayLoadBalancerProperties properties;
+	private LoadBalancerProperties properties;
 	@Mock
 	private ReactiveLoadBalancerClientFilter originalFilter;
 	@Mock

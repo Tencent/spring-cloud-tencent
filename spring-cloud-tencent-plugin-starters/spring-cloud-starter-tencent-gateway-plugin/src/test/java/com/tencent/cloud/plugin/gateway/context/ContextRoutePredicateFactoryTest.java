@@ -51,7 +51,6 @@ class ContextRoutePredicateFactoryTest {
 			GatewayPredicate gatewayPredicate = (GatewayPredicate) factory.apply(config);
 			gatewayPredicate.toString();
 			Assertions.assertTrue(gatewayPredicate.test(null));
-			Assertions.assertEquals(config, gatewayPredicate.getConfig());
 		});
 	}
 

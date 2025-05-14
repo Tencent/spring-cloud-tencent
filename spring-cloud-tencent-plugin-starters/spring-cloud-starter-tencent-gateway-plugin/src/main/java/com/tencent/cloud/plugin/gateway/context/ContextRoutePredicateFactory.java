@@ -39,12 +39,6 @@ public class ContextRoutePredicateFactory extends AbstractRoutePredicateFactory<
 				// TODO: do path-rewriting , put to GATEWAY_PREDICATE_PATH_CONTAINER_ATTR
 				return true;
 			}
-
-
-			public Object getConfig() {
-				return config;
-			}
-
 			@Override
 			public String toString() {
 				return String.format("Config: %s", config);
