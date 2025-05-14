@@ -51,7 +51,7 @@ import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
-import org.yaml.snakeyaml.util.UriEncoder;
+import shade.polaris.org.yaml.snakeyaml.util.UriEncoder;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.util.CollectionUtils;
