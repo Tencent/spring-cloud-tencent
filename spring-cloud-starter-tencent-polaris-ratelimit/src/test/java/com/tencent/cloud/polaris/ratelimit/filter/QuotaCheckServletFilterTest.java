@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.StringValue;
-import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
@@ -44,6 +41,9 @@ import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import shade.polaris.com.google.protobuf.InvalidProtocolBufferException;
+import shade.polaris.com.google.protobuf.StringValue;
+import shade.polaris.com.google.protobuf.util.JsonFormat;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;

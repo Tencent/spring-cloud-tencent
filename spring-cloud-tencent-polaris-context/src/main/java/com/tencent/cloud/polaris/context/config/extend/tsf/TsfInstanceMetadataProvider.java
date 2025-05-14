@@ -23,7 +23,6 @@ import java.util.Map;
 import com.tencent.cloud.common.constant.SdkVersion;
 import com.tencent.cloud.common.constant.WarmupCons;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
-import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.inet.PolarisInetUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.metadata.core.constant.TsfMetadataConstants;
@@ -75,7 +74,6 @@ public class TsfInstanceMetadataProvider implements InstanceMetadataProvider {
 
 		tsfMetadata.put(WarmupCons.TSF_START_TIME, String.valueOf(System.currentTimeMillis()));
 		tsfMetadata.put(TsfMetadataConstants.TSF_SDK_VERSION, SdkVersion.get());
-		tsfMetadata.put(TsfMetadataConstants.TSF_TAGS, JacksonUtils.serialize2Json(tsfCoreProperties.getTsfTags()));
 		String ipv4Address = PolarisInetUtils.getIpString(false);
 		if (StringUtils.isNotBlank(ipv4Address)) {
 			tsfMetadata.put(TsfMetadataConstants.TSF_ADDRESS_IPV4, ipv4Address);

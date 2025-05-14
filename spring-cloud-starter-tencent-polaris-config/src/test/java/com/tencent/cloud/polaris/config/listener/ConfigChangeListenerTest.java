@@ -18,10 +18,11 @@
 package com.tencent.cloud.polaris.config.listener;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Sets;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFileLocator;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
@@ -83,8 +84,9 @@ public class ConfigChangeListenerTest {
 
 		//submit change event
 		System.setProperty("timeout", "2000");
-		EnvironmentChangeEvent event = new EnvironmentChangeEvent(applicationContext,
-				Sets.newHashSet("timeout"));
+		Set<String> ketSet = new HashSet<>();
+		ketSet.add("timeout");
+		EnvironmentChangeEvent event = new EnvironmentChangeEvent(applicationContext, ketSet);
 
 		applicationEventPublisher.publishEvent(event);
 

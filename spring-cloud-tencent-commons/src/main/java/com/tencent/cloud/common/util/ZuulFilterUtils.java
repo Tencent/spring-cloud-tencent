@@ -17,12 +17,13 @@
 
 package com.tencent.cloud.common.util;
 
+
 import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.netflix.zuul.context.RequestContext;
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

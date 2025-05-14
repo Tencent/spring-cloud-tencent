@@ -17,9 +17,8 @@
 
 package com.tencent.cloud.metadata.service.frontend;
 
+import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
 
 import org.springframework.stereotype.Component;
 
@@ -33,6 +32,6 @@ public class MetadataMiddleServiceFallback implements MetadataMiddleService {
 
 	@Override
 	public Map<String, Map<String, String>> info() {
-		return Maps.newHashMap();
+		return new HashMap<>();
 	}
 }

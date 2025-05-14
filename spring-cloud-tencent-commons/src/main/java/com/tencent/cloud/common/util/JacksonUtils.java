@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
@@ -41,6 +42,10 @@ public final class JacksonUtils {
 	public static final ObjectMapper OM = new ObjectMapper();
 
 	private static final Logger LOG = LoggerFactory.getLogger(JacksonUtils.class);
+
+	static {
+		OM.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
 
 	private JacksonUtils() {
 	}

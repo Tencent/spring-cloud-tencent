@@ -25,10 +25,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
-import org.apache.commons.lang.StringUtils;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
