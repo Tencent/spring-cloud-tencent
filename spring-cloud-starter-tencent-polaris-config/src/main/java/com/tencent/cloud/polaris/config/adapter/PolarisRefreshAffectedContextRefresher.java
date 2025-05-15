@@ -24,6 +24,7 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +64,8 @@ public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropert
 
 	public PolarisRefreshAffectedContextRefresher(PolarisConfigProperties polarisConfigProperties,
 			SpringValueRegistry springValueRegistry, PlaceholderHelper placeholderHelper,
-			ConfigFileService configFileService, ContextRefresher contextRefresher) {
-		super(polarisConfigProperties, configFileService);
+			ConfigFileService configFileService, ContextRefresher contextRefresher, SDKContext context) {
+		super(polarisConfigProperties, configFileService, context);
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
 		this.contextRefresher = contextRefresher;

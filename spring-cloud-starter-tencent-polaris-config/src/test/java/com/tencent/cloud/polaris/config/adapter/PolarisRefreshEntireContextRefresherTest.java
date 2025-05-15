@@ -25,6 +25,7 @@ import java.util.Set;
 
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,9 @@ public class PolarisRefreshEntireContextRefresherTest {
 
 	private PolarisRefreshEntireContextRefresher refresher;
 
+	@Mock
+	private SDKContext context;
+
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
@@ -77,7 +81,8 @@ public class PolarisRefreshEntireContextRefresherTest {
 				polarisConfigProperties,
 				springValueRegistry,
 				configFileService,
-				contextRefresher
+				contextRefresher,
+				context
 		);
 		refresher.setApplicationContext(applicationContext);
 	}
