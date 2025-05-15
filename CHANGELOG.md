@@ -34,3 +34,4 @@
 - [fix: fix count circuit breaker in gateway & return 404 when context api does not match.](https://github.com/Tencent/spring-cloud-tencent/pull/1552)
 - [docs:simplify GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1553)
 - [feat: support config event.](https://github.com/Tencent/spring-cloud-tencent/pull/1558)
+- [feat:support stat and event report with service discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1560)
