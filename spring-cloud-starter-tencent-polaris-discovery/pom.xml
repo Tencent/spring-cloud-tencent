@@ -54,12 +54,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-security-rsa</artifactId>
-					<groupId>org.springframework.security</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>
