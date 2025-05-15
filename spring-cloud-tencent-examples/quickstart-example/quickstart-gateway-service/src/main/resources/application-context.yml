@@ -18,7 +18,7 @@ spring:
                 metadata: { }
                 method: GET
                 namespace: default
-                path: /quickstart/callee/{segment}
+                path: /quickstart/callee/info
                 service: QuickstartCalleeService
           group-caller:
             predicate:
@@ -35,17 +35,8 @@ spring:
                 metadata: { }
                 method: GET
                 namespace: default
-                path: /**
+                path: /quickstart/**
                 service: QuickstartCallerService
-          external-api:
-            predicate:
-              apiType: EXTERNAL
-              context: /external-api
-            routes:
-              - host: http://127.0.0.1:48082/
-                metadata: { }
-                method: GET
-                path: /v3/api-docs
         routes:
           group-callee:
             filters:
@@ -72,7 +63,3 @@ spring:
               - Path=/external-api/**
             uri: lb://external-api # do not use "_".
 
-#
-#http://localhost:48081/group-callee/default/QuickstartCalleeService/quickstart/callee/info
-#http://localhost:48081/group-caller/default/QuickstartCallerService/quickstart/caller/info
-#http://localhost:48081/external-api/v3/api-docs
