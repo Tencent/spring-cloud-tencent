@@ -46,9 +46,9 @@ jobs:
           elif [[ "$branch_name" == "2020" ]]; then
             echo "jdks=[8,11,17,21]" >> $GITHUB_OUTPUT
           elif [[ "$branch_name" == "hoxton" ]]; then
-            echo "jdks=[8,11,17,21]" >> $GITHUB_OUTPUT
+            echo "jdks=[8,11,17]" >> $GITHUB_OUTPUT
           elif [[ "$branch_name" == "greenwich" ]]; then
-            echo "jdks=[8,11,17,21]" >> $GITHUB_OUTPUT
+            echo "jdks=[8,11,17]" >> $GITHUB_OUTPUT
           else
             echo "jdks=[17]" >> $GITHUB_OUTPUT
           fi
