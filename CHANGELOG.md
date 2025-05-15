@@ -31,3 +31,4 @@
 - [feat: support gateway context, feign eager-load support default value.](https://github.com/Tencent/spring-cloud-tencent/pull/1545)
 - [feat:use polaris-all for shading third-party dependencies.](https://github.com/Tencent/spring-cloud-tencent/pull/1549)
 - [feat:support default instance circuit breaker rule.](https://github.com/Tencent/spring-cloud-tencent/pull/1551)
+- [fix: fix count circuit breaker in gateway & return 404 when context api does not match.](https://github.com/Tencent/spring-cloud-tencent/pull/1552)

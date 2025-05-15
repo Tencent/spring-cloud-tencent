@@ -52,6 +52,10 @@ public class ContextGatewayPropertiesManager {
 		return groupPathRouteMap;
 	}
 
+	public Map<String, Map<String, GroupContext.ContextRoute>> getGroupWildcardPathRouteMap() {
+		return groupWildcardPathRouteMap;
+	}
+
 	public void setGroupRouteMap(Map<String, GroupContext> groups) {
 
 		ConcurrentHashMap<String, Map<String, GroupContext.ContextRoute>> newGroupPathRouteMap = new ConcurrentHashMap<>();
@@ -63,7 +67,7 @@ public class ContextGatewayPropertiesManager {
 				for (GroupContext.ContextRoute route : entry.getValue().getRoutes()) {
 					String path = route.getPath();
 					// convert path parameter to group wildcard path
-					if (path.contains("{") && path.contains("}") || path.contains("*")) {
+					if (path.contains("{") && path.contains("}") || path.contains("*") || path.contains("?")) {
 						newGroupWildcardPathRoute.put(buildPathKey(entry.getValue(), route), route);
 					}
 					else {

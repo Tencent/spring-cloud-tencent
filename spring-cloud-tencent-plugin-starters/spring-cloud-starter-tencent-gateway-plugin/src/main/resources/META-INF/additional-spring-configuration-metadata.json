@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.tencent.gateway.routes",
+      "type": "java.util.Map<java.lang.String, org.springframework.cloud.gateway.route.RouteDefinition>",
+      "description": "Route definitions map for gateway context",
+      "sourceType": "com.tencent.cloud.plugin.gateway.context.ContextGatewayProperties",
+      "defaultValue": {}
+    },
+    {
+      "name": "spring.cloud.tencent.gateway.groups",
+      "type": "java.util.Map<java.lang.String, com.tencent.cloud.plugin.gateway.context.GroupContext>",
+      "description": "Group contexts configuration",
+      "sourceType": "com.tencent.cloud.plugin.gateway.context.ContextGatewayProperties",
+      "defaultValue": {}
+    }
+  ]
+}
