@@ -3,10 +3,10 @@ spring:
     tencent:
       gateway:
         groups:
-          group-scg2p:
+          group-callee:
             predicate:
               apiType: ms
-              context: /group1
+              context: /group-callee
               namespace:
                 key: null
                 position: PATH
@@ -15,17 +15,64 @@ spring:
                 position: PATH
             routes:
               - host: null
-                metadata: {}
+                metadata: { }
                 method: GET
                 namespace: default
-                path: /echo/{param}
-                service: provider-demo
+                path: /quickstart/callee/{segment}
+                service: QuickstartCalleeService
+          group-caller:
+            predicate:
+              apiType: ms
+              context: /group-caller
+              namespace:
+                key: null
+                position: PATH
+              service:
+                key: null
+                position: PATH
+            routes:
+              - host: null
+                metadata: { }
+                method: GET
+                namespace: default
+                path: /**
+                service: QuickstartCallerService
+          external-api:
+            predicate:
+              apiType: EXTERNAL
+              context: /external-api
+            routes:
+              - host: http://127.0.0.1:48082/
+                metadata: { }
+                method: GET
+                path: /v3/api-docs
         routes:
-          group1:
+          group-callee:
             filters:
-              - Context=group1
+              - Context=group-callee
             order: -1
             predicates:
-              - Context=group1
-              - Path=/group1/**
-            uri: lb://group1
+              - Context=group-callee
+              - Path=/group-callee/**
+            uri: lb://group-callee # do not use "_".
+          group-caller:
+            filters:
+              - Context=group-caller
+            order: -1
+            predicates:
+              - Context=group-caller
+              - Path=/group-caller/**
+            uri: lb://group-caller # do not use "_".
+          external-api:
+            filters:
+              - Context=external-api
+            order: -1
+            predicates:
+              - Context=external-api
+              - Path=/external-api/**
+            uri: lb://external-api # do not use "_".
+
+#
+#http://localhost:48081/group-callee/default/QuickstartCalleeService/quickstart/callee/info
+#http://localhost:48081/group-caller/default/QuickstartCallerService/quickstart/caller/info
+#http://localhost:48081/external-api/v3/api-docs
