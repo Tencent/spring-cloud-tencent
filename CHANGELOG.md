@@ -15,4 +15,4 @@
 - [feat:support stat and event report with service discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1533)
 - [fix: update EnhancedRequestContext toString method.](https://github.com/Tencent/spring-cloud-tencent/pull/1547)
 - [docs: update GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1554)
-- [fix: add gateway context config example.](https://github.com/Tencent/spring-cloud-tencent/pull/1561)
+- [fix: add gateway context config example.](https://github.com/Tencent/spring-cloud-tencent/pull/1562)
