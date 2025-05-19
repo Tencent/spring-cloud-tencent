@@ -130,7 +130,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 				response.getHeaders()
 						.add(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
 				// set trace span
-				RateLimitUtils.reportTrace(assemblyAPI, quotaResponse.getActiveRule().getId().getValue());
+				RateLimitUtils.reportTrace(assemblyAPI, quotaResponse.getActiveRuleId());
 				if (Objects.nonNull(quotaResponse.getActiveRule())) {
 					try {
 						String encodedActiveRuleName = URLEncoder.encode(
