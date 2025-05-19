@@ -17,7 +17,7 @@
       "name": "spring.cloud.polaris.namespace",
       "type": "java.lang.String",
       "description": "polaris namespace",
-        "defaultValue": "default",
+      "defaultValue": "default",
       "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     },
     {
@@ -51,6 +51,29 @@
       "type": "java.lang.String",
       "defaultValue": "./polaris/logs",
       "description": "polaris log storage path."
+    },
+    {
+      "name": "spring.cloud.polaris.event.pushgateway.enabled",
+      "type": "java.lang.Boolean",
+      "description": "If push gateway event reporter is enabled.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.cloud.polaris.event.pushgateway.address",
+      "type": "java.lang.String",
+      "description": "Address of pushgateway. For example: 1.2.3.4:9091."
+    },
+    {
+      "name": "spring.cloud.polaris.event.pushgateway.eventQueueSize",
+      "type": "java.lang.Integer",
+      "description": "Queue size for push gateway event queue. Default is 1000.",
+      "defaultValue": 1000
+    },
+    {
+      "name": "spring.cloud.polaris.event.pushgateway.maxBatchSize",
+      "type": "java.lang.Integer",
+      "description": "Max batch size for push gateway event. Default is 100.",
+      "defaultValue": 100
     }
   ],
   "hints": []

@@ -56,13 +56,12 @@ public class PolarisRegistration implements Registration {
 	private final SDKContext polarisContext;
 
 	private final StaticMetadataManager staticMetadataManager;
-
-	private String serviceId;
 	private final String host;
 	private final boolean isSecure;
 	private final ServletWebServerApplicationContext servletWebServerApplicationContext;
 	private final ReactiveWebServerApplicationContext reactiveWebServerApplicationContext;
 	private final List<PolarisRegistrationCustomizer> customizers;
+	private String serviceId;
 	private boolean registerEnabled = false;
 	private Map<String, String> metadata;
 	private Map<String, Map<String, String>> extendedMetadata;
@@ -164,13 +163,13 @@ public class PolarisRegistration implements Registration {
 		}
 	}
 
-	public void setServiceId(String serviceId) {
-		this.serviceId = serviceId;
-	}
-
 	@Override
 	public String getServiceId() {
 		return serviceId;
+	}
+
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
 	}
 
 	@Override
@@ -236,6 +235,10 @@ public class PolarisRegistration implements Registration {
 
 	public boolean isRegisterEnabled() {
 		return registerEnabled;
+	}
+
+	public SDKContext getPolarisContext() {
+		return polarisContext;
 	}
 
 	@Override
