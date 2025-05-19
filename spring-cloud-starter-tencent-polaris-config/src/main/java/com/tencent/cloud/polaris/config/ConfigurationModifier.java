@@ -105,7 +105,10 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 					+ " with spring.cloud.polaris.address or spring.cloud.polaris.config.address");
 		}
 
-		checkAddressAccessible(configAddresses);
+		// enable close check address for unit tests
+		if (polarisConfigProperties.isCheckAddress()) {
+			checkAddressAccessible(configAddresses);
+		}
 
 		configuration.getConfigFile().getServerConnector().setAddresses(configAddresses);
 

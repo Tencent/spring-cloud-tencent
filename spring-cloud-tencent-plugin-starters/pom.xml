@@ -22,6 +22,7 @@
 		<module>spring-cloud-starter-tencent-threadlocal-plugin</module>
 		<module>spring-cloud-starter-tencent-trace-plugin</module>
 		<module>spring-cloud-starter-tencent-fault-tolerance</module>
+		<module>spring-cloud-tencent-security-protection-plugin</module>
 	</modules>
 
 </project>

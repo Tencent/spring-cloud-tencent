@@ -19,16 +19,24 @@ package com.tencent.cloud.rpc.enhancement.instrument.feign;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import feign.Client;
 import feign.Request;
 import feign.Request.Options;
+import feign.RequestTemplate;
 import feign.Response;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -61,16 +69,19 @@ public class EnhancedFeignClient implements Client {
 		request.headers().forEach((s, strings) -> requestHeaders.addAll(s, new ArrayList<>(strings)));
 		URI url = URI.create(request.url());
 
+		URI serviceUrl = url.resolve(request.requestTemplate().url());
+
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(requestHeaders)
 				.httpMethod(HttpMethod.valueOf(request.httpMethod().name()))
 				.url(url)
+				.serviceUrl(serviceUrl)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(request);
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
-		String svcName = request.requestTemplate().feignTarget().name();
+		String svcName = serviceUrl.getHost();
 		DefaultServiceInstance serviceInstance = new DefaultServiceInstance(
 				String.format("%s-%s-%d", svcName, url.getHost(), url.getPort()),
 				svcName, url.getHost(), url.getPort(), url.getScheme().equals("https"));
@@ -82,11 +93,11 @@ public class EnhancedFeignClient implements Client {
 			enhancedPluginContext.setTargetServiceInstance(serviceInstance, url);
 		}
 
-		// Run pre enhanced plugins.
-		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
-
 		long startMillis = System.currentTimeMillis();
 		try {
+			// Run pre enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+
 			Response response = delegate.execute(request, options);
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 
@@ -103,6 +114,15 @@ public class EnhancedFeignClient implements Client {
 			pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
 			return response;
 		}
+		catch (CallAbortedException callAbortedException) {
+			// circuit breaker fallback, not need to run post/exception enhanced plugins.
+			if (callAbortedException.getFallbackInfo() != null) {
+				return getFallbackResponse(callAbortedException.getFallbackInfo());
+			}
+			else {
+				throw callAbortedException;
+			}
+		}
 		catch (IOException origin) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 			enhancedPluginContext.setThrowable(origin);
@@ -114,5 +134,26 @@ public class EnhancedFeignClient implements Client {
 			// Run finally enhanced plugins.
 			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 		}
+	}
+
+	private Response getFallbackResponse(CircuitBreakerStatus.FallbackInfo fallbackInfo) {
+
+		Response.Builder responseBuilder = Response.builder()
+				.status(fallbackInfo.getCode());
+		if (fallbackInfo.getHeaders() != null) {
+			Map<String, Collection<String>> headers = new HashMap<>();
+			fallbackInfo.getHeaders().forEach((k, v) -> headers.put(k, Collections.singleton(v)));
+			responseBuilder.headers(headers);
+		}
+		if (fallbackInfo.getBody() != null) {
+			responseBuilder.body(fallbackInfo.getBody(), StandardCharsets.UTF_8);
+		}
+		// Feign Response need a nonnull Request,
+		// which is not important in fallback response (no real request),
+		// so we create a fake one
+		Request fakeRequest = Request.create(Request.HttpMethod.GET, "/", new HashMap<>(), Request.Body.empty(), new RequestTemplate());
+		responseBuilder.request(fakeRequest);
+
+		return responseBuilder.build();
 	}
 }

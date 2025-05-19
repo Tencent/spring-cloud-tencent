@@ -27,7 +27,9 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.api.FunctionalDecorator;
+import com.tencent.polaris.circuitbreak.api.InvokeHandler;
 import com.tencent.polaris.circuitbreak.api.pojo.FunctionalDecoratorRequest;
+import com.tencent.polaris.circuitbreak.api.pojo.InvokeContext;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +41,7 @@ import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
  *
  * @author seanyu 2023-02-27
  */
-public class PolarisCircuitBreaker implements CircuitBreaker {
+public class PolarisCircuitBreaker implements CircuitBreaker, InvokeHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisCircuitBreaker.class);
 
@@ -49,6 +51,8 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 	private final PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf;
 
 	private final ConsumerAPI consumerAPI;
+
+	private final InvokeHandler invokeHandler;
 
 	public PolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf,
 			ConsumerAPI consumerAPI,
@@ -60,6 +64,7 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 		this.consumerAPI = consumerAPI;
 		this.conf = conf;
 		this.decorator = circuitBreakAPI.makeFunctionalDecorator(makeDecoratorRequest);
+		this.invokeHandler = circuitBreakAPI.makeInvokeHandler(makeDecoratorRequest);
 	}
 
 	@Override
@@ -78,4 +83,18 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 		}
 	}
 
+	@Override
+	public void acquirePermission() {
+		invokeHandler.acquirePermission();
+	}
+
+	@Override
+	public void onSuccess(InvokeContext.ResponseContext responseContext) {
+		invokeHandler.onSuccess(responseContext);
+	}
+
+	@Override
+	public void onError(InvokeContext.ResponseContext responseContext) {
+		invokeHandler.onError(responseContext);
+	}
 }

@@ -49,7 +49,6 @@ public class NacosDiscoveryAdapterAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = "com.alibaba.cloud.nacos.registry.NacosRegistration")
 	public RegistrationTransformer registrationTransformer() {
 		return new NacosRegistrationTransformer();

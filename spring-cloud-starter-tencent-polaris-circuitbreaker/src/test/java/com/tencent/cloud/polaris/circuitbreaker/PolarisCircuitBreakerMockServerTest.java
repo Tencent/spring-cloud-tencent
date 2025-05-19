@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,11 +49,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
@@ -62,7 +58,7 @@ import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisCircuitBreaker} and {@link ReactivePolarisCircuitBreaker} using real mock server.
+ * Test for {@link PolarisCircuitBreaker} using real mock server.
  *
  * @author sean yu
  */
@@ -138,26 +134,6 @@ public class PolarisCircuitBreakerMockServerTest {
 			Utils.sleepUninterrupted(2000);
 		}
 		assertThat(resList).isEqualTo(Arrays.asList("invoke success", "fallback", "fallback", "fallback", "fallback"));
-
-		// always fallback
-		ReactivePolarisCircuitBreakerFactory reactivePolarisCircuitBreakerFactory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI, polarisCircuitBreakerProperties);
-		ReactiveCircuitBreaker rcb = reactivePolarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
-
-		assertThat(Mono.just("foobar").transform(it -> rcb.run(it, t -> Mono.just("fallback")))
-				.block()).isEqualTo("fallback");
-
-		assertThat(Mono.error(new RuntimeException("boom")).transform(it -> rcb.run(it, t -> Mono.just("fallback")))
-				.block()).isEqualTo("fallback");
-
-		assertThat(Flux.just("foobar", "hello world")
-				.transform(it -> rcb.run(it, t -> Flux.just("fallback", "fallback")))
-				.collectList().block())
-				.isEqualTo(Arrays.asList("fallback", "fallback"));
-
-		assertThat(Flux.error(new RuntimeException("boom")).transform(it -> rcb.run(it, t -> Flux.just("fallback")))
-				.collectList().block())
-				.isEqualTo(Collections.singletonList("fallback"));
-
 	}
 
 }

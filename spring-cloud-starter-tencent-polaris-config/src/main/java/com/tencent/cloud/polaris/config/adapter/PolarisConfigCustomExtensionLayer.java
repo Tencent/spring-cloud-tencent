@@ -36,5 +36,5 @@ public interface PolarisConfigCustomExtensionLayer {
 
 	void executeAfterLocateConfigReturning(CompositePropertySource compositePropertySource);
 
-	boolean executeRegisterPublishChangeListener(PolarisPropertySource polarisPropertySource);
+	boolean executeRegisterPublishChangeListener(PolarisPropertySource polarisPropertySource, PolarisPropertySource effectPolarisPropertySource);
 }

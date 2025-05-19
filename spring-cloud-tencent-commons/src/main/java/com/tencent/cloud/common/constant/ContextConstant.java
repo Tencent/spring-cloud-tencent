@@ -43,4 +43,23 @@ public final class ContextConstant {
 
 	private ContextConstant() {
 	}
+
+	public static final class CircuitBreaker {
+		/**
+		 * polaris circuit breaker.
+		 */
+		public static final String POLARIS_CIRCUIT_BREAKER = "PolarisCircuitBreaker";
+		/**
+		 * circuit breaker start time.
+		 */
+		public static final String CIRCUIT_BREAKER_START_TIME = "CIRCUIT_BREAKER_START_TIME";
+		/**
+		 * circuit breaker fallback http response.
+		 */
+		public static final String CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE = "CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE";
+
+		private CircuitBreaker() {
+
+		}
+	}
 }

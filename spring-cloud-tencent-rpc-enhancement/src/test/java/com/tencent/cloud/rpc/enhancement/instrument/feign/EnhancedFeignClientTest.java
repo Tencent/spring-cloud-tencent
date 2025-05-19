@@ -20,6 +20,7 @@ package com.tencent.cloud.rpc.enhancement.instrument.feign;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
@@ -27,6 +28,8 @@ import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
+import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import feign.Client;
 import feign.Request;
 import feign.RequestTemplate;
@@ -81,7 +84,7 @@ public class EnhancedFeignClientTest {
 		List<EnhancedPlugin> enhancedPlugins = getMockEnhancedFeignPlugins();
 		try {
 			new EnhancedFeignClient(mock(Client.class),
-					new DefaultEnhancedPluginRunner(enhancedPlugins, null, polarisSDKContextManager.getSDKContext()));
+					new DefaultEnhancedPluginRunner(enhancedPlugins, new ArrayList<>(), polarisSDKContextManager.getSDKContext()));
 		}
 		catch (Throwable e) {
 			fail("Exception encountered.", e);
@@ -111,7 +114,7 @@ public class EnhancedFeignClientTest {
 		requestTemplate.feignTarget(target);
 
 		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate,
-				new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins(), null, polarisSDKContextManager.getSDKContext()));
+				new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins(), new ArrayList<>(), polarisSDKContextManager.getSDKContext()));
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
@@ -133,6 +136,52 @@ public class EnhancedFeignClientTest {
 			assertThat(t).isInstanceOf(IOException.class);
 			assertThat(t.getMessage()).isEqualTo("Mock exception.");
 		}
+	}
+
+	@Test
+	public void testExecuteCallAbortedException() throws IOException {
+		// mock Client.class
+		Client delegate = mock(Client.class);
+		doAnswer(invocation -> {
+			Request request = invocation.getArgument(0);
+			if (request.httpMethod().equals(Request.HttpMethod.GET)) {
+				return Response.builder().request(request).status(200).build();
+			}
+			else if (request.httpMethod().equals(Request.HttpMethod.POST)) {
+				return Response.builder().request(request).status(502).build();
+			}
+			throw new IOException("Mock exception.");
+		}).when(delegate).execute(any(Request.class), nullable(Request.Options.class));
+
+		// mock target
+		Target<Object> target = Target.EmptyTarget.create(Object.class);
+
+		// mock RequestTemplate.class
+		RequestTemplate requestTemplate = new RequestTemplate();
+		requestTemplate.feignTarget(target);
+
+		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate,
+				new DefaultEnhancedPluginRunner(getMockCallAbortedExceptionEnhancedFeignPlugins(null), new ArrayList<>(), polarisSDKContextManager.getSDKContext()));
+
+		// Exception
+		try {
+			polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
+					Collections.emptyMap(), null, requestTemplate), null);
+			fail("CallAbortedException should be thrown.");
+		}
+		catch (CallAbortedException t) {
+			assertThat(t).isInstanceOf(CallAbortedException.class);
+			assertThat(t.getMessage()).contains("Mock CallAbortedException");
+		}
+
+		polarisFeignClient = new EnhancedFeignClient(delegate,
+				new DefaultEnhancedPluginRunner(getMockCallAbortedExceptionEnhancedFeignPlugins(
+						new CircuitBreakerStatus.FallbackInfo(200, new HashMap<>(), "mock ok")), new ArrayList<>(), polarisSDKContextManager.getSDKContext()));
+
+		// fallback 200
+		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
+				Collections.emptyMap(), null, requestTemplate), null);
+		assertThat(response.status()).isEqualTo(200);
 	}
 
 	private List<EnhancedPlugin> getMockEnhancedFeignPlugins() {
@@ -228,6 +277,30 @@ public class EnhancedFeignClientTest {
 
 		return enhancedPlugins;
 
+	}
+
+	private List<EnhancedPlugin> getMockCallAbortedExceptionEnhancedFeignPlugins(CircuitBreakerStatus.FallbackInfo fallbackInfo) {
+		List<EnhancedPlugin> enhancedPlugins = new ArrayList<>();
+
+		enhancedPlugins.add(new EnhancedPlugin() {
+
+			@Override
+			public int getOrder() {
+				return 0;
+			}
+
+			@Override
+			public EnhancedPluginType getType() {
+				return EnhancedPluginType.Client.PRE;
+			}
+
+			@Override
+			public void run(EnhancedPluginContext context) throws Throwable {
+				throw new CallAbortedException("Mock CallAbortedException", fallbackInfo);
+			}
+		});
+
+		return enhancedPlugins;
 	}
 
 	@SpringBootApplication

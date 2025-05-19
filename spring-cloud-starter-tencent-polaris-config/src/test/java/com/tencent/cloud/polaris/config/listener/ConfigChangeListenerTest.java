@@ -17,13 +17,16 @@
 
 package com.tencent.cloud.polaris.config.listener;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Sets;
+import com.tencent.cloud.polaris.config.adapter.PolarisConfigFileLocator;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -34,6 +37,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -46,7 +50,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = ConfigChangeListenerTest.TestApplication.class,
-		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml"})
+		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml",
+				"spring.cloud.polaris.config.connect-remote-server=true", "spring.cloud.polaris.config.check-address=false"
+		})
 public class ConfigChangeListenerTest {
 
 	private static final CountDownLatch hits = new CountDownLatch(2);
@@ -56,6 +62,19 @@ public class ConfigChangeListenerTest {
 	private ConfigurableApplicationContext applicationContext;
 	@Autowired
 	private TestApplication.TestConfig testConfig;
+
+	@BeforeAll
+	public static void setUp() {
+		try {
+			Class<?> clazz = PolarisConfigFileLocator.class;
+			Field field = clazz.getDeclaredField("compositePropertySourceCache");
+			field.setAccessible(true);
+			field.set(null, new CompositePropertySource("mock"));
+		}
+		catch (Exception e) {
+			// ignore
+		}
+	}
 
 	@Test
 	public void test() throws InterruptedException {
