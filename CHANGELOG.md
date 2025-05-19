@@ -59,4 +59,4 @@
 - [feat:support stat and event report with service discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1537)
 - [fix: update EnhancedRequestContext toString method.](https://github.com/Tencent/spring-cloud-tencent/pull/1546)
 - [docs: update GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1556)
-- [fix: fix javaagent ratelimit pb method not found erro](https://github.com/Tencent/spring-cloud-tencent/pull/1569)
+- [fix: fix javaagent ratelimit pb method not found error](https://github.com/Tencent/spring-cloud-tencent/pull/1569)
