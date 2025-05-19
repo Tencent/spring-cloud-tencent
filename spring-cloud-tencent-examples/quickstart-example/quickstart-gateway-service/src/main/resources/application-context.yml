@@ -54,12 +54,3 @@ spring:
               - Context=group-caller
               - Path=/group-caller/**
             uri: lb://group-caller # do not use "_".
-          external-api:
-            filters:
-              - Context=external-api
-            order: -1
-            predicates:
-              - Context=external-api
-              - Path=/external-api/**
-            uri: lb://external-api # do not use "_".
-
