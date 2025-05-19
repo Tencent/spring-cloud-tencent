@@ -18,12 +18,6 @@
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-security-crypto</artifactId>
-					<groupId>org.springframework.security</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>
