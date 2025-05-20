@@ -21,7 +21,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -67,6 +70,19 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 		String serviceId = Optional.ofNullable(serviceInstanceResponse).map(Response::getServer).
 				map(ServiceInstance::getServiceId).orElse(null);
 
+		MetadataContext metadataContext = (MetadataContext) originExchange.getAttributes().get(
+				MetadataConstant.HeaderName.METADATA_CONTEXT);
+		if (metadataContext != null) {
+			MetadataContextHolder.set(metadataContext);
+		}
+		else {
+			metadataContext = MetadataContextHolder.get();
+		}
+
+		String governanceNamespace = metadataContext.getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
+
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
@@ -74,6 +90,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 				.httpMethod(originExchange.getRequest().getMethod())
 				.url(originExchange.getRequest().getURI())
 				.serviceUrl(getServiceUri(originExchange, serviceId))
+				.governanceNamespace(governanceNamespace)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(originExchange);
@@ -83,6 +100,8 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
 		}
 		catch (CallAbortedException e) {
+			// Run finally enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 			if (e.getFallbackInfo() == null) {
 				throw e;
 			}
@@ -106,7 +125,8 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 					URI uri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
 					enhancedPluginContext.getRequest().setUrl(uri);
 					if (uri != null) {
-						if (route != null && route.getUri().getScheme().contains("lb") && StringUtils.isNotEmpty(serviceId)) {
+						if (route != null && route.getUri().getScheme()
+								.contains("lb") && StringUtils.isNotEmpty(serviceId)) {
 							DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
 							serviceInstance.setServiceId(serviceId);
 							serviceInstance.setHost(uri.getHost());
