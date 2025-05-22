@@ -21,21 +21,21 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 import com.tencent.polaris.api.pojo.TrieNode;
 import com.tencent.polaris.api.utils.TrieUtil;
 import com.tencent.polaris.client.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.com.google.common.collect.LinkedListMultimap;
+import shade.polaris.com.google.common.collect.Multimap;
+import shade.polaris.com.google.common.collect.Multimaps;
+import shade.polaris.com.google.common.collect.Sets;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -53,14 +53,12 @@ public class SpringValueRegistry implements DisposableBean {
 	private static final Logger logger = LoggerFactory.getLogger(SpringValueRegistry.class);
 
 	private static final long CLEAN_INTERVAL_IN_SECONDS = 5;
-	private final Map<BeanFactory, Multimap<String, SpringValue>> registry = Maps.newConcurrentMap();
+	private final Map<BeanFactory, Multimap<String, SpringValue>> registry = new ConcurrentHashMap<>();
 	private final AtomicBoolean initialized = new AtomicBoolean(false);
 	private final Object LOCK = new Object();
-	private ScheduledExecutorService executor;
-
 	private final TrieNode<String> refreshScopePrefixRoot = new TrieNode<>(TrieNode.ROOT_PATH);
-
 	private final Set<String> refreshScopeKeys = Sets.newConcurrentHashSet();
+	private ScheduledExecutorService executor;
 
 	public void register(BeanFactory beanFactory, String key, SpringValue springValue) {
 		if (!registry.containsKey(beanFactory)) {

@@ -33,6 +33,7 @@ import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.plugin.server.InterfaceDescriptor;
 import com.tencent.polaris.api.plugin.server.ReportServiceContractRequest;
 import com.tencent.polaris.api.plugin.server.ReportServiceContractResponse;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -49,7 +50,6 @@ import org.springdoc.webmvc.api.OpenApiWebMvcUtil;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Polaris contract reporter.

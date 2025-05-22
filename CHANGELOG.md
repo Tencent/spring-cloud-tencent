@@ -5,3 +5,4 @@
 - [feat:support polaris event.](https://github.com/Tencent/spring-cloud-tencent/pull/1571)
 - [feat:support circuit breaker metrics reporting.](https://github.com/Tencent/spring-cloud-tencent/pull/1573)
 - [feat: support gateway context, feign eager-load support default value.](https://github.com/Tencent/spring-cloud-tencent/pull/1576)
+- [feat:use polaris-all for shading third-party dependencies.](https://github.com/Tencent/spring-cloud-tencent/pull/1579)

@@ -26,9 +26,6 @@ import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.StringValue;
-import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -47,6 +44,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import reactor.core.publisher.Mono;
+import shade.polaris.com.google.protobuf.InvalidProtocolBufferException;
+import shade.polaris.com.google.protobuf.StringValue;
+import shade.polaris.com.google.protobuf.util.JsonFormat;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;

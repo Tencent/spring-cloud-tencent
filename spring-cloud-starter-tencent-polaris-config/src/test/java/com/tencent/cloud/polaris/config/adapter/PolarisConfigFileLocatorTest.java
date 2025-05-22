@@ -18,13 +18,13 @@
 package com.tencent.cloud.polaris.config.adapter;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.enums.RefreshType;
@@ -188,7 +188,10 @@ public class PolarisConfigFileLocatorTest {
 		configFileGroup.setName(customGroup);
 		String customFile1 = "file1.properties";
 		String customFile2 = "file2.properties";
-		configFileGroup.setFiles(Lists.newArrayList(customFile1, customFile2));
+		List<String> files = new ArrayList<>();
+		files.add(customFile1);
+		files.add(customFile2);
+		configFileGroup.setFiles(files);
 		customFiles.add(configFileGroup);
 
 		when(polarisConfigProperties.isEnabled()).thenReturn(true);

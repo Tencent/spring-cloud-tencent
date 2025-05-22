@@ -145,8 +145,8 @@ public class ConsulDiscoveryConfigModifier implements PolarisConfigModifier {
 		configuration.getProvider().getRegisters().add(registerConfig);
 
 		// heartbeat
-		polarisDiscoveryProperties.setHeartbeatInterval(Long.valueOf(
-				consulHeartbeatProperties.computeHeartbeatInterval().toStandardDuration().getMillis()).intValue());
+		polarisDiscoveryProperties.setHeartbeatInterval(
+				(int) consulHeartbeatProperties.computeHeartbeatInterval().getSeconds());
 	}
 
 	@Override

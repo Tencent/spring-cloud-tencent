@@ -72,7 +72,7 @@ public class RouterAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.router.namespace-router.enabled", matchIfMissing = true)
+	@ConditionalOnProperty("spring.cloud.polaris.router.namespace-router.enabled")
 	public NamespaceRouterRequestInterceptor namespaceRouterRequestInterceptor(PolarisNamespaceRouterProperties polarisNamespaceRouterProperties) {
 		return new NamespaceRouterRequestInterceptor(polarisNamespaceRouterProperties);
 	}

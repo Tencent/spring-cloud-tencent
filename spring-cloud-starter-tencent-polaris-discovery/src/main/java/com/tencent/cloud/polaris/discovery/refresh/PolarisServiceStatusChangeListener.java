@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Sets;
 import com.tencent.polaris.api.plugin.registry.AbstractResourceEventListener;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.RegistryCacheValue;
@@ -33,6 +32,7 @@ import com.tencent.polaris.client.pojo.ServiceInstancesByProto;
 import com.tencent.polaris.client.pojo.ServicesByProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.com.google.common.collect.Sets;
 
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.context.ApplicationEventPublisher;

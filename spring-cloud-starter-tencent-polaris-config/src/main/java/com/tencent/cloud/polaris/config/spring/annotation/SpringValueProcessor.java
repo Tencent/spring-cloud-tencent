@@ -26,12 +26,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
@@ -40,6 +36,10 @@ import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.com.google.common.base.CaseFormat;
+import shade.polaris.com.google.common.collect.LinkedListMultimap;
+import shade.polaris.com.google.common.collect.Multimap;
+import shade.polaris.com.google.common.collect.Sets;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -73,7 +73,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 
 	private static final Set<BeanDefinitionRegistry> PROPERTY_VALUES_PROCESSED_BEAN_FACTORIES = Sets.newConcurrentHashSet();
 	private static final Map<BeanDefinitionRegistry, Multimap<String, SpringValueDefinition>> BEAN_DEFINITION_REGISTRY_MULTIMAP_CONCURRENT_MAP =
-			Maps.newConcurrentMap();
+			new ConcurrentHashMap<>();
 	private final PolarisConfigProperties polarisConfigProperties;
 	private final PlaceholderHelper placeholderHelper;
 	private final SpringValueRegistry springValueRegistry;
@@ -88,6 +88,33 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.springValueRegistry = springValueRegistry;
 		beanName2SpringValueDefinitions = LinkedListMultimap.create();
+	}
+
+	/**
+	 * whether the class is primitive or wrapper.
+	 * @param clazz the class under analysis.
+	 * @return true if the class is primitive or wrapper, otherwise false.
+	 */
+	private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
+		return clazz.isPrimitive() ||
+				clazz == String.class ||
+				clazz == Boolean.class ||
+				clazz == Character.class ||
+				clazz == Byte.class ||
+				clazz == Short.class ||
+				clazz == Integer.class ||
+				clazz == Long.class ||
+				clazz == Float.class ||
+				clazz == Double.class;
+	}
+
+	/**
+	 * whether the class is collection(array, collection, map).
+	 * @param clazz the class under analysis.
+	 * @return true if the class is collection(array, collection, map), otherwise false.
+	 */
+	private static boolean isCollection(Class<?> clazz) {
+		return clazz.isArray() || Collection.class.isAssignableFrom(clazz) || Map.class.isAssignableFrom(clazz);
 	}
 
 	@Override
@@ -107,7 +134,6 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		}
 		return bean;
 	}
-
 
 	@Override
 	protected void processField(Object bean, String beanName, Field field, boolean isRefreshScope) {
@@ -169,7 +195,8 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 				springValueRegistry.putRefreshScopeKeys(keys);
 			}
 			// method parameter class with @ConfigurationProperties
-			ConfigurationProperties configurationProperties = parameter.getType().getAnnotation(ConfigurationProperties.class);
+			ConfigurationProperties configurationProperties = parameter.getType()
+					.getAnnotation(ConfigurationProperties.class);
 			parseConfigurationPropertiesKeys(configurationProperties, parameter.getType());
 		}
 
@@ -183,7 +210,8 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 				continue;
 			}
 			// field class with @ConfigurationProperties
-			ConfigurationProperties configurationProperties = field.getType().getAnnotation(ConfigurationProperties.class);
+			ConfigurationProperties configurationProperties = field.getType()
+					.getAnnotation(ConfigurationProperties.class);
 			parseConfigurationPropertiesKeys(configurationProperties, field.getType());
 		}
 	}
@@ -239,33 +267,6 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()) + ".");
 			}
 		}
-	}
-
-	/**
-	 * whether the class is primitive or wrapper.
-	 * @param clazz the class under analysis.
-	 * @return true if the class is primitive or wrapper, otherwise false.
-	 */
-	private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
-		return clazz.isPrimitive() ||
-				clazz == String.class ||
-				clazz == Boolean.class ||
-				clazz == Character.class ||
-				clazz == Byte.class ||
-				clazz == Short.class ||
-				clazz == Integer.class ||
-				clazz == Long.class ||
-				clazz == Float.class ||
-				clazz == Double.class;
-	}
-
-	/**
-	 * whether the class is collection(array, collection, map).
-	 * @param clazz the class under analysis.
-	 * @return true if the class is collection(array, collection, map), otherwise false.
-	 */
-	private static boolean isCollection(Class<?> clazz) {
-		return clazz.isArray() || Collection.class.isAssignableFrom(clazz) || Map.class.isAssignableFrom(clazz);
 	}
 
 	@Override
