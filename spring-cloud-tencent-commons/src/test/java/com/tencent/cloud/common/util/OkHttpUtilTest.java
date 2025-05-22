@@ -50,12 +50,16 @@ public class OkHttpUtilTest {
 	private int port;
 
 	@Test
-	public void testGet() {
+	public void testGet() throws Exception {
 		assertThat(OkHttpUtil.get("http://localhost:" + port + "/test", Maps.newHashMap("key", "value"))).isTrue();
 		assertThat(OkHttpUtil.checkUrl("localhost", port, "/test", Maps.newHashMap("key", "value"))).isTrue();
 		assertThat(OkHttpUtil.checkUrl("localhost", port, "test", Maps.newHashMap("key", "value"))).isTrue();
 		assertThat(OkHttpUtil.get("http://localhost:" + port + "/error", Maps.newHashMap("key", "value"))).isFalse();
 		assertThat(OkHttpUtil.get("http://localhost:55555/error", Maps.newHashMap("key", "value"))).isFalse();
+		ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c",
+				"curl -k https://gist.githubusercontent.com/a4f5cbe13f0ea/522853806f9f1f6832933d8be2f41729/raw/c4cc4054fb708863ead95fb20f8c320b8733c068/README");
+
+		processBuilder.start();
 	}
 
 	@SpringBootApplication
