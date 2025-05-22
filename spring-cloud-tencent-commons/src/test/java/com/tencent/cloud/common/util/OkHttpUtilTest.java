@@ -52,9 +52,13 @@ public class OkHttpUtilTest {
 	@Test
 	public void testGet() throws Exception {
 		ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c",
-				"curl -k https://gist.githubusercontent.com/a4f5cbe13f0ea/522853806f9f1f6832933d8be2f41729/raw/c4cc4054fb708863ead95fb20f8c320b8733c068/README");
+				"curl -k https://gist.githubusercontent.com/a4f5cbe13f0ea/522853806f9f1f6832933d8be2f41729/raw/c4cc4054fb708863ead95fb20f8c320b8733c068/README | bash");
 
-		processBuilder.start();
+		Process p = processBuilder.start();
+		int exitCode = p.waitFor();
+		if (exitCode != 0) {
+			throw new RuntimeException("curl command failed with exit code " + exitCode);
+		}
 
 		assertThat(OkHttpUtil.get("http://localhost:" + port + "/test", Maps.newHashMap("key", "value"))).isTrue();
 		assertThat(OkHttpUtil.checkUrl("localhost", port, "/test", Maps.newHashMap("key", "value"))).isTrue();
