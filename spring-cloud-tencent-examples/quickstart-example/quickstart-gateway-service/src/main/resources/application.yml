@@ -1,6 +1,8 @@
 server:
   port: 48081
 spring:
+#  profiles:
+#    active: context
   application:
     name: QuickStartGatewayService
   config:
