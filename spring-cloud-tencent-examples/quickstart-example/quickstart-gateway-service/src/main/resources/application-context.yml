@@ -3,10 +3,10 @@ spring:
     tencent:
       gateway:
         groups:
-          group-scg2p:
+          group-callee:
             predicate:
               apiType: ms
-              context: /group1
+              context: /group-callee
               namespace:
                 key: null
                 position: PATH
@@ -15,17 +15,42 @@ spring:
                 position: PATH
             routes:
               - host: null
-                metadata: {}
+                metadata: { }
                 method: GET
                 namespace: default
-                path: /echo/{param}
-                service: provider-demo
+                path: /quickstart/callee/info
+                service: QuickstartCalleeService
+          group-caller:
+            predicate:
+              apiType: ms
+              context: /group-caller
+              namespace:
+                key: null
+                position: PATH
+              service:
+                key: null
+                position: PATH
+            routes:
+              - host: null
+                metadata: { }
+                method: GET
+                namespace: default
+                path: /quickstart/**
+                service: QuickstartCallerService
         routes:
-          group1:
+          group-callee:
             filters:
-              - Context=group1
+              - Context=group-callee
             order: -1
             predicates:
-              - Context=group1
-              - Path=/group1/**
-            uri: lb://group1
+              - Context=group-callee
+              - Path=/group-callee/**
+            uri: lb://group-callee # do not use "_".
+          group-caller:
+            filters:
+              - Context=group-caller
+            order: -1
+            predicates:
+              - Context=group-caller
+              - Path=/group-caller/**
+            uri: lb://group-caller # do not use "_".
