@@ -18,6 +18,8 @@
 package com.tencent.cloud.polaris.router.instrument.resttemplate;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -108,6 +110,11 @@ public class RouterLabelRestTemplateInterceptorTest {
 		@Override
 		public URI getURI() {
 			return uri;
+		}
+
+		@Override
+		public Map<String, Object> getAttributes() {
+			return new HashMap<>();
 		}
 
 		@Override

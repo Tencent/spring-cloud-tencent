@@ -26,14 +26,15 @@ import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.AbstractClientHttpResponse;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.client.ClientHttpResponse;
 
 /**
  * PolarisCircuitBreakerHttpResponse.
  *
  * @author sean yu
  */
-public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpResponse {
+public class PolarisCircuitBreakerHttpResponse implements ClientHttpResponse {
 
 	private final CircuitBreakerStatus.FallbackInfo fallbackInfo;
 
@@ -64,13 +65,13 @@ public class PolarisCircuitBreakerHttpResponse extends AbstractClientHttpRespons
 	}
 
 	@Override
-	public final int getRawStatusCode() {
-		return fallbackInfo.getCode();
+	public HttpStatusCode getStatusCode() {
+		return HttpStatus.valueOf(fallbackInfo.getCode());
 	}
 
 	@Override
 	public final String getStatusText() {
-		HttpStatus status = HttpStatus.resolve(getRawStatusCode());
+		HttpStatus status = HttpStatus.resolve(getStatusCode().value());
 		return (status != null ? status.getReasonPhrase() : "");
 	}
 

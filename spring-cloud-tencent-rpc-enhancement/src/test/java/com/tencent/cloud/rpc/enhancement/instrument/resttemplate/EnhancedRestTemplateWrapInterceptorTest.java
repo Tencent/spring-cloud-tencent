@@ -103,7 +103,7 @@ class EnhancedRestTemplateWrapInterceptorTest {
 		when(request.getMethod()).thenReturn(HttpMethod.GET);
 		when(pluginRunner.getLocalServiceInstance()).thenReturn(localServiceInstance);
 		when(delegate.execute(any(), any())).thenReturn(response);
-		when(response.getRawStatusCode()).thenReturn(200);
+		when(response.getStatusCode()).thenReturn(HttpStatus.OK);
 		when(response.getHeaders()).thenReturn(new HttpHeaders());
 
 		// Act
@@ -138,7 +138,7 @@ class EnhancedRestTemplateWrapInterceptorTest {
 		when(request.getURI()).thenReturn(originalUri);
 		when(pluginRunner.getLocalServiceInstance()).thenReturn(localServiceInstance);
 		when(delegate.execute(any(), any())).thenReturn(response);
-		when(response.getRawStatusCode()).thenReturn(200);
+		when(response.getStatusCode()).thenReturn(HttpStatus.OK);
 		when(response.getHeaders()).thenReturn(new HttpHeaders());
 
 		// Act
@@ -227,7 +227,7 @@ class EnhancedRestTemplateWrapInterceptorTest {
 		when(request.getMethod()).thenReturn(HttpMethod.GET);
 		when(pluginRunner.getLocalServiceInstance()).thenReturn(null);
 		when(delegate.execute(any(), any())).thenReturn(response);
-		when(response.getRawStatusCode()).thenReturn(200);
+		when(response.getStatusCode()).thenReturn(HttpStatus.OK);
 		when(response.getHeaders()).thenReturn(new HttpHeaders());
 
 		// Act
@@ -272,11 +272,6 @@ class EnhancedRestTemplateWrapInterceptorTest {
 		@Override
 		public HttpStatus getStatusCode() throws IOException {
 			return null;
-		}
-
-		@Override
-		public int getRawStatusCode() throws IOException {
-			return 0;
 		}
 
 		@Override

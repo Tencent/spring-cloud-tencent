@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>4.1.3</version>
+		<version>4.2.1</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
 	<version>${revision}</version>
 	<name>Spring Cloud Tencent</name>
 	<description>Spring Cloud Tencent</description>
-	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2023</url>
+	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2024</url>
 
 	<organization>
 		<name>Tencent</name>
@@ -26,7 +26,7 @@
 	<licenses>
 		<license>
 			<name>The BSD 3-Clause License (BSD3)</name>
-			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2023/LICENSE</url>
+			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2024/LICENSE</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -90,16 +90,16 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.0.1.0-2023.0.3-SNAPSHOT</revision>
+		<revision>2.0.2.0-2024.0.1-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>6.1.14</spring.framework.version>
+		<spring.framework.version>6.2.7</spring.framework.version>
 
 		<!-- Spring Boot -->
-		<spring.boot.version>3.3.5</spring.boot.version>
+		<spring.boot.version>3.4.5</spring.boot.version>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2023.0.3</spring.cloud.version>
+		<spring.cloud.version>2024.0.1</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.12</jacoco.version>

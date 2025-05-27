@@ -23,9 +23,12 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -36,6 +39,8 @@ import org.springframework.web.server.WebFilterChain;
  * @author sean yu
  */
 public class EnhancedReactiveFilter implements WebFilter, Ordered {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedReactiveFilter.class);
 
 	private final EnhancedPluginRunner pluginRunner;
 
@@ -64,8 +69,16 @@ public class EnhancedReactiveFilter implements WebFilter, Ordered {
 				.doOnSuccess(v -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 
+					HttpStatusCode httpStatusCode = exchange.getResponse().getStatusCode();
+					int httpStatus = 200;
+					if (httpStatusCode != null) {
+						httpStatus = httpStatusCode.value();
+					}
+					else {
+						LOGGER.warn("httpStatusCode is null with response {}", exchange.getResponse());
+					}
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-							.httpStatus(exchange.getResponse().getRawStatusCode())
+							.httpStatus(httpStatus)
 							.httpHeaders(exchange.getResponse().getHeaders())
 							.build();
 					enhancedPluginContext.setResponse(enhancedResponseContext);

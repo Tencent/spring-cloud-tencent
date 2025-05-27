@@ -182,7 +182,8 @@ public class QuotaCheckReactiveFilterTest {
 		ServerWebExchange testApp3Exchange = MockServerWebExchange.from(request);
 		quotaCheckReactiveFilter.filter(testApp3Exchange, webFilterChain);
 		ServerHttpResponse response = testApp3Exchange.getResponse();
-		assertThat(response.getRawStatusCode()).isEqualTo(419);
+		assertThat(response.getStatusCode()).isNotNull();
+		assertThat(response.getStatusCode().value()).isEqualTo(419);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INSUFFICIENT_SPACE_ON_RESOURCE);
 		assertThat(response.getHeaders()
 				.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)).isEqualTo(Collections.singletonList("MOCK_RULE"));
@@ -227,7 +228,8 @@ public class QuotaCheckReactiveFilterTest {
 		MetadataContext.LOCAL_SERVICE = "TestApp3";
 		quotaCheckWithRateLimiterLimitedFallbackReactiveFilter.filter(exchange, webFilterChain);
 		ServerHttpResponse response = exchange.getResponse();
-		assertThat(response.getRawStatusCode()).isEqualTo(polarisRateLimiterLimitedFallback.rejectHttpCode());
+		assertThat(response.getStatusCode()).isNotNull();
+		assertThat(response.getStatusCode().value()).isEqualTo(polarisRateLimiterLimitedFallback.rejectHttpCode());
 		assertThat(response.getHeaders().getContentType()).isEqualTo(polarisRateLimiterLimitedFallback.mediaType());
 
 		// Exception
