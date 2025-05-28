@@ -37,3 +37,4 @@
 - [feat:support stat and event report with service discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1560)
 - [fix: add gateway context config example.](https://github.com/Tencent/spring-cloud-tencent/pull/1561)
 - [fix: use getActiveRuleId method to fix javaagent ratelimit pb method not found error.](https://github.com/Tencent/spring-cloud-tencent/pull/1575)
+- [feat:support config empty protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1583)
