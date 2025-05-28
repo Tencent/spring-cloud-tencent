@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 [![Junit Test](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit.yml/badge.svg?branch=2023)](https://github.com/Tencent/spring-cloud-tencent/actions/workflows/junit.yml)
-[![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2023/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2023)
+[![codecov.io](https://codecov.io/gh/Tencent/spring-cloud-tencent/branch/2023/graph/badge.svg)](https://codecov.io/gh/Tencent/spring-cloud-tencent?branch=2024)
 
 English | [简体中文](./README-zh.md)
 
@@ -62,9 +62,6 @@ All the components of Spring Cloud Tencent have been uploaded to the Maven centr
 dependencies.
 
 > Notice:
->
-> Support Spring Cloud 2023, 2022, 2021, 2020, Hoxton.
->
 > The version list of Spring Cloud Tencent can be found
 > in
 > [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)

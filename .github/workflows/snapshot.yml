@@ -10,6 +10,7 @@ on:
       - 2020
       - hoxton
       - greenwich
+      - release/*
 
 jobs:
   check-snapshot:

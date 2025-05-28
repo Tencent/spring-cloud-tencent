@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.instrument.resttemplate;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class PolarisCircuitBreakerHttpResponseTest {
 	@Test
-	void testConstructorWithCodeOnly() {
+	void testConstructorWithCodeOnly() throws IOException {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200);
 
 		Assertions.assertEquals(200, response.getRawStatusCode());
@@ -45,7 +46,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 	}
 
 	@Test
-	void testConstructorWithCodeAndBody() {
+	void testConstructorWithCodeAndBody() throws IOException {
 		String body = "test body";
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200, body);
 
@@ -56,7 +57,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 	}
 
 	@Test
-	void testConstructorWithCodeHeadersAndBody() {
+	void testConstructorWithCodeHeadersAndBody() throws IOException {
 		String body = "test body";
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
@@ -73,7 +74,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 	}
 
 	@Test
-	void testConstructorWithFallbackInfo() {
+	void testConstructorWithFallbackInfo() throws IOException {
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
 		CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(200, headers, "test body");
@@ -96,7 +97,8 @@ public class PolarisCircuitBreakerHttpResponseTest {
 	@Test
 	void testGetStatusTextWithInvalidHttpStatus() {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(999);
-		Assertions.assertEquals("", response.getStatusText());
+		//SCT 2024 will throw IllegalArgumentException when getStatusText() is called with invalid http status code
+		Assertions.assertThrows(IllegalArgumentException.class, () -> response.getStatusText());
 	}
 
 	@Test
