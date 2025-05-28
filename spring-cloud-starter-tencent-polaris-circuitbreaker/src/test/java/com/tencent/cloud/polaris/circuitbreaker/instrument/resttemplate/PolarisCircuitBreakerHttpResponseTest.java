@@ -95,8 +95,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 
 	@Test
 	void testGetStatusTextWithInvalidHttpStatus() {
-		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(999);
-		Assertions.assertEquals("", response.getStatusText());
+		Assertions.assertThrows(IllegalArgumentException.class, () -> new PolarisCircuitBreakerHttpResponse(999).getStatusText());
 	}
 
 	@Test
