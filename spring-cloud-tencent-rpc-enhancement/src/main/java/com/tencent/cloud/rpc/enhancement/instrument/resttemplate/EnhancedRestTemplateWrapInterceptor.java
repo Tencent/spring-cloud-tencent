@@ -92,7 +92,7 @@ public class EnhancedRestTemplateWrapInterceptor {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 
 			EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-					.httpStatus(response.getStatusCode().value())
+					.httpStatus(response.getRawStatusCode())
 					.httpHeaders(response.getHeaders())
 					.build();
 			enhancedPluginContext.setResponse(enhancedResponseContext);

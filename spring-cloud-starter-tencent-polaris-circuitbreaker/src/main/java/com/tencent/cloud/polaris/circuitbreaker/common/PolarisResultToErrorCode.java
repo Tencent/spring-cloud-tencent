@@ -40,7 +40,7 @@ public class PolarisResultToErrorCode implements ResultToErrorCode {
 	public int onError(Throwable e) {
 		if (checkClassExist("org.springframework.web.client.RestClientResponseException")
 				&& e instanceof RestClientResponseException) {
-			return ((RestClientResponseException) e).getStatusCode().value();
+			return ((RestClientResponseException) e).getRawStatusCode();
 		}
 		else if (checkClassExist("feign.FeignException")
 				&& e instanceof FeignException) {
@@ -48,10 +48,10 @@ public class PolarisResultToErrorCode implements ResultToErrorCode {
 		}
 		else if (checkClassExist("org.springframework.web.reactive.function.client.WebClientResponseException")
 				&& e instanceof WebClientResponseException) {
-			return ((WebClientResponseException) e).getStatusCode().value();
+			return ((WebClientResponseException) e).getRawStatusCode();
 		}
 		else if (e instanceof CircuitBreakerStatusCodeException) {
-			return ((CircuitBreakerStatusCodeException) e).getStatusCode().value();
+			return ((CircuitBreakerStatusCodeException) e).getRawStatusCode();
 		}
 		return -1;
 	}

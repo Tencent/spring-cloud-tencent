@@ -39,7 +39,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 	void testConstructorWithCodeOnly() throws IOException {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200);
 
-		Assertions.assertEquals(200, response.getStatusCode().value());
+		Assertions.assertEquals(200, response.getRawStatusCode());
 		Assertions.assertNotNull(response.getHeaders());
 		Assertions.assertTrue(response.getHeaders().isEmpty());
 		Assertions.assertNull(response.getBody());
@@ -50,7 +50,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 		String body = "test body";
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200, body);
 
-		Assertions.assertEquals(200, response.getStatusCode().value());
+		Assertions.assertEquals(200, response.getRawStatusCode());
 		Assertions.assertNotNull(response.getHeaders());
 		Assertions.assertTrue(response.getHeaders().isEmpty());
 		Assertions.assertNotNull(response.getBody());
@@ -65,7 +65,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200, headers, body);
 
-		Assertions.assertEquals(200, response.getStatusCode().value());
+		Assertions.assertEquals(200, response.getRawStatusCode());
 		Assertions.assertNotNull(response.getHeaders());
 		Assertions.assertEquals(2, response.getHeaders().size());
 		Assertions.assertTrue(response.getHeaders().containsKey("Content-Type"));
@@ -81,7 +81,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(fallbackInfo);
 
-		Assertions.assertEquals(200, response.getStatusCode().value());
+		Assertions.assertEquals(200, response.getRawStatusCode());
 		Assertions.assertEquals(fallbackInfo, response.getFallbackInfo());
 		Assertions.assertNotNull(response.getHeaders());
 		Assertions.assertTrue(response.getHeaders().containsKey("Content-Type"));
@@ -97,8 +97,10 @@ public class PolarisCircuitBreakerHttpResponseTest {
 	@Test
 	void testGetStatusTextWithInvalidHttpStatus() {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(999);
+		String statusText = response.getStatusText();
+		Assertions.assertEquals("", statusText);
 		//SCT 2024 will throw IllegalArgumentException when getStatusText() is called with invalid http status code
-		Assertions.assertThrows(IllegalArgumentException.class, () -> response.getStatusText());
+//		Assertions.assertThrows(IllegalArgumentException.class, () -> response.getStatusText());
 	}
 
 	@Test

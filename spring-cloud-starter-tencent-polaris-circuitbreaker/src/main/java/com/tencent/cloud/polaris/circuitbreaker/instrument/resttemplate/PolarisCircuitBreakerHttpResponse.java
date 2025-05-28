@@ -70,8 +70,12 @@ public class PolarisCircuitBreakerHttpResponse implements ClientHttpResponse {
 	}
 
 	@Override
+	public final int getRawStatusCode() {
+		return fallbackInfo.getCode();
+	}
+	@Override
 	public final String getStatusText() {
-		HttpStatus status = HttpStatus.resolve(getStatusCode().value());
+		HttpStatus status = HttpStatus.resolve(getRawStatusCode());
 		return (status != null ? status.getReasonPhrase() : "");
 	}
 
