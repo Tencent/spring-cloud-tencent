@@ -100,6 +100,17 @@ public class PolarisConfigProperties {
 	 */
 	private boolean checkAddress = true;
 
+	/**
+	 * if empty protection is enabled.
+	 */
+	private boolean emptyProtectionEnabled = true;
+
+	/**
+	 * interval of empty protection. 7 days by default.
+	 */
+	private long emptyProtectionExpiredInterval = 7 * 24 * 3600 * 1000L;
+
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -204,6 +215,22 @@ public class PolarisConfigProperties {
 		this.checkAddress = checkAddress;
 	}
 
+	public boolean isEmptyProtectionEnabled() {
+		return emptyProtectionEnabled;
+	}
+
+	public void setEmptyProtectionEnabled(boolean emptyProtectionEnabled) {
+		this.emptyProtectionEnabled = emptyProtectionEnabled;
+	}
+
+	public long getEmptyProtectionExpiredInterval() {
+		return emptyProtectionExpiredInterval;
+	}
+
+	public void setEmptyProtectionExpiredInterval(long emptyProtectionExpiredInterval) {
+		this.emptyProtectionExpiredInterval = emptyProtectionExpiredInterval;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisConfigProperties{" +
@@ -220,6 +247,8 @@ public class PolarisConfigProperties {
 				", localFileRootPath='" + localFileRootPath + '\'' +
 				", internalEnabled=" + internalEnabled +
 				", checkAddress=" + checkAddress +
+				", emptyProtectionEnabled=" + emptyProtectionEnabled +
+				", emptyProtectionExpiredInterval=" + emptyProtectionExpiredInterval +
 				'}';
 	}
 }
