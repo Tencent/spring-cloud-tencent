@@ -80,11 +80,12 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	}
 
 	private void initDataSource(ConfigurationImpl configuration) {
+		ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
 		// set connector type
-		configuration.getConfigFile().getServerConnector().setConnectorType(polarisConfigProperties.getDataSource());
+		connectorConfig.setConnectorType(polarisConfigProperties.getDataSource());
 		if (StringUtils.equalsIgnoreCase(polarisConfigProperties.getDataSource(), LOCAL_FILE_CONNECTOR_TYPE)) {
 			String localFileRootPath = polarisConfigProperties.getLocalFileRootPath();
-			configuration.getConfigFile().getServerConnector().setPersistDir(localFileRootPath);
+			connectorConfig.setPersistDir(localFileRootPath);
 			LOGGER.info("[SCT] Run spring cloud tencent config with local data source. localFileRootPath = {}", localFileRootPath);
 			return;
 		}
@@ -108,12 +109,14 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 			checkAddressAccessible(configAddresses);
 		}
 
-		configuration.getConfigFile().getServerConnector().setAddresses(configAddresses);
+		connectorConfig.setAddresses(configAddresses);
 
 		if (StringUtils.isNotEmpty(polarisConfigProperties.getToken())) {
-			ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
 			connectorConfig.setToken(polarisConfigProperties.getToken());
 		}
+
+		connectorConfig.setEmptyProtectionEnable(polarisConfigProperties.isEmptyProtectionEnabled());
+		connectorConfig.setEmptyProtectionExpiredInterval(polarisConfigProperties.getEmptyProtectionExpiredInterval());
 
 		LOGGER.info("[SCT] Run spring cloud tencent config in polaris data source.");
 	}
