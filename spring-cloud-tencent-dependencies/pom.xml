@@ -207,12 +207,6 @@
 				<version>${revision}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>com.tencent.cloud</groupId>
-				<artifactId>spring-cloud-tencent-security-protection-plugin</artifactId>
-				<version>${revision}</version>
-			</dependency>
-
 			<!-- third part framework dependencies -->
 			<dependency>
 				<groupId>org.springdoc</groupId>
