@@ -15,30 +15,32 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context.config.extend.tsf;
+package com.tencent.cloud.plugin.discovery.multi.config;
 
-import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
+import com.tencent.cloud.plugin.discovery.multi.listeners.ConsulDiscoveryConfigChangeListener;
+import com.tencent.cloud.polaris.registry.PolarisRegistration;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * TSF context auto configuration.
+ * Auto configuration for multi discovery.
  *
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
-@ConditionalOnOnlyTsfConsulEnabled
-public class TsfContextAutoConfiguration {
+public class MultiDiscoveryAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public TsfContextConfigModifier tsfConfigModifier(TsfCoreProperties tsfCoreProperties, ConsulProperties consulProperties) {
-		return new TsfContextConfigModifier(tsfCoreProperties, consulProperties);
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(value = "spring.cloud.consul.enabled", havingValue = "true")
+	protected static class ConsulMultiDiscoveryConfig {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ConsulDiscoveryConfigChangeListener consulDiscoveryConfigChangeListener(PolarisRegistration polarisRegistration) {
+			return new ConsulDiscoveryConfigChangeListener(polarisRegistration);
+		}
 	}
 }
