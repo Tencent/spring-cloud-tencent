@@ -3,3 +3,4 @@
 
 - [fix: add gateway context config example.](https://github.com/Tencent/spring-cloud-tencent/pull/1564)
 - [feat:support config empty protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1586)
+- [feat:upgrade to 2023.0.5.](https://github.com/Tencent/spring-cloud-tencent/pull/1588)
