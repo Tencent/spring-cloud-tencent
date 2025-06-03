@@ -112,6 +112,11 @@ public class PolarisDiscoveryProperties {
 	@Value("${spring.cloud.polaris.discovery.zero-protection.is-need-test-connectivity:false}")
 	private boolean zeroProtectionNeedTestConnectivity = false;
 
+	/**
+	 * if prefer ipv6.
+	 */
+	private Boolean preferIpv6 = false;
+
 	public String getInstanceId() {
 		return instanceId;
 	}
@@ -219,6 +224,14 @@ public class PolarisDiscoveryProperties {
 		this.zeroProtectionNeedTestConnectivity = zeroProtectionNeedTestConnectivity;
 	}
 
+	public Boolean getPreferIpv6() {
+		return preferIpv6;
+	}
+
+	public void setPreferIpv6(Boolean preferIpv6) {
+		this.preferIpv6 = preferIpv6;
+	}
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -256,6 +269,7 @@ public class PolarisDiscoveryProperties {
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
 				", zeroProtectionEnabled=" + zeroProtectionEnabled +
 				", zeroProtectionNeedTestConnectivity=" + zeroProtectionNeedTestConnectivity +
+				", preferIpv6=" + preferIpv6 +
 				'}';
 	}
 }
