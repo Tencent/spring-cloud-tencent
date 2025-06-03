@@ -74,6 +74,11 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 				defaultProperties.put("spring.cloud.polaris.lossless.enabled", environment.getProperty("spring.cloud.polaris.lossless.enabled", "true"));
 			}
 
+			String tsfPreferIpv6 = environment.getProperty("tsf_prefer_ipv6");
+			if (StringUtils.isNotBlank(tsfPreferIpv6)) {
+				defaultProperties.put("spring.cloud.polaris.discovery.prefer-ipv6", tsfPreferIpv6);
+			}
+
 			if (TsfContextUtils.isTsfConsulEnabled(environment)) {
 				// tsf_consul_ip
 				String tsfConsulIp = environment.getProperty("tsf_consul_ip");
