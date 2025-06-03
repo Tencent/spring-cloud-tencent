@@ -173,6 +173,8 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 							environment.getProperty("spring.cloud.polaris.router.rule-router.fail-over", "none"));
 					defaultProperties.put("spring.cloud.polaris.router.namespace-router.enabled",
 							environment.getProperty("spring.cloud.polaris.router.namespace-router.enabled", "true"));
+					defaultProperties.put("spring.cloud.polaris.discovery.all-recover-enabled",
+							environment.getProperty("spring.cloud.polaris.discovery.all-recover-enabled", "false"));
 				}
 			}
 
