@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.ratelimit.tsf;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Import;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnTsfConsulEnabled
+@ConditionalOnOnlyTsfConsulEnabled
 @Import(TsfRateLimitAutoConfiguration.class)
 public class TsfRateLimitBootstrapConfiguration {
 }

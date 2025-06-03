@@ -21,20 +21,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.utils.ClassUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
-import com.tencent.polaris.configuration.api.core.ConfigKVFile;
-import com.tencent.polaris.configuration.client.internal.CompositeConfigFile;
 import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +39,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
+
+import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadGroupPolarisPropertySource;
+import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadPolarisPropertySource;
 
 /**
  * Spring cloud reserved core configuration loading SPI.
@@ -74,64 +72,6 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		this.environment = environment;
 	}
 
-	public static PolarisPropertySource loadPolarisPropertySource(ConfigFileService configFileService, String namespace, String group, String fileName) {
-		ConfigKVFile configKVFile = loadConfigKVFile(configFileService, namespace, group, fileName);
-
-		Map<String, Object> map = new ConcurrentHashMap<>();
-		for (String key : configKVFile.getPropertyNames()) {
-			map.put(key, configKVFile.getProperty(key, null));
-		}
-
-		return new PolarisPropertySource(namespace, group, fileName, configKVFile, map);
-	}
-
-	public static PolarisPropertySource loadGroupPolarisPropertySource(ConfigFileService configFileService, String namespace, String group) {
-		List<ConfigKVFile> configKVFiles = new ArrayList<>();
-
-		com.tencent.polaris.configuration.api.core.ConfigFileGroup remoteGroup = configFileService.getConfigFileGroup(namespace, group);
-		if (remoteGroup == null) {
-			return null;
-		}
-
-		for (ConfigFileMetadata configFile : remoteGroup.getConfigFileMetadataList()) {
-			String fileName = configFile.getFileName();
-			ConfigKVFile configKVFile = loadConfigKVFile(configFileService, namespace, group, fileName);
-			configKVFiles.add(configKVFile);
-		}
-
-		CompositeConfigFile compositeConfigFile = new CompositeConfigFile(configKVFiles);
-
-		Map<String, Object> map = new ConcurrentHashMap<>();
-		for (String key : compositeConfigFile.getPropertyNames()) {
-			String value = compositeConfigFile.getProperty(key, null);
-			map.put(key, value);
-		}
-
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("namespace='" + namespace + '\''
-					+ ", group='" + group + '\'' + ", fileName='" + compositeConfigFile + '\''
-					+ ", map='" + map + '\'');
-		}
-
-		return new PolarisPropertySource(namespace, group, "", compositeConfigFile, map);
-	}
-
-	public static ConfigKVFile loadConfigKVFile(ConfigFileService configFileService, String namespace, String group, String fileName) {
-		ConfigKVFile configKVFile;
-		// unknown extension is resolved as yaml file
-		if (ConfigFileFormat.isYamlFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
-			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
-		}
-		else if (ConfigFileFormat.isPropertyFile(fileName)) {
-			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
-		}
-		else {
-			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
-
-			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
-		}
-		return configKVFile;
-	}
 
 	/**
 	 *  order: spring boot default config files > custom config files > tsf default config group.
