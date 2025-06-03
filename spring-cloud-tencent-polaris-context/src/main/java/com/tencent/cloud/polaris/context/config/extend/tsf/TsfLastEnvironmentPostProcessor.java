@@ -25,6 +25,7 @@ import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
@@ -33,7 +34,11 @@ import org.springframework.core.env.MapPropertySource;
  *
  * @author Haotian Zhang
  */
-public final class TsfLastEnvironmentPostProcessor implements EnvironmentPostProcessor {
+public final class TsfLastEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
+	@Override
+	public int getOrder() {
+		return -2147483637;
+	}
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		String tsfAppId = environment.getProperty("tsf_app_id");
