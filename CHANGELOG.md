@@ -6,3 +6,4 @@
 - [feat:support config empty protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1587)
 - [feat:remove useless plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1589)
 - [feat:support dynamic multi-discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1597)
+- [feat:support ipv6.](https://github.com/Tencent/spring-cloud-tencent/pull/1561)

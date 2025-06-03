@@ -79,6 +79,12 @@
       "description": "Zero protection test connectivity switch. Default: false."
     },
     {
+      "name": "spring.cloud.polaris.discovery.prefer-ipv6",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "if prefer ipv6. Default: false."
+    },
+    {
       "name": "spring.cloud.polaris.discovery.eager-load.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": false,
