@@ -130,6 +130,8 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 			log.info("loading config data config file, group:" + resource.getGroupName() + " file: " + resource.getFileName());
 			this.puller.initCustomPolarisConfigFile(compositePropertySource, configFileGroup(resource));
 		}
+		// load tsf default config group
+		this.puller.initTsfConfigGroups(compositePropertySource);
 		if (polarisConfigCustomExtensionLayer != null) {
 			polarisConfigCustomExtensionLayer.executeAfterLocateConfigReturning(compositePropertySource);
 		}

@@ -237,6 +237,13 @@ public class PolarisRegistration implements Registration {
 		return registerEnabled;
 	}
 
+	public String getNamespace() {
+		if (polarisDiscoveryProperties != null) {
+			return polarisDiscoveryProperties.getNamespace();
+		}
+		return null;
+	}
+
 	public SDKContext getPolarisContext() {
 		return polarisContext;
 	}
