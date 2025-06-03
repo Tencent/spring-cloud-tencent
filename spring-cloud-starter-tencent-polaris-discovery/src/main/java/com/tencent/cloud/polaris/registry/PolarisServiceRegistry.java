@@ -199,6 +199,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		}
 
 		InstanceDeregisterRequest deRegisterRequest = new InstanceDeregisterRequest();
+		deRegisterRequest.setInstanceID(registration.getInstanceId());
 		deRegisterRequest.setToken(polarisDiscoveryProperties.getToken());
 		deRegisterRequest.setNamespace(polarisDiscoveryProperties.getNamespace());
 		deRegisterRequest.setService(registration.getServiceId());

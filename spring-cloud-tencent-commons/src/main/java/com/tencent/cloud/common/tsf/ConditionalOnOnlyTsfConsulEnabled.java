@@ -28,20 +28,20 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Condition that if TSF Consul enabled.
+ * Condition that if Only TSF Consul enabled.
  *
  * @author Haotian Zhang
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-@Conditional(ConditionalOnTsfConsulEnabled.OnTsfEnabledCondition.class)
-public @interface ConditionalOnTsfConsulEnabled {
+@Conditional(ConditionalOnOnlyTsfConsulEnabled.OnTsfEnabledCondition.class)
+public @interface ConditionalOnOnlyTsfConsulEnabled {
 
 	class OnTsfEnabledCondition implements Condition {
 
 		@Override
 		public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
-			return TsfContextUtils.isTsfConsulEnabled(conditionContext.getEnvironment());
+			return TsfContextUtils.isOnlyTsfConsulEnabled(conditionContext.getEnvironment());
 		}
 	}
 }

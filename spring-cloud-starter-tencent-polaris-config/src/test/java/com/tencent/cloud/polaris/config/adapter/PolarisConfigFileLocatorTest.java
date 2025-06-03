@@ -27,25 +27,35 @@ import java.util.Map;
 
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.enums.RefreshType;
+import com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.client.internal.RevisableConfigFileGroup;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 /**
  * test for {@link PolarisConfigFileLocator}.
- *@author lepdou 2022-06-11
+ *
+ * @author lepdou 2022-06-11
  */
 @ExtendWith(MockitoExtension.class)
 public class PolarisConfigFileLocatorTest {
@@ -266,6 +276,99 @@ public class PolarisConfigFileLocatorTest {
 		assertThat(propertySource.getProperty("k1")).isEqualTo("v1");
 		assertThat(propertySource.getProperty("k2")).isEqualTo("v2");
 		assertThat(propertySource.getProperty("k3")).isEqualTo("v3");
+	}
+
+	@Test
+	void testInitTsfConfigGroupsSuccessfulLoad() {
+		clearCompositePropertySourceCache();
+
+		// Arrange
+		String tsfId = "test-id";
+		String tsfNamespace = "test-namespace";
+		String tsfGroup = "test-group";
+		String polarisNamespace = "polaris-namespace";
+
+		when(environment.getProperty("tsf_id")).thenReturn(tsfId);
+		when(environment.getProperty("tsf_namespace_name")).thenReturn(tsfNamespace);
+		when(environment.getProperty("tsf_group_name")).thenReturn(tsfGroup);
+		when(polarisContextProperties.getNamespace()).thenReturn(polarisNamespace);
+
+		String expectedAppConfigGroup = tsfId + "." + tsfGroup + ".application_config_group";
+
+		// mock polaris config properties
+		PolarisPropertySource mockPropertySource = mock(PolarisPropertySource.class);
+		when(mockPropertySource.getPropertySourceName()).thenReturn(expectedAppConfigGroup);
+
+		CompositePropertySource compositePropertySource = mock(CompositePropertySource.class);
+		try (MockedStatic<PolarisPropertySourceUtils> mockedStatic = mockStatic(PolarisPropertySourceUtils.class)) {
+			mockedStatic.when(() -> PolarisPropertySourceUtils.loadGroupPolarisPropertySource(
+					eq(configFileService),
+					eq(polarisNamespace),
+					any()
+			)).thenReturn(mockPropertySource);
+
+			PolarisConfigFileLocator locator = new PolarisConfigFileLocator(
+					polarisConfigProperties,
+					polarisContextProperties,
+					configFileService,
+					environment
+			);
+			// Act
+			locator.initTsfConfigGroups(compositePropertySource);
+
+			// Verify
+			List<PolarisPropertySource> polarisPropertySources = PolarisPropertySourceManager.getAllPropertySources();
+			assertThat(polarisPropertySources.stream().map(PolarisPropertySource::getPropertySourceName).
+					filter(name -> name.equals(expectedAppConfigGroup)).count() == 1);
+		}
+	}
+
+	@Test
+	void testPolarisConfigProperties() {
+		PolarisConfigProperties testProperties = new PolarisConfigProperties();
+		boolean enabled = true;
+		String address = "127.0.0.1";
+		int port = 1234;
+		String token = "<PASSWORD>";
+		boolean autoRefresh = true;
+		RefreshType refreshType = RefreshType.REFRESH_CONTEXT;
+		List<ConfigFileGroup> groups = new LinkedList<>();
+		boolean preference = true;
+		String dataSource = "test-data-source";
+		String localFileRootPath = "test-local-file-root-path";
+		boolean internalEnabled = true;
+		boolean checkAddress = true;
+		boolean shutdownIfConnectToConfigServerFailed = true;
+
+		testProperties.setEnabled(enabled);
+		testProperties.setAddress(address);
+		testProperties.setPort(port);
+		testProperties.setToken(token);
+		testProperties.setAutoRefresh(autoRefresh);
+		testProperties.setRefreshType(refreshType);
+		testProperties.setGroups(groups);
+		testProperties.setPreference(preference);
+		testProperties.setDataSource(dataSource);
+		testProperties.setLocalFileRootPath(localFileRootPath);
+		testProperties.setInternalEnabled(internalEnabled);
+		testProperties.setCheckAddress(checkAddress);
+		testProperties.setShutdownIfConnectToConfigServerFailed(shutdownIfConnectToConfigServerFailed);
+
+		Assertions.assertEquals(enabled, testProperties.isEnabled());
+		Assertions.assertEquals(address, testProperties.getAddress());
+		Assertions.assertEquals(port, testProperties.getPort());
+		Assertions.assertEquals(token, testProperties.getToken());
+		Assertions.assertEquals(autoRefresh, testProperties.isAutoRefresh());
+		Assertions.assertEquals(refreshType, testProperties.getRefreshType());
+		Assertions.assertEquals(groups, testProperties.getGroups());
+		Assertions.assertEquals(preference, testProperties.isPreference());
+		Assertions.assertEquals(dataSource, testProperties.getDataSource());
+		Assertions.assertEquals(localFileRootPath, testProperties.getLocalFileRootPath());
+		Assertions.assertEquals(internalEnabled, testProperties.isInternalEnabled());
+		Assertions.assertEquals(checkAddress, testProperties.isCheckAddress());
+		Assertions.assertEquals(shutdownIfConnectToConfigServerFailed, testProperties.isShutdownIfConnectToConfigServerFailed());
+
+		Assertions.assertNotNull(testProperties.toString());
 	}
 
 	private void clearCompositePropertySourceCache() {
