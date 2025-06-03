@@ -59,6 +59,7 @@ public class PolarisDiscoveryHandler {
 		getHealthyInstancesRequest.setNamespace(namespace);
 		getHealthyInstancesRequest.setService(service);
 		getHealthyInstancesRequest.setIncludeCircuitBreakInstances(false);
+		getHealthyInstancesRequest.setPreferIpv6(polarisDiscoveryProperties.getPreferIpv6());
 		return polarisConsumer.getHealthyInstances(getHealthyInstancesRequest);
 	}
 
