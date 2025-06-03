@@ -21,23 +21,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader;
-import com.tencent.cloud.polaris.config.enums.ConfigFileFormat;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.utils.ClassUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
-import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.env.CompositePropertySource;
+
+import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadGroupPolarisPropertySource;
+import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadPolarisPropertySource;
 
 /**
  * PolarisConfigFilePuller pull configFile from Polaris.
@@ -82,7 +82,7 @@ public final class PolarisConfigFilePuller {
 			String[] defaultProfiles, String serviceName) {
 		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles(activeProfiles, defaultProfiles, serviceName);
 		for (ConfigFileMetadata configFile : internalConfigFiles) {
-			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(
+			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService,
 					configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
 			compositePropertySource.addPropertySource(polarisPropertySource);
 			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
@@ -124,7 +124,7 @@ public final class PolarisConfigFilePuller {
 			return;
 		}
 		for (String fileName : files) {
-			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(groupNamespace, group, fileName);
+			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService, groupNamespace, group, fileName);
 			compositePropertySource.addPropertySource(polarisPropertySource);
 			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 			LOGGER.info(
@@ -133,27 +133,35 @@ public final class PolarisConfigFilePuller {
 		}
 	}
 
-	private PolarisPropertySource loadPolarisPropertySource(String namespace, String group, String fileName) {
-		ConfigKVFile configKVFile;
-		// unknown extension is resolved as yaml file
-		if (ConfigFileFormat.isYamlFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
-			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
-		}
-		else if (ConfigFileFormat.isPropertyFile(fileName)) {
-			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
-		}
-		else {
-			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace,
-					group, fileName);
+	/**
+	 * Init TSF config groups.
+	 * @param compositePropertySource compositePropertySource
+	 */
+	public void initTsfConfigGroups(CompositePropertySource compositePropertySource) {
+		String tsfId = System.getProperty("tsf_id");
+		String tsfNamespaceName = System.getProperty("tsf_namespace_name");
+		String tsfGroupName = System.getProperty("tsf_group_name");
 
-			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml"
-					+ " can be injected into the spring context");
+		if (StringUtils.isEmpty(tsfNamespaceName) || StringUtils.isEmpty(tsfGroupName)) {
+			return;
 		}
-		Map<String, Object> map = new ConcurrentHashMap<>();
-		for (String key : configKVFile.getPropertyNames()) {
-			map.put(key, configKVFile.getProperty(key, null));
+		String namespace = polarisContextProperties.getNamespace();
+		List<String> tsfConfigGroups = new ArrayList<>();
+		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".application_config_group");
+		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfNamespaceName + ".global_config_group");
+
+		if (ClassUtils.isClassPresent("org.springframework.cloud.gateway.filter.GlobalFilter")) {
+			tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".gateway_config_group");
 		}
-		return new PolarisPropertySource(namespace, group, fileName, configKVFile, map);
+		for (String tsfConfigGroup : tsfConfigGroups) {
+			PolarisPropertySource polarisPropertySource = loadGroupPolarisPropertySource(configFileService, namespace, tsfConfigGroup);
+			if (polarisPropertySource == null) {
+				// not register to polaris
+				continue;
+			}
+			compositePropertySource.addPropertySource(polarisPropertySource);
+			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+		}
 	}
 
 	private List<ConfigFileMetadata> getInternalConfigFiles(
