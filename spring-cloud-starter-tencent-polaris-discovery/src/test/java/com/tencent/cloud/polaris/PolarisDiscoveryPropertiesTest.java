@@ -88,6 +88,12 @@ public class PolarisDiscoveryPropertiesTest {
 		polarisDiscoveryProperties.setInstanceId("test-ins-id");
 		assertThat(polarisDiscoveryProperties.getInstanceId()).isEqualTo("test-ins-id");
 
+		polarisDiscoveryProperties.setPreferIpv6(true);
+		assertThat(polarisDiscoveryProperties.getPreferIpv6()).isTrue();
+
+		polarisDiscoveryProperties.setAllRecoverEnabled(false);
+		assertThat(polarisDiscoveryProperties.getAllRecoverEnabled()).isFalse();
+
 		assertThat(polarisDiscoveryProperties.toString())
 				.isEqualTo("PolarisDiscoveryProperties{"
 						+ "namespace='Test'"
@@ -103,6 +109,7 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", serviceListRefreshInterval=1000"
 						+ ", zeroProtectionEnabled=false"
 						+ ", zeroProtectionNeedTestConnectivity=false"
-						+ ", preferIpv6=false}");
+						+ ", preferIpv6=true"
+						+ ", allRecoverEnabled=false}");
 	}
 }
