@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -80,7 +81,7 @@ public class PolarisStatProperties {
 	/**
 	 * The path regex list for stat for aggregation.
 	 */
-	private List<String> pathRegexList;
+	private List<String> pathRegexList = new ArrayList<>();
 
 	public boolean isEnabled() {
 		return enabled;
