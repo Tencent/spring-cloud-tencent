@@ -45,6 +45,7 @@ public class StatConfigModifier implements PolarisConfigModifier {
 		StatReporterConfigImpl statReporterConfig = configuration.getGlobal().getStatReporter();
 		statReporterConfig.setEnable(polarisStatProperties.isEnabled());
 		PrometheusHandlerConfig prometheusHandlerConfig = statReporterConfig.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
+		prometheusHandlerConfig.setPathRegexList(polarisStatProperties.getPathRegexList());
 		// Set prometheus plugin.
 		if (polarisStatProperties.isEnabled()) {
 			if (polarisStatProperties.isPushGatewayEnabled()) {
