@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -74,6 +76,11 @@ public class PolarisStatProperties {
 	 */
 	@Value("${spring.cloud.polaris.stat.pushgateway.open-gzip:#{false}}")
 	private Boolean openGzip = false;
+
+	/**
+	 * The path regex list for stat for aggregation.
+	 */
+	private List<String> pathRegexList;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -139,6 +146,14 @@ public class PolarisStatProperties {
 		this.openGzip = openGzip;
 	}
 
+	public List<String> getPathRegexList() {
+		return pathRegexList;
+	}
+
+	public void setPathRegexList(List<String> pathRegexList) {
+		this.pathRegexList = pathRegexList;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisStatProperties{" +
@@ -150,6 +165,7 @@ public class PolarisStatProperties {
 				", statService='" + statService + '\'' +
 				", pushGatewayPushInterval=" + pushGatewayPushInterval +
 				", openGzip=" + openGzip +
+				", pathRegexList=" + pathRegexList +
 				'}';
 	}
 }
