@@ -42,6 +42,7 @@ public class DiscoveryConfigModifier implements PolarisConfigModifier {
 		RecoverRouterConfig recoverRouterConfig = configuration.getConsumer().getServiceRouter()
 				.getPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, RecoverRouterConfig.class);
 		recoverRouterConfig.setExcludeCircuitBreakInstances(false);
+		recoverRouterConfig.setAllRecoverEnable(polarisDiscoveryProperties.getAllRecoverEnabled());
 
 		// Update modified config to source properties
 		configuration.getConsumer().getServiceRouter()
