@@ -8,7 +8,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spring-cloud-starter-tencent-multi-discovery-plugin</artifactId>
-	<name>Spring Cloud Tencent Trace Plugin</name>
+	<name>Spring Cloud Tencent Multi Discovery Plugin</name>
 
 
 	<dependencies>
