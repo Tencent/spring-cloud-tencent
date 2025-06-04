@@ -117,6 +117,11 @@ public class PolarisDiscoveryProperties {
 	 */
 	private Boolean preferIpv6 = false;
 
+	/**
+	 * is all recover enable.
+	 */
+	private Boolean allRecoverEnabled = true;
+
 	public String getInstanceId() {
 		return instanceId;
 	}
@@ -232,6 +237,14 @@ public class PolarisDiscoveryProperties {
 		this.preferIpv6 = preferIpv6;
 	}
 
+	public Boolean getAllRecoverEnabled() {
+		return allRecoverEnabled;
+	}
+
+	public void setAllRecoverEnabled(Boolean allRecoverEnabled) {
+		this.allRecoverEnabled = allRecoverEnabled;
+	}
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -270,6 +283,7 @@ public class PolarisDiscoveryProperties {
 				", zeroProtectionEnabled=" + zeroProtectionEnabled +
 				", zeroProtectionNeedTestConnectivity=" + zeroProtectionNeedTestConnectivity +
 				", preferIpv6=" + preferIpv6 +
+				", allRecoverEnabled=" + allRecoverEnabled +
 				'}';
 	}
 }
