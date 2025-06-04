@@ -28,6 +28,7 @@ import java.util.Map;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.enums.RefreshType;
+import com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
@@ -299,8 +300,8 @@ public class PolarisConfigFileLocatorTest {
 		when(mockPropertySource.getPropertySourceName()).thenReturn(expectedAppConfigGroup);
 
 		CompositePropertySource compositePropertySource = mock(CompositePropertySource.class);
-		try (MockedStatic<PolarisConfigFileLocator> mockedStatic = mockStatic(PolarisConfigFileLocator.class)) {
-			mockedStatic.when(() -> PolarisConfigFileLocator.loadGroupPolarisPropertySource(
+		try (MockedStatic<PolarisPropertySourceUtils> mockedStatic = mockStatic(PolarisPropertySourceUtils.class)) {
+			mockedStatic.when(() -> PolarisPropertySourceUtils.loadGroupPolarisPropertySource(
 					eq(configFileService),
 					eq(polarisNamespace),
 					any()

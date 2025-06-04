@@ -22,7 +22,6 @@ import java.util.Map;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
-import com.tencent.cloud.polaris.context.config.extend.tsf.TsfContextUtils;
 import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.ratelimit.client.sync.tsf.TsfRateLimitConstants;
@@ -51,14 +50,12 @@ public class TsfRateLimitConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
-		if (TsfContextUtils.isTsfConsulEnabled(environment)) {
-			Map<String, String> metadata = configuration.getProvider().getRateLimit().getMetadata();
-			metadata.put(TsfRateLimitConstants.RATE_LIMIT_MASTER_IP_KEY, tsfCoreProperties.getRatelimitMasterIp());
-			metadata.put(TsfRateLimitConstants.RATE_LIMIT_MASTER_PORT_KEY, String.valueOf(tsfCoreProperties.getRatelimitMasterPort()));
-			metadata.put(TsfRateLimitConstants.SERVICE_NAME_KEY, tsfCoreProperties.getServiceName());
-			metadata.put(TsfRateLimitConstants.INSTANCE_ID_KEY, tsfCoreProperties.getInstanceId());
-			metadata.put(TsfRateLimitConstants.TOKEN_KEY, consulProperties.getAclToken());
-		}
+		Map<String, String> metadata = configuration.getProvider().getRateLimit().getMetadata();
+		metadata.put(TsfRateLimitConstants.RATE_LIMIT_MASTER_IP_KEY, tsfCoreProperties.getRatelimitMasterIp());
+		metadata.put(TsfRateLimitConstants.RATE_LIMIT_MASTER_PORT_KEY, String.valueOf(tsfCoreProperties.getRatelimitMasterPort()));
+		metadata.put(TsfRateLimitConstants.SERVICE_NAME_KEY, tsfCoreProperties.getServiceName());
+		metadata.put(TsfRateLimitConstants.INSTANCE_ID_KEY, tsfCoreProperties.getInstanceId());
+		metadata.put(TsfRateLimitConstants.TOKEN_KEY, consulProperties.getAclToken());
 	}
 
 	@Override
