@@ -7,3 +7,4 @@
 - [feat:support dynamic multi-discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1595)
 - [feat:support ipv6.](https://github.com/Tencent/spring-cloud-tencent/pull/1598)
 - [feat:support config all recover enabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1604)
+- [feat:support stat reporting path aggregation.](https://github.com/Tencent/spring-cloud-tencent/pull/1608)
