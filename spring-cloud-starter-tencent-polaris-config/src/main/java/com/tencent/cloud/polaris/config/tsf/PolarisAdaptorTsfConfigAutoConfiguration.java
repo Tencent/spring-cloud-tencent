@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.config.tsf;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
 import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
 import com.tencent.cloud.polaris.config.tsf.controller.PolarisAdaptorTsfConfigController;
 import com.tencent.tsf.consul.config.watch.TsfConsulConfigRefreshEventListener;
@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @Date Jul 23, 2023 3:52:48 PM
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnTsfConsulEnabled
+@ConditionalOnOnlyTsfConsulEnabled
 @ConditionalOnPolarisConfigEnabled
 public class PolarisAdaptorTsfConfigAutoConfiguration {
 

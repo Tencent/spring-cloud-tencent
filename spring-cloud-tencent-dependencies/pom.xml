@@ -224,6 +224,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-multi-discovery-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>

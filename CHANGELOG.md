@@ -38,3 +38,4 @@
 - [fix: add gateway context config example.](https://github.com/Tencent/spring-cloud-tencent/pull/1561)
 - [fix: use getActiveRuleId method to fix javaagent ratelimit pb method not found error.](https://github.com/Tencent/spring-cloud-tencent/pull/1575)
 - [feat:support config empty protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1583)
+- [feat:support dynamic multi-discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1594)
