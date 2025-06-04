@@ -6,3 +6,4 @@
 - [feat:upgrade to 2023.0.5.](https://github.com/Tencent/spring-cloud-tencent/pull/1588)
 - [feat:support dynamic multi-discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1596)
 - [feat:support ipv6.](https://github.com/Tencent/spring-cloud-tencent/pull/1601)
+- [feat:support config all recover enabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1605)
