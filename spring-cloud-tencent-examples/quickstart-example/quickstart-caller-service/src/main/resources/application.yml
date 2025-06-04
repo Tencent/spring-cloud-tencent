@@ -28,6 +28,8 @@ spring:
         port: 28082
       stat:
         enabled: true
+        path-regex-list:
+          - /quickstart/callee/test/(.+)/echo
     #        pushgateway:
     #          enabled: true
     #          address: 127.0.0.1:9091
