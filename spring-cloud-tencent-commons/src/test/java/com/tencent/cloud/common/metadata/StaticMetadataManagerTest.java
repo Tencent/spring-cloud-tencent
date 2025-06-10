@@ -57,6 +57,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith({MockitoExtension.class, SystemStubsExtension.class})
 public class StaticMetadataManagerTest {
 
+	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	/**
 	 * EnvironmentVariablesRule.
 	 */
@@ -64,8 +65,6 @@ public class StaticMetadataManagerTest {
 	public EnvironmentVariables environmentVariables = new EnvironmentVariables();
 	@Mock
 	private MetadataLocalProperties metadataLocalProperties;
-
-	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -137,7 +136,7 @@ public class StaticMetadataManagerTest {
 				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider(null)));
 
 		Map<String, String> metadata = metadataManager.getAllCustomMetadata();
-		assertThat(metadata.size()).isEqualTo(5);
+		assertThat(metadata.size()).isEqualTo(6);
 		assertThat(metadata.get("k1")).isEqualTo("v1");
 		assertThat(metadata.get("k2")).isEqualTo("v22");
 		assertThat(metadata.get("k3")).isEqualTo("v33");
@@ -182,7 +181,7 @@ public class StaticMetadataManagerTest {
 				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider(null)));
 
 		Map<String, String> metadata = metadataManager.getMergedStaticMetadata();
-		assertThat(metadata.size()).isEqualTo(8);
+		assertThat(metadata.size()).isEqualTo(9);
 		assertThat(metadata.get("k1")).isEqualTo("v1");
 		assertThat(metadata.get("k2")).isEqualTo("v22");
 		assertThat(metadata.get("k3")).isEqualTo("v33");
