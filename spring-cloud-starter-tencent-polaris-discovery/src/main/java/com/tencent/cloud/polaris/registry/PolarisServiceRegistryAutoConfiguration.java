@@ -95,4 +95,9 @@ public class PolarisServiceRegistryAutoConfiguration {
 	public PolarisWebApplicationCheck polarisWebApplicationCheck() {
 		return new PolarisWebApplicationCheck();
 	}
+
+	@Bean
+	public NamespaceRegistrationCustomizer namespaceRegistrationCustomizer(PolarisDiscoveryProperties polarisDiscoveryProperties) {
+		return new NamespaceRegistrationCustomizer(polarisDiscoveryProperties);
+	}
 }
