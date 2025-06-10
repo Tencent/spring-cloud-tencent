@@ -122,6 +122,11 @@ public class PolarisDiscoveryProperties {
 	 */
 	private Boolean allRecoverEnabled = true;
 
+	/**
+	 * namespace exports if not created.
+	 */
+	private String namespaceExports;
+
 	public String getInstanceId() {
 		return instanceId;
 	}
@@ -265,6 +270,14 @@ public class PolarisDiscoveryProperties {
 		this.registerEnabled = registerEnabled;
 	}
 
+	public String getNamespaceExports() {
+		return namespaceExports;
+	}
+
+	public void setNamespaceExports(String namespaceExports) {
+		this.namespaceExports = namespaceExports;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisDiscoveryProperties{" +
@@ -284,6 +297,7 @@ public class PolarisDiscoveryProperties {
 				", zeroProtectionNeedTestConnectivity=" + zeroProtectionNeedTestConnectivity +
 				", preferIpv6=" + preferIpv6 +
 				", allRecoverEnabled=" + allRecoverEnabled +
+				", namespaceExports='" + namespaceExports + '\'' +
 				'}';
 	}
 }
