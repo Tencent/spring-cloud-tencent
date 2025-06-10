@@ -100,6 +100,12 @@ public final class PolarisContextEnvironmentPostProcessor implements Environment
 			polarisEnvProperties.put("spring.cloud.tencent.metadata.content.zone", zone);
 		}
 
+		// global namespace enabled
+		String globalNamespaceEnabled = environment.getProperty("global_namespace_enabled");
+		if (StringUtils.isNotBlank(globalNamespaceEnabled) && StringUtils.equals("true", globalNamespaceEnabled)) {
+			polarisEnvProperties.put("spring.cloud.polaris.discovery.namespace-exports", "*");
+		}
+
 		MapPropertySource propertySource = new MapPropertySource("polaris-env-properties", polarisEnvProperties);
 		environment.getPropertySources().addFirst(propertySource);
 	}
