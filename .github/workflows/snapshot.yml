@@ -68,11 +68,11 @@ jobs:
         with:
           java-version: ${{ needs.set-jdk.outputs.jdk }}
           distribution: 'temurin'
-          server-id: nexus-snapshots
+          server-id: central-portal
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
       - name: Publish package
-        run: mvn clean deploy -B -U -Psonatype
+        run: mvn clean deploy -B -U -Dmaven.test.skip=true
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
