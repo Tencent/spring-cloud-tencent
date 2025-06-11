@@ -229,7 +229,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	}
 
 	public Map<String, Object> getLoadbalancerMetadata() {
-		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.APPLICATION, false);
+		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.CUSTOM, false);
 		MetadataValue metadataValue = metadataContainer.getMetadataValue(FRAGMENT_LB_METADATA);
 		Map<String, Object> values = new HashMap<>();
 		if (metadataValue instanceof MetadataMapValue) {
@@ -248,7 +248,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	}
 
 	public void setLoadbalancer(String key, Object value) {
-		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.APPLICATION, false);
+		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.CUSTOM, false);
 		metadataContainer.putMetadataMapObjectValue(FRAGMENT_LB_METADATA, key, value);
 	}
 
