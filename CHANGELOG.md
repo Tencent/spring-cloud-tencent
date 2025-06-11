@@ -9,3 +9,4 @@
 - [feat:support config all recover enabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1604)
 - [feat:support stat reporting path aggregation.](https://github.com/Tencent/spring-cloud-tencent/pull/1608)
 - [feat:support namespace exports configuration if not created.](https://github.com/Tencent/spring-cloud-tencent/pull/1613)
+- [feat:support instance detect.](https://github.com/Tencent/spring-cloud-tencent/pull/1616)
