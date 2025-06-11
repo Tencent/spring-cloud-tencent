@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris;
 
 
+import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 import org.junit.jupiter.api.Test;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
@@ -94,6 +95,11 @@ public class PolarisDiscoveryPropertiesTest {
 		polarisDiscoveryProperties.setAllRecoverEnabled(false);
 		assertThat(polarisDiscoveryProperties.getAllRecoverEnabled()).isFalse();
 
+		PolarisDiscoveryProperties.Detect detect = new PolarisDiscoveryProperties.Detect();
+		detect.setWhen(OutlierDetectionConfig.When.after_call);
+		polarisDiscoveryProperties.setDetect(detect);
+		assertThat(polarisDiscoveryProperties.getDetect().getWhen()).isEqualTo(OutlierDetectionConfig.When.after_call);
+
 		assertThat(polarisDiscoveryProperties.toString())
 				.isEqualTo("PolarisDiscoveryProperties{"
 						+ "namespace='Test'"
@@ -110,6 +116,7 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", zeroProtectionEnabled=false"
 						+ ", zeroProtectionNeedTestConnectivity=false"
 						+ ", preferIpv6=true"
-						+ ", allRecoverEnabled=false}");
+						+ ", allRecoverEnabled=false"
+						+ ", detect=Detect{when=after_call}}");
 	}
 }
