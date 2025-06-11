@@ -91,6 +91,11 @@
       "description": "is all recover enable. Default: true."
     },
     {
+      "name": "spring.cloud.polaris.discovery.namespace-exports",
+      "type": "java.lang.String",
+      "description": "namespace exports if not created."
+    },
+    {
       "name": "spring.cloud.polaris.discovery.eager-load.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": false,
