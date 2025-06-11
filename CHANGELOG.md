@@ -42,4 +42,4 @@
 - [feat:support ipv6.](https://github.com/Tencent/spring-cloud-tencent/pull/1600)
 - [feat:support config all recover enabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1603)
 - [feat:support stat reporting path aggregation.](https://github.com/Tencent/spring-cloud-tencent/pull/1607)
-- [feat:support namespace exports configuration if not created.](https://github.com/Tencent/spring-cloud-tencent/pull/1612)
+- [feat:support instance detect.](https://github.com/Tencent/spring-cloud-tencent/pull/1618)
