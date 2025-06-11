@@ -55,6 +55,8 @@ public class DiscoveryConfigModifier implements PolarisConfigModifier {
 		configuration.getConsumer().getZeroProtection().setEnable(polarisDiscoveryProperties.isZeroProtectionEnabled());
 		configuration.getConsumer().getZeroProtection()
 				.setNeedTestConnectivity(polarisDiscoveryProperties.isZeroProtectionNeedTestConnectivity());
+
+		configuration.getConsumer().getOutlierDetection().setWhen(polarisDiscoveryProperties.getDetect().getWhen());
 	}
 
 	@Override
