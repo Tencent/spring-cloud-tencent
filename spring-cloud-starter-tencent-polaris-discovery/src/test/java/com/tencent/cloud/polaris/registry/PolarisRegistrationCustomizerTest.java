@@ -62,7 +62,7 @@ public class PolarisRegistrationCustomizerTest {
 		this.contextRunner.run(context -> {
 			PolarisRegistration polarisRegistration = context.getBean(PolarisRegistration.class);
 			polarisRegistration.customize();
-			PolarisRegistrationCustomizer customizer = context.getBean(PolarisRegistrationCustomizer.class);
+			TestPolarisRegistrationCustomizer customizer = context.getBean(TestPolarisRegistrationCustomizer.class);
 			verify(customizer, times(1)).customize(any(PolarisRegistration.class));
 		});
 	}
@@ -71,8 +71,14 @@ public class PolarisRegistrationCustomizerTest {
 	@EnableAutoConfiguration
 	static class PolarisServiceRegistryAutoConfiguration {
 		@Bean
-		public PolarisRegistrationCustomizer polarisRegistrationCustomizer() {
-			return mock(PolarisRegistrationCustomizer.class);
+		public TestPolarisRegistrationCustomizer testPolarisRegistrationCustomizer() {
+			return mock(TestPolarisRegistrationCustomizer.class);
+		}
+	}
+
+	static class TestPolarisRegistrationCustomizer implements PolarisRegistrationCustomizer {
+		@Override
+		public void customize(PolarisRegistration polarisRegistration) {
 		}
 	}
 }

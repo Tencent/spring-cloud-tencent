@@ -25,6 +25,9 @@ import java.util.Set;
 
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.common.util.inet.PolarisInetUtils;
+import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.metadata.core.constant.MetadataConstants;
 
 import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME;
 import static com.tencent.cloud.common.constant.MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE;
@@ -48,10 +51,20 @@ public class DefaultInstanceMetadataProvider implements InstanceMetadataProvider
 
 	@Override
 	public Map<String, String> getMetadata() {
-		return new HashMap<String, String>() {{
-			put(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE, LOCAL_NAMESPACE);
-			put(DEFAULT_METADATA_SOURCE_SERVICE_NAME, LOCAL_SERVICE);
-		}};
+		HashMap<String, String> defaultInstanceMetadata = new HashMap<>();
+		defaultInstanceMetadata.put(DEFAULT_METADATA_SOURCE_SERVICE_NAMESPACE, LOCAL_NAMESPACE);
+		defaultInstanceMetadata.put(DEFAULT_METADATA_SOURCE_SERVICE_NAME, LOCAL_SERVICE);
+
+		String ipv4Address = PolarisInetUtils.getIpString(false);
+		if (StringUtils.isNotBlank(ipv4Address)) {
+			defaultInstanceMetadata.put(MetadataConstants.ADDRESS_IPV4, ipv4Address);
+		}
+		String ipv6Address = PolarisInetUtils.getIpString(true);
+		if (StringUtils.isNotBlank(ipv6Address)) {
+			defaultInstanceMetadata.put(MetadataConstants.ADDRESS_IPV6, ipv6Address);
+		}
+
+		return defaultInstanceMetadata;
 	}
 
 	@Override
