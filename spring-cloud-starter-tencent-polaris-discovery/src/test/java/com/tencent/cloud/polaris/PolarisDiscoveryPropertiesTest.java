@@ -94,6 +94,9 @@ public class PolarisDiscoveryPropertiesTest {
 		polarisDiscoveryProperties.setAllRecoverEnabled(false);
 		assertThat(polarisDiscoveryProperties.getAllRecoverEnabled()).isFalse();
 
+		polarisDiscoveryProperties.setNamespaceExports("*");
+		assertThat(polarisDiscoveryProperties.getNamespaceExports()).isEqualTo("*");
+
 		assertThat(polarisDiscoveryProperties.toString())
 				.isEqualTo("PolarisDiscoveryProperties{"
 						+ "namespace='Test'"
@@ -110,6 +113,7 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", zeroProtectionEnabled=false"
 						+ ", zeroProtectionNeedTestConnectivity=false"
 						+ ", preferIpv6=true"
-						+ ", allRecoverEnabled=false}");
+						+ ", allRecoverEnabled=false"
+						+ ", namespaceExports='*'}");
 	}
 }
