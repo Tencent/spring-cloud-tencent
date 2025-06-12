@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris;
 
 import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -121,6 +122,11 @@ public class PolarisDiscoveryProperties {
 	 * is all recover enable.
 	 */
 	private Boolean allRecoverEnabled = true;
+
+	/**
+	 * Instance detect.
+	 */
+	private Detect detect = new Detect();
 
 	public String getInstanceId() {
 		return instanceId;
@@ -265,6 +271,14 @@ public class PolarisDiscoveryProperties {
 		this.registerEnabled = registerEnabled;
 	}
 
+	public Detect getDetect() {
+		return detect;
+	}
+
+	public void setDetect(Detect detect) {
+		this.detect = detect;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisDiscoveryProperties{" +
@@ -284,6 +298,29 @@ public class PolarisDiscoveryProperties {
 				", zeroProtectionNeedTestConnectivity=" + zeroProtectionNeedTestConnectivity +
 				", preferIpv6=" + preferIpv6 +
 				", allRecoverEnabled=" + allRecoverEnabled +
+				", detect=" + detect +
 				'}';
+	}
+
+	public static class Detect {
+		/**
+		 * Enable instance detect or not.
+		 */
+		private OutlierDetectionConfig.When when = OutlierDetectionConfig.When.never;
+
+		public OutlierDetectionConfig.When getWhen() {
+			return when;
+		}
+
+		public void setWhen(OutlierDetectionConfig.When when) {
+			this.when = when;
+		}
+
+		@Override
+		public String toString() {
+			return "Detect{" +
+					"when=" + when +
+					'}';
+		}
 	}
 }
