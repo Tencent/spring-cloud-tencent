@@ -27,6 +27,7 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigurationConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -64,6 +65,7 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	public void modify(ConfigurationImpl configuration) {
 		configuration.getGlobal().getAPI().setReportEnable(false);
 		configuration.getGlobal().getStatReporter().setEnable(false);
+		configuration.getConsumer().getOutlierDetection().setWhen(OutlierDetectionConfig.When.never);
 
 		if (!polarisContextProperties.getEnabled() || !polarisConfigProperties.isEnabled()) {
 			return;
