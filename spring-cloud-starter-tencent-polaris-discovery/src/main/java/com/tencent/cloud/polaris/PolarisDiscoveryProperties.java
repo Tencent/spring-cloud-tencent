@@ -303,6 +303,7 @@ public class PolarisDiscoveryProperties {
 				", version='" + version + '\'' +
 				", protocol='" + protocol + '\'' +
 				", enabled=" + enabled +
+				", heartbeatEnabled=" + heartbeatEnabled +
 				", registerEnabled=" + registerEnabled +
 				", heartbeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
