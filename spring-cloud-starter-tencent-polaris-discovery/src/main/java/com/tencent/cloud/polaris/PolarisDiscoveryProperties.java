@@ -80,6 +80,7 @@ public class PolarisDiscoveryProperties {
 	/**
 	 * Enable heartbeat or not.
 	 */
+	@Value("${spring.cloud.polaris.discovery.heartbeat.enabled:true}")
 	private Boolean heartbeatEnabled = true;
 
 	/**
