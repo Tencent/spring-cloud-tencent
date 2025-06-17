@@ -87,8 +87,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		this.polarisDiscoveryHandler = polarisDiscoveryHandler;
 		this.staticMetadataManager = staticMetadataManager;
 
-		if (polarisDiscoveryProperties.getHeartbeatEnabled() 
-				&& StringUtils.isNotBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
+		if (polarisDiscoveryProperties.getHeartbeatEnabled()) {
 			this.heartbeatExecutor = Executors
 					.newSingleThreadScheduledExecutor(new NamedThreadFactory("polaris-heartbeat"));
 		}
@@ -139,7 +138,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		try {
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
-			if (StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
+			if (!polarisDiscoveryProperties.getHeartbeatEnabled() || StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
 				instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
 			}
 			else {
