@@ -13,6 +13,8 @@ spring:
       discovery:
         enabled: true
         register: true
+        heartbeat:
+          enabled: false
       contract:
         exposure: true
         report:
