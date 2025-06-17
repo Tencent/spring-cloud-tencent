@@ -78,6 +78,11 @@ public class PolarisDiscoveryProperties {
 	private Boolean enabled = true;
 
 	/**
+	 * Enable heartbeat or not.
+	 */
+	private Boolean heartbeatEnabled = true;
+
+	/**
 	 * If instance registered.
 	 */
 	@Value("${spring.cloud.polaris.discovery.register:#{true}}")
@@ -277,6 +282,14 @@ public class PolarisDiscoveryProperties {
 
 	public void setDetect(Detect detect) {
 		this.detect = detect;
+	}
+
+	public Boolean getHeartbeatEnabled() {
+		return heartbeatEnabled;
+	}
+
+	public void setHeartbeatEnabled(Boolean heartbeatEnabled) {
+		this.heartbeatEnabled = heartbeatEnabled;
 	}
 
 	@Override
