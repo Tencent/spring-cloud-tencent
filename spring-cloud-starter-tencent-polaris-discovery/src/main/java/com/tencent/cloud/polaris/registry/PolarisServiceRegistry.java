@@ -79,7 +79,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 
 	private final StaticMetadataManager staticMetadataManager;
 	private final PolarisStatProperties polarisStatProperties;
-	private volatile ScheduledExecutorService heartbeatExecutor;
 
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler polarisDiscoveryHandler,
@@ -130,19 +129,15 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
 			
-			// Always use registerInstance to avoid automatic heartbeat
-			instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatEnabled() ? 
-					polarisDiscoveryProperties.getHeartbeatInterval() : 2592000);
-			instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
-			
-			// Only start heartbeat if explicitly enabled and health check URL is provided
-			if (polarisDiscoveryProperties.getHeartbeatEnabled() && 
-					StringUtils.isNotBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
-				startHeartbeat(instanceRegisterRequest, instanceRegisterResponse);
-				LOGGER.info("Registered instance with heartbeat enabled and health check URL.");
-			} else {
-				stopHeartbeat(); // Ensure no heartbeat is running
+			if (!polarisDiscoveryProperties.getHeartbeatEnabled()) {
+				// Use register() when heartbeat is disabled - this doesn't start the SDK's heartbeat
+				instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 				LOGGER.info("Registered instance without heartbeat.");
+			} else {
+				// Use registerInstance() when heartbeat is enabled - this starts the SDK's heartbeat
+				instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
+				instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
+				LOGGER.info("Registered instance with heartbeat enabled.");
 			}
 			
 			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
@@ -196,85 +191,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		}
 	}
 
-	private void startHeartbeat(InstanceRegisterRequest instanceRegisterRequest, InstanceRegisterResponse instanceRegisterResponse) {
-		// Double check heartbeat is enabled and health check URL is not blank
-		if (!polarisDiscoveryProperties.getHeartbeatEnabled() || StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
-			stopHeartbeat();
-			LOGGER.info("Heartbeat is disabled or health check URL is blank, skipping heartbeat initialization.");
-			return;
-		}
-
-		// Stop any existing heartbeat task before starting a new one
-		stopHeartbeat();
-
-		heartbeatExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("polaris-heartbeat"));
-		LOGGER.info("Created new heartbeat executor.");
-
-		InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
-		BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
-		heartbeatRequest.setInstanceID(instanceRegisterResponse.getInstanceId());
-
-		heartbeatExecutor.scheduleWithFixedDelay(() -> {
-			try {
-				// Check if heartbeat should still be running
-				if (!polarisDiscoveryProperties.getHeartbeatEnabled() || 
-						StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
-					LOGGER.info("Heartbeat conditions no longer met, stopping heartbeat task.");
-					stopHeartbeat();
-					return;
-				}
-
-				// Perform health check
-				Map<String, String> headers = new HashMap<>(1);
-				headers.put(HttpHeaders.USER_AGENT, "polaris");
-				if (!OkHttpUtil.checkUrl(heartbeatRequest.getHost(), heartbeatRequest.getPort(),
-						polarisDiscoveryProperties.getHealthCheckUrl(), headers)) {
-					LOGGER.error("Backend service health check failed. health check endpoint = {}",
-							polarisDiscoveryProperties.getHealthCheckUrl());
-					return;
-				}
-
-				// Send heartbeat
-				polarisSDKContextManager.getProviderAPI().heartbeat(heartbeatRequest);
-				LOGGER.debug("Polaris heartbeat is sent successfully.");
-			}
-			catch (PolarisException e) {
-				LOGGER.error("Polaris heartbeat error with code [{}]", e.getCode(), e);
-			}
-			catch (Exception e) {
-				LOGGER.error("Polaris heartbeat runtime error", e);
-			}
-		}, polarisDiscoveryProperties.getHeartbeatInterval(), polarisDiscoveryProperties.getHeartbeatInterval(), SECONDS);
-		
-		LOGGER.info("Heartbeat task scheduled with interval {} seconds.", polarisDiscoveryProperties.getHeartbeatInterval());
-	}
-
-	private void stopHeartbeat() {
-		if (heartbeatExecutor != null) {
-			try {
-				heartbeatExecutor.shutdownNow();
-				if (heartbeatExecutor.awaitTermination(5, SECONDS)) {
-					LOGGER.info("Polaris heartbeat task stopped gracefully.");
-				} else {
-					LOGGER.warn("Polaris heartbeat task did not terminate in time.");
-				}
-			} catch (InterruptedException e) {
-				LOGGER.warn("Interrupted while stopping heartbeat task.", e);
-				Thread.currentThread().interrupt();
-			} finally {
-				heartbeatExecutor = null;
-			}
-		}
-	}
-
-	@EventListener(RefreshScopeRefreshedEvent.class)
-	public void onPropertyRefreshed() {
-		if (!polarisDiscoveryProperties.getHeartbeatEnabled()) {
-			LOGGER.info("Heartbeat disabled via property refresh, stopping heartbeat task.");
-			stopHeartbeat();
-		}
-	}
-
 	@Override
 	public void deregister(PolarisRegistration registration) {
 		LOGGER.info("De-registering from Polaris Server now...");
@@ -283,8 +199,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			LOGGER.warn("No dom to de-register for polaris client...");
 			return;
 		}
-
-		stopHeartbeat();
 
 		InstanceDeregisterRequest deRegisterRequest = new InstanceDeregisterRequest();
 		deRegisterRequest.setInstanceID(registration.getInstanceId());
@@ -307,7 +221,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 
 	@Override
 	public void close() {
-		stopHeartbeat();
 	}
 
 	@Override
@@ -333,6 +246,5 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 
 	@Override
 	public void destroy() {
-		stopHeartbeat();
 	}
 }
