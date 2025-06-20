@@ -85,7 +85,10 @@ public class PolarisConfigAutoConfiguration {
 
 	@Bean
 	public SpringValueRegistry springValueRegistry() {
-		return new SpringValueRegistry();
+		SpringValueRegistry springValueRegistry = new SpringValueRegistry();
+		// TODO: support dynamic config
+		springValueRegistry.putRefreshScopePrefixKey("spring.cloud.openfeign.client");
+		return springValueRegistry;
 	}
 
 	@Bean

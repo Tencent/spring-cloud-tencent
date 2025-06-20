@@ -77,4 +77,8 @@ public final class TsfContextUtils {
 		}
 		return onlyTsfConsulEnabled;
 	}
+
+	public static boolean isOnlyTsfConsulEnabled() {
+		return onlyTsfConsulEnabled;
+	}
 }

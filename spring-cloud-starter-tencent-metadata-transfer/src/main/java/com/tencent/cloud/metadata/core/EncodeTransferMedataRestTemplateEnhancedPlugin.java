@@ -21,7 +21,9 @@ import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -64,20 +66,27 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
-		// currently only support transitive header from calleeMessageMetadataContainer
-		this.buildHeaderMap(httpRequest, calleeTransitiveHeaders);
+		if (TsfContextUtils.isOnlyTsfConsulEnabled()) {
+			Map<String, String> tsfMetadataMap = TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata);
+			this.buildHeaderMap(httpRequest, tsfMetadataMap);
+		}
+		else {
+			// currently only support transitive header from calleeMessageMetadataContainer
+			this.buildHeaderMap(httpRequest, calleeTransitiveHeaders);
 
-		// build custom disposable metadata request header
-		this.buildMetadataHeader(httpRequest, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+			// build custom disposable metadata request header
+			this.buildMetadataHeader(httpRequest, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
-		// build custom metadata request header
-		this.buildMetadataHeader(httpRequest, customMetadata, CUSTOM_METADATA);
+			// build custom metadata request header
+			this.buildMetadataHeader(httpRequest, customMetadata, CUSTOM_METADATA);
 
-		// build application metadata request header
-		this.buildMetadataHeader(httpRequest, applicationMetadata, APPLICATION_METADATA);
-
+			// build application metadata request header
+			this.buildMetadataHeader(httpRequest, applicationMetadata, APPLICATION_METADATA);
+		}
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(httpRequest, transHeaders);
+
+
 	}
 
 	private void buildTransmittedHeader(HttpRequest request, Map<String, String> transHeaders) {
