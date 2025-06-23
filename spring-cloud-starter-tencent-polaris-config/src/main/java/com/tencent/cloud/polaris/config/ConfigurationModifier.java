@@ -114,6 +114,8 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		}
 
 		connectorConfig.setAddresses(configAddresses);
+		connectorConfig.setLbPolicy(polarisContextProperties.getAddressLbPolicy());
+		connectorConfig.setServerSwitchInterval(polarisContextProperties.getServerSwitchInterval());
 
 		if (StringUtils.isNotEmpty(polarisConfigProperties.getToken())) {
 			connectorConfig.setToken(polarisConfigProperties.getToken());
