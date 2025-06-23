@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.ConfigProvider;
 import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.ConfigAPIFactory;
@@ -47,6 +48,16 @@ public class PolarisContextProperties {
 	 */
 	@Value("${spring.cloud.polaris.address:}")
 	private String address;
+
+	/**
+	 * polaris server address load balance policy.
+	 */
+	private String addressLbPolicy = LoadBalanceConfig.LOAD_BALANCE_ROUND_ROBIN;
+
+	/**
+	 * polaris server switch interval.
+	 */
+	private long serverSwitchInterval = 600000;
 
 	/**
 	 * current server local ip address.
@@ -116,6 +127,22 @@ public class PolarisContextProperties {
 		this.address = address;
 	}
 
+	public String getAddressLbPolicy() {
+		return addressLbPolicy;
+	}
+
+	public void setAddressLbPolicy(String addressLbPolicy) {
+		this.addressLbPolicy = addressLbPolicy;
+	}
+
+	public long getServerSwitchInterval() {
+		return serverSwitchInterval;
+	}
+
+	public void setServerSwitchInterval(long serverSwitchInterval) {
+		this.serverSwitchInterval = serverSwitchInterval;
+	}
+
 	public String getLocalIpAddress() {
 		return localIpAddress;
 	}
@@ -160,6 +187,8 @@ public class PolarisContextProperties {
 	public String toString() {
 		return "PolarisContextProperties{" +
 				"address='" + address + '\'' +
+				", addressLbPolicy='" + addressLbPolicy + '\'' +
+				", serverSwitchInterval=" + serverSwitchInterval +
 				", localIpAddress='" + localIpAddress + '\'' +
 				((this.localPort == null || this.localPort <= 0) ? "" : ", localPort=" + localPort) +
 				", enabled=" + enabled +
