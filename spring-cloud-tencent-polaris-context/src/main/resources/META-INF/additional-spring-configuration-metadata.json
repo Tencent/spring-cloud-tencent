@@ -88,5 +88,19 @@
       "defaultValue": "polaris.pushgateway"
     }
   ],
-  "hints": []
+  "hints": [
+    {
+      "name": "spring.cloud.polaris.address-lb-policy",
+      "values": [
+        {
+          "value": "roundRobin",
+          "description": "Round robin policy."
+        },
+        {
+          "value": "nearbyBackup",
+          "description": "Nearby backup policy."
+        }
+      ]
+    }
+  ]
 }
