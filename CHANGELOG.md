@@ -10,3 +10,4 @@
 - [feat:support stat reporting path aggregation.](https://github.com/Tencent/spring-cloud-tencent/pull/1609)
 - [feat:support instance detect.](https://github.com/Tencent/spring-cloud-tencent/pull/1619)
 - [fix: fix loadbalancer metadata type.](https://github.com/Tencent/spring-cloud-tencent/pull/1626)
+- [feat:support polaris server nearby backup LB.](https://github.com/Tencent/spring-cloud-tencent/pull/1627)
