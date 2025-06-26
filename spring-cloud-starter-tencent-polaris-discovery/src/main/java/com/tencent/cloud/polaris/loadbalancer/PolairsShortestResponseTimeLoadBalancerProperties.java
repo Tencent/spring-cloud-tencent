@@ -8,7 +8,7 @@ public class PolairsShortestResponseTimeLoadBalancerProperties {
 	/**
 	 * Slide period in milliseconds.
 	 */
-	@Value("${spring.cloud.polaris.loadbalancer.polarisShortestResponseTime.slidePeriod:30000}")
+	@Value("${spring.cloud.polaris.loadbalancer.polaris-shortest-response-time.slide-period:30000}")
 	private long slidePeriod;
 
 	long getSlidePeriod() {

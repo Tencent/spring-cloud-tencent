@@ -18,8 +18,6 @@
 package com.tencent.cloud.polaris.loadbalancer;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
-import com.tencent.cloud.rpc.enhancement.stat.config.StatConfigModifier;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
