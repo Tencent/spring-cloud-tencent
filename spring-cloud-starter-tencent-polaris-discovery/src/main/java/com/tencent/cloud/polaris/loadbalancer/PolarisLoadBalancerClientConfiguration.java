@@ -105,6 +105,15 @@ public class PolarisLoadBalancerClientConfiguration {
 	}
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisLeastConnection")
+	public ReactorLoadBalancer<ServiceInstance> polarisLeastConnectionLoadBalancer(Environment environment,
+			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
+		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
+		return new PolarisShortestLeastConnectionLoadBalancer(name,
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
+	}
+	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRoundRobin", matchIfMissing = true)
 	public ReactorLoadBalancer<ServiceInstance> polarisWeightedRoundRobinLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
@@ -112,6 +121,7 @@ public class PolarisLoadBalancerClientConfiguration {
 		return new PolarisWeightedRoundRobinLoadBalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
 	}
+
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnReactiveDiscoveryEnabled
