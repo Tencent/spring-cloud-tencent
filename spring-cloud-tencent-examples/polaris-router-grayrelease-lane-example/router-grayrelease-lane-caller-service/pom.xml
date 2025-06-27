@@ -10,7 +10,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>route-grayrelease-lane-caller-service</artifactId>
+	<artifactId>router-grayrelease-lane-caller-service</artifactId>
 
 	<dependencies>
 		<dependency>
