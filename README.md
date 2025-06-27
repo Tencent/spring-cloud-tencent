@@ -63,11 +63,8 @@ dependencies.
 
 > Notice:
 >
-> Support Spring Cloud 2023, 2022, 2021, 2020, Hoxton.
->
-> The version list of Spring Cloud Tencent can be found
-> in
-> [Spring Cloud Tencent Version Management](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+> The version list of Spring Cloud Tencent can be found in
+> [Spring Cloud Tencent Release Note](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
 > .
 
 For example:
@@ -86,11 +83,11 @@ For example:
     </dependencies>
 </dependencyManagement>    
                  
-<!-- add spring-cloud-starter-tencent-polaris-discovery dependency  -->
+<!-- add spring-cloud-starter-tencent-all dependency  -->
 <dependencies>
     <dependency>
         <groupId>com.tencent.cloud</groupId>
-        <artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
+        <artifactId>spring-cloud-starter-tencent-all</artifactId>
     </dependency>
 </dependencies>
 
