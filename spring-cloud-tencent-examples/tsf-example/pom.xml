@@ -13,10 +13,6 @@
 	<name>Spring Cloud Tencent TSF Examples</name>
 	<packaging>pom</packaging>
 
-	<properties>
-		<maven.deploy.skip>true</maven.deploy.skip>
-	</properties>
-
 	<modules>
 		<module>provider-demo</module>
 		<module>consumer-demo</module>
