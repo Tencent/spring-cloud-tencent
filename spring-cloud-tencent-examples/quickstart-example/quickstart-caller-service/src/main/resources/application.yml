@@ -6,6 +6,10 @@ spring:
   config:
     import: optional:polaris
   cloud:
+    loadbalancer:
+      clients:
+        QuickstartCallerService:
+          strategies: random
     polaris:
       address: grpc://119.91.66.223:8091
       namespace: default
