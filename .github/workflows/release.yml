@@ -24,4 +24,4 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
         run: |
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import;
-          mvn clean deploy -B -U -P release -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -Dmaven.test.skip=true
+          mvn clean deploy -B -U -P release -Dmaven.test.skip=true
