@@ -9,12 +9,12 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 
 /**
- * PolarisShortestResponseTimeLoadBalancer.
+ * Polaris Least Connection LoadBalancer.
  *
  * @author Yuwei Fu
  */
-public class PolarisShortestLeastConnectionLoadBalancer extends AbstractPolarisLoadBalancer {
-	public PolarisShortestLeastConnectionLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
+public class PolarisLeastConnectionLoadBalancer extends AbstractPolarisLoadBalancer {
+	public PolarisLeastConnectionLoadBalancer(String serviceId, ObjectProvider<ServiceInstanceListSupplier> supplierObjectProvider, RouterAPI routerAPI) {
 		super(serviceId, supplierObjectProvider, routerAPI);
 	}
 

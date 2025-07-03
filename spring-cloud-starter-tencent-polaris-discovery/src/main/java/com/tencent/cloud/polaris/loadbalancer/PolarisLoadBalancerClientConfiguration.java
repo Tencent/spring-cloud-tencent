@@ -109,7 +109,7 @@ public class PolarisLoadBalancerClientConfiguration {
 	public ReactorLoadBalancer<ServiceInstance> polarisLeastConnectionLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
-		return new PolarisShortestLeastConnectionLoadBalancer(name,
+		return new PolarisLeastConnectionLoadBalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
 	}
 	@Bean
