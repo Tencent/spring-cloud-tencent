@@ -68,7 +68,7 @@ public class PolarisContextProperties {
 	/**
 	 * current server local port.
 	 */
-	@Value("${spring.cloud.polaris.localPort:}")
+	@Value("${spring.cloud.polaris.localPort:0}")
 	private Integer localPort;
 
 	/**
