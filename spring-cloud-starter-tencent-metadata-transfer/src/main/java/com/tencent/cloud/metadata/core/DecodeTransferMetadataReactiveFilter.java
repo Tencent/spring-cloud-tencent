@@ -69,6 +69,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		Map<String, String> mergedDisposableMetadata = new HashMap<>();
 		Map<String, String> mergedApplicationMetadata = new HashMap<>();
+		// some tsf headers need to change to polaris header
 		Map<String, String> addHeaders = new HashMap<>();
 		AtomicReference<String> callerIp = new AtomicReference<>("");
 

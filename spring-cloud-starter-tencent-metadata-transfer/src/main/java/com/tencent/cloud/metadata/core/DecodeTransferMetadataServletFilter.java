@@ -64,6 +64,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		Map<String, String> mergedDisposableMetadata = new HashMap<>();
 		Map<String, String> mergedApplicationMetadata = new HashMap<>();
+		// some tsf headers need to change to polaris header
 		Map<String, String> addHeaders = new HashMap<>();
 		AtomicReference<String> callerIp = new AtomicReference<>("");
 
@@ -95,9 +96,10 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		if (StringUtils.isNotBlank(mergedApplicationMetadata.get(LOCAL_IP))) {
 			callerIp.set(mergedApplicationMetadata.get(LOCAL_IP));
 		}
+		// add headers
+		httpServletRequest = new HttpServletRequestHeaderWrapper(httpServletRequest, addHeaders);
 		// message metadata
-		ServletMetadataProvider callerMessageMetadataProvider = new ServletMetadataProvider(
-				new HttpServletRequestHeaderWrapper(httpServletRequest, addHeaders), callerIp.get());
+		ServletMetadataProvider callerMessageMetadataProvider = new ServletMetadataProvider(httpServletRequest, callerIp.get());
 
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 
