@@ -40,6 +40,6 @@ public class PolarisShortestResponseTimeLoadBalancerConfigModifier implements Po
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return Integer.MAX_VALUE;
 	}
 }
