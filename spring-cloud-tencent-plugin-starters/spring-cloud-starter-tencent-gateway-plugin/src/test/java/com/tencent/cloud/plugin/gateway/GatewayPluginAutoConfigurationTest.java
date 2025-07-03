@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAut
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.gateway.config.GatewayAutoConfiguration;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -138,6 +139,11 @@ class GatewayPluginAutoConfigurationTest {
 		@Bean
 		PolarisConfigProperties polarisConfigProperties() {
 			return new PolarisConfigProperties();
+		}
+
+		@Bean
+		LoadBalancerClientFactory loadBalancerClientFactory() {
+			return mock(LoadBalancerClientFactory.class);
 		}
 	}
 }

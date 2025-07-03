@@ -75,6 +75,7 @@ public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFa
 					);
 				}
 			}
+			return createPolarisFeignClient((Client) bean);
 		}
 		return bean;
 	}
