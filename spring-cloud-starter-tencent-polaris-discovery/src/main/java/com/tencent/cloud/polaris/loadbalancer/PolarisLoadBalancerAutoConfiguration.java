@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(PolairsShortestResponseTimeLoadBalancerProperties.class)
+@EnableConfigurationProperties
 @ConditionalOnDiscoveryEnabled
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)

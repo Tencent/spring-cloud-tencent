@@ -64,7 +64,7 @@ import static org.mockito.Mockito.when;
  * @author Yuwei Fu
  */
 @ExtendWith(MockitoExtension.class)
-public class PolarisShortestResponseTimeBalancerTest {
+public class PolarisShortestResponseTimeLoadBalancerTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static Instance testInstance;
