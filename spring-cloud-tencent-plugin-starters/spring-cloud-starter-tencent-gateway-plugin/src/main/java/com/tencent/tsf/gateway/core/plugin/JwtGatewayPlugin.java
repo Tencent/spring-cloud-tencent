@@ -31,17 +31,16 @@ import com.tencent.tsf.gateway.core.exception.TsfGatewayException;
 import com.tencent.tsf.gateway.core.model.ClaimMapping;
 import com.tencent.tsf.gateway.core.model.JwtPlugin;
 import com.tencent.tsf.gateway.core.model.PluginPayload;
-import org.jose4j.jwa.AlgorithmConstraints;
-import org.jose4j.jwa.AlgorithmConstraints.ConstraintType;
-import org.jose4j.jwk.PublicJsonWebKey;
-import org.jose4j.jwt.JwtClaims;
-import org.jose4j.jwt.MalformedClaimException;
-import org.jose4j.jwt.consumer.InvalidJwtException;
-import org.jose4j.jwt.consumer.JwtConsumer;
-import org.jose4j.jwt.consumer.JwtConsumerBuilder;
-import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.org.jose4j.jwa.AlgorithmConstraints;
+import shade.polaris.org.jose4j.jwk.PublicJsonWebKey;
+import shade.polaris.org.jose4j.jwt.JwtClaims;
+import shade.polaris.org.jose4j.jwt.MalformedClaimException;
+import shade.polaris.org.jose4j.jwt.consumer.InvalidJwtException;
+import shade.polaris.org.jose4j.jwt.consumer.JwtConsumer;
+import shade.polaris.org.jose4j.jwt.consumer.JwtConsumerBuilder;
+import shade.polaris.org.jose4j.lang.JoseException;
 
 
 /**
@@ -60,6 +59,7 @@ public class JwtGatewayPlugin implements IGatewayPlugin<JwtPlugin> {
 		Map<String, String[]> parameterMap = tsfGatewayRequest.getParameterMap();
 		String tokenBaggagePosition = pluginInfo.getTokenBaggagePosition();
 		if (Position.fromString(tokenBaggagePosition) == null) {
+			logger.error("tokenBaggagePosition is wrong, tokenBaggagePosition: {}, tsfGatewayRequest: {}", tokenBaggagePosition, tsfGatewayRequest);
 			throw new TsfGatewayException(TsfGatewayError.GATEWAY_AUTH_FAILED, "tokenBaggagePosition is wrong");
 		}
 		String idToken;
@@ -69,11 +69,13 @@ public class JwtGatewayPlugin implements IGatewayPlugin<JwtPlugin> {
 		else {
 			//queryParam中取
 			if (parameterMap.get(pluginInfo.getTokenKeyName()) == null || parameterMap.get(pluginInfo.getTokenKeyName()).length == 0) {
+				logger.error("idToken is empty, tsfGatewayRequest: {}", tsfGatewayRequest);
 				throw new TsfGatewayException(TsfGatewayError.GATEWAY_AUTH_FAILED, "idToken is empty");
 			}
 			idToken = parameterMap.get(pluginInfo.getTokenKeyName())[0];
 		}
 		if (StringUtils.isEmpty(idToken)) {
+			logger.error("idToken is empty, tsfGatewayRequest: {}", tsfGatewayRequest);
 			throw new TsfGatewayException(TsfGatewayError.GATEWAY_AUTH_FAILED, "idToken is empty");
 		}
 
@@ -95,7 +97,7 @@ public class JwtGatewayPlugin implements IGatewayPlugin<JwtPlugin> {
 				.setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
 				.setRequireSubject() // the JWT must have a subject claim
 				.setVerificationKey(jwk.getPublicKey())
-				.setJwsAlgorithmConstraints(new AlgorithmConstraints(ConstraintType.WHITELIST, jwk.getAlgorithm()))
+				.setJwsAlgorithmConstraints(new AlgorithmConstraints(AlgorithmConstraints.ConstraintType.WHITELIST, jwk.getAlgorithm()))
 				// ignore audience
 				.setSkipDefaultAudienceValidation()
 				.build(); // create the JwtConsumer instance
@@ -114,7 +116,7 @@ public class JwtGatewayPlugin implements IGatewayPlugin<JwtPlugin> {
 							.getValueInMillis();
 					String msg = String
 							.format("JWT expired at (%d)", expirationTime);
-					logger.info(msg);
+					logger.error(msg);
 					throw new TsfGatewayException(TsfGatewayError.GATEWAY_AUTH_ERROR, msg);
 				}
 				catch (MalformedClaimException e1) {
@@ -122,7 +124,7 @@ public class JwtGatewayPlugin implements IGatewayPlugin<JwtPlugin> {
 				}
 			}
 
-			logger.warn("Invalid JWT! ", e);
+			logger.warn("Invalid JWT! tsfGatewayRequest:{}, error:{}", tsfGatewayRequest, e.getMessage());
 			throw new TsfGatewayException(TsfGatewayError.GATEWAY_AUTH_ERROR, "Invalid JWT");
 		}
 

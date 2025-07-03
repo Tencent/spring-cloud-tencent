@@ -58,24 +58,24 @@ public class EnhancedRestTemplateWrapInterceptor {
 	}
 
 
-	public ClientHttpResponse intercept(HttpRequest request, String serviceId,
-			LoadBalancerRequest<ClientHttpResponse> loadBalancerRequest) throws IOException {
+	public <T> T intercept(HttpRequest httpRequest, String serviceId, ServiceInstance serviceInstance,
+			LoadBalancerRequest<T> loadBalancerRequest) throws IOException {
 
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
-		URI serviceUrl = request.getURI();
-		if (request instanceof ServiceRequestWrapper) {
-			serviceUrl = ((ServiceRequestWrapper) request).getRequest().getURI();
+		URI serviceUrl = httpRequest.getURI();
+		if (httpRequest instanceof ServiceRequestWrapper) {
+			serviceUrl = ((ServiceRequestWrapper) httpRequest).getRequest().getURI();
 		}
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
-				.httpHeaders(request.getHeaders())
-				.httpMethod(request.getMethod())
-				.url(request.getURI())
+				.httpHeaders(httpRequest.getHeaders())
+				.httpMethod(httpRequest.getMethod())
+				.url(httpRequest.getURI())
 				.serviceUrl(serviceUrl)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
-		enhancedPluginContext.setOriginRequest(request);
+		enhancedPluginContext.setOriginRequest(httpRequest);
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 
@@ -85,16 +85,27 @@ public class EnhancedRestTemplateWrapInterceptor {
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
 			startMillis = System.currentTimeMillis();
 
-			ClientHttpResponse response = delegate.execute(serviceId, loadBalancerRequest);
+			T response = null;
+			// retry rest template, serviceInstance is not null
+			if (serviceInstance != null) {
+				response = delegate.execute(serviceId, serviceInstance, loadBalancerRequest);
+			}
+			else {
+				response = delegate.execute(serviceId, loadBalancerRequest);
+			}
 			// get target instance after execute
 			enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
-					.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), request.getURI());
+					.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), httpRequest.getURI());
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 
-			EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-					.httpStatus(response.getRawStatusCode())
-					.httpHeaders(response.getHeaders())
-					.build();
+
+			EnhancedResponseContext.EnhancedContextResponseBuilder enhancedResponseContextBuilder = EnhancedResponseContext.builder();
+			if (response instanceof ClientHttpResponse) {
+				enhancedResponseContextBuilder.httpStatus(((ClientHttpResponse) response).getStatusCode().value());
+				enhancedResponseContextBuilder.httpHeaders(((ClientHttpResponse) response).getHeaders());
+			}
+			EnhancedResponseContext enhancedResponseContext =  enhancedResponseContextBuilder.build();
+
 			enhancedPluginContext.setResponse(enhancedResponseContext);
 
 			// Run post enhanced plugins.
@@ -114,7 +125,7 @@ public class EnhancedRestTemplateWrapInterceptor {
 			if (existFallback) {
 				Object fallbackResponse = fallbackResponseValue.getObjectValue().orElse(null);
 				if (fallbackResponse instanceof ClientHttpResponse) {
-					return (ClientHttpResponse) fallbackResponse;
+					return (T) fallbackResponse;
 				}
 			}
 			throw callAbortedException;

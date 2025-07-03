@@ -20,30 +20,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.11.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.bitbucket.b_c</groupId>
-			<artifactId>jose4j</artifactId>
-			<version>0.9.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent</groupId>
-			<artifactId>tencentsm-crypto</artifactId>
-			<version>1.9.1</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
 			<optional>true</optional>

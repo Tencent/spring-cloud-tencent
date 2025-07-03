@@ -18,10 +18,10 @@
 package com.tencent.tsf.gateway.core.util;
 
 import com.tencent.tsf.gateway.core.constant.TsfAlgType;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.org.apache.commons.codec.binary.Base64;
+import shade.polaris.org.apache.commons.codec.digest.HmacUtils;
 
 
 /**
@@ -59,9 +59,6 @@ public final class TsfSignUtil {
 			break;
 		case HMAC_SHA_512:
 			serverSignBytes = HmacUtils.hmacSha512(secretKey, digestValue);
-			break;
-		case HMAC_SM3:
-			serverSignBytes = SM3Util.hmacSm3(secretKey, digestValue);
 			break;
 		default:
 			throw new UnsupportedOperationException("不支持的鉴权算法: " + algType);

@@ -19,7 +19,7 @@ package com.tencent.tsf.gateway.core.util;
 
 import java.util.UUID;
 
-import org.apache.commons.codec.binary.Base64;
+import shade.polaris.org.apache.commons.codec.binary.Base64;
 
 /**
  * @author kysonli

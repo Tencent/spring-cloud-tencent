@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
-import com.tencent.cloud.polaris.circuitbreaker.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.CircuitBreakerPlugin;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
@@ -32,7 +31,6 @@ import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
@@ -92,10 +90,6 @@ public class PolarisCircuitBreakerAutoConfiguration {
 		return new CircuitBreakerConfigModifier(properties, polarisCircuitBreakerProperties);
 	}
 
-	@Bean
-	@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
-	public LoadBalancerInterceptorBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
-		return new LoadBalancerInterceptorBeanPostProcessor();
-	}
+
 
 }

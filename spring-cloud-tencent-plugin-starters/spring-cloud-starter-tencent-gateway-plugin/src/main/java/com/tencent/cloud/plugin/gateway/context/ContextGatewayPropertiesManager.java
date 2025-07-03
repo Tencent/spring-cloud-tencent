@@ -41,9 +41,9 @@ import com.tencent.tsf.gateway.core.model.PluginDetail;
 import com.tencent.tsf.gateway.core.model.PluginInfo;
 import com.tencent.tsf.gateway.core.model.PluginInstanceInfo;
 import com.tencent.tsf.gateway.core.util.PluginUtil;
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.org.apache.commons.beanutils.BeanUtils;
 
 import org.springframework.util.AntPathMatcher;
 
