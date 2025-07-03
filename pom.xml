@@ -90,7 +90,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.0.2.0-2024.0.1</revision>
+		<revision>2.0.2.1-2024.0.1</revision>
 
 		<!-- Spring Framework -->
 		<spring.framework.version>6.2.7</spring.framework.version>
