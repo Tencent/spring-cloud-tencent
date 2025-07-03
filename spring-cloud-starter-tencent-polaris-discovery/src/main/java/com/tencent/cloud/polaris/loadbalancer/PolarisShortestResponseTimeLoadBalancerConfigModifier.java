@@ -7,16 +7,16 @@ import com.tencent.polaris.plugins.loadbalancer.shortestresponsetime.ShortestRes
 
 public class PolarisShortestResponseTimeLoadBalancerConfigModifier implements PolarisConfigModifier {
 
-	private final PolairsShortestResponseTimeLoadBalancerProperties polairsShortestResponseTimeLoadBalancerProperties;
+	private final PolarisShortestResponseTimeLoadBalancerProperties polarisShortestResponseTimeLoadBalancerProperties;
 
 	public PolarisShortestResponseTimeLoadBalancerConfigModifier(
-			PolairsShortestResponseTimeLoadBalancerProperties polairsShortestResponseTimeLoadBalancerProperties) {
-		this.polairsShortestResponseTimeLoadBalancerProperties = polairsShortestResponseTimeLoadBalancerProperties;
+			PolarisShortestResponseTimeLoadBalancerProperties polarisShortestResponseTimeLoadBalancerProperties) {
+		this.polarisShortestResponseTimeLoadBalancerProperties = polarisShortestResponseTimeLoadBalancerProperties;
 	}
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		ShortestResponseTimeLoadBalanceConfig config = new ShortestResponseTimeLoadBalanceConfig();
-		config.setSlidePeriod(polairsShortestResponseTimeLoadBalancerProperties.getSlidePeriod());
+		config.setSlidePeriod(polarisShortestResponseTimeLoadBalancerProperties.getSlidePeriod());
 		configuration.getConsumer().getLoadbalancer().setPluginConfig("shortestResponseTime",
 				config);
 	}

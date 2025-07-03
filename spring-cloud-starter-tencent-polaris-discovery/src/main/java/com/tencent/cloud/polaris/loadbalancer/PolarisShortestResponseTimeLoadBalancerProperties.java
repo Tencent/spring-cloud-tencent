@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "spring.cloud.polaris.loadbalancer")
-public class PolairsShortestResponseTimeLoadBalancerProperties {
+public class PolarisShortestResponseTimeLoadBalancerProperties {
 	/**
 	 * Slide period in milliseconds.
 	 */
@@ -18,6 +18,5 @@ public class PolairsShortestResponseTimeLoadBalancerProperties {
 	void setSlidePeriod(long slidePeriod) {
 		this.slidePeriod = slidePeriod;
 	}
-
 
 }
