@@ -17,29 +17,33 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.loadbalancer.shortestresponsetime.ShortestResponseTimeLoadBalanceConfig;
 
 
 public class PolarisShortestResponseTimeLoadBalancerConfigModifier implements PolarisConfigModifier {
 
-	private final PolarisShortestResponseTimeLoadBalancerProperties polarisShortestResponseTimeLoadBalancerProperties;
+	private final PolarisLoadBalancerProperties.PolarisShortestResponseTime polarisShortestResponseTime;
 
 	public PolarisShortestResponseTimeLoadBalancerConfigModifier(
-			PolarisShortestResponseTimeLoadBalancerProperties polarisShortestResponseTimeLoadBalancerProperties) {
-		this.polarisShortestResponseTimeLoadBalancerProperties = polarisShortestResponseTimeLoadBalancerProperties;
+			PolarisLoadBalancerProperties.PolarisShortestResponseTime polarisShortestResponseTime) {
+		this.polarisShortestResponseTime = polarisShortestResponseTime;
 	}
+
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		ShortestResponseTimeLoadBalanceConfig config = new ShortestResponseTimeLoadBalanceConfig();
-		config.setSlidePeriod(polarisShortestResponseTimeLoadBalancerProperties.getSlidePeriod());
-		configuration.getConsumer().getLoadbalancer().setPluginConfig("shortestResponseTime",
-				config);
+		config.setSlidePeriod(polarisShortestResponseTime.getSlidePeriod());
+		configuration.getConsumer().getLoadbalancer()
+				.setPluginConfig(LoadBalanceConfig.LOAD_BALANCE_SHORTEST_RESPONSE_TIME,
+						config);
 	}
 
 	@Override
 	public int getOrder() {
-		return Integer.MAX_VALUE;
+		return OrderConstant.Modifier.LOAD_BALANCER_CONFIG_ORDER;
 	}
 }
