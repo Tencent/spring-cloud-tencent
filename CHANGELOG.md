@@ -27,3 +27,4 @@
 - fix:fix tsf lossless not working bug.
 - fix:fix RestTemplate trace attribute loss bug.
 - fix:fix polaris_namespace is null when using TSF.
+- [fix:fix PolarisContextProperties instantiated twice causing NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/1642)
