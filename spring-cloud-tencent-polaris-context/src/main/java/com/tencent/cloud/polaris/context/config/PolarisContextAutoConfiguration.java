@@ -46,8 +46,14 @@ import org.springframework.core.env.Environment;
  * @author Haotian Zhang
  */
 @ConditionalOnPolarisEnabled
-@EnableConfigurationProperties({PolarisContextProperties.class})
+@EnableConfigurationProperties
 public class PolarisContextAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisContextProperties polarisContextProperties() {
+		return new PolarisContextProperties();
+	}
 
 	@Bean(initMethod = "init")
 	@ConditionalOnMissingBean
