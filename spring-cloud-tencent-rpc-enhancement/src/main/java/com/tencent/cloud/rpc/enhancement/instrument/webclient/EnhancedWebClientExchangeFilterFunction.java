@@ -107,7 +107,8 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 				.doOnError(t -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 					enhancedPluginContext.setThrowable(t);
-
+					enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
+							.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), originRequest.url());
 					// Run exception enhanced plugins.
 					pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
 				})
