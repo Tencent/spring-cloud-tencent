@@ -30,10 +30,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PolarisPropertySourceManager {
 
-	private final Map<String, PolarisPropertySource> polarisPropertySources = new ConcurrentHashMap<>();
+	private static final Map<String, PolarisPropertySource> polarisPropertySources = new ConcurrentHashMap<>();
 
 	public void addPropertySource(PolarisPropertySource polarisPropertySource) {
-		polarisPropertySources.putIfAbsent(polarisPropertySource.getPropertySourceName(), polarisPropertySource);
+		polarisPropertySources.put(polarisPropertySource.getPropertySourceName(), polarisPropertySource);
 	}
 
 	public List<PolarisPropertySource> getAllPropertySources() {
