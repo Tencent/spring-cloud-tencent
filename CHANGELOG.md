@@ -26,3 +26,4 @@
 - fix:fix restTemplateCustomizer bean conflict causing service to fail to start properly.
 - fix:fix NullPointerException when properties contain kv with null value.
 - fix: upgrade polaris java to 1.15.8
+- [fix: The repeated creation of PolarisPropertySourceManager results in the failure of configuration refresh.](https://github.com/Tencent/spring-cloud-tencent/pull/1643)
