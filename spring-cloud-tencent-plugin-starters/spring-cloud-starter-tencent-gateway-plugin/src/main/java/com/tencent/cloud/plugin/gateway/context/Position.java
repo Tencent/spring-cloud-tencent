@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.plugin.gateway.context;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public enum Position {
 	/**
 	 * Path position.
@@ -30,4 +32,24 @@ public enum Position {
 	 * Header position.
 	 */
 	HEADER,
+
+	/**
+	 * HTTP COOKIE.
+	 */
+	COOKIE,
+
+	/**
+	 * TSF TAG，目前用于 Request Transformer Plugin 的改写流量.
+	 */
+	TSF_TAG;
+
+	@JsonCreator
+	public static Position fromString(String key) {
+		for (Position position : Position.values()) {
+			if (position.name().equalsIgnoreCase(key)) {
+				return position;
+			}
+		}
+		return null;
+	}
 }

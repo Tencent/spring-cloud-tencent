@@ -20,6 +20,8 @@ package com.tencent.cloud.plugin.gateway.context;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.tsf.gateway.core.constant.AuthMode;
+
 public class GroupContext {
 
 	private String comment;
@@ -27,6 +29,8 @@ public class GroupContext {
 	private ContextPredicate predicate;
 
 	private List<ContextRoute> routes;
+
+	private ContextAuth auth;
 
 	public String getComment() {
 		return comment;
@@ -50,6 +54,14 @@ public class GroupContext {
 
 	public void setRoutes(List<ContextRoute> routes) {
 		this.routes = routes;
+	}
+
+	public ContextAuth getAuth() {
+		return auth;
+	}
+
+	public void setAuth(ContextAuth auth) {
+		this.auth = auth;
 	}
 
 	public static class ContextPredicate {
@@ -100,6 +112,15 @@ public class GroupContext {
 
 		private String key;
 
+		public ContextNamespace() {
+
+		}
+
+		public ContextNamespace(Position position, String key) {
+			this.position = position;
+			this.key = key;
+		}
+
 		public Position getPosition() {
 			return position;
 		}
@@ -121,6 +142,15 @@ public class GroupContext {
 		private Position position;
 
 		private String key;
+
+		public ContextService() {
+
+		}
+
+		public ContextService(Position position, String key) {
+			this.position = position;
+			this.key = key;
+		}
 
 		public Position getPosition() {
 			return position;
@@ -146,11 +176,15 @@ public class GroupContext {
 
 		private String method;
 
+		private String apiId;
+
 		private String service;
 
 		private String host;
 
 		private String namespace;
+
+		private String namespaceId;
 
 		private Map<String, String> metadata;
 
@@ -178,6 +212,14 @@ public class GroupContext {
 			this.method = method;
 		}
 
+		public String getApiId() {
+			return apiId;
+		}
+
+		public void setApiId(String apiId) {
+			this.apiId = apiId;
+		}
+
 		public String getService() {
 			return service;
 		}
@@ -202,6 +244,14 @@ public class GroupContext {
 			this.namespace = namespace;
 		}
 
+		public String getNamespaceId() {
+			return namespaceId;
+		}
+
+		public void setNamespaceId(String namespaceId) {
+			this.namespaceId = namespaceId;
+		}
+
 		public Map<String, String> getMetadata() {
 			return metadata;
 		}
@@ -210,4 +260,79 @@ public class GroupContext {
 			this.metadata = metadata;
 		}
 	}
+
+	public static class ContextAuth {
+		private AuthMode type;
+
+		private List<ContextSecret> secrets;
+
+		public AuthMode getType() {
+			return type;
+		}
+
+		public void setType(AuthMode type) {
+			this.type = type;
+		}
+
+		public List<ContextSecret> getSecrets() {
+			return secrets;
+		}
+
+		public void setSecrets(List<ContextSecret> secrets) {
+			this.secrets = secrets;
+		}
+	}
+
+	public static class ContextSecret {
+		private String name;
+
+		private String id;
+
+		private String key;
+
+		private String status;
+
+		private String expiredTime;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public void setKey(String key) {
+			this.key = key;
+		}
+
+		public String getStatus() {
+			return status;
+		}
+
+		public void setStatus(String status) {
+			this.status = status;
+		}
+
+		public String getExpiredTime() {
+			return expiredTime;
+		}
+
+		public void setExpiredTime(String expiredTime) {
+			this.expiredTime = expiredTime;
+		}
+	}
+
 }

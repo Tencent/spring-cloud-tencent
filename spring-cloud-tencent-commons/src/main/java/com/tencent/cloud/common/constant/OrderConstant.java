@@ -51,7 +51,7 @@ public class OrderConstant {
 			/**
 			 * Order of encode transfer metadata interceptor.
 			 */
-			public static final int ENCODE_TRANSFER_METADATA_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE - 1;
+			public static final int ENCODE_TRANSFER_METADATA_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
 
 			/**
 			 * Order of encode router label interceptor.

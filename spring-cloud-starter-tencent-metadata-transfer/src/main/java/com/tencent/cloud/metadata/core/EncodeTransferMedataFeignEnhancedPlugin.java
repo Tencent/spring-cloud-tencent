@@ -24,8 +24,10 @@ import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.ReflectionUtils;
+import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -69,18 +71,23 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
-		// currently only support transitive header from calleeMessageMetadataContainer
-		this.buildHeaderMap(request, calleeTransitiveHeaders);
+		if (TsfContextUtils.isOnlyTsfConsulEnabled()) {
+			Map<String, String> tsfMetadataMap = TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata);
+			this.buildHeaderMap(request, tsfMetadataMap);
+		}
+		else {
+			// currently only support transitive header from calleeMessageMetadataContainer
+			this.buildHeaderMap(request, calleeTransitiveHeaders);
 
-		// build custom disposable metadata request header
-		this.buildMetadataHeader(request, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+			// build custom disposable metadata request header
+			this.buildMetadataHeader(request, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
-		// process custom metadata
-		this.buildMetadataHeader(request, customMetadata, CUSTOM_METADATA);
+			// process custom metadata
+			this.buildMetadataHeader(request, customMetadata, CUSTOM_METADATA);
 
-		// add application metadata
-		this.buildMetadataHeader(request, applicationMetadata, APPLICATION_METADATA);
-
+			// add application metadata
+			this.buildMetadataHeader(request, applicationMetadata, APPLICATION_METADATA);
+		}
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(request, transHeaders);
 	}

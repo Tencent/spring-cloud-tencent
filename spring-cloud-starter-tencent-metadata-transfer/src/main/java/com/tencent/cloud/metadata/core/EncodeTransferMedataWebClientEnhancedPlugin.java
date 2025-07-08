@@ -21,7 +21,9 @@ import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -65,15 +67,18 @@ public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlug
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
 
 		ClientRequest.Builder requestBuilder = ClientRequest.from(clientRequest);
+		if (TsfContextUtils.isOnlyTsfConsulEnabled()) {
+			this.buildHeaderMap(requestBuilder, TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata));
+		}
+		else {
+			// currently only support transitive header from calleeMessageMetadataContainer
+			this.buildHeaderMap(requestBuilder, calleeTransitiveHeaders);
 
-		// currently only support transitive header from calleeMessageMetadataContainer
-		this.buildHeaderMap(requestBuilder, calleeTransitiveHeaders);
-
-		this.buildMetadataHeader(requestBuilder, customMetadata, CUSTOM_METADATA);
-		this.buildMetadataHeader(requestBuilder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
-		this.buildMetadataHeader(requestBuilder, applicationMetadata, APPLICATION_METADATA);
+			this.buildMetadataHeader(requestBuilder, customMetadata, CUSTOM_METADATA);
+			this.buildMetadataHeader(requestBuilder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+			this.buildMetadataHeader(requestBuilder, applicationMetadata, APPLICATION_METADATA);
+		}
 		this.buildTransmittedHeader(requestBuilder, transHeaders);
-
 		context.setOriginRequest(requestBuilder.build());
 	}
 
