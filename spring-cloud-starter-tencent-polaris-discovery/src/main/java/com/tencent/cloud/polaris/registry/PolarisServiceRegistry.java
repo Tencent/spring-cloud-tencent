@@ -61,6 +61,7 @@ import org.springframework.http.HttpHeaders;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Service registry of Polaris.
@@ -79,6 +80,12 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 
 	private final StaticMetadataManager staticMetadataManager;
 	private final PolarisStatProperties polarisStatProperties;
+
+	@Value("${spring.cloud.polaris.discovery.heartbeat-enabled:true}")
+	private Boolean heartbeatEnabled = true;
+
+	@Value("${spring.cloud.polaris.discovery.heartbeat-interval:5}")
+	private Integer heartbeatInterval = 5;
 
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler polarisDiscoveryHandler,
@@ -128,13 +135,15 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		try {
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
-			
-			if (!polarisDiscoveryProperties.getHeartbeatEnabled()) {
-				// Use register() when heartbeat is disabled - this doesn't start the SDK's heartbeat
+
+			// 结合heartbeatEnabled和healthCheckUrl判断
+			if (!polarisDiscoveryProperties.getHeartbeatEnabled()
+				|| StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
+				// 不启用心跳 或 未配置healthCheckUrl
 				instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 				LOGGER.info("Registered instance without heartbeat.");
 			} else {
-				// Use registerInstance() when heartbeat is enabled - this starts the SDK's heartbeat
+				// 启用心跳 且 配置了healthCheckUrl
 				instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 				instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
 				LOGGER.info("Registered instance with heartbeat enabled.");

@@ -19,7 +19,7 @@
       "description": "enable polaris discovery or not."
     },
     {
-      "name": "spring.cloud.polaris.discovery.heartbeat.enabled",
+      "name": "spring.cloud.polaris.discovery.heartbeat-enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "enable polaris heartbeat or not."
