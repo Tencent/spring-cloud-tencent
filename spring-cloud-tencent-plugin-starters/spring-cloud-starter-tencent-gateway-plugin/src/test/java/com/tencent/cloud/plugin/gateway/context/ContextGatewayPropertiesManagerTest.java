@@ -54,7 +54,7 @@ class ContextGatewayPropertiesManagerTest {
 	@Test
 	void shouldHandleEmptyGroupsWhenSettingRouteMap() {
 		// Test empty groups handling
-		manager.setGroupRouteMap(null);
+		manager.refreshGroupRoute(null);
 		assertThat(manager.getGroupPathRouteMap()).isEmpty();
 		assertThat(manager.getGroups()).isNull();
 	}
@@ -81,7 +81,7 @@ class ContextGatewayPropertiesManagerTest {
 		groups.put("group1", group1);
 
 		// Execute
-		manager.setGroupRouteMap(groups);
+		manager.refreshGroupRoute(groups);
 
 		// Verify classification
 		Map<String, Map<String, GroupContext.ContextRoute>> pathMap = manager.getGroupPathRouteMap();
@@ -123,7 +123,7 @@ class ContextGatewayPropertiesManagerTest {
 		service.setPosition(Position.PATH);
 		predicate.setService(service);
 		group.setPredicate(predicate);
-		manager.setGroupRouteMap(Collections.singletonMap("testGroup", group));
+		manager.refreshGroupRoute(Collections.singletonMap("testGroup", group));
 
 
 		ContextGatewayFilter filter = new ContextGatewayFilter(manager, null);
@@ -233,7 +233,7 @@ class ContextGatewayPropertiesManagerTest {
 		group.setRoutes(Collections.singletonList(
 				createContextRoute(expectedMatchPath, "POST", "testNS", "testSvc")
 		));
-		manager.setGroupRouteMap(Collections.singletonMap("testGroup", group));
+		manager.refreshGroupRoute(Collections.singletonMap("testGroup", group));
 
 		// Build test request with appropriate parameters
 		MockServerHttpRequest.BaseBuilder<?> requestBuilder = MockServerHttpRequest.post(inputPath);
@@ -270,7 +270,7 @@ class ContextGatewayPropertiesManagerTest {
 		group.setRoutes(Collections.singletonList(
 				createContextRoute("POST|/external/api", "POST", null, null)
 		));
-		manager.setGroupRouteMap(Collections.singletonMap("externalGroup", group));
+		manager.refreshGroupRoute(Collections.singletonMap("externalGroup", group));
 
 		ContextGatewayFilter filter = new ContextGatewayFilter(manager, null);
 		String inputPath = "/context/external/api";

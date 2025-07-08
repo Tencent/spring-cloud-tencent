@@ -27,6 +27,7 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_PREDICATE_PATH_CONTAINER_ATTR;
 
 /**
  * Tests for {@link ContextRoutePredicateFactory}.
@@ -34,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ContextRoutePredicateFactoryTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withBean(ContextGatewayPropertiesManager.class)
 			.withBean(ContextRoutePredicateFactory.class);
 
 	@Test
@@ -50,7 +52,12 @@ class ContextRoutePredicateFactoryTest {
 
 			GatewayPredicate gatewayPredicate = (GatewayPredicate) factory.apply(config);
 			gatewayPredicate.toString();
-			Assertions.assertTrue(gatewayPredicate.test(null));
+
+			MockServerWebExchange exchange = MockServerWebExchange.from(
+					MockServerHttpRequest.get("/test").build());
+			exchange.getAttributes().put(GATEWAY_PREDICATE_PATH_CONTAINER_ATTR, "mock");
+
+			Assertions.assertTrue(gatewayPredicate.test(exchange));
 			Assertions.assertEquals(config, gatewayPredicate.getConfig());
 		});
 	}

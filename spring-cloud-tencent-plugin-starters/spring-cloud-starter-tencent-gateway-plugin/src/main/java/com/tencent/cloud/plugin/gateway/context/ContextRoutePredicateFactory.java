@@ -17,18 +17,23 @@
 
 package com.tencent.cloud.plugin.gateway.context;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 import org.springframework.cloud.gateway.handler.predicate.AbstractRoutePredicateFactory;
 import org.springframework.cloud.gateway.handler.predicate.GatewayPredicate;
+import org.springframework.http.server.PathContainer;
 import org.springframework.web.server.ServerWebExchange;
+
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_PREDICATE_PATH_CONTAINER_ATTR;
 
 public class ContextRoutePredicateFactory extends AbstractRoutePredicateFactory<ContextRoutePredicateFactory.Config> {
 
-	public ContextRoutePredicateFactory() {
+	private final ContextGatewayPropertiesManager manager;
+
+	public ContextRoutePredicateFactory(ContextGatewayPropertiesManager manager) {
 		super(Config.class);
+		this.manager = manager;
 	}
 
 	@Override
@@ -36,7 +41,14 @@ public class ContextRoutePredicateFactory extends AbstractRoutePredicateFactory<
 		return new GatewayPredicate() {
 			@Override
 			public boolean test(ServerWebExchange exchange) {
-				// TODO: do path-rewriting , put to GATEWAY_PREDICATE_PATH_CONTAINER_ATTR
+				if (exchange.getAttributes().containsKey(GATEWAY_PREDICATE_PATH_CONTAINER_ATTR)) {
+					return true;
+				}
+				// do path-rewriting
+				String path = exchange.getRequest().getURI().getRawPath();
+				String rewritePath = PathRewriteUtil.getNewPath(manager.getPathRewrites(), path, exchange);
+				exchange.getAttributes()
+						.put(GATEWAY_PREDICATE_PATH_CONTAINER_ATTR, PathContainer.parsePath(rewritePath));
 				return true;
 			}
 
@@ -54,7 +66,7 @@ public class ContextRoutePredicateFactory extends AbstractRoutePredicateFactory<
 
 	@Override
 	public List<String> shortcutFieldOrder() {
-		return Arrays.asList("group");
+		return List.of("group");
 	}
 
 	public static class Config {

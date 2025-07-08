@@ -18,7 +18,6 @@
 package com.tencent.cloud.metadata.config;
 
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignEnhancedPlugin;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateEnhancedPlugin;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientEnhancedPlugin;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import org.junit.jupiter.api.Test;
@@ -52,7 +51,6 @@ public class MetadataTransferAutoConfigurationTest {
 				.run(context -> {
 					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
 					assertThat(context).hasSingleBean(EncodeTransferMedataFeignEnhancedPlugin.class);
-					assertThat(context).hasSingleBean(EncodeTransferMedataRestTemplateEnhancedPlugin.class);
 					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
 					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
 				});
@@ -68,7 +66,6 @@ public class MetadataTransferAutoConfigurationTest {
 					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
 					assertThat(context).hasSingleBean(EncodeTransferMedataFeignEnhancedPlugin.class);
 					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferRestTemplateConfig.class);
-					assertThat(context).hasSingleBean(EncodeTransferMedataRestTemplateEnhancedPlugin.class);
 					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferScgFilterConfig.class);
 					assertThat(context).hasSingleBean(EncodeTransferMedataWebClientEnhancedPlugin.class);
 				});
