@@ -22,17 +22,19 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Tag implements Serializable {
 
 	/**
 	 * update version whenever change the content in tag.
 	 */
 	public static final int VERSION = 1;
-
+	@JsonProperty("k")
 	private String key;
-
+	@JsonProperty("v")
 	private String value;
-
+	@JsonProperty("f")
 	private Set<ControlFlag> flags = new HashSet<>();
 
 	public Tag(String key, String value, ControlFlag... flags) {
@@ -98,31 +100,37 @@ public class Tag implements Serializable {
 		/**
 		 * tag transitive by all services.
 		 */
+		@JsonProperty("0")
 		TRANSITIVE,
 
 		/**
 		 * tag not used in auth.
 		 */
+		@JsonProperty("1")
 		NOT_IN_AUTH,
 
 		/**
 		 * tag not used in route.
 		 */
+		@JsonProperty("2")
 		NOT_IN_ROUTE,
 
 		/**
 		 * tag not used in trace.
 		 */
+		@JsonProperty("3")
 		NOT_IN_SLEUTH,
 
 		/**
 		 * tag not used in lane.
 		 */
+		@JsonProperty("4")
 		NOT_IN_LANE,
 
 		/**
 		 * tag not used in unit.
 		 */
+		@JsonProperty("5")
 		IN_UNIT
 	}
 }

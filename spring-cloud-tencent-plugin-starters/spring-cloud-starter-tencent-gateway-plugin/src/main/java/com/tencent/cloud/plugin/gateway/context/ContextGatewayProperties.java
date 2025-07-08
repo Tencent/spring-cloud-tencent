@@ -17,9 +17,12 @@
 
 package com.tencent.cloud.plugin.gateway.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.tencent.tsf.gateway.core.model.PluginInstanceInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,6 +44,10 @@ public class ContextGatewayProperties {
 
 	private Map<String, GroupContext> groups = new HashMap<>();
 
+	private List<PathRewrite> pathRewrites = new ArrayList<>();
+
+	private List<PluginInstanceInfo> plugins;
+
 	public Map<String, RouteDefinition> getRoutes() {
 		return routes;
 	}
@@ -58,6 +65,22 @@ public class ContextGatewayProperties {
 
 	public void setGroups(Map<String, GroupContext> groups) {
 		this.groups = groups;
+	}
+
+	public List<PathRewrite> getPathRewrites() {
+		return pathRewrites;
+	}
+
+	public void setPathRewrites(List<PathRewrite> pathRewrites) {
+		this.pathRewrites = pathRewrites;
+	}
+
+	public List<PluginInstanceInfo> getPlugins() {
+		return plugins;
+	}
+
+	public void setPlugins(List<PluginInstanceInfo> plugins) {
+		this.plugins = plugins;
 	}
 
 	@Override

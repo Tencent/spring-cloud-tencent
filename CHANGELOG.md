@@ -2,3 +2,4 @@
 ---
 
 - [fix:fix PolarisContextProperties instantiated twice causing NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/1641)
+- [feat: support tsf 2024.](https://github.com/Tencent/spring-cloud-tencent/pull/1645)

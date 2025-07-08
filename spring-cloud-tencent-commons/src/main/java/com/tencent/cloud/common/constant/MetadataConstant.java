@@ -54,7 +54,18 @@ public final class MetadataConstant {
 	 * Metadata HTTP header name.
 	 */
 	public static class HeaderName {
-
+		/**
+		 * TSF Tags.
+		 */
+		public static final String TSF_TAGS = "TSF-Tags";
+		/**
+		 * TSF System Tags.
+		 */
+		public static final String TSF_SYSTEM_TAG = "TSF-System-Tags";
+		/**
+		 * TSF Metadata.
+		 */
+		public static final String TSF_METADATA = "TSF-Metadata";
 		/**
 		 * Custom metadata.
 		 */
@@ -78,6 +89,11 @@ public final class MetadataConstant {
 		 * Namespace context.
 		 */
 		public static final String NAMESPACE = "SCT-NAMESPACE";
+
+		/**
+		 * TSF Namespace Id context.
+		 */
+		public static final String TSF_NAMESPACE_ID = "TSF-NamespaceId";
 	}
 
 	public static class DefaultMetadata {

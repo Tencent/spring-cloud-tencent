@@ -33,7 +33,7 @@ public class PolarisReactiveLoadBalancerClientFilter extends ReactiveLoadBalance
 	private final ReactiveLoadBalancerClientFilter clientFilter;
 
 	public PolarisReactiveLoadBalancerClientFilter(LoadBalancerClientFactory clientFactory,
-			GatewayLoadBalancerProperties properties, ReactiveLoadBalancerClientFilter clientFilter)  {
+			GatewayLoadBalancerProperties properties, ReactiveLoadBalancerClientFilter clientFilter) {
 		super(clientFactory, properties);
 		this.clientFilter = clientFilter;
 	}

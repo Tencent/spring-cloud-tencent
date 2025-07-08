@@ -23,6 +23,7 @@ import java.util.List;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.rpc.enhancement.beanprocessor.BlockingLoadBalancerClientBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.instrument.feign.EnhancedFeignBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.instrument.feign.PolarisLoadBalancerFeignRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.instrument.filter.EnhancedReactiveFilter;
@@ -112,6 +113,12 @@ public class RpcEnhancementAutoConfiguration {
 	public ExceptionPolarisReporter exceptionPolarisReporter(RpcEnhancementReporterProperties properties,
 			PolarisSDKContextManager polarisSDKContextManager) {
 		return new ExceptionPolarisReporter(properties, polarisSDKContextManager.getConsumerAPI());
+	}
+
+	@Bean
+	@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
+	public BlockingLoadBalancerClientBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
+		return new BlockingLoadBalancerClientBeanPostProcessor();
 	}
 
 	@Configuration(proxyBeanMethods = false)
