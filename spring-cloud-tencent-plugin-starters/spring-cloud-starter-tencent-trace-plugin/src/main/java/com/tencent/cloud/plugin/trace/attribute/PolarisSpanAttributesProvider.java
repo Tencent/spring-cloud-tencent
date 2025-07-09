@@ -20,6 +20,7 @@ package com.tencent.cloud.plugin.trace.attribute;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -59,6 +60,9 @@ public class PolarisSpanAttributesProvider implements SpanAttributesProvider {
 		if (CollectionUtils.isNotEmpty(upstreamDisposableCustomAttributes)) {
 			for (Map.Entry<String, String> entry : upstreamDisposableCustomAttributes.entrySet()) {
 				attributes.put("custom." + entry.getKey(), entry.getValue());
+				if (MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME.equals(entry.getKey())) {
+					attributes.put("net.peer.service", entry.getValue());
+				}
 			}
 		}
 		attributes.put("http.port", CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
