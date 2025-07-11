@@ -20,11 +20,8 @@ package com.tencent.cloud.polaris.loadbalancer;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
-import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.loadbalancer.shortestresponsetime.ShortestResponseTimeLoadBalanceConfig;
-import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
-
 
 public class PolarisShortestResponseTimeLoadBalancerConfigModifier implements PolarisConfigModifier {
 
