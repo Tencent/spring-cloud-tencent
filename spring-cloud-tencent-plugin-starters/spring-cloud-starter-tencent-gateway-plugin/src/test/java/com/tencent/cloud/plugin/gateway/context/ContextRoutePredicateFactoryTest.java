@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.plugin.gateway.context;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -48,7 +47,7 @@ class ContextRoutePredicateFactoryTest {
 			// Act
 			ContextRoutePredicateFactory.Config config = factory.newConfig();
 			config.setGroup("g1");
-			Assertions.assertEquals("g1", config.getGroup());
+			assertThat(config.getGroup()).isEqualTo("g1");
 
 			GatewayPredicate gatewayPredicate = (GatewayPredicate) factory.apply(config);
 			gatewayPredicate.toString();
@@ -57,8 +56,8 @@ class ContextRoutePredicateFactoryTest {
 					MockServerHttpRequest.get("/test").build());
 			exchange.getAttributes().put(GATEWAY_PREDICATE_PATH_CONTAINER_ATTR, "mock");
 
-			Assertions.assertTrue(gatewayPredicate.test(exchange));
-			Assertions.assertEquals(config, gatewayPredicate.getConfig());
+			assertThat(gatewayPredicate.test(exchange)).isTrue();
+			assertThat(gatewayPredicate.getConfig()).isEqualTo(config);
 		});
 	}
 

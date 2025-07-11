@@ -18,7 +18,6 @@
 package com.tencent.cloud.rpc.enhancement.beanprocessor;
 
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -28,6 +27,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
@@ -73,7 +73,7 @@ class BlockingLoadBalancerClientBeanPostProcessorTest {
 		Object result = processor.postProcessBeforeInitialization(originalBean, beanName);
 
 		// Assert
-		Assertions.assertSame(originalBean, result);
+		assertThat(result).isSameAs(originalBean);
 	}
 
 	@Test
@@ -82,6 +82,6 @@ class BlockingLoadBalancerClientBeanPostProcessorTest {
 		int order = processor.getOrder();
 
 		// Assert
-		Assertions.assertEquals(BlockingLoadBalancerClientBeanPostProcessor.ORDER, order);
+		assertThat(order).isEqualTo(BlockingLoadBalancerClientBeanPostProcessor.ORDER);
 	}
 }

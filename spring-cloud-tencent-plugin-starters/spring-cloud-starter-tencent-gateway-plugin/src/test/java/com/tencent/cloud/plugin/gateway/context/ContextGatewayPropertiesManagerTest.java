@@ -24,7 +24,6 @@ import java.util.Map;
 
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClient;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -127,7 +126,8 @@ class ContextGatewayPropertiesManagerTest {
 
 
 		ContextGatewayFilter filter = new ContextGatewayFilter(manager, null);
-		MockServerHttpRequest request = MockServerHttpRequest.post("http://localhost/context/testNS/testSvc/api/exact").build();
+		MockServerHttpRequest request = MockServerHttpRequest.post("http://localhost/context/testNS/testSvc/api/exact")
+				.build();
 		String[] apis = filter.rebuildMsApi(request, group, request.getPath().value());
 
 		// Test path matching
@@ -223,7 +223,6 @@ class ContextGatewayPropertiesManagerTest {
 				"POST|/headerNS/svcFromHeader/api/test",
 				"/api/test");
 
-
 	}
 
 	private void testPositionCombination(ApiType apiType, Position namespacePos, Position servicePos,
@@ -287,19 +286,19 @@ class ContextGatewayPropertiesManagerTest {
 	void testGroupContext() {
 		GroupContext group1 = new GroupContext();
 		group1.setComment("testComment");
-		Assertions.assertEquals("testComment", group1.getComment());
+		assertThat(group1.getComment()).isEqualTo("testComment");
 
 		GroupContext.ContextPredicate contextPredicate = new GroupContext.ContextPredicate();
 
 		contextPredicate.setContext("testContext");
-		Assertions.assertEquals("testContext", contextPredicate.getContext());
+		assertThat(contextPredicate.getContext()).isEqualTo("testContext");
 
 		GroupContext.ContextRoute contextRoute = new GroupContext.ContextRoute();
 		contextRoute.setPathMapping("testPathMapping");
-		Assertions.assertEquals("testPathMapping", contextRoute.getPathMapping());
+		assertThat(contextRoute.getPathMapping()).isEqualTo("testPathMapping");
 		contextRoute.setHost("testHost");
-		Assertions.assertEquals("testHost", contextRoute.getHost());
+		assertThat(contextRoute.getHost()).isEqualTo("testHost");
 		contextRoute.setMetadata(Collections.singletonMap("testKey", "testValue"));
-		Assertions.assertEquals(1, contextRoute.getMetadata().size());
+		assertThat(contextRoute.getMetadata().size()).isEqualTo(1);
 	}
 }

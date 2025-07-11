@@ -26,7 +26,6 @@ import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.factory.ConfigAPIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouterConfig;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -60,7 +59,7 @@ public class RouterBootstrapAutoConfigurationTest {
 			routerConfigModifier.modify((ConfigurationImpl) configuration);
 			NearbyRouterConfig nearbyRouterConfig = configuration.getConsumer().getServiceRouter().getPluginConfig(
 					ServiceRouterConfig.DEFAULT_ROUTER_NEARBY, NearbyRouterConfig.class);
-			Assertions.assertEquals("CAMPUS", nearbyRouterConfig.getMatchLevel().name());
+			assertThat(nearbyRouterConfig.getMatchLevel().name()).isEqualTo("CAMPUS");
 		});
 	}
 }
