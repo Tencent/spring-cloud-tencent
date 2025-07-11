@@ -15,6 +15,7 @@
 
 	<modules>
 		<module>provider-demo</module>
+		<module>consumer-demo-retry</module>
 		<module>consumer-demo</module>
 	</modules>
 </project>
