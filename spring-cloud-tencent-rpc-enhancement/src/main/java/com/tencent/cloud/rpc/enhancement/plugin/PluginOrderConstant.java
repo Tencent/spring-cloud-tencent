@@ -34,7 +34,7 @@ public class PluginOrderConstant {
 		 * and
 		 * {@link com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter}.
 		 */
-		public static final int CONSUMER_REPORTER_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 1;
+		public static final int CONSUMER_REPORTER_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 		/**
 		 * order for
@@ -42,7 +42,15 @@ public class PluginOrderConstant {
 		 * and
 		 * {@link com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter}.
 		 */
-		public static final int CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 2;
+		public static final int CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 30;
+
+		/**
+		 * order for
+		 * {@link com.tencent.cloud.plugin.trafficmirroring.TrafficMirrorPostPlugin}
+		 * and
+		 * {@link com.tencent.cloud.plugin.trafficmirroring.TrafficMirrorExceptionPlugin}.
+		 */
+		public static final int TRAFFIC_MIRRORING_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
 
 		/**
 		 * order for

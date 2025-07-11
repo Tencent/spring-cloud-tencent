@@ -18,6 +18,7 @@
 package com.tencent.cloud.rpc.enhancement.instrument.feign;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -118,18 +119,18 @@ public class EnhancedFeignClientTest {
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
-				Collections.emptyMap(), null, requestTemplate), null);
+				Collections.emptyMap(), new byte[0], StandardCharsets.UTF_8, requestTemplate), null);
 		assertThat(response.status()).isEqualTo(200);
 
 		// 502
 		response = polarisFeignClient.execute(Request.create(Request.HttpMethod.POST, "http://localhost:8080/test",
-				Collections.emptyMap(), null, requestTemplate), null);
+				Collections.emptyMap(), new byte[0], StandardCharsets.UTF_8, requestTemplate), null);
 		assertThat(response.status()).isEqualTo(502);
 
 		// Exception
 		try {
 			polarisFeignClient.execute(Request.create(Request.HttpMethod.DELETE, "http://localhost:8080/test",
-					Collections.emptyMap(), null, requestTemplate), null);
+					Collections.emptyMap(), new byte[0], StandardCharsets.UTF_8, requestTemplate), null);
 			fail("IOException should be thrown.");
 		}
 		catch (Throwable t) {
@@ -166,7 +167,7 @@ public class EnhancedFeignClientTest {
 		// Exception
 		try {
 			polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
-					Collections.emptyMap(), null, requestTemplate), null);
+					Collections.emptyMap(), new byte[0], StandardCharsets.UTF_8, requestTemplate), null);
 			fail("CallAbortedException should be thrown.");
 		}
 		catch (CallAbortedException t) {
@@ -180,7 +181,7 @@ public class EnhancedFeignClientTest {
 
 		// fallback 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
-				Collections.emptyMap(), null, requestTemplate), null);
+				Collections.emptyMap(), new byte[0], StandardCharsets.UTF_8, requestTemplate), null);
 		assertThat(response.status()).isEqualTo(200);
 	}
 

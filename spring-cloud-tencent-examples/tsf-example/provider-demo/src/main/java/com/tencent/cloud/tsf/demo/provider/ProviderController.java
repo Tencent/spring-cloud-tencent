@@ -23,6 +23,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 import com.tencent.cloud.tsf.demo.provider.config.ProviderNameConfig;
+import com.tencent.cloud.tsf.demo.provider.entity.User;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -148,5 +151,13 @@ public class ProviderController {
 		LOG.info("provider-demo -- unit provider config name: [" + applicationName + ']');
 		LOG.info("provider-demo -- unit response info: [" + result + "]");
 		return result;
+	}
+
+	@PostMapping("/user")
+	public String user(@RequestBody User user) {
+		String response = String.format("from host-ip: %s, request body: %s, response from %s",
+				getInet4Address(), user, providerNameConfig.getName());
+		LOG.info(response);
+		return response;
 	}
 }
