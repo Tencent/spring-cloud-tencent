@@ -98,7 +98,6 @@ public class PolarisLoadBalancerClientConfiguration {
 		return new PolarisRingHashLoadBalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
 	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(PolarisShortestResponseTimeStrategyCondition.class)
@@ -118,7 +117,6 @@ public class PolarisLoadBalancerClientConfiguration {
 		return new PolarisLeastConnectionLoadBalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
 	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(DefaultStrategyCondition.class)
@@ -159,6 +157,7 @@ public class PolarisLoadBalancerClientConfiguration {
 					ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().build(context));
 		}
 	}
+
 
 	static class DefaultStrategyCondition implements Condition {
 
