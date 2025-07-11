@@ -20,8 +20,10 @@ package com.tencent.cloud.polaris.loadbalancer;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
+import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.loadbalancer.shortestresponsetime.ShortestResponseTimeLoadBalanceConfig;
+import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 
 
 public class PolarisShortestResponseTimeLoadBalancerConfigModifier implements PolarisConfigModifier {
@@ -35,7 +37,8 @@ public class PolarisShortestResponseTimeLoadBalancerConfigModifier implements Po
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
-		ShortestResponseTimeLoadBalanceConfig config = new ShortestResponseTimeLoadBalanceConfig();
+		ShortestResponseTimeLoadBalanceConfig config = configuration.getConsumer().getLoadbalancer()
+				.getPluginConfig(LoadBalanceConfig.LOAD_BALANCE_SHORTEST_RESPONSE_TIME, ShortestResponseTimeLoadBalanceConfig.class);
 		config.setSlidePeriod(shortestResponseTime.getSlidePeriod());
 		configuration.getConsumer().getLoadbalancer()
 				.setPluginConfig(LoadBalanceConfig.LOAD_BALANCE_SHORTEST_RESPONSE_TIME,
