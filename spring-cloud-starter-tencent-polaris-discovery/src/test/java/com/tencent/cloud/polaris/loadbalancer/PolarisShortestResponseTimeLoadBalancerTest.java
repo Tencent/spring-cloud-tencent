@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,8 +109,8 @@ public class PolarisShortestResponseTimeLoadBalancerTest {
 		when(routerAPI.processLoadBalance(any())).thenReturn(mockLbRes);
 
 		// request construct and execute invoke
-		PolarisShortestResponseTimeLoadBalancer polarisShortestResponseTimeLoadBalancer = new PolarisShortestResponseTimeLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
-		Mono<Response<ServiceInstance>> responseMono = polarisShortestResponseTimeLoadBalancer.choose(request);
+		PolarisShortestResponseTimeLoadBalancer PolarisShortestResponseTimeLoadBalancer = new PolarisShortestResponseTimeLoadBalancer(LOCAL_SERVICE, supplierObjectProvider, routerAPI);
+		Mono<Response<ServiceInstance>> responseMono = PolarisShortestResponseTimeLoadBalancer.choose(request);
 		ServiceInstance serviceInstance = responseMono.block().getServer();
 
 		// verify method has invoked

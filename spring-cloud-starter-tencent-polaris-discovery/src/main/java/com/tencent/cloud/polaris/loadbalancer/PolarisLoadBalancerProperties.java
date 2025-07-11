@@ -25,24 +25,24 @@ public class PolarisLoadBalancerProperties {
 	/**
 	 * Shortest response time load balancer.
 	 */
-	public PolarisShortestResponseTime polarisShortestResponseTime = new PolarisShortestResponseTime();
+	public ShortestResponseTime shortestResponseTime = new ShortestResponseTime();
 
-	PolarisShortestResponseTime getPolarisShortestResponseTime() {
-		return polarisShortestResponseTime;
+	ShortestResponseTime getShortestResponseTime() {
+		return shortestResponseTime;
 	}
 
-	void setPolarisShortestResponseTime(PolarisShortestResponseTime polarisShortestResponseTime) {
-		this.polarisShortestResponseTime = polarisShortestResponseTime;
+	void setShortestResponseTime(ShortestResponseTime shortestResponseTime) {
+		this.shortestResponseTime = shortestResponseTime;
 	}
 
 	@Override
 	public String toString() {
 		return "PolarisLoadBalancerProperties{" +
-				"polarisShortestResponseTime=" + polarisShortestResponseTime +
+				"shortestResponseTime=" + shortestResponseTime +
 				'}';
 	}
 
-	public static class PolarisShortestResponseTime {
+	public static class ShortestResponseTime {
 		/**
 		 * Slide period in milliseconds. Default is 30s.
 		 */
@@ -58,7 +58,7 @@ public class PolarisLoadBalancerProperties {
 
 		@Override
 		public String toString() {
-			return "PolarisShortestResponseTime{" +
+			return "ShortestResponseTime{" +
 					"slidePeriod=" + slidePeriod +
 					'}';
 		}

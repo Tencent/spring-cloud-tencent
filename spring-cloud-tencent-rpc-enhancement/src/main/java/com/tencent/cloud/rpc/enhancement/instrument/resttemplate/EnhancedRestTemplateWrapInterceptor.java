@@ -134,7 +134,7 @@ public class EnhancedRestTemplateWrapInterceptor {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 			enhancedPluginContext.setThrowable(e);
 			enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
-					.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), request.getURI());
+					.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), httpRequest.getURI());
 			// Run exception enhanced plugins.
 			pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
 			throw e;

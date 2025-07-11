@@ -116,7 +116,7 @@ public class PolarisWeightedRandomLoadBalancerAutoConfigurationTest {
 	@Test
 	public void testPolarisShortestResponseTimeInitialization() {
 		this.contextRunner
-				.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=polarisShortestResponseTime").run(context -> {
+				.withPropertyValues("spring.cloud.polaris.loadbalancer.strategy=shortestResponseTime").run(context -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
 					assertThatThrownBy(() -> {
 						context.getBean(RestTemplate.class).getForEntity("http://wrong.url", String.class);

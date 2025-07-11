@@ -160,13 +160,13 @@
       "description": "polaris loadbalancer."
     },
     {
-      "name": "spring.cloud.polaris.loadbalancer.strategy",
+      "name": "spring.cloud.loadbalancer.strategy",
       "type": "java.lang.String",
       "defaultValue": "roundRobin",
       "description": "loadbalancer strategy."
     },
     {
-      "name": "spring.cloud.polaris.loadbalancer.polaris-shortest-response-time.slide-period",
+      "name": "spring.cloud.polaris.loadbalancer.shortest-response-time.slide-period",
       "type": "java.lang.Long",
       "defaultValue": 30000,
       "description": "The length of the average response time calculation window for instances in milliseconds. The default is 30000 milliseconds."
@@ -174,7 +174,7 @@
   ],
   "hints": [
     {
-      "name": "spring.cloud.polaris.loadbalancer.strategy",
+      "name": "spring.cloud.loadbalancer.strategy",
       "values": [
         {
           "value": "roundRobin",

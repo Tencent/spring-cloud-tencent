@@ -45,6 +45,6 @@ public class PolarisLoadBalancerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PolarisShortestResponseTimeLoadBalancerConfigModifier polarisShortestResponseTimeLoadBalancerConfigModifier(PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
-		return new PolarisShortestResponseTimeLoadBalancerConfigModifier(polarisLoadBalancerProperties.polarisShortestResponseTime);
+		return new PolarisShortestResponseTimeLoadBalancerConfigModifier(polarisLoadBalancerProperties.shortestResponseTime);
 	}
 }
