@@ -88,6 +88,7 @@ public abstract class AbstractPolarisLoadBalancer implements ReactorServiceInsta
 
 			try {
 				ProcessLoadBalanceResponse response = routerAPI.processLoadBalance(req);
+				log.debug("loadbalancer choose:" + response.getTargetInstance().getHost() + ":" + response.getTargetInstance().getPort());
 				return new DefaultResponse(new PolarisServiceInstance(response.getTargetInstance()));
 			}
 			catch (Exception e) {

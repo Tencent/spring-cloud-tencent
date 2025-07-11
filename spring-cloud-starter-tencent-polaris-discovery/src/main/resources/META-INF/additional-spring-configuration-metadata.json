@@ -152,12 +152,34 @@
       "type": "java.lang.String",
       "description": "the nacos authentication cluster-name.",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties"
+    },
+    {
+      "name": "spring.cloud.polaris.loadbalancer.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "polaris loadbalancer."
+    },
+    {
+      "name": "spring.cloud.loadbalancer.strategy",
+      "type": "java.lang.String",
+      "defaultValue": "polarisWeightedRoundRobin",
+      "description": "loadbalancer strategy."
+    },
+    {
+      "name": "spring.cloud.polaris.loadbalancer.shortest-response-time.slide-period",
+      "type": "java.lang.Long",
+      "defaultValue": 30000,
+      "description": "The length of the average response time calculation window for instances in milliseconds. The default is 30000 milliseconds."
     }
   ],
   "hints": [
     {
-      "name": "spring.cloud.polaris.loadbalancer.strategy",
+      "name": "spring.cloud.loadbalancer.strategy",
       "values": [
+        {
+          "value": "polarisWeightedRoundRobin",
+          "description": "polaris weighted round robin load balancer."
+        },
         {
           "value": "roundRobin",
           "description": "round robin load balancer."
@@ -171,8 +193,16 @@
           "description": "polaris weighted random load balancer."
         },
         {
+          "value": "polarisShortestResponseTime",
+          "description": "polaris shortest response time load balancer."
+        },
+        {
           "value": "polarisRingHash",
           "description": "polaris ring hash load balancer."
+        },
+        {
+          "value": "polarisLeastConnection",
+          "description": "polaris least connection load balancer."
         }
       ]
     }
