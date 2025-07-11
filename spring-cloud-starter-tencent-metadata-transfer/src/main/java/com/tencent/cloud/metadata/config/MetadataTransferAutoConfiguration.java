@@ -17,20 +17,32 @@
 
 package com.tencent.cloud.metadata.config;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignEnhancedPlugin;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateEnhancedPlugin;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgEnhancedPlugin;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientEnhancedPlugin;
 
+import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
+import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
+import org.springframework.cloud.client.loadbalancer.RetryLoadBalancerInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static jakarta.servlet.DispatcherType.ERROR;
@@ -118,9 +130,59 @@ public class MetadataTransferAutoConfiguration {
 	@ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
 	protected static class MetadataTransferRestTemplateConfig {
 
+		@Autowired(required = false)
+		private List<RestTemplate> restTemplates = Collections.emptyList();
+
 		@Bean
-		public EncodeTransferMedataRestTemplateEnhancedPlugin encodeTransferMedataRestTemplateEnhancedPlugin() {
-			return new EncodeTransferMedataRestTemplateEnhancedPlugin();
+		public EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor() {
+			return new EncodeTransferMedataRestTemplateInterceptor();
+		}
+
+		@Bean
+		public SmartInitializingSingleton addEncodeTransferMetadataInterceptorForRestTemplate(EncodeTransferMedataRestTemplateInterceptor interceptor) {
+			return () -> restTemplates.forEach(restTemplate -> {
+				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
+				list.add(interceptor);
+				restTemplate.setInterceptors(list);
+			});
+		}
+
+		@Bean
+		public RestTemplateCustomizer polarisRestTemplateCustomizer(
+				@Autowired(required = false) RetryLoadBalancerInterceptor retryLoadBalancerInterceptor,
+				@Autowired(required = false) LoadBalancerInterceptor loadBalancerInterceptor) {
+			return restTemplate -> {
+				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
+				// LoadBalancerInterceptor must invoke before EncodeTransferMedataRestTemplateInterceptor
+				int addIndex = list.size();
+				if (CollectionUtils.containsInstance(list, retryLoadBalancerInterceptor) || CollectionUtils.containsInstance(list, loadBalancerInterceptor)) {
+					ClientHttpRequestInterceptor enhancedRestTemplateInterceptor = null;
+					for (int i = 0; i < list.size(); i++) {
+						if (list.get(i) instanceof EncodeTransferMedataRestTemplateInterceptor) {
+							enhancedRestTemplateInterceptor = list.get(i);
+							addIndex = i;
+						}
+					}
+					if (enhancedRestTemplateInterceptor != null) {
+						list.remove(addIndex);
+						list.add(enhancedRestTemplateInterceptor);
+					}
+				}
+				else {
+					if (retryLoadBalancerInterceptor != null || loadBalancerInterceptor != null) {
+						for (int i = 0; i < list.size(); i++) {
+							if (list.get(i) instanceof EncodeTransferMedataRestTemplateInterceptor) {
+								addIndex = i;
+							}
+						}
+						list.add(addIndex,
+								retryLoadBalancerInterceptor != null
+										? retryLoadBalancerInterceptor
+										: loadBalancerInterceptor);
+					}
+				}
+				restTemplate.setInterceptors(list);
+			};
 		}
 	}
 

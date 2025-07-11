@@ -31,7 +31,7 @@ public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessor implements
 	 */
 	public static final int ORDER = 0;
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
 	public PolarisReactiveLoadBalancerClientFilterBeanPostProcessor(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;

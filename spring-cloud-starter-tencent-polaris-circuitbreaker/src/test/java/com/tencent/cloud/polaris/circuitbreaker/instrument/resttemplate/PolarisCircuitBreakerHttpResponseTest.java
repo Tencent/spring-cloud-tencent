@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.instrument.resttemplate;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,28 +36,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class PolarisCircuitBreakerHttpResponseTest {
 	@Test
-	void testConstructorWithCodeOnly() {
+	void testConstructorWithCodeOnly() throws IOException {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200);
 
-		Assertions.assertEquals(200, response.getRawStatusCode());
+		Assertions.assertEquals(200, response.getStatusCode().value());
 		Assertions.assertNotNull(response.getHeaders());
 		Assertions.assertTrue(response.getHeaders().isEmpty());
 		Assertions.assertNull(response.getBody());
 	}
 
 	@Test
-	void testConstructorWithCodeAndBody() {
+	void testConstructorWithCodeAndBody() throws IOException {
 		String body = "test body";
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200, body);
 
-		Assertions.assertEquals(200, response.getRawStatusCode());
+		Assertions.assertEquals(200, response.getStatusCode().value());
 		Assertions.assertNotNull(response.getHeaders());
 		Assertions.assertTrue(response.getHeaders().isEmpty());
 		Assertions.assertNotNull(response.getBody());
 	}
 
 	@Test
-	void testConstructorWithCodeHeadersAndBody() {
+	void testConstructorWithCodeHeadersAndBody() throws IOException {
 		String body = "test body";
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
@@ -64,7 +65,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200, headers, body);
 
-		Assertions.assertEquals(200, response.getRawStatusCode());
+		Assertions.assertEquals(200, response.getStatusCode().value());
 		Assertions.assertNotNull(response.getHeaders());
 		Assertions.assertEquals(2, response.getHeaders().size());
 		Assertions.assertTrue(response.getHeaders().containsKey("Content-Type"));
@@ -73,14 +74,14 @@ public class PolarisCircuitBreakerHttpResponseTest {
 	}
 
 	@Test
-	void testConstructorWithFallbackInfo() {
+	void testConstructorWithFallbackInfo() throws IOException {
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
 		CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(200, headers, "test body");
 
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(fallbackInfo);
 
-		Assertions.assertEquals(200, response.getRawStatusCode());
+		Assertions.assertEquals(200, response.getStatusCode().value());
 		Assertions.assertEquals(fallbackInfo, response.getFallbackInfo());
 		Assertions.assertNotNull(response.getHeaders());
 		Assertions.assertTrue(response.getHeaders().containsKey("Content-Type"));
