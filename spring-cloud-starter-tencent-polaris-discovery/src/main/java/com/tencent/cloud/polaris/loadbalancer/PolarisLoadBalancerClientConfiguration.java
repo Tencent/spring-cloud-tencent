@@ -98,7 +98,25 @@ public class PolarisLoadBalancerClientConfiguration {
 		return new PolarisRingHashLoadBalancer(name,
 				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
 	}
+	@Bean
+	@ConditionalOnMissingBean
+	@Conditional(PolarisShortestResponseTimeStrategyCondition.class)
+	public ReactorLoadBalancer<ServiceInstance> polarisShortestResponseTimeLoadBalancer(Environment environment,
+			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
+		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
+		return new PolarisShortestResponseTimeLoadBalancer(name,
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
+	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	@Conditional(PolarisLeastConnectionStrategyCondition.class)
+	public ReactorLoadBalancer<ServiceInstance> polarisLeastConnectionLoadBalancer(Environment environment,
+			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
+		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
+		return new PolarisLeastConnectionLoadBalancer(name,
+				loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), polarisSDKContextManager.getRouterAPI());
+	}
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(DefaultStrategyCondition.class)
@@ -140,12 +158,31 @@ public class PolarisLoadBalancerClientConfiguration {
 		}
 	}
 
+
 	static class DefaultStrategyCondition implements Condition {
 
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			return LoadBalancerEnvironmentPropertyUtils.equalToOrMissingForClientOrDefault(context.getEnvironment(),
-					"strategies", "default");
+					"strategies", "polarisWeightedRoundRobin");
+		}
+	}
+
+	static class PolarisShortestResponseTimeStrategyCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return LoadBalancerEnvironmentPropertyUtils.equalToForClientOrDefault(context.getEnvironment(),
+					"strategies", "polarisShortestResponseTime");
+		}
+	}
+
+	static class PolarisLeastConnectionStrategyCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return LoadBalancerEnvironmentPropertyUtils.equalToForClientOrDefault(context.getEnvironment(),
+					"strategies", "polarisLeastConnection");
 		}
 	}
 

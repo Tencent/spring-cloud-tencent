@@ -188,6 +188,11 @@ public class OrderConstant {
 		public static Integer STAT_REPORTER_ORDER = 1;
 
 		/**
+		 * Load Balancer config modifier order.
+		 */
+		public static Integer LOAD_BALANCER_CONFIG_ORDER = 2;
+
+		/**
 		 * Order of lossless configuration modifier.
 		 */
 		public static Integer LOSSLESS_ORDER = 2;

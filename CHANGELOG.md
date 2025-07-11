@@ -6,3 +6,4 @@
 - [feat: support tsf 2024.](https://github.com/Tencent/spring-cloud-tencent/pull/1635)
 - [fix: fix ConfigChangeListener and unit test](https://github.com/Tencent/spring-cloud-tencent/pull/1657)
 - [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1663)
+- [feat: support shortest response time lb and least connection lb](https://github.com/Tencent/spring-cloud-tencent/pull/1637)
