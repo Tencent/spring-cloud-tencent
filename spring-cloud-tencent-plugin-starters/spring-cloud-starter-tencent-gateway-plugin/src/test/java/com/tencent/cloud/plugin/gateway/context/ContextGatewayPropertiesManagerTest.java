@@ -286,7 +286,7 @@ class ContextGatewayPropertiesManagerTest {
 	void testGroupContext() {
 		GroupContext group1 = new GroupContext();
 		group1.setComment("testComment");
-		Assertions.assertEquals("testComment", group1.getComment());
+		assertThat(group1.getComment()).isEqualTo("testComment");
 
 		GroupContext.ContextPredicate contextPredicate = new GroupContext.ContextPredicate();
 
