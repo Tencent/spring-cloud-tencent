@@ -162,7 +162,7 @@
     {
       "name": "spring.cloud.loadbalancer.strategy",
       "type": "java.lang.String",
-      "defaultValue": "roundRobin",
+      "defaultValue": "polarisWeightedRoundRobin",
       "description": "loadbalancer strategy."
     },
     {
@@ -176,6 +176,10 @@
     {
       "name": "spring.cloud.loadbalancer.strategy",
       "values": [
+        {
+          "value": "polarisWeightedRoundRobin",
+          "description": "polaris weighted round robin load balancer."
+        },
         {
           "value": "roundRobin",
           "description": "round robin load balancer."

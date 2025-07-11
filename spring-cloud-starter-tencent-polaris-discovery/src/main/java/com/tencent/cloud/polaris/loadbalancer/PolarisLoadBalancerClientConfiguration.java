@@ -164,7 +164,7 @@ public class PolarisLoadBalancerClientConfiguration {
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			return LoadBalancerEnvironmentPropertyUtils.equalToOrMissingForClientOrDefault(context.getEnvironment(),
-					"strategies", "default");
+					"strategies", "polarisWeightedRoundRobin");
 		}
 	}
 
@@ -172,7 +172,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			return LoadBalancerEnvironmentPropertyUtils.equalToOrMissingForClientOrDefault(context.getEnvironment(),
+			return LoadBalancerEnvironmentPropertyUtils.equalToForClientOrDefault(context.getEnvironment(),
 					"strategies", "polarisShortestResponseTime");
 		}
 	}
@@ -181,7 +181,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			return LoadBalancerEnvironmentPropertyUtils.equalToOrMissingForClientOrDefault(context.getEnvironment(),
+			return LoadBalancerEnvironmentPropertyUtils.equalToForClientOrDefault(context.getEnvironment(),
 					"strategies", "polarisLeastConnection");
 		}
 	}
