@@ -72,6 +72,8 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 			String polarisAdminPort = environment.getProperty("polaris_admin_port");
 			if (StringUtils.isNotBlank(polarisAdminPort)) {
 				defaultProperties.put("spring.cloud.polaris.lossless.enabled", environment.getProperty("spring.cloud.polaris.lossless.enabled", "true"));
+				// for tsf health check.
+				defaultProperties.put("spring.cloud.polaris.stat.enabled", environment.getProperty("spring.cloud.polaris.stat.enabled", "true"));
 			}
 
 			String tsfPreferIpv6 = environment.getProperty("tsf_prefer_ipv6");
