@@ -14,3 +14,4 @@
 - [feat:support polaris server nearby backup LB.](https://github.com/Tencent/spring-cloud-tencent/pull/1631)
 - fix:fix PolarisContextProperties instantiated twice causing NPE.
 - fix:fix ipv6 instance not found bug.
+- fix:fix tsf lossless not working bug.
