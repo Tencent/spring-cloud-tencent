@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "provider-demo")
+@FeignClient(name = "${provider.name:provider-demo}")
 public interface ProviderDemoService {
 	@RequestMapping(value = "/echo/{str}", method = RequestMethod.GET)
 	String echo(@PathVariable("str") String str);

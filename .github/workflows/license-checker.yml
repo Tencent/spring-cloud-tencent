@@ -9,6 +9,7 @@ on:
       - 2020.0
       - hoxton
       - greenwich
+      - release/*
   pull_request:
     branches:
       - 2023.0
@@ -17,6 +18,7 @@ on:
       - 2020.0
       - hoxton
       - greenwich
+      - release/*
 jobs:
   check-license:
     runs-on: ubuntu-latest
