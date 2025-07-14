@@ -13,3 +13,4 @@
 - [feat:support polaris server nearby backup LB.](https://github.com/Tencent/spring-cloud-tencent/pull/1630)
 - fix:fix ipv6 instance not found bug.
 - fix:fix tsf lossless not working bug.
+- fix:fix RestTemplate trace attribute loss bug.
