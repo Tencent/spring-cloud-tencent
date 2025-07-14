@@ -19,6 +19,9 @@ package com.tencent.cloud.rpc.enhancement.plugin;
 
 import java.net.URI;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.polaris.api.utils.StringUtils;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
@@ -38,6 +41,10 @@ public class EnhancedRequestContext {
 	private URI serviceUrl;
 
 	private String governanceNamespace;
+
+	public static EnhancedContextRequestBuilder builder() {
+		return new EnhancedContextRequestBuilder();
+	}
 
 	public HttpMethod getHttpMethod() {
 		return httpMethod;
@@ -72,15 +79,31 @@ public class EnhancedRequestContext {
 	}
 
 	public String getGovernanceNamespace() {
-		return governanceNamespace;
+		return StringUtils.isNotEmpty(governanceNamespace) ? governanceNamespace : MetadataContext.LOCAL_NAMESPACE;
 	}
 
 	public void setGovernanceNamespace(String governanceNamespace) {
 		this.governanceNamespace = governanceNamespace;
 	}
 
-	public static EnhancedContextRequestBuilder builder() {
-		return new EnhancedContextRequestBuilder();
+	public String getHost() {
+		if (serviceUrl != null) {
+			return serviceUrl.getHost();
+		}
+		if (url != null) {
+			return url.getHost();
+		}
+		return null;
+	}
+
+	public String getPath() {
+		if (serviceUrl != null) {
+			return serviceUrl.getPath();
+		}
+		if (url != null) {
+			return url.getPath();
+		}
+		return null;
 	}
 
 	@Override
