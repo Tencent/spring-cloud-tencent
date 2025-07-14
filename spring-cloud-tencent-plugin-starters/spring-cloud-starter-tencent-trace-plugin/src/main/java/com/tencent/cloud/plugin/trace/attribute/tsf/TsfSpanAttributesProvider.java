@@ -33,8 +33,8 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 	@Override
 	public Map<String, String> getClientBaggageAttributes(EnhancedPluginContext context) {
 		Map<String, String> attributes = new HashMap<>();
-		if (null != context.getRequest().getUrl()) {
-			attributes.put("remoteInterface", context.getRequest().getUrl().getPath());
+		if (context.getRequest() != null && StringUtils.isNotBlank(context.getRequest().getPath())) {
+			attributes.put("remoteInterface", context.getRequest().getPath());
 		}
 		ServiceInstance targetServiceInstance = context.getTargetServiceInstance();
 		if (null != targetServiceInstance && CollectionUtils.isNotEmpty(targetServiceInstance.getMetadata())) {
@@ -50,6 +50,9 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 				attributes.put("remote.application-id", StringUtils.defaultString(
 						targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_APPLICATION_ID)));
 			}
+		}
+		if (StringUtils.isBlank(attributes.get("remote.namespace-id"))) {
+			attributes.put("remote.namespace-id", context.getRequest().getGovernanceNamespace());
 		}
 		return attributes;
 	}
