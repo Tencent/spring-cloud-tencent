@@ -11,3 +11,4 @@
 - [feat:support instance detect.](https://github.com/Tencent/spring-cloud-tencent/pull/1617)
 - [fix: fix loadbalancer metadata type.](https://github.com/Tencent/spring-cloud-tencent/pull/1625)
 - [feat:support polaris server nearby backup LB.](https://github.com/Tencent/spring-cloud-tencent/pull/1627)
+- fix:fix ipv6 instance not found bug.
