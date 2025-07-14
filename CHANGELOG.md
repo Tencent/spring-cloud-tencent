@@ -15,3 +15,4 @@
 - fix:fix PolarisContextProperties instantiated twice causing NPE.
 - fix:fix ipv6 instance not found bug.
 - fix:fix tsf lossless not working bug.
+- fix:fix RestTemplate trace attribute loss bug.
