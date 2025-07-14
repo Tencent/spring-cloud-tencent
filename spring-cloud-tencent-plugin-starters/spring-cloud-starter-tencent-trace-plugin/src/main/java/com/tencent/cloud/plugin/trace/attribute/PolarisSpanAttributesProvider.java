@@ -84,7 +84,7 @@ public class PolarisSpanAttributesProvider implements SpanAttributesProvider {
 		}
 		attributes.put("http.port", CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
 				.getRawMetadataStringValue(MetadataConstants.LOCAL_PORT));
-		attributes.put("net.peer.service", context.getTargetServiceInstance().getServiceId());
+		attributes.put("net.peer.service", context.getRequest().getHost());
 
 		String serviceLane = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false)
 				.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, TRAFFIC_STAIN_LABEL);
