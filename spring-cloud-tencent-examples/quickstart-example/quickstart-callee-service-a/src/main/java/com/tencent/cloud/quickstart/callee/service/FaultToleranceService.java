@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tencent.cloud.plugin.faulttolerance.annotation.FaultTolerance;
 import com.tencent.cloud.plugin.faulttolerance.model.FaultToleranceStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 
@@ -32,30 +34,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class FaultToleranceService {
 
+	private static final Logger LOG = LoggerFactory.getLogger(FaultToleranceService.class);
+
 	private final AtomicInteger failOverCount = new AtomicInteger(0);
 	private final AtomicInteger forkingCount = new AtomicInteger(0);
 
 	@FaultTolerance(strategy = FaultToleranceStrategy.FAIL_FAST, fallbackMethod = "fallback")
 	public String failFast() {
+		LOG.info("Test failFast");
 		throw new RuntimeException("NO");
 	}
 
 	public String fallback() {
-		return "fallback";
+		return "fallback success";
 	}
 
 	@FaultTolerance(strategy = FaultToleranceStrategy.FAIL_OVER, maxAttempts = 3)
 	public String failOver() {
+		LOG.info("Test failOver");
 		if (failOverCount.incrementAndGet() % 4 == 0) {
-			return "OK";
+			return "failOver success";
 		}
 		throw new RuntimeException("NO");
 	}
 
 	@FaultTolerance(strategy = FaultToleranceStrategy.FORKING, parallelism = 4)
 	public String forking() {
+		LOG.info("Test forking");
 		if (forkingCount.incrementAndGet() % 4 == 0) {
-			return "OK";
+			return "forking success";
 		}
 		throw new RuntimeException("NO");
 	}
