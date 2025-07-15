@@ -8,3 +8,4 @@
 - [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1663)
 - [fix: tsf 2024 related bugfixes](https://github.com/Tencent/spring-cloud-tencent/pull/1664)
 - [feat: support shortest response time lb and least connection lb](https://github.com/Tencent/spring-cloud-tencent/pull/1637)
+- [feat:support traffic mirroring.](https://github.com/Tencent/spring-cloud-tencent/pull/1647)
