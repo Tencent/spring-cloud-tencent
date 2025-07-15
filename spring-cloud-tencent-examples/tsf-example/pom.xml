@@ -16,5 +16,6 @@
 	<modules>
 		<module>provider-demo</module>
 		<module>consumer-demo</module>
+		<module>msgw-scg</module>
 	</modules>
 </project>

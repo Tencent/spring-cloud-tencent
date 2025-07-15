@@ -7,3 +7,4 @@
 - [fix: fix ConfigChangeListener and unit test](https://github.com/Tencent/spring-cloud-tencent/pull/1657)
 - [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1663)
 - [feat: support shortest response time lb and least connection lb](https://github.com/Tencent/spring-cloud-tencent/pull/1637)
+- [feat:support traffic mirroring.](https://github.com/Tencent/spring-cloud-tencent/pull/1647)

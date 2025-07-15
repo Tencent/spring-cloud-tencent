@@ -79,6 +79,9 @@ public class EnhancedFeignClient implements Client {
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(request);
+		if (request.body() != null) {
+			enhancedPluginContext.setOriginBody(request.body());
+		}
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 		String svcName = serviceUrl.getHost();
