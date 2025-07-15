@@ -33,9 +33,9 @@ public class TrafficMirroringProperties {
 	private boolean enabled = true;
 
 	/**
-	 * Traffic mirroring request pool size. Default is 4.
+	 * Traffic mirroring request pool size. Default is 100.
 	 */
-	private int requestPoolSize = 4;
+	private int requestPoolSize = 100;
 
 	/**
 	 * Traffic mirroring request connection timeout in millisecond. Default is 5000.
