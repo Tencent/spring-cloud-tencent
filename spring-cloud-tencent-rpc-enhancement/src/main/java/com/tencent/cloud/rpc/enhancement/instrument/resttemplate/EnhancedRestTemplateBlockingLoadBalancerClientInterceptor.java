@@ -61,7 +61,7 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 	}
 
 
-	public <T> T intercept(HttpRequest httpRequest, String serviceId, ServiceInstance serviceInstance,
+	public <T> T intercept(HttpRequest httpRequest, byte[] body, String serviceId, ServiceInstance serviceInstance,
 			LoadBalancerRequest<T> loadBalancerRequest) throws IOException {
 
 		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
@@ -83,6 +83,9 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(httpRequest);
+		if (body != null) {
+			enhancedPluginContext.setOriginBody(body);
+		}
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 
@@ -111,7 +114,7 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 				enhancedResponseContextBuilder.httpStatus(((ClientHttpResponse) response).getStatusCode().value());
 				enhancedResponseContextBuilder.httpHeaders(((ClientHttpResponse) response).getHeaders());
 			}
-			EnhancedResponseContext enhancedResponseContext =  enhancedResponseContextBuilder.build();
+			EnhancedResponseContext enhancedResponseContext = enhancedResponseContextBuilder.build();
 
 			enhancedPluginContext.setResponse(enhancedResponseContext);
 

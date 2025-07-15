@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.tencent.cloud.common.util.PolarisCompletableFutureUtils;
+import com.tencent.cloud.tsf.demo.consumer.entity.User;
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderDemoService;
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderService;
 import com.tencent.polaris.api.utils.StringUtils;
@@ -32,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.tsf.core.TsfContext;
 import org.springframework.tsf.core.entity.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -166,5 +169,15 @@ public class ConsumerController {
 		mTags.put("feignUrl-trace-key2", "value2");
 		TsfContext.putTags(mTags, Tag.ControlFlag.TRANSITIVE);
 		return providerService.echo(str);
+	}
+
+	@PostMapping("/user-rest")
+	public String userRest(@RequestBody User user) {
+		return restTemplate.postForObject("http://provider-demo/user", user, String.class);
+	}
+
+	@PostMapping("/user-feign")
+	public String userFeign(@RequestBody User user) {
+		return providerDemoService.user(user);
 	}
 }

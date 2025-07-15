@@ -35,9 +35,8 @@ import org.springframework.http.HttpRequest;
  */
 public class PolarisBlockingLoadBalancerClient extends BlockingLoadBalancerClient {
 
-	private BlockingLoadBalancerClient delegate;
-
 	private final EnhancedPluginRunner enhancedPluginRunner;
+	private BlockingLoadBalancerClient delegate;
 
 	public PolarisBlockingLoadBalancerClient(ReactiveLoadBalancer.Factory<ServiceInstance> loadBalancerClientFactory,
 			BlockingLoadBalancerClient delegate, EnhancedPluginRunner enhancedPluginRunner) {
@@ -55,8 +54,9 @@ public class PolarisBlockingLoadBalancerClient extends BlockingLoadBalancerClien
 		if (httpRequest == null || enhancedPluginRunner == null) {
 			return delegate.execute(serviceId, request);
 		}
+		byte[] body = LoadBalancerUtils.getHttpBodyIfAvailable(request);
 		EnhancedRestTemplateBlockingLoadBalancerClientInterceptor enhancedRestTemplateBlockingLoadBalancerClientInterceptor = new EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(enhancedPluginRunner, delegate);
-		return enhancedRestTemplateBlockingLoadBalancerClientInterceptor.intercept(httpRequest, serviceId, null, request);
+		return enhancedRestTemplateBlockingLoadBalancerClientInterceptor.intercept(httpRequest, body, serviceId, null, request);
 	}
 
 	/**
@@ -68,7 +68,8 @@ public class PolarisBlockingLoadBalancerClient extends BlockingLoadBalancerClien
 		if (httpRequest == null || serviceInstance == null || enhancedPluginRunner == null) {
 			return delegate.execute(serviceId, serviceInstance, request);
 		}
+		byte[] body = LoadBalancerUtils.getHttpBodyIfAvailable(request);
 		EnhancedRestTemplateBlockingLoadBalancerClientInterceptor enhancedRestTemplateBlockingLoadBalancerClientInterceptor = new EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(enhancedPluginRunner, delegate);
-		return enhancedRestTemplateBlockingLoadBalancerClientInterceptor.intercept(httpRequest, serviceId, serviceInstance, request);
+		return enhancedRestTemplateBlockingLoadBalancerClientInterceptor.intercept(httpRequest, body, serviceId, serviceInstance, request);
 	}
 }
