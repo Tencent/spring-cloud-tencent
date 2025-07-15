@@ -39,6 +39,7 @@ public class EnhancedPluginContext {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedPluginContext.class);
 	private final Map<String, Object> extraData = new ConcurrentHashMap<>();
 	private Object originRequest;
+	private byte[] originBody;
 	private EnhancedRequestContext request;
 	private EnhancedResponseContext response;
 	private Throwable throwable;
@@ -55,6 +56,20 @@ public class EnhancedPluginContext {
 
 	public void setOriginRequest(Object originRequest) {
 		this.originRequest = originRequest;
+	}
+
+	public byte[] getOriginBody() {
+		return originBody;
+	}
+
+	public void setOriginBody(byte[] originBody) {
+		if (originBody != null) {
+			this.originBody = new byte[originBody.length];
+			System.arraycopy(originBody, 0, this.originBody, 0, originBody.length);
+		}
+		else {
+			this.originBody = new byte[0];
+		}
 	}
 
 	public EnhancedRequestContext getRequest() {

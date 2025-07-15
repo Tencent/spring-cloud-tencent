@@ -190,6 +190,12 @@ public class RpcEnhancementAutoConfiguration {
 	protected static class PolarisRestTemplateAutoConfiguration {
 
 		@Bean
+		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
+		public BlockingLoadBalancerClientBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
+			return new BlockingLoadBalancerClientBeanPostProcessor();
+		}
+
+		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnClass(name = {"org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer"})
 		public PolarisLoadBalancerRequestTransformer polarisLoadBalancerRequestTransformer() {
