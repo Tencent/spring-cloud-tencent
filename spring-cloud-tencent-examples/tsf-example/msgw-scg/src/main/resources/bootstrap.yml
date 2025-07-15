@@ -1,0 +1,28 @@
+server:
+  port: 8080
+  error:
+    include-exception: true
+spring:
+  application:
+    name: msgw-scg
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: false
+      httpclient:
+        # The connect timeout in millis, the default is 45s.
+        connectTimeout: 200
+        responseTimeout: 10s
+    consul:
+      enabled: true
+      scheme: HTTP
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: /tsf-demo-logs/${spring.application.name}/root.log
+  pattern:
+    level: "%-5level [${spring.application.name},%mdc{trace_id},%mdc{span_id},]"

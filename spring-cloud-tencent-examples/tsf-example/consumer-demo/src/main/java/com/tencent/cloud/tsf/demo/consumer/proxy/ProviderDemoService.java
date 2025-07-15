@@ -17,8 +17,11 @@
 
 package com.tencent.cloud.tsf.demo.consumer.proxy;
 
+import com.tencent.cloud.tsf.demo.consumer.entity.User;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,4 +36,7 @@ public interface ProviderDemoService {
 
 	@RequestMapping(value = "/echo/slow/{str}", method = RequestMethod.GET)
 	String echoSlow(@PathVariable("str") String str, @RequestParam("delay") int delay);
+
+	@RequestMapping(value = "/user", method = RequestMethod.POST)
+	String user(@RequestBody User user);
 }
