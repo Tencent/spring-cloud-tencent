@@ -18,8 +18,10 @@
 package com.tencent.cloud.plugin.gateway.context;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.util.ArrayList;
@@ -63,6 +65,7 @@ import com.tencent.tsf.gateway.core.model.PathWildcardRule;
 import com.tencent.tsf.gateway.core.model.PluginInstanceInfoResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shade.polaris.org.apache.commons.io.IOUtils;
 
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
@@ -125,6 +128,10 @@ public class GatewayConsulRepo {
 		gatewayGroupIndex.set(listResponse.getConsulIndex());
 		if (listResponse.getValue() != null) {
 			refreshGatewayGroupConfig(parseGroupResponse(listResponse));
+		}
+		else {
+			logger.info("try to load gateway group config from local file.");
+			refreshGatewayGroupConfig(loadResponseFromFile());
 		}
 
 		scheduledExecutorService.scheduleAtFixedRate(() -> {
@@ -255,6 +262,35 @@ public class GatewayConsulRepo {
 		contextGatewayProperties.setPlugins(pluginInstanceInfoResult.getResult());
 		contextGatewayPropertiesManager.refreshPlugins(contextGatewayProperties.getPlugins());
 
+	}
+
+	private GatewayAllResult loadResponseFromFile() {
+		GroupResult groupResult = (GroupResult) readLocalRepo(GatewayConstant.GROUP_FILE_NAME, GroupResult.class);
+		GroupApiResult groupApiResult = (GroupApiResult) readLocalRepo(GatewayConstant.API_FILE_NAME, GroupApiResult.class);
+		PathRewriteResult pathRewriteResult = (PathRewriteResult) readLocalRepo(GatewayConstant.PATH_REWRITE_FILE_NAME, PathRewriteResult.class);
+		PathWildcardResult pathWildcardResult = (PathWildcardResult) readLocalRepo(GatewayConstant.PATH_WILDCARD_FILE_NAME, PathWildcardResult.class);
+		return new GatewayAllResult(groupResult, groupApiResult, pathRewriteResult, pathWildcardResult);
+	}
+
+	private Object readLocalRepo(String type, Class<?> repoResultClazz) {
+		byte[] bytes;
+		try (FileInputStream fin = new FileInputStream(getRepoStoreFile(type)); InputStreamReader isr = new InputStreamReader(fin)) {
+			bytes = IOUtils.toByteArray(isr, "utf-8");
+			if (bytes == null || bytes.length == 0) {
+				return null;
+			}
+		}
+		catch (IOException t) {
+			logger.warn("[readLocalRepo] read group info from file occur exception: {}", t.getMessage());
+			return null;
+		}
+		try {
+			return JacksonUtils.deserialize(new String(bytes, "utf-8"), repoResultClazz);
+		}
+		catch (Throwable t) {
+			logger.warn("[readLocalRepo] json serialize data to group occur exception: {}", t.getMessage());
+			return null;
+		}
 	}
 
 	private GatewayAllResult parseGroupResponse(Response<List<GetValue>> listResponse) {
