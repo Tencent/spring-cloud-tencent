@@ -17,8 +17,10 @@
 
 package com.tencent.cloud.quickstart.callee;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.concurrent.TimeoutException;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.quickstart.callee.config.DataSourceProperties;
@@ -150,4 +152,10 @@ public class QuickstartCalleeController {
 	public String faultToleranceForking() {
 		return faultToleranceService.forking();
 	}
+
+	@GetMapping("/faultTolerance/raisedException/{exceptionType}")
+	public String faultToleranceRaisedException(@PathVariable String exceptionType) throws IOException, TimeoutException {
+		return faultToleranceService.raisedException(exceptionType);
+	}
+
 }
