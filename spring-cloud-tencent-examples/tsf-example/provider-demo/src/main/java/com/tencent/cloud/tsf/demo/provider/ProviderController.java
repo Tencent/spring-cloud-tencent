@@ -51,12 +51,6 @@ public class ProviderController {
 	@Value("${spring.application.name:}")
 	private String applicationName;
 
-	@Value("${server.port:0}")
-	private int port;
-
-	@Value("${spring.cloud.client.ip-address:127.0.0.1}")
-	private String ip;
-
 	@Autowired
 	private ProviderNameConfig providerNameConfig;
 
@@ -96,8 +90,8 @@ public class ProviderController {
 	@RequestMapping(value = "/echo/{param}", method = RequestMethod.GET)
 	public ResponseEntity<String> echo(@PathVariable String param) {
 		if (ifBadGateway) {
-			LOG.info("Quickstart Callee Service [{}:{}] is called wrong.", ip, port);
-			return new ResponseEntity<>("failed for call quickstart callee service.", HttpStatus.BAD_GATEWAY);
+			LOG.info("Provider Demo is called wrong.");
+			return new ResponseEntity<>("failed for call provider demo service. Address: " + getInet4Address(), HttpStatus.BAD_GATEWAY);
 		}
 
 		int status;
