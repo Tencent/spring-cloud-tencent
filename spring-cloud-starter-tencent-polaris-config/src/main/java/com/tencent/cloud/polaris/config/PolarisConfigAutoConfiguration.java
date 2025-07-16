@@ -83,9 +83,16 @@ public class PolarisConfigAutoConfiguration {
 				springValueRegistry, configFileService, contextRefresher, polarisSDKContextManager.getSDKContext());
 	}
 
+	/**
+	 * In some scenarios, configurations are not annotated with @RefreshScope but are refreshed directly by listening to events.
+	 * In such cases, it is necessary to actively execute putRefreshScopePrefixKey.
+	 */
 	@Bean
 	public SpringValueRegistry springValueRegistry() {
-		return new SpringValueRegistry();
+		SpringValueRegistry springValueRegistry = new SpringValueRegistry();
+		// TODO: support dynamic config
+		springValueRegistry.putRefreshScopePrefixKey("spring.cloud.openfeign.client");
+		return springValueRegistry;
 	}
 
 	@Bean
