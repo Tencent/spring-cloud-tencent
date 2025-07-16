@@ -15,9 +15,8 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.beanprocessor;
+package com.tencent.cloud.rpc.enhancement.beanprocessor;
 
-import com.tencent.cloud.polaris.circuitbreaker.instrument.resttemplate.PolarisLoadBalancerInterceptor;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,19 +26,16 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for ${@link LoadBalancerInterceptorBeanPostProcessor}.
+ * Test for ${@link BlockingLoadBalancerClientBeanPostProcessor}.
  *
  * @author Shedfree Wu
  */
-class LoadBalancerInterceptorBeanPostProcessorTest {
+class BlockingLoadBalancerClientBeanPostProcessorTest {
 
 	@Mock
 	private BeanFactory beanFactory;
@@ -53,34 +49,18 @@ class LoadBalancerInterceptorBeanPostProcessorTest {
 	@Mock
 	private EnhancedPluginRunner pluginRunner;
 
-	private LoadBalancerInterceptorBeanPostProcessor processor;
+	private BlockingLoadBalancerClientBeanPostProcessor processor;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		processor = new LoadBalancerInterceptorBeanPostProcessor();
+		processor = new BlockingLoadBalancerClientBeanPostProcessor();
 		processor.setBeanFactory(beanFactory);
 
 		// Setup mock behavior
 		when(beanFactory.getBean(LoadBalancerRequestFactory.class)).thenReturn(requestFactory);
 		when(beanFactory.getBean(LoadBalancerClient.class)).thenReturn(loadBalancerClient);
 		when(beanFactory.getBean(EnhancedPluginRunner.class)).thenReturn(pluginRunner);
-	}
-
-	@Test
-	void testPostProcessBeforeInitializationWithLoadBalancerInterceptor() {
-		// Arrange
-		LoadBalancerInterceptor originalInterceptor = mock(LoadBalancerInterceptor.class);
-		String beanName = "testBean";
-
-		// Act
-		Object result = processor.postProcessBeforeInitialization(originalInterceptor, beanName);
-
-		// Assert
-		Assertions.assertInstanceOf(PolarisLoadBalancerInterceptor.class, result);
-		verify(beanFactory).getBean(LoadBalancerRequestFactory.class);
-		verify(beanFactory).getBean(LoadBalancerClient.class);
-		verify(beanFactory).getBean(EnhancedPluginRunner.class);
 	}
 
 	@Test
@@ -102,26 +82,6 @@ class LoadBalancerInterceptorBeanPostProcessorTest {
 		int order = processor.getOrder();
 
 		// Assert
-		Assertions.assertEquals(LoadBalancerInterceptorBeanPostProcessor.POLARIS_LOAD_BALANCER_INTERCEPTOR_POST_PROCESSOR_ORDER, order);
-	}
-
-	@Test
-	void testSetBeanFactory() {
-		// Arrange
-		BeanFactory newBeanFactory = mock(BeanFactory.class);
-		LoadBalancerInterceptorBeanPostProcessor newProcessor = new LoadBalancerInterceptorBeanPostProcessor();
-
-		// Act
-		newProcessor.setBeanFactory(newBeanFactory);
-
-		// Assert
-		// Verify the bean factory is set by trying to process a bean
-		LoadBalancerInterceptor interceptor = mock(LoadBalancerInterceptor.class);
-		when(newBeanFactory.getBean(LoadBalancerRequestFactory.class)).thenReturn(requestFactory);
-		when(newBeanFactory.getBean(LoadBalancerClient.class)).thenReturn(loadBalancerClient);
-		when(newBeanFactory.getBean(EnhancedPluginRunner.class)).thenReturn(pluginRunner);
-
-		Object result = newProcessor.postProcessBeforeInitialization(interceptor, "testBean");
-		Assertions.assertInstanceOf(PolarisLoadBalancerInterceptor.class, result);
+		Assertions.assertEquals(BlockingLoadBalancerClientBeanPostProcessor.ORDER, order);
 	}
 }

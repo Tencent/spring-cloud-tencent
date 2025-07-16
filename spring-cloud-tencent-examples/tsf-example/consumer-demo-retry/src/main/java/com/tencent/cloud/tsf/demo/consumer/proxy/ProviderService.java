@@ -18,19 +18,27 @@
 package com.tencent.cloud.tsf.demo.consumer.proxy;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "${provider.name:http://provider-demo}")
-public interface ProviderDemoService {
+/**
+ * 测试通过URL配置FeignClient
+ * 使用时修改provider-ip:provider-port配置
+ */
+@FeignClient(name = "provider", url = "http://127.0.0.1:18081", fallback = FeignClientFallback.class)
+public interface ProviderService {
+
 	@RequestMapping(value = "/echo/{str}", method = RequestMethod.GET)
 	String echo(@PathVariable("str") String str);
 
-	@RequestMapping(value = "/echo/error/{str}", method = RequestMethod.GET)
-	String echoError(@PathVariable("str") String str);
+}
 
-	@RequestMapping(value = "/echo/slow/{str}", method = RequestMethod.GET)
-	String echoSlow(@PathVariable("str") String str, @RequestParam("delay") int delay);
+@Component
+class FeignClientFallback implements ProviderService {
+	@Override
+	public String echo(String str) {
+		return "tsf-fault-tolerance-" + str;
+	}
 }
