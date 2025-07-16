@@ -68,7 +68,7 @@ public class FeignEagerLoadSmartLifecycle implements SmartLifecycle {
 							}
 							String serviceName = URI.create(url).getHost();
 
-							LOG.info("[{}] eager-load start", serviceName);
+							LOG.info("[{}] eager-load start, feign name: {}", serviceName, hardCodedTarget.name());
 							if (polarisDiscoveryClient != null) {
 								polarisDiscoveryClient.getInstances(serviceName);
 							}
