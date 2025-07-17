@@ -57,7 +57,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		})
 public class ConfigChangeListenerTest {
 
-	private static final CountDownLatch hits = new CountDownLatch(2);
+	private static CountDownLatch hits = new CountDownLatch(2);
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 	@Autowired
@@ -85,13 +85,16 @@ public class ConfigChangeListenerTest {
 		Set<String> ketSet = new HashSet<>();
 		ketSet.add("timeout");
 		for (int i = 2; i <= 1000; i++) {
+			// Reset hits for each iteration
 			//submit change event
 			System.setProperty("timeout", String.valueOf(i * 1000));
 			EnvironmentChangeEvent event = new EnvironmentChangeEvent(applicationContext, ketSet);
 			applicationEventPublisher.publishEvent(event);
+
 			//after change
 			boolean ret = hits.await(2, TimeUnit.SECONDS);
 			Assertions.assertThat(ret).isEqualTo(true);
+			hits = new CountDownLatch(2);
 			Assertions.assertThat(testConfig.getChangeCnt()).isEqualTo(2 * i - 2);
 			Assertions.assertThat(testConfig.getSyncChangeCnt()).isEqualTo(2 * i - 2);
 			Assertions.assertThat(testConfig.getTimeout()).isEqualTo(i * 1000);
