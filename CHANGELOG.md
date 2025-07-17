@@ -7,3 +7,4 @@
 - [feat:Add log output and test scenarios in the FaultToleranceService file.](https://github.com/Tencent/spring-cloud-tencent/pull/1652)
 - [fix: fix ConfigChangeListener and unit test](https://github.com/Tencent/spring-cloud-tencent/pull/1656)
 - [feat: support spring-retry and feign config refresh and feign eager load support schema](https://github.com/Tencent/spring-cloud-tencent/pull/1651)
+- [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1661)
