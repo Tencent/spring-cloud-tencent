@@ -85,13 +85,12 @@ public class ConfigChangeListenerTest {
 		Set<String> ketSet = new HashSet<>();
 		ketSet.add("timeout");
 		for (int i = 2; i <= 1000; i++) {
-			// Reset hits for each iteration
 			//submit change event
 			System.setProperty("timeout", String.valueOf(i * 1000));
 			EnvironmentChangeEvent event = new EnvironmentChangeEvent(applicationContext, ketSet);
 			applicationEventPublisher.publishEvent(event);
-
 			//after change
+			//Reset hits for each iteration
 			boolean ret = hits.await(2, TimeUnit.SECONDS);
 			Assertions.assertThat(ret).isEqualTo(true);
 			hits = new CountDownLatch(2);
