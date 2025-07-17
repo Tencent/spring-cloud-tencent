@@ -26,6 +26,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -71,11 +74,15 @@ public class EnhancedFeignClient implements Client {
 
 		URI serviceUrl = url.resolve(request.requestTemplate().url());
 
+		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(requestHeaders)
 				.httpMethod(HttpMethod.valueOf(request.httpMethod().name()))
 				.url(url)
 				.serviceUrl(serviceUrl)
+				.governanceNamespace(governanceNamespace)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(request);

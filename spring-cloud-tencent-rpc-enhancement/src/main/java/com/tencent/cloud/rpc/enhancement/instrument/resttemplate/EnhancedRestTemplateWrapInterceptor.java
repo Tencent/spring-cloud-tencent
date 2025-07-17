@@ -22,6 +22,8 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
@@ -68,11 +70,15 @@ public class EnhancedRestTemplateWrapInterceptor {
 			serviceUrl = ((ServiceRequestWrapper) httpRequest).getRequest().getURI();
 		}
 
+		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(httpRequest.getHeaders())
 				.httpMethod(httpRequest.getMethod())
 				.url(httpRequest.getURI())
 				.serviceUrl(serviceUrl)
+				.governanceNamespace(governanceNamespace)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(httpRequest);
