@@ -61,11 +61,8 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
 
 > 注意：
 >
-> 支持Spring Cloud 版本：2023.0, 2022.0、2021.0、2020.0、Hoxton。
->
-> Spring Cloud Tencent
-> 的版本列表可以查看
-> [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+> Spring Cloud Tencent 的版本列表可以查看
+> [Spring Cloud Tencent 更新日志](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
 > 。
 
 例如：
@@ -84,11 +81,11 @@ Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要�
     </dependencies>
 </dependencyManagement>    
                  
-<!-- add spring-cloud-starter-tencent-polaris-discovery dependency  -->
+<!-- add spring-cloud-starter-tencent-all dependency  -->
 <dependencies>
     <dependency>
         <groupId>com.tencent.cloud</groupId>
-        <artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
+        <artifactId>spring-cloud-starter-tencent-all</artifactId>
     </dependency>
 </dependencies>
 
