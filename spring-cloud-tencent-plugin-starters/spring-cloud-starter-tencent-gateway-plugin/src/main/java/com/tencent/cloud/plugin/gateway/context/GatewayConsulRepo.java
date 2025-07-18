@@ -398,30 +398,32 @@ public class GatewayConsulRepo {
 			}
 		}
 
-		for (GroupApi groupApi : groupApiResult.getResult()) {
-			GroupContext groupContext = groups.get(groupApi.getGroupId());
-			if (groupContext == null) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("group api {} not found in group {}", groupApi.getApiId(), groupApi.getGroupId());
+		if (groupApiResult != null) {
+			for (GroupApi groupApi : groupApiResult.getResult()) {
+				GroupContext groupContext = groups.get(groupApi.getGroupId());
+				if (groupContext == null) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("group api {} not found in group {}", groupApi.getApiId(), groupApi.getGroupId());
+					}
+					continue;
 				}
-				continue;
-			}
 
-			GroupContext.ContextRoute contextRoute = new GroupContext.ContextRoute();
-			contextRoute.setApiId(groupApi.getApiId());
-			contextRoute.setHost(groupApi.getHost());
-			contextRoute.setPath(groupApi.getPath());
-			contextRoute.setPathMapping(groupApi.getPathMapping());
-			contextRoute.setMethod(groupApi.getMethod());
-			contextRoute.setService(groupApi.getServiceName());
-			contextRoute.setNamespaceId(groupApi.getNamespaceId());
-			contextRoute.setNamespace(groupApi.getNamespaceName());
-			if (groupApi.getTimeout() != null) {
-				Map<String, String> metadata = new HashMap<>();
-				metadata.put("response-timeout", String.valueOf(groupApi.getTimeout()));
-				contextRoute.setMetadata(metadata);
+				GroupContext.ContextRoute contextRoute = new GroupContext.ContextRoute();
+				contextRoute.setApiId(groupApi.getApiId());
+				contextRoute.setHost(groupApi.getHost());
+				contextRoute.setPath(groupApi.getPath());
+				contextRoute.setPathMapping(groupApi.getPathMapping());
+				contextRoute.setMethod(groupApi.getMethod());
+				contextRoute.setService(groupApi.getServiceName());
+				contextRoute.setNamespaceId(groupApi.getNamespaceId());
+				contextRoute.setNamespace(groupApi.getNamespaceName());
+				if (groupApi.getTimeout() != null) {
+					Map<String, String> metadata = new HashMap<>();
+					metadata.put("response-timeout", String.valueOf(groupApi.getTimeout()));
+					contextRoute.setMetadata(metadata);
+				}
+				groupContext.getRoutes().add(contextRoute);
 			}
-			groupContext.getRoutes().add(contextRoute);
 		}
 
 		if (pathWildcardResult != null && pathWildcardResult.getResult() != null) {
@@ -446,7 +448,7 @@ public class GatewayConsulRepo {
 
 		contextGatewayProperties.setGroups(groups);
 		contextGatewayProperties.setRoutes(routes);
-		contextGatewayProperties.setPathRewrites(Optional.ofNullable(pathRewriteResult.getResult())
+		contextGatewayProperties.setPathRewrites(Optional.ofNullable(pathRewriteResult).map(PathRewriteResult::getResult)
 				.orElse(new ArrayList<>()));
 
 		logger.debug("Gateway config loaded. :{}", JacksonUtils.serialize2Json(contextGatewayProperties));
