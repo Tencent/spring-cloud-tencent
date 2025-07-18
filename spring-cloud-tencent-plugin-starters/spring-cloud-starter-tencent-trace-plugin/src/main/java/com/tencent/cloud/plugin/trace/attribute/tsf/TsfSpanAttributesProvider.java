@@ -20,10 +20,15 @@ package com.tencent.cloud.plugin.trace.attribute.tsf;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.plugin.trace.attribute.SpanAttributesProvider;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.metadata.core.MetadataObjectValue;
+import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.constant.TsfMetadataConstants;
 
 import org.springframework.cloud.client.ServiceInstance;
@@ -53,6 +58,14 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 		}
 		if (StringUtils.isBlank(attributes.get("remote.namespace-id"))) {
 			attributes.put("remote.namespace-id", context.getRequest().getGovernanceNamespace());
+		}
+
+		MetadataObjectValue<Map<String, String>> extraTraceAttributeObject = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(ContextConstant.Trace.EXTRA_TRACE_ATTRIBUTES);
+		if (MetadataContextUtils.existMetadataValue(extraTraceAttributeObject)) {
+			Map<String, String> extraTraceAttributes = extraTraceAttributeObject.getObjectValue().get();
+			attributes.putAll(extraTraceAttributes);
 		}
 		return attributes;
 	}

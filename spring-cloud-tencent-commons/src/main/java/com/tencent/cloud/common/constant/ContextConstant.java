@@ -62,4 +62,15 @@ public final class ContextConstant {
 
 		}
 	}
+
+	public static final class Trace {
+		/**
+		 * EXTRA_TRACE_ATTRIBUTES.
+		 */
+		public static final String EXTRA_TRACE_ATTRIBUTES = "EXTRA_TRACE_ATTRIBUTES";
+
+		private Trace() {
+
+		}
+	}
 }

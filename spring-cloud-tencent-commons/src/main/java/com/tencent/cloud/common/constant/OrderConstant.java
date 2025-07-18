@@ -56,7 +56,7 @@ public class OrderConstant {
 			/**
 			 * Order of encode router label interceptor.
 			 */
-			public static final int ROUTER_LABEL_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
+			public static final int ROUTER_LABEL_INTERCEPTOR_ORDER = 0;
 		}
 
 		/**

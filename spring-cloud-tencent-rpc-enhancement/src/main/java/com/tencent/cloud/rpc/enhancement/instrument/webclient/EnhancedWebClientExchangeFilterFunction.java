@@ -21,6 +21,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
@@ -56,11 +58,15 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 	public Mono<ClientResponse> filter(ClientRequest originRequest, ExchangeFunction next) {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
+		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(originRequest.headers())
 				.httpMethod(originRequest.method())
 				.url(originRequest.url())
 				.serviceUrl(getServiceUri(originRequest))
+				.governanceNamespace(governanceNamespace)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(originRequest);
