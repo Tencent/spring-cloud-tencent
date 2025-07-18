@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,11 @@ public class SuccessCircuitBreakerReporter implements EnhancedPlugin {
 			CircuitBreakAPI circuitBreakAPI) {
 		this.reportProperties = reportProperties;
 		this.circuitBreakAPI = circuitBreakAPI;
+	}
+
+	private static boolean existMetadataValue(MetadataObjectValue<?> metadataObjectValue) {
+		return Optional.ofNullable(metadataObjectValue).map(MetadataObjectValue::getObjectValue).
+				map(Optional::isPresent).orElse(false);
 	}
 
 	@Override
@@ -141,10 +146,5 @@ public class SuccessCircuitBreakerReporter implements EnhancedPlugin {
 	@Override
 	public int getOrder() {
 		return CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER;
-	}
-
-	private static boolean existMetadataValue(MetadataObjectValue<?> metadataObjectValue) {
-		return Optional.ofNullable(metadataObjectValue).map(MetadataObjectValue::getObjectValue).
-				map(Optional::isPresent).orElse(false);
 	}
 }

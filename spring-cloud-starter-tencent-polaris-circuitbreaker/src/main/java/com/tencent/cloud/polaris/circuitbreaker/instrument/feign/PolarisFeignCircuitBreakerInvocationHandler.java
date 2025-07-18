@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,24 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 		this.decoder = decoder;
 	}
 
+	/**
+	 * If the method param of {@link InvocationHandler#invoke(Object, Method, Object[])}
+	 * is not accessible, i.e in a package-private interface, the fallback call will cause
+	 * of access restrictions. But methods in dispatch are copied methods. So setting
+	 * access to dispatch method doesn't take effect to the method in
+	 * InvocationHandler.invoke. Use map to store a copy of method to invoke the fallback
+	 * to bypass this and reducing the count of reflection calls.
+	 * @return cached methods map for fallback invoking
+	 */
+	static Map<Method, Method> toFallbackMethod(Map<Method, InvocationHandlerFactory.MethodHandler> dispatch) {
+		Map<Method, Method> result = new LinkedHashMap<>();
+		for (Method method : dispatch.keySet()) {
+			method.setAccessible(true);
+			result.put(method, method);
+		}
+		return result;
+	}
+
 	@Override
 	public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 		// early exit if the invoked method is from java.lang.Object
@@ -114,24 +132,6 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 			}
 			throw new FallbackWrapperException(exception);
 		}
-	}
-
-	/**
-	 * If the method param of {@link InvocationHandler#invoke(Object, Method, Object[])}
-	 * is not accessible, i.e in a package-private interface, the fallback call will cause
-	 * of access restrictions. But methods in dispatch are copied methods. So setting
-	 * access to dispatch method doesn't take effect to the method in
-	 * InvocationHandler.invoke. Use map to store a copy of method to invoke the fallback
-	 * to bypass this and reducing the count of reflection calls.
-	 * @return cached methods map for fallback invoking
-	 */
-	static Map<Method, Method> toFallbackMethod(Map<Method, InvocationHandlerFactory.MethodHandler> dispatch) {
-		Map<Method, Method> result = new LinkedHashMap<>();
-		for (Method method : dispatch.keySet()) {
-			method.setAccessible(true);
-			result.put(method, method);
-		}
-		return result;
 	}
 
 	@Override

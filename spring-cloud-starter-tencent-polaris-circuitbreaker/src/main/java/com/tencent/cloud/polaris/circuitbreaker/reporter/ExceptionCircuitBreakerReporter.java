@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,11 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 		this.circuitBreakAPI = circuitBreakAPI;
 	}
 
+	private static boolean existMetadataValue(MetadataObjectValue<?> metadataObjectValue) {
+		return Optional.ofNullable(metadataObjectValue).map(MetadataObjectValue::getObjectValue).
+				map(Optional::isPresent).orElse(false);
+	}
+
 	@Override
 	public String getName() {
 		return ExceptionCircuitBreakerReporter.class.getName();
@@ -82,7 +87,8 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 				.orElse(new DefaultServiceInstance());
 
 		if (LOG.isDebugEnabled()) {
-			String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_NAMESPACE);
+			String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata()
+					.get(ContextConstant.POLARIS_GOVERNANCE_NAMESPACE);
 			LOG.debug("governanceNamespace={}, serviceInstance:{}", governanceNamespace, serviceInstance);
 		}
 		ResourceStat resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat(
@@ -140,11 +146,6 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 	@Override
 	public int getOrder() {
 		return CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER;
-	}
-
-	private static boolean existMetadataValue(MetadataObjectValue<?> metadataObjectValue) {
-		return Optional.ofNullable(metadataObjectValue).map(MetadataObjectValue::getObjectValue).
-				map(Optional::isPresent).orElse(false);
 	}
 
 }
