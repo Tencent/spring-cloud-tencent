@@ -81,12 +81,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 	private final StaticMetadataManager staticMetadataManager;
 	private final PolarisStatProperties polarisStatProperties;
 
-	@Value("${spring.cloud.polaris.discovery.heartbeat-enabled:true}")
-	private Boolean heartbeatEnabled = true;
-
-	@Value("${spring.cloud.polaris.discovery.heartbeat-interval:5}")
-	private Integer heartbeatInterval = 5;
-
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler polarisDiscoveryHandler,
 			StaticMetadataManager staticMetadataManager, PolarisStatProperties polarisStatProperties) {
@@ -136,14 +130,14 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
 
-			// 结合heartbeatEnabled和healthCheckUrl判断
+			// heartbeatEnabled and healthCheckUrl
 			if (!polarisDiscoveryProperties.getHeartbeatEnabled()
 				|| StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
-				// 不启用心跳 或 未配置healthCheckUrl
+				// Do not enable heartbeat or configure healthCheckURL
 				instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 				LOGGER.info("Registered instance without heartbeat.");
 			} else {
-				// 启用心跳 且 配置了healthCheckUrl
+				// Enable heartbeat and configure healthCheckURL
 				instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 				instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
 				LOGGER.info("Registered instance with heartbeat enabled.");

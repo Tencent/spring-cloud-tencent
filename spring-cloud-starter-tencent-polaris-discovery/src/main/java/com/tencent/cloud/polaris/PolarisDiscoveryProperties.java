@@ -80,21 +80,20 @@ public class PolarisDiscoveryProperties {
 	/**
 	 * Enable heartbeat or not.
 	 */
-	@Value("${spring.cloud.polaris.discovery.heartbeat.enabled:true}")
+	@Value("${spring.cloud.polaris.discovery.heartbeat-enabled:true}")
 	private Boolean heartbeatEnabled = true;
+
+	/**
+	 * Heartbeat interval (seconds).
+	 */
+	@Value("${spring.cloud.polaris.discovery.heartbeat-interval:5}")
+	private Integer heartbeatInterval = 5;
 
 	/**
 	 * If instance registered.
 	 */
 	@Value("${spring.cloud.polaris.discovery.register:#{true}}")
 	private Boolean registerEnabled;
-
-	/**
-	 * Heartbeat interval ( 0 < interval <= 60).
-	 * Time unit: second. Default: 5.
-	 * @see ContextConstant#DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL
-	 */
-	private Integer heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
 
 	/**
 	 * Custom health check url to override default.
