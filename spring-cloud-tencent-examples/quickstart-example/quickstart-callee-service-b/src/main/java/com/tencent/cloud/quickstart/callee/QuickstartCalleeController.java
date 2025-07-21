@@ -124,8 +124,8 @@ public class QuickstartCalleeController {
 		}
 		if (delay > 0) {
 			Thread.sleep(delay);
-			LOG.info("Quickstart Callee Service [{}:{}] is called slow.", ip, port);
-			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called slow.", ip, port), HttpStatus.OK);
+			LOG.info("Quickstart Callee Service [{}:{}] is called after {}ms", ip, port, delay);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called after %sms.", ip, port, delay), HttpStatus.OK);
 		}
 		LOG.info("Quickstart Callee Service [{}:{}] is called right.", ip, port);
 		return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port), HttpStatus.OK);
@@ -144,11 +144,11 @@ public class QuickstartCalleeController {
 		}
 		if (delay > 0) {
 			Thread.sleep(delay);
-			LOG.info("Quickstart Callee Service uid {} [{}:{}] is called slow.", uid, ip, port);
-			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called slow.", ip, port), HttpStatus.OK);
+			LOG.info("Quickstart Callee Service uid {} [{}:{}] is called after {}ms", uid, ip, port, delay);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service uid %s [%s:%s] is called after %sms.", uid, ip, port, delay), HttpStatus.OK);
 		}
 		LOG.info("Quickstart Callee Service uid {} [{}:{}] is called right.", uid, ip, port);
-		return new ResponseEntity<>(String.format("Quickstart Callee Service %s [%s:%s] is called right.", uid, ip, port), HttpStatus.OK);
+		return new ResponseEntity<>(String.format("Quickstart Callee Service uid %s [%s:%s] is called right.", uid, ip, port), HttpStatus.OK);
 	}
 
 	@GetMapping("/setBadGateway")
