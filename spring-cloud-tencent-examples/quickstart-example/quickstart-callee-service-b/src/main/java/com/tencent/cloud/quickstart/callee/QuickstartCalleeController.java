@@ -66,7 +66,7 @@ public class QuickstartCalleeController {
 	@Autowired
 	private DataSourceProperties dataSourceProperties;
 	private boolean ifBadGateway = true;
-	private boolean ifDelay = false;
+	private long delay = 0;
 
 	/**
 	 * Get sum of two value.
@@ -122,8 +122,8 @@ public class QuickstartCalleeController {
 			LOG.info("Quickstart Callee Service [{}:{}] is called wrong.", ip, port);
 			return new ResponseEntity<>("failed for call quickstart callee service.", HttpStatus.BAD_GATEWAY);
 		}
-		if (ifDelay) {
-			Thread.sleep(200);
+		if (delay > 0) {
+			Thread.sleep(delay);
 			LOG.info("Quickstart Callee Service [{}:{}] is called slow.", ip, port);
 			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called slow.", ip, port), HttpStatus.OK);
 		}
@@ -142,8 +142,8 @@ public class QuickstartCalleeController {
 			LOG.info("Quickstart Callee Service with uid {} [{}:{}] is called wrong.", uid, ip, port);
 			return new ResponseEntity<>("failed for call quickstart callee service wildcard.", HttpStatus.BAD_GATEWAY);
 		}
-		if (ifDelay) {
-			Thread.sleep(200);
+		if (delay > 0) {
+			Thread.sleep(delay);
 			LOG.info("Quickstart Callee Service uid {} [{}:{}] is called slow.", uid, ip, port);
 			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called slow.", ip, port), HttpStatus.OK);
 		}
@@ -165,16 +165,17 @@ public class QuickstartCalleeController {
 	}
 
 	@GetMapping("/setDelay")
-	public String setDelay(@RequestParam boolean param) {
-		this.ifDelay = param;
-		if (param) {
-			LOG.info("info is set to delay 200ms.");
-			return "info is set to delay 200ms.";
+	public ResponseEntity<String> setDelay(@RequestParam long param) {
+		this.delay = param;
+		if (param > 0) {
+			LOG.info("info is set to delay {}}ms.", param);
+			return new ResponseEntity<>(String.format("info is set to delay %sms.", param), HttpStatus.OK);
 		}
-		else {
+		if (param == 0) {
 			LOG.info("info is set to no delay.");
-			return "info is set to no delay.";
+			return new ResponseEntity<>("info is set to no delay.", HttpStatus.OK);
 		}
+		return new ResponseEntity<>("delay must be non-negative", HttpStatus.BAD_REQUEST);
 	}
 
 	@GetMapping("/faultDetect")
@@ -183,8 +184,8 @@ public class QuickstartCalleeController {
 			LOG.info("Quickstart Callee Service [{}:{}] is detected wrong.", ip, port);
 			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected wrong.", ip, port), HttpStatus.BAD_GATEWAY);
 		}
-		if (ifDelay) {
-			Thread.sleep(200);
+		if (delay > 0) {
+			Thread.sleep(delay);
 			LOG.info("Quickstart Callee Service [{}:{}] is detected slow.", ip, port);
 			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected slow.", ip, port), HttpStatus.OK);
 		}
