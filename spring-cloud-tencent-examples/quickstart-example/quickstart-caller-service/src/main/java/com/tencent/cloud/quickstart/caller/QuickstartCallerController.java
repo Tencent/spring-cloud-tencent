@@ -264,4 +264,10 @@ public class QuickstartCallerController {
 	public String user(@RequestBody User user) {
 		return restTemplate.postForObject("http://QuickstartCalleeService/quickstart/callee/user", user, String.class);
 	}
+
+	@GetMapping("/delayTest")
+	public String delayTest() {
+		String path = "http://QuickstartCalleeService/quickstart/callee/delayTest";
+		return restTemplate.getForObject(path, String.class);
+	}
 }

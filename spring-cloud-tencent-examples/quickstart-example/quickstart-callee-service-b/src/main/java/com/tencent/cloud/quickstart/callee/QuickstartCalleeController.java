@@ -191,4 +191,11 @@ public class QuickstartCalleeController {
 		LOG.info("Quickstart Callee Service [{}:{}] is detected right.", ip, port);
 		return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port), HttpStatus.OK);
 	}
+	@GetMapping("/delayTest")
+	public String delayTest()  throws InterruptedException {
+		long delay = Long.parseLong(System.getProperty("DELAY_TEST_TIME", "50"));
+		Thread.sleep(delay);
+		LOG.info("Quickstart [{}] Service [{}:{}] is called. datasource = [{}]. Delay Time is {}", appName, ip, port, dataSourceProperties, delay);
+		return String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s]. Delay Time is %s", appName, ip, port, dataSourceProperties, delay);
+	}
 }
