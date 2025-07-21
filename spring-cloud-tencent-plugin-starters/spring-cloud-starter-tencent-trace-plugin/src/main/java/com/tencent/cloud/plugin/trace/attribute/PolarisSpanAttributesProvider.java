@@ -41,7 +41,7 @@ import static com.tencent.polaris.plugins.router.lane.LaneRouter.TRAFFIC_STAIN_L
  */
 public class PolarisSpanAttributesProvider implements SpanAttributesProvider {
 	@Override
-	public Map<String, String> getServerSpanAttributes(EnhancedPluginContext context) {
+	public Map<String, String> getServerPreSpanAttributes(EnhancedPluginContext context) {
 		Map<String, String> attributes = new HashMap<>();
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> transitiveCustomAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);

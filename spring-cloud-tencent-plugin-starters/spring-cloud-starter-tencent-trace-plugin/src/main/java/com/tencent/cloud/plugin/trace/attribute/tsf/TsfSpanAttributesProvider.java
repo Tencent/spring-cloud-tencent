@@ -69,4 +69,17 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 		}
 		return attributes;
 	}
+
+	@Override
+	public Map<String, String> getServerFinallySpanAttributes(EnhancedPluginContext context) {
+		Map<String, String> attributes = new HashMap<>();
+		MetadataObjectValue<Map<String, String>> extraTraceAttributeObject = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(ContextConstant.Trace.EXTRA_TRACE_ATTRIBUTES);
+		if (MetadataContextUtils.existMetadataValue(extraTraceAttributeObject)) {
+			Map<String, String> extraTraceAttributes = extraTraceAttributeObject.getObjectValue().get();
+			attributes.putAll(extraTraceAttributes);
+		}
+		return attributes;
+	}
 }

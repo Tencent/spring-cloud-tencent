@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.tencent.cloud.plugin.trace.TraceClientFinallyEnhancedPlugin;
 import com.tencent.cloud.plugin.trace.TraceClientPreEnhancedPlugin;
+import com.tencent.cloud.plugin.trace.TraceServerFinallyEnhancedPlugin;
 import com.tencent.cloud.plugin.trace.TraceServerPreEnhancedPlugin;
 import com.tencent.cloud.plugin.trace.attribute.PolarisSpanAttributesProvider;
 import com.tencent.cloud.plugin.trace.attribute.SpanAttributesProvider;
@@ -44,6 +45,12 @@ public class TraceEnhancedPluginAutoConfiguration {
 	public TraceServerPreEnhancedPlugin traceServerPreEnhancedPlugin(
 			PolarisSDKContextManager polarisSDKContextManager, @Autowired(required = false) List<SpanAttributesProvider> spanAttributesProviderList) {
 		return new TraceServerPreEnhancedPlugin(polarisSDKContextManager, spanAttributesProviderList);
+	}
+
+	@Bean
+	public TraceServerFinallyEnhancedPlugin traceServerFinallyEnhancedPlugin(
+			PolarisSDKContextManager polarisSDKContextManager, @Autowired(required = false) List<SpanAttributesProvider> spanAttributesProviderList) {
+		return new TraceServerFinallyEnhancedPlugin(polarisSDKContextManager, spanAttributesProviderList);
 	}
 
 	@Bean

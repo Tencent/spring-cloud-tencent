@@ -31,20 +31,20 @@ import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.TraceAttributes;
 
-public class TraceServerPreEnhancedPlugin implements EnhancedPlugin {
+public class TraceServerFinallyEnhancedPlugin implements EnhancedPlugin {
 
 	private final PolarisSDKContextManager polarisSDKContextManager;
 
 	private final List<SpanAttributesProvider> spanAttributesProviderList;
 
-	public TraceServerPreEnhancedPlugin(PolarisSDKContextManager polarisSDKContextManager, List<SpanAttributesProvider> spanAttributesProviderList) {
+	public TraceServerFinallyEnhancedPlugin(PolarisSDKContextManager polarisSDKContextManager, List<SpanAttributesProvider> spanAttributesProviderList) {
 		this.polarisSDKContextManager = polarisSDKContextManager;
 		this.spanAttributesProviderList = spanAttributesProviderList;
 	}
 
 	@Override
 	public EnhancedPluginType getType() {
-		return EnhancedPluginType.Server.PRE;
+		return EnhancedPluginType.Server.FINALLY;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class TraceServerPreEnhancedPlugin implements EnhancedPlugin {
 		Map<String, String> attributes = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(spanAttributesProviderList)) {
 			for (SpanAttributesProvider spanAttributesProvider : spanAttributesProviderList) {
-				Map<String, String> additionalAttributes = spanAttributesProvider.getServerPreSpanAttributes(context);
+				Map<String, String> additionalAttributes = spanAttributesProvider.getServerFinallySpanAttributes(context);
 				if (CollectionUtils.isNotEmpty(additionalAttributes)) {
 					attributes.putAll(additionalAttributes);
 				}
