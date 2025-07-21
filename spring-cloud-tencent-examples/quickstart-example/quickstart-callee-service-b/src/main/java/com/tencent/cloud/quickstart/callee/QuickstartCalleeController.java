@@ -119,9 +119,9 @@ public class QuickstartCalleeController {
 	@GetMapping("/circuitBreak")
 	public ResponseEntity<String> circuitBreak() throws InterruptedException {
 		if (ifBadGateway) {
-			String result = String.format("Quickstart Callee Service [%s:%s] is called wrong.", ip, port);
+			String result = String.format("Quickstart Callee Service [%s:%s] is call failed.", ip, port);
 			LOG.info(result);
-			return new ResponseEntity<>("failed for call quickstart callee service. " + result, HttpStatus.BAD_GATEWAY);
+			return new ResponseEntity<>(result, HttpStatus.BAD_GATEWAY);
 		}
 		if (delay > 0) {
 			String result =  String.format("Quickstart Callee Service [%s:%s] is called after %sms.", ip, port, delay);
@@ -142,9 +142,9 @@ public class QuickstartCalleeController {
 	@GetMapping("/circuitBreak/wildcard/{uid}")
 	public ResponseEntity<String> circuitBreakWildcard(@PathVariable String uid) throws InterruptedException {
 		if (ifBadGateway) {
-			String result = String.format("Quickstart Callee Service uid %s [%s:%s] is called wrong.", uid, ip, port);
+			String result = String.format("Quickstart Callee Service uid %s [%s:%s] call failed.", uid, ip, port);
 			LOG.info(result);
-			return new ResponseEntity<>("failed for call quickstart callee service wildcard. " + result, HttpStatus.BAD_GATEWAY);
+			return new ResponseEntity<>(result, HttpStatus.BAD_GATEWAY);
 		}
 		if (delay > 0) {
 			String result =  String.format("Quickstart Callee Service uid %s [%s:%s] is called after %sms.", uid, ip, port, delay);
@@ -174,7 +174,7 @@ public class QuickstartCalleeController {
 	public ResponseEntity<String> setDelay(@RequestParam long param) {
 		this.delay = param;
 		if (param > 0) {
-			LOG.info("info is set to delay {}}ms.", param);
+			LOG.info("info is set to delay {}ms.", param);
 			return new ResponseEntity<>(String.format("info is set to delay %sms.", param), HttpStatus.OK);
 		}
 		if (param == 0) {
@@ -188,9 +188,9 @@ public class QuickstartCalleeController {
 	@GetMapping("/faultDetect")
 	public ResponseEntity<String> health() throws InterruptedException {
 		if (ifBadGateway) {
-			String result = String.format("Quickstart Callee Service [%s:%s] is detected wrong.", ip, port);
+			String result = String.format("Quickstart Callee Service [%s:%s] call failed", ip, port);
 			LOG.info(result);
-			return new ResponseEntity<>("failed for call quickstart callee service wildcard. " + result, HttpStatus.BAD_GATEWAY);
+			return new ResponseEntity<>(result, HttpStatus.BAD_GATEWAY);
 		}
 		if (delay > 0) {
 			Thread.sleep(delay);
