@@ -9,3 +9,4 @@
 - [fix: tsf 2024 related bugfixes](https://github.com/Tencent/spring-cloud-tencent/pull/1664)
 - [feat: support shortest response time lb and least connection lb](https://github.com/Tencent/spring-cloud-tencent/pull/1637)
 - [feat:support traffic mirroring.](https://github.com/Tencent/spring-cloud-tencent/pull/1647)
+- [feat: support custom quickstart circuitbreak delay time.](https://github.com/Tencent/spring-cloud-tencent/pull/1666)
