@@ -28,6 +28,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.plugin.gateway.context.Position;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.polaris.api.utils.ClassUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.TraceAttributes;
@@ -39,6 +40,7 @@ import com.tencent.tsf.gateway.core.http.HttpConnectionPoolUtil;
 import com.tencent.tsf.gateway.core.model.OAuthPlugin;
 import com.tencent.tsf.gateway.core.model.OAuthResult;
 import com.tencent.tsf.gateway.core.model.PluginPayload;
+import io.opentelemetry.context.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -196,7 +198,7 @@ public class OAuthGatewayPlugin implements IGatewayPlugin<OAuthPlugin> {
 				throw new TsfGatewayException(TsfGatewayError.GATEWAY_REQUEST_NOT_FOUND, "Unable to find instance for " + pluginInfo.getTokenAuthServiceName());
 			}
 
-			fillTracingContext(namespace, serviceName);
+			Object otScope = fillTracingContext(namespace, serviceName);
 
 			String newRequestUrl = uri.getScheme() + "://" + GATEWAY_WILDCARD_SERVICE_NAME + tokenAuthUrl;
 			URI newUri = new URI(newRequestUrl);
@@ -204,7 +206,12 @@ public class OAuthGatewayPlugin implements IGatewayPlugin<OAuthPlugin> {
 			// http://127.0.0.1:8080/group1/namespace1/Consumer-demo/echo-rest/1?user=1
 			URI requestUrl = this.reconstructURI(new OauthDelegatingServiceInstance(instance.getServer()), newUri);
 			logger.debug("LoadBalancerClientFilter url chosen: " + requestUrl);
-			return sendAuthRequestByHttpMethod(paramsMap, headerParamsMap, requestUrl.toASCIIString(), tokenAuthMethod, timeout);
+			String result = sendAuthRequestByHttpMethod(paramsMap, headerParamsMap, requestUrl.toASCIIString(), tokenAuthMethod, timeout);
+
+			if (ClassUtils.isClassPresent("io.opentelemetry.context.Scope") && otScope instanceof Scope) {
+				((Scope) otScope).close();
+			}
+			return result;
 		}
 		catch (Exception e) {
 			logger.error("MicroService {} Request Auth Server Error", tokenAuthMethod, e);
@@ -244,7 +251,7 @@ public class OAuthGatewayPlugin implements IGatewayPlugin<OAuthPlugin> {
 		}
 	}
 
-	void fillTracingContext(String namespace, String serviceName) {
+	Object fillTracingContext(String namespace, String serviceName) {
 
 		Map<String, String> attributes = new HashMap<>();
 		attributes.put("net.peer.service", serviceName);
@@ -256,6 +263,8 @@ public class OAuthGatewayPlugin implements IGatewayPlugin<OAuthPlugin> {
 
 		AssemblyAPI assemblyAPI = polarisSDKContextManager.getAssemblyAPI();
 		assemblyAPI.updateTraceAttributes(traceAttributes);
+
+		return traceAttributes.getOtScope();
 	}
 
 	class OauthDelegatingServiceInstance implements ServiceInstance {

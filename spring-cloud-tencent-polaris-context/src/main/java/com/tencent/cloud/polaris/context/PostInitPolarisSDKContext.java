@@ -40,7 +40,7 @@ public class PostInitPolarisSDKContext {
 		if (StringUtils.isNotBlank(region)) {
 			valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.REGION.name(), region);
 		}
-		if (StringUtils.isNotBlank(zone)) {
+		if (zone != null) {
 			valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.ZONE.name(), zone);
 		}
 		if (StringUtils.isNotBlank(campus)) {

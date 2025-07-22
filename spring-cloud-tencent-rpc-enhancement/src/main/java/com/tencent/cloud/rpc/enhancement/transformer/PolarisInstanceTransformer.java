@@ -23,6 +23,8 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.metadata.core.constant.TsfMetadataConstants;
 
 import org.springframework.cloud.client.ServiceInstance;
 
@@ -47,7 +49,16 @@ public class PolarisInstanceTransformer implements InstanceTransformer {
 			}
 
 			String namespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
-					MetadataConstant.POLARIS_TARGET_NAMESPACE, instance.getNamespace());
+					MetadataConstant.POLARIS_TARGET_NAMESPACE);
+
+			if (StringUtils.isBlank(namespace) && serviceInstance.getMetadata() != null &&
+					serviceInstance.getMetadata().containsKey(TsfMetadataConstants.TSF_NAMESPACE_ID)) {
+				namespace = serviceInstance.getMetadata().get(TsfMetadataConstants.TSF_NAMESPACE_ID);
+			}
+
+			if (StringUtils.isBlank(namespace)) {
+				namespace = instance.getNamespace();
+			}
 
 			instance.setNamespace(namespace);
 		}

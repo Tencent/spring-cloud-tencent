@@ -30,6 +30,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
@@ -83,7 +84,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
 
 
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(originExchange.getRequest().getHeaders())
@@ -137,6 +138,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 							enhancedPluginContext.setTargetServiceInstance(null, uri);
 						}
 					}
+					pluginRunner.run(EnhancedPluginType.Client.BEFORE_CALLING, enhancedPluginContext);
 				})
 				.doOnSuccess(v -> {
 					MetadataContext metadataContextOnSuccess = originExchange.getAttribute(

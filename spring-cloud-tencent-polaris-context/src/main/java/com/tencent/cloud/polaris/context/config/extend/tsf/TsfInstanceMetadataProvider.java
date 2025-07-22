@@ -68,7 +68,7 @@ public class TsfInstanceMetadataProvider implements InstanceMetadataProvider {
 			tsfMetadata.put(TsfMetadataConstants.TSF_REGION, tsfCoreProperties.getTsfRegion());
 		}
 
-		if (StringUtils.isNotBlank(tsfCoreProperties.getTsfZone())) {
+		if (tsfCoreProperties.getTsfZone() != null) {
 			tsfMetadata.put(TsfMetadataConstants.TSF_ZONE, tsfCoreProperties.getTsfZone());
 		}
 
