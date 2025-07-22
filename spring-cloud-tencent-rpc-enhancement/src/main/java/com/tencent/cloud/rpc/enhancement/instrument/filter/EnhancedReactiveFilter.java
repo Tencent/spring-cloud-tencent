@@ -26,6 +26,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import reactor.core.publisher.Mono;
 
 import org.springframework.core.Ordered;
@@ -48,7 +49,7 @@ public class EnhancedReactiveFilter implements WebFilter, Ordered {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(exchange.getRequest().getHeaders())

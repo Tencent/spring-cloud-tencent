@@ -44,7 +44,7 @@ public class TraceClientPreEnhancedPlugin implements EnhancedPlugin {
 
 	@Override
 	public EnhancedPluginType getType() {
-		return EnhancedPluginType.Client.PRE;
+		return EnhancedPluginType.Client.BEFORE_CALLING;
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,7 +57,7 @@ public class EnhancedServletFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		HttpHeaders requestHeaders = new HttpHeaders();
 		Enumeration<String> requestHeaderNames = request.getHeaderNames();

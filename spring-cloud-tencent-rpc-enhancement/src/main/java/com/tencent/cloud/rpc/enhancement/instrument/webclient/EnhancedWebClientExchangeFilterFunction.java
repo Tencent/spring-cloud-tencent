@@ -29,6 +29,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import reactor.core.publisher.Mono;
@@ -56,7 +57,7 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 
 	@Override
 	public Mono<ClientResponse> filter(ClientRequest originRequest, ExchangeFunction next) {
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
@@ -78,6 +79,7 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 		// Run post enhanced plugins.
 		try {
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.BEFORE_CALLING, enhancedPluginContext);
 		}
 		catch (CallAbortedException e) {
 			// Run finally enhanced plugins.

@@ -30,6 +30,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.metadata.core.MetadataObjectValue;
 import com.tencent.polaris.metadata.core.MetadataType;
@@ -44,17 +45,17 @@ import org.springframework.http.client.ClientHttpResponse;
 import static com.tencent.cloud.rpc.enhancement.instrument.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 
 /**
- * EnhancedRestTemplateInterceptor.
+ * Interceptor used for pre-plugin, post-plugin, exception-plugin, and final-plugin in RestTemplate.
  *
  * @author sean yu
  */
-public class EnhancedRestTemplateWrapInterceptor {
+public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 
 	private final EnhancedPluginRunner pluginRunner;
 
 	private final LoadBalancerClient delegate;
 
-	public EnhancedRestTemplateWrapInterceptor(EnhancedPluginRunner pluginRunner, LoadBalancerClient delegate) {
+	public EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(EnhancedPluginRunner pluginRunner, LoadBalancerClient delegate) {
 		this.pluginRunner = pluginRunner;
 		this.delegate = delegate;
 	}
@@ -63,7 +64,7 @@ public class EnhancedRestTemplateWrapInterceptor {
 	public <T> T intercept(HttpRequest httpRequest, String serviceId, ServiceInstance serviceInstance,
 			LoadBalancerRequest<T> loadBalancerRequest) throws IOException {
 
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		URI serviceUrl = httpRequest.getURI();
 		if (httpRequest instanceof ServiceRequestWrapper) {

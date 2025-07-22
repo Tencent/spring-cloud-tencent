@@ -34,6 +34,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import feign.Client;
@@ -66,7 +67,7 @@ public class EnhancedFeignClient implements Client {
 
 	@Override
 	public Response execute(Request request, Options options) throws IOException {
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		HttpHeaders requestHeaders = new HttpHeaders();
 		request.headers().forEach((s, strings) -> requestHeaders.addAll(s, new ArrayList<>(strings)));
@@ -104,6 +105,7 @@ public class EnhancedFeignClient implements Client {
 		try {
 			// Run pre enhanced plugins.
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.BEFORE_CALLING, enhancedPluginContext);
 			startMillis = System.currentTimeMillis();
 
 			Response response = delegate.execute(request, options);
