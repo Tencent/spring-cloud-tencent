@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -43,16 +44,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataRestTemplateInterceptor}.
+ * Test for {@link EnhancedRestTemplateInterceptor}.
  *
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
-		classes = EncodeTransferMedataRestTemplateInterceptorTest.TestApplication.class,
+		classes = EnhancedRestTemplateInterceptorTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml",
 				"spring.main.web-application-type = reactive"})
-public class EncodeTransferMedataRestTemplateInterceptorTest {
+public class EnhancedRestTemplateInterceptorTest {
 
 	@Autowired
 	private RestTemplate restTemplate;

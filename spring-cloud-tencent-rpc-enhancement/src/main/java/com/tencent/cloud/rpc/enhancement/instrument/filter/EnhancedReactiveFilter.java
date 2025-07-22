@@ -17,12 +17,16 @@
 
 package com.tencent.cloud.rpc.enhancement.instrument.filter;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import reactor.core.publisher.Mono;
 
 import org.springframework.core.Ordered;
@@ -45,7 +49,7 @@ public class EnhancedReactiveFilter implements WebFilter, Ordered {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(exchange.getRequest().getHeaders())
@@ -80,6 +84,10 @@ public class EnhancedReactiveFilter implements WebFilter, Ordered {
 					pluginRunner.run(EnhancedPluginType.Server.EXCEPTION, enhancedPluginContext);
 				})
 				.doFinally(v -> {
+					if (exchange.getAttributes().containsKey(MetadataConstant.HeaderName.METADATA_CONTEXT)) {
+						MetadataContextHolder.set((MetadataContext) exchange.getAttributes().get(
+								MetadataConstant.HeaderName.METADATA_CONTEXT));
+					}
 					// Run finally enhanced plugins.
 					pluginRunner.run(EnhancedPluginType.Server.FINALLY, enhancedPluginContext);
 				});

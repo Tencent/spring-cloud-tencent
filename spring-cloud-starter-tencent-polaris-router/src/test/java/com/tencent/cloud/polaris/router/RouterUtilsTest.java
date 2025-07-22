@@ -76,6 +76,8 @@ public class RouterUtilsTest {
 			mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 			Mockito.when(metadataContext.getContext(anyString(), anyString(), anyString()))
 					.thenReturn(testNamespaceAndService);
+			Mockito.when(metadataContext.getContext(anyString(), anyString()))
+					.thenReturn(testNamespaceAndService);
 
 			int instanceSize = 100;
 			int weight = 50;
