@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 
@@ -47,6 +49,15 @@ public class PolarisRateLimitProperties {
 	 * Max queuing time when using unirate.
 	 */
 	private long maxQueuingTime = 1000L;
+	private List<String> limiterAddresses;
+
+	List<String> getLimiterAddresses() {
+		return limiterAddresses;
+	}
+
+	void setLimiterAddresses(List<String> limiterAddresses) {
+		this.limiterAddresses = limiterAddresses;
+	}
 
 	public String getRejectRequestTips() {
 		return rejectRequestTips;

@@ -39,6 +39,8 @@ public class RateLimitConfigModifier implements PolarisConfigModifier {
 		// Update MaxQueuingTime.
 		configuration.getProvider().getRateLimit()
 				.setMaxQueuingTime(polarisRateLimitProperties.getMaxQueuingTime());
+		configuration.getProvider().getRateLimit()
+				.setLimiterAddresses(polarisRateLimitProperties.getLimiterAddresses());
 	}
 
 	@Override
