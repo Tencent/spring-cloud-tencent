@@ -113,6 +113,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		}
 		registration.customize();
 		MetadataContext.setLocalService(serviceId);
+		MetadataContext.setLocalNamespace(polarisDiscoveryProperties.getNamespace());
 
 		// Register instance.
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
