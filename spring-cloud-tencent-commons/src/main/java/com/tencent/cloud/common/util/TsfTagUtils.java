@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
@@ -114,6 +115,7 @@ public final class TsfTagUtils {
 
 		if (laneTag != null) {
 			tsfSystemTags.add(laneTag);
+			MetadataContextUtils.putMetadataObjectValue(ContextConstant.LANE_TAG, laneTag);
 		}
 
 		if (CollectionUtils.isNotEmpty(tsfUserTags)) {

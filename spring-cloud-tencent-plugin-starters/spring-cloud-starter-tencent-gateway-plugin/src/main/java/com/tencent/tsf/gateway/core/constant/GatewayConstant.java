@@ -74,6 +74,22 @@ public final class GatewayConstant {
 	 * Gateway 本地仓库的文件目录.
 	 */
 	public static final String GATEWAY_REPO_PREFIX = GATEWAY_REPO_ROOT + "/tsf/gateway/";
+	/**
+	 * NON_UNIT_TYPE.
+	 */
+	public static final String NON_UNIT_TYPE = "non-unit";
+	/**
+	 * NON_UNIT_TRANSFER_TYPE.
+	 */
+	public static final String NON_UNIT_TRANSFER_TYPE = "non-unit";
+	/**
+	 * UNIT_TYPE.
+	 */
+	public static final String UNIT_TYPE = "unit";
+	/**
+	 * UNIT_TRANSFER_TYPE.
+	 */
+	public static final String UNIT_TRANSFER_TYPE = "ms_unit_proxy";
 
 	private GatewayConstant() {
 

@@ -40,6 +40,14 @@ public final class ContextConstant {
 	 * Default registry heartbeat time interval: 5 (s).
 	 */
 	public static final Integer DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL = 5;
+	/**
+	 * ENHANCED_PLUGIN_CONTEXT.
+	 */
+	public static final String ENHANCED_PLUGIN_CONTEXT = "ENHANCED_PLUGIN_CONTEXT";
+	/**
+	 * LANE_TAG.
+	 */
+	public static final String LANE_TAG = "LANE_TAG";
 
 	private ContextConstant() {
 	}
@@ -59,6 +67,17 @@ public final class ContextConstant {
 		public static final String CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE = "CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE";
 
 		private CircuitBreaker() {
+
+		}
+	}
+
+	public static final class Trace {
+		/**
+		 * EXTRA_TRACE_ATTRIBUTES.
+		 */
+		public static final String EXTRA_TRACE_ATTRIBUTES = "EXTRA_TRACE_ATTRIBUTES";
+
+		private Trace() {
 
 		}
 	}
