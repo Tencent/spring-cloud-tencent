@@ -101,6 +101,9 @@
 		<!-- Spring Cloud -->
 		<spring.cloud.version>2021.0.9</spring.cloud.version>
 
+		<!-- Test -->
+		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
+
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.12</jacoco.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -152,6 +155,13 @@
 				<version>${spring.cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>uk.org.webcompere</groupId>
+				<artifactId>system-stubs-jupiter</artifactId>
+				<version>${system-stubs-jupiter.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
