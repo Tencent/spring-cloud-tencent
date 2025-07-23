@@ -13,3 +13,4 @@
 - [feat: support shortest response time lb and least connection lb](https://github.com/Tencent/spring-cloud-tencent/pull/1702)
 - [feat:support traffic mirroring.](https://github.com/Tencent/spring-cloud-tencent/pull/1703)
 - [feat: support custom quickstart circuitbreak delay time.](https://github.com/Tencent/spring-cloud-tencent/pull/1704)
+- [feat: add delay interface in tsf-example.](https://github.com/Tencent/spring-cloud-tencent/pull/1705)

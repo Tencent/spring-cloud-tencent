@@ -91,6 +91,15 @@ public class ConsumerController {
 	}
 
 
+	@RequestMapping(value = "/echo-rest/slow/{str}", method = RequestMethod.GET)
+	public String restSlowProvider(@PathVariable String str) {
+		try {
+			return restTemplate.getForObject("http://provider-demo/echo/slow/" + str, String.class);
+		}
+		catch (CallAbortedException callAbortedException) {
+			return callAbortedException.getMessage();
+		}
+	}
 	@RequestMapping(value = "/echo-rest-async/{str}", method = RequestMethod.GET)
 	public String restAsync(@PathVariable String str,
 			@RequestParam(required = false) String tagName,
