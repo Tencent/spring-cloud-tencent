@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -37,7 +39,7 @@ public class PolarisStatPropertiesTest {
 			.withPropertyValues("spring.cloud.polaris.stat.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.path=/xxx")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091,127.0.0.1:9092")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.namespace=test-namespace")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.service=test-service")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
@@ -52,7 +54,8 @@ public class PolarisStatPropertiesTest {
 			assertThat(polarisStatProperties.isEnabled()).isTrue();
 			assertThat(polarisStatProperties.getPath()).isEqualTo("/xxx");
 			assertThat(polarisStatProperties.isPushGatewayEnabled()).isTrue();
-			assertThat(polarisStatProperties.getPushGatewayAddress()).isEqualTo("127.0.0.1:9091");
+			assertThat(polarisStatProperties.getPushGatewayAddress().get(0)).isEqualTo("127.0.0.1:9091");
+			assertThat(polarisStatProperties.getPushGatewayAddress().get(1)).isEqualTo("127.0.0.1:9092");
 			assertThat(polarisStatProperties.getStatNamespace()).isEqualTo("test-namespace");
 			assertThat(polarisStatProperties.getStatService()).isEqualTo("test-service");
 			assertThat(polarisStatProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
@@ -68,8 +71,10 @@ public class PolarisStatPropertiesTest {
 		assertThat(polarisStatProperties.isPushGatewayEnabled()).isTrue();
 
 		// PushGatewayAddress
-		polarisStatProperties.setPushGatewayAddress("127.0.0.1:9091");
-		assertThat(polarisStatProperties.getPushGatewayAddress()).isEqualTo("127.0.0.1:9091");
+		List<String> pushGatewayAddress = List.of("127.0.0.1:9091", "127.0.0.1:9092");
+		polarisStatProperties.setPushGatewayAddress(pushGatewayAddress);
+		assertThat(polarisStatProperties.getPushGatewayAddress().get(0)).isEqualTo("127.0.0.1:9091");
+		assertThat(polarisStatProperties.getPushGatewayAddress().get(1)).isEqualTo("127.0.0.1:9092");
 
 		// PushGatewayPushInterval
 		polarisStatProperties.setPushGatewayPushInterval(1000L);
