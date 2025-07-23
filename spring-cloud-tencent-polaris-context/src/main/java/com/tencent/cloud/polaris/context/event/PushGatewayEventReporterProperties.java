@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.context.event;
 
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -35,7 +37,7 @@ public class PushGatewayEventReporterProperties {
 	/**
 	 * Address of pushgateway. For example: 1.2.3.4:9091.
 	 */
-	private String address;
+	private List<String> address;
 
 	/**
 	 * Queue size for push gateway event queue. Default is 1000.
@@ -65,11 +67,11 @@ public class PushGatewayEventReporterProperties {
 		this.enabled = enabled;
 	}
 
-	public String getAddress() {
+	public List<String> getAddress() {
 		return address;
 	}
 
-	public void setAddress(String address) {
+	public void setAddress(List<String> address) {
 		this.address = address;
 	}
 

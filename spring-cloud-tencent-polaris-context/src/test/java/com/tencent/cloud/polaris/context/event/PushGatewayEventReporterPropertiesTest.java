@@ -37,7 +37,7 @@ public class PushGatewayEventReporterPropertiesTest {
 	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.event.pushgateway.address=1.2.3.4:9091")
+			.withPropertyValues("spring.cloud.polaris.event.pushgateway.address=1.2.3.4:9091,1.2.3.5:9091")
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.eventQueueSize=123")
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.maxBatchSize=456")
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.namespace=test-namespace")
@@ -53,7 +53,8 @@ public class PushGatewayEventReporterPropertiesTest {
 		this.applicationContextRunner.run(context -> {
 			PushGatewayEventReporterProperties properties = context.getBean(PushGatewayEventReporterProperties.class);
 			assertThat(properties.isEnabled()).isTrue();
-			assertThat(properties.getAddress()).isEqualTo("1.2.3.4:9091");
+			assertThat(properties.getAddress().get(0)).isEqualTo("1.2.3.4:9091");
+			assertThat(properties.getAddress().get(1)).isEqualTo("1.2.3.5:9091");
 			assertThat(properties.getEventQueueSize()).isEqualTo(123);
 			assertThat(properties.getMaxBatchSize()).isEqualTo(456);
 			assertThat(properties.getNamespace()).isEqualTo("test-namespace");

@@ -51,7 +51,7 @@ public class PolarisStatProperties {
 	 * PushGateway address.
 	 */
 	@Value("${spring.cloud.polaris.stat.pushgateway.address:}")
-	private String pushGatewayAddress;
+	private List<String> pushGatewayAddress;
 
 	/**
 	 * PushGateway namespace.
@@ -107,11 +107,11 @@ public class PolarisStatProperties {
 		this.pushGatewayEnabled = pushGatewayEnabled;
 	}
 
-	public String getPushGatewayAddress() {
+	public List<String> getPushGatewayAddress() {
 		return pushGatewayAddress;
 	}
 
-	public void setPushGatewayAddress(String pushGatewayAddress) {
+	public void setPushGatewayAddress(List<String> pushGatewayAddress) {
 		this.pushGatewayAddress = pushGatewayAddress;
 	}
 
