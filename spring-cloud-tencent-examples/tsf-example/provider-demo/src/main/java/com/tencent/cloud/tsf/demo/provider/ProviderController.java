@@ -55,6 +55,8 @@ public class ProviderController {
 	@Autowired
 	private ProviderNameConfig providerNameConfig;
 
+	private int delay = 1000;
+
 	// 获取本机ip
 	public static String getInet4Address() {
 		Enumeration<NetworkInterface> nis;
@@ -84,6 +86,14 @@ public class ProviderController {
 		String echoHello = "say hello";
 		LOG.info(echoHello);
 		return echoHello;
+	}
+
+	@RequestMapping(value = "/setDelay", method = RequestMethod.GET)
+	public String setSleepTime(@RequestParam("delay") int delay) {
+		this.delay = delay;
+		String result = "set delay time success, delay: " + delay;
+		LOG.info(result);
+		return result;
 	}
 
 	@RequestMapping(value = "/echo/{param}", method = RequestMethod.GET)
@@ -133,7 +143,7 @@ public class ProviderController {
 	 */
 	@RequestMapping(value = "/echo/slow/{param}", method = RequestMethod.GET)
 	public String echoSlow(@PathVariable String param, @RequestParam(required = false) Integer delay) throws InterruptedException {
-		int sleepTime = delay == null ? 1000 : delay;
+		int sleepTime = delay == null ? this.delay : delay;
 		LOG.info("slow request param: [" + param + "], Start sleep: [" + sleepTime + "]ms");
 		Thread.sleep(sleepTime);
 		LOG.info("slow request param: [" + param + "], End sleep: [" + sleepTime + "]ms");
