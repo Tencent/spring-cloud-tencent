@@ -6,3 +6,4 @@
 - [fix: fix ConfigChangeListener and unit test](https://github.com/Tencent/spring-cloud-tencent/pull/1657)
 - [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1663)
 - [fix: tsf 2024 related bugfixes](https://github.com/Tencent/spring-cloud-tencent/pull/1664)
+- [fix: remove conflict dependencies management](https://github.com/Tencent/spring-cloud-tencent/pull/1669)
