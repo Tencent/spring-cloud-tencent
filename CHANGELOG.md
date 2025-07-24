@@ -10,3 +10,4 @@
 - [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1661)
 - [fix: tsf 2024 related bugfixes](https://github.com/Tencent/spring-cloud-tencent/pull/1682)
 - [fix: remove conflict dependencies management](https://github.com/Tencent/spring-cloud-tencent/pull/1683)
+- [refactor: optimize log](https://github.com/Tencent/spring-cloud-tencent/pull/1684)
