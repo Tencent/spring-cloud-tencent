@@ -15,30 +15,18 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.tsf.unit.annotation;
+package com.tencent.cloud.common.util;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.tencent.polaris.api.utils.ClassUtils;
 
-/**
- * Empty annotation. Compatible with old versions TSF SDK.
- *
- * @author Haotian Zhang
- */
-@Deprecated(since = "2.0.0.0")
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Documented
-public @interface TsfUnitCall {
+public final class EnvironmentUtils {
 
-	// 单元化下的业务系统名
-	String systemName() default "";
+	private final static boolean IS_GATEWAY = ClassUtils.isClassPresent("org.springframework.cloud.gateway.filter.GlobalFilter");
 
-	// 单元化下的是否调用GDU服务
-	boolean global() default false;
+	private EnvironmentUtils() {
+	}
+
+	public static boolean isGateway() {
+		return IS_GATEWAY;
+	}
 }

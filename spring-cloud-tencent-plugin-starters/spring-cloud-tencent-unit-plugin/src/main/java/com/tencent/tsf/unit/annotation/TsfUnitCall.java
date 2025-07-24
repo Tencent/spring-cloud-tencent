@@ -24,15 +24,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Empty annotation. Compatible with old versions TSF SDK.
- *
- * @author Haotian Zhang
- */
-@Deprecated(since = "2.0.0.0")
-@Target(ElementType.PARAMETER)
+
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface TsfUnitCustomerIdentifier {
+public @interface TsfUnitCall {
+
+	// 单元化下的业务系统名
+	String systemName() default "";
+
+	// 单元化下的是否调用GDU服务
+	boolean global() default false;
 }
