@@ -15,66 +15,61 @@ public class PolarisStatPushGatewayProperties {
 	/**
 	 * If state pushGateway reporter enabled.
 	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.enabled:#{false}}")
-	private boolean pushGatewayEnabled = false;
+	private boolean enabled = false;
 
 	/**
 	 * PushGateway namespace.
 	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.namespace:Polaris}")
-	private String statNamespace = "Polaris";
+	private String namespace = "Polaris";
 
 	/**
 	 * PushGateway service.
 	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.service:polaris.pushgateway}")
-	private String statService = "polaris.pushgateway";
+	private String service = "polaris.pushgateway";
 
 	/**
 	 * Push metrics interval.
 	 * unit: milliseconds default 60s.
 	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.push-interval:#{60000}}")
-	private Long pushGatewayPushInterval = 60 * 1000L;
+	private Long pushInterval = 60 * 1000L;
 
 	/**
 	 * If push gateway gzip open. default false.
 	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.open-gzip:#{false}}")
 	private Boolean openGzip = false;
 
 	private List<String> address;
 
-	boolean isPushGatewayEnabled() {
-		return pushGatewayEnabled;
+	boolean isEnabled() {
+		return enabled;
 	}
 
-	void setPushGatewayEnabled(boolean pushGatewayEnabled) {
-		this.pushGatewayEnabled = pushGatewayEnabled;
+	void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
-	String getStatNamespace() {
-		return statNamespace;
+	String getNamespace() {
+		return namespace;
 	}
 
-	void setStatNamespace(String statNamespace) {
-		this.statNamespace = statNamespace;
+	void setNamespace(String namespace) {
+		this.namespace = namespace;
 	}
 
-	String getStatService() {
-		return statService;
+	String getService() {
+		return service;
 	}
 
-	void setStatService(String statService) {
-		this.statService = statService;
+	void setService(String service) {
+		this.service = service;
 	}
 
-	Long getPushGatewayPushInterval() {
-		return pushGatewayPushInterval;
+	Long getPushInterval() {
+		return pushInterval;
 	}
 
-	void setPushGatewayPushInterval(Long pushGatewayPushInterval) {
-		this.pushGatewayPushInterval = pushGatewayPushInterval;
+	void setPushInterval(Long pushInterval) {
+		this.pushInterval = pushInterval;
 	}
 
 	Boolean getOpenGzip() {
@@ -91,5 +86,17 @@ public class PolarisStatPushGatewayProperties {
 
 	void setAddress(List<String> address) {
 		this.address = address;
+	}
+
+	@Override
+	public String toString() {
+		return "PolarisStatPushGatewayProperties{" +
+				"enabled=" + enabled +
+				", namespace='" + namespace + '\'' +
+				", service='" + service + '\'' +
+				", pushInterval=" + pushInterval +
+				", openGzip=" + openGzip +
+				", address=" + address +
+				'}';
 	}
 }

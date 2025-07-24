@@ -51,13 +51,13 @@ public class StatConfigModifier implements PolarisConfigModifier {
 		prometheusHandlerConfig.setPathRegexList(polarisStatProperties.getPathRegexList());
 		// Set prometheus plugin.
 		if (polarisStatProperties.isEnabled()) {
-			if (polarisStatPushGatewayProperties.isPushGatewayEnabled()) {
+			if (polarisStatPushGatewayProperties.isEnabled()) {
 				// push gateway
 				prometheusHandlerConfig.setType("push");
 				prometheusHandlerConfig.setAddress(polarisStatPushGatewayProperties.getAddress());
-				prometheusHandlerConfig.setNamespace(polarisStatPushGatewayProperties.getStatNamespace());
-				prometheusHandlerConfig.setService(polarisStatPushGatewayProperties.getStatService());
-				prometheusHandlerConfig.setPushInterval(polarisStatPushGatewayProperties.getPushGatewayPushInterval());
+				prometheusHandlerConfig.setNamespace(polarisStatPushGatewayProperties.getNamespace());
+				prometheusHandlerConfig.setService(polarisStatPushGatewayProperties.getService());
+				prometheusHandlerConfig.setPushInterval(polarisStatPushGatewayProperties.getPushInterval());
 				prometheusHandlerConfig.setOpenGzip(polarisStatPushGatewayProperties.getOpenGzip());
 			}
 			else {

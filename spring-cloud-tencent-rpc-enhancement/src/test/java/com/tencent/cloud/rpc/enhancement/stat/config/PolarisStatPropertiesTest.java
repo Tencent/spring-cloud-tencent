@@ -53,12 +53,12 @@ public class PolarisStatPropertiesTest {
 			assertThat(polarisStatProperties).isNotNull();
 			assertThat(polarisStatProperties.isEnabled()).isTrue();
 			assertThat(polarisStatProperties.getPath()).isEqualTo("/xxx");
-			assertThat(polarisStatPushGatewayProperties.isPushGatewayEnabled()).isTrue();
+			assertThat(polarisStatPushGatewayProperties.isEnabled()).isTrue();
 			assertThat(polarisStatPushGatewayProperties.getAddress().get(0)).isEqualTo("127.0.0.1:9091");
 			assertThat(polarisStatPushGatewayProperties.getAddress().get(1)).isEqualTo("127.0.0.1:9092");
-			assertThat(polarisStatPushGatewayProperties.getStatNamespace()).isEqualTo("test-namespace");
-			assertThat(polarisStatPushGatewayProperties.getStatService()).isEqualTo("test-service");
-			assertThat(polarisStatPushGatewayProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
+			assertThat(polarisStatPushGatewayProperties.getNamespace()).isEqualTo("test-namespace");
+			assertThat(polarisStatPushGatewayProperties.getService()).isEqualTo("test-service");
+			assertThat(polarisStatPushGatewayProperties.getPushInterval().toString()).isEqualTo("1000");
 		});
 	}
 
@@ -67,8 +67,8 @@ public class PolarisStatPropertiesTest {
 		PolarisStatProperties polarisStatProperties = new PolarisStatProperties();
 		PolarisStatPushGatewayProperties polarisStatPushGatewayProperties = new PolarisStatPushGatewayProperties();
 		// PushGatewayEnabled
-		polarisStatPushGatewayProperties.setPushGatewayEnabled(true);
-		assertThat(polarisStatPushGatewayProperties.isPushGatewayEnabled()).isTrue();
+		polarisStatPushGatewayProperties.setEnabled(true);
+		assertThat(polarisStatPushGatewayProperties.isEnabled()).isTrue();
 
 		// PushGatewayAddress
 		List<String> pushGatewayAddress = List.of("127.0.0.1:9091", "127.0.0.1:9092");
@@ -77,7 +77,7 @@ public class PolarisStatPropertiesTest {
 		assertThat(polarisStatPushGatewayProperties.getAddress().get(1)).isEqualTo("127.0.0.1:9092");
 
 		// PushGatewayPushInterval
-		polarisStatPushGatewayProperties.setPushGatewayPushInterval(1000L);
-		assertThat(polarisStatPushGatewayProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
+		polarisStatPushGatewayProperties.setPushInterval(1000L);
+		assertThat(polarisStatPushGatewayProperties.getPushInterval().toString()).isEqualTo("1000");
 	}
 }
