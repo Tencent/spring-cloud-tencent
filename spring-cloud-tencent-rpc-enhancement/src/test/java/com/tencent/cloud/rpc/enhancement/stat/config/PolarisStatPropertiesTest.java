@@ -39,7 +39,7 @@ public class PolarisStatPropertiesTest {
 			.withPropertyValues("spring.cloud.polaris.stat.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.path=/xxx")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091,127.0.0.1:9092")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091, 127.0.0.1:9092")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.namespace=test-namespace")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.service=test-service")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
@@ -49,35 +49,35 @@ public class PolarisStatPropertiesTest {
 	public void testDefaultInitialization() {
 		contextRunner.run(context -> {
 			PolarisStatProperties polarisStatProperties = context.getBean(PolarisStatProperties.class);
-
+			PolarisStatPushGatewayProperties polarisStatPushGatewayProperties = context.getBean(PolarisStatPushGatewayProperties.class);
 			assertThat(polarisStatProperties).isNotNull();
 			assertThat(polarisStatProperties.isEnabled()).isTrue();
 			assertThat(polarisStatProperties.getPath()).isEqualTo("/xxx");
-			assertThat(polarisStatProperties.isPushGatewayEnabled()).isTrue();
-			assertThat(polarisStatProperties.getPushGatewayAddress().get(0)).isEqualTo("127.0.0.1:9091");
-			assertThat(polarisStatProperties.getPushGatewayAddress().get(1)).isEqualTo("127.0.0.1:9092");
-			assertThat(polarisStatProperties.getStatNamespace()).isEqualTo("test-namespace");
-			assertThat(polarisStatProperties.getStatService()).isEqualTo("test-service");
-			assertThat(polarisStatProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
+			assertThat(polarisStatPushGatewayProperties.isPushGatewayEnabled()).isTrue();
+			assertThat(polarisStatPushGatewayProperties.getAddress().get(0)).isEqualTo("127.0.0.1:9091");
+			assertThat(polarisStatPushGatewayProperties.getAddress().get(1)).isEqualTo("127.0.0.1:9092");
+			assertThat(polarisStatPushGatewayProperties.getStatNamespace()).isEqualTo("test-namespace");
+			assertThat(polarisStatPushGatewayProperties.getStatService()).isEqualTo("test-service");
+			assertThat(polarisStatPushGatewayProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
 		});
 	}
 
 	@Test
 	void testGetAndSet() {
 		PolarisStatProperties polarisStatProperties = new PolarisStatProperties();
-
+		PolarisStatPushGatewayProperties polarisStatPushGatewayProperties = new PolarisStatPushGatewayProperties();
 		// PushGatewayEnabled
-		polarisStatProperties.setPushGatewayEnabled(true);
-		assertThat(polarisStatProperties.isPushGatewayEnabled()).isTrue();
+		polarisStatPushGatewayProperties.setPushGatewayEnabled(true);
+		assertThat(polarisStatPushGatewayProperties.isPushGatewayEnabled()).isTrue();
 
 		// PushGatewayAddress
 		List<String> pushGatewayAddress = List.of("127.0.0.1:9091", "127.0.0.1:9092");
-		polarisStatProperties.setPushGatewayAddress(pushGatewayAddress);
-		assertThat(polarisStatProperties.getPushGatewayAddress().get(0)).isEqualTo("127.0.0.1:9091");
-		assertThat(polarisStatProperties.getPushGatewayAddress().get(1)).isEqualTo("127.0.0.1:9092");
+		polarisStatPushGatewayProperties.setAddress(pushGatewayAddress);
+		assertThat(polarisStatPushGatewayProperties.getAddress().get(0)).isEqualTo("127.0.0.1:9091");
+		assertThat(polarisStatPushGatewayProperties.getAddress().get(1)).isEqualTo("127.0.0.1:9092");
 
 		// PushGatewayPushInterval
-		polarisStatProperties.setPushGatewayPushInterval(1000L);
-		assertThat(polarisStatProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
+		polarisStatPushGatewayProperties.setPushGatewayPushInterval(1000L);
+		assertThat(polarisStatPushGatewayProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
 	}
 }

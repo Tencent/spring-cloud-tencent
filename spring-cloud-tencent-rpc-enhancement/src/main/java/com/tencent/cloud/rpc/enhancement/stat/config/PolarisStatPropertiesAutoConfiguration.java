@@ -31,12 +31,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
-@EnableConfigurationProperties(PolarisStatProperties.class)
+@EnableConfigurationProperties({PolarisStatProperties.class, PolarisStatPushGatewayProperties.class})
 public class PolarisStatPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StatConfigModifier statReporterConfigModifier(PolarisStatProperties polarisStatProperties) {
-		return new StatConfigModifier(polarisStatProperties);
+	public StatConfigModifier statReporterConfigModifier(PolarisStatProperties polarisStatProperties, PolarisStatPushGatewayProperties polarisStatPushGatewayProperties) {
+		return new StatConfigModifier(polarisStatProperties, polarisStatPushGatewayProperties);
 	}
 }

@@ -55,7 +55,7 @@
     },
     {
       "name": "spring.cloud.polaris.stat.pushgateway.address",
-      "type": "java.lang.String",
+      "type": "java.util.List<java.lang.String>",
       "description": "PushGateway address.",
       "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties"
     },

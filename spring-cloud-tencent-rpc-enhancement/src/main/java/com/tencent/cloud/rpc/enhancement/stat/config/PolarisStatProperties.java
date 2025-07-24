@@ -42,43 +42,6 @@ public class PolarisStatProperties {
 	private String path = "/metrics";
 
 	/**
-	 * If state pushGateway reporter enabled.
-	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.enabled:#{false}}")
-	private boolean pushGatewayEnabled = false;
-
-	/**
-	 * PushGateway address.
-	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.address:}")
-	private List<String> pushGatewayAddress;
-
-	/**
-	 * PushGateway namespace.
-	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.namespace:Polaris}")
-	private String statNamespace = "Polaris";
-
-	/**
-	 * PushGateway service.
-	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.service:polaris.pushgateway}")
-	private String statService = "polaris.pushgateway";
-
-	/**
-	 * Push metrics interval.
-	 * unit: milliseconds default 60s.
-	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.push-interval:#{60000}}")
-	private Long pushGatewayPushInterval = 60 * 1000L;
-
-	/**
-	 * If push gateway gzip open. default false.
-	 */
-	@Value("${spring.cloud.polaris.stat.pushgateway.open-gzip:#{false}}")
-	private Boolean openGzip = false;
-
-	/**
 	 * The path regex list for stat for aggregation.
 	 */
 	private List<String> pathRegexList = new ArrayList<>();
@@ -99,53 +62,6 @@ public class PolarisStatProperties {
 		this.path = path;
 	}
 
-	public boolean isPushGatewayEnabled() {
-		return pushGatewayEnabled;
-	}
-
-	public void setPushGatewayEnabled(boolean pushGatewayEnabled) {
-		this.pushGatewayEnabled = pushGatewayEnabled;
-	}
-
-	public List<String> getPushGatewayAddress() {
-		return pushGatewayAddress;
-	}
-
-	public void setPushGatewayAddress(List<String> pushGatewayAddress) {
-		this.pushGatewayAddress = pushGatewayAddress;
-	}
-
-	public String getStatNamespace() {
-		return statNamespace;
-	}
-
-	public void setStatNamespace(String statNamespace) {
-		this.statNamespace = statNamespace;
-	}
-
-	public String getStatService() {
-		return statService;
-	}
-
-	public void setStatService(String statService) {
-		this.statService = statService;
-	}
-
-	public Long getPushGatewayPushInterval() {
-		return pushGatewayPushInterval;
-	}
-
-	public void setPushGatewayPushInterval(Long pushGatewayPushInterval) {
-		this.pushGatewayPushInterval = pushGatewayPushInterval;
-	}
-
-	public Boolean getOpenGzip() {
-		return openGzip;
-	}
-
-	public void setOpenGzip(Boolean openGzip) {
-		this.openGzip = openGzip;
-	}
 
 	public List<String> getPathRegexList() {
 		return pathRegexList;
@@ -160,12 +76,6 @@ public class PolarisStatProperties {
 		return "PolarisStatProperties{" +
 				"enabled=" + enabled +
 				", path='" + path + '\'' +
-				", pushGatewayEnabled=" + pushGatewayEnabled +
-				", pushGatewayAddress='" + pushGatewayAddress + '\'' +
-				", statNamespace='" + statNamespace + '\'' +
-				", statService='" + statService + '\'' +
-				", pushGatewayPushInterval=" + pushGatewayPushInterval +
-				", openGzip=" + openGzip +
 				", pathRegexList=" + pathRegexList +
 				'}';
 	}

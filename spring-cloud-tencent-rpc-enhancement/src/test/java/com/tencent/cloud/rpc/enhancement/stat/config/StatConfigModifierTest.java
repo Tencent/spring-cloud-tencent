@@ -52,7 +52,7 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091, 127.0.0.1:9092")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.open-gzip=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.namespace=test-namespace")
@@ -92,7 +92,8 @@ public class StatConfigModifierTest {
 					.getGlobal().getStatReporter()
 					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
 			assertThat(prometheusHandlerConfig.getType()).isEqualTo("push");
-			assertThat(prometheusHandlerConfig.getAddress()).isEqualTo("127.0.0.1:9091");
+			assertThat(prometheusHandlerConfig.getAddress().get(0)).isEqualTo("127.0.0.1:9091");
+			assertThat(prometheusHandlerConfig.getAddress().get(1)).isEqualTo("127.0.0.1:9092");
 			assertThat(prometheusHandlerConfig.getPushInterval()).isEqualTo(1000);
 			assertThat(prometheusHandlerConfig.isOpenGzip()).isTrue();
 			assertThat(prometheusHandlerConfig.getNamespace()).isEqualTo("test-namespace");

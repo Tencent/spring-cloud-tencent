@@ -34,8 +34,11 @@ public class StatConfigModifier implements PolarisConfigModifier {
 
 	private final PolarisStatProperties polarisStatProperties;
 
-	public StatConfigModifier(PolarisStatProperties polarisStatProperties) {
+	private final PolarisStatPushGatewayProperties polarisStatPushGatewayProperties;
+
+	public StatConfigModifier(PolarisStatProperties polarisStatProperties, PolarisStatPushGatewayProperties polarisStatPushGatewayProperties) {
 		this.polarisStatProperties = polarisStatProperties;
+		this.polarisStatPushGatewayProperties = polarisStatPushGatewayProperties;
 	}
 
 	@Override
@@ -48,14 +51,14 @@ public class StatConfigModifier implements PolarisConfigModifier {
 		prometheusHandlerConfig.setPathRegexList(polarisStatProperties.getPathRegexList());
 		// Set prometheus plugin.
 		if (polarisStatProperties.isEnabled()) {
-			if (polarisStatProperties.isPushGatewayEnabled()) {
+			if (polarisStatPushGatewayProperties.isPushGatewayEnabled()) {
 				// push gateway
 				prometheusHandlerConfig.setType("push");
-				prometheusHandlerConfig.setAddress(polarisStatProperties.getPushGatewayAddress());
-				prometheusHandlerConfig.setNamespace(polarisStatProperties.getStatNamespace());
-				prometheusHandlerConfig.setService(polarisStatProperties.getStatService());
-				prometheusHandlerConfig.setPushInterval(polarisStatProperties.getPushGatewayPushInterval());
-				prometheusHandlerConfig.setOpenGzip(polarisStatProperties.getOpenGzip());
+				prometheusHandlerConfig.setAddress(polarisStatPushGatewayProperties.getAddress());
+				prometheusHandlerConfig.setNamespace(polarisStatPushGatewayProperties.getStatNamespace());
+				prometheusHandlerConfig.setService(polarisStatPushGatewayProperties.getStatService());
+				prometheusHandlerConfig.setPushInterval(polarisStatPushGatewayProperties.getPushGatewayPushInterval());
+				prometheusHandlerConfig.setOpenGzip(polarisStatPushGatewayProperties.getOpenGzip());
 			}
 			else {
 				// pull metrics
