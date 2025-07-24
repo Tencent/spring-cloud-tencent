@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link PolarisStatProperties}.
+ * Test for {@link PolarisStatProperties} and {@link PolarisStatPushGatewayProperties}.
  *
  * @author Haotian Zhang
  */
