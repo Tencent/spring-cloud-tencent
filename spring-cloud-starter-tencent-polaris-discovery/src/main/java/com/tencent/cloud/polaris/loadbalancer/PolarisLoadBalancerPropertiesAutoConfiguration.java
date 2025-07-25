@@ -33,6 +33,11 @@ import org.springframework.context.annotation.Configuration;
 public class PolarisLoadBalancerPropertiesAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
+	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
+		return new PolarisLoadBalancerProperties();
+	}
+	@Bean
+	@ConditionalOnMissingBean
 	public PolarisShortestResponseTimeLoadBalancerConfigModifier polarisShortestResponseTimeLoadBalancerConfigModifier(PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
 		return new PolarisShortestResponseTimeLoadBalancerConfigModifier(polarisLoadBalancerProperties.shortestResponseTime);
 	}
