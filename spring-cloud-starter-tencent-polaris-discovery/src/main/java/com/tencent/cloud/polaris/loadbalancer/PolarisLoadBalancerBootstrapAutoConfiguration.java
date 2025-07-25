@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Import;
  * @author Yuwei Fu
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
 @Import(PolarisLoadBalancerAutoConfiguration.class)
 public class PolarisLoadBalancerBootstrapAutoConfiguration {
 
