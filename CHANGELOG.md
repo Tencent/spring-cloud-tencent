@@ -13,3 +13,4 @@
 - [feat:support traffic mirroring.](https://github.com/Tencent/spring-cloud-tencent/pull/1647)
 - [feat: support custom quickstart circuitbreak delay time.](https://github.com/Tencent/spring-cloud-tencent/pull/1666)
 - [feat: add delay interface in tsf-example.](https://github.com/Tencent/spring-cloud-tencent/pull/1668)
+- [fix: fix lb configuration on bootstrap step.](https://github.com/Tencent/spring-cloud-tencent/issues/1673)
