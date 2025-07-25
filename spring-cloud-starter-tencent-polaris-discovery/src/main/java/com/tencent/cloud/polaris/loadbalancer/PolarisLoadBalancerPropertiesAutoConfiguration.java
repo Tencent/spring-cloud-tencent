@@ -17,9 +17,8 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisEnabled
+@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
 public class PolarisLoadBalancerPropertiesAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
