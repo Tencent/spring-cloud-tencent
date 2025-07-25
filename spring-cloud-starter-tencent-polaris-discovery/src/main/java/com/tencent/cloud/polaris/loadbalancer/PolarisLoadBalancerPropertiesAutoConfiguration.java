@@ -17,13 +17,9 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
-import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
-import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -32,11 +28,16 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnDiscoveryEnabled
-@ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
-@AutoConfigureAfter(LoadBalancerAutoConfiguration.class)
-@LoadBalancerClients(defaultConfiguration = PolarisLoadBalancerClientConfiguration.class)
-public class PolarisLoadBalancerAutoConfiguration {
-
+public class PolarisLoadBalancerPropertiesAutoConfiguration {
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
+		return new PolarisLoadBalancerProperties();
+	}
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisShortestResponseTimeLoadBalancerConfigModifier polarisShortestResponseTimeLoadBalancerConfigModifier(PolarisLoadBalancerProperties polarisLoadBalancerProperties) {
+		return new PolarisShortestResponseTimeLoadBalancerConfigModifier(polarisLoadBalancerProperties.shortestResponseTime);
+	}
 }
