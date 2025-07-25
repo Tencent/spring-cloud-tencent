@@ -23,9 +23,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * Common configuration of discovery.
+ * Common configuration of loadbalancer.
  *
- * @author Haotian Zhang
+ * @author Yuwei Fu
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
