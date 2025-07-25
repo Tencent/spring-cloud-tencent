@@ -32,7 +32,7 @@ public class TrafficMirroringPropertiesTest {
 		TrafficMirroringProperties properties = new TrafficMirroringProperties();
 
 		assertThat(properties.isEnabled()).isTrue();
-		assertThat(properties.getRequestPoolSize()).isEqualTo(4);
+		assertThat(properties.getRequestPoolSize()).isEqualTo(100);
 		assertThat(properties.getRequestConnectionTimeout()).isEqualTo(5000L);
 	}
 
