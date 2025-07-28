@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
@@ -130,17 +131,48 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
 
-			// heartbeatEnabled and healthCheckUrl
-			if (!polarisDiscoveryProperties.getHeartbeatEnabled()
-				|| StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
-				// Do not enable heartbeat or configure healthCheckURL
+			if (!polarisDiscoveryProperties.getHeartbeatEnabled()) {
+				// Heartbeat is disabled
 				instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 				LOGGER.info("Registered instance without heartbeat.");
 			} else {
-				// Enable heartbeat and configure healthCheckURL
+				// Heartbeat is enabled
 				instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 				instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
 				LOGGER.info("Registered instance with heartbeat enabled.");
+
+				// Heartbeat thread always starts, health check only affects heartbeat content
+				String healthCheckUrl = polarisDiscoveryProperties.getHealthCheckUrl();
+				ScheduledExecutorService heartbeatExecutor = Executors.newSingleThreadScheduledExecutor();
+				heartbeatExecutor.scheduleWithFixedDelay(() -> {
+					try {
+						boolean canSendHeartbeat = true;
+						if (StringUtils.isNotBlank(healthCheckUrl)) {
+							Map<String, String> headers = new HashMap<>(1);
+							headers.put(HttpHeaders.USER_AGENT, "polaris");
+							canSendHeartbeat = OkHttpUtil.checkUrl(
+								instanceRegisterRequest.getHost(),
+								instanceRegisterRequest.getPort(),
+								healthCheckUrl,
+								headers
+							);
+						}
+						if (!canSendHeartbeat) {
+							LOGGER.warn("Health check failed, skip heartbeat this round. health check endpoint = {}", healthCheckUrl);
+							return;
+						}
+						InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
+						BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
+						heartbeatRequest.setInstanceID(instanceRegisterResponse.getInstanceId());
+						providerClient.heartbeat(heartbeatRequest);
+						LOGGER.debug("Polaris heartbeat is sent successfully.");
+					} catch (Exception e) {
+						LOGGER.error("Polaris heartbeat runtime error", e);
+					}
+				},
+				polarisDiscoveryProperties.getHeartbeatInterval(),
+				polarisDiscoveryProperties.getHeartbeatInterval(),
+				TimeUnit.SECONDS);
 			}
 			
 			registration.setInstanceId(instanceRegisterResponse.getInstanceId());

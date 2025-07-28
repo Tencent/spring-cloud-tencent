@@ -13,8 +13,9 @@ spring:
       discovery:
         enabled: true
         register: true
-        heartbeat:
-          enabled: true
+        heartbeat-enabled: false
+        heartbeat-interval: 5
+        health-check-url: /actuator/health
       contract:
         exposure: true
         report:
