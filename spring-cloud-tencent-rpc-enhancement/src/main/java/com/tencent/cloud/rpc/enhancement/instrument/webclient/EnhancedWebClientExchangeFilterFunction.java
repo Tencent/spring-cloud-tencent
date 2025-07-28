@@ -32,6 +32,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
+import com.tencent.polaris.fault.client.exception.FaultInjectionException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.client.ServiceInstance;
@@ -76,6 +77,7 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 		enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
 				.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), originRequest.url());
 
+		long startTime = System.currentTimeMillis();
 		// Run post enhanced plugins.
 		try {
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
@@ -96,9 +98,42 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 			}
 			return Mono.just(responseBuilder.build());
 		}
+		catch (FaultInjectionException faultInjectionException) {
+			enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
+			if (faultInjectionException.getFallbackInfo() != null) {
+				HttpStatus httpStatus = HttpStatus.resolve(faultInjectionException.getFallbackInfo().getCode());
+				ClientResponse.Builder responseBuilder = ClientResponse.create(httpStatus != null ? httpStatus : HttpStatus.INTERNAL_SERVER_ERROR)
+						.body(Optional.of(faultInjectionException.getFallbackInfo().getBody()).orElse(""));
+				if (CollectionUtils.isNotEmpty(faultInjectionException.getFallbackInfo().getHeaders())) {
+					faultInjectionException.getFallbackInfo().getHeaders().forEach(responseBuilder::header);
+				}
+				ClientResponse response = responseBuilder.build();
+
+				EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
+						.httpStatus(response.statusCode().value())
+						.httpHeaders(response.headers().asHttpHeaders())
+						.build();
+				enhancedPluginContext.setResponse(enhancedResponseContext);
+
+				// Run post enhanced plugins.
+				pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+
+				pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+
+				return Mono.just(response);
+			}
+			else {
+				enhancedPluginContext.setThrowable(faultInjectionException);
+
+				// Run exception enhanced plugins.
+				pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
+
+				pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+				throw faultInjectionException;
+			}
+		}
 		// request may be changed by plugin
 		ClientRequest request = (ClientRequest) enhancedPluginContext.getOriginRequest();
-		long startTime = System.currentTimeMillis();
 		return next.exchange(request)
 				.doOnSuccess(response -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);

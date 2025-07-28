@@ -23,6 +23,7 @@ import java.util.List;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.fault.client.exception.FaultInjectionException;
 import shade.polaris.com.google.common.collect.ArrayListMultimap;
 import shade.polaris.com.google.common.collect.Multimap;
 
@@ -98,8 +99,8 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 			try {
 				plugin.run(context);
 			}
-			catch (CallAbortedException callAbortedException) {
-				throw callAbortedException;
+			catch (CallAbortedException | FaultInjectionException rethrowException) {
+				throw rethrowException;
 			}
 			catch (Throwable throwable) {
 				plugin.handlerThrowable(context, throwable);
