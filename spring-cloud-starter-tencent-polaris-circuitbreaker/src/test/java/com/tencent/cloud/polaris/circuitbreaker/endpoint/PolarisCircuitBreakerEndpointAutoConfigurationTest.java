@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker.endpoint;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesAutoConfiguration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -37,6 +38,7 @@ public class PolarisCircuitBreakerEndpointAutoConfigurationTest {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
+					RpcEnhancementPropertiesAutoConfiguration.class,
 					RpcEnhancementAutoConfiguration.class,
 					PolarisCircuitBreakerAutoConfiguration.class,
 					PolarisCircuitBreakerEndpointAutoConfiguration.class

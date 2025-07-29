@@ -1,6 +1,9 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatPropertiesBootstrapConfiguration,\
-  com.tencent.cloud.rpc.enhancement.config.RpcEnhancementBootstrapConfiguration
+  com.tencent.cloud.rpc.enhancement.config.RpcEnhancementBootstrapConfiguration,\
+  com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesBootstrapConfiguration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration,\
-  com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatPropertiesAutoConfiguration
+  com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatPropertiesAutoConfiguration,\
+  com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesAutoConfiguration
+
