@@ -208,6 +208,14 @@ public class PolarisDiscoveryProperties {
 		this.serviceListRefreshInterval = serviceListRefreshInterval;
 	}
 
+	public Boolean getHeartbeatEnabled() {
+		return heartbeatEnabled;
+	}
+
+	public void setHeartbeatEnabled(Boolean heartbeatEnabled) {
+		this.heartbeatEnabled = heartbeatEnabled;
+	}
+
 	public Integer getHeartbeatInterval() {
 		if (this.heartbeatInterval <= 0 || this.heartbeatInterval > 60) {
 			heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
@@ -291,6 +299,7 @@ public class PolarisDiscoveryProperties {
 				", protocol='" + protocol + '\'' +
 				", enabled=" + enabled +
 				", registerEnabled=" + registerEnabled +
+				", heartbeatEnabled=" + heartbeatEnabled +
 				", heartbeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
