@@ -1,0 +1,20 @@
+server:
+  port: 18083
+spring:
+  application:
+    name: consumer-demo
+  config:
+    import: optional:polaris
+
+feign:
+  tsf:
+    enabled: true
+
+#本地测试时打开
+#tsf_namespace_id: default_namespace
+
+logging:
+  file:
+    name: /tsf-demo-logs/${spring.application.name}/root.log
+  level:
+    root: INFO

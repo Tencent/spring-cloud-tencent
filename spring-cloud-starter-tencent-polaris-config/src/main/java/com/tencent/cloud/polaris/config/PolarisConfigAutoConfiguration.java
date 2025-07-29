@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,9 +83,16 @@ public class PolarisConfigAutoConfiguration {
 				springValueRegistry, configFileService, contextRefresher, polarisSDKContextManager.getSDKContext());
 	}
 
+	/**
+	 * In some scenarios, configurations are not annotated with @RefreshScope but are refreshed directly by listening to events.
+	 * In such cases, it is necessary to actively execute putRefreshScopePrefixKey.
+	 */
 	@Bean
 	public SpringValueRegistry springValueRegistry() {
-		return new SpringValueRegistry();
+		SpringValueRegistry springValueRegistry = new SpringValueRegistry();
+		// TODO: support dynamic config
+		springValueRegistry.putRefreshScopePrefixKey("spring.cloud.openfeign.client");
+		return springValueRegistry;
 	}
 
 	@Bean

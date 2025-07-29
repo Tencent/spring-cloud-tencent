@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 
 /**
  * Modify polaris server address.
@@ -48,7 +49,10 @@ public class ModifyAddress implements PolarisConfigModifier {
 
 		List<String> addresses = AddressUtils.parseAddressList(properties.getAddress());
 
-		configuration.getGlobal().getServerConnector().setAddresses(addresses);
+		ServerConnectorConfigImpl serverConnectorConfig = configuration.getGlobal().getServerConnector();
+		serverConnectorConfig.setAddresses(addresses);
+		serverConnectorConfig.setLbPolicy(properties.getAddressLbPolicy());
+		serverConnectorConfig.setServerSwitchInterval(properties.getServerSwitchInterval());
 		if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
 			configuration.getGlobal().setServerConnectors(new ArrayList<>());
 		}

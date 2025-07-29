@@ -10,3 +10,7 @@
 - [feat:support stat reporting path aggregation.](https://github.com/Tencent/spring-cloud-tencent/pull/1608)
 - [feat:support instance detect.](https://github.com/Tencent/spring-cloud-tencent/pull/1617)
 - [fix: polaris.discovery.heartbeat.enabled not effective.](https://github.com/Tencent/spring-cloud-tencent/pull/1621)
+- [fix:fix PolarisContextProperties instantiated twice causing NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/1640)
+- [fix: fix ConfigChangeListener and unit test](https://github.com/Tencent/spring-cloud-tencent/pull/1655)
+- [feat: support spring-retry and feign config refresh and feign eager load support schema](https://github.com/Tencent/spring-cloud-tencent/pull/1650)
+- [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1660)

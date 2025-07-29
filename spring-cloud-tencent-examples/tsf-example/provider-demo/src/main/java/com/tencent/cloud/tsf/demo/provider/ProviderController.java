@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,6 +53,8 @@ public class ProviderController {
 
 	@Autowired
 	private ProviderNameConfig providerNameConfig;
+
+	private boolean ifBadGateway = false;
 
 	// 获取本机ip
 	public static String getInet4Address() {
@@ -85,6 +89,11 @@ public class ProviderController {
 
 	@RequestMapping(value = "/echo/{param}", method = RequestMethod.GET)
 	public ResponseEntity<String> echo(@PathVariable String param) {
+		if (ifBadGateway) {
+			LOG.info("Provider Demo is called wrong.");
+			return new ResponseEntity<>("failed for call provider demo service. Address: " + getInet4Address(), HttpStatus.BAD_GATEWAY);
+		}
+
 		int status;
 		String responseBody;
 
@@ -148,5 +157,18 @@ public class ProviderController {
 		LOG.info("provider-demo -- unit provider config name: [" + applicationName + ']');
 		LOG.info("provider-demo -- unit response info: [" + result + "]");
 		return result;
+	}
+
+	@GetMapping("/setBadGateway")
+	public String setBadGateway(@RequestParam boolean param) {
+		this.ifBadGateway = param;
+		if (param) {
+			LOG.info("info is set to return HttpStatus.BAD_GATEWAY.");
+			return "info is set to return HttpStatus.BAD_GATEWAY.";
+		}
+		else {
+			LOG.info("info is set to return HttpStatus.OK.");
+			return "info is set to return HttpStatus.OK.";
+		}
 	}
 }

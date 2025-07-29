@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.eager.instrument.feign;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
+import java.net.URI;
 
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClient;
@@ -60,18 +61,24 @@ public class FeignEagerLoadSmartLifecycle implements SmartLifecycle {
 						// if feignClient contains url, it doesn't need to eager load.
 						if (StringUtils.isEmpty(feignClient.url())) {
 							// support variables and default values.
-							String feignName = hardCodedTarget.name();
-							LOG.info("[{}] eager-load start", feignName);
+							String url = hardCodedTarget.name();
+							// refer to FeignClientFactoryBean, convert to URL, then take the host as the service name.
+							if (!url.startsWith("http://") && !url.startsWith("https://")) {
+								url = "http://" + url;
+							}
+							String serviceName = URI.create(url).getHost();
+
+							LOG.info("[{}] eager-load start, feign name: {}", serviceName, hardCodedTarget.name());
 							if (polarisDiscoveryClient != null) {
-								polarisDiscoveryClient.getInstances(feignName);
+								polarisDiscoveryClient.getInstances(serviceName);
 							}
 							else if (polarisReactiveDiscoveryClient != null) {
-								polarisReactiveDiscoveryClient.getInstances(feignName).subscribe();
+								polarisReactiveDiscoveryClient.getInstances(serviceName).subscribe();
 							}
 							else {
-								LOG.warn("[{}] no discovery client found.", feignName);
+								LOG.warn("[{}] no discovery client found.", serviceName);
 							}
-							LOG.info("[{}] eager-load end", feignName);
+							LOG.info("[{}] eager-load end", serviceName);
 						}
 					}
 				}

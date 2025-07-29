@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.ConfigProvider;
 import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.config.consumer.LoadBalanceConfig;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.ConfigAPIFactory;
@@ -49,6 +50,16 @@ public class PolarisContextProperties {
 	private String address;
 
 	/**
+	 * polaris server address load balance policy.
+	 */
+	private String addressLbPolicy = LoadBalanceConfig.LOAD_BALANCE_ROUND_ROBIN;
+
+	/**
+	 * polaris server switch interval.
+	 */
+	private long serverSwitchInterval = 600000;
+
+	/**
 	 * current server local ip address.
 	 */
 	@Value("${spring.cloud.polaris.localIpAddress:}")
@@ -57,7 +68,7 @@ public class PolarisContextProperties {
 	/**
 	 * current server local port.
 	 */
-	@Value("${spring.cloud.polaris.localPort:}")
+	@Value("${spring.cloud.polaris.localPort:0}")
 	private Integer localPort;
 
 	/**
@@ -116,6 +127,22 @@ public class PolarisContextProperties {
 		this.address = address;
 	}
 
+	public String getAddressLbPolicy() {
+		return addressLbPolicy;
+	}
+
+	public void setAddressLbPolicy(String addressLbPolicy) {
+		this.addressLbPolicy = addressLbPolicy;
+	}
+
+	public long getServerSwitchInterval() {
+		return serverSwitchInterval;
+	}
+
+	public void setServerSwitchInterval(long serverSwitchInterval) {
+		this.serverSwitchInterval = serverSwitchInterval;
+	}
+
 	public String getLocalIpAddress() {
 		return localIpAddress;
 	}
@@ -160,6 +187,8 @@ public class PolarisContextProperties {
 	public String toString() {
 		return "PolarisContextProperties{" +
 				"address='" + address + '\'' +
+				", addressLbPolicy='" + addressLbPolicy + '\'' +
+				", serverSwitchInterval=" + serverSwitchInterval +
 				", localIpAddress='" + localIpAddress + '\'' +
 				((this.localPort == null || this.localPort <= 0) ? "" : ", localPort=" + localPort) +
 				", enabled=" + enabled +

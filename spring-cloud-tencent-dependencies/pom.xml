@@ -71,10 +71,10 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.0.2.0-2022.0.5-SNAPSHOT</revision>
+		<revision>2.1.0.0-2022.0.5-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>2.0.2.0-SNAPSHOT</polaris.version>
+		<polaris.version>2.0.2.0</polaris.version>
 
 		<!-- Dependencies -->
 		<springdoc.version>2.2.0</springdoc.version>
@@ -85,6 +85,7 @@
 
 		<!-- Maven Plugin Versions -->
 		<flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
+		<central.publishing.maven.plugin.version>0.8.0</central.publishing.maven.plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -363,6 +364,15 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>${central.publishing.maven.plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central-portal</publishingServerId>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

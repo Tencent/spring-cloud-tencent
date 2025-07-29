@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,7 +229,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	}
 
 	public Map<String, Object> getLoadbalancerMetadata() {
-		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.APPLICATION, false);
+		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.CUSTOM, false);
 		MetadataValue metadataValue = metadataContainer.getMetadataValue(FRAGMENT_LB_METADATA);
 		Map<String, Object> values = new HashMap<>();
 		if (metadataValue instanceof MetadataMapValue) {
@@ -248,7 +248,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	}
 
 	public void setLoadbalancer(String key, Object value) {
-		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.APPLICATION, false);
+		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.CUSTOM, false);
 		metadataContainer.putMetadataMapObjectValue(FRAGMENT_LB_METADATA, key, value);
 	}
 

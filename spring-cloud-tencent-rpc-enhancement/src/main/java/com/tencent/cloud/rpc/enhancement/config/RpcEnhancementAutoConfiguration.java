@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 Tencent. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.rpc.enhancement.beanprocessor.BlockingLoadBalancerClientBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.instrument.feign.EnhancedFeignBeanPostProcessor;
 import com.tencent.cloud.rpc.enhancement.instrument.feign.PolarisLoadBalancerFeignRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.instrument.filter.EnhancedReactiveFilter;
@@ -186,6 +187,12 @@ public class RpcEnhancementAutoConfiguration {
 		@ConditionalOnClass(name = {"org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer"})
 		public PolarisLoadBalancerRequestTransformer polarisLoadBalancerRequestTransformer() {
 			return new PolarisLoadBalancerRequestTransformer();
+		}
+
+		@Bean
+		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
+		public BlockingLoadBalancerClientBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
+			return new BlockingLoadBalancerClientBeanPostProcessor();
 		}
 
 	}
