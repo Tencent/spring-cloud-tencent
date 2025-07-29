@@ -18,6 +18,7 @@
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.global.StatReporterConfigImpl;
@@ -51,7 +52,7 @@ public class StatConfigModifier implements PolarisConfigModifier {
 			if (polarisStatProperties.isPushGatewayEnabled()) {
 				// push gateway
 				prometheusHandlerConfig.setType("push");
-				prometheusHandlerConfig.setAddress(polarisStatProperties.getPushGatewayAddress());
+				prometheusHandlerConfig.setAddress(AddressUtils.parseAddressList(polarisStatProperties.getPushGatewayAddress()));
 				prometheusHandlerConfig.setNamespace(polarisStatProperties.getStatNamespace());
 				prometheusHandlerConfig.setService(polarisStatProperties.getStatService());
 				prometheusHandlerConfig.setPushInterval(polarisStatProperties.getPushGatewayPushInterval());

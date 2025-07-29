@@ -35,9 +35,9 @@ public class PushGatewayEventReporterProperties {
 	private boolean enabled = false;
 
 	/**
-	 * Address of pushgateway. For example: 1.2.3.4:9091.
+	 * Address list of pushgateway. For example: 1.2.3.4:9091,1.2.3.4:9092.
 	 */
-	private List<String> address;
+	private String address;
 
 	/**
 	 * Queue size for push gateway event queue. Default is 1000.
@@ -67,11 +67,11 @@ public class PushGatewayEventReporterProperties {
 		this.enabled = enabled;
 	}
 
-	public List<String> getAddress() {
+	public String getAddress() {
 		return address;
 	}
 
-	public void setAddress(List<String> address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 
