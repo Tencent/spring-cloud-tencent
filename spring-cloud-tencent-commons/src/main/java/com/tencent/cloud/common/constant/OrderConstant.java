@@ -216,5 +216,10 @@ public class OrderConstant {
 		 * Order of push gateway event reporter modifier.
 		 */
 		public static Integer PUSH_GATEWAY_EVENT_ORDER = 2;
+
+		/**
+		 * Order of fault injection modifier.
+		 */
+		public static Integer FAULT_INJECTION_ORDER = 2;
 	}
 }

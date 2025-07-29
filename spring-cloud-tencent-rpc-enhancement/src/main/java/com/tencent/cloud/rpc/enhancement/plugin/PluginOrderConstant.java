@@ -54,6 +54,12 @@ public class PluginOrderConstant {
 
 		/**
 		 * order for
+		 * {@link com.tencent.cloud.plugin.fault.FaultInjectionPrePlugin}.
+		 */
+		public static final int FAULT_INJECTION_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 40;
+
+		/**
+		 * order for
 		 * {@link com.tencent.cloud.metadata.core.EncodeTransferMedataFeignEnhancedPlugin}
 		 * and
 		 * {@link com.tencent.cloud.metadata.core.EncodeTransferMedataScgEnhancedPlugin}
