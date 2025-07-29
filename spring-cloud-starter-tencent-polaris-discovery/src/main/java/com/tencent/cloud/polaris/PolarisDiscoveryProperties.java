@@ -78,22 +78,22 @@ public class PolarisDiscoveryProperties {
 	private Boolean enabled = true;
 
 	/**
-	 * Enable heartbeat or not.
-	 */
-	@Value("${spring.cloud.polaris.discovery.heartbeat-enabled:true}")
-	private Boolean heartbeatEnabled = true;
-
-	/**
-	 * Heartbeat interval (seconds).
-	 */
-	@Value("${spring.cloud.polaris.discovery.heartbeat-interval:5}")
-	private Integer heartbeatInterval = 5;
-
-	/**
 	 * If instance registered.
 	 */
 	@Value("${spring.cloud.polaris.discovery.register:#{true}}")
 	private Boolean registerEnabled;
+
+	/**
+	 * Enable heartbeat or not.
+	 */
+	private Boolean heartbeatEnabled = true;
+
+	/**
+	 * Heartbeat interval ( 0 < interval <= 60).
+	 * Time unit: second. Default: 5.
+	 * @see ContextConstant#DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL
+	 */
+	private Integer heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
 
 	/**
 	 * Custom health check url to override default.
@@ -213,6 +213,14 @@ public class PolarisDiscoveryProperties {
 		this.serviceListRefreshInterval = serviceListRefreshInterval;
 	}
 
+	public Boolean getHeartbeatEnabled() {
+		return heartbeatEnabled;
+	}
+
+	public void setHeartbeatEnabled(Boolean heartbeatEnabled) {
+		this.heartbeatEnabled = heartbeatEnabled;
+	}
+
 	public Integer getHeartbeatInterval() {
 		if (this.heartbeatInterval <= 0 || this.heartbeatInterval > 60) {
 			heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
@@ -284,14 +292,6 @@ public class PolarisDiscoveryProperties {
 		this.detect = detect;
 	}
 
-	public Boolean getHeartbeatEnabled() {
-		return heartbeatEnabled;
-	}
-
-	public void setHeartbeatEnabled(Boolean heartbeatEnabled) {
-		this.heartbeatEnabled = heartbeatEnabled;
-	}
-
 	@Override
 	public String toString() {
 		return "PolarisDiscoveryProperties{" +
@@ -303,8 +303,8 @@ public class PolarisDiscoveryProperties {
 				", version='" + version + '\'' +
 				", protocol='" + protocol + '\'' +
 				", enabled=" + enabled +
-				", heartbeatEnabled=" + heartbeatEnabled +
 				", registerEnabled=" + registerEnabled +
+				", heartbeatEnabled=" + heartbeatEnabled +
 				", heartbeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
