@@ -45,6 +45,7 @@ public class RpcEnhancementAutoConfigurationTest {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
+					RpcEnhancementPropertiesAutoConfiguration.class,
 					RpcEnhancementAutoConfiguration.class,
 					PolarisRestTemplateAutoConfigurationTester.class,
 					FeignLoadBalancerAutoConfiguration.class))

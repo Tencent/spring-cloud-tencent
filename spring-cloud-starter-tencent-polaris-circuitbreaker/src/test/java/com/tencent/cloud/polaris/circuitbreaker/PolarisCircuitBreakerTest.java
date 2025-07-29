@@ -28,6 +28,7 @@ import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAuto
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesAutoConfiguration;
 import com.tencent.polaris.client.util.Utils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -58,6 +59,7 @@ public class PolarisCircuitBreakerTest {
 	private static ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
+					RpcEnhancementPropertiesAutoConfiguration.class,
 					RpcEnhancementAutoConfiguration.class,
 					LoadBalancerAutoConfiguration.class,
 					PolarisCircuitBreakerFeignClientAutoConfiguration.class,
