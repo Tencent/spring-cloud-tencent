@@ -14,3 +14,4 @@
 - [fix: fix ConfigChangeListener and unit test](https://github.com/Tencent/spring-cloud-tencent/pull/1655)
 - [feat: support spring-retry and feign config refresh and feign eager load support schema](https://github.com/Tencent/spring-cloud-tencent/pull/1650)
 - [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1660)
+- [fix: polaris.discovery.heartbeat.enabled not effective.](https://github.com/Tencent/spring-cloud-tencent/pull/1621)
