@@ -17,16 +17,26 @@
 
 package com.tencent.cloud.rpc.enhancement.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * Bootstrap configuration for rpc enhancement.
- * @author lepdou 2022-08-24
+ * Auto Configuration for Polaris {@link feign.Feign} OR {@link RestTemplate} which can automatically bring in the call
+ * results for reporting.
+ *
+ * @author <a href="mailto:iskp.me@gmail.com">Palmer.Xu</a> 2022-06-29
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import(RpcEnhancementAutoConfiguration.class)
-public class RpcEnhancementBootstrapConfiguration {
+@ConditionalOnPolarisEnabled
+public class RpcEnhancementPropertiesAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public RpcEnhancementReporterProperties rpcEnhancementReporterProperties() {
+		return new RpcEnhancementReporterProperties();
+	}
 }

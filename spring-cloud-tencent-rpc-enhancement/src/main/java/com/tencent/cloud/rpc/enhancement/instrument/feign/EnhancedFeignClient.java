@@ -37,6 +37,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
+import com.tencent.polaris.fault.client.exception.FaultInjectionException;
 import feign.Client;
 import feign.Request;
 import feign.Request.Options;
@@ -134,6 +135,33 @@ public class EnhancedFeignClient implements Client {
 			}
 			else {
 				throw callAbortedException;
+			}
+		}
+		catch (FaultInjectionException faultInjectionException) {
+			if (faultInjectionException.getFallbackInfo() != null) {
+				enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
+
+				Response response = getFallbackResponse(faultInjectionException.getFallbackInfo());
+
+				HttpHeaders responseHeaders = new HttpHeaders();
+				response.headers().forEach((s, strings) -> responseHeaders.addAll(s, new ArrayList<>(strings)));
+
+				EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
+						.httpStatus(response.status())
+						.httpHeaders(responseHeaders)
+						.build();
+				enhancedPluginContext.setResponse(enhancedResponseContext);
+
+				// Run post enhanced plugins.
+				pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+				return response;
+			}
+			else {
+				enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
+				enhancedPluginContext.setThrowable(faultInjectionException);
+				// Run exception enhanced feign plugins.
+				pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
+				throw faultInjectionException;
 			}
 		}
 		catch (IOException origin) {

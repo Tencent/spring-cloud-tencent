@@ -81,4 +81,11 @@ public final class ContextConstant {
 
 		}
 	}
+
+	public static final class FaultInjection {
+		/**
+		 * fault injection fallback http response.
+		 */
+		public static final String FAULT_INJECTION_FALLBACK_HTTP_RESPONSE = "FAULT_INJECTION_FALLBACK_HTTP_RESPONSE";
+	}
 }
