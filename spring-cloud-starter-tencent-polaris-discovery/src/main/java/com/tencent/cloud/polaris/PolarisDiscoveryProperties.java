@@ -207,8 +207,7 @@ public class PolarisDiscoveryProperties {
 	public void setServiceListRefreshInterval(Long serviceListRefreshInterval) {
 		this.serviceListRefreshInterval = serviceListRefreshInterval;
 	}
-
-
+	
 	public Integer getHeartbeatInterval() {
 		if (this.heartbeatInterval <= 0 || this.heartbeatInterval > 60) {
 			heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
