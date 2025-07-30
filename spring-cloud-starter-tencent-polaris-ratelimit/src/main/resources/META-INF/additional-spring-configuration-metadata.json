@@ -29,6 +29,17 @@
       "type": "java.lang.Long",
       "defaultValue": "1000",
       "description": "Max queuing time when using unirate."
+    },
+    {
+      "name": "spring.cloud.polaris.ratelimit.limiterAddresses",
+      "type": "java.util.List",
+      "description": "Remote limiter service addresses."
+    },
+    {
+      "name": "spring.cloud.polaris.ratelimit.remoteTaskInterval",
+      "type": "java.lang.Long",
+      "defaultValue": "30",
+      "description": "Remote limiter service task base interval."
     }
   ]
 }
