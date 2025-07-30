@@ -75,7 +75,7 @@ public class PolarisStatPropertiesTest {
 		// PushGatewayAddress
 		String pushGatewayAddress = "127.0.0.1:9091, " + "127.0.0.1:9092";
 		polarisStatProperties.setPushGatewayAddress(pushGatewayAddress);
-		List<String> addresses = AddressUtils.parseAddressList(polarisStatProperties.getPushGatewayAddress());
+		List<String> addresses = AddressUtils.parseHostPortList(polarisStatProperties.getPushGatewayAddress());
 		assertThat(addresses.get(0)).isEqualTo("127.0.0.1:9091");
 		assertThat(addresses.get(1)).isEqualTo("127.0.0.1:9092");
 
