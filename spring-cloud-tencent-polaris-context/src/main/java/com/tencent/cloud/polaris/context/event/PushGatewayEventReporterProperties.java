@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.context.event;
 
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -33,7 +34,7 @@ public class PushGatewayEventReporterProperties {
 	private boolean enabled = false;
 
 	/**
-	 * Address of pushgateway. For example: 1.2.3.4:9091.
+	 * Address list of pushgateway. For example: 1.2.3.4:9091,1.2.3.4:9092.
 	 */
 	private String address;
 
