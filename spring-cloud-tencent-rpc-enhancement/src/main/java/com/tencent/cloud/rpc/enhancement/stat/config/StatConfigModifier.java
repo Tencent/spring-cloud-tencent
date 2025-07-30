@@ -52,7 +52,7 @@ public class StatConfigModifier implements PolarisConfigModifier {
 			if (polarisStatProperties.isPushGatewayEnabled()) {
 				// push gateway
 				prometheusHandlerConfig.setType("push");
-				prometheusHandlerConfig.setAddress(AddressUtils.parseAddressList(polarisStatProperties.getPushGatewayAddress()));
+				prometheusHandlerConfig.setAddress(AddressUtils.parseHostPortList(polarisStatProperties.getPushGatewayAddress()));
 				prometheusHandlerConfig.setNamespace(polarisStatProperties.getStatNamespace());
 				prometheusHandlerConfig.setService(polarisStatProperties.getStatService());
 				prometheusHandlerConfig.setPushInterval(polarisStatProperties.getPushGatewayPushInterval());
