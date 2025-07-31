@@ -127,7 +127,6 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		instanceRegisterRequest.setRegion(staticMetadataManager.getRegion());
 		instanceRegisterRequest.setZone(staticMetadataManager.getZone());
 		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
-		instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 		instanceRegisterRequest.setMetadata(registration.getMetadata());
 		instanceRegisterRequest.setExtendedMetadata(registration.getExtendedMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
@@ -144,16 +143,24 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		try {
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
-			if (StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
-				instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
+			if (polarisDiscoveryProperties.getHeartbeatEnabled()) {
+				instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
+				if (StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
+					instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
+				}
+				else {
+					instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
+					InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
+					BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
+					heartbeatRequest.setInstanceID(instanceRegisterResponse.getInstanceId());
+					// Start the heartbeat thread after the registration is successful.
+					heartbeat(heartbeatRequest);
+				}
 			}
 			else {
+				// Heartbeat is disabled
 				instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
-				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
-				BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
-				heartbeatRequest.setInstanceID(instanceRegisterResponse.getInstanceId());
-				// Start the heartbeat thread after the registration is successful.
-				heartbeat(heartbeatRequest);
+				LOGGER.info("Registered instance without heartbeat.");
 			}
 			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
 			LOGGER.info("polaris registry, {} {} {} {}:{} {} {} {} {} register finished", polarisDiscoveryProperties.getNamespace(),
