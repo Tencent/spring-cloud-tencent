@@ -32,7 +32,7 @@
     },
     {
       "name": "spring.cloud.polaris.ratelimit.limiterAddresses",
-      "type": "java.util.List",
+      "type": "java.lang.String",
       "description": "Remote limiter service addresses."
     },
     {
