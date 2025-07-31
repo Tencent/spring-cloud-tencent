@@ -20,3 +20,4 @@
 - [fix:replace HttpClient with HttpURLConnection for JDK 8 compatibility.](https://github.com/Tencent/spring-cloud-tencent/pull/1709)
 - [feat:Modify the annotations.](https://github.com/Tencent/spring-cloud-tencent/pull/1712)
 - [fix: polaris.discovery.heartbeat.enabled not effective.](https://github.com/Tencent/spring-cloud-tencent/pull/1713)
+- [feat: support config ratelimit addresses and remote task interval.](https://github.com/Tencent/spring-cloud-tencent/pull/1714)
