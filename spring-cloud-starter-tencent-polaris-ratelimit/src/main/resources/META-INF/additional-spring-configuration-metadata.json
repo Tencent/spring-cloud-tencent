@@ -39,7 +39,7 @@
       "name": "spring.cloud.polaris.ratelimit.remoteTaskInterval",
       "type": "java.lang.Long",
       "defaultValue": "30",
-      "description": "Remote limiter service task base interval."
+      "description": "Remote limiter service task base interval. Unit: ms."
     }
   ]
 }
