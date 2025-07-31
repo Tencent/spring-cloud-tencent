@@ -166,5 +166,4 @@ public class QuickstartCalleeController {
 	public String faultToleranceRaisedException(@PathVariable String exceptionType) throws IOException, TimeoutException {
 		return faultToleranceService.raisedException(exceptionType);
 	}
-
 }
