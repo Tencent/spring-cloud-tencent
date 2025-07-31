@@ -84,6 +84,11 @@ public class PolarisDiscoveryProperties {
 	private Boolean registerEnabled;
 
 	/**
+	 * Enable heartbeat or not.
+	 */
+	private Boolean heartbeatEnabled = true;
+
+	/**
 	 * Heartbeat interval ( 0 < interval <= 60).
 	 * Time unit: second. Default: 5.
 	 * @see ContextConstant#DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL
@@ -208,6 +213,14 @@ public class PolarisDiscoveryProperties {
 		this.serviceListRefreshInterval = serviceListRefreshInterval;
 	}
 
+	public Boolean getHeartbeatEnabled() {
+		return heartbeatEnabled;
+	}
+
+	public void setHeartbeatEnabled(Boolean heartbeatEnabled) {
+		this.heartbeatEnabled = heartbeatEnabled;
+	}
+
 	public Integer getHeartbeatInterval() {
 		if (this.heartbeatInterval <= 0 || this.heartbeatInterval > 60) {
 			heartbeatInterval = DEFAULT_REGISTRY_HEARTBEAT_TIME_INTERVAL;
@@ -291,6 +304,7 @@ public class PolarisDiscoveryProperties {
 				", protocol='" + protocol + '\'' +
 				", enabled=" + enabled +
 				", registerEnabled=" + registerEnabled +
+				", heartbeatEnabled=" + heartbeatEnabled +
 				", heartbeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
