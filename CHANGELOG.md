@@ -11,3 +11,4 @@
 - [fix: tsf 2024 related bugfixes](https://github.com/Tencent/spring-cloud-tencent/pull/1682)
 - [fix: remove conflict dependencies management](https://github.com/Tencent/spring-cloud-tencent/pull/1683)
 - [refactor: optimize log](https://github.com/Tencent/spring-cloud-tencent/pull/1684)
+- [feat:support setting load balancing strategy per service.](https://github.com/Tencent/spring-cloud-tencent/pull/1685)
