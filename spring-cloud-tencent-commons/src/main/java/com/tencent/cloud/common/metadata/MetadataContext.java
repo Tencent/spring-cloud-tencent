@@ -133,6 +133,10 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		LOCAL_SERVICE = service;
 	}
 
+	public static void setLocalNamespace(String namespace) {
+		LOCAL_NAMESPACE = namespace;
+	}
+
 	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean caller) {
 		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
 		Map<String, String> values = new HashMap<>();

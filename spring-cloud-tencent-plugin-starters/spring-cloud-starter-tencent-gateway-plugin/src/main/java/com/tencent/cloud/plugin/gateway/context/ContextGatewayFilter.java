@@ -28,9 +28,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.tsf.gateway.core.TsfGatewayRequest;
@@ -240,6 +242,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			throw NotFoundException.create(true, msg);
 		}
 		updateRouteMetadata(exchange, contextRoute);
+		setTraceAttributes(contextRoute, GatewayConstant.NON_UNIT_TYPE, GatewayConstant.NON_UNIT_TRANSFER_TYPE);
 		exchange.getAttributes().put(GatewayConstant.CONTEXT_ROUTE, contextRoute);
 
 		URI requestUri = URI.create(contextRoute.getHost() + apis[1]);
@@ -261,6 +264,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			throw NotFoundException.create(true, msg);
 		}
 		updateRouteMetadata(exchange, contextRoute);
+		setTraceAttributes(contextRoute, GatewayConstant.NON_UNIT_TYPE, GatewayConstant.NON_UNIT_TRANSFER_TYPE);
 		exchange.getAttributes().put(GatewayConstant.CONTEXT_ROUTE, contextRoute);
 
 		MetadataContext metadataContext = exchange.getAttribute(
@@ -487,5 +491,23 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		catch (RuntimeException ex) {
 			throw new IllegalStateException("Invalid URI query: \"" + query + "\"");
 		}
+	}
+
+	private void setTraceAttributes(GroupContext.ContextRoute contextRoute, String unitType, String unitTransferType) {
+
+		Map<String, String> traceAttributes = new HashMap<>();
+		traceAttributes.put("tsf-ms-type", "MSGW");
+		traceAttributes.put("tsf-unit-type", unitType);
+		traceAttributes.put("tsf-unit-transfer-type", unitTransferType);
+		traceAttributes.put("destination.namespace-id", contextRoute.getNamespaceId());
+		traceAttributes.put("tsf-msgw-group", config.getGroup());
+		traceAttributes.put("tsf-msgw-groupApi", contextRoute.getApiId());
+		traceAttributes.put("tsf-msgw-apiPath", contextRoute.getPath());
+		traceAttributes.put("tsf-msgw-apiMethod", contextRoute.getMethod());
+		traceAttributes.put("tsf-msgw-namespaceName", contextRoute.getNamespace());
+		traceAttributes.put("tsf-msgw-serviceName", contextRoute.getService());
+		traceAttributes.put("localComponent", "msgw");
+
+		MetadataContextUtils.putMetadataObjectValue(ContextConstant.Trace.EXTRA_TRACE_ATTRIBUTES, traceAttributes);
 	}
 }

@@ -29,6 +29,10 @@ public interface EnhancedPluginType {
 		 * Pre Client plugin.
 		 */
 		PRE,
+		/**
+		 * Before calling the Client plugin.
+		 */
+		BEFORE_CALLING,
 
 		/**
 		 * Post Client plugin.

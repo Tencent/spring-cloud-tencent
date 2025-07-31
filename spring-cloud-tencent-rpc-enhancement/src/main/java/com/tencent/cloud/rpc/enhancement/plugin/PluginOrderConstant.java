@@ -70,7 +70,7 @@ public class PluginOrderConstant {
 		 * and
 		 * {@link com.tencent.cloud.plugin.trace.TraceClientFinallyEnhancedPlugin}.
 		 */
-		public static final int TRACE_CLIENT_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 3;
+		public static final int TRACE_CLIENT_PLUGIN_ORDER = CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER + 3;
 	}
 
 	public static class ServerPluginOrder {

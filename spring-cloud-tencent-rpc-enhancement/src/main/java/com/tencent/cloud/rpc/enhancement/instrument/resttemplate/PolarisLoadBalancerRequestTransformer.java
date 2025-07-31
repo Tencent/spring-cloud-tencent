@@ -18,6 +18,8 @@
 package com.tencent.cloud.rpc.enhancement.instrument.resttemplate;
 
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer;
@@ -45,6 +47,10 @@ public class PolarisLoadBalancerRequestTransformer implements LoadBalancerReques
 	public HttpRequest transformRequest(HttpRequest request, ServiceInstance instance) {
 		if (instance != null) {
 			MetadataContextHolder.get().setLoadbalancer(LOAD_BALANCER_SERVICE_INSTANCE, instance);
+			EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.getEnhancedPluginContextFromMetadataContext();
+			if (enhancedPluginContext != null) {
+				enhancedPluginContext.setTargetServiceInstance(instance, request.getURI());
+			}
 		}
 		return request;
 	}

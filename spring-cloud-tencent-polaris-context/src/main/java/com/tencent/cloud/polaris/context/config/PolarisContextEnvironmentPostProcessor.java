@@ -96,7 +96,7 @@ public final class PolarisContextEnvironmentPostProcessor implements Environment
 
 		// zone
 		String zone = environment.getProperty("tsf_zone");
-		if (StringUtils.isNotBlank(zone)) {
+		if (zone != null) {
 			polarisEnvProperties.put("spring.cloud.tencent.metadata.content.zone", zone);
 		}
 
