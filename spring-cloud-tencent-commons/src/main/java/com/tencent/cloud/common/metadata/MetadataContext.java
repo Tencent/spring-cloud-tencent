@@ -118,7 +118,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 							.getProperties("spring.application.name", null));
 		}
 		if (!StringUtils.hasText(serviceName)) {
-			LOG.error("service name should not be blank. please configure spring.cloud.polaris.service or "
+			LOG.warn("service name should not be blank. please configure spring.cloud.polaris.service or "
 					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 		}
 		serviceName = DiscoveryUtil.rewriteServiceId(serviceName);

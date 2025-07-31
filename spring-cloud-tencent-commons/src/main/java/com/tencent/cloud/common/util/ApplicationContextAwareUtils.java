@@ -59,7 +59,7 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 		if (applicationContext != null) {
 			return applicationContext.getEnvironment().getProperty(key);
 		}
-		LOGGER.warn("applicationContext is null, try to get property from System.getenv or System.getProperty");
+		LOGGER.warn("applicationContext is null, try to get property({}} from System.getenv or System.getProperty", key);
 		String property = System.getenv(key);
 		if (StringUtils.isBlank(property)) {
 			property = System.getProperty(key);
@@ -77,7 +77,7 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 		if (applicationContext != null) {
 			return applicationContext.getEnvironment().getProperty(key, defaultValue);
 		}
-		LOGGER.warn("applicationContext is null, try to get property from System.getenv or System.getProperty");
+		LOGGER.warn("applicationContext is null, try to get property({}} from System.getenv or System.getProperty", key);
 		String property = System.getenv(key);
 		if (StringUtils.isBlank(property)) {
 			property = System.getProperty(key, defaultValue);
