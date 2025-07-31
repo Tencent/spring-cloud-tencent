@@ -144,11 +144,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
 			if (polarisDiscoveryProperties.getHeartbeatEnabled()) {
+				instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 				if (StringUtils.isBlank(polarisDiscoveryProperties.getHealthCheckUrl())) {
 					instanceRegisterResponse = providerClient.registerInstance(instanceRegisterRequest);
 				}
 				else {
-					instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 					instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 					InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
 					BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
