@@ -110,6 +110,7 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", protocol='HTTP'"
 						+ ", enabled=true"
 						+ ", registerEnabled=true"
+						+ ", heartbeatEnabled=true"
 						+ ", heartbeatInterval=20"
 						+ ", healthCheckUrl='/health'"
 						+ ", serviceListRefreshInterval=1000"
