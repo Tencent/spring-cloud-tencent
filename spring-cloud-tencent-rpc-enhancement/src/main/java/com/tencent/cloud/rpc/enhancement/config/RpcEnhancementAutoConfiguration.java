@@ -122,12 +122,6 @@ public class RpcEnhancementAutoConfiguration {
 		return new ExceptionPolarisReporter(properties, polarisSDKContextManager.getConsumerAPI());
 	}
 
-	@Bean
-	@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
-	public BlockingLoadBalancerClientBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
-		return new BlockingLoadBalancerClientBeanPostProcessor();
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	protected static class RpcEnhancementServletFilterConfig {
@@ -202,6 +196,11 @@ public class RpcEnhancementAutoConfiguration {
 			return new PolarisLoadBalancerRequestTransformer();
 		}
 
+		@Bean
+		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
+		public BlockingLoadBalancerClientBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
+			return new BlockingLoadBalancerClientBeanPostProcessor();
+		}
 		@Autowired(required = false)
 		private List<RestTemplate> restTemplates = Collections.emptyList();
 
