@@ -52,7 +52,7 @@ public class TraceServerPreEnhancedPlugin implements EnhancedPlugin {
 		Map<String, String> attributes = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(spanAttributesProviderList)) {
 			for (SpanAttributesProvider spanAttributesProvider : spanAttributesProviderList) {
-				Map<String, String> additionalAttributes = spanAttributesProvider.getServerSpanAttributes(context);
+				Map<String, String> additionalAttributes = spanAttributesProvider.getServerPreSpanAttributes(context);
 				if (CollectionUtils.isNotEmpty(additionalAttributes)) {
 					attributes.putAll(additionalAttributes);
 				}

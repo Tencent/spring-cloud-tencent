@@ -49,14 +49,14 @@ public class OrderConstant {
 		 */
 		public static class RestTemplate {
 			/**
-			 * Order of encode transfer metadata interceptor.
+			 * Order of encode enhance interceptor.
 			 */
-			public static final int ENCODE_TRANSFER_METADATA_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
+			public static final int ENHANCE_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
 
 			/**
 			 * Order of encode router label interceptor.
 			 */
-			public static final int ROUTER_LABEL_INTERCEPTOR_ORDER = Ordered.LOWEST_PRECEDENCE;
+			public static final int ROUTER_LABEL_INTERCEPTOR_ORDER = 0;
 		}
 
 		/**

@@ -17,27 +17,23 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.io.IOException;
 import java.util.Map;
 
-import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
+import com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataType;
 import shade.polaris.com.google.common.collect.ImmutableMap;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
-import org.springframework.core.Ordered;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
@@ -45,23 +41,23 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
 /**
- * Interceptor used for adding the metadata in http headers from context when web client
- * is RestTemplate.
+ * Pre EnhancedPlugin for rest template to encode transfer metadata.
  *
- * It needs to execute after {@link LoadBalancerInterceptor}, because LaneRouter may add calleeTransitiveHeaders.
- *
- * @author Haotian Zhang
+ * @author Shedfree Wu
  */
-public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRequestInterceptor, Ordered {
-
+public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedPlugin {
 	@Override
-	public int getOrder() {
-		return OrderConstant.Client.RestTemplate.ENCODE_TRANSFER_METADATA_INTERCEPTOR_ORDER;
+	public EnhancedPluginType getType() {
+		return EnhancedPluginType.Client.BEFORE_CALLING;
 	}
 
 	@Override
-	public ClientHttpResponse intercept(@NonNull HttpRequest httpRequest, @NonNull byte[] bytes,
-			@NonNull ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
+	public void run(EnhancedPluginContext context) throws Throwable {
+		if (!(context.getOriginRequest() instanceof HttpRequest)) {
+			return;
+		}
+		HttpRequest httpRequest = (HttpRequest) context.getOriginRequest();
+
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
@@ -91,8 +87,6 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		}
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(httpRequest, transHeaders);
-
-		return clientHttpRequestExecution.execute(httpRequest, bytes);
 	}
 
 	private void buildTransmittedHeader(HttpRequest request, Map<String, String> transHeaders) {
@@ -120,5 +114,10 @@ public class EncodeTransferMedataRestTemplateInterceptor implements ClientHttpRe
 		if (!CollectionUtils.isEmpty(metadata)) {
 			buildHeaderMap(request, ImmutableMap.of(headerName, JacksonUtils.serialize2Json(metadata)));
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return PluginOrderConstant.ClientPluginOrder.CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER;
 	}
 }

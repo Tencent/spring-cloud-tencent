@@ -55,8 +55,8 @@ public class PolarisBlockingLoadBalancerClient extends BlockingLoadBalancerClien
 		if (httpRequest == null || enhancedPluginRunner == null) {
 			return delegate.execute(serviceId, request);
 		}
-		EnhancedRestTemplateWrapInterceptor enhancedRestTemplateWrapInterceptor = new EnhancedRestTemplateWrapInterceptor(enhancedPluginRunner, delegate);
-		return enhancedRestTemplateWrapInterceptor.intercept(httpRequest, serviceId, null, request);
+		EnhancedRestTemplateBlockingLoadBalancerClientInterceptor enhancedRestTemplateBlockingLoadBalancerClientInterceptor = new EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(enhancedPluginRunner, delegate);
+		return enhancedRestTemplateBlockingLoadBalancerClientInterceptor.intercept(httpRequest, serviceId, null, request);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class PolarisBlockingLoadBalancerClient extends BlockingLoadBalancerClien
 		if (httpRequest == null || serviceInstance == null || enhancedPluginRunner == null) {
 			return delegate.execute(serviceId, serviceInstance, request);
 		}
-		EnhancedRestTemplateWrapInterceptor enhancedRestTemplateWrapInterceptor = new EnhancedRestTemplateWrapInterceptor(enhancedPluginRunner, delegate);
-		return enhancedRestTemplateWrapInterceptor.intercept(httpRequest, serviceId, serviceInstance, request);
+		EnhancedRestTemplateBlockingLoadBalancerClientInterceptor enhancedRestTemplateBlockingLoadBalancerClientInterceptor = new EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(enhancedPluginRunner, delegate);
+		return enhancedRestTemplateBlockingLoadBalancerClientInterceptor.intercept(httpRequest, serviceId, serviceInstance, request);
 	}
 }

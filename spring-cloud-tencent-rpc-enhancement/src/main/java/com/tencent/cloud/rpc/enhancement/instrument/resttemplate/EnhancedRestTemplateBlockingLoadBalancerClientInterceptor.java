@@ -22,12 +22,15 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.metadata.core.MetadataObjectValue;
 import com.tencent.polaris.metadata.core.MetadataType;
@@ -42,17 +45,17 @@ import org.springframework.http.client.ClientHttpResponse;
 import static com.tencent.cloud.rpc.enhancement.instrument.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 
 /**
- * EnhancedRestTemplateInterceptor.
+ * Interceptor used for pre-plugin, post-plugin, exception-plugin, and final-plugin in RestTemplate.
  *
  * @author sean yu
  */
-public class EnhancedRestTemplateWrapInterceptor {
+public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 
 	private final EnhancedPluginRunner pluginRunner;
 
 	private final LoadBalancerClient delegate;
 
-	public EnhancedRestTemplateWrapInterceptor(EnhancedPluginRunner pluginRunner, LoadBalancerClient delegate) {
+	public EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(EnhancedPluginRunner pluginRunner, LoadBalancerClient delegate) {
 		this.pluginRunner = pluginRunner;
 		this.delegate = delegate;
 	}
@@ -61,18 +64,22 @@ public class EnhancedRestTemplateWrapInterceptor {
 	public <T> T intercept(HttpRequest httpRequest, String serviceId, ServiceInstance serviceInstance,
 			LoadBalancerRequest<T> loadBalancerRequest) throws IOException {
 
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		URI serviceUrl = httpRequest.getURI();
 		if (httpRequest instanceof ServiceRequestWrapper) {
 			serviceUrl = ((ServiceRequestWrapper) httpRequest).getRequest().getURI();
 		}
 
+		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(httpRequest.getHeaders())
 				.httpMethod(httpRequest.getMethod())
 				.url(httpRequest.getURI())
 				.serviceUrl(serviceUrl)
+				.governanceNamespace(governanceNamespace)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(httpRequest);
