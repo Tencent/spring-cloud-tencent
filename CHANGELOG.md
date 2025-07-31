@@ -9,3 +9,4 @@
 - [feat: support spring-retry and feign config refresh and feign eager load support schema](https://github.com/Tencent/spring-cloud-tencent/pull/1651)
 - [fix: fix ConfigChangeListener ut bug](https://github.com/Tencent/spring-cloud-tencent/pull/1661)
 - [fix: tsf 2024 related bugfixes](https://github.com/Tencent/spring-cloud-tencent/pull/1682)
+- [fix: remove conflict dependencies management](https://github.com/Tencent/spring-cloud-tencent/pull/1683)
