@@ -55,7 +55,7 @@ public class FaultToleranceService {
 	public String failOver() {
 		LOG.info("Test failOver");
 		if (failOverCount.incrementAndGet() % 4 == 0) {
-			return "failOver success，failOverCount=" + failOverCount.get();
+			return "failOver success,failOverCount=" + failOverCount.get();
 		}
 		throw new RuntimeException("NO");
 	}
@@ -64,13 +64,13 @@ public class FaultToleranceService {
 	public String forking() {
 		LOG.info("Test forking");
 		if (forkingCount.incrementAndGet() % 4 == 0) {
-			return "forking success, forkingCount=" + forkingCount.get();
+			return "forking success,forkingCount=" + forkingCount.get();
 		}
 		throw new RuntimeException("NO");
 	}
 
 	@FaultTolerance(strategy = FaultToleranceStrategy.FAIL_OVER, maxAttempts = 3, fallbackMethod = "fallback",
-		ignoreExceptions = {RuntimeException.class}, raisedExceptions = {Exception.class})
+			ignoreExceptions = {RuntimeException.class}, raisedExceptions = {Exception.class})
 	public String raisedException(String exceptionType) throws IOException, RuntimeException, TimeoutException {
 		switch (exceptionType) {
 			case "RuntimeException":
@@ -79,17 +79,16 @@ public class FaultToleranceService {
 			case "TimeOutException":
 				LOG.info("Test failOver for raised TimeOutException");
 				if (failOverCount.incrementAndGet() % 4 == 0) {
-					return "failOver success，failOverCount=" + failOverCount.get();
+					return "failOver success,failOverCount=" + failOverCount.get();
 				}
 				throw new TimeoutException("NO");
 			default:
 				LOG.info("Test failOver for raised otherException");
 				if (failOverCount.incrementAndGet() % 4 == 0) {
-					return "failOver success，failOverCount=" + failOverCount.get();
+					return "failOver success,failOverCount=" + failOverCount.get();
 				}
 				throw new IOException("NO");
 		}
 	}
-
 
 }
