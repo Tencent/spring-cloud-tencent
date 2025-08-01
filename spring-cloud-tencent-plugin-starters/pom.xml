@@ -23,6 +23,7 @@
 		<module>spring-cloud-starter-tencent-fault-tolerance</module>
 		<module>spring-cloud-starter-tencent-multi-discovery-plugin</module>
 		<module>spring-cloud-starter-tencent-traffic-mirroring-plugin</module>
+		<module>spring-cloud-starter-tencent-fault-injection-plugin</module>
 	</modules>
 
 </project>

@@ -34,6 +34,7 @@ import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
+import com.tencent.polaris.fault.client.exception.FaultInjectionException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -96,6 +97,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(originExchange);
 
+		long startTime = System.currentTimeMillis();
 		// Run pre enhanced plugins.
 		try {
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
@@ -117,27 +119,53 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			DataBuffer dataBuffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
 			return response.writeWith(Mono.just(dataBuffer));
 		}
+		catch (FaultInjectionException faultInjectionException) {
+			enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
+			if (faultInjectionException.getFallbackInfo() != null) {
+				ServerHttpResponse response = originExchange.getResponse();
+				HttpStatus httpStatus = HttpStatus.resolve(faultInjectionException.getFallbackInfo().getCode());
+				response.setStatusCode(httpStatus != null ? httpStatus : HttpStatus.INTERNAL_SERVER_ERROR);
+				if (CollectionUtils.isNotEmpty(faultInjectionException.getFallbackInfo().getHeaders())) {
+					faultInjectionException.getFallbackInfo().getHeaders().forEach(response.getHeaders()::set);
+				}
+				String body = Optional.of(faultInjectionException.getFallbackInfo().getBody()).orElse("");
+				DataBuffer dataBuffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
+
+				EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
+						.httpStatus(faultInjectionException.getFallbackInfo().getCode())
+						.httpHeaders(response.getHeaders())
+						.build();
+				enhancedPluginContext.setResponse(enhancedResponseContext);
+				setTargetServiceInstance(originExchange, enhancedPluginContext, serviceId);
+
+				// Run post enhanced plugins.
+				pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+
+				pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+
+				return response.writeWith(Mono.just(dataBuffer));
+			}
+			else {
+				MetadataContext metadataContextOnError = originExchange.getAttribute(
+						MetadataConstant.HeaderName.METADATA_CONTEXT);
+				if (metadataContextOnError != null) {
+					MetadataContextHolder.set(metadataContextOnError);
+				}
+
+				enhancedPluginContext.setThrowable(faultInjectionException);
+
+				// Run exception enhanced plugins.
+				pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
+
+				pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+				throw faultInjectionException;
+			}
+		}
 		// Exchange may be changed in plugin
 		ServerWebExchange exchange = (ServerWebExchange) enhancedPluginContext.getOriginRequest();
-		long startTime = System.currentTimeMillis();
 		return chain.filter(exchange)
 				.doOnSubscribe(v -> {
-					Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
-					URI uri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
-					enhancedPluginContext.getRequest().setUrl(uri);
-					if (uri != null) {
-						if (route != null && route.getUri().getScheme()
-								.contains("lb") && StringUtils.isNotEmpty(serviceId)) {
-							DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-							serviceInstance.setServiceId(serviceId);
-							serviceInstance.setHost(uri.getHost());
-							serviceInstance.setPort(uri.getPort());
-							enhancedPluginContext.setTargetServiceInstance(serviceInstance, null);
-						}
-						else {
-							enhancedPluginContext.setTargetServiceInstance(null, uri);
-						}
-					}
+					setTargetServiceInstance(exchange, enhancedPluginContext, serviceId);
 					pluginRunner.run(EnhancedPluginType.Client.BEFORE_CALLING, enhancedPluginContext);
 				})
 				.doOnSuccess(v -> {
@@ -185,6 +213,25 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 	@Override
 	public int getOrder() {
 		return OrderConstant.Client.Scg.ENHANCED_FILTER_ORDER;
+	}
+
+	private void setTargetServiceInstance(ServerWebExchange exchange, EnhancedPluginContext enhancedPluginContext, String serviceId) {
+		Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
+		URI uri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
+		enhancedPluginContext.getRequest().setUrl(uri);
+		if (uri != null) {
+			if (route != null && route.getUri().getScheme()
+					.contains("lb") && StringUtils.isNotEmpty(serviceId)) {
+				DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+				serviceInstance.setServiceId(serviceId);
+				serviceInstance.setHost(uri.getHost());
+				serviceInstance.setPort(uri.getPort());
+				enhancedPluginContext.setTargetServiceInstance(serviceInstance, null);
+			}
+			else {
+				enhancedPluginContext.setTargetServiceInstance(null, uri);
+			}
+		}
 	}
 
 	private URI getServiceUri(ServerWebExchange originExchange, String serviceId) {
