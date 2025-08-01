@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.quickstart.caller.pojo.User;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -255,5 +258,10 @@ public class QuickstartCallerController {
 		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
 			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
 		}
+	}
+
+	@PostMapping("/user")
+	public String user(@RequestBody User user) {
+		return restTemplate.postForObject("http://QuickstartCalleeService/quickstart/callee/user", user, String.class);
 	}
 }

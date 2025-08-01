@@ -50,8 +50,8 @@ public final class LoadBalancerUtils {
 	/**
 	 * if request is a LoadBalancerRequestAdapter(RetryLoadBalancerInterceptor), return its delegate.
 	 */
-	public static LoadBalancerRequest<?> getDelegateLoadBalancerRequestIfAvailable(LoadBalancerRequest<?> request)  {
-		if (!(request instanceof LoadBalancerRequestAdapter))  {
+	public static LoadBalancerRequest<?> getDelegateLoadBalancerRequestIfAvailable(LoadBalancerRequest<?> request) {
+		if (!(request instanceof LoadBalancerRequestAdapter)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("LoadBalancerRequest is not a LoadBalancerRequestAdapter, request:{}", request);
 			}
@@ -72,4 +72,38 @@ public final class LoadBalancerUtils {
 		return null;
 	}
 
+	/**
+	 * if request is a BlockingLoadBalancerRequest, return its body.
+	 */
+	public static byte[] getHttpBodyIfAvailable(LoadBalancerRequest<?> request) {
+		if (request instanceof BlockingLoadBalancerRequest) {
+			BlockingLoadBalancerRequest blockingRequest = (BlockingLoadBalancerRequest) request;
+
+			try {
+				// get clientHttpRequestData field from BlockingLoadBalancerRequest
+				Field clientHttpRequestDataField = BlockingLoadBalancerRequest.class.getDeclaredField("clientHttpRequestData");
+				clientHttpRequestDataField.setAccessible(true);
+				BlockingLoadBalancerRequest.ClientHttpRequestData clientHttpRequestData = (BlockingLoadBalancerRequest.ClientHttpRequestData) clientHttpRequestDataField.get(blockingRequest);
+
+				// get body field from clientHttpRequestData
+				Field bodyField = BlockingLoadBalancerRequest.ClientHttpRequestData.class.getDeclaredField("body");
+				bodyField.setAccessible(true);
+				return (byte[]) bodyField.get(clientHttpRequestData);
+			}
+			catch (Exception e) {
+				// ignore
+				if (logger.isDebugEnabled()) {
+					logger.debug("Failed to get body from BlockingLoadBalancerRequest, request:{}", request, e);
+				}
+			}
+
+			return null;
+		}
+		else {
+			if (logger.isDebugEnabled()) {
+				logger.debug("LoadBalancerRequest is not a BlockingLoadBalancerRequest, request:{}", request);
+			}
+			return null;
+		}
+	}
 }

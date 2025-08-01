@@ -370,6 +370,7 @@
 								<excludeArtifact>quickstart-zuul-service</excludeArtifact>
 								<excludeArtifact>tsf-example</excludeArtifact>
 								<excludeArtifact>consumer-demo</excludeArtifact>
+								<excludeArtifact>msgw-scg</excludeArtifact>
 								<excludeArtifact>provider-demo</excludeArtifact>
 							</excludeArtifacts>
 						</configuration>

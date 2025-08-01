@@ -74,5 +74,10 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-starter-tencent-multi-discovery-plugin</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-traffic-mirroring-plugin</artifactId>
+		</dependency>
 	</dependencies>
 </project>

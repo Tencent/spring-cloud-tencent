@@ -17,5 +17,6 @@
 		<module>provider-demo</module>
 		<module>consumer-demo-retry</module>
 		<module>consumer-demo</module>
+		<module>msgw-scg</module>
 	</modules>
 </project>
