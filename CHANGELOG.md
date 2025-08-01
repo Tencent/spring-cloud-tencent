@@ -20,3 +20,4 @@
 - [feat:support fault injection.](https://github.com/Tencent/spring-cloud-tencent/pull/1691)
 - [feat: support config event and monitor address list.](https://github.com/Tencent/spring-cloud-tencent/pull/1692)
 - [feat:Modify the annotations.](https://github.com/Tencent/spring-cloud-tencent/pull/1693)
+- [fix: polaris.discovery.heartbeat.enabled not effective.](https://github.com/Tencent/spring-cloud-tencent/pull/1694)
