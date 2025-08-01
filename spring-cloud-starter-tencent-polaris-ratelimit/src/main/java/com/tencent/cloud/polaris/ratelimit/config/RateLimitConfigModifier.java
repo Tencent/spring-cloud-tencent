@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.ratelimit.config;
 
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 
@@ -39,6 +40,9 @@ public class RateLimitConfigModifier implements PolarisConfigModifier {
 		// Update MaxQueuingTime.
 		configuration.getProvider().getRateLimit()
 				.setMaxQueuingTime(polarisRateLimitProperties.getMaxQueuingTime());
+		configuration.getProvider().getRateLimit()
+				.setLimiterAddresses(AddressUtils.parseHostPortList(polarisRateLimitProperties.getLimiterAddresses()));
+		configuration.getProvider().getRateLimit().setRemoteTaskIntervalMilli(polarisRateLimitProperties.getRemoteTaskInterval());
 	}
 
 	@Override
