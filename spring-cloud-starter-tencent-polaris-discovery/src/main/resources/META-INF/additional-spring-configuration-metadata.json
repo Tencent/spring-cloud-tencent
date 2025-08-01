@@ -160,7 +160,7 @@
       "description": "polaris loadbalancer."
     },
     {
-      "name": "spring.cloud.loadbalancer.strategy",
+      "name": "spring.cloud.loadbalancer.strategies",
       "type": "java.lang.String",
       "defaultValue": "polarisWeightedRoundRobin",
       "description": "loadbalancer strategy."
