@@ -19,8 +19,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.metadata.core.MetadataObjectValue;
+import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.tsf.unit.core.model.UnitRouteInfo.GrayMatchRouteUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,19 +112,116 @@ public final class TencentUnitContext {
 	 * GRAY_PREFIX.
 	 */
 	public static final String GRAY_PREFIX = "gray.";
+	/**
+	 * USER_CONTEXTS_KEY.
+	 */
+	private static final String USER_CONTEXTS_KEY = "USER_CONTEXTS";
+	/**
+	 * SYSTEM_CONTEXTS_KEY.
+	 */
+	private static final String SYSTEM_CONTEXTS_KEY = "SYSTEM_CONTEXTS";
+	/**
+	 * ROUTE_CONTEXTS_KEY.
+	 */
+	private static final String ROUTE_CONTEXTS_KEY = "ROUTE_CONTEXTS";
+	/**
+	 * SOURCE_CONTEXTS_KEY.
+	 */
+	private static final String SOURCE_CONTEXTS_KEY = "SOURCE_CONTEXTS";
+	/**
+	 * GRAY_USER_CONTEXTS_KEY.
+	 */
+	private static final String GRAY_USER_CONTEXTS_KEY = "GRAY_USER_CONTEXTS";
+	/**
+	 * GRAY_SYSTEM_CONTEXTS_KEY.
+	 */
+	private static final String GRAY_SYSTEM_CONTEXTS_KEY = "GRAY_SYSTEM_CONTEXTS";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(TencentUnitContext.class);
-	// 用户标签，客户可以直接设置的
-	private final static ThreadLocal<HashMap<String, String>> USER_CONTEXTS = ThreadLocal.withInitial(HashMap::new);
-	// 系统标签，用于中间的计算，部分需要传递
-	private final static ThreadLocal<HashMap<String, String>> SYSTEM_CONTEXTS = ThreadLocal.withInitial(HashMap::new);
-	// 路由标签, key 为 CloudSpaceRoute 前缀的，提供给 TsfConsulReactiveCommonDiscoveryClient 做服务发现使用，无需传递
-	private final static ThreadLocal<HashMap<String, Object>> ROUTE_CONTEXTS = ThreadLocal.withInitial(HashMap::new);
-	// 上游标签，不需要放到 header 传递
-	private final static ThreadLocal<HashMap<String, String>> SOURCE_CONTEXTS = ThreadLocal.withInitial(HashMap::new);
-	// 用户灰度标签，用于匹配灰度规则，不需要放到 header 传递
-	private final static ThreadLocal<HashMap<String, String>> GRAY_USER_CONTEXTS = ThreadLocal.withInitial(HashMap::new);
-	// 灰度内部标签，不需要放到 header 传递
-	private final static ThreadLocal<HashMap<String, String>> GRAY_SYSTEM_CONTEXTS = ThreadLocal.withInitial(HashMap::new);
+
+	private static Map<String, String> getUserContext() {
+		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(USER_CONTEXTS_KEY);
+		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
+			return metadataObjectValue.getObjectValue().get();
+		}
+		else {
+			Map<String, String> map = new HashMap<>();
+			MetadataContextUtils.putMetadataObjectValue(USER_CONTEXTS_KEY, map);
+			return map;
+		}
+	}
+
+	private static Map<String, String> getSystemContext() {
+		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(SYSTEM_CONTEXTS_KEY);
+		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
+			return metadataObjectValue.getObjectValue().get();
+		}
+		else {
+			Map<String, String> map = new HashMap<>();
+			MetadataContextUtils.putMetadataObjectValue(SYSTEM_CONTEXTS_KEY, map);
+			return map;
+		}
+	}
+
+	private static Map<String, Object> getRouteContext() {
+		MetadataObjectValue<Map<String, Object>> metadataObjectValue = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(ROUTE_CONTEXTS_KEY);
+		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
+			return metadataObjectValue.getObjectValue().get();
+		}
+		else {
+			Map<String, Object> map = new HashMap<>();
+			MetadataContextUtils.putMetadataObjectValue(ROUTE_CONTEXTS_KEY, map);
+			return map;
+		}
+	}
+
+	private static Map<String, String> getSourceContext() {
+		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(SOURCE_CONTEXTS_KEY);
+		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
+			return metadataObjectValue.getObjectValue().get();
+		}
+		else {
+			Map<String, String> map = new HashMap<>();
+			MetadataContextUtils.putMetadataObjectValue(SOURCE_CONTEXTS_KEY, map);
+			return map;
+		}
+	}
+
+	private static Map<String, String> getGrayUserContext() {
+		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(GRAY_USER_CONTEXTS_KEY);
+		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
+			return metadataObjectValue.getObjectValue().get();
+		}
+		else {
+			Map<String, String> map = new HashMap<>();
+			MetadataContextUtils.putMetadataObjectValue(GRAY_USER_CONTEXTS_KEY, map);
+			return map;
+		}
+	}
+
+	private static Map<String, String> getGraySystemContext() {
+		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(GRAY_SYSTEM_CONTEXTS_KEY);
+		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
+			return metadataObjectValue.getObjectValue().get();
+		}
+		else {
+			Map<String, String> map = new HashMap<>();
+			MetadataContextUtils.putMetadataObjectValue(GRAY_SYSTEM_CONTEXTS_KEY, map);
+			return map;
+		}
+	}
 
 	private TencentUnitContext() {
 	}
@@ -131,19 +232,19 @@ public final class TencentUnitContext {
 	}
 
 	public static void putUserTag(String key, String value) {
-		USER_CONTEXTS.get().put(key, value);
+		getUserContext().put(key, value);
 	}
 
 	public static void putSystemTag(String key, String value) {
-		SYSTEM_CONTEXTS.get().put(key, value);
+		getSystemContext().put(key, value);
 	}
 
 	public static void putRouteTag(String key, Object value) {
-		ROUTE_CONTEXTS.get().put(key, value);
+		getRouteContext().put(key, value);
 	}
 
 	public static void putSourceTag(String key, String value) {
-		SOURCE_CONTEXTS.get().put(SOURCE_PREFIX + key, value);
+		getSourceContext().put(SOURCE_PREFIX + key, value);
 	}
 
 	public static void putGrayUserTags(String position, Map<String, String> labels) {
@@ -154,20 +255,20 @@ public final class TencentUnitContext {
 
 	// 需要携带 position，做灰度路由匹配用的
 	public static void putGrayUserTag(String position, String key, String value) {
-		GRAY_USER_CONTEXTS.get().put(getGrayPositionPrefix(position) + key, value);
+		getGrayUserContext().put(getGrayPositionPrefix(position) + key, value);
 	}
 
 	// 传递灰度单元信息用的
 	public static void putGraySystemTag(String key, String value) {
-		GRAY_SYSTEM_CONTEXTS.get().put(getGrayPrefix() + key, value);
+		getGraySystemContext().put(getGrayPrefix() + key, value);
 	}
 
 	public static String getGraySystemTag(String key) {
-		return GRAY_SYSTEM_CONTEXTS.get().get(getGrayPrefix() + key);
+		return getGraySystemContext().get(getGrayPrefix() + key);
 	}
 
 	public static boolean grayContextIsEmpty() {
-		return GRAY_USER_CONTEXTS.get().isEmpty();
+		return getGrayUserContext().isEmpty();
 	}
 
 	public static String getGrayPositionPrefix(String position) {
@@ -180,15 +281,15 @@ public final class TencentUnitContext {
 
 	public static void putSystemTagsFromUser() {
 		for (String key : CLOUD_SPACE_SYSTEM_FROM_USER_KEYS) {
-			if (USER_CONTEXTS.get().containsKey(key)) {
-				SYSTEM_CONTEXTS.get().put(key, USER_CONTEXTS.get().get(key));
+			if (getUserContext().containsKey(key)) {
+				getSystemContext().put(key, getUserContext().get(key));
 			}
 		}
 	}
 
 	public static void putSystemTags(Map<String, String> tags) {
 		for (Map.Entry<String, String> tag : tags.entrySet()) {
-			SYSTEM_CONTEXTS.get().put(tag.getKey(), tag.getValue());
+			getSystemContext().put(tag.getKey(), tag.getValue());
 		}
 	}
 
@@ -204,69 +305,77 @@ public final class TencentUnitContext {
 	}
 
 	public static String getUserTag(String key) {
-		return USER_CONTEXTS.get().get(key);
+		return getUserContext().get(key);
 	}
 
 	public static String getSystemTag(String key) {
-		return SYSTEM_CONTEXTS.get().get(key);
+		return getSystemContext().get(key);
 	}
 
 	public static Object getObjectRouteTag(String key) {
-		return ROUTE_CONTEXTS.get().get(key);
+		return getRouteContext().get(key);
 	}
 
 	public static String getStringRouteTag(String key) {
-		return (String) ROUTE_CONTEXTS.get().get(key);
+		return (String) getRouteContext().get(key);
 	}
 
 	public static boolean containRouteTag(String key) {
-		return ROUTE_CONTEXTS.get().containsKey(key);
+		return getRouteContext().containsKey(key);
 	}
 
 	public static void removeAll() {
-		USER_CONTEXTS.get().clear();
-		SYSTEM_CONTEXTS.get().clear();
-		ROUTE_CONTEXTS.get().clear();
-		SOURCE_CONTEXTS.get().clear();
-		GRAY_USER_CONTEXTS.get().clear();
-		GRAY_SYSTEM_CONTEXTS.get().clear();
+		getUserContext().clear();
+		getSystemContext().clear();
+		getRouteContext().clear();
+		getSourceContext().clear();
+		getGrayUserContext().clear();
+		getGraySystemContext().clear();
 	}
 
 	public static void clearGrayUserContext() {
-		GRAY_USER_CONTEXTS.get().clear();
+		getGrayUserContext().clear();
 	}
 
 	/**
 	 * 清理客户直接设置或直接影响的 key.
 	 */
 	public static void clearUserTags() {
-		USER_CONTEXTS.get().remove(CLOUD_SPACE_TARGET_UNIT_ID);
-		USER_CONTEXTS.get().remove(CLOUD_SPACE_CUSTOMER_IDENTIFIER);
-		USER_CONTEXTS.get().remove(CLOUD_SPACE_TARGET_SYSTEM);
+		getUserContext().remove(CLOUD_SPACE_TARGET_UNIT_ID);
+		getUserContext().remove(CLOUD_SPACE_CUSTOMER_IDENTIFIER);
+		getUserContext().remove(CLOUD_SPACE_TARGET_SYSTEM);
 	}
 
 	public static void setUnitCompositeContextMap(UnitCompositeContextMap unitCompositeContextMap) {
 		removeAll();
 
-		USER_CONTEXTS.get().putAll(unitCompositeContextMap.getUserContext());
-		SYSTEM_CONTEXTS.get().putAll(unitCompositeContextMap.getSystemContext());
-		SOURCE_CONTEXTS.get().putAll(unitCompositeContextMap.getSourceContext());
-		GRAY_USER_CONTEXTS.get().putAll(unitCompositeContextMap.getGrayUserContext());
-		GRAY_SYSTEM_CONTEXTS.get().putAll(unitCompositeContextMap.getGraySystemContext());
+		getUserContext().putAll(unitCompositeContextMap.getUserContext());
+		getSystemContext().putAll(unitCompositeContextMap.getSystemContext());
+		getSourceContext().putAll(unitCompositeContextMap.getSourceContext());
+		getGrayUserContext().putAll(unitCompositeContextMap.getGrayUserContext());
+		getGraySystemContext().putAll(unitCompositeContextMap.getGraySystemContext());
 	}
 
 
 	public static UnitCompositeContextMap getCompositeContextMap() {
-		return new UnitCompositeContextMap(USER_CONTEXTS.get(), SYSTEM_CONTEXTS.get(), ROUTE_CONTEXTS.get(),
-				SOURCE_CONTEXTS.get(), GRAY_USER_CONTEXTS.get(), GRAY_SYSTEM_CONTEXTS.get());
+		return new UnitCompositeContextMap(new HashMap<>(getUserContext()), new HashMap<>(getSystemContext()), new HashMap<>(getRouteContext()),
+				new HashMap<>(getSourceContext()), new HashMap<>(getGrayUserContext()), new HashMap<>(getGraySystemContext()));
+	}
+
+	/**
+	 * Internal Use.
+	 */
+	public static UnitCompositeContextMap getOriginCompositeContextMap() {
+		return new UnitCompositeContextMap(getUserContext(), getSystemContext(), getRouteContext(),
+				getSourceContext(), getGrayUserContext(), getGraySystemContext());
 	}
 
 	public static String getSourceTag(String key) {
-		return SOURCE_CONTEXTS.get().get(SOURCE_PREFIX + key);
+		return getSourceContext().get(SOURCE_PREFIX + key);
 	}
 
 	public static String getGrayTag(String position, String key) {
-		return GRAY_USER_CONTEXTS.get().get(getGrayPositionPrefix(position) + key);
+		return getGrayUserContext().get(getGrayPositionPrefix(position) + key);
 	}
 
 	public static List<GrayMatchRouteUnit> parseGrayMatchRouteUnitList() {

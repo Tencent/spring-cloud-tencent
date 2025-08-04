@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.metadata.core.TransitiveType;
+import com.tencent.polaris.metadata.core.manager.CalleeMetadataContainerGroup;
+import com.tencent.polaris.plugins.connector.common.constant.ConsulConstant;
 import com.tencent.tsf.unit.core.TencentUnitContext;
 import com.tencent.tsf.unit.core.TencentUnitContext.UnitCompositeContextMap;
 import com.tencent.tsf.unit.core.TencentUnitManager;
@@ -247,9 +250,11 @@ public final class TencentUnitUtils {
 	}
 
 	/**
-	 * tsf spring cloud 普通应用通过注解开启，网关默认都开启.
+	 * tsf spring cloud 普通应用通过注解开启初始化，网关默认都初始化.
 	 */
 	public static void enable() {
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer().
+				putMetadataStringValue(ConsulConstant.NAMESPACE_TYPE_KEY, ConsulConstant.NAMESPACE_TYPE_DEFAULT, TransitiveType.NONE);
 		TencentUnitManager.setEnable(true);
 		TsfUnitConsulManager.init();
 	}

@@ -49,7 +49,7 @@ public class UnitRestTemplateEnhancedPlugin implements EnhancedPlugin {
 			return;
 		}
 
-		TencentUnitContext.UnitCompositeContextMap unitCompositeContextMap = TencentUnitContext.getCompositeContextMap();
+		TencentUnitContext.UnitCompositeContextMap unitCompositeContextMap = TencentUnitContext.getOriginCompositeContextMap();
 		if (!CollectionUtils.isEmpty(unitCompositeContextMap.getSystemContext())) {
 			buildMetadataHeader(httpRequest, unitCompositeContextMap.getSystemContext(), MetadataConstant.HeaderName.TSF_UNIT);
 		}

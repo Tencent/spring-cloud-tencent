@@ -53,7 +53,7 @@ public class UnitScgEnhancedPlugin implements EnhancedPlugin {
 		// get request builder
 		ServerHttpRequest.Builder builder = exchange.getRequest().mutate();
 
-		TencentUnitContext.UnitCompositeContextMap unitCompositeContextMap = TencentUnitContext.getCompositeContextMap();
+		TencentUnitContext.UnitCompositeContextMap unitCompositeContextMap = TencentUnitContext.getOriginCompositeContextMap();
 		if (!com.tencent.polaris.api.utils.CollectionUtils.isEmpty(unitCompositeContextMap.getSystemContext())) {
 			buildMetadataHeader(builder, unitCompositeContextMap.getSystemContext(), MetadataConstant.HeaderName.TSF_UNIT);
 		}

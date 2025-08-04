@@ -54,6 +54,8 @@ public class UnitServletPreEnhancedPlugin implements EnhancedPlugin {
 			return;
 		}
 
+		TencentUnitContext.removeAll();
+
 		String unitContextEncoded = httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_UNIT);
 		if (StringUtils.isNotEmpty(unitContextEncoded)) {
 			Map<String, String> unitMap = JacksonUtils.deserialize2Map(URLDecoder.decode(unitContextEncoded, StandardCharsets.UTF_8));
@@ -73,18 +75,19 @@ public class UnitServletPreEnhancedPlugin implements EnhancedPlugin {
 				Optional.ofNullable(unitMap.get(TencentUnitContext.CLOUD_SPACE_GRAY_UNIT_INFO)).
 						ifPresent(value -> TencentUnitContext.putSystemTag(TencentUnitContext.CLOUD_SPACE_GRAY_UNIT_INFO, value));
 			}
-			if (logger.isDebugEnabled()) {
-				logger.debug("[getSerializeTagsFromRequestMeta] unit context:{}",
-						TencentUnitContext.getCompositeContextMap());
-			}
+		}
 
-			for (String grayKey : TencentUnitManager.getGrayUnitHeaderKey()) {
-				String value = httpServletRequest.getHeader(grayKey);
-				// 非空 value 才设置，便于匹配灰度规则时能否直接跳过
-				if (StringUtils.isNotEmpty(value)) {
-					TencentUnitContext.putGrayUserTag(UnitTagPosition.HEADER.name(), grayKey, value);
-				}
+		for (String grayKey : TencentUnitManager.getGrayUnitHeaderKey()) {
+			String value = httpServletRequest.getHeader(grayKey);
+			// 非空 value 才设置，便于匹配灰度规则时能否直接跳过
+			if (StringUtils.isNotEmpty(value)) {
+				TencentUnitContext.putGrayUserTag(UnitTagPosition.HEADER.name(), grayKey, value);
 			}
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("[getSerializeTagsFromRequestMeta] unit context:{}",
+					TencentUnitContext.getOriginCompositeContextMap());
 		}
 
 	}

@@ -21,10 +21,14 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.tsf.unit.core.TencentUnitContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.core.Ordered;
 
 public class UnitClientFinallyEnhancedPlugin implements EnhancedPlugin {
+
+	private static final Logger LOG = LoggerFactory.getLogger(UnitClientFinallyEnhancedPlugin.class);
 
 	public UnitClientFinallyEnhancedPlugin() {
 	}
@@ -36,6 +40,9 @@ public class UnitClientFinallyEnhancedPlugin implements EnhancedPlugin {
 
 	@Override
 	public void run(EnhancedPluginContext context) throws Throwable {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("clean unit context, unit context:{}", TencentUnitContext.getOriginCompositeContextMap());
+		}
 		TencentUnitContext.removeAll();
 	}
 

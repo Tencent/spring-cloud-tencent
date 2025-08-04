@@ -43,7 +43,7 @@ public class UnitPolarisDiscoveryClient extends PolarisDiscoveryClient {
 		if (TencentUnitManager.isEnable()) {
 			String[] parts = service.split("/");
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("[getInstance] service:{}, unit context:{}", service, TencentUnitContext.getCompositeContextMap());
+				LOGGER.debug("[getInstance] service:{}, unit context:{}", service, TencentUnitContext.getOriginCompositeContextMap());
 			}
 
 			if (parts.length != 2) {

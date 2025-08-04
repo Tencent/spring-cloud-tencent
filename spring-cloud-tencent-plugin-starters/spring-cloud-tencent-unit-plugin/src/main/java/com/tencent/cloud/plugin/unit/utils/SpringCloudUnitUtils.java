@@ -56,7 +56,10 @@ public final class SpringCloudUnitUtils {
 		}
 
 		TencentUnitContext.putSystemTagsFromUser();
-
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("[preRequestRecordUnitContext] service name:{}, unit context:{}",
+					serviceName, TencentUnitContext.getOriginCompositeContextMap());
+		}
 		String system = TencentUnitContext.getSystemTag(TencentUnitContext.CLOUD_SPACE_TARGET_SYSTEM);
 		// 无论 gdu 还是 sdu, 都需要 system 信息，如果没有 system（返回 false），则直接返回
 		if (!checkSystem(system, serviceName)) {
@@ -95,7 +98,7 @@ public final class SpringCloudUnitUtils {
 			TencentUnitContext.putSystemTag(TencentUnitContext.CLOUD_SPACE_GDU_FORWARD_ONLY, Boolean.FALSE.toString());
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("[preRequestRecordUnitContext] gduNsNotExist. only forward to sdu, system:{}, service name:{}, unit context:{}",
-						system, serviceName, TencentUnitContext.getCompositeContextMap());
+						system, serviceName, TencentUnitContext.getOriginCompositeContextMap());
 			}
 		}
 		else {
@@ -108,7 +111,7 @@ public final class SpringCloudUnitUtils {
 				setUnitContext(gduUnitId, gduNs, serviceName);
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("[preRequestRecordUnitContext] cid or business system is empty. only forward to gdu, service name:{}, unit context:{}",
-							serviceName, TencentUnitContext.getCompositeContextMap());
+							serviceName, TencentUnitContext.getOriginCompositeContextMap());
 				}
 				return;
 			}
@@ -125,7 +128,7 @@ public final class SpringCloudUnitUtils {
 				setUnitContext(gduUnitId, gduNs, serviceName);
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("[preRequestRecordUnitContext] gdu first and exist instance. forward to gdu, service name:{}, unit context:{}",
-							serviceName, TencentUnitContext.getCompositeContextMap());
+							serviceName, TencentUnitContext.getOriginCompositeContextMap());
 				}
 			}
 		}
@@ -153,7 +156,7 @@ public final class SpringCloudUnitUtils {
 			}
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("[preRequestRecordUnitContext] do calculate customer num. service name:{}, unit context:{}",
-						serviceName, TencentUnitContext.getCompositeContextMap());
+						serviceName, TencentUnitContext.getOriginCompositeContextMap());
 			}
 		}
 	}
@@ -186,7 +189,7 @@ public final class SpringCloudUnitUtils {
 		setCrossGduContext(gduUnitId, serviceName);
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("[preRequestRecordUnitContext] gdu in other cloud, gdu unit id:{}, service name:{}, unit context:{}",
-					gduUnitId, serviceName, TencentUnitContext.getCompositeContextMap());
+					gduUnitId, serviceName, TencentUnitContext.getOriginCompositeContextMap());
 		}
 		return true;
 	}
@@ -207,7 +210,7 @@ public final class SpringCloudUnitUtils {
 			if (checkUnitIdAndSetContext(destUnitId, system, serviceName)) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("[preRequestRecordUnitContext] unit id exist:{}. service name:{}, unit context:{}",
-							destUnitId, serviceName, TencentUnitContext.getCompositeContextMap());
+							destUnitId, serviceName, TencentUnitContext.getOriginCompositeContextMap());
 				}
 				return true;
 			}
@@ -231,7 +234,7 @@ public final class SpringCloudUnitUtils {
 		if (StringUtils.isEmpty(sourceGrayUnitInfo) && CollectionUtils.isEmpty(TencentUnitManager.getGrayUnitRoutes())) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("[preRequestRecordGrayUnitContext] empty header gray info and empty gray unit routes,"
-						+ "unitContextMap:{}", TencentUnitContext.getCompositeContextMap());
+						+ "unitContextMap:{}", TencentUnitContext.getOriginCompositeContextMap());
 			}
 			return null;
 		}
@@ -242,7 +245,7 @@ public final class SpringCloudUnitUtils {
 			TencentUnitContext.setGrayUnitContext(grayMatchRouteUnitList);
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("[preRequestRecordGrayUnitContext] using header gray, unitContextMap:{}",
-						TencentUnitContext.getCompositeContextMap());
+						TencentUnitContext.getOriginCompositeContextMap());
 			}
 			return null;
 		}
@@ -251,7 +254,7 @@ public final class SpringCloudUnitUtils {
 		if (TencentUnitContext.grayContextIsEmpty()) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("[preRequestRecordGrayUnitContext] empty gray header, unitContextMap:{}",
-						TencentUnitContext.getCompositeContextMap());
+						TencentUnitContext.getOriginCompositeContextMap());
 			}
 			return null;
 		}
@@ -296,24 +299,19 @@ public final class SpringCloudUnitUtils {
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("[preRequestRecordGrayUnitContext] grayMatchRoute:{}, unitContextMap:{}",
-					grayMatchRoute, TencentUnitContext.getCompositeContextMap());
+					grayMatchRoute, TencentUnitContext.getOriginCompositeContextMap());
 		}
 		return routingUnit;
 	}
 
 	/**
-	 * 如果没有 gdu 对应 ns，返回 null；如果目标 ns 为当前 ns，返回 serviceName；其他 ns 则返回 nsId/serviceName.
+	 * 如果没有 gdu 对应 ns，返回 null；SCT 统一返回 nsId/serviceName.
 	 */
 	public static String getGduServiceId(String serviceName, String gduNsId) {
 		if (StringUtils.isEmpty(gduNsId)) {
 			return null;
 		}
-		if (TencentUnitManager.checkLocalNamespace(gduNsId)) {
-			return serviceName;
-		}
-		else {
-			return gduNsId + "/" + serviceName;
-		}
+		return gduNsId + "/" + serviceName;
 	}
 
 	public static String getGduUnitId() {
@@ -345,7 +343,7 @@ public final class SpringCloudUnitUtils {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("[getProxyInfoFromUnitHeader] parse unit from header. path:{}, unit context:{}",
-					path, TencentUnitContext.getCompositeContextMap());
+					path, TencentUnitContext.getOriginCompositeContextMap());
 		}
 	}
 
@@ -433,7 +431,7 @@ public final class SpringCloudUnitUtils {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("[getProxyInfoFromCid] parse unit from cid. path:{}, unit context:{}",
-					path, TencentUnitContext.getCompositeContextMap());
+					path, TencentUnitContext.getOriginCompositeContextMap());
 		}
 	}
 

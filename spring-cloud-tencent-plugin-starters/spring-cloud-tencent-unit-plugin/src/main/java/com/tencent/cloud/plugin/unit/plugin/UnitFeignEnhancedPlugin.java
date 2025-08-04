@@ -53,7 +53,7 @@ public class UnitFeignEnhancedPlugin implements EnhancedPlugin {
 			return;
 		}
 
-		TencentUnitContext.UnitCompositeContextMap unitCompositeContextMap = TencentUnitContext.getCompositeContextMap();
+		TencentUnitContext.UnitCompositeContextMap unitCompositeContextMap = TencentUnitContext.getOriginCompositeContextMap();
 		if (!com.tencent.polaris.api.utils.CollectionUtils.isEmpty(unitCompositeContextMap.getSystemContext())) {
 			buildMetadataHeader(request, unitCompositeContextMap.getSystemContext(), MetadataConstant.HeaderName.TSF_UNIT);
 		}
