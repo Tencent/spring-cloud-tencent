@@ -23,6 +23,7 @@ import java.util.Map;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
@@ -84,7 +85,9 @@ public class PolarisSpanAttributesProvider implements SpanAttributesProvider {
 		}
 		attributes.put("http.port", CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
 				.getRawMetadataStringValue(MetadataConstants.LOCAL_PORT));
-		attributes.put("net.peer.service", context.getTargetServiceInstance().getServiceId());
+		EnhancedRequestContext request = context.getRequest();
+		String service = request.getServiceUrl() != null ? request.getServiceUrl().getHost() : request.getUrl().getHost();
+		attributes.put("net.peer.service", service);
 
 		String serviceLane = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false)
 				.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, TRAFFIC_STAIN_LABEL);

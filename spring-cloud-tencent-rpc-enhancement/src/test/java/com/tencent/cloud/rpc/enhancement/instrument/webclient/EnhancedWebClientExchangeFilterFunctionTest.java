@@ -36,7 +36,6 @@ import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,6 +53,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
@@ -126,7 +126,7 @@ public class EnhancedWebClientExchangeFilterFunctionTest {
 		doReturn(HttpMethod.GET).when(clientRequest).method();
 		ClientResponse.Headers headers = mock(ClientResponse.Headers.class);
 		doReturn(headers).when(clientResponse).headers();
-		doReturn(HttpStatus.valueOf(200)).when(clientResponse).statusCode();
+		doReturn(HttpStatusCode.valueOf(200)).when(clientResponse).statusCode();
 		doReturn(Mono.just(clientResponse)).when(exchangeFunction).exchange(any());
 
 		EnhancedWebClientExchangeFilterFunction reporter = new EnhancedWebClientExchangeFilterFunction(new DefaultEnhancedPluginRunner(new ArrayList<>(), registration, null));
@@ -169,7 +169,7 @@ public class EnhancedWebClientExchangeFilterFunctionTest {
 		// Assert
 		StepVerifier.create(responseMono)
 				.expectNextMatches(response -> {
-					Assertions.assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.statusCode());
+					assertThat(response.statusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 					assertThat(response.headers().asHttpHeaders().containsKey("header-key")).isTrue();
 					return true;
 				})

@@ -20,15 +20,18 @@ package com.tencent.cloud.metadata.core;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.metadata.provider.ServletMetadataProvider;
 import com.tencent.polaris.api.utils.StringUtils;
@@ -59,30 +62,45 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest,
 			@NonNull HttpServletResponse httpServletResponse, FilterChain filterChain)
 			throws ServletException, IOException {
+		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
+		Map<String, String> mergedDisposableMetadata = new HashMap<>();
+		Map<String, String> mergedApplicationMetadata = new HashMap<>();
+		// some tsf headers need to change to polaris header
+		Map<String, String> addHeaders = new HashMap<>();
+		AtomicReference<String> callerIp = new AtomicReference<>("");
+
+		TsfTagUtils.updateTsfMetadata(mergedTransitiveMetadata, mergedDisposableMetadata,
+				mergedApplicationMetadata, addHeaders, callerIp,
+				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_TAGS),
+				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_SYSTEM_TAG),
+				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_METADATA));
+
 		// transitive metadata
 		// from specific header
 		Map<String, String> internalTransitiveMetadata = getInternalMetadata(httpServletRequest, CUSTOM_METADATA);
 		// from header with specific prefix
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(httpServletRequest);
-		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
+
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
 		// disposable metadata
 		// from specific header
 		Map<String, String> internalDisposableMetadata = getInternalMetadata(httpServletRequest, CUSTOM_DISPOSABLE_METADATA);
-		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
+		mergedDisposableMetadata.putAll(internalDisposableMetadata);
 
 		// application metadata
 		Map<String, String> internalApplicationMetadata = getInternalMetadata(httpServletRequest, APPLICATION_METADATA);
-		Map<String, String> mergedApplicationMetadata = new HashMap<>(internalApplicationMetadata);
+		mergedApplicationMetadata.putAll(internalApplicationMetadata);
 
-		String callerIp = "";
+
 		if (StringUtils.isNotBlank(mergedApplicationMetadata.get(LOCAL_IP))) {
-			callerIp = mergedApplicationMetadata.get(LOCAL_IP);
+			callerIp.set(mergedApplicationMetadata.get(LOCAL_IP));
 		}
+		// add headers
+		httpServletRequest = new HttpServletRequestHeaderWrapper(httpServletRequest, addHeaders);
 		// message metadata
-		ServletMetadataProvider callerMessageMetadataProvider = new ServletMetadataProvider(httpServletRequest, callerIp);
+		ServletMetadataProvider callerMessageMetadataProvider = new ServletMetadataProvider(httpServletRequest, callerIp.get());
 
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 
