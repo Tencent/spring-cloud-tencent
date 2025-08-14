@@ -20,6 +20,7 @@ package com.tencent.cloud.plugin.trace.attribute;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -40,7 +41,7 @@ import static com.tencent.polaris.plugins.router.lane.LaneRouter.TRAFFIC_STAIN_L
  */
 public class PolarisSpanAttributesProvider implements SpanAttributesProvider {
 	@Override
-	public Map<String, String> getServerSpanAttributes(EnhancedPluginContext context) {
+	public Map<String, String> getServerPreSpanAttributes(EnhancedPluginContext context) {
 		Map<String, String> attributes = new HashMap<>();
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> transitiveCustomAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
@@ -59,6 +60,9 @@ public class PolarisSpanAttributesProvider implements SpanAttributesProvider {
 		if (CollectionUtils.isNotEmpty(upstreamDisposableCustomAttributes)) {
 			for (Map.Entry<String, String> entry : upstreamDisposableCustomAttributes.entrySet()) {
 				attributes.put("custom." + entry.getKey(), entry.getValue());
+				if (MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME.equals(entry.getKey())) {
+					attributes.put("net.peer.service", entry.getValue());
+				}
 			}
 		}
 		attributes.put("http.port", CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()

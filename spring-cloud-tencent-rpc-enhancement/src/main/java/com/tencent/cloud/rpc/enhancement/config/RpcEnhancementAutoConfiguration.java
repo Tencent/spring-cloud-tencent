@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.config;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import com.tencent.cloud.rpc.enhancement.instrument.feign.EnhancedFeignBeanPostP
 import com.tencent.cloud.rpc.enhancement.instrument.feign.EnhancedLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.instrument.filter.EnhancedReactiveFilter;
 import com.tencent.cloud.rpc.enhancement.instrument.filter.EnhancedServletFilter;
+import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.PolarisLoadBalancerRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.instrument.scg.EnhancedGatewayGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.instrument.webclient.EnhancedWebClientExchangeFilterFunction;
@@ -53,12 +55,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
+import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
+import org.springframework.cloud.client.loadbalancer.RetryLoadBalancerInterceptor;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -182,6 +189,9 @@ public class RpcEnhancementAutoConfiguration {
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
 	protected static class PolarisRestTemplateAutoConfiguration {
 
+		@Autowired(required = false)
+		private List<RestTemplate> restTemplates = Collections.emptyList();
+
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnClass(name = {"org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer"})
@@ -195,6 +205,57 @@ public class RpcEnhancementAutoConfiguration {
 			return new BlockingLoadBalancerClientBeanPostProcessor();
 		}
 
+		@Bean
+		public EnhancedRestTemplateInterceptor enhancedRestTemplateInterceptor(EnhancedPluginRunner pluginRunner) {
+			return new EnhancedRestTemplateInterceptor(pluginRunner);
+		}
+
+		@Bean
+		public SmartInitializingSingleton addEncodeTransferMetadataInterceptorForRestTemplate(EnhancedRestTemplateInterceptor interceptor) {
+			return () -> restTemplates.forEach(restTemplate -> {
+				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
+				list.add(interceptor);
+				restTemplate.setInterceptors(list);
+			});
+		}
+
+		@Bean
+		public RestTemplateCustomizer polarisRestTemplateCustomizer(
+				@Autowired(required = false) RetryLoadBalancerInterceptor retryLoadBalancerInterceptor,
+				@Autowired(required = false) LoadBalancerInterceptor loadBalancerInterceptor) {
+			return restTemplate -> {
+				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
+				// LoadBalancerInterceptor must invoke before EncodeTransferMedataRestTemplateInterceptor
+				int addIndex = list.size();
+				if (CollectionUtils.containsInstance(list, retryLoadBalancerInterceptor) || CollectionUtils.containsInstance(list, loadBalancerInterceptor)) {
+					ClientHttpRequestInterceptor enhancedRestTemplateInterceptor = null;
+					for (int i = 0; i < list.size(); i++) {
+						if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
+							enhancedRestTemplateInterceptor = list.get(i);
+							addIndex = i;
+						}
+					}
+					if (enhancedRestTemplateInterceptor != null) {
+						list.remove(addIndex);
+						list.add(enhancedRestTemplateInterceptor);
+					}
+				}
+				else {
+					if (retryLoadBalancerInterceptor != null || loadBalancerInterceptor != null) {
+						for (int i = 0; i < list.size(); i++) {
+							if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
+								addIndex = i;
+							}
+						}
+						list.add(addIndex,
+								retryLoadBalancerInterceptor != null
+										? retryLoadBalancerInterceptor
+										: loadBalancerInterceptor);
+					}
+				}
+				restTemplate.setInterceptors(list);
+			};
+		}
 	}
 
 	/**

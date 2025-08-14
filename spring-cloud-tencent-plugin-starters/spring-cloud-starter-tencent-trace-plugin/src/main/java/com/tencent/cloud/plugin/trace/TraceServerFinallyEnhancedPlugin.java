@@ -31,20 +31,20 @@ import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.TraceAttributes;
 
-public class TraceClientPreEnhancedPlugin implements EnhancedPlugin {
+public class TraceServerFinallyEnhancedPlugin implements EnhancedPlugin {
 
 	private final PolarisSDKContextManager polarisSDKContextManager;
 
 	private final List<SpanAttributesProvider> spanAttributesProviderList;
 
-	public TraceClientPreEnhancedPlugin(PolarisSDKContextManager polarisSDKContextManager, List<SpanAttributesProvider> spanAttributesProviderList) {
+	public TraceServerFinallyEnhancedPlugin(PolarisSDKContextManager polarisSDKContextManager, List<SpanAttributesProvider> spanAttributesProviderList) {
 		this.polarisSDKContextManager = polarisSDKContextManager;
 		this.spanAttributesProviderList = spanAttributesProviderList;
 	}
 
 	@Override
 	public EnhancedPluginType getType() {
-		return EnhancedPluginType.Client.BEFORE_CALLING;
+		return EnhancedPluginType.Server.FINALLY;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class TraceClientPreEnhancedPlugin implements EnhancedPlugin {
 		Map<String, String> attributes = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(spanAttributesProviderList)) {
 			for (SpanAttributesProvider spanAttributesProvider : spanAttributesProviderList) {
-				Map<String, String> additionalAttributes = spanAttributesProvider.getClientBaggageAttributes(context);
+				Map<String, String> additionalAttributes = spanAttributesProvider.getServerFinallySpanAttributes(context);
 				if (CollectionUtils.isNotEmpty(additionalAttributes)) {
 					attributes.putAll(additionalAttributes);
 				}
@@ -61,18 +61,14 @@ public class TraceClientPreEnhancedPlugin implements EnhancedPlugin {
 
 		TraceAttributes traceAttributes = new TraceAttributes();
 		traceAttributes.setAttributes(attributes);
-		traceAttributes.setAttributeLocation(TraceAttributes.AttributeLocation.BAGGAGE);
+		traceAttributes.setAttributeLocation(TraceAttributes.AttributeLocation.SPAN);
 
 		AssemblyAPI assemblyAPI = polarisSDKContextManager.getAssemblyAPI();
 		assemblyAPI.updateTraceAttributes(traceAttributes);
-		Object otScope = traceAttributes.getOtScope();
-		if (otScope != null) {
-			context.getExtraData().put(SpanAttributesProvider.OT_SCOPE_KEY, otScope);
-		}
 	}
 
 	@Override
 	public int getOrder() {
-		return PluginOrderConstant.ClientPluginOrder.TRACE_CLIENT_PLUGIN_ORDER;
+		return PluginOrderConstant.ServerPluginOrder.TRACE_SERVER_PRE_PLUGIN_ORDER;
 	}
 }

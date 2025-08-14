@@ -26,11 +26,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.common.constant.MetadataConstant;
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import feign.Client;
@@ -63,7 +67,7 @@ public class EnhancedFeignClient implements Client {
 
 	@Override
 	public Response execute(Request request, Options options) throws IOException {
-		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
+		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
 		HttpHeaders requestHeaders = new HttpHeaders();
 		request.headers().forEach((s, strings) -> requestHeaders.addAll(s, new ArrayList<>(strings)));
@@ -71,11 +75,15 @@ public class EnhancedFeignClient implements Client {
 
 		URI serviceUrl = url.resolve(request.requestTemplate().url());
 
+		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(requestHeaders)
 				.httpMethod(HttpMethod.valueOf(request.httpMethod().name()))
 				.url(url)
 				.serviceUrl(serviceUrl)
+				.governanceNamespace(governanceNamespace)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(request);
@@ -97,6 +105,7 @@ public class EnhancedFeignClient implements Client {
 		try {
 			// Run pre enhanced plugins.
 			pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
+			pluginRunner.run(EnhancedPluginType.Client.BEFORE_CALLING, enhancedPluginContext);
 			startMillis = System.currentTimeMillis();
 
 			Response response = delegate.execute(request, options);

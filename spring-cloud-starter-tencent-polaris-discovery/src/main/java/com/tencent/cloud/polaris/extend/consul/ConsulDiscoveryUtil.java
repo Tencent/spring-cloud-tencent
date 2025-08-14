@@ -65,7 +65,7 @@ public final class ConsulDiscoveryUtil {
 		if (StringUtils.isNotBlank(appName)) {
 			return appName;
 		}
-		return env.getProperty("spring.application.name", "application");
+		return env.getProperty("spring.application.name");
 	}
 
 	public static String getInstanceId(ConsulDiscoveryProperties properties, ApplicationContext context) {

@@ -29,7 +29,11 @@ public interface SpanAttributesProvider {
 	 */
 	String OT_SCOPE_KEY = "OT_SCOPE_KEY";
 
-	default Map<String, String> getServerSpanAttributes(EnhancedPluginContext context) {
+	default Map<String, String> getServerPreSpanAttributes(EnhancedPluginContext context) {
+		return new HashMap<>();
+	}
+
+	default Map<String, String> getServerFinallySpanAttributes(EnhancedPluginContext context) {
 		return new HashMap<>();
 	}
 

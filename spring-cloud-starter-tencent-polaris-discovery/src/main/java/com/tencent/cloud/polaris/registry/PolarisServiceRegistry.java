@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.common.util.OtUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -101,13 +102,18 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 	@Override
 	public void register(PolarisRegistration registration) {
 
-		if (StringUtils.isBlank(registration.getServiceId())) {
+		String serviceId = registration.getServiceId();
+		if (StringUtils.isBlank(serviceId)) {
+			serviceId = ApplicationContextAwareUtils.getProperties("spring.application.name");
+		}
+
+		if (StringUtils.isBlank(serviceId)) {
 			LOGGER.warn("No service to register for polaris client...");
 			return;
 		}
 		registration.customize();
-		String serviceId = registration.getServiceId();
 		MetadataContext.setLocalService(serviceId);
+		MetadataContext.setLocalNamespace(polarisDiscoveryProperties.getNamespace());
 
 		// Register instance.
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
