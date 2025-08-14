@@ -17,11 +17,15 @@
 
 package com.tencent.cloud.common.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
@@ -91,6 +95,30 @@ public final class JacksonUtils {
 			LOG.error("Json to object failed. {}", type, e);
 			throw new RuntimeException("Json to object failed.", e);
 		}
+	}
+
+	public static <T> T deserialize(String jsonStr, TypeReference<T> typeReference) {
+		try {
+			return OM.readValue(jsonStr, typeReference);
+		}
+		catch (JsonProcessingException e) {
+			LOG.error("Json to object failed. {}", typeReference, e);
+			throw new RuntimeException("Json to object failed.", e);
+		}
+	}
+
+	public static <T> List<T> deserializeCollection(String jsonArrayStr, Class<T> clazz) {
+		JavaType javaType = getCollectionType(ArrayList.class, clazz);
+		try {
+			return  (List<T>) OM.readValue(jsonArrayStr, javaType);
+		}
+		catch (Exception t) {
+			throw new RuntimeException(t);
+		}
+	}
+
+	public static JavaType getCollectionType(Class<?> collectionClass, Class<?>... elementClasses) {
+		return OM.getTypeFactory().constructParametricType(collectionClass, elementClasses);
 	}
 
 	/**

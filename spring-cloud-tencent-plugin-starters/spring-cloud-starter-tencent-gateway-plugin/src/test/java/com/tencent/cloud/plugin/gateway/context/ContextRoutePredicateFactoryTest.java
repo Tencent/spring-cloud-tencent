@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.plugin.gateway.context;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -27,6 +26,7 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_PREDICATE_PATH_CONTAINER_ATTR;
 
 /**
  * Tests for {@link ContextRoutePredicateFactory}.
@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ContextRoutePredicateFactoryTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withBean(ContextGatewayPropertiesManager.class)
 			.withBean(ContextRoutePredicateFactory.class);
 
 	@Test
@@ -46,12 +47,17 @@ class ContextRoutePredicateFactoryTest {
 			// Act
 			ContextRoutePredicateFactory.Config config = factory.newConfig();
 			config.setGroup("g1");
-			Assertions.assertEquals("g1", config.getGroup());
+			assertThat(config.getGroup()).isEqualTo("g1");
 
 			GatewayPredicate gatewayPredicate = (GatewayPredicate) factory.apply(config);
 			gatewayPredicate.toString();
-			Assertions.assertTrue(gatewayPredicate.test(null));
-			Assertions.assertEquals(config, gatewayPredicate.getConfig());
+
+			MockServerWebExchange exchange = MockServerWebExchange.from(
+					MockServerHttpRequest.get("/test").build());
+			exchange.getAttributes().put(GATEWAY_PREDICATE_PATH_CONTAINER_ATTR, "mock");
+
+			assertThat(gatewayPredicate.test(exchange)).isTrue();
+			assertThat(gatewayPredicate.getConfig()).isEqualTo(config);
 		});
 	}
 

@@ -19,12 +19,14 @@ package com.tencent.cloud.metadata.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.metadata.provider.ReactiveMetadataProvider;
 import com.tencent.polaris.api.utils.StringUtils;
@@ -64,30 +66,47 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		// Get metadata string from http header.
 		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
 
+		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
+		Map<String, String> mergedDisposableMetadata = new HashMap<>();
+		Map<String, String> mergedApplicationMetadata = new HashMap<>();
+		// some tsf headers need to change to polaris header
+		Map<String, String> addHeaders = new HashMap<>();
+		AtomicReference<String> callerIp = new AtomicReference<>("");
+
+		TsfTagUtils.updateTsfMetadata(mergedTransitiveMetadata, mergedDisposableMetadata,
+				mergedApplicationMetadata, addHeaders, callerIp,
+				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_TAGS),
+				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_SYSTEM_TAG),
+				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_METADATA));
+
 		// transitive metadata
 		// from specific header
 		Map<String, String> internalTransitiveMetadata = getInternalMetadata(serverHttpRequest, CUSTOM_METADATA);
 		// from header with specific prefix
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(serverWebExchange);
-		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
 		// disposable metadata
 		// from specific header
 		Map<String, String> internalDisposableMetadata = getInternalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
-		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
+		mergedDisposableMetadata.putAll(internalDisposableMetadata);
 
 		// application metadata
 		Map<String, String> internalApplicationMetadata = getInternalMetadata(serverHttpRequest, APPLICATION_METADATA);
-		Map<String, String> mergedApplicationMetadata = new HashMap<>(internalApplicationMetadata);
+		mergedApplicationMetadata.putAll(internalApplicationMetadata);
 
-		String callerIp = "";
 		if (StringUtils.isNotBlank(mergedApplicationMetadata.get(LOCAL_IP))) {
-			callerIp = mergedApplicationMetadata.get(LOCAL_IP);
+			callerIp.set(mergedApplicationMetadata.get(LOCAL_IP));
 		}
+		// add headers
+		serverHttpRequest = serverHttpRequest.mutate().headers(httpHeaders -> {
+			for (Map.Entry<String, String> entry : addHeaders.entrySet()) {
+				httpHeaders.add(entry.getKey(), entry.getValue());
+			}
+		}).build();
 		// message metadata
-		ReactiveMetadataProvider callerMessageMetadataProvider = new ReactiveMetadataProvider(serverHttpRequest, callerIp);
+		ReactiveMetadataProvider callerMessageMetadataProvider = new ReactiveMetadataProvider(serverHttpRequest, callerIp.get());
 
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 
@@ -97,6 +116,11 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				MetadataContextHolder.get());
 
 		String targetNamespace = serverWebExchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.NAMESPACE);
+		// Compatible with TSF
+		if (StringUtils.isBlank(targetNamespace)) {
+			targetNamespace = serverWebExchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.TSF_NAMESPACE_ID);
+		}
+
 		if (StringUtils.isNotBlank(targetNamespace)) {
 			MetadataContextHolder.get().putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 					MetadataConstant.POLARIS_TARGET_NAMESPACE, targetNamespace);

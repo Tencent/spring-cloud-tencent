@@ -29,14 +29,14 @@ import org.springframework.core.env.Environment;
 
 public class GatewayConfigChangeListener {
 
-	private ApplicationEventPublisher publisher;
+	private final ApplicationEventPublisher publisher;
 
-	private ContextGatewayPropertiesManager manager;
+	private final ContextGatewayPropertiesManager manager;
 
-	private Environment environment;
+	private final Environment environment;
 
 	public GatewayConfigChangeListener(ContextGatewayPropertiesManager manager,
-			ApplicationEventPublisher publisher, Environment environment)  {
+			ApplicationEventPublisher publisher, Environment environment) {
 		this.manager = manager;
 		this.publisher = publisher;
 		this.environment = environment;
@@ -47,7 +47,10 @@ public class GatewayConfigChangeListener {
 		Binder binder = Binder.get(environment);
 		BindResult<ContextGatewayProperties> result = binder.bind(ContextGatewayProperties.PREFIX, ContextGatewayProperties.class);
 		if (result.isBound()) {
-			manager.setGroupRouteMap(result.get().getGroups());
+			manager.refreshGroupRoute(result.get().getGroups());
+			manager.refreshPlugins(result.get().getPlugins());
+			manager.setPathRewrites(result.get().getPathRewrites());
+
 			this.publisher.publishEvent(new RefreshRoutesEvent(event));
 		}
 	}

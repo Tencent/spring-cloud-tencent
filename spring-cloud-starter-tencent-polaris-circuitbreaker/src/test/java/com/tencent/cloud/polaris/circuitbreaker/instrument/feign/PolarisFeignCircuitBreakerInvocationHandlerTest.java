@@ -28,7 +28,6 @@ import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import feign.InvocationHandlerFactory;
 import feign.Target;
 import feign.codec.Decoder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.openfeign.FallbackFactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -84,20 +84,20 @@ class PolarisFeignCircuitBreakerInvocationHandlerTest {
 
 	@Test
 	void testConstructorWithNullTarget() {
-		Assertions.assertThrows(NullPointerException.class, () ->
+		assertThatThrownBy(() ->
 				new PolarisFeignCircuitBreakerInvocationHandler(
 						null, dispatch, fallbackFactory, decoder
 				)
-		);
+		).isExactlyInstanceOf(NullPointerException.class);
 	}
 
 	@Test
 	void testConstructorWithNullDispatch() {
-		Assertions.assertThrows(NullPointerException.class, () ->
+		assertThatThrownBy(() ->
 				new PolarisFeignCircuitBreakerInvocationHandler(
 						target, null, fallbackFactory, decoder
 				)
-		);
+		).isExactlyInstanceOf(NullPointerException.class);
 	}
 
 	@Test
@@ -108,9 +108,9 @@ class PolarisFeignCircuitBreakerInvocationHandlerTest {
 
 		Map<Method, Method> result = PolarisFeignCircuitBreakerInvocationHandler.toFallbackMethod(testDispatch);
 
-		Assertions.assertNotNull(result);
-		Assertions.assertTrue(result.containsKey(method));
-		Assertions.assertEquals(method, result.get(method));
+		assertThat(result).isNotNull();
+		assertThat(result.containsKey(method)).isTrue();
+		assertThat(result.get(method)).isEqualTo(method);
 	}
 
 	@Test
@@ -119,10 +119,10 @@ class PolarisFeignCircuitBreakerInvocationHandlerTest {
 		Object mockProxy = mock(Object.class);
 
 		// Test equals with null
-		Assertions.assertFalse((Boolean) handler.invoke(mockProxy, equalsMethod, new Object[] {null}));
+		assertThat((Boolean) handler.invoke(mockProxy, equalsMethod, new Object[] {null})).isFalse();
 
 		// Test equals with non-proxy object
-		Assertions.assertFalse((Boolean) handler.invoke(mockProxy, equalsMethod, new Object[] {new Object()}));
+		assertThat((Boolean) handler.invoke(mockProxy, equalsMethod, new Object[] {new Object()})).isFalse();
 	}
 
 	@Test
@@ -131,7 +131,7 @@ class PolarisFeignCircuitBreakerInvocationHandlerTest {
 		Object mockProxy = mock(Object.class);
 		when(target.toString()).thenReturn("TestTarget");
 
-		Assertions.assertEquals("TestTarget", handler.invoke(mockProxy, toStringMethod, null));
+		assertThat(handler.invoke(mockProxy, toStringMethod, null)).isEqualTo("TestTarget");
 	}
 
 	@Test
@@ -178,7 +178,7 @@ class PolarisFeignCircuitBreakerInvocationHandlerTest {
 		Object result = handler.invoke(null, testMethod, new Object[] {});
 
 		// Verify
-		Assertions.assertEquals(expected, result);
+		assertThat(result).isEqualTo(expected);
 	}
 
 	@Test
@@ -190,8 +190,8 @@ class PolarisFeignCircuitBreakerInvocationHandlerTest {
 				decoder
 		);
 
-		Assertions.assertEquals(handler, testHandler);
-		Assertions.assertEquals(handler.hashCode(), testHandler.hashCode());
+		assertThat(testHandler).isEqualTo(handler);
+		assertThat(testHandler.hashCode()).isEqualTo(handler.hashCode());
 	}
 
 	interface TestInterface {

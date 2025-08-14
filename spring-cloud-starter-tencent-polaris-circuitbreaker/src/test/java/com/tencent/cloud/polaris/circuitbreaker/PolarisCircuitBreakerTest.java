@@ -30,7 +30,6 @@ import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.polaris.client.util.Utils;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -101,16 +100,16 @@ public class PolarisCircuitBreakerTest {
 
 			Method getConfigurationsMethod = ReflectionUtils.findMethod(PolarisCircuitBreakerFactory.class,
 					"getConfigurations");
-			Assertions.assertNotNull(getConfigurationsMethod);
+			assertThat(getConfigurationsMethod).isNotNull();
 			ReflectionUtils.makeAccessible(getConfigurationsMethod);
 			Map<?, ?> values = (Map<?, ?>) ReflectionUtils.invokeMethod(getConfigurationsMethod, polarisCircuitBreakerFactory);
-			Assertions.assertNotNull(values);
+			assertThat(values).isNotNull();
 
-			Assertions.assertEquals(1, values.size());
+			assertThat(values.size()).isEqualTo(1);
 
 			Utils.sleepUninterrupted(10 * 1000);
 
-			Assertions.assertEquals(0, values.size());
+			assertThat(values.size()).isEqualTo(0);
 		});
 	}
 
