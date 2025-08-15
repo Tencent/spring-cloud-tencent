@@ -222,6 +222,12 @@
 				<version>${revision}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-traffic-mirroring-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
 			<!-- third part framework dependencies -->
 			<dependency>
 				<groupId>org.springdoc</groupId>
