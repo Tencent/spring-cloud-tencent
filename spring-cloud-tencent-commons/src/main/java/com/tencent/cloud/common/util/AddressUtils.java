@@ -67,6 +67,18 @@ public final class AddressUtils {
 		return addressList;
 	}
 
+	public static List<String> parseHostPortList(String addressInfo) {
+		if (StringUtils.isBlank(addressInfo)) {
+			return Collections.emptyList();
+		}
+		String[] addresses = addressInfo.split(ADDRESS_SEPARATOR);
+		List<String> addressList = new ArrayList<>();
+		for (String address : addresses) {
+			addressList.add(address.trim());
+		}
+		return addressList;
+	}
+
 	public static boolean accessible(String ip, int port, int timeout) {
 		Socket socket = new Socket();
 		try {
