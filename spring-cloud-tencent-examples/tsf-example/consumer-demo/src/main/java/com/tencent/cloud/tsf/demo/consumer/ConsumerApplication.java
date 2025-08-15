@@ -17,11 +17,31 @@
 
 package com.tencent.cloud.tsf.demo.consumer;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.SSLContext;
+
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.tsf.annotation.EnableTsf;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,9 +53,43 @@ public class ConsumerApplication {
 		SpringApplication.run(ConsumerApplication.class, args);
 	}
 
-	@LoadBalanced
 	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
+	@RefreshScope
+	@ConditionalOnProperty(value = "server.ssl.bundle", havingValue = "tsf")
+	public HttpClientConnectionManager connectionManagerWithSSL(SslBundles sslBundles) {
+		SSLContext sslContext = sslBundles.getBundle("tsf").createSslContext();
+		SSLContext.setDefault(sslContext);
+		return PoolingHttpClientConnectionManagerBuilder.create()
+				.setTlsSocketStrategy(new DefaultClientTlsStrategy(
+						sslContext,
+						HostnameVerificationPolicy.CLIENT,
+						NoopHostnameVerifier.INSTANCE))
+				.build();
+	}
+
+	@Bean
+	@ConditionalOnExpression("'${server.ssl.bundle:}' != 'tsf'")
+	public HttpClientConnectionManager connectionManager() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+		SSLContext sslContext = SSLContextBuilder.create()
+				.loadTrustMaterial(null, (chain, authType) -> true)
+				.build();
+		return PoolingHttpClientConnectionManagerBuilder.create()
+				.setTlsSocketStrategy(new DefaultClientTlsStrategy(
+						sslContext,
+						HostnameVerificationPolicy.CLIENT,
+						NoopHostnameVerifier.INSTANCE))
+				.build();
+	}
+
+	@Bean
+	@LoadBalanced
+	public RestTemplate restTemplate(
+			RestTemplateBuilder builder, HttpClientConnectionManager connectionManager) {
+		return builder
+				.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(
+						HttpClients.custom()
+								.setConnectionManager(connectionManager)
+								.build()))
+				.build();
 	}
 }
