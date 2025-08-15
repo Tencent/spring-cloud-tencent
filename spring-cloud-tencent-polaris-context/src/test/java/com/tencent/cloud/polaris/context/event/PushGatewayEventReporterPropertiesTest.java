@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.polaris.context.event;
 
+import java.util.List;
+
+import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +40,7 @@ public class PushGatewayEventReporterPropertiesTest {
 	private final ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.event.pushgateway.address=1.2.3.4:9091")
+			.withPropertyValues("spring.cloud.polaris.event.pushgateway.address=1.2.3.4:9091,1.2.3.5:9091")
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.eventQueueSize=123")
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.maxBatchSize=456")
 			.withPropertyValues("spring.cloud.polaris.event.pushgateway.namespace=test-namespace")
@@ -53,7 +56,9 @@ public class PushGatewayEventReporterPropertiesTest {
 		this.applicationContextRunner.run(context -> {
 			PushGatewayEventReporterProperties properties = context.getBean(PushGatewayEventReporterProperties.class);
 			assertThat(properties.isEnabled()).isTrue();
-			assertThat(properties.getAddress()).isEqualTo("1.2.3.4:9091");
+			List<String> addresses = AddressUtils.parseHostPortList(properties.getAddress());
+			assertThat(addresses.get(0)).isEqualTo("1.2.3.4:9091");
+			assertThat(addresses.get(1)).isEqualTo("1.2.3.5:9091");
 			assertThat(properties.getEventQueueSize()).isEqualTo(123);
 			assertThat(properties.getMaxBatchSize()).isEqualTo(456);
 			assertThat(properties.getNamespace()).isEqualTo("test-namespace");

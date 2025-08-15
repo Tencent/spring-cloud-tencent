@@ -16,3 +16,4 @@
 - [feat: add delay interface in tsf-example.](https://github.com/Tencent/spring-cloud-tencent/pull/1705)
 - [fix: fix lb configuration on bootstrap step.](https://github.com/Tencent/spring-cloud-tencent/issues/1706)
 - [feat:support fault injection.](https://github.com/Tencent/spring-cloud-tencent/pull/1707)
+- [feat: support config event and monitor address list.](https://github.com/Tencent/spring-cloud-tencent/pull/1708)

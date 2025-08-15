@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.context.event;
 
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.api.config.plugin.DefaultPlugins;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -49,7 +50,7 @@ public class PushGatewayEventReporterConfigModifier implements PolarisConfigModi
 		else {
 			pushGatewayEventReporterConfig.setEnable(true);
 		}
-		pushGatewayEventReporterConfig.setAddress(properties.getAddress());
+		pushGatewayEventReporterConfig.setAddress(AddressUtils.parseHostPortList(properties.getAddress()));
 		pushGatewayEventReporterConfig.setEventQueueSize(properties.getEventQueueSize());
 		pushGatewayEventReporterConfig.setMaxBatchSize(properties.getMaxBatchSize());
 		pushGatewayEventReporterConfig.setNamespace(properties.getNamespace());
