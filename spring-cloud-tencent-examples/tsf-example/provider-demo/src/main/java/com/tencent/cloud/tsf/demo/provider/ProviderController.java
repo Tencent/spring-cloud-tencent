@@ -129,8 +129,11 @@ public class ProviderController {
 			responseBody = "mock 5xx return.";
 			break;
 		default:
+			LOG.info("provider-demo -- request param: [" + param + "]");
 			responseBody = String.format("from host-ip: %s, request param: %s, response from %s",
 					getInet4Address(), param, providerNameConfig.getName());
+			LOG.info("provider-demo -- provider config name: [" + providerNameConfig.getName() + ']');
+			LOG.info("provider-demo -- response info: [" + responseBody + "]");
 			status = HttpServletResponse.SC_OK;
 			break;
 		}
