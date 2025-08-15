@@ -225,4 +225,35 @@ public class QuickstartCallerController {
 		String path = "http://QuickstartCalleeService/quickstart/callee/test/" + num + "/echo";
 		return restTemplate.getForObject(path, String.class);
 	}
+
+	/**
+	 * Get information of callee.
+	 * @return information of callee
+	 */
+	@GetMapping("/rest-self")
+	public ResponseEntity<String> restSelf(@RequestHeader Map<String, String> headerMap) {
+		String url = "http://QuickstartCallerService/quickstart/caller/rest";
+
+		HttpHeaders headers = new HttpHeaders();
+		for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+			if (StringUtils.isNotBlank(entry.getKey()) && StringUtils.isNotBlank(entry.getValue())
+					&& !entry.getKey().contains("sct-")
+					&& !entry.getKey().contains("SCT-")
+					&& !entry.getKey().contains("polaris-")
+					&& !entry.getKey().contains("POLARIS-")) {
+				headers.add(entry.getKey(), entry.getValue());
+			}
+		}
+
+		// 创建 HttpEntity 实例并传入 HttpHeaders
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+
+		// 使用 exchange 方法发送 GET 请求，并获取响应
+		try {
+			return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		}
+		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
+			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
+		}
+	}
 }

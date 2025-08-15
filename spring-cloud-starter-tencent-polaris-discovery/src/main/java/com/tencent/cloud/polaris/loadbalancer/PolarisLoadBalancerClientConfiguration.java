@@ -22,7 +22,6 @@ import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.ConditionalOnBlockingDiscoveryEnabled;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled;
@@ -34,11 +33,16 @@ import org.springframework.cloud.loadbalancer.core.ReactorLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerEnvironmentPropertyUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Configuration of loadbalancer client.
@@ -57,7 +61,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "roundRobin")
+	@Conditional(RoundRobinStrategyCondition.class)
 	public ReactorLoadBalancer<ServiceInstance> roundRobinLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
@@ -67,7 +71,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "random")
+	@Conditional(RandomStrategyCondition.class)
 	public ReactorLoadBalancer<ServiceInstance> randomLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
@@ -77,7 +81,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRandom")
+	@Conditional(PolarisWeightedRandomStrategyCondition.class)
 	public ReactorLoadBalancer<ServiceInstance> polarisWeightedLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
@@ -87,7 +91,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisRingHash")
+	@Conditional(PolarisRingHashStrategyCondition.class)
 	public ReactorLoadBalancer<ServiceInstance> polarisRingHashLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
@@ -97,7 +101,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRoundRobin", matchIfMissing = true)
+	@Conditional(DefaultStrategyCondition.class)
 	public ReactorLoadBalancer<ServiceInstance> polarisWeightedRoundRobinLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
@@ -133,6 +137,51 @@ public class PolarisLoadBalancerClientConfiguration {
 				ConfigurableApplicationContext context) {
 			return new PolarisServiceInstanceListSupplier(
 					ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().build(context));
+		}
+	}
+
+	static class DefaultStrategyCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return LoadBalancerEnvironmentPropertyUtils.equalToOrMissingForClientOrDefault(context.getEnvironment(),
+					"strategies", "default");
+		}
+	}
+
+	static class PolarisWeightedRandomStrategyCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return LoadBalancerEnvironmentPropertyUtils.equalToForClientOrDefault(context.getEnvironment(),
+					"strategies", "polarisWeightedRandom");
+		}
+	}
+
+	static class RoundRobinStrategyCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return LoadBalancerEnvironmentPropertyUtils.equalToForClientOrDefault(context.getEnvironment(),
+					"strategies", "roundRobin");
+		}
+	}
+
+	static class RandomStrategyCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return LoadBalancerEnvironmentPropertyUtils.equalToForClientOrDefault(context.getEnvironment(),
+					"strategies", "random");
+		}
+	}
+
+	static class PolarisRingHashStrategyCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return LoadBalancerEnvironmentPropertyUtils.equalToForClientOrDefault(context.getEnvironment(),
+					"strategies", "polarisRingHash");
 		}
 	}
 }
