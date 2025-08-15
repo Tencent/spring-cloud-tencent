@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.polaris.ratelimit.config;
 
+import java.util.List;
+
+import com.tencent.cloud.common.util.AddressUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -48,6 +51,10 @@ public class PolarisRateLimitPropertiesTest {
 		assertThat(polarisRateLimitProperties.getRejectRequestTipsFilePath()).isEqualTo("/index.html");
 		assertThat(polarisRateLimitProperties.getRejectHttpCode()).isEqualTo(419);
 		assertThat(polarisRateLimitProperties.getMaxQueuingTime()).isEqualTo(500L);
+		assertThat(polarisRateLimitProperties.getRemoteTaskInterval()).isEqualTo(50L);
+		List<String> limiterAddresses = AddressUtils.parseHostPortList(polarisRateLimitProperties.getLimiterAddresses());
+		assertThat(limiterAddresses.get(0)).isEqualTo("127.0.0.1:8080");
+
 	}
 
 	@SpringBootApplication
