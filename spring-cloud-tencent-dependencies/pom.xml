@@ -74,14 +74,11 @@
 		<revision>2.1.0.0-2021.0.9-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>2.0.3.0-SNAPSHOT</polaris.version>
+		<polaris.version>2.1.0.0-SNAPSHOT</polaris.version>
 
 		<!-- Dependencies -->
 		<bcpkix-jdk18on.version>1.78.1</bcpkix-jdk18on.version>
-		<byte-buddy.version>1.14.19</byte-buddy.version>
 		<jackson.version>2.15.3</jackson.version>
-		<mocktio.version>4.9.0</mocktio.version>
-		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 		<snakeyaml.version>2.0</snakeyaml.version>
 		<springdoc.version>1.7.0</springdoc.version>
 
@@ -239,12 +236,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>net.bytebuddy</groupId>
-				<artifactId>byte-buddy</artifactId>
-				<version>${byte-buddy.version}</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-jdk18on</artifactId>
 				<version>${bcpkix-jdk18on.version}</version>
@@ -260,27 +251,6 @@
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-inline</artifactId>
-				<version>${mocktio.version}</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${mocktio.version}</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>uk.org.webcompere</groupId>
-				<artifactId>system-stubs-jupiter</artifactId>
-				<version>${system-stubs-jupiter.version}</version>
-				<scope>test</scope>
 			</dependency>
 
 			<!-- polaris SDK-->
