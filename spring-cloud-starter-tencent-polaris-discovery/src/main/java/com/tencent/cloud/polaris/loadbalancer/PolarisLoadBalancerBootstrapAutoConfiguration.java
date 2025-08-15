@@ -17,26 +17,19 @@
 
 package com.tencent.cloud.polaris.loadbalancer;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
-import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
-import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
- * Auto-configuration of loadbalancer for Polaris.
+ * Common configuration of loadbalancer.
  *
- * @author Haotian Zhang
+ * @author Yuwei Fu
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnDiscoveryEnabled
-@ConditionalOnPolarisEnabled
-@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.enabled", matchIfMissing = true)
-@AutoConfigureAfter(LoadBalancerAutoConfiguration.class)
-@LoadBalancerClients(defaultConfiguration = PolarisLoadBalancerClientConfiguration.class)
-public class PolarisLoadBalancerAutoConfiguration {
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
+@Import(PolarisLoadBalancerPropertiesAutoConfiguration.class)
+public class PolarisLoadBalancerBootstrapAutoConfiguration {
 
 }
