@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 
 /**
@@ -67,8 +66,13 @@ public class PolarisFaultInjectionHttpResponse implements ClientHttpResponse {
 
 	@NotNull
 	@Override
-	public HttpStatusCode getStatusCode() {
+	public HttpStatus getStatusCode() {
 		return HttpStatus.valueOf(fallbackInfo.getCode());
+	}
+
+	@Override
+	public int getRawStatusCode() throws IOException {
+		return fallbackInfo.getCode();
 	}
 
 	@NotNull

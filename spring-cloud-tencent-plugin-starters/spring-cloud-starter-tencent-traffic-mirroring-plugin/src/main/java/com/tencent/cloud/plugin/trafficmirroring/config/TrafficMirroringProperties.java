@@ -40,7 +40,7 @@ public class TrafficMirroringProperties {
 	/**
 	 * Traffic mirroring request connection timeout in millisecond. Default is 5000.
 	 */
-	private long requestConnectionTimeout = 5000;
+	private int requestConnectionTimeout = 5000;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -62,7 +62,7 @@ public class TrafficMirroringProperties {
 		return requestConnectionTimeout;
 	}
 
-	public void setRequestConnectionTimeout(long requestConnectionTimeout) {
+	public void setRequestConnectionTimeout(int requestConnectionTimeout) {
 		this.requestConnectionTimeout = requestConnectionTimeout;
 	}
 

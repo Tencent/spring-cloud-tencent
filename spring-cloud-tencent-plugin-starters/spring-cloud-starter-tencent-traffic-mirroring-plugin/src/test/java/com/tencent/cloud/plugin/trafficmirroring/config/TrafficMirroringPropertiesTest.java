@@ -69,7 +69,7 @@ public class TrafficMirroringPropertiesTest {
 	void testRequestConnectionTimeoutProperty() {
 		TrafficMirroringProperties properties = new TrafficMirroringProperties();
 
-		properties.setRequestConnectionTimeout(3000L);
+		properties.setRequestConnectionTimeout(3000);
 
 		assertThat(properties.getRequestConnectionTimeout()).isEqualTo(3000L);
 	}
@@ -78,10 +78,10 @@ public class TrafficMirroringPropertiesTest {
 	void testRequestConnectionTimeoutBoundaryValues() {
 		TrafficMirroringProperties properties = new TrafficMirroringProperties();
 
-		properties.setRequestConnectionTimeout(0L);
+		properties.setRequestConnectionTimeout(0);
 		assertThat(properties.getRequestConnectionTimeout()).isZero();
 
-		properties.setRequestConnectionTimeout(-1000L);
+		properties.setRequestConnectionTimeout(-1000);
 		assertThat(properties.getRequestConnectionTimeout()).isNegative();
 	}
 
@@ -90,7 +90,7 @@ public class TrafficMirroringPropertiesTest {
 		TrafficMirroringProperties properties = new TrafficMirroringProperties();
 		properties.setEnabled(false);
 		properties.setRequestPoolSize(8);
-		properties.setRequestConnectionTimeout(2000L);
+		properties.setRequestConnectionTimeout(2000);
 
 		String result = properties.toString();
 

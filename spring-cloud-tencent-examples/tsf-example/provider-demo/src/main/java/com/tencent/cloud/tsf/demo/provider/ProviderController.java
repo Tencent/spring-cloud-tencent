@@ -21,6 +21,8 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -129,8 +131,11 @@ public class ProviderController {
 			responseBody = "mock 5xx return.";
 			break;
 		default:
+			LOG.info("provider-demo -- request param: [" + param + "]");
 			responseBody = String.format("from host-ip: %s, request param: %s, response from %s",
 					getInet4Address(), param, providerNameConfig.getName());
+			LOG.info("provider-demo -- provider config name: [" + providerNameConfig.getName() + ']');
+			LOG.info("provider-demo -- response info: [" + responseBody + "]");
 			status = HttpServletResponse.SC_OK;
 			break;
 		}
@@ -192,5 +197,24 @@ public class ProviderController {
 				getInet4Address(), user, providerNameConfig.getName());
 		LOG.info(response);
 		return response;
+	}
+
+	/**
+	 * 简单的鉴权接口。
+	 * token = provider-demo 鉴权成功，其它失败。
+	 *
+	 * @param token 凭证
+	 * @return 鉴权结果
+	 */
+	@RequestMapping(value = "/checkToken", method = RequestMethod.GET)
+	public Map<String, Object> checkToken(@RequestParam String token) {
+		LOG.info("provider-demo -- request param: [" + token + "]");
+
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("result", "provider-demo".equalsIgnoreCase(token));
+		resultMap.put("payload", "this is payload");
+
+		LOG.info("provider-demo -- response info: [" + resultMap + "]");
+		return resultMap;
 	}
 }
