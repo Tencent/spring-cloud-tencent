@@ -32,6 +32,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
+import com.tencent.polaris.fault.client.exception.FaultInjectionException;
 import com.tencent.polaris.metadata.core.MetadataObjectValue;
 import com.tencent.polaris.metadata.core.MetadataType;
 
@@ -139,6 +140,39 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 				}
 			}
 			throw callAbortedException;
+		}
+		catch (FaultInjectionException faultInjectionException) {
+			MetadataObjectValue<Object> fallbackResponseValue = MetadataContextHolder.get().
+					getMetadataContainer(MetadataType.APPLICATION, true).
+					getMetadataValue(ContextConstant.FaultInjection.FAULT_INJECTION_FALLBACK_HTTP_RESPONSE);
+
+			boolean existFallback = Optional.ofNullable(fallbackResponseValue).
+					map(MetadataObjectValue::getObjectValue).map(Optional::isPresent).orElse(false);
+
+			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
+			if (existFallback) {
+				Object fallbackResponse = fallbackResponseValue.getObjectValue().orElse(null);
+				if (fallbackResponse instanceof ClientHttpResponse) {
+					ClientHttpResponse response = (ClientHttpResponse) fallbackResponse;
+					// get target instance after execute
+					enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
+							.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), httpRequest.getURI());
+
+					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
+							.httpStatus(response.getStatusCode().value())
+							.httpHeaders(response.getHeaders())
+							.build();
+					enhancedPluginContext.setResponse(enhancedResponseContext);
+
+					// Run post enhanced plugins.
+					pluginRunner.run(EnhancedPluginType.Client.POST, enhancedPluginContext);
+					return (T) response;
+				}
+			}
+			enhancedPluginContext.setThrowable(faultInjectionException);
+			// Run exception enhanced plugins.
+			pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
+			throw faultInjectionException;
 		}
 		catch (IOException e) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);

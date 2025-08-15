@@ -53,7 +53,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
@@ -84,7 +83,6 @@ import static javax.servlet.DispatcherType.REQUEST;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
-@EnableConfigurationProperties(RpcEnhancementReporterProperties.class)
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 public class RpcEnhancementAutoConfiguration {
 
@@ -203,12 +201,6 @@ public class RpcEnhancementAutoConfiguration {
 		@ConditionalOnClass(name = {"org.springframework.cloud.client.loadbalancer.LoadBalancerRequestTransformer"})
 		public PolarisLoadBalancerRequestTransformer polarisLoadBalancerRequestTransformer() {
 			return new PolarisLoadBalancerRequestTransformer();
-		}
-
-		@Bean
-		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
-		public BlockingLoadBalancerClientBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
-			return new BlockingLoadBalancerClientBeanPostProcessor();
 		}
 
 		@Bean

@@ -21,6 +21,7 @@ import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.router.RouterConfigModifier;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesAutoConfiguration;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.factory.ConfigAPIFactory;
@@ -44,6 +45,7 @@ public class RouterBootstrapAutoConfigurationTest {
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
 					PolarisNearByRouterProperties.class,
+					RpcEnhancementPropertiesAutoConfiguration.class,
 					RpcEnhancementAutoConfiguration.class,
 					RouterBootstrapAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true")

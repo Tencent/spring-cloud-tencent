@@ -30,6 +30,11 @@ import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.tsf.core.TsfContext;
 import org.springframework.tsf.core.entity.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +44,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
@@ -51,7 +58,7 @@ public class ConsumerController {
 	private ProviderDemoService providerDemoService;
 
 	@RequestMapping(value = "/echo-rest/{str}", method = RequestMethod.GET)
-	public String restProvider(@PathVariable String str,
+	public ResponseEntity<String> restProvider(@PathVariable String str,
 			@RequestParam(required = false) String tagName,
 			@RequestParam(required = false) String tagValue) {
 		if (StringUtils.isNotBlank(tagName)) {
@@ -63,10 +70,15 @@ public class ConsumerController {
 		mTags.put("rest-trace-key2", "value2");
 		TsfContext.putTags(mTags, Tag.ControlFlag.TRANSITIVE);
 		try {
-			return restTemplate.getForObject("http://provider-demo/echo/" + str, String.class);
+			HttpHeaders headers = new HttpHeaders();
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+			return restTemplate.exchange("http://provider-demo/echo/" + str, HttpMethod.GET, entity, String.class);
 		}
 		catch (CallAbortedException callAbortedException) {
-			return callAbortedException.getMessage();
+			return new ResponseEntity<>(callAbortedException.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
+			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
 		}
 	}
 
