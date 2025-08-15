@@ -19,3 +19,4 @@
 - [feat: support config event and monitor address list.](https://github.com/Tencent/spring-cloud-tencent/pull/1708)
 - [fix:replace HttpClient with HttpURLConnection for JDK 8 compatibility.](https://github.com/Tencent/spring-cloud-tencent/pull/1709)
 - [feat:Modify the annotations.](https://github.com/Tencent/spring-cloud-tencent/pull/1712)
+- [fix: polaris.discovery.heartbeat.enabled not effective.](https://github.com/Tencent/spring-cloud-tencent/pull/1713)
