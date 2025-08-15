@@ -102,6 +102,8 @@
 		<spring.cloud.version>2021.0.9</spring.cloud.version>
 
 		<!-- Test -->
+		<byte-buddy.version>1.14.19</byte-buddy.version>
+		<mocktio.version>4.9.0</mocktio.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
 		<!-- Maven Plugin Versions -->
@@ -155,6 +157,26 @@
 				<version>${spring.cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>${byte-buddy.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>${mocktio.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mocktio.version}</version>
+				<scope>test</scope>
 			</dependency>
 
 			<dependency>
