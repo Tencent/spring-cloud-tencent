@@ -20,3 +20,4 @@
 - [feat:Modify the annotations.](https://github.com/Tencent/spring-cloud-tencent/pull/1678)
 - [fix: polaris.discovery.heartbeat.enabled not effective.](https://github.com/Tencent/spring-cloud-tencent/pull/1680)
 - [feat: support config ratelimit addresses and remote task interval.](https://github.com/Tencent/spring-cloud-tencent/pull/1679)
+- [docs:optimize tsf example.](https://github.com/Tencent/spring-cloud-tencent/pull/1710)
