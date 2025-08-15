@@ -8,3 +8,4 @@
 - [feat: support tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1697)
 - [fix: tsf related bugfixes](https://github.com/Tencent/spring-cloud-tencent/pull/1698)
 - [fix: remove conflict dependencies management](https://github.com/Tencent/spring-cloud-tencent/pull/1699)
+- [refactor: optimize log](https://github.com/Tencent/spring-cloud-tencent/pull/1700)
