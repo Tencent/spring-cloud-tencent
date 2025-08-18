@@ -48,8 +48,10 @@ import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFA
  */
 public class PolarisRegistration implements Registration {
 
-	private static final String GROUP_SERVER_ID_FORMAT = "%s__%s";
+
 	private static final String NACOS_CLUSTER = "nacos.cluster";
+
+	private static final String NACOS_GROUP = "nacos.group";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
@@ -83,20 +85,8 @@ public class PolarisRegistration implements Registration {
 		this.servletWebServerApplicationContext = servletWebServerApplicationContext;
 		this.reactiveWebServerApplicationContext = reactiveWebServerApplicationContext;
 		this.customizers = registrationCustomizers;
+		this.serviceId = polarisDiscoveryProperties.getService();
 
-		// generate serviceId
-		if (Objects.isNull(nacosContextProperties)) {
-			serviceId = polarisDiscoveryProperties.getService();
-		}
-		else {
-			String group = nacosContextProperties.getGroup();
-			if (StringUtils.isNotBlank(group) && !DEFAULT_GROUP.equals(group)) {
-				serviceId = String.format(GROUP_SERVER_ID_FORMAT, group, polarisDiscoveryProperties.getService());
-			}
-			else {
-				serviceId = polarisDiscoveryProperties.getService();
-			}
-		}
 
 		// generate host
 		host = polarisContext.getConfig().getGlobal().getAPI().getBindIP();
@@ -118,6 +108,10 @@ public class PolarisRegistration implements Registration {
 				String clusterName = nacosContextProperties.getClusterName();
 				if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER.equals(clusterName)) {
 					instanceMetadata.put(NACOS_CLUSTER, clusterName);
+				}
+				String groupName = nacosContextProperties.getGroup();
+				if (StringUtils.isNotBlank(groupName) && !DEFAULT_GROUP.equals(groupName)) {
+					instanceMetadata.put(NACOS_GROUP, groupName);
 				}
 			}
 

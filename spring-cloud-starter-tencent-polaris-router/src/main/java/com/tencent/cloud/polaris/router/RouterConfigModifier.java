@@ -19,11 +19,13 @@ package com.tencent.cloud.polaris.router;
 
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
+import com.tencent.polaris.plugins.router.metadata.MetadataRouterConfig;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouterConfig;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 
@@ -36,8 +38,10 @@ public class RouterConfigModifier implements PolarisConfigModifier {
 
 	private final PolarisNearByRouterProperties polarisNearByRouterProperties;
 
-	public RouterConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties) {
+	private final PolarisMetadataRouterProperties polarisMetadataRouterProperties;
+	public RouterConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties, PolarisMetadataRouterProperties polarisMetadataRouterProperties) {
 		this.polarisNearByRouterProperties = polarisNearByRouterProperties;
+		this.polarisMetadataRouterProperties = polarisMetadataRouterProperties;
 	}
 
 	@Override
@@ -50,7 +54,9 @@ public class RouterConfigModifier implements PolarisConfigModifier {
 		// Update modified config to source properties
 		configuration.getConsumer().getServiceRouter()
 				.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
-
+		MetadataRouterConfig metadataRouterConfig = configuration.getConsumer().getServiceRouter().getPluginConfig(
+					ServiceRouterConfig.DEFAULT_ROUTER_METADATA, MetadataRouterConfig.class);
+		metadataRouterConfig.setMetadataFailOverType(polarisMetadataRouterProperties.getFailoverType());
 		if (StringUtils.isNotBlank(polarisNearByRouterProperties.getMatchLevel())) {
 			RoutingProto.NearbyRoutingConfig.LocationLevel locationLevel =
 					RoutingProto.NearbyRoutingConfig.LocationLevel.valueOf(StringUtils.upperCase(polarisNearByRouterProperties.getMatchLevel()));

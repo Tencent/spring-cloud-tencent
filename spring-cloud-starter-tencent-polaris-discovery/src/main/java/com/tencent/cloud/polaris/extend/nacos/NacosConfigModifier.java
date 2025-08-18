@@ -61,7 +61,15 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 	/**
 	 * nacos group.
 	 */
-	public static final String GROUP = "group";
+	public static final String NACOS_GROUP = "nacos.group";
+	/**
+	 * nacos service.
+	 */
+	public static final String NACOS_SERVICE = "nacos.service";
+	/**
+	 * nacos cluster.
+	 */
+	public static final String NACOS_CLUSTER = "nacos.cluster";
 	private static final Logger LOGGER = LoggerFactory.getLogger(NacosConfigModifier.class);
 	private static final String ID = "nacos";
 	private final NacosContextProperties nacosContextProperties;
@@ -127,9 +135,14 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 		}
 
 		if (StringUtils.isNotBlank(nacosContextProperties.getGroup())) {
-			metadata.put(GROUP, nacosContextProperties.getGroup());
+			metadata.put(NACOS_GROUP, nacosContextProperties.getGroup());
 		}
-
+		if (StringUtils.isNotBlank(nacosContextProperties.getClusterName())) {
+			metadata.put(NACOS_CLUSTER, nacosContextProperties.getClusterName());
+		}
+		if (StringUtils.isNotBlank(nacosContextProperties.getServiceName())) {
+			metadata.put(NACOS_SERVICE, nacosContextProperties.getServiceName());
+		}
 		configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
 		DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
 		discoveryConfig.setServerConnectorId(ID);

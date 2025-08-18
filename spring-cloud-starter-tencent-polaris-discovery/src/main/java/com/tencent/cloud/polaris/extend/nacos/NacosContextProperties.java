@@ -67,6 +67,13 @@ public class NacosContextProperties {
 	@Value("${spring.cloud.nacos.discovery.username:}")
 	private String username;
 
+
+	/**
+	 * service name to registry.
+	 */
+	@Value("${spring.cloud.nacos.discovery.service:${spring.application.name:}}")
+	private String serviceName;
+
 	/**
 	 * the nacos authentication password.
 	 */
@@ -170,6 +177,15 @@ public class NacosContextProperties {
 		this.namespace = namespace;
 	}
 
+
+	String getServiceName() {
+		return serviceName;
+	}
+
+	void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
 	@Override
 	public String toString() {
 		return "NacosContextProperties{" +
@@ -178,11 +194,12 @@ public class NacosContextProperties {
 				", registerEnabled=" + registerEnabled +
 				", serverAddr='" + serverAddr + '\'' +
 				", username='" + username + '\'' +
+				", serviceName='" + serviceName + '\'' +
 				", password='" + password + '\'' +
 				", clusterName='" + clusterName + '\'' +
 				", group='" + group + '\'' +
-				", contextPath='" + contextPath + '\'' +
 				", namespace='" + namespace + '\'' +
+				", contextPath='" + contextPath + '\'' +
 				'}';
 	}
 }

@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.polaris.router.config.properties;
 
+import com.tencent.polaris.api.rpc.MetadataFailoverType;
+import com.tencent.polaris.plugins.router.metadata.FailOverType;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -27,6 +30,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class PolarisMetadataRouterProperties {
 
 	private boolean enabled = true;
+
+	private FailOverType failoverType = FailOverType.all;
+
+	public FailOverType getFailoverType() {
+		return failoverType;
+	}
+
+	public void setFailoverType(FailOverType failoverType) {
+		this.failoverType = failoverType;
+	}
 
 	public boolean isEnabled() {
 		return enabled;
