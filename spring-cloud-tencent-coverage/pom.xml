@@ -106,6 +106,12 @@
 			<artifactId>spring-cloud-starter-tencent-fault-injection-plugin</artifactId>
 			<version>${revision}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-starter-tencent-tsf-tls-plugin</artifactId>
+			<version>${revision}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

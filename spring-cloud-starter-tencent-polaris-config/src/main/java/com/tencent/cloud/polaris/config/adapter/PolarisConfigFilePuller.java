@@ -19,12 +19,16 @@ package com.tencent.cloud.polaris.config.adapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import com.tencent.cloud.plugin.tsf.tls.utils.SyncUtils;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.cloud.polaris.context.config.extend.tsf.TsfTlsProperties;
 import com.tencent.polaris.api.utils.ClassUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
@@ -35,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.env.CompositePropertySource;
+import org.springframework.core.env.MapPropertySource;
 
 import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadGroupPolarisPropertySource;
 import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadPolarisPropertySource;
@@ -161,6 +166,79 @@ public final class PolarisConfigFilePuller {
 			}
 			compositePropertySource.addPropertySource(polarisPropertySource);
 			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+		}
+	}
+
+	/**
+	 * Init TSF TLS property source.
+	 * @param compositePropertySource compositePropertySource
+	 */
+	public void initTsfTlsPropertySource(CompositePropertySource compositePropertySource,
+			TsfTlsProperties tsfTlsProperties, String serviceName) {
+		String address = System.getProperty("MESH_CITADEL_ADDR", System.getenv("MESH_CITADEL_ADDR"));
+		if (StringUtils.isNotBlank(address)
+				&& (StringUtils.equals("tsf", System.getProperty("server.ssl.bundle"))
+				|| "tsf".equals(compositePropertySource.getProperty(("server.ssl.bundle"))))
+				&& ClassUtils.isClassPresent("com.tencent.cloud.plugin.tsf.tls.utils.SyncUtils")
+				&& !SyncUtils.isInitialized()) {
+			// get certPath
+			String certPath = System.getProperty("MESH_CITADEL_CERT", System.getenv("MESH_CITADEL_CERT"));
+			// get token
+			String token = System.getProperty("tsf_token", System.getenv("tsf_token"));
+			// get validityDuration
+			Object validityDuration = compositePropertySource.getProperty("spring.cloud.polaris.tls.validityDuration");
+			if (validityDuration == null) {
+				validityDuration = tsfTlsProperties.getValidityDuration();
+			}
+			if (validityDuration instanceof String) {
+				validityDuration = Long.valueOf((String) validityDuration);
+			}
+			// get refreshBefore
+			Object refreshBefore = compositePropertySource.getProperty("spring.cloud.polaris.tls.refreshBefore");
+			if (refreshBefore == null) {
+				refreshBefore = tsfTlsProperties.getRefreshBefore();
+			}
+			if (refreshBefore instanceof String) {
+				refreshBefore = Long.valueOf((String) refreshBefore);
+			}
+			// get watchInterval
+			Object watchInterval = compositePropertySource.getProperty("spring.cloud.polaris.tls.watchInterval");
+			if (watchInterval == null) {
+				watchInterval = tsfTlsProperties.getWatchInterval();
+			}
+			if (watchInterval instanceof String) {
+				watchInterval = Long.valueOf((String) watchInterval);
+			}
+			SyncUtils.init(serviceName, address, certPath, token, (Long) validityDuration, (Long) refreshBefore, (Long) watchInterval);
+			if (SyncUtils.isVerified()) {
+				Map<String, Object> tlsEnvProperties = new HashMap<>();
+				// set ssl
+				Object clientAuth = compositePropertySource.getProperty("server.ssl.client-auth");
+				if (clientAuth == null) {
+					clientAuth = System.getProperty("server.ssl.client-auth", "want");
+				}
+				tlsEnvProperties.put("server.ssl.client-auth", clientAuth);
+				Object protocol = compositePropertySource.getProperty("spring.cloud.polaris.discovery.protocol");
+				if (protocol == null) {
+					protocol = System.getProperty("spring.cloud.polaris.discovery.protocol", "https");
+				}
+				tlsEnvProperties.put("spring.cloud.polaris.discovery.protocol", protocol);
+				tlsEnvProperties.put("tsf.discovery.scheme", protocol);
+
+				// set tsf spring ssl bundle
+				tlsEnvProperties.put("spring.ssl.bundle.pem.tsf.reload-on-update", "true");
+				if (StringUtils.isNotBlank(SyncUtils.getPemKeyStoreCertPath()) && StringUtils.isNotBlank(SyncUtils.getPemKeyStoreKeyPath())) {
+					tlsEnvProperties.put("spring.ssl.bundle.pem.tsf.keystore.certificate", SyncUtils.getPemKeyStoreCertPath());
+					tlsEnvProperties.put("spring.ssl.bundle.pem.tsf.keystore.private-key", SyncUtils.getPemKeyStoreKeyPath());
+				}
+				if (StringUtils.isNotBlank(SyncUtils.getPemTrustStoreCertPath())) {
+					tlsEnvProperties.put("spring.ssl.bundle.pem.tsf.truststore.certificate", SyncUtils.getPemTrustStoreCertPath());
+				}
+
+				// process environment
+				MapPropertySource propertySource = new MapPropertySource("tsf-tls-config-data", tlsEnvProperties);
+				compositePropertySource.addPropertySource(propertySource);
+			}
 		}
 	}
 

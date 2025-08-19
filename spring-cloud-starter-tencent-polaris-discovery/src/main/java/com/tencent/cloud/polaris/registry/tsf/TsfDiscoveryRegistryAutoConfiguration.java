@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.registry.tsf;
 
 import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
+import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
@@ -67,5 +68,12 @@ public class TsfDiscoveryRegistryAutoConfiguration {
 	@ConditionalOnProperty(value = "tsf.swagger.enabled", havingValue = "true", matchIfMissing = true)
 	public TsfApiPolarisRegistrationCustomizer tsfApiPolarisRegistrationCustomizer(ApplicationContext context) {
 		return new TsfApiPolarisRegistrationCustomizer(context);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public TsfTagsRegistrationCustomizer tsfTagsRegistrationCustomizer(TsfCoreProperties tsfCoreProperties,
+			PolarisDiscoveryProperties polarisDiscoveryProperties) {
+		return new TsfTagsRegistrationCustomizer(tsfCoreProperties, polarisDiscoveryProperties);
 	}
 }

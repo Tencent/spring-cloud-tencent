@@ -1,0 +1,20 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>spring-cloud-tencent-plugin-starters</artifactId>
+		<groupId>com.tencent.cloud</groupId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>spring-cloud-starter-tencent-tsf-tls-plugin</artifactId>
+	<name>Spring Cloud Tencent TSF TLS Plugin</name>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
+		</dependency>
+	</dependencies>
+</project>
