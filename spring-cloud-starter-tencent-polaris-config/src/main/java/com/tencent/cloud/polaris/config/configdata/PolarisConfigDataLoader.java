@@ -132,6 +132,8 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 		}
 		// load tsf default config group
 		this.puller.initTsfConfigGroups(compositePropertySource);
+		// load tsf tls properties if need.
+		this.puller.initTsfTlsPropertySource(compositePropertySource, resource.getTsfTlsProperties(), resource.getServiceName());
 		if (polarisConfigCustomExtensionLayer != null) {
 			polarisConfigCustomExtensionLayer.executeAfterLocateConfigReturning(compositePropertySource);
 		}

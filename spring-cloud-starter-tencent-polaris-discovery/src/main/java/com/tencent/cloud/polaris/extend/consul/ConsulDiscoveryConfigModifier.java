@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.tencent.cloud.common.constant.OrderConstant;
-import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
@@ -125,10 +124,6 @@ public class ConsulDiscoveryConfigModifier implements PolarisConfigModifier {
 			metadata.put(ConsulConstant.MetadataMapKey.PREFER_IP_ADDRESS_KEY,
 					String.valueOf(consulDiscoveryProperties.isPreferIpAddress()));
 			metadata.put(ConsulConstant.MetadataMapKey.IP_ADDRESS_KEY, consulDiscoveryProperties.getHostname());
-		}
-		if (tsfCoreProperties != null) {
-			// tags
-			metadata.put(ConsulConstant.MetadataMapKey.TAGS_KEY, JacksonUtils.serialize2Json(tsfCoreProperties.getTsfTags()));
 		}
 		configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
 

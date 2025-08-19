@@ -21,3 +21,4 @@
 - [fix: polaris.discovery.heartbeat.enabled not effective.](https://github.com/Tencent/spring-cloud-tencent/pull/1680)
 - [feat: support config ratelimit addresses and remote task interval.](https://github.com/Tencent/spring-cloud-tencent/pull/1679)
 - [docs:optimize tsf example.](https://github.com/Tencent/spring-cloud-tencent/pull/1710)
+- [feat:support TSF certificate manager.](https://github.com/Tencent/spring-cloud-tencent/pull/1715)

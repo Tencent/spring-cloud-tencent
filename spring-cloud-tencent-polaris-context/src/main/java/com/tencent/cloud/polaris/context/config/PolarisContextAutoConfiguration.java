@@ -29,6 +29,7 @@ import com.tencent.cloud.polaris.context.admin.PolarisAdminProperties;
 import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
 import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
 import com.tencent.cloud.polaris.context.config.extend.tsf.TsfInstanceMetadataProvider;
+import com.tencent.cloud.polaris.context.config.extend.tsf.TsfTlsProperties;
 import com.tencent.cloud.polaris.context.event.PushGatewayEventReporterConfigModifier;
 import com.tencent.cloud.polaris.context.event.PushGatewayEventReporterProperties;
 import com.tencent.cloud.polaris.context.listener.PolarisContextApplicationEventListener;
@@ -111,6 +112,12 @@ public class PolarisContextAutoConfiguration {
 	@ConditionalOnMissingBean
 	public TsfCoreProperties tsfCoreProperties() {
 		return new TsfCoreProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public TsfTlsProperties tsfTlsProperties() {
+		return new TsfTlsProperties();
 	}
 
 	@Bean
