@@ -26,9 +26,8 @@ import javax.net.ssl.SSLContext;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
-import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 
 import org.springframework.boot.SpringApplication;
@@ -60,10 +59,10 @@ public class ConsumerApplication {
 		SSLContext sslContext = sslBundles.getBundle("tsf").createSslContext();
 		SSLContext.setDefault(sslContext);
 		return PoolingHttpClientConnectionManagerBuilder.create()
-				.setTlsSocketStrategy(new DefaultClientTlsStrategy(
+				.setSSLSocketFactory(new SSLConnectionSocketFactory(
 						sslContext,
-						HostnameVerificationPolicy.CLIENT,
-						NoopHostnameVerifier.INSTANCE))
+						NoopHostnameVerifier.INSTANCE
+				))
 				.build();
 	}
 
@@ -74,10 +73,10 @@ public class ConsumerApplication {
 				.loadTrustMaterial(null, (chain, authType) -> true)
 				.build();
 		return PoolingHttpClientConnectionManagerBuilder.create()
-				.setTlsSocketStrategy(new DefaultClientTlsStrategy(
+				.setSSLSocketFactory(new SSLConnectionSocketFactory(
 						sslContext,
-						HostnameVerificationPolicy.CLIENT,
-						NoopHostnameVerifier.INSTANCE))
+						NoopHostnameVerifier.INSTANCE
+				))
 				.build();
 	}
 

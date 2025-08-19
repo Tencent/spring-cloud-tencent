@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.ApplicationListener;
@@ -45,12 +46,14 @@ public class TlsReadyApplicationListener implements ApplicationListener<Applicat
 		SslBundles sslBundles = ApplicationContextAwareUtils.getBeanIfExists(SslBundles.class);
 		ContextRefresher contextRefresher = ApplicationContextAwareUtils.getBeanIfExists(ContextRefresher.class);
 		try {
-			if (sslBundles != null && contextRefresher != null && isSet.compareAndSet(false, true)
-					&& sslBundles.getBundleNames().contains("tsf")) {
-				sslBundles.addBundleUpdateHandler("tsf", sslBundle -> contextRefresher.refresh());
-			}
-			else if (sslBundles != null && !sslBundles.getBundleNames().contains("tsf")) {
-				log.warn("tsf ssl bundle is not registered.");
+			if (sslBundles != null && contextRefresher != null && isSet.compareAndSet(false, true)) {
+				try {
+					sslBundles.getBundle("tsf");
+					sslBundles.addBundleUpdateHandler("tsf", sslBundle -> contextRefresher.refresh());
+				}
+				catch (NoSuchSslBundleException e) {
+					log.warn("tsf ssl bundle is not registered.");
+				}
 			}
 		}
 		catch (Throwable throwable) {
