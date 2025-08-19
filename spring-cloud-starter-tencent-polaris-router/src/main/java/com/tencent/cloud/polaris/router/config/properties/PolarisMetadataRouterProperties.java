@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.polaris.router.config.properties;
 
-import com.tencent.polaris.api.rpc.MetadataFailoverType;
 import com.tencent.polaris.plugins.router.metadata.FailOverType;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

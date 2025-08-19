@@ -60,6 +60,11 @@ public class NacosContextProperties {
 	 */
 	@Value("${spring.cloud.nacos.discovery.server-addr:}")
 	private String serverAddr;
+	/**
+	 * nacos discovery server address.
+	 */
+	@Value("${spring.cloud.nacos.discovery.ephemeral:false}")
+	private boolean ephemeral;
 
 	/**
 	 * the nacos authentication username.
@@ -177,7 +182,13 @@ public class NacosContextProperties {
 		this.namespace = namespace;
 	}
 
+	public boolean isEphemeral() {
+		return ephemeral;
+	}
 
+	public void setEphemeral(boolean ephemeral) {
+		this.ephemeral = ephemeral;
+	}
 	String getServiceName() {
 		return serviceName;
 	}

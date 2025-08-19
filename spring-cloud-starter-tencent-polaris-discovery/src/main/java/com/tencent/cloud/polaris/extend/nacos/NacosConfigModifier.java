@@ -70,6 +70,10 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 	 * nacos cluster.
 	 */
 	public static final String NACOS_CLUSTER = "nacos.cluster";
+	/**
+	 * nacos ephemeral.
+	 */
+	public static final String NACOS_EPHEMERAL = "nacos.ephemeral";
 	private static final Logger LOGGER = LoggerFactory.getLogger(NacosConfigModifier.class);
 	private static final String ID = "nacos";
 	private final NacosContextProperties nacosContextProperties;
@@ -143,6 +147,7 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 		if (StringUtils.isNotBlank(nacosContextProperties.getServiceName())) {
 			metadata.put(NACOS_SERVICE, nacosContextProperties.getServiceName());
 		}
+		metadata.put(NACOS_EPHEMERAL, String.valueOf(nacosContextProperties.isEphemeral()));
 		configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
 		DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
 		discoveryConfig.setServerConnectorId(ID);

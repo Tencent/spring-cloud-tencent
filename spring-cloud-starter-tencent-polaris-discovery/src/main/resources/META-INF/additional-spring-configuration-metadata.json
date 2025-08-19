@@ -115,6 +115,12 @@
       "defaultValue": false
     },
     {
+      "name": "spring.cloud.nacos.discovery.ephemeral",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
+      "defaultValue": false
+    },
+    {
       "name": "spring.cloud.nacos.discovery.group",
       "type": "java.lang.String",
       "description": "group name for nacos.",
