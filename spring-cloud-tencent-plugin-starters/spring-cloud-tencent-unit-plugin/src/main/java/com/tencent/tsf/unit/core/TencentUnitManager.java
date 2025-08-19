@@ -378,7 +378,7 @@ public final class TencentUnitManager {
 							.getOptions());
 					break;
 				}
-				// TODO: 2023/11/3 支持自定义算法
+
 				transformAction.setUnitTransformAlgorithm(unitTransformAlgorithm);
 
 				tagTransform = unitRouteInfo.getTencent().getUnitRouteRule().getTagTransforms().get(0);

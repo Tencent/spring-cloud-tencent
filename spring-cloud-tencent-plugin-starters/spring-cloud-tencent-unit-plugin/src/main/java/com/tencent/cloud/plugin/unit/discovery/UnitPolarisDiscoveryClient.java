@@ -30,6 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.client.ServiceInstance;
 
+/**
+ * Support unit discovery.
+ * TODO: support reactive discovery.
+ */
 public class UnitPolarisDiscoveryClient extends PolarisDiscoveryClient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UnitPolarisDiscoveryClient.class);
@@ -49,6 +53,7 @@ public class UnitPolarisDiscoveryClient extends PolarisDiscoveryClient {
 	@Override
 	public List<ServiceInstance> getInstances(String service) {
 		if (TencentUnitManager.isEnable()) {
+			// if service is not in the format of namespace/service, we will use the namespace in unit context
 			String[] parts = service.split("/");
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("[getInstance] service:{}, unit context:{}", service, TencentUnitContext.getOriginCompositeContextMap());
