@@ -149,7 +149,7 @@ public final class TencentUnitContext {
 
 	private static Map<String, String> getUserContext() {
 		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(USER_CONTEXTS_KEY);
 		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
 			return metadataObjectValue.getObjectValue().get();
@@ -163,7 +163,7 @@ public final class TencentUnitContext {
 
 	private static Map<String, String> getSystemContext() {
 		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(SYSTEM_CONTEXTS_KEY);
 		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
 			return metadataObjectValue.getObjectValue().get();
@@ -177,7 +177,7 @@ public final class TencentUnitContext {
 
 	private static Map<String, Object> getRouteContext() {
 		MetadataObjectValue<Map<String, Object>> metadataObjectValue = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ROUTE_CONTEXTS_KEY);
 		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
 			return metadataObjectValue.getObjectValue().get();
@@ -191,7 +191,7 @@ public final class TencentUnitContext {
 
 	private static Map<String, String> getSourceContext() {
 		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(SOURCE_CONTEXTS_KEY);
 		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
 			return metadataObjectValue.getObjectValue().get();
@@ -205,7 +205,7 @@ public final class TencentUnitContext {
 
 	private static Map<String, String> getGrayUserContext() {
 		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(GRAY_USER_CONTEXTS_KEY);
 		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
 			return metadataObjectValue.getObjectValue().get();
@@ -219,7 +219,7 @@ public final class TencentUnitContext {
 
 	private static Map<String, String> getGraySystemContext() {
 		MetadataObjectValue<Map<String, String>> metadataObjectValue = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(GRAY_SYSTEM_CONTEXTS_KEY);
 		if (MetadataContextUtils.existMetadataValue(metadataObjectValue)) {
 			return metadataObjectValue.getObjectValue().get();
