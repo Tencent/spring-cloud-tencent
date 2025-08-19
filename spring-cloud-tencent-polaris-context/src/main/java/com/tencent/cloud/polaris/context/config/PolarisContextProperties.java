@@ -89,6 +89,8 @@ public class PolarisContextProperties {
 	@Value("${spring.cloud.polaris.service:${spring.application.name:}}")
 	private String service;
 
+	private Long apiTimeout = 1000L;
+
 	public Configuration configuration(List<PolarisConfigModifier> modifierList, Supplier<String> ipAddressSupplier, Supplier<Integer> portSupplier) {
 		// 1. Read user-defined polaris.yml configuration
 		ConfigurationImpl configuration = (ConfigurationImpl) ConfigAPIFactory
@@ -105,6 +107,7 @@ public class PolarisContextProperties {
 		}
 
 		configuration.getGlobal().getAPI().setBindIP(defaultHost);
+		configuration.getGlobal().getAPI().setTimeout(apiTimeout);
 
 		Collection<PolarisConfigModifier> modifiers = modifierList;
 		modifiers = modifiers.stream()
@@ -183,6 +186,14 @@ public class PolarisContextProperties {
 		this.service = service;
 	}
 
+	public Long getApiTimeout() {
+		return apiTimeout;
+	}
+
+	public void setApiTimeout(Long apiTimeout) {
+		this.apiTimeout = apiTimeout;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisContextProperties{" +
@@ -194,6 +205,7 @@ public class PolarisContextProperties {
 				", enabled=" + enabled +
 				", namespace='" + namespace + '\'' +
 				((StringUtils.isBlank(this.service)) ? "" : ", service='" + service + '\'') +
+				", apiTimeout=" + apiTimeout +
 				'}';
 	}
 }
