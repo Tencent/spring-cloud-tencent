@@ -223,8 +223,6 @@ public class TsfCoreProperties {
 		if (StringUtils.isNotBlank(getInstanceGroup())) {
 			tags.add("group=" + getInstanceGroup());
 		}
-		//store the secure flag in the tags so that clients will be able to figure out whether to use http or https automatically
-		tags.add("secure=" + getScheme().equalsIgnoreCase("https"));
 		return tags;
 	}
 
