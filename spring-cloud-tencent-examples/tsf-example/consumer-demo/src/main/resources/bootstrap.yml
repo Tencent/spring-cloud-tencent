@@ -3,8 +3,6 @@ server:
 spring:
   application:
     name: consumer-demo
-  config:
-    import: optional:polaris
 
 feign:
   tsf:

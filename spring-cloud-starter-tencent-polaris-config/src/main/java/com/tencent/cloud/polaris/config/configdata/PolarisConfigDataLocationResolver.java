@@ -29,6 +29,7 @@ import com.tencent.cloud.polaris.context.ModifyAddress;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.cloud.polaris.context.config.extend.tsf.TsfTlsProperties;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -149,6 +150,14 @@ public class PolarisConfigDataLocationResolver implements
 			return Collections.emptyList();
 		}
 
+		TsfTlsProperties tsfTlsProperties = loadPolarisConfigProperties(
+				resolverContext,
+				TsfTlsProperties.class,
+				POLARIS_PREFIX + ".tls");
+		if (Objects.isNull(tsfTlsProperties)) {
+			tsfTlsProperties = new TsfTlsProperties();
+		}
+
 		// prepare and init earlier Polaris SDKContext to pull config files from remote.
 		try {
 			prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
@@ -172,8 +181,11 @@ public class PolarisConfigDataLocationResolver implements
 		bootstrapContext.registerIfAbsent(PolarisContextProperties.class,
 				BootstrapRegistry.InstanceSupplier.of(polarisContextProperties));
 
+		bootstrapContext.registerIfAbsent(TsfTlsProperties.class,
+				BootstrapRegistry.InstanceSupplier.of(tsfTlsProperties));
+
 		return loadConfigDataResources(resolverContext,
-				location, profiles, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+				location, profiles, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties, tsfTlsProperties);
 	}
 
 	@Override
@@ -211,12 +223,21 @@ public class PolarisConfigDataLocationResolver implements
 			Profiles profiles,
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisCryptoConfigProperties polarisCryptoConfigProperties,
-			PolarisContextProperties polarisContextProperties) {
+			PolarisContextProperties polarisContextProperties,
+			TsfTlsProperties tsfTlsProperties) {
 		List<PolarisConfigDataResource> result = new ArrayList<>();
 		boolean optional = location.isOptional();
 		String groupFileName = getRealGroupFileName(location);
 		String serviceName = loadPolarisConfigProperties(resolverContext,
-				String.class, "spring.application.name");
+				String.class, "spring.cloud.polaris.discovery.service");
+		if (StringUtils.isBlank(serviceName)) {
+			serviceName = loadPolarisConfigProperties(resolverContext,
+					String.class, "spring.cloud.polaris.service");
+		}
+		if (StringUtils.isBlank(serviceName)) {
+			serviceName = loadPolarisConfigProperties(resolverContext,
+					String.class, "spring.application.name");
+		}
 		if (StringUtils.isBlank(serviceName)) {
 			serviceName = "application";
 			log.warn("No spring.application.name found, defaulting to 'application'");
@@ -233,6 +254,7 @@ public class PolarisConfigDataLocationResolver implements
 				polarisConfigProperties,
 				polarisCryptoConfigProperties,
 				polarisContextProperties,
+				tsfTlsProperties,
 				profiles, optional,
 				fileName, groupName, serviceName
 		);
