@@ -67,6 +67,10 @@ public final class MetadataConstant {
 		 */
 		public static final String TSF_METADATA = "TSF-Metadata";
 		/**
+		 * TSF Unit.
+		 */
+		public static final String TSF_UNIT = "TSF-Unit";
+		/**
 		 * Custom metadata.
 		 */
 		public static final String CUSTOM_METADATA = "SCT-CUSTOM-METADATA";

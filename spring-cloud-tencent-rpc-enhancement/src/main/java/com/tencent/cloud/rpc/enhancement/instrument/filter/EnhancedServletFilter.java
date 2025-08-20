@@ -73,6 +73,7 @@ public class EnhancedServletFilter extends OncePerRequestFilter {
 				.url(URI.create(request.getRequestURL().toString()))
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
+		enhancedPluginContext.setOriginRequest(request);
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
 

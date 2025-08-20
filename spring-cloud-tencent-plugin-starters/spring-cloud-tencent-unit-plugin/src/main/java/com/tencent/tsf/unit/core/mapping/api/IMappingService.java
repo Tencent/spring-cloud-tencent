@@ -15,24 +15,12 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.tsf.unit.annotation;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.tencent.tsf.unit.core.mapping.api;
 
 /**
- * Empty annotation. Compatible with old versions TSF SDK.
- *
- * @author Haotian Zhang
+ * 数据映射服务，根据用户输入，执行转换后输出.
  */
-@Deprecated(since = "2.0.0.0")
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Documented
-public @interface TsfUnitCustomerIdentifier {
+public interface IMappingService {
+	// 数据映射服务接口定义
+	MappingEntity processMapping(String params);
 }

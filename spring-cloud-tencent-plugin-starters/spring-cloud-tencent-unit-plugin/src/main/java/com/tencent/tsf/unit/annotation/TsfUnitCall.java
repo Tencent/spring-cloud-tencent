@@ -24,12 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Empty annotation. Compatible with old versions TSF SDK.
- *
- * @author Haotian Zhang
- */
-@Deprecated(since = "2.0.0.0")
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
