@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.cloud.common.util.EnvironmentUtils;
 import com.tencent.cloud.plugin.tsf.tls.utils.SyncUtils;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
@@ -222,7 +223,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".application_config_group");
 		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfNamespaceName + ".global_config_group");
 
-		if (ClassUtils.isClassPresent("org.springframework.cloud.gateway.filter.GlobalFilter")) {
+		if (EnvironmentUtils.isGateway()) {
 			tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".gateway_config_group");
 		}
 		for (String tsfConfigGroup : tsfConfigGroups) {

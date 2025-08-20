@@ -53,7 +53,6 @@ public class PolarisReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 
 	@Override
 	public Flux<ServiceInstance> getInstances(String serviceId) {
-
 		return Mono.justOrEmpty(serviceId).flatMapMany(loadInstancesFromPolaris())
 				.subscribeOn(Schedulers.boundedElastic());
 	}

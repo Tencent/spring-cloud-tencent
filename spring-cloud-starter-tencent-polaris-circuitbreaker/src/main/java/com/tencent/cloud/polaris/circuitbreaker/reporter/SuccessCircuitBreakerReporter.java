@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
 import com.tencent.cloud.polaris.context.CircuitBreakerStatusCodeException;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
@@ -65,11 +66,6 @@ public class SuccessCircuitBreakerReporter implements EnhancedPlugin {
 		this.circuitBreakAPI = circuitBreakAPI;
 	}
 
-	private static boolean existMetadataValue(MetadataObjectValue<?> metadataObjectValue) {
-		return Optional.ofNullable(metadataObjectValue).map(MetadataObjectValue::getObjectValue).
-				map(Optional::isPresent).orElse(false);
-	}
-
 	@Override
 	public String getName() {
 		return SuccessCircuitBreakerReporter.class.getName();
@@ -107,15 +103,15 @@ public class SuccessCircuitBreakerReporter implements EnhancedPlugin {
 		circuitBreakAPI.report(resourceStat);
 
 		MetadataObjectValue<PolarisCircuitBreaker> circuitBreakerObject = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER);
 
 		MetadataObjectValue<Long> startTimeMilliObject = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME);
 
-		boolean existCircuitBreaker = existMetadataValue(circuitBreakerObject);
-		boolean existStartTime = existMetadataValue(startTimeMilliObject);
+		boolean existCircuitBreaker = MetadataContextUtils.existMetadataValue(circuitBreakerObject);
+		boolean existStartTime = MetadataContextUtils.existMetadataValue(startTimeMilliObject);
 
 		if (existCircuitBreaker && existStartTime) {
 			PolarisCircuitBreaker polarisCircuitBreaker = circuitBreakerObject.getObjectValue().get();

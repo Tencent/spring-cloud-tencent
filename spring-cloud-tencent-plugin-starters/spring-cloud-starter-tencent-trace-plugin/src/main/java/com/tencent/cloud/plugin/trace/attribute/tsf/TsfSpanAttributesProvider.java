@@ -65,14 +65,14 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 		}
 
 		MetadataObjectValue<Tag> langTagObject = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.LANE_TAG);
 		if (MetadataContextUtils.existMetadataValue(langTagObject)) {
 			attributes.put(OtUtils.OTEL_LANE_ID_KEY, langTagObject.getObjectValue().get().getValue());
 		}
 
 		MetadataObjectValue<Map<String, String>> extraTraceAttributeObject = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.Trace.EXTRA_TRACE_ATTRIBUTES);
 		if (MetadataContextUtils.existMetadataValue(extraTraceAttributeObject)) {
 			Map<String, String> extraTraceAttributes = extraTraceAttributeObject.getObjectValue().get();
@@ -101,7 +101,7 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 	public Map<String, String> getServerFinallySpanAttributes(EnhancedPluginContext context) {
 		Map<String, String> attributes = new HashMap<>();
 		MetadataObjectValue<Map<String, String>> extraTraceAttributeObject = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.Trace.EXTRA_TRACE_ATTRIBUTES);
 		if (MetadataContextUtils.existMetadataValue(extraTraceAttributeObject)) {
 			Map<String, String> extraTraceAttributes = extraTraceAttributeObject.getObjectValue().get();
