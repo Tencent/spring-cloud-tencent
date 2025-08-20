@@ -22,6 +22,7 @@ import java.util.HashMap;
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.plugin.fault.config.FaultInjectionProperties;
 import com.tencent.cloud.plugin.fault.instrument.resttemplate.PolarisFaultInjectionHttpResponse;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
@@ -37,7 +38,6 @@ import com.tencent.polaris.fault.api.rpc.DelayResult;
 import com.tencent.polaris.fault.api.rpc.FaultRequest;
 import com.tencent.polaris.fault.api.rpc.FaultResponse;
 import com.tencent.polaris.fault.client.exception.FaultInjectionException;
-import com.tencent.polaris.metadata.core.MetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,16 +94,11 @@ public class FaultInjectionPrePlugin implements EnhancedPlugin {
 				CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(abortResult.getAbortCode(), new HashMap<>(), "");
 				if (ClassUtils.isClassPresent("org.springframework.http.client.ClientHttpResponse")) {
 					Object fallbackResponse = new PolarisFaultInjectionHttpResponse(fallbackInfo);
-					putMetadataObjectValue(ContextConstant.FaultInjection.FAULT_INJECTION_FALLBACK_HTTP_RESPONSE, fallbackResponse);
+					MetadataContextUtils.putMetadataObjectValue(ContextConstant.FaultInjection.FAULT_INJECTION_FALLBACK_HTTP_RESPONSE, fallbackResponse);
 				}
 				throw new FaultInjectionException(fallbackInfo);
 			}
 		}
-	}
-
-	private void putMetadataObjectValue(String key, Object value) {
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
-				putMetadataObjectValue(key, value);
 	}
 
 	@Override

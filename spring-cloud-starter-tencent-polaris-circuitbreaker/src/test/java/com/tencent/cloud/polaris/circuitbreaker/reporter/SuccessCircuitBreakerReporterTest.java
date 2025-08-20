@@ -183,9 +183,9 @@ public class SuccessCircuitBreakerReporterTest {
 		pluginContext.setResponse(response);
 		pluginContext.setTargetServiceInstance(serviceInstance, null);
 
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.CUSTOM, false).
 				putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.CUSTOM, false).
 				putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME, System.currentTimeMillis());
 
 		successCircuitBreakerReporter.run(pluginContext);
@@ -217,7 +217,7 @@ public class SuccessCircuitBreakerReporterTest {
 		pluginContext.setResponse(response);
 		pluginContext.setTargetServiceInstance(serviceInstance, null);
 		// not exist circuit CIRCUIT_BREAKER_START_TIME
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.CUSTOM, false).
 				putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
 
 		successCircuitBreakerReporter.run(pluginContext);

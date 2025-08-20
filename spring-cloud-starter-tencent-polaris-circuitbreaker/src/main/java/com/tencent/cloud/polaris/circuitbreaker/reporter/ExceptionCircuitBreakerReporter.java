@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
@@ -98,15 +99,15 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 		circuitBreakAPI.report(resourceStat);
 
 		MetadataObjectValue<PolarisCircuitBreaker> circuitBreakerObject = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER);
 
 		MetadataObjectValue<Long> startTimeMilliObject = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME);
 
-		boolean existCircuitBreaker = existMetadataValue(circuitBreakerObject);
-		boolean existStartTime = existMetadataValue(startTimeMilliObject);
+		boolean existCircuitBreaker = MetadataContextUtils.existMetadataValue(circuitBreakerObject);
+		boolean existStartTime = MetadataContextUtils.existMetadataValue(startTimeMilliObject);
 
 		if (existCircuitBreaker && existStartTime) {
 			PolarisCircuitBreaker polarisCircuitBreaker = circuitBreakerObject.getObjectValue().get();

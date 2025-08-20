@@ -20,19 +20,24 @@ package com.tencent.cloud.plugin.gateway.context;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.MetadataContextUtils;
+import com.tencent.cloud.plugin.unit.utils.SpringCloudUnitUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.tsf.gateway.core.TsfGatewayRequest;
@@ -47,6 +52,9 @@ import com.tencent.tsf.gateway.core.plugin.GatewayPluginFactory;
 import com.tencent.tsf.gateway.core.plugin.IGatewayPlugin;
 import com.tencent.tsf.gateway.core.util.CookieUtil;
 import com.tencent.tsf.gateway.core.util.IdGenerator;
+import com.tencent.tsf.unit.core.TencentUnitContext;
+import com.tencent.tsf.unit.core.TencentUnitManager;
+import com.tencent.tsf.unit.core.model.UnitTagPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -94,6 +102,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		if (pathRewriteException != null) {
 			throw pathRewriteException;
 		}
+
 		// plugins will add metadata
 		if (exchange.getAttributes().containsKey(MetadataConstant.HeaderName.METADATA_CONTEXT)) {
 			MetadataContextHolder.set((MetadataContext) exchange.getAttributes().get(
@@ -114,11 +123,17 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 
 		ServerWebExchange apiRebuildExchange;
 
-		if (ApiType.MS.equals(groupContext.getPredicate().getApiType())) {
-			apiRebuildExchange = msFilter(exchange, chain, groupContext, path);
+		if (TencentUnitManager.isEnable()) {
+			unitPreprocess(exchange);
+			apiRebuildExchange = unitFilter(exchange, chain, groupContext, path);
 		}
 		else {
-			apiRebuildExchange = externalFilter(exchange, chain, path);
+			if (ApiType.MS.equals(groupContext.getPredicate().getApiType())) {
+				apiRebuildExchange = msFilter(exchange, chain, groupContext, path);
+			}
+			else {
+				apiRebuildExchange = externalFilter(exchange, chain, path);
+			}
 		}
 
 		ServerWebExchange pluginRebuildExchange = doPlugins(apiRebuildExchange,
@@ -281,6 +296,89 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		// to correct path
 		ServerHttpRequest newRequest = request.mutate().path(apis[1]).build();
 		return exchange.mutate().request(newRequest).build();
+	}
+
+	private void unitPreprocess(ServerWebExchange exchange) {
+		// 提前到这里清理
+		TencentUnitContext.removeAll();
+
+		ServerHttpRequest servletRequest = exchange.getRequest();
+		HttpHeaders headers = servletRequest.getHeaders();
+		String unitAttr = Optional.ofNullable(headers.getFirst(HeaderName.UNIT)).orElse("");
+
+		String cid = headers.getFirst(TencentUnitManager.getRouterIdentifierHeader());
+
+		for (String grayKey: TencentUnitManager.getGrayUnitHeaderKey()) {
+			TencentUnitContext.putGrayUserTag(UnitTagPosition.HEADER.name(), grayKey, headers.getFirst(grayKey));
+		}
+
+		Map<String, String> unitMap = null;
+		try {
+			unitMap = JacksonUtils.deserialize2Map(URLDecoder.decode(unitAttr, StandardCharsets.UTF_8.name()));
+		}
+		catch (UnsupportedEncodingException e) {
+			logger.warn("[unitPreprocess] decode unitAttr error: {}", e.getMessage());
+		}
+		String path = exchange.getRequest().getURI().getPath();
+		if (CollectionUtils.isEmpty(unitMap)) {
+			SpringCloudUnitUtils.processFromCid(cid, path);
+		}
+		else {
+			SpringCloudUnitUtils.processFromUnitHeader(unitMap, path);
+		}
+	}
+
+	private ServerWebExchange unitFilter(ServerWebExchange exchange, GatewayFilterChain chain, GroupContext groupContext, PathContainer path) {
+		ServerHttpRequest request = exchange.getRequest();
+		String[] apis = rebuildUnitApi(request, path.value());
+		logger.debug("[unitFilter] path:{}, apis: {}", path, apis);
+		// check api
+		GroupContext.ContextRoute contextRoute = manager.getGroupUnitPathRoute(config.getGroup(), apis[0]);
+		if (contextRoute == null) {
+			String msg = String.format("[unitFilter] Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], path.value());
+			logger.warn(msg);
+			throw NotFoundException.create(true, msg);
+		}
+		updateRouteMetadata(exchange, contextRoute);
+		setTraceAttributes(contextRoute, GatewayConstant.UNIT_TYPE, GatewayConstant.UNIT_TRANSFER_TYPE);
+		exchange.getAttributes().put(GatewayConstant.CONTEXT_ROUTE, contextRoute);
+
+		MetadataContext metadataContext = exchange.getAttribute(
+				MetadataConstant.HeaderName.METADATA_CONTEXT);
+		if (metadataContext != null) {
+			// get unit ns
+			String routeNamespace = TencentUnitContext.getSystemTag(TencentUnitContext.CLOUD_SPACE_TARGET_NAMESPACE_ID);
+			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+					MetadataConstant.POLARIS_TARGET_NAMESPACE, routeNamespace);
+		}
+		URI requestUri = URI.create("lb://" + contextRoute.getService() + apis[1]);
+		exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUri);
+		// to correct path
+		ServerHttpRequest newRequest = request.mutate().path(apis[1]).build();
+		return exchange.mutate().request(newRequest).build();
+	}
+
+	/**
+	 * e.g. "/context/system/svc/api/test" → [ "GET|/svc/api/test", "/api/test"]
+	 */
+	String[] rebuildUnitApi(ServerHttpRequest request, String path) {
+		String[] pathSegments = path.split("/");
+		StringBuilder matchPath = new StringBuilder();
+		matchPath.append(request.getMethod().name()).append("|");
+		if (pathSegments.length > 3) {
+			matchPath.append("/").append(pathSegments[3]);
+		}
+		StringBuilder realPath = new StringBuilder();
+		int index = 4;
+		for (int i = index; i < pathSegments.length; i++) {
+			matchPath.append("/").append(pathSegments[i]);
+			realPath.append("/").append(pathSegments[i]);
+		}
+		if (path.endsWith("/")) {
+			matchPath.append("/");
+			realPath.append("/");
+		}
+		return new String[] {matchPath.toString(), realPath.toString()};
 	}
 
 	/**
