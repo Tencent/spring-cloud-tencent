@@ -16,3 +16,4 @@
 - [fix: update EnhancedRequestContext toString method.](https://github.com/Tencent/spring-cloud-tencent/pull/1547)
 - [docs: update GitHub Actions.](https://github.com/Tencent/spring-cloud-tencent/pull/1554)
 - [fix: use getActiveRuleId method to fix javaagent ratelimit pb method not found error.](https://github.com/Tencent/spring-cloud-tencent/pull/1572)
+- [fix: update polaris-java to change the heartbeat task to scheduleAtFixedRate.](https://github.com/Tencent/spring-cloud-tencent/pull/1719)
