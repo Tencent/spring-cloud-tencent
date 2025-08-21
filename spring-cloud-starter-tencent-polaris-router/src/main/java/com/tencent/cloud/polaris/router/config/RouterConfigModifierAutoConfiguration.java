@@ -41,8 +41,8 @@ public class RouterConfigModifierAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RouterConfigModifier routerConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties, PolarisMetadataRouterProperties polarisMetadataRouterProperties) {
-		return new RouterConfigModifier(polarisNearByRouterProperties, polarisMetadataRouterProperties);
+	public RouterConfigModifier routerConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties) {
+		return new RouterConfigModifier(polarisNearByRouterProperties);
 	}
 
 }
