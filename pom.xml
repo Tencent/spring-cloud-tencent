@@ -106,8 +106,8 @@
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
 		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-		<maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
 		<maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
+		<central.publishing.maven.plugin.version>0.8.0</central.publishing.maven.plugin.version>
 
 		<!--  Checkstyle      -->
 		<maven-checkstyle-plugin.failsOnError>true</maven-checkstyle-plugin.failsOnError>
@@ -196,16 +196,6 @@
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>${jacoco.version}</version>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-shade-plugin</artifactId>
-					<version>${maven-shade-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>${maven-clean-plugin.version}</version>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -216,6 +206,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
+				<version>${maven-clean-plugin.version}</version>
 				<configuration>
 					<filesets>
 						<fileset>
@@ -240,7 +231,6 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco.version}</version>
 				<executions>
 					<execution>
 						<id>jacoco-initialize</id>
@@ -266,6 +256,31 @@
 					<reuseForks>false</reuseForks>
 					<argLine>${argLine}</argLine>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -311,33 +326,6 @@
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>${maven-source-plugin.version}</version>
-						<executions>
-							<execution>
-								<phase>package</phase>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
 						<version>${maven-gpg-plugin.version}</version>
 						<executions>
@@ -350,45 +338,77 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>${central.publishing.maven.plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central-portal</publishingServerId>
+							<excludeArtifacts>
+								<excludeArtifact>spring-cloud-tencent-coverage</excludeArtifact>
+								<excludeArtifact>spring-cloud-tencent-examples</excludeArtifact>
+								<excludeArtifact>lossless-example</excludeArtifact>
+								<excludeArtifact>lossless-callee-service</excludeArtifact>
+								<excludeArtifact>lossless-nacos-callee-service</excludeArtifact>
+								<excludeArtifact>metadata-transfer-example</excludeArtifact>
+								<excludeArtifact>metadata-backend</excludeArtifact>
+								<excludeArtifact>metadata-frontend</excludeArtifact>
+								<excludeArtifact>metadata-middle</excludeArtifact>
+								<excludeArtifact>multiple-discovery-example</excludeArtifact>
+								<excludeArtifact>multiple-discovery-nacos-example</excludeArtifact>
+								<excludeArtifact>nacos-callee-service-a</excludeArtifact>
+								<excludeArtifact>nacos-callee-service-b</excludeArtifact>
+								<excludeArtifact>nacos-discovery-caller</excludeArtifact>
+								<excludeArtifact>polaris-router-grayrelease-example</excludeArtifact>
+								<excludeArtifact>router-grayrelease-backend</excludeArtifact>
+								<excludeArtifact>router-grayrelease-frontend</excludeArtifact>
+								<excludeArtifact>router-grayrelease-gateway</excludeArtifact>
+								<excludeArtifact>router-grayrelease-middle</excludeArtifact>
+								<excludeArtifact>polaris-router-grayrelease-lane-example</excludeArtifact>
+								<excludeArtifact>router-grayrelease-lane-callee-service</excludeArtifact>
+								<excludeArtifact>router-grayrelease-lane-caller-service</excludeArtifact>
+								<excludeArtifact>router-grayrelease-lane-gateway</excludeArtifact>
+								<excludeArtifact>quickstart-example</excludeArtifact>
+								<excludeArtifact>quickstart-callee-service-a</excludeArtifact>
+								<excludeArtifact>quickstart-callee-service-b</excludeArtifact>
+								<excludeArtifact>quickstart-caller-service</excludeArtifact>
+								<excludeArtifact>quickstart-gateway-service</excludeArtifact>
+								<excludeArtifact>quickstart-zuul-service</excludeArtifact>
+								<excludeArtifact>tsf-example</excludeArtifact>
+								<excludeArtifact>consumer-demo</excludeArtifact>
+								<excludeArtifact>provider-demo</excludeArtifact>
+							</excludeArtifacts>
+						</configuration>
+					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
-			<id>sonatype</id>
-			<repositories>
-				<repository>
-					<id>nexus-snapshots</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-					<releases>
-						<enabled>false</enabled>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-						<updatePolicy>always</updatePolicy>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>nexus-releases</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
 		</profile>
 	</profiles>
 
 	<distributionManagement>
 		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<id>central-portal</id>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
 		</snapshotRepository>
 		<repository>
-			<id>nexus-releases</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>central-portal</id>
+			<url>https://ossrh-staging-api.central.sonatype.com/service/local/</url>
 		</repository>
 	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<name>Central Portal Snapshots</name>
+			<id>central-portal-snapshots</id>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>
