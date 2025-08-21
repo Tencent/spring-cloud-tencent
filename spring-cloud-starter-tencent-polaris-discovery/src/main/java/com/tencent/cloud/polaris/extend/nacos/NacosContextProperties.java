@@ -63,7 +63,7 @@ public class NacosContextProperties {
 	/**
 	 * nacos discovery server address.
 	 */
-	@Value("${spring.cloud.nacos.discovery.ephemeral:false}")
+	@Value("${spring.cloud.nacos.discovery.ephemeral:true}")
 	private boolean ephemeral;
 
 	/**
