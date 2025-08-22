@@ -100,6 +100,9 @@ public class NacosContextProperties {
 	@Value("${spring.cloud.nacos.discovery.namespace:public}")
 	private String namespace = DEFAULT_NAMESPACE;
 
+	@Value("${spring.cloud.nacos.discovery.weight:1.0}")
+	private double weight = 1.0;
+
 	private String contextPath;
 
 	public boolean isEnabled() {
@@ -197,6 +200,14 @@ public class NacosContextProperties {
 		this.serviceName = serviceName;
 	}
 
+	double getWeight() {
+		return weight;
+	}
+
+	void setWeight(double weight) {
+		this.weight = weight;
+	}
+
 	@Override
 	public String toString() {
 		return "NacosContextProperties{" +
@@ -204,12 +215,14 @@ public class NacosContextProperties {
 				", discoveryEnabled=" + discoveryEnabled +
 				", registerEnabled=" + registerEnabled +
 				", serverAddr='" + serverAddr + '\'' +
+				", ephemeral=" + ephemeral +
 				", username='" + username + '\'' +
 				", serviceName='" + serviceName + '\'' +
 				", password='" + password + '\'' +
 				", clusterName='" + clusterName + '\'' +
 				", group='" + group + '\'' +
 				", namespace='" + namespace + '\'' +
+				", weight=" + weight +
 				", contextPath='" + contextPath + '\'' +
 				'}';
 	}

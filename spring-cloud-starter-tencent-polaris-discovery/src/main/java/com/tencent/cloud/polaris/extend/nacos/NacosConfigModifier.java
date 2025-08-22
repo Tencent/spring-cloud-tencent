@@ -34,6 +34,16 @@ import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.alibaba.nacos.api.PropertyKeyConst.CONTEXT_PATH;
+import static com.alibaba.nacos.api.PropertyKeyConst.NAMESPACE;
+import static com.alibaba.nacos.api.PropertyKeyConst.PASSWORD;
+import static com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
+import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_CLUSTER_KEY;
+import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_EPHEMERAL_KEY;
+import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_GROUP_KEY;
+import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_SERVICE_KEY;
+import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_WEIGHT_KEY;
+
 
 /**
  * {@link PolarisConfigModifier} impl of Nacos.
@@ -42,38 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NacosConfigModifier implements PolarisConfigModifier {
 
-	/**
-	 * nacos username.
-	 */
-	public static final String USERNAME = "username";
-	/**
-	 * nacos password.
-	 */
-	public static final String PASSWORD = "password";
-	/**
-	 * nacos contextPath.
-	 */
-	public static final String CONTEXT_PATH = "contextPath";
-	/**
-	 * nacos namespace.
-	 */
-	public static final String NAMESPACE = "namespace";
-	/**
-	 * nacos group.
-	 */
-	public static final String NACOS_GROUP = "nacos.group";
-	/**
-	 * nacos service.
-	 */
-	public static final String NACOS_SERVICE = "nacos.service";
-	/**
-	 * nacos cluster.
-	 */
-	public static final String NACOS_CLUSTER = "nacos.cluster";
-	/**
-	 * nacos ephemeral.
-	 */
-	public static final String NACOS_EPHEMERAL = "nacos.ephemeral";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(NacosConfigModifier.class);
 	private static final String ID = "nacos";
 	private final NacosContextProperties nacosContextProperties;
@@ -139,15 +118,16 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 		}
 
 		if (StringUtils.isNotBlank(nacosContextProperties.getGroup())) {
-			metadata.put(NACOS_GROUP, nacosContextProperties.getGroup());
+			metadata.put(NACOS_GROUP_KEY, nacosContextProperties.getGroup());
 		}
 		if (StringUtils.isNotBlank(nacosContextProperties.getClusterName())) {
-			metadata.put(NACOS_CLUSTER, nacosContextProperties.getClusterName());
+			metadata.put(NACOS_CLUSTER_KEY, nacosContextProperties.getClusterName());
 		}
 		if (StringUtils.isNotBlank(nacosContextProperties.getServiceName())) {
-			metadata.put(NACOS_SERVICE, nacosContextProperties.getServiceName());
+			metadata.put(NACOS_SERVICE_KEY, nacosContextProperties.getServiceName());
 		}
-		metadata.put(NACOS_EPHEMERAL, String.valueOf(nacosContextProperties.isEphemeral()));
+		metadata.put(NACOS_EPHEMERAL_KEY, String.valueOf(nacosContextProperties.isEphemeral()));
+		metadata.put(NACOS_WEIGHT_KEY, String.valueOf(nacosContextProperties.getWeight()));
 		configuration.getGlobal().getServerConnectors().add(serverConnectorConfig);
 		DiscoveryConfigImpl discoveryConfig = new DiscoveryConfigImpl();
 		discoveryConfig.setServerConnectorId(ID);

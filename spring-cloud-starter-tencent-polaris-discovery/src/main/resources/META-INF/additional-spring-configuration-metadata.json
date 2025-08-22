@@ -118,7 +118,13 @@
       "name": "spring.cloud.nacos.discovery.ephemeral",
       "type": "java.lang.Boolean",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
-      "defaultValue": false
+      "defaultValue": true
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.weight",
+      "type": "java.lang.Double",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
+      "defaultValue": 1.0
     },
     {
       "name": "spring.cloud.nacos.discovery.group",
