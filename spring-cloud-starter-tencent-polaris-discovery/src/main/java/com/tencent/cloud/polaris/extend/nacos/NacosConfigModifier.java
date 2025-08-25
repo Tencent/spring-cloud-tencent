@@ -34,16 +34,15 @@ import com.tencent.polaris.factory.config.provider.RegisterConfigImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.alibaba.nacos.api.PropertyKeyConst.CONTEXT_PATH;
-import static com.alibaba.nacos.api.PropertyKeyConst.NAMESPACE;
-import static com.alibaba.nacos.api.PropertyKeyConst.PASSWORD;
-import static com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
 import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_CLUSTER_KEY;
 import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_EPHEMERAL_KEY;
 import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_GROUP_KEY;
 import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_SERVICE_KEY;
 import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_WEIGHT_KEY;
-
+import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.CONTEXT_PATH;
+import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.NAMESPACE;
+import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.PASSWORD;
+import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
 
 /**
  * {@link PolarisConfigModifier} impl of Nacos.
@@ -69,7 +68,7 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 		// Check if Nacos Available
 		boolean nacosAvailable = false;
 		try {
-			nacosAvailable = null != Class.forName("com.alibaba.nacos.api.naming.NamingService");
+			nacosAvailable = null != Class.forName("shade.polaris.com.alibaba.nacos.api.naming.NamingService");
 		}
 		catch (Throwable ignored) {
 
