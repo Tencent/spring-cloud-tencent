@@ -34,7 +34,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_GROUP_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.CONTEXT_PATH;
+import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.NAMESPACE;
+import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.PASSWORD;
+import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
+
 
 /**
  * Test for {@link NacosContextProperties}.
@@ -82,11 +88,11 @@ public class NacosContextPropertiesTest {
 		assertThat(DefaultPlugins.SERVER_CONNECTOR_NACOS.equals(serverConnectorConfig.getProtocol())).isTrue();
 
 		Map<String, String> metadata = serverConnectorConfig.getMetadata();
-		assertThat(metadata.get(NacosConfigModifier.USERNAME)).isEqualTo(nacosContextProperties.getUsername());
-		assertThat(metadata.get(NacosConfigModifier.PASSWORD)).isEqualTo(nacosContextProperties.getPassword());
-		assertThat(metadata.get(NacosConfigModifier.CONTEXT_PATH)).isEqualTo(nacosContextProperties.getContextPath());
-		assertThat(metadata.get(NacosConfigModifier.NAMESPACE)).isEqualTo(nacosContextProperties.getNamespace());
-		assertThat(metadata.get(NacosConfigModifier.NACOS_GROUP)).isEqualTo(nacosContextProperties.getGroup());
+		assertThat(metadata.get(USERNAME)).isEqualTo(nacosContextProperties.getUsername());
+		assertThat(metadata.get(PASSWORD)).isEqualTo(nacosContextProperties.getPassword());
+		assertThat(metadata.get(CONTEXT_PATH)).isEqualTo(nacosContextProperties.getContextPath());
+		assertThat(metadata.get(NAMESPACE)).isEqualTo(nacosContextProperties.getNamespace());
+		assertThat(metadata.get(NACOS_GROUP_KEY)).isEqualTo(nacosContextProperties.getGroup());
 	}
 
 	@SpringBootApplication

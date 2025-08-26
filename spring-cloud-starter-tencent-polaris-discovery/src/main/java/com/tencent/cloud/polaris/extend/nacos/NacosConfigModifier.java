@@ -65,23 +65,6 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 		if (Objects.isNull(nacosContextProperties) || !nacosContextProperties.isEnabled()) {
 			return;
 		}
-		// Check if Nacos Available
-		boolean nacosAvailable = false;
-		try {
-			nacosAvailable = null != Class.forName("shade.polaris.com.alibaba.nacos.api.naming.NamingService");
-		}
-		catch (Throwable ignored) {
-
-		}
-		if (!nacosAvailable) {
-			LOGGER.error("Please import \"connector-nacos\" dependency when enabling nacos service registration and discovery.\n"
-					+ "Add dependency configuration below to pom.xml:\n"
-					+ "<dependency>\n"
-					+ "\t<groupId>com.tencent.polaris</groupId>\n"
-					+ "\t<artifactId>connector-nacos</artifactId>\n"
-					+ "</dependency>");
-			throw new RuntimeException("Dependency \"connector-nacos\" not found.");
-		}
 		if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
 			configuration.getGlobal().setServerConnectors(new ArrayList<>());
 		}
