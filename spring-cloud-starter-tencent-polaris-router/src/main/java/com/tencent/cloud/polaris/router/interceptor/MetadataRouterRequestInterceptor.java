@@ -50,6 +50,5 @@ public class MetadataRouterRequestInterceptor implements RouterRequestIntercepto
 				.getMetadataContainer(MetadataType.CUSTOM, false);
 		String metadataRouteKeys = metadataContainer.getRawMetadataStringValue(LABEL_KEY_METADATA_ROUTER_KEYS);
 		metadataContainer.putMetadataMapValue(MetadataRouter.ROUTER_TYPE_METADATA, MetadataRouter.KEY_METADATA_KEYS, metadataRouteKeys, TransitiveType.NONE);
-		request.setMetadataFailoverType(polarisMetadataRouterProperties.getFailOver());
 	}
 }

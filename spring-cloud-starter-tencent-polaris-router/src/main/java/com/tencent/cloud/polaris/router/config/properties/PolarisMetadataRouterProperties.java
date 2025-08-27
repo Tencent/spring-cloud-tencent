@@ -30,16 +30,6 @@ public class PolarisMetadataRouterProperties {
 
 	private boolean enabled = true;
 
-	private MetadataFailoverType failOver = MetadataFailoverType.METADATAFAILOVERALL;
-
-	public MetadataFailoverType getFailOver() {
-		return failOver;
-	}
-
-	public void setFailOver(MetadataFailoverType failOver) {
-		this.failOver = failOver;
-	}
-
 	public boolean isEnabled() {
 		return enabled;
 	}
