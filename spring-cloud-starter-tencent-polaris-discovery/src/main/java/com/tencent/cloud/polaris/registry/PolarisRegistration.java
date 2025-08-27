@@ -102,19 +102,6 @@ public class PolarisRegistration implements Registration {
 		// generate metadata
 		if (CollectionUtils.isEmpty(metadata)) {
 			Map<String, String> instanceMetadata = new HashMap<>();
-
-			// put internal-nacos-cluster if necessary
-			if (Objects.nonNull(nacosContextProperties)) {
-				String clusterName = nacosContextProperties.getClusterName();
-				if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER.equals(clusterName)) {
-					instanceMetadata.put(NACOS_CLUSTER, clusterName);
-				}
-				String groupName = nacosContextProperties.getGroup();
-				if (StringUtils.isNotBlank(groupName) && !DEFAULT_GROUP.equals(groupName)) {
-					instanceMetadata.put(NACOS_GROUP, groupName);
-				}
-			}
-
 			instanceMetadata.putAll(staticMetadataManager.getMergedStaticMetadata());
 
 			this.metadata = instanceMetadata;
@@ -129,7 +116,7 @@ public class PolarisRegistration implements Registration {
 		if (null != consulDiscoveryProperties) {
 			registerEnabled |= consulDiscoveryProperties.isRegister();
 		}
-		if (null != nacosContextProperties && nacosContextProperties.isEnabled()) {
+		if (null != nacosContextProperties && nacosContextProperties.isDiscoveryEnabled()) {
 			registerEnabled |= nacosContextProperties.isRegisterEnabled();
 		}
 	}

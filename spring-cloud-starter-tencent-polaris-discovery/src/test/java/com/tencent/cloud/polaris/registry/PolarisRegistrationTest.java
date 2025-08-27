@@ -82,7 +82,6 @@ public class PolarisRegistrationTest {
 
 		// mock NacosContextProperties
 		nacosContextProperties = mock(NacosContextProperties.class);
-		doReturn(true).when(nacosContextProperties).isEnabled();
 		doReturn(true).when(nacosContextProperties).isRegisterEnabled();
 		doReturn("/").when(nacosContextProperties).getContextPath();
 		doReturn("cluster").when(nacosContextProperties).getClusterName();

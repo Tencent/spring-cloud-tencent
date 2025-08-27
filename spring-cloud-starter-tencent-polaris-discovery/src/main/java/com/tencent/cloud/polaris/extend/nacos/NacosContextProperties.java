@@ -43,9 +43,7 @@ public class NacosContextProperties {
 	 */
 	public static final String DEFAULT_NAMESPACE = "public";
 
-	private boolean enabled = false;
-
-	@Value("${spring.cloud.nacos.discovery.enabled:#{'true'}}")
+	@Value("${spring.cloud.nacos.discovery.enabled:#{'false'}}")
 	private boolean discoveryEnabled;
 
 	/**
@@ -105,13 +103,6 @@ public class NacosContextProperties {
 
 	private String contextPath;
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 
 	public boolean isRegisterEnabled() {
 		return registerEnabled;
@@ -211,8 +202,7 @@ public class NacosContextProperties {
 	@Override
 	public String toString() {
 		return "NacosContextProperties{" +
-				"enabled=" + enabled +
-				", discoveryEnabled=" + discoveryEnabled +
+				"discoveryEnabled=" + discoveryEnabled +
 				", registerEnabled=" + registerEnabled +
 				", serverAddr='" + serverAddr + '\'' +
 				", ephemeral=" + ephemeral +

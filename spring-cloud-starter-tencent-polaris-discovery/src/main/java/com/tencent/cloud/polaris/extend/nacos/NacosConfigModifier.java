@@ -62,7 +62,7 @@ public class NacosConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
-		if (Objects.isNull(nacosContextProperties) || !nacosContextProperties.isEnabled()) {
+		if (Objects.isNull(nacosContextProperties) || !nacosContextProperties.isDiscoveryEnabled()) {
 			return;
 		}
 		if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
