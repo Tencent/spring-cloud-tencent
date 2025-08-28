@@ -34,6 +34,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_CLUSTER_KEY;
 import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_GROUP_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static shade.polaris.com.alibaba.nacos.api.PropertyKeyConst.CONTEXT_PATH;
@@ -92,6 +93,7 @@ public class NacosContextPropertiesTest {
 		assertThat(metadata.get(CONTEXT_PATH)).isEqualTo(nacosContextProperties.getContextPath());
 		assertThat(metadata.get(NAMESPACE)).isEqualTo(nacosContextProperties.getNamespace());
 		assertThat(metadata.get(NACOS_GROUP_KEY)).isEqualTo(nacosContextProperties.getGroup());
+		assertThat(metadata.get(NACOS_CLUSTER_KEY)).isEqualTo(nacosContextProperties.getClusterName());
 	}
 
 	@SpringBootApplication

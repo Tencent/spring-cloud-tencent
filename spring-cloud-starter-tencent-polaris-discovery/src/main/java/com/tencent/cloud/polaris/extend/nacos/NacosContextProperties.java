@@ -20,6 +20,10 @@ package com.tencent.cloud.polaris.extend.nacos;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_CLUSTER_NAME;
+import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_NAMESPACE_ID;
+
 /**
  * Discovery configuration of Nacos.
  *
@@ -27,21 +31,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("spring.cloud.nacos")
 public class NacosContextProperties {
-
-	/**
-	 * Nacos default group name.
-	 */
-	public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
-
-	/**
-	 * Nacos default cluster name.
-	 */
-	public static final String DEFAULT_CLUSTER = "DEFAULT";
-
-	/**
-	 * Nacos default namespace name.
-	 */
-	public static final String DEFAULT_NAMESPACE = "public";
 
 	@Value("${spring.cloud.nacos.discovery.enabled:#{'false'}}")
 	private boolean discoveryEnabled;
@@ -87,7 +76,7 @@ public class NacosContextProperties {
 	 * cluster name for nacos .
 	 */
 	@Value("${spring.cloud.nacos.discovery.cluster-name:DEFAULT}")
-	private String clusterName = DEFAULT_CLUSTER;
+	private String clusterName = DEFAULT_CLUSTER_NAME;
 
 	/**
 	 * group name for nacos.
@@ -96,7 +85,7 @@ public class NacosContextProperties {
 	private String group = DEFAULT_GROUP;
 
 	@Value("${spring.cloud.nacos.discovery.namespace:public}")
-	private String namespace = DEFAULT_NAMESPACE;
+	private String namespace = DEFAULT_NAMESPACE_ID;
 
 	@Value("${spring.cloud.nacos.discovery.weight:1.0}")
 	private double weight = 1.0;
