@@ -37,9 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test for {@link PolarisRegistrationCustomizer}.
+ * Test for {@link NacosPolarisRegistrationCustomizerTest}.
  *
- * @author Haotian Zhang
+ * @author Yuwei Fu
  */
 public class NacosPolarisRegistrationCustomizerTest {
 
