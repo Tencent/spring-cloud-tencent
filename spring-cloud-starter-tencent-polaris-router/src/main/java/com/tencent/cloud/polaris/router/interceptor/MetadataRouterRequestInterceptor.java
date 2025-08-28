@@ -45,7 +45,6 @@ public class MetadataRouterRequestInterceptor implements RouterRequestIntercepto
 		if (!polarisMetadataRouterProperties.isEnabled()) {
 			return;
 		}
-
 		// set metadata router label keys
 		MetadataContainer metadataContainer = MetadataContextHolder.get()
 				.getMetadataContainer(MetadataType.CUSTOM, false);

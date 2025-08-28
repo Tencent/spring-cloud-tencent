@@ -254,12 +254,6 @@
 
 			<dependency>
 				<groupId>com.tencent.polaris</groupId>
-				<artifactId>connector-nacos</artifactId>
-				<version>${polaris.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.tencent.polaris</groupId>
 				<artifactId>polaris-test-common</artifactId>
 				<version>${polaris.version}</version>
 				<scope>test</scope>
