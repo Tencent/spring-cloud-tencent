@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
-import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
@@ -51,7 +50,6 @@ public class PolarisServiceDiscovery {
 	 * @throws PolarisException polarisException
 	 */
 	public List<ServiceInstance> getInstances(String serviceId) throws PolarisException {
-		serviceId = DiscoveryUtil.rewriteServiceId(serviceId);
 		List<ServiceInstance> instances = new ArrayList<>();
 		InstancesResponse filteredInstances = polarisDiscoveryHandler.getHealthyInstances(serviceId);
 		ServiceInstances serviceInstances = filteredInstances.toServiceInstances();

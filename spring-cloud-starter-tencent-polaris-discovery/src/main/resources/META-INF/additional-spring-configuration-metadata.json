@@ -115,6 +115,18 @@
       "defaultValue": false
     },
     {
+      "name": "spring.cloud.nacos.discovery.ephemeral",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.weight",
+      "type": "java.lang.Double",
+      "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
+      "defaultValue": 1.0
+    },
+    {
       "name": "spring.cloud.nacos.discovery.group",
       "type": "java.lang.String",
       "description": "group name for nacos.",
@@ -133,6 +145,12 @@
       "type": "java.lang.String",
       "description": "the nacos authentication password.",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties"
+    },
+    {
+      "name": "spring.cloud.nacos.discovery.service",
+      "type": "java.lang.String",
+      "defaultValue": "${spring.application.name}",
+      "description": "the service name to register, default value is ${spring.application.name}."
     },
     {
       "name": "spring.cloud.nacos.discovery.register-enabled",
@@ -180,7 +198,7 @@
   ],
   "hints": [
     {
-      "name": "spring.cloud.loadbalancer.strategy",
+      "name": "spring.cloud.loadbalancer.strategies",
       "values": [
         {
           "value": "polarisWeightedRoundRobin",
