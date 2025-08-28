@@ -21,7 +21,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -37,21 +36,12 @@ import org.springframework.boot.web.servlet.context.ServletWebServerApplicationC
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.lang.Nullable;
-
-import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_CLUSTER;
-import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_GROUP;
-
 /**
  * Registration object of Polaris.
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng, Palmer.Xu, changjin wei(魏昌进)
  */
 public class PolarisRegistration implements Registration {
-
-
-	private static final String NACOS_CLUSTER = "nacos.cluster";
-
-	private static final String NACOS_GROUP = "nacos.group";
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
