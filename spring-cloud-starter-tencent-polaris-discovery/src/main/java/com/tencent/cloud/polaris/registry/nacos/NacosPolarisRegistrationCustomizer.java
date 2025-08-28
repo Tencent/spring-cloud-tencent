@@ -25,10 +25,11 @@ import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisRegistrationCustomizer;
 import com.tencent.polaris.api.utils.StringUtils;
 
-import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_CLUSTER;
-import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFAULT_GROUP;
+
 import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_CLUSTER_KEY;
 import static com.tencent.polaris.plugins.connector.common.constant.NacosConstant.MetadataMapKey.NACOS_GROUP_KEY;
+import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_CLUSTER_NAME;
+import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 
 public class NacosPolarisRegistrationCustomizer implements PolarisRegistrationCustomizer {
 	NacosContextProperties nacosContextProperties;
@@ -41,7 +42,7 @@ public class NacosPolarisRegistrationCustomizer implements PolarisRegistrationCu
 		Map<String, String> instanceMetadata = registration.getMetadata();
 		if (Objects.nonNull(nacosContextProperties)) {
 			String clusterName = nacosContextProperties.getClusterName();
-			if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER.equals(clusterName)) {
+			if (StringUtils.isNotBlank(clusterName) && !DEFAULT_CLUSTER_NAME.equals(clusterName)) {
 				instanceMetadata.put(NACOS_CLUSTER_KEY, clusterName);
 			}
 			String groupName = nacosContextProperties.getGroup();
