@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.registry;
 
+import java.util.Map;
+
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClientConfiguration;
@@ -31,17 +33,15 @@ import org.springframework.context.annotation.Configuration;
 
 import static com.tencent.polaris.test.common.Consts.PORT;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link PolarisRegistrationCustomizer}.
  *
  * @author Haotian Zhang
  */
-public class PolarisRegistrationCustomizerTest {
+public class NacosPolarisRegistrationCustomizerTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
@@ -50,6 +50,8 @@ public class PolarisRegistrationCustomizerTest {
 					PolarisDiscoveryClientConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
+			.withPropertyValues("spring.cloud.nacos.discovery.cluster-name=nacos")
+			.withPropertyValues("spring.cloud.nacos.discovery.group=nacos")
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081");
 
 	@BeforeEach
@@ -62,8 +64,9 @@ public class PolarisRegistrationCustomizerTest {
 		this.contextRunner.run(context -> {
 			PolarisRegistration polarisRegistration = context.getBean(PolarisRegistration.class);
 			polarisRegistration.customize();
-			PolarisRegistrationCustomizer customizer = context.getBeansOfType(PolarisRegistrationCustomizer.class).get("polarisRegistrationCustomizer");
-			verify(customizer, times(1)).customize(any(PolarisRegistration.class));
+			Map<String, String> metadata = polarisRegistration.getMetadata();
+			assertThat(metadata.get("nacos.cluster")).isEqualTo("nacos");
+			assertThat(metadata.get("nacos.group")).isEqualTo("nacos");
 		});
 	}
 
