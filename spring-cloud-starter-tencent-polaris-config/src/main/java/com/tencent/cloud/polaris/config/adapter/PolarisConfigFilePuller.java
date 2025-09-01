@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.tencent.cloud.common.util.EnvironmentUtils;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
@@ -150,7 +151,7 @@ public final class PolarisConfigFilePuller {
 		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".application_config_group");
 		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfNamespaceName + ".global_config_group");
 
-		if (ClassUtils.isClassPresent("org.springframework.cloud.gateway.filter.GlobalFilter")) {
+		if (EnvironmentUtils.isGateway()) {
 			tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".gateway_config_group");
 		}
 		for (String tsfConfigGroup : tsfConfigGroups) {
