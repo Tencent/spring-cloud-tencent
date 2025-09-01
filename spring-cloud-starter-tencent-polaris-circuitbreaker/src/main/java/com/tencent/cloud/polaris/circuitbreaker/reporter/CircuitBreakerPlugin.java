@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.circuitbreaker.reporter;
 
 import com.tencent.cloud.common.constant.ContextConstant;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.MetadataContextUtils;
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
 import com.tencent.cloud.polaris.circuitbreaker.instrument.resttemplate.PolarisCircuitBreakerHttpResponse;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
@@ -28,7 +28,6 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
-import com.tencent.polaris.metadata.core.MetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +76,8 @@ public class CircuitBreakerPlugin implements EnhancedPlugin {
 		CircuitBreaker circuitBreaker = circuitBreakerFactory.create(governanceNamespace + "#" + host + "#" + path + "#http#" + httpMethod);
 		if (circuitBreaker instanceof PolarisCircuitBreaker) {
 			PolarisCircuitBreaker polarisCircuitBreaker = (PolarisCircuitBreaker) circuitBreaker;
-			putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
-			putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME, System.currentTimeMillis());
+			MetadataContextUtils.putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
+			MetadataContextUtils.putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME, System.currentTimeMillis());
 
 			try {
 				polarisCircuitBreaker.acquirePermission();
@@ -88,7 +87,7 @@ public class CircuitBreakerPlugin implements EnhancedPlugin {
 				polarisCircuitBreaker.reportStatus(e);
 				if (e.getFallbackInfo() != null) {
 					Object fallbackResponse = new PolarisCircuitBreakerHttpResponse(e.getFallbackInfo());
-					putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE, fallbackResponse);
+					MetadataContextUtils.putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE, fallbackResponse);
 				}
 				throw e;
 			}
@@ -104,10 +103,5 @@ public class CircuitBreakerPlugin implements EnhancedPlugin {
 	@Override
 	public int getOrder() {
 		return CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER;
-	}
-
-	private void putMetadataObjectValue(String key, Object value) {
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
-				putMetadataObjectValue(key, value);
 	}
 }

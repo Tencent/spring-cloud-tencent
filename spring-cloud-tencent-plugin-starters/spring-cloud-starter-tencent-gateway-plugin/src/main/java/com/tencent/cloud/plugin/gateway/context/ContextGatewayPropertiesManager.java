@@ -59,6 +59,14 @@ public class ContextGatewayPropertiesManager {
 	 */
 	private volatile ConcurrentHashMap<String, Map<String, GroupContext.ContextRoute>> groupWildcardPathRouteMap = new ConcurrentHashMap<>();
 	/**
+	 * context -> {unit path key -> route}.
+	 */
+	private volatile ConcurrentHashMap<String, Map<String, GroupContext.ContextRoute>> groupUnitPathRouteMap = new ConcurrentHashMap<>();
+	/**
+	 * context -> {unit wildcard path key -> route}.
+	 */
+	private volatile ConcurrentHashMap<String, Map<String, GroupContext.ContextRoute>> groupUnitWildcardPathRouteMap = new ConcurrentHashMap<>();
+	/**
 	 * group -> plugin info.
 	 */
 	private volatile ConcurrentHashMap<String, PluginInstanceInfo> groupPluginInfoMap = new ConcurrentHashMap<>();
@@ -145,31 +153,47 @@ public class ContextGatewayPropertiesManager {
 		ConcurrentHashMap<String, Map<String, GroupContext.ContextRoute>> newGroupPathRouteMap = new ConcurrentHashMap<>();
 		ConcurrentHashMap<String, Map<String, GroupContext.ContextRoute>> newGroupWildcardPathRouteMap = new ConcurrentHashMap<>();
 
+		ConcurrentHashMap<String, Map<String, GroupContext.ContextRoute>> newGroupUnitPathRouteMap = new ConcurrentHashMap<>();
+		ConcurrentHashMap<String, Map<String, GroupContext.ContextRoute>> newGroupUnitWildcardPathRouteMap = new ConcurrentHashMap<>();
+
 		if (groups != null) {
 			for (Map.Entry<String, GroupContext> entry : groups.entrySet()) {
 				GroupContext groupContext = entry.getValue();
 				Map<String, GroupContext.ContextRoute> newGroupPathRoute = new HashMap<>();
 				Map<String, GroupContext.ContextRoute> newGroupWildcardPathRoute = new HashMap<>();
 
+				Map<String, GroupContext.ContextRoute> newGroupUnitPathRoute = new HashMap<>();
+				Map<String, GroupContext.ContextRoute> newGroupUnitWildcardPathRoute = new HashMap<>();
+
 				for (GroupContext.ContextRoute route : groupContext.getRoutes()) {
 					String path = route.getPath();
 					// convert path parameter to group wildcard path
 					if (path.contains("{") && path.contains("}") || path.contains("*") || path.contains("?")) {
 						newGroupWildcardPathRoute.put(buildPathKey(groupContext, route), route);
+						newGroupUnitWildcardPathRoute.put(buildUnitPathKey(groupContext, route), route);
 					}
 					else {
 						newGroupPathRoute.put(buildPathKey(groupContext, route), route);
+						newGroupUnitPathRoute.put(buildUnitPathKey(groupContext, route), route);
 						if (StringUtils.isNotEmpty(route.getPathMapping())) {
 							newGroupPathRoute.put(buildPathMappingKey(groupContext, route), route);
+							newGroupUnitPathRoute.put(buildUnitPathKey(groupContext, route), route);
 						}
 					}
 				}
 				newGroupWildcardPathRouteMap.put(entry.getKey(), newGroupWildcardPathRoute);
 				newGroupPathRouteMap.put(entry.getKey(), newGroupPathRoute);
+
+				newGroupUnitWildcardPathRouteMap.put(entry.getKey(), newGroupUnitWildcardPathRoute);
+				newGroupUnitPathRouteMap.put(entry.getKey(), newGroupUnitPathRoute);
 			}
 		}
 		this.groupPathRouteMap = newGroupPathRouteMap;
 		this.groupWildcardPathRouteMap = newGroupWildcardPathRouteMap;
+
+		this.groupUnitPathRouteMap = newGroupUnitPathRouteMap;
+		this.groupUnitWildcardPathRouteMap = newGroupUnitWildcardPathRouteMap;
+
 		this.groups = groups;
 	}
 
@@ -184,6 +208,24 @@ public class ContextGatewayPropertiesManager {
 		}
 
 		Map<String, GroupContext.ContextRoute> groupWildcardPathRouteMap = this.groupWildcardPathRouteMap.get(group);
+		if (groupWildcardPathRouteMap != null) {
+			for (Map.Entry<String, GroupContext.ContextRoute> entry : groupWildcardPathRouteMap.entrySet()) {
+				boolean matched = antPathMatcher.match(entry.getKey(), path);
+				if (matched) {
+					return entry.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
+	public GroupContext.ContextRoute getGroupUnitPathRoute(String group, String path) {
+		Map<String, GroupContext.ContextRoute> groupPathRouteMap = this.groupUnitPathRouteMap.get(group);
+		if (groupPathRouteMap != null && groupPathRouteMap.containsKey(path)) {
+			return groupPathRouteMap.get(path);
+		}
+
+		Map<String, GroupContext.ContextRoute> groupWildcardPathRouteMap = this.groupUnitWildcardPathRouteMap.get(group);
 		if (groupWildcardPathRouteMap != null) {
 			for (Map.Entry<String, GroupContext.ContextRoute> entry : groupWildcardPathRouteMap.entrySet()) {
 				boolean matched = antPathMatcher.match(entry.getKey(), path);
@@ -239,6 +281,10 @@ public class ContextGatewayPropertiesManager {
 		default:
 			return String.format("%s|%s", route.getMethod(), route.getPath());
 		}
+	}
+
+	private String buildUnitPathKey(GroupContext groupContext, GroupContext.ContextRoute route) {
+		return String.format("%s|/%s%s", route.getMethod(), route.getService(), route.getPath());
 	}
 
 	private String buildPathMappingKey(GroupContext groupContext, GroupContext.ContextRoute route) {

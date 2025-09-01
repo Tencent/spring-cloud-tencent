@@ -127,7 +127,7 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 		}
 		catch (CallAbortedException callAbortedException) {
 			MetadataObjectValue<Object> fallbackResponseValue = MetadataContextHolder.get().
-					getMetadataContainer(MetadataType.APPLICATION, true).
+					getMetadataContainer(MetadataType.CUSTOM, false).
 					getMetadataValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE);
 
 			boolean existFallback = Optional.ofNullable(fallbackResponseValue).
@@ -143,7 +143,7 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 		}
 		catch (FaultInjectionException faultInjectionException) {
 			MetadataObjectValue<Object> fallbackResponseValue = MetadataContextHolder.get().
-					getMetadataContainer(MetadataType.APPLICATION, true).
+					getMetadataContainer(MetadataType.CUSTOM, false).
 					getMetadataValue(ContextConstant.FaultInjection.FAULT_INJECTION_FALLBACK_HTTP_RESPONSE);
 
 			boolean existFallback = Optional.ofNullable(fallbackResponseValue).

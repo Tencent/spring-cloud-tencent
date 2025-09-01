@@ -25,15 +25,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Empty annotation. Compatible with old versions TSF SDK.
- *
- * @author Haotian Zhang
- */
-@Deprecated(since = "2.0.0.0")
+import com.tencent.cloud.plugin.unit.config.UnitAutoConfiguration;
+
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@ImportAutoConfiguration({UnitAutoConfiguration.class})
 public @interface EnableTsfUnit {
 }

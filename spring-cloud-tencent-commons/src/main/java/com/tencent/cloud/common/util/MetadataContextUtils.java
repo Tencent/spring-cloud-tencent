@@ -37,8 +37,11 @@ public final class MetadataContextUtils {
 	private MetadataContextUtils() {
 	}
 
+	/**
+	 * use callee's custom metadata to store local thread's metadata. caller's metadata is for remote upstream service.
+	 */
 	public static void putMetadataObjectValue(String key, Object value) {
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
+		MetadataContextHolder.get().getMetadataContainer(MetadataType.CUSTOM, false).
 				putMetadataObjectValue(key, value);
 	}
 

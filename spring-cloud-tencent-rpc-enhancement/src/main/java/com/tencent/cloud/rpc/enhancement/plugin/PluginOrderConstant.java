@@ -73,6 +73,11 @@ public class PluginOrderConstant {
 		public static final int CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 		/**
+		 * order for ${@link com.tencent.cloud.plugin.unit.plugin.UnitRestTemplateEnhancedPlugin}.
+		 */
+		public static final int CONSUMER_UNIT_METADATA_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 11;
+
+		/**
 		 * order for
 		 * {@link com.tencent.cloud.plugin.trace.TraceMetadataEnhancedPlugin}.
 		 */
