@@ -17,7 +17,6 @@
 
 package com.tencent.tsf.unit.annotation;
 
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -25,17 +24,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Empty annotation. Compatible with old versions TSF SDK.
- * <p>
- * Deprecated since 2.0.0.0.
- *
- * @author Haotian Zhang
- */
-@Deprecated
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 @Inherited
-public @interface EnableTsfUnit {
+@Documented
+public @interface TsfUnitCall {
+
+	// 单元化下的业务系统名
+	String systemName() default "";
+
+	// 单元化下的是否调用GDU服务
+	boolean global() default false;
 }

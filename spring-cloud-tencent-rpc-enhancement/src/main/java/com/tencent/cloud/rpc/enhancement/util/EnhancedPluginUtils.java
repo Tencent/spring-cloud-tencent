@@ -43,7 +43,7 @@ public final class EnhancedPluginUtils {
 	public static EnhancedPluginContext getEnhancedPluginContextFromMetadataContext() {
 
 		MetadataObjectValue<EnhancedPluginContext> enhancedPluginContextObject = MetadataContextHolder.get().
-				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.ENHANCED_PLUGIN_CONTEXT);
 
 		if (MetadataContextUtils.existMetadataValue(enhancedPluginContextObject)) {
