@@ -26,7 +26,6 @@ import com.tencent.cloud.common.util.EnvironmentUtils;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.polaris.api.utils.ClassUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
