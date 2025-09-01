@@ -24,4 +24,4 @@
 - [feat: support config ratelimit addresses and remote task interval.](https://github.com/Tencent/spring-cloud-tencent/pull/1695)
 - [docs:optimize tsf example.](https://github.com/Tencent/spring-cloud-tencent/pull/1711)
 - [feat:support TSF certificate manager.](https://github.com/Tencent/spring-cloud-tencent/pull/1716)
-- [feat:support tsf unit.](https://github.com/Tencent/spring-cloud-tencent/pull/1681)
+- [feat:support tsf unit.](https://github.com/Tencent/spring-cloud-tencent/pull/1720)
