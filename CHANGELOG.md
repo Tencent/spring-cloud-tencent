@@ -26,3 +26,4 @@
 - [feat:support TSF certificate manager.](https://github.com/Tencent/spring-cloud-tencent/pull/1716)
 - [feat:support tsf unit.](https://github.com/Tencent/spring-cloud-tencent/pull/1722)
 - [feat: support service registry and discovery with Polaris and Nacos](https://github.com/Tencent/spring-cloud-tencent/pull/1724)
+- [test:add junit tests to sct-common.](https://github.com/Tencent/spring-cloud-tencent/pull/1727)
