@@ -7,7 +7,7 @@ spring:
     import: optional:polaris
   cloud:
     polaris:
-      address: grpc://9.135.147.8:8091
+      address: grpc://119.91.66.223:8091
       namespace: default
       enabled: true
       discovery:
@@ -25,7 +25,7 @@ spring:
       #          enabled: true
       #          address: 127.0.0.1:9091
       config:
-        address: grpc://9.135.147.8:8093
+        address: grpc://119.91.66.223:8093
         auto-refresh: true
         groups:
           - name: ${spring.application.name}
@@ -33,7 +33,6 @@ spring:
       ratelimit:
         enabled: true
         maxQueuingTime: 500
-        limiter-addresses: 9.135.147.8:8101
     tencent:
       metadata:
         content:
