@@ -15,34 +15,27 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.common.rule;
+package com.tencent.cloud.common.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.util.CollectionUtils;
+import static com.tencent.cloud.common.util.OtUtils.OTEL_RESOURCE_ATTRIBUTES;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * The util for key/value pair.
- * @author lepdou 2022-07-11
+ * Test for {@link OtUtils}.
+ *
+ * @author Haotian Zhang
  */
-public final class KVPairUtils {
+public class OtUtilsTest {
 
-	private KVPairUtils() {
-	}
+	@Test
+	public void testOtUtils() {
+		String serviceName = "test-service";
+		System.setProperty(OTEL_RESOURCE_ATTRIBUTES, "service.name=" + serviceName);
 
-	public static Map<String, String> toMap(List<KVPair> labels) {
-		if (CollectionUtils.isEmpty(labels)) {
-			return Collections.emptyMap();
-		}
+		OtUtils.setOtServiceNameIfNeeded(serviceName);
 
-		Map<String, String> result = new HashMap<>();
-		labels.forEach(label -> {
-			result.put(label.getKey(), label.getValue());
-		});
-
-		return result;
+		assertThat(OtUtils.getOtServiceName()).isEqualTo(serviceName);
 	}
 }
