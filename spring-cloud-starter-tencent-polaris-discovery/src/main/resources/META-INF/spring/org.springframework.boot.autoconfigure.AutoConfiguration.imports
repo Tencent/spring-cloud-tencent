@@ -1,0 +1,9 @@
+com.tencent.cloud.polaris.DiscoveryPropertiesAutoConfiguration
+com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration
+com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration
+com.tencent.cloud.polaris.endpoint.PolarisDiscoveryEndpointAutoConfiguration
+com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancerAutoConfiguration
+com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancerPropertiesAutoConfiguration
+com.tencent.cloud.polaris.registry.tsf.TsfDiscoveryRegistryAutoConfiguration
+com.tencent.cloud.polaris.eager.config.PolarisEagerLoadAutoConfiguration
+com.tencent.cloud.polaris.registry.nacos.NacosDiscoveryRegistryAutoConfiguration

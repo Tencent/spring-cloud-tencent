@@ -50,7 +50,6 @@ public class RouterConfigModifier implements PolarisConfigModifier {
 		// Update modified config to source properties
 		configuration.getConsumer().getServiceRouter()
 				.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
-
 		if (StringUtils.isNotBlank(polarisNearByRouterProperties.getMatchLevel())) {
 			RoutingProto.NearbyRoutingConfig.LocationLevel locationLevel =
 					RoutingProto.NearbyRoutingConfig.LocationLevel.valueOf(StringUtils.upperCase(polarisNearByRouterProperties.getMatchLevel()));
