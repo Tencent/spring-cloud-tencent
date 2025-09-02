@@ -25,3 +25,4 @@
 - [docs:optimize tsf example.](https://github.com/Tencent/spring-cloud-tencent/pull/1711)
 - [feat:support TSF certificate manager.](https://github.com/Tencent/spring-cloud-tencent/pull/1716)
 - [feat:support tsf unit.](https://github.com/Tencent/spring-cloud-tencent/pull/1722)
+- [feat: support service registry and discovery with Polaris and Nacos](https://github.com/Tencent/spring-cloud-tencent/pull/1724)
