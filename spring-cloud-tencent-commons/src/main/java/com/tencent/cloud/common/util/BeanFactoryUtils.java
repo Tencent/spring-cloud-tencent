@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.polaris.annonation.JustForTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,11 @@ public final class BeanFactoryUtils implements BeanFactoryAware {
 
 		Map<String, T> beanMap = beansOfTypeIncludingAncestors((ListableBeanFactory) beanFactory, requiredType);
 		return new ArrayList<>(beanMap.values());
+	}
+
+	@JustForTest
+	static void resetBeanFactory() {
+		BeanFactoryUtils.beanFactory = null;
 	}
 
 	@Override
