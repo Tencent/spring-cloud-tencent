@@ -58,7 +58,7 @@ public class JacksonUtilsTest {
 		assertThat(deserializedTag.hashCode()).isEqualTo(originalTag.hashCode());
 		assertThat(deserializedTag.toString()).isEqualTo(originalTag.toString());
 
-		deserializedTag = JacksonUtils.deserialize("{\"k\":\"k2\",\"v\":\"v2\"}", new TypeReference<>() { });
+		deserializedTag = JacksonUtils.deserialize("{\"k\":\"k2\",\"v\":\"v2\"}", new TypeReference<Tag>() { });
 		assertThat(deserializedTag.getKey()).isEqualTo("k2");
 		assertThat(deserializedTag.getValue()).isEqualTo("v2");
 
