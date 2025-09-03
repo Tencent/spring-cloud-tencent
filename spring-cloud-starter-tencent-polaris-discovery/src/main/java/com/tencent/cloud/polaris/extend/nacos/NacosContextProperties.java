@@ -20,6 +20,10 @@ package com.tencent.cloud.polaris.extend.nacos;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_CLUSTER_NAME;
+import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_NAMESPACE_ID;
+
 /**
  * Discovery configuration of Nacos.
  *
@@ -28,24 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("spring.cloud.nacos")
 public class NacosContextProperties {
 
-	/**
-	 * Nacos default group name.
-	 */
-	public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
-
-	/**
-	 * Nacos default cluster name.
-	 */
-	public static final String DEFAULT_CLUSTER = "DEFAULT";
-
-	/**
-	 * Nacos default namespace name.
-	 */
-	public static final String DEFAULT_NAMESPACE = "public";
-
-	private boolean enabled = false;
-
-	@Value("${spring.cloud.nacos.discovery.enabled:#{'true'}}")
+	@Value("${spring.cloud.nacos.discovery.enabled:#{'false'}}")
 	private boolean discoveryEnabled;
 
 	/**
@@ -60,12 +47,24 @@ public class NacosContextProperties {
 	 */
 	@Value("${spring.cloud.nacos.discovery.server-addr:}")
 	private String serverAddr;
+	/**
+	 * nacos discovery server address.
+	 */
+	@Value("${spring.cloud.nacos.discovery.ephemeral:true}")
+	private boolean ephemeral;
 
 	/**
 	 * the nacos authentication username.
 	 */
 	@Value("${spring.cloud.nacos.discovery.username:}")
 	private String username;
+
+
+	/**
+	 * service name to registry.
+	 */
+	@Value("${spring.cloud.nacos.discovery.service:${spring.application.name:}}")
+	private String serviceName;
 
 	/**
 	 * the nacos authentication password.
@@ -77,7 +76,7 @@ public class NacosContextProperties {
 	 * cluster name for nacos .
 	 */
 	@Value("${spring.cloud.nacos.discovery.cluster-name:DEFAULT}")
-	private String clusterName = DEFAULT_CLUSTER;
+	private String clusterName = DEFAULT_CLUSTER_NAME;
 
 	/**
 	 * group name for nacos.
@@ -86,17 +85,13 @@ public class NacosContextProperties {
 	private String group = DEFAULT_GROUP;
 
 	@Value("${spring.cloud.nacos.discovery.namespace:public}")
-	private String namespace = DEFAULT_NAMESPACE;
+	private String namespace = DEFAULT_NAMESPACE_ID;
+
+	@Value("${spring.cloud.nacos.discovery.weight:1.0}")
+	private double weight = 1.0;
 
 	private String contextPath;
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 
 	public boolean isRegisterEnabled() {
 		return registerEnabled;
@@ -170,19 +165,44 @@ public class NacosContextProperties {
 		this.namespace = namespace;
 	}
 
+	public boolean isEphemeral() {
+		return ephemeral;
+	}
+
+	public void setEphemeral(boolean ephemeral) {
+		this.ephemeral = ephemeral;
+	}
+	String getServiceName() {
+		return serviceName;
+	}
+
+	void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	double getWeight() {
+		return weight;
+	}
+
+	void setWeight(double weight) {
+		this.weight = weight;
+	}
+
 	@Override
 	public String toString() {
 		return "NacosContextProperties{" +
-				"enabled=" + enabled +
-				", discoveryEnabled=" + discoveryEnabled +
+				"discoveryEnabled=" + discoveryEnabled +
 				", registerEnabled=" + registerEnabled +
 				", serverAddr='" + serverAddr + '\'' +
+				", ephemeral=" + ephemeral +
 				", username='" + username + '\'' +
+				", serviceName='" + serviceName + '\'' +
 				", password='" + password + '\'' +
 				", clusterName='" + clusterName + '\'' +
 				", group='" + group + '\'' +
-				", contextPath='" + contextPath + '\'' +
 				", namespace='" + namespace + '\'' +
+				", weight=" + weight +
+				", contextPath='" + contextPath + '\'' +
 				'}';
 	}
 }

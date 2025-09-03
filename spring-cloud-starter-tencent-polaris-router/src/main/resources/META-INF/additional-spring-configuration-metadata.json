@@ -7,6 +7,12 @@
       "description": "the switch for metadata router."
     },
     {
+      "name": "spring.cloud.polaris.router.metadata-router.failOver",
+      "type": "java.lang.String",
+      "defaultValue": "METADATAFAILOVERALL",
+      "description": "the fail over type for rule based router."
+    },
+    {
       "name": "spring.cloud.polaris.router.nearby-router.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": false,

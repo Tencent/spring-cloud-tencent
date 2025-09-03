@@ -4,6 +4,8 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration,\
   com.tencent.cloud.polaris.endpoint.PolarisDiscoveryEndpointAutoConfiguration,\
   com.tencent.cloud.polaris.registry.tsf.TsfDiscoveryRegistryAutoConfiguration,\
-  com.tencent.cloud.polaris.eager.config.PolarisEagerLoadAutoConfiguration
+  com.tencent.cloud.polaris.eager.config.PolarisEagerLoadAutoConfiguration,\
+  com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancerPropertiesAutoConfiguration,\
+  com.tencent.cloud.polaris.registry.nacos.NacosDiscoveryRegistryAutoConfiguration
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.polaris.DiscoveryPropertiesBootstrapAutoConfiguration
