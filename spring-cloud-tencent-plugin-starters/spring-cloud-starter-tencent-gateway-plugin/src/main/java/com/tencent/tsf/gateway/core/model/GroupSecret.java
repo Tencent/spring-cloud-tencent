@@ -101,4 +101,16 @@ public class GroupSecret implements Serializable {
 	public void setExpiredTime(String expiredTime) {
 		this.expiredTime = expiredTime;
 	}
+
+	@Override
+	public String toString() {
+		return "GroupSecret{" +
+				"secretId='" + secretId + '\'' +
+				", secretKey='" + secretKey + '\'' +
+				", secretName='" + secretName + '\'' +
+				", groupId='" + groupId + '\'' +
+				", status='" + status + '\'' +
+				", expiredTime='" + expiredTime + '\'' +
+				'}';
+	}
 }
