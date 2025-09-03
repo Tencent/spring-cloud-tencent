@@ -31,14 +31,14 @@ public class CookieUtilTest {
 	@Test
 	public void testBuildCookie() {
 		StringBuilder stringBuilder1 = new StringBuilder();
-		CookieUtil.buildCookie(stringBuilder1, new HashMap<>() {{
+		CookieUtil.buildCookie(stringBuilder1, new HashMap<String, String>() {{
 			put("test1", "123");
 			put("test2", "123");
 		}});
 
 		StringBuilder stringBuilder2 = new StringBuilder();
 		stringBuilder2.append("aaa=bbb");
-		CookieUtil.buildCookie(stringBuilder2, new HashMap<>() {{
+		CookieUtil.buildCookie(stringBuilder2, new HashMap<String, String>() {{
 			put("test1", "123");
 			put("test2", "123");
 		}});
