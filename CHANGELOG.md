@@ -23,3 +23,4 @@
 - [feat: support config ratelimit addresses and remote task interval.](https://github.com/Tencent/spring-cloud-tencent/pull/1714)
 - [refactor:optimize instance secure definition.](https://github.com/Tencent/spring-cloud-tencent/pull/1717)
 - [feat:support tsf unit.](https://github.com/Tencent/spring-cloud-tencent/pull/1723)
+- [feat: support service registry and discovery with Polaris and Nacos](https://github.com/Tencent/spring-cloud-tencent/pull/1728)

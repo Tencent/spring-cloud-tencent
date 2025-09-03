@@ -25,7 +25,6 @@ import java.util.function.BiConsumer;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.common.util.DiscoveryUtil;
 import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataMapValue;
 import com.tencent.polaris.metadata.core.MetadataObjectValue;
@@ -107,7 +106,6 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 			LOG.error("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
 					+ "spring.cloud.polaris.discovery.namespace");
 		}
-		namespace = DiscoveryUtil.rewriteNamespace(namespace);
 		LOCAL_NAMESPACE = namespace;
 
 		String serviceName = ApplicationContextAwareUtils
@@ -121,7 +119,6 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 			LOG.warn("service name should not be blank. please configure spring.cloud.polaris.service or "
 					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 		}
-		serviceName = DiscoveryUtil.rewriteServiceId(serviceName);
 		LOCAL_SERVICE = serviceName;
 	}
 
