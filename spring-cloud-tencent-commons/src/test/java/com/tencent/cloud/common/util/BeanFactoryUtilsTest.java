@@ -23,12 +23,15 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link BeanFactoryUtils}.
@@ -52,6 +55,19 @@ public class BeanFactoryUtilsTest {
 		assertThatThrownBy(() -> BeanFactoryUtils.getBeans(mockBeanFactory, Bar.class))
 				.isExactlyInstanceOf(RuntimeException.class)
 				.hasMessageContaining("bean factory not support get list bean.");
+	}
+
+	@Test
+	public void testResolve() {
+		ConfigurableBeanFactory beanFactory = mock(ConfigurableBeanFactory.class);
+		when(beanFactory.resolveEmbeddedValue("${foo}")).thenReturn("bar");
+		when(beanFactory.resolveEmbeddedValue("${bar}")).thenThrow(new RuntimeException("mock exception"));
+
+		BeanFactoryUtils beanFactoryUtils = new BeanFactoryUtils();
+		beanFactoryUtils.setBeanFactory(beanFactory);
+		assertThat(BeanFactoryUtils.resolve("${foo}")).isEqualTo("bar");
+		assertThat(BeanFactoryUtils.resolve("${bar}")).isNull();
+		BeanFactoryUtils.resetBeanFactory();
 	}
 
 	static class Foo {
