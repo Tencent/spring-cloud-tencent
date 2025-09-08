@@ -75,17 +75,15 @@ public class EncodeTransferMedataScgEnhancedPlugin implements EnhancedPlugin {
 
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
-		if (TsfContextUtils.isOnlyTsfConsulEnabled()) {
+		if (TsfContextUtils.isTsfConsulEnabled()) {
 			this.buildHeaderMap(builder, TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata));
 		}
-		else {
-			// currently only support transitive header from calleeMessageMetadataContainer
-			this.buildHeaderMap(builder, calleeTransitiveHeaders);
+		// currently only support transitive header from calleeMessageMetadataContainer
+		this.buildHeaderMap(builder, calleeTransitiveHeaders);
 
-			this.buildMetadataHeader(builder, customMetadata, CUSTOM_METADATA);
-			this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
-			this.buildMetadataHeader(builder, applicationMetadata, APPLICATION_METADATA);
-		}
+		this.buildMetadataHeader(builder, customMetadata, CUSTOM_METADATA);
+		this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+		this.buildMetadataHeader(builder, applicationMetadata, APPLICATION_METADATA);
 		TransHeadersTransfer.transfer(exchange.getRequest());
 
 		context.setOriginRequest(exchange.mutate().request(builder.build()).build());
