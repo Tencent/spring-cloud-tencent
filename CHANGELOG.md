@@ -26,3 +26,4 @@
 - [feat: support service registry and discovery with Polaris and Nacos](https://github.com/Tencent/spring-cloud-tencent/pull/1718)
 - [test:add junit tests to sct-common.](https://github.com/Tencent/spring-cloud-tencent/pull/1726)
 - [test:add junit tests to sct-gw-plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1729)
+- [feat:compatible metadata transfer with TSF SDK version 1.x.](https://github.com/Tencent/spring-cloud-tencent/pull/1734)

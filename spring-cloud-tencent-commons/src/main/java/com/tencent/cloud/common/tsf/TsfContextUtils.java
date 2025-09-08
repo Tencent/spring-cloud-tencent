@@ -85,4 +85,13 @@ public final class TsfContextUtils {
 	public static boolean isOnlyTsfConsulEnabled() {
 		return onlyTsfConsulEnabled;
 	}
+
+	/**
+	 * This method should be called after {@link com.tencent.cloud.common.tsf.TsfContextUtils#isTsfConsulEnabled(Environment)}.
+	 * @return whether Tsf Consul is enabled
+	 */
+
+	public static boolean isTsfConsulEnabled() {
+		return tsfConsulEnabled;
+	}
 }
