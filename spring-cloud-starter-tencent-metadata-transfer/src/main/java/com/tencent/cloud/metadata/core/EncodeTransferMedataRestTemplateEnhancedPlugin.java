@@ -68,23 +68,22 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
 
-		if (TsfContextUtils.isOnlyTsfConsulEnabled()) {
+		if (TsfContextUtils.isTsfConsulEnabled()) {
 			Map<String, String> tsfMetadataMap = TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata);
 			this.buildHeaderMap(httpRequest, tsfMetadataMap);
 		}
-		else {
-			// currently only support transitive header from calleeMessageMetadataContainer
-			this.buildHeaderMap(httpRequest, calleeTransitiveHeaders);
+		// currently only support transitive header from calleeMessageMetadataContainer
+		this.buildHeaderMap(httpRequest, calleeTransitiveHeaders);
 
-			// build custom disposable metadata request header
-			this.buildMetadataHeader(httpRequest, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+		// build custom disposable metadata request header
+		this.buildMetadataHeader(httpRequest, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 
-			// build custom metadata request header
-			this.buildMetadataHeader(httpRequest, customMetadata, CUSTOM_METADATA);
+		// build custom metadata request header
+		this.buildMetadataHeader(httpRequest, customMetadata, CUSTOM_METADATA);
 
-			// build application metadata request header
-			this.buildMetadataHeader(httpRequest, applicationMetadata, APPLICATION_METADATA);
-		}
+		// build application metadata request header
+		this.buildMetadataHeader(httpRequest, applicationMetadata, APPLICATION_METADATA);
+
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(httpRequest, transHeaders);
 	}
