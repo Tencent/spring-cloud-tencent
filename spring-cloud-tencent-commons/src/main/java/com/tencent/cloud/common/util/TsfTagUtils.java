@@ -77,7 +77,7 @@ public final class TsfTagUtils {
 			if (tsfUserTagKeys.contains(entry.getKey())) {
 				continue;
 			}
-			Tag tag = new Tag(entry.getKey(),  entry.getValue(), Tag.ControlFlag.TRANSITIVE);
+			Tag tag = new Tag(entry.getKey(), entry.getValue(), Tag.ControlFlag.TRANSITIVE);
 			tsfUserTags.add(tag);
 			tsfUserTagKeys.add(entry.getKey());
 			if (LaneRouter.TRAFFIC_STAIN_LABEL.equals(entry.getKey()) && entry.getValue().contains("/")) {
@@ -89,7 +89,7 @@ public final class TsfTagUtils {
 			if (tsfUserTagKeys.contains(entry.getKey())) {
 				continue;
 			}
-			Tag tag = new Tag(entry.getKey(),  entry.getValue());
+			Tag tag = new Tag(entry.getKey(), entry.getValue());
 			tsfUserTags.add(tag);
 			tsfUserTagKeys.add(entry.getKey());
 		}
@@ -156,7 +156,7 @@ public final class TsfTagUtils {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("calleeTransitiveHeaders:{}, disposableMetadata: {}, customMetadata: {}, applicationMetadata: {}, tsfMetadataMap:{}",
-					calleeTransitiveHeaders,  disposableMetadata, customMetadata, applicationMetadata, tsfMetadataMap);
+					calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata, tsfMetadataMap);
 		}
 
 		return tsfMetadataMap;
@@ -164,9 +164,9 @@ public final class TsfTagUtils {
 
 	public static void updateTsfMetadata(Map<String, String> mergedTransitiveMetadata,
 			Map<String, String> mergedDisposableMetadata, Map<String, String> mergedApplicationMetadata, Map<String, String> addHeaders,
-			AtomicReference<String> callerIp, String encodedUserTagList, String encodedSystemTagList, String encodedMetadata)  {
+			AtomicReference<String> callerIp, String encodedUserTagList, String encodedSystemTagList, String encodedMetadata) {
 
-		if (!TsfContextUtils.isOnlyTsfConsulEnabled()) {
+		if (!TsfContextUtils.isTsfConsulEnabled()) {
 			return;
 		}
 		List<Tag> tsfUserTagList = TsfTagUtils.deserializeTagList(encodedUserTagList);
@@ -222,10 +222,10 @@ public final class TsfTagUtils {
 		}
 
 		if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("mergedTransitiveMetadata:{}, mergedDisposableMetadata: {}, mergedApplicationMetadata: {},"
-								+ " addHeaders:{}, encodedUserTagList:{}, encodedSystemTagList:{}, encodedMetadata:{}, callerIp:{}",
-						mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata,
-						addHeaders, encodedUserTagList, encodedSystemTagList, encodedMetadata, callerIp.get());
+			LOGGER.debug("mergedTransitiveMetadata:{}, mergedDisposableMetadata: {}, mergedApplicationMetadata: {},"
+							+ " addHeaders:{}, encodedUserTagList:{}, encodedSystemTagList:{}, encodedMetadata:{}, callerIp:{}",
+					mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata,
+					addHeaders, encodedUserTagList, encodedSystemTagList, encodedMetadata, callerIp.get());
 		}
 
 	}
