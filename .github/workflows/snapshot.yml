@@ -11,6 +11,8 @@ on:
       - hoxton
       - greenwich
       - release/*
+    paths-ignore:
+      - '**.md'
 
 jobs:
   check-snapshot:
