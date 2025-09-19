@@ -90,7 +90,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.1.0.0-2023.0.6-SNAPSHOT</revision>
+		<revision>2.1.0.0-2023.0.6-RC1</revision>
 
 		<!-- Spring Framework -->
 		<spring.framework.version>6.1.21</spring.framework.version>
@@ -372,6 +372,7 @@
 								<excludeArtifact>consumer-demo</excludeArtifact>
 								<excludeArtifact>msgw-scg</excludeArtifact>
 								<excludeArtifact>provider-demo</excludeArtifact>
+								<excludeArtifact>consumer-demo-retry</excludeArtifact>
 							</excludeArtifacts>
 						</configuration>
 					</plugin>
