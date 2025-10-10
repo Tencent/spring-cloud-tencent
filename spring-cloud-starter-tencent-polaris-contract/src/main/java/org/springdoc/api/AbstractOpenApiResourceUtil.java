@@ -32,6 +32,6 @@ public final class AbstractOpenApiResourceUtil {
 	}
 
 	public static OpenAPI getOpenApi(AbstractOpenApiResource openApiResource) {
-		return openApiResource.getOpenApi(Locale.getDefault());
+		return openApiResource.getOpenApi(null, Locale.getDefault());
 	}
 }
