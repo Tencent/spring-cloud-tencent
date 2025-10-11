@@ -37,7 +37,7 @@
 
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -52,7 +52,7 @@
 
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+			<artifactId>springdoc-openapi-starter-webflux-api</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
