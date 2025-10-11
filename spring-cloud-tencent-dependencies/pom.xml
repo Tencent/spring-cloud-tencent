@@ -243,13 +243,13 @@
 			<!-- third part framework dependencies -->
 			<dependency>
 				<groupId>org.springdoc</groupId>
-				<artifactId>springdoc-openapi-webflux-ui</artifactId>
+				<artifactId>springdoc-openapi-webflux-core</artifactId>
 				<version>${springdoc.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.springdoc</groupId>
-				<artifactId>springdoc-openapi-ui</artifactId>
+				<artifactId>springdoc-openapi-webmvc-core</artifactId>
 				<version>${springdoc.version}</version>
 			</dependency>
 
