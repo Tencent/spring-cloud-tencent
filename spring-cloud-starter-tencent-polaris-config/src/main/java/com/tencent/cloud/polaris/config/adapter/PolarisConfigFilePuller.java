@@ -36,9 +36,11 @@ import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
+import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.MapPropertySource;
 
@@ -52,13 +54,19 @@ import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.
  */
 public final class PolarisConfigFilePuller {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigFileLocator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigFilePuller.class);
+
+	private static Log log;
 
 	private PolarisContextProperties polarisContextProperties;
 
 	private ConfigFileService configFileService;
 
 	private PolarisConfigFilePuller() {
+	}
+
+	public static PolarisConfigFilePuller get(PolarisContextProperties polarisContextProperties, ConfigFileService configFileService) {
+		return get(polarisContextProperties, configFileService, null);
 	}
 
 	/**
@@ -69,11 +77,24 @@ public final class PolarisConfigFilePuller {
 	 * @param configFileService            configFileService
 	 * @return PolarisConfigFilePuller instance
 	 */
-	public static PolarisConfigFilePuller get(PolarisContextProperties polarisContextProperties, ConfigFileService configFileService) {
+	public static PolarisConfigFilePuller get(PolarisContextProperties polarisContextProperties,
+			ConfigFileService configFileService, DeferredLogFactory logFactory) {
 		PolarisConfigFilePuller puller = new PolarisConfigFilePuller();
 		puller.polarisContextProperties = polarisContextProperties;
 		puller.configFileService = configFileService;
+		if (logFactory != null) {
+			log = logFactory.getLog(PolarisConfigFilePuller.class);
+		}
 		return puller;
+	}
+
+	private static void logInfo(String msg) {
+		if (log != null) {
+			log.info(msg);
+		}
+		else {
+			LOGGER.info(msg);
+		}
 	}
 
 	/**
@@ -86,13 +107,14 @@ public final class PolarisConfigFilePuller {
 	 */
 	public void initInternalConfigFiles(CompositePropertySource compositePropertySource, String[] activeProfiles,
 			String[] defaultProfiles, String serviceName) {
+		logInfo("[SCT Config] Loading polaris internal config files");
 		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles(activeProfiles, defaultProfiles, serviceName);
 		for (ConfigFileMetadata configFile : internalConfigFiles) {
 			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService,
 					configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
 			compositePropertySource.addPropertySource(polarisPropertySource);
 			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
-			LOGGER.info("[SCT Config] Load and inject polaris config file. file = {}", configFile);
+			logInfo(String.format("[SCT Config] Load and inject polaris internal config file success. file = %s", configFile));
 		}
 	}
 
@@ -104,6 +126,7 @@ public final class PolarisConfigFilePuller {
 	 */
 	public void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource,
 			List<ConfigFileGroup> configFileGroups) {
+		logInfo("[SCT Config] Loading polaris custom config files");
 		configFileGroups.forEach(
 				configFileGroup -> initCustomPolarisConfigFile(compositePropertySource, configFileGroup)
 		);
@@ -127,15 +150,21 @@ public final class PolarisConfigFilePuller {
 		}
 		List<String> files = configFileGroup.getFiles();
 		if (CollectionUtils.isEmpty(files)) {
-			return;
-		}
-		for (String fileName : files) {
-			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService, groupNamespace, group, fileName);
+			PolarisPropertySource polarisPropertySource = loadGroupPolarisPropertySource(configFileService, groupNamespace, group);
+			if (polarisPropertySource == null) {
+				return;
+			}
 			compositePropertySource.addPropertySource(polarisPropertySource);
 			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
-			LOGGER.info(
-					"[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}",
-					groupNamespace, group, fileName);
+			logInfo(String.format("[SCT Config] Load and inject polaris custom group config file success. namespace = %s, group = %s", groupNamespace, group));
+		}
+		else {
+			for (String fileName : files) {
+				PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService, groupNamespace, group, fileName);
+				compositePropertySource.addPropertySource(polarisPropertySource);
+				PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+				logInfo(String.format("[SCT Config] Load and inject polaris custom config file success. namespace = %s, group = %s, fileName = %s", groupNamespace, group, fileName));
+			}
 		}
 	}
 
@@ -151,6 +180,7 @@ public final class PolarisConfigFilePuller {
 		if (StringUtils.isEmpty(tsfNamespaceName) || StringUtils.isEmpty(tsfGroupName)) {
 			return;
 		}
+		logInfo("[SCT Config] Loading tsf config files");
 		String namespace = polarisContextProperties.getNamespace();
 		List<String> tsfConfigGroups = new ArrayList<>();
 		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".application_config_group");
@@ -167,6 +197,7 @@ public final class PolarisConfigFilePuller {
 			}
 			compositePropertySource.addPropertySource(polarisPropertySource);
 			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+			logInfo(String.format("[SCT Config] Load and inject tsf config file success. namespace = %s, group = %s", namespace, tsfConfigGroup));
 		}
 	}
 
