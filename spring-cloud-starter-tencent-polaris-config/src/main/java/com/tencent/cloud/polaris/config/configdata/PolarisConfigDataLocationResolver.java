@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Objects;
 
 import com.tencent.cloud.polaris.config.ConfigurationModifier;
+import com.tencent.cloud.polaris.config.PolarisConfigSDKContextManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.ModifyAddress;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
-import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
@@ -280,7 +280,7 @@ public class PolarisConfigDataLocationResolver implements
 				((ConfigurationImpl) sdkContext.getConfig()).getGlobal().getStatReporter().setEnable(false);
 			}
 			sdkContext.init();
-			PolarisSDKContextManager.setConfigSDKContext(sdkContext);
+			PolarisConfigSDKContextManager.setConfigSDKContext(sdkContext);
 		}
 
 	}

@@ -3,6 +3,3 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitPropertiesAutoConfiguration,\
   com.tencent.cloud.polaris.ratelimit.endpoint.PolarisRateLimitRuleEndpointAutoConfiguration,\
   com.tencent.cloud.polaris.ratelimit.tsf.TsfRateLimitAutoConfiguration
-org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitPropertiesBootstrapConfiguration,\
-  com.tencent.cloud.polaris.ratelimit.tsf.TsfRateLimitBootstrapConfiguration

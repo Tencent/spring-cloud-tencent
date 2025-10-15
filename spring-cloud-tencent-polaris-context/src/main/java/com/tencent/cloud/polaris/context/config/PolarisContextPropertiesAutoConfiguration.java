@@ -15,20 +15,27 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.contract.config;
+package com.tencent.cloud.polaris.context.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.polaris.client.api.SDKContext;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 /**
- * Bootstrap configuration for Polaris contract properties.
+ * Autoconfiguration for Polaris {@link SDKContext}.
  *
  * @author Haotian Zhang
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import(PolarisContractPropertiesAutoConfiguration.class)
-public class PolarisContractPropertiesBootstrapConfiguration {
+@ConditionalOnPolarisEnabled
+@EnableConfigurationProperties
+public class PolarisContextPropertiesAutoConfiguration {
 
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisContextProperties polarisContextProperties() {
+		return new PolarisContextProperties();
+	}
 }

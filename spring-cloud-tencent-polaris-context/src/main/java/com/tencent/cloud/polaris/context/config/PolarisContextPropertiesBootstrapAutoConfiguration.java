@@ -15,21 +15,20 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.lossless.config;
+package com.tencent.cloud.polaris.context.config;
+
+import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-
 /**
- * BootstrapConfiguration of lossless properties.
+ * Bootstrap autoconfiguration for Polaris {@link SDKContext}.
  *
- * @author Shedfree Wu
+ * @author Haotian Zhang
  */
-@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import(LosslessPropertiesAutoConfiguration.class)
-public class LosslessPropertiesBootstrapConfiguration {
+@Import(PolarisContextPropertiesAutoConfiguration.class)
+public class PolarisContextPropertiesBootstrapAutoConfiguration {
 
 }
