@@ -1,3 +1,0 @@
-org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.tencent.cloud.polaris.DiscoveryPropertiesBootstrapAutoConfiguration,\
-  com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancerBootstrapAutoConfiguration

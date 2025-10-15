@@ -1,3 +1,0 @@
-org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatPropertiesBootstrapConfiguration,\
-  com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesBootstrapConfiguration

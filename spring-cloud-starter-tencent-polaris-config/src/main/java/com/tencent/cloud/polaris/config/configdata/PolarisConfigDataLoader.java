@@ -22,12 +22,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tencent.cloud.polaris.config.PolarisConfigSDKContextManager;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigCustomExtensionLayer;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFilePuller;
 import com.tencent.cloud.polaris.config.adapter.PolarisServiceLoaderUtil;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
@@ -97,7 +97,7 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 			PolarisConfigDataResource resource) {
 		CompositePropertySource compositePropertySource = new CompositePropertySource(
 				POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
-		SDKContext sdkContext = PolarisSDKContextManager.innerGetConfigSDKContext();
+		SDKContext sdkContext = PolarisConfigSDKContextManager.innerGetConfigSDKContext();
 		if (null == this.configFileService) {
 			this.configFileService = ConfigFileServiceFactory.createConfigFileService(sdkContext);
 		}
