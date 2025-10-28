@@ -90,7 +90,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.1.0.0-2021.0.9-SNAPSHOT</revision>
+		<revision>2.1.0.0-2021.0.9</revision>
 
 		<!-- Spring Framework -->
 		<spring.framework.version>5.3.39</spring.framework.version>
@@ -409,6 +409,7 @@
 								<excludeArtifact>quickstart-zuul-service</excludeArtifact>
 								<excludeArtifact>tsf-example</excludeArtifact>
 								<excludeArtifact>consumer-demo</excludeArtifact>
+								<excludeArtifact>consumer-demo-retry</excludeArtifact>
 								<excludeArtifact>msgw-scg</excludeArtifact>
 								<excludeArtifact>provider-demo</excludeArtifact>
 							</excludeArtifacts>
