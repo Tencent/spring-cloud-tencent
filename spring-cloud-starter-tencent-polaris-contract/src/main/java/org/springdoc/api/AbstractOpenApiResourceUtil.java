@@ -32,6 +32,11 @@ public final class AbstractOpenApiResourceUtil {
 	}
 
 	public static OpenAPI getOpenApi(AbstractOpenApiResource openApiResource) {
-		return openApiResource.getOpenApi(Locale.getDefault());
+		try {
+			return openApiResource.getOpenApi(null, Locale.getDefault());
+		}
+		catch (NoSuchMethodError e) {
+			throw new RuntimeException("Spring Cloud Tencent Contract Report is not compatible with current version spring-doc. Please upgrade spring-doc to 2.8.13 or higher.");
+		}
 	}
 }

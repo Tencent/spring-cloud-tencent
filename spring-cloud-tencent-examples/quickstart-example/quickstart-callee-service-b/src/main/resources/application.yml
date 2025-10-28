@@ -13,6 +13,7 @@ spring:
       discovery:
         enabled: true
         register: true
+        version: 1.0.1
       contract:
         exposure: true
         report:
