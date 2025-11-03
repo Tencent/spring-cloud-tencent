@@ -21,9 +21,7 @@ import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.auth.filter.AuthReactiveFilter;
 import com.tencent.cloud.polaris.auth.filter.AuthServletFilter;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -43,7 +41,6 @@ import static jakarta.servlet.DispatcherType.REQUEST;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 public class PolarisAuthAutoConfiguration {
 
 	/**

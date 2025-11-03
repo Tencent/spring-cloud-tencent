@@ -17,17 +17,21 @@
 
 package com.tencent.cloud.polaris.config;
 
+import java.util.List;
+
 import com.tencent.cloud.polaris.config.adapter.AffectedConfigurationPropertiesRebinder;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFileLocator;
 import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshType;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
-import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.cloud.polaris.context.config.PolarisContextPropertiesAutoConfiguration;
+import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.cloud.context.properties.ConfigurationPropertiesBeans;
@@ -45,27 +49,37 @@ import org.springframework.core.env.Environment;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisConfigEnabled
-@Import(PolarisContextAutoConfiguration.class)
+@Import(PolarisContextPropertiesAutoConfiguration.class)
 public class PolarisConfigBootstrapAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean
 	public PolarisConfigProperties polarisProperties() {
 		return new PolarisConfigProperties();
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public PolarisCryptoConfigProperties polarisCryptoConfigProperties() {
 		return new PolarisCryptoConfigProperties();
 	}
 
 	@Bean
-	@ConditionalOnConnectRemoteServerEnabled
-	public ConfigFileService configFileService(PolarisSDKContextManager polarisSDKContextManager) {
-		return ConfigFileServiceFactory.createConfigFileService(polarisSDKContextManager.getConfigSDKContext());
+	@ConditionalOnMissingBean
+	public PolarisConfigSDKContextManager polarisConfigSDKContextManager(PolarisContextProperties properties, Environment environment, ObjectProvider<List<PolarisConfigModifier>> modifierListProvider) throws PolarisException {
+		return new PolarisConfigSDKContextManager(properties, environment, modifierListProvider);
 	}
 
 	@Bean
 	@ConditionalOnConnectRemoteServerEnabled
+	@ConditionalOnMissingBean
+	public ConfigFileService configFileService(PolarisConfigSDKContextManager polarisConfigSDKContextManager) {
+		return ConfigFileServiceFactory.createConfigFileService(polarisConfigSDKContextManager.getConfigSDKContext());
+	}
+
+	@Bean
+	@ConditionalOnConnectRemoteServerEnabled
+	@ConditionalOnMissingBean
 	public PolarisConfigFileLocator polarisConfigFileLocator(
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties,
@@ -77,6 +91,7 @@ public class PolarisConfigBootstrapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnConnectRemoteServerEnabled
+	@ConditionalOnMissingBean
 	public ConfigurationModifier configurationModifier(PolarisConfigProperties polarisConfigProperties,
 			PolarisCryptoConfigProperties polarisCryptoConfigProperties,
 			PolarisContextProperties polarisContextProperties) {

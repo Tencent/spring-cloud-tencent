@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.cloud.polaris.config.PolarisConfigSDKContextManager;
 import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
@@ -69,12 +69,12 @@ public class PolarisConfigDataLoaderTest {
 
 	@BeforeAll
 	static void beforeAll() {
-		PolarisSDKContextManager.setConfigSDKContext(sdkContext);
+		PolarisConfigSDKContextManager.setConfigSDKContext(sdkContext);
 	}
 
 	@AfterAll
 	static void afterAll() {
-		PolarisSDKContextManager.innerGetConfigSDKContext();
+		PolarisConfigSDKContextManager.innerGetConfigSDKContext();
 	}
 
 	@Test

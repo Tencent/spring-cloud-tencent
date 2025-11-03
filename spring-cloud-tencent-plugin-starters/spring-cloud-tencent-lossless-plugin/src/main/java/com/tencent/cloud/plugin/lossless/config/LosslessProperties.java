@@ -22,6 +22,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("spring.cloud.polaris.lossless")
 public class LosslessProperties {
 
+	/**
+	 * the switch for lossless plugin.
+	 */
 	private boolean enabled = false;
 
 	private String healthCheckPath;
