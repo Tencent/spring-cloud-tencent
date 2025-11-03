@@ -39,6 +39,7 @@ import com.tencent.polaris.client.api.SDKContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
 /**
@@ -48,15 +49,10 @@ import org.springframework.core.env.Environment;
  */
 @ConditionalOnPolarisEnabled
 @EnableConfigurationProperties
+@Import(PolarisContextPropertiesAutoConfiguration.class)
 public class PolarisContextAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public PolarisContextProperties polarisContextProperties() {
-		return new PolarisContextProperties();
-	}
-
-	@Bean(initMethod = "init")
 	@ConditionalOnMissingBean
 	public PolarisSDKContextManager polarisSDKContextManager(PolarisContextProperties properties, Environment environment, List<PolarisConfigModifier> modifierList) throws PolarisException {
 		return new PolarisSDKContextManager(properties, environment, modifierList);

@@ -1,3 +1,0 @@
-org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitPropertiesBootstrapConfiguration,\
-  com.tencent.cloud.polaris.ratelimit.tsf.TsfRateLimitBootstrapConfiguration

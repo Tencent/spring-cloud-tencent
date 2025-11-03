@@ -30,6 +30,7 @@ import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.cloud.polaris.config.spring.annotation.SpringValueProcessor;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -74,6 +75,7 @@ public class ConditionalOnReflectRefreshTypeTest {
 	@Test
 	public void testReflectEnabled() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(PolarisConfigBootstrapAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(PolarisConfigAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(RefreshAutoConfiguration.class))
@@ -94,6 +96,7 @@ public class ConditionalOnReflectRefreshTypeTest {
 	@Test
 	public void testWithoutReflectEnabled() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(PolarisConfigBootstrapAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(PolarisConfigAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(RefreshAutoConfiguration.class))
