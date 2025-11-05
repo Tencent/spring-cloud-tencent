@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
+import com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
@@ -30,11 +31,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.core.env.CompositePropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 /**
@@ -174,5 +180,45 @@ public class PolarisConfigFilePullerTest {
 		assertThat(compositePropertySource.getProperty("k1")).isEqualTo("v1");
 		assertThat(compositePropertySource.getProperty("k2")).isEqualTo("v2");
 		assertThat(compositePropertySource.getProperty("k3")).isEqualTo("v3");
+	}
+
+	@Test
+	void testInitTsfConfigGroupsSuccessfulLoad() {
+		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService);
+
+		// Arrange
+		String tsfId = "test-id";
+		String tsfNamespace = "test-namespace";
+		String tsfGroup = "test-group";
+		String polarisNamespace = "polaris-namespace";
+
+		System.setProperty("tsf_id", tsfId);
+		System.setProperty("tsf_namespace_name", tsfNamespace);
+		System.setProperty("tsf_group_name", tsfGroup);
+
+		when(polarisContextProperties.getNamespace()).thenReturn(polarisNamespace);
+
+		String expectedAppConfigGroup = tsfId + "." + tsfGroup + ".application_config_group";
+
+		// mock polaris config properties
+		PolarisPropertySource mockPropertySource = mock(PolarisPropertySource.class);
+		when(mockPropertySource.getPropertySourceName()).thenReturn(expectedAppConfigGroup);
+
+		CompositePropertySource compositePropertySource = mock(CompositePropertySource.class);
+		try (MockedStatic<PolarisPropertySourceUtils> mockedStatic = mockStatic(PolarisPropertySourceUtils.class)) {
+			mockedStatic.when(() -> PolarisPropertySourceUtils.loadGroupPolarisPropertySource(
+					eq(configFileService),
+					eq(polarisNamespace),
+					any()
+			)).thenReturn(mockPropertySource);
+
+			// Act
+			puller.initTsfConfigGroups(compositePropertySource);
+
+			// Verify
+			List<PolarisPropertySource> polarisPropertySources = PolarisPropertySourceManager.getAllPropertySources();
+			assertThat(polarisPropertySources.stream().map(PolarisPropertySource::getPropertySourceName).
+					filter(name -> name.equals(expectedAppConfigGroup)).count() == 1);
+		}
 	}
 }
