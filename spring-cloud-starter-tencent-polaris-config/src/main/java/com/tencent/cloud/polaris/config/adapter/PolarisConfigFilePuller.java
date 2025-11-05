@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.CompositePropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
 import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadGroupPolarisPropertySource;
@@ -204,23 +205,36 @@ public final class PolarisConfigFilePuller {
 	/**
 	 * Init TSF TLS property source.
 	 * @param compositePropertySource compositePropertySource
+	 * @param tsfTlsProperties tsfTlsProperties
+	 * @param environment environment
+	 * @param serviceName serviceName
 	 */
 	public void initTsfTlsPropertySource(CompositePropertySource compositePropertySource,
-			TsfTlsProperties tsfTlsProperties, String serviceName) {
-		String address = System.getProperty("MESH_CITADEL_ADDR", System.getenv("MESH_CITADEL_ADDR"));
+			TsfTlsProperties tsfTlsProperties, Environment environment, String serviceName) {
+		String address = getSystemPropertyOrEnv("MESH_CITADEL_ADDR");
 		if (StringUtils.isNotBlank(address)
 				&& (StringUtils.equals("tsf", System.getProperty("server.ssl.bundle"))
+				|| (environment != null && StringUtils.equals("tsf", environment.getProperty("server.ssl.bundle")))
 				|| "tsf".equals(compositePropertySource.getProperty(("server.ssl.bundle"))))
 				&& ClassUtils.isClassPresent("com.tencent.cloud.plugin.tsf.tls.utils.SyncUtils")
 				&& !SyncUtils.isInitialized()) {
 			// get certPath
-			String certPath = System.getProperty("MESH_CITADEL_CERT", System.getenv("MESH_CITADEL_CERT"));
+			String certPath = getSystemPropertyOrEnv("MESH_CITADEL_CERT");
 			// get token
-			String token = System.getProperty("tsf_token", System.getenv("tsf_token"));
+			String token = getSystemPropertyOrEnv("tsf_token");
 			// get validityDuration
 			Object validityDuration = compositePropertySource.getProperty("spring.cloud.polaris.tls.validityDuration");
 			if (validityDuration == null) {
-				validityDuration = tsfTlsProperties.getValidityDuration();
+				if (environment != null) {
+					validityDuration = environment.getProperty("spring.cloud.polaris.tls.validityDuration",
+							Long.class, TsfTlsProperties.DEFAULT_VALIDITY_DURATION);
+				}
+				else if (tsfTlsProperties != null) {
+					validityDuration = tsfTlsProperties.getValidityDuration();
+				}
+				else {
+					validityDuration = TsfTlsProperties.DEFAULT_VALIDITY_DURATION;
+				}
 			}
 			if (validityDuration instanceof String) {
 				validityDuration = Long.valueOf((String) validityDuration);
@@ -228,7 +242,16 @@ public final class PolarisConfigFilePuller {
 			// get refreshBefore
 			Object refreshBefore = compositePropertySource.getProperty("spring.cloud.polaris.tls.refreshBefore");
 			if (refreshBefore == null) {
-				refreshBefore = tsfTlsProperties.getRefreshBefore();
+				if (environment != null) {
+					refreshBefore = environment.getProperty("spring.cloud.polaris.tls.refreshBefore",
+							Long.class, TsfTlsProperties.DEFAULT_REFRESH_BEFORE);
+				}
+				else if (tsfTlsProperties != null) {
+					refreshBefore = tsfTlsProperties.getRefreshBefore();
+				}
+				else {
+					refreshBefore = TsfTlsProperties.DEFAULT_REFRESH_BEFORE;
+				}
 			}
 			if (refreshBefore instanceof String) {
 				refreshBefore = Long.valueOf((String) refreshBefore);
@@ -236,7 +259,16 @@ public final class PolarisConfigFilePuller {
 			// get watchInterval
 			Object watchInterval = compositePropertySource.getProperty("spring.cloud.polaris.tls.watchInterval");
 			if (watchInterval == null) {
-				watchInterval = tsfTlsProperties.getWatchInterval();
+				if (environment != null) {
+					watchInterval = environment.getProperty("spring.cloud.polaris.tls.watchInterval",
+							Long.class, TsfTlsProperties.DEFAULT_WATCH_INTERVAL);
+				}
+				else if (tsfTlsProperties != null) {
+					watchInterval = tsfTlsProperties.getWatchInterval();
+				}
+				else {
+					watchInterval = TsfTlsProperties.DEFAULT_WATCH_INTERVAL;
+				}
 			}
 			if (watchInterval instanceof String) {
 				watchInterval = Long.valueOf((String) watchInterval);
@@ -245,15 +277,11 @@ public final class PolarisConfigFilePuller {
 			if (SyncUtils.isVerified()) {
 				Map<String, Object> tlsEnvProperties = new HashMap<>();
 				// set ssl
-				Object clientAuth = compositePropertySource.getProperty("server.ssl.client-auth");
-				if (clientAuth == null) {
-					clientAuth = System.getProperty("server.ssl.client-auth", "want");
-				}
+				Object clientAuth = getPropertyWithDefault(compositePropertySource, environment,
+						"server.ssl.client-auth", "want");
 				tlsEnvProperties.put("server.ssl.client-auth", clientAuth);
-				Object protocol = compositePropertySource.getProperty("spring.cloud.polaris.discovery.protocol");
-				if (protocol == null) {
-					protocol = System.getProperty("spring.cloud.polaris.discovery.protocol", "https");
-				}
+				Object protocol = getPropertyWithDefault(compositePropertySource, environment,
+						"spring.cloud.polaris.discovery.protocol", "https");
 				tlsEnvProperties.put("spring.cloud.polaris.discovery.protocol", protocol);
 				tlsEnvProperties.put("tsf.discovery.scheme", protocol);
 
@@ -268,10 +296,28 @@ public final class PolarisConfigFilePuller {
 				}
 
 				// process environment
-				MapPropertySource propertySource = new MapPropertySource("tsf-tls-config-data", tlsEnvProperties);
+				MapPropertySource propertySource = new MapPropertySource("tsf-tls-config", tlsEnvProperties);
 				compositePropertySource.addPropertySource(propertySource);
 			}
 		}
+	}
+
+	private String getSystemPropertyOrEnv(String key) {
+		return System.getProperty(key, System.getenv(key));
+	}
+
+	private Object getPropertyWithDefault(CompositePropertySource compositePropertySource,
+			Environment environment, String propertyKey, String defaultValue) {
+		Object value = compositePropertySource.getProperty(propertyKey);
+		if (value == null) {
+			if (environment != null) {
+				value = environment.getProperty(propertyKey, defaultValue);
+			}
+			else {
+				value = System.getProperty(propertyKey, defaultValue);
+			}
+		}
+		return value;
 	}
 
 	private List<ConfigFileMetadata> getInternalConfigFiles(

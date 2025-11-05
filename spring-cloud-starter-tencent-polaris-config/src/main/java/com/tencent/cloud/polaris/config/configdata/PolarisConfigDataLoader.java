@@ -180,7 +180,7 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 
 	private void initTsfTlsPropertySource(CompositePropertySource compositePropertySource, PolarisConfigDataResource resource) {
 		if (TSF_TLS_CONFIG_FILE_LOADED.compareAndSet(false, true)) {
-			this.puller.initTsfTlsPropertySource(compositePropertySource, resource.getTsfTlsProperties(), resource.getServiceName());
+			this.puller.initTsfTlsPropertySource(compositePropertySource, resource.getTsfTlsProperties(), null, resource.getServiceName());
 		}
 	}
 
