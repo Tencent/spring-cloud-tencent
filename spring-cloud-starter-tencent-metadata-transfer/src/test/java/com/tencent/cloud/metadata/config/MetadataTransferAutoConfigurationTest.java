@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.metadata.config;
 
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignEnhancedPlugin;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientEnhancedPlugin;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
@@ -61,7 +62,11 @@ public class MetadataTransferAutoConfigurationTest {
 	 */
 	@Test
 	public void test2() {
-		this.reactiveWebApplicationContextRunner.withConfiguration(AutoConfigurations.of(MetadataTransferAutoConfiguration.class, PolarisContextProperties.class))
+		this.reactiveWebApplicationContextRunner.withConfiguration(
+						AutoConfigurations.of(
+								MetadataTransferAutoConfiguration.class,
+								PolarisContextProperties.class,
+								MetadataLocalProperties.class))
 				.run(context -> {
 					assertThat(context).hasSingleBean(MetadataTransferAutoConfiguration.MetadataTransferFeignInterceptorConfig.class);
 					assertThat(context).hasSingleBean(EncodeTransferMedataFeignEnhancedPlugin.class);
