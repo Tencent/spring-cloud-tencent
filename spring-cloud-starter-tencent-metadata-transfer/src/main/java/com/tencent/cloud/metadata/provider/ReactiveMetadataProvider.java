@@ -19,6 +19,8 @@ package com.tencent.cloud.metadata.provider;
 
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
+import com.tencent.cloud.metadata.pojo.SnapshotServerHttpRequest;
+import com.tencent.polaris.annonation.JustForTest;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataProvider;
 
@@ -31,12 +33,21 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
  */
 public class ReactiveMetadataProvider implements MetadataProvider {
 
-	private ServerHttpRequest serverHttpRequest;
+	private final ServerHttpRequest serverHttpRequest;
 
-	private String callerIp;
+	private final String callerIp;
 
 	public ReactiveMetadataProvider(ServerHttpRequest serverHttpRequest, String callerIp) {
-		this.serverHttpRequest = serverHttpRequest;
+		this(serverHttpRequest, callerIp, false);
+	}
+
+	public ReactiveMetadataProvider(ServerHttpRequest serverHttpRequest, String callerIp, boolean isAsync) {
+		if (isAsync) {
+			this.serverHttpRequest = SnapshotServerHttpRequest.from(serverHttpRequest);
+		}
+		else {
+			this.serverHttpRequest = serverHttpRequest;
+		}
 		this.callerIp = callerIp;
 	}
 
@@ -57,14 +68,19 @@ public class ReactiveMetadataProvider implements MetadataProvider {
 	@Override
 	public String getRawMetadataMapValue(String key, String mapKey) {
 		switch (key) {
-			case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
-				return UrlUtils.decode(SpringWebExpressionLabelUtils.getHeaderValue(serverHttpRequest, mapKey, null));
-			case MessageMetadataContainer.LABEL_MAP_KEY_COOKIE:
-				return UrlUtils.decode(SpringWebExpressionLabelUtils.getCookieValue(serverHttpRequest, mapKey, null));
-			case MessageMetadataContainer.LABEL_MAP_KEY_QUERY:
-				return UrlUtils.decode(SpringWebExpressionLabelUtils.getQueryValue(serverHttpRequest, mapKey, null));
-			default:
-				return null;
+		case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
+			return UrlUtils.decode(SpringWebExpressionLabelUtils.getHeaderValue(serverHttpRequest, mapKey, null));
+		case MessageMetadataContainer.LABEL_MAP_KEY_COOKIE:
+			return UrlUtils.decode(SpringWebExpressionLabelUtils.getCookieValue(serverHttpRequest, mapKey, null));
+		case MessageMetadataContainer.LABEL_MAP_KEY_QUERY:
+			return UrlUtils.decode(SpringWebExpressionLabelUtils.getQueryValue(serverHttpRequest, mapKey, null));
+		default:
+			return null;
 		}
+	}
+
+	@JustForTest
+	ServerHttpRequest getServerHttpRequest() {
+		return serverHttpRequest;
 	}
 }

@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
@@ -56,6 +57,12 @@ import static com.tencent.polaris.metadata.core.constant.MetadataConstants.LOCAL
 public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataServletFilter.class);
+
+	private final MetadataLocalProperties metadataLocalProperties;
+
+	public DecodeTransferMetadataServletFilter(MetadataLocalProperties metadataLocalProperties) {
+		this.metadataLocalProperties = metadataLocalProperties;
+	}
 
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest,
@@ -99,7 +106,8 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		// add headers
 		httpServletRequest = new HttpServletRequestHeaderWrapper(httpServletRequest, addHeaders);
 		// message metadata
-		ServletMetadataProvider callerMessageMetadataProvider = new ServletMetadataProvider(httpServletRequest, callerIp.get());
+		ServletMetadataProvider callerMessageMetadataProvider = new ServletMetadataProvider(httpServletRequest,
+				callerIp.get(), metadataLocalProperties.getAsync().getEnabled());
 
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 

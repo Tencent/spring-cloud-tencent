@@ -52,6 +52,10 @@ public class MetadataLocalProperties {
 	 * A transitive http header key list.
 	 */
 	private List<String> headers;
+	/**
+	 * Async mode config.
+	 */
+	private Async async = new Async();
 
 	public Map<String, String> getContent() {
 		if (CollectionUtils.isEmpty(content)) {
@@ -95,5 +99,50 @@ public class MetadataLocalProperties {
 
 	public void setHeaders(List<String> headers) {
 		this.headers = headers;
+	}
+
+	public Async getAsync() {
+		return async;
+	}
+
+	public void setAsync(Async async) {
+		this.async = async;
+	}
+
+	@Override
+	public String toString() {
+		return "MetadataLocalProperties{" +
+				"content=" + content +
+				", transitive=" + transitive +
+				", disposable=" + disposable +
+				", headers=" + headers +
+				", async=" + async +
+				'}';
+	}
+
+	/**
+	 * Async mode config.
+	 */
+	public static class Async {
+
+		/**
+		 * Enable async or not.
+		 */
+		private Boolean enabled = false;
+
+		public Boolean getEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(Boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		@Override
+		public String toString() {
+			return "Async{" +
+					"enabled=" + enabled +
+					'}';
+		}
 	}
 }
