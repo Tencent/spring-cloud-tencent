@@ -52,7 +52,7 @@ public class ReactiveMetadataProvider implements MetadataProvider {
 	}
 
 	@Override
-	public String getRawMetadataStringValue(String key) {
+	public String doGetRawMetadataStringValue(String key) {
 		switch (key) {
 		case MessageMetadataContainer.LABEL_KEY_METHOD:
 			return serverHttpRequest.getMethod().name();
@@ -66,7 +66,7 @@ public class ReactiveMetadataProvider implements MetadataProvider {
 	}
 
 	@Override
-	public String getRawMetadataMapValue(String key, String mapKey) {
+	public String doGetRawMetadataMapValue(String key, String mapKey) {
 		switch (key) {
 		case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
 			return UrlUtils.decode(SpringWebExpressionLabelUtils.getHeaderValue(serverHttpRequest, mapKey, null));
