@@ -17,25 +17,14 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import com.tencent.cloud.common.util.EnvironmentUtils;
-import com.tencent.cloud.plugin.tsf.tls.utils.SyncUtils;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.cloud.polaris.context.config.extend.tsf.TsfTlsProperties;
-import com.tencent.polaris.api.utils.ClassUtils;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
-import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
-import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +32,7 @@ import org.springframework.cloud.bootstrap.config.PropertySourceLocator;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
-
-import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadGroupPolarisPropertySource;
-import static com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils.loadPolarisPropertySource;
 
 /**
  * Spring cloud reserved core configuration loading SPI.
@@ -66,6 +51,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	private final PolarisConfigProperties polarisConfigProperties;
 	private final PolarisContextProperties polarisContextProperties;
 	private final ConfigFileService configFileService;
+	private final PolarisConfigFilePuller puller;
 	private final Environment environment;
 	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
@@ -75,6 +61,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisContextProperties = polarisContextProperties;
 		this.configFileService = configFileService;
+		this.puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService);
 		this.environment = environment;
 	}
 
@@ -100,10 +87,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 				// load spring boot default config files
 				initInternalConfigFiles(compositePropertySource);
 				// load custom config files
-				List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
-				if (CollectionUtils.isNotEmpty(configFileGroups)) {
-					initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
-				}
+				initCustomPolarisConfigFiles(compositePropertySource);
 				// load tsf default config group
 				initTsfConfigGroups(compositePropertySource);
 				// load tsf tls properties if need.
@@ -137,226 +121,46 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		if (!polarisConfigProperties.isInternalEnabled()) {
 			return;
 		}
-		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles();
-
-		for (ConfigFileMetadata configFile : internalConfigFiles) {
-			if (StringUtils.isEmpty(configFile.getFileGroup())) {
-				continue;
-			}
-			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService, configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
-
-			compositePropertySource.addPropertySource(polarisPropertySource);
-
-			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
-
-			LOGGER.info("[SCT Config] Load and inject polaris config file. file = {}", configFile);
-		}
-	}
-
-	private List<ConfigFileMetadata> getInternalConfigFiles() {
-		String namespace = polarisContextProperties.getNamespace();
+		// priority: application-${profile} > application > boostrap-${profile} > boostrap
+		String[] activeProfiles = environment.getActiveProfiles();
+		String[] defaultProfiles = environment.getDefaultProfiles();
 		String serviceName = polarisContextProperties.getService();
 		if (StringUtils.isBlank(serviceName)) {
 			serviceName = environment.getProperty("spring.application.name");
 		}
-
-		List<ConfigFileMetadata> internalConfigFiles = new LinkedList<>();
-
-		// priority: application-${profile} > application > boostrap-${profile} > boostrap
-		String[] activeProfiles = environment.getActiveProfiles();
-		String[] defaultProfiles = environment.getDefaultProfiles();
-		List<String> profileList = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(activeProfiles)) {
-			profileList.addAll(Arrays.asList(activeProfiles));
-		}
-		else if (CollectionUtils.isNotEmpty(defaultProfiles)) {
-			profileList.addAll(Arrays.asList(defaultProfiles));
-		}
-		// build application config files
-		buildInternalApplicationConfigFiles(internalConfigFiles, namespace, serviceName, profileList);
-		// build bootstrap config files
-		buildInternalBootstrapConfigFiles(internalConfigFiles, namespace, serviceName, profileList);
-
-		return internalConfigFiles;
+		this.puller.initInternalConfigFiles(compositePropertySource, activeProfiles, defaultProfiles, serviceName);
 	}
 
-	private void buildInternalApplicationConfigFiles(List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
-		for (String profile : profileList) {
-			if (StringUtils.isBlank(profile)) {
-				continue;
-			}
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + profile + ".properties"));
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + profile + ".yml"));
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application-" + profile + ".yaml"));
-		}
-		// build default config properties files.
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.properties"));
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yml"));
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "application.yaml"));
-	}
-
-	private void buildInternalBootstrapConfigFiles(List<ConfigFileMetadata> internalConfigFiles, String namespace, String serviceName, List<String> profileList) {
-		for (String profile : profileList) {
-			if (StringUtils.isBlank(profile)) {
-				continue;
-			}
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + profile + ".properties"));
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + profile + ".yml"));
-			internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap-" + profile + ".yaml"));
-		}
-		// build default config properties files.
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.properties"));
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yml"));
-		internalConfigFiles.add(new DefaultConfigFileMetadata(namespace, serviceName, "bootstrap.yaml"));
-	}
-
-	void initTsfConfigGroups(CompositePropertySource compositePropertySource) {
-		String tsfId = environment.getProperty("tsf_id");
-		String tsfNamespaceName = environment.getProperty("tsf_namespace_name");
-		String tsfGroupName = environment.getProperty("tsf_group_name");
-
-		if (StringUtils.isEmpty(tsfNamespaceName) || StringUtils.isEmpty(tsfGroupName)) {
-			return;
-		}
-		String namespace = polarisContextProperties.getNamespace();
-		List<String> tsfConfigGroups = new ArrayList<>();
-		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".application_config_group");
-		tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfNamespaceName + ".global_config_group");
-
-		if (EnvironmentUtils.isGateway()) {
-			tsfConfigGroups.add((StringUtils.isNotBlank(tsfId) ? tsfId + "." : "") + tsfGroupName + ".gateway_config_group");
-		}
-		for (String tsfConfigGroup : tsfConfigGroups) {
-			PolarisPropertySource polarisPropertySource = loadGroupPolarisPropertySource(configFileService, namespace, tsfConfigGroup);
-			if (polarisPropertySource == null) {
-				// not register to polaris
-				continue;
-			}
-			compositePropertySource.addPropertySource(polarisPropertySource);
-			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+	private void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource) {
+		List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
+		if (CollectionUtils.isNotEmpty(configFileGroups)) {
+			this.puller.initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
 		}
 	}
 
-	void initTsfTlsPropertySource(CompositePropertySource compositePropertySource) {
-		String address = System.getProperty("MESH_CITADEL_ADDR", System.getenv("MESH_CITADEL_ADDR"));
-		if (StringUtils.isNotBlank(address)
-				&& (StringUtils.equals("tsf", environment.getProperty("server.ssl.bundle"))
-				|| "tsf".equals(compositePropertySource.getProperty(("server.ssl.bundle"))))
-				&& ClassUtils.isClassPresent("com.tencent.cloud.plugin.tsf.tls.utils.SyncUtils")
-				&& !SyncUtils.isInitialized()) {
-			// get common name
-			Object commonName = compositePropertySource.getProperty("spring.cloud.polaris.service");
-			if (commonName == null) {
-				commonName = compositePropertySource.getProperty("spring.cloud.polaris.discovery.service");
-			}
-			if (commonName == null) {
-				commonName = compositePropertySource.getProperty("spring.application.name");
-			}
-			if (commonName == null) {
-				commonName = environment.getProperty("spring.cloud.polaris.service");
-			}
-			if (commonName == null) {
-				commonName = environment.getProperty("spring.cloud.polaris.discovery.service");
-			}
-			if (commonName == null) {
-				commonName = environment.getProperty("spring.application.name");
-			}
-			// get certPath
-			String certPath = System.getProperty("MESH_CITADEL_CERT", System.getenv("MESH_CITADEL_CERT"));
-			// get token
-			String token = System.getProperty("tsf_token", System.getenv("tsf_token"));
-			// get validityDuration
-			Object validityDuration = compositePropertySource.getProperty("spring.cloud.polaris.tls.validityDuration");
-			if (validityDuration == null) {
-				validityDuration = environment.getProperty("spring.cloud.polaris.tls.validityDuration", Long.class, TsfTlsProperties.DEFAULT_VALIDITY_DURATION);
-			}
-			if (validityDuration instanceof String) {
-				validityDuration = Long.valueOf((String) validityDuration);
-			}
-			// get refreshBefore
-			Object refreshBefore = compositePropertySource.getProperty("spring.cloud.polaris.tls.refreshBefore");
-			if (refreshBefore == null) {
-				refreshBefore = environment.getProperty("spring.cloud.polaris.tls.refreshBefore", Long.class, TsfTlsProperties.DEFAULT_REFRESH_BEFORE);
-			}
-			if (refreshBefore instanceof String) {
-				refreshBefore = Long.valueOf((String) refreshBefore);
-			}
-			// get watchInterval
-			Object watchInterval = compositePropertySource.getProperty("spring.cloud.polaris.tls.watchInterval");
-			if (watchInterval == null) {
-				watchInterval = environment.getProperty("spring.cloud.polaris.tls.watchInterval", Long.class, TsfTlsProperties.DEFAULT_WATCH_INTERVAL);
-			}
-			if (watchInterval instanceof String) {
-				watchInterval = Long.valueOf((String) watchInterval);
-			}
-			SyncUtils.init((String) commonName, address, certPath, token, (Long) validityDuration, (Long) refreshBefore, (Long) watchInterval);
-			if (SyncUtils.isVerified()) {
-				Map<String, Object> tlsEnvProperties = new HashMap<>();
-				// set ssl
-				Object clientAuth = compositePropertySource.getProperty("server.ssl.client-auth");
-				if (clientAuth == null) {
-					clientAuth = environment.getProperty("server.ssl.client-auth", "want");
-				}
-				tlsEnvProperties.put("server.ssl.client-auth", clientAuth);
-				Object protocol = compositePropertySource.getProperty("spring.cloud.polaris.discovery.protocol");
-				if (protocol == null) {
-					protocol = environment.getProperty("spring.cloud.polaris.discovery.protocol", "https");
-				}
-				tlsEnvProperties.put("spring.cloud.polaris.discovery.protocol", protocol);
-				tlsEnvProperties.put("tsf.discovery.scheme", protocol);
-				// set tsf spring ssl bundle
-				tlsEnvProperties.put("spring.ssl.bundle.pem.tsf.reload-on-update", "true");
-				if (StringUtils.isNotBlank(SyncUtils.getPemKeyStoreCertPath()) && StringUtils.isNotBlank(SyncUtils.getPemKeyStoreKeyPath())) {
-					tlsEnvProperties.put("spring.ssl.bundle.pem.tsf.keystore.certificate", SyncUtils.getPemKeyStoreCertPath());
-					tlsEnvProperties.put("spring.ssl.bundle.pem.tsf.keystore.private-key", SyncUtils.getPemKeyStoreKeyPath());
-				}
-				if (StringUtils.isNotBlank(SyncUtils.getPemTrustStoreCertPath())) {
-					tlsEnvProperties.put("spring.ssl.bundle.pem.tsf.truststore.certificate", SyncUtils.getPemTrustStoreCertPath());
-				}
-
-				// process environment
-				MapPropertySource propertySource = new MapPropertySource("tsf-tls-config", tlsEnvProperties);
-				compositePropertySource.addPropertySource(propertySource);
-			}
-		}
+	private void initTsfConfigGroups(CompositePropertySource compositePropertySource) {
+		this.puller.initTsfConfigGroups(compositePropertySource);
 	}
 
-	private void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource, List<ConfigFileGroup> configFileGroups) {
-		String namespace = polarisContextProperties.getNamespace();
-
-		for (ConfigFileGroup configFileGroup : configFileGroups) {
-			String groupNamespace = configFileGroup.getNamespace();
-			if (StringUtils.isBlank(groupNamespace)) {
-				groupNamespace = namespace;
-			}
-
-			String group = configFileGroup.getName();
-			if (StringUtils.isBlank(group)) {
-				continue;
-			}
-
-			List<String> files = configFileGroup.getFiles();
-
-			if (CollectionUtils.isEmpty(files)) {
-				PolarisPropertySource polarisPropertySource = loadGroupPolarisPropertySource(configFileService, namespace, group);
-				if (polarisPropertySource == null) {
-					continue;
-				}
-				compositePropertySource.addPropertySource(polarisPropertySource);
-				PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
-				LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}", namespace, group);
-			}
-			else {
-				for (String fileName : files) {
-					PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(configFileService, groupNamespace, group, fileName);
-
-					compositePropertySource.addPropertySource(polarisPropertySource);
-
-					PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
-
-					LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}", groupNamespace, group, fileName);
-				}
-			}
+	private void initTsfTlsPropertySource(CompositePropertySource compositePropertySource) {
+		// get service name
+		Object serviceName = compositePropertySource.getProperty("spring.cloud.polaris.service");
+		if (serviceName == null) {
+			serviceName = compositePropertySource.getProperty("spring.cloud.polaris.discovery.service");
 		}
+		if (serviceName == null) {
+			serviceName = compositePropertySource.getProperty("spring.application.name");
+		}
+		if (serviceName == null) {
+			serviceName = environment.getProperty("spring.cloud.polaris.service");
+		}
+		if (serviceName == null) {
+			serviceName = environment.getProperty("spring.cloud.polaris.discovery.service");
+		}
+		if (serviceName == null) {
+			serviceName = environment.getProperty("spring.application.name");
+		}
+		String commonName = (String) serviceName;
+		this.puller.initTsfTlsPropertySource(compositePropertySource, null, environment, commonName);
 	}
 }
