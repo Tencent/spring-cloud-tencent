@@ -52,7 +52,7 @@ public class ServletMetadataProvider implements MetadataProvider {
 	}
 
 	@Override
-	public String getRawMetadataStringValue(String key) {
+	public String doGetRawMetadataStringValue(String key) {
 		switch (key) {
 		case MessageMetadataContainer.LABEL_KEY_METHOD:
 			return httpServletRequest.getMethod();
@@ -66,7 +66,7 @@ public class ServletMetadataProvider implements MetadataProvider {
 	}
 
 	@Override
-	public String getRawMetadataMapValue(String key, String mapKey) {
+	public String doGetRawMetadataMapValue(String key, String mapKey) {
 		switch (key) {
 		case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
 			return UrlUtils.decode(httpServletRequest.getHeader(mapKey));

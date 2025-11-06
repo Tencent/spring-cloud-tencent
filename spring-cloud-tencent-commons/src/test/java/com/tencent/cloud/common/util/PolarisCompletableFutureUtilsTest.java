@@ -58,7 +58,6 @@ public class PolarisCompletableFutureUtilsTest {
 					.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key1")).isNull();
 			assertThat(MetadataContextHolder.get()
 					.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key2")).isNull();
-			MetadataContextHolder.get().putContext(MetadataContext.FRAGMENT_TRANSITIVE, "key2", "value2");
 			return "test";
 		}).thenAccept(result -> {
 			assertThat(result).isEqualTo("test");
@@ -100,7 +99,6 @@ public class PolarisCompletableFutureUtilsTest {
 					.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key1")).isNull();
 			assertThat(MetadataContextHolder.get()
 					.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key2")).isNull();
-			MetadataContextHolder.get().putContext(MetadataContext.FRAGMENT_TRANSITIVE, "key2", "value3");
 		}).join();
 		assertThat(MetadataContextHolder.get()
 				.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key1")).isEqualTo("value1");
@@ -136,7 +134,6 @@ public class PolarisCompletableFutureUtilsTest {
 					.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key1")).isNull();
 			assertThat(MetadataContextHolder.get()
 					.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key2")).isNull();
-			MetadataContextHolder.get().putContext(MetadataContext.FRAGMENT_TRANSITIVE, "key2", "value2");
 			return "test";
 		}).thenAccept(result -> {
 			assertThat(result).isEqualTo("test");
@@ -173,6 +170,21 @@ public class PolarisCompletableFutureUtilsTest {
 	@Test
 	public void testCallAsyncWithExecutor() {
 		Executor executor = Executors.newSingleThreadExecutor();
+
+		// can not be found and set
+		FutureUtils.callAsync(() -> {
+			assertThat(MetadataContextHolder.get()
+					.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key1")).isNull();
+			assertThat(MetadataContextHolder.get()
+					.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key2")).isNull();
+			return "test";
+		}, executor).thenAccept(result -> {
+			assertThat(result).isEqualTo("test");
+		}).join();
+		assertThat(MetadataContextHolder.get()
+				.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key1")).isEqualTo("value1");
+		assertThat(MetadataContextHolder.get()
+				.getContext(MetadataContext.FRAGMENT_TRANSITIVE, "key2")).isNull();
 
 		// can be found and set
 		PolarisCompletableFutureUtils.callAsync(() -> {
