@@ -43,8 +43,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
 
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.http.HttpHeaders;
 
 /**
  * Snapshot of HttpServletRequest.
@@ -71,7 +70,7 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 	/**
 	 * HTTP headers.
 	 */
-	private final MultiValueMap<String, String> headers;
+	private final HttpHeaders headers;
 
 	/**
 	 * HTTP cookies.
@@ -82,8 +81,8 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 		this.method = builder.method;
 		this.requestURI = builder.requestURI;
 		this.queryString = builder.queryString;
-		this.headers = new LinkedMultiValueMap<>(builder.headers);
-		this.cookies = builder.cookies;
+		this.headers = HttpHeaders.readOnlyHttpHeaders(builder.headers);
+		this.cookies = builder.cookies != null ? builder.cookies.clone() : null;
 	}
 
 	/**
@@ -136,7 +135,6 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getHeader(String name) {
-		// 返回第一个值
 		return headers.getFirst(name);
 	}
 
@@ -156,15 +154,14 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public Cookie[] getCookies() {
-		return cookies;
+		return cookies != null ? cookies.clone() : null;
 	}
 
+	// ========== Unsupported operations ==========
 	@Override
 	public String getAuthType() {
 		throw new UnsupportedOperationException("Snapshot request does not support this operation");
 	}
-
-	// 以下是HttpServletRequest接口的其他方法，抛出UnsupportedOperationException
 
 	@Override
 	public String getPathInfo() {
@@ -480,7 +477,7 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 		private String method;
 		private String requestURI;
 		private String queryString;
-		private MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		private HttpHeaders headers = new HttpHeaders();
 		private Cookie[] cookies;
 
 		public Builder method(String method) {
