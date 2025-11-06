@@ -25,6 +25,7 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
@@ -55,6 +56,12 @@ import static com.tencent.polaris.metadata.core.constant.MetadataConstants.LOCAL
 public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataReactiveFilter.class);
+
+	private final MetadataLocalProperties metadataLocalProperties;
+
+	public DecodeTransferMetadataReactiveFilter(MetadataLocalProperties metadataLocalProperties) {
+		this.metadataLocalProperties = metadataLocalProperties;
+	}
 
 	@Override
 	public int getOrder() {
@@ -106,7 +113,8 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 			}
 		}).build();
 		// message metadata
-		ReactiveMetadataProvider callerMessageMetadataProvider = new ReactiveMetadataProvider(serverHttpRequest, callerIp.get());
+		ReactiveMetadataProvider callerMessageMetadataProvider = new ReactiveMetadataProvider(serverHttpRequest,
+				callerIp.get(), metadataLocalProperties.getAsync().getEnabled());
 
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 
@@ -115,10 +123,12 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				MetadataConstant.HeaderName.METADATA_CONTEXT,
 				MetadataContextHolder.get());
 
-		String targetNamespace = serverWebExchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.NAMESPACE);
+		String targetNamespace = serverWebExchange.getRequest().getHeaders()
+				.getFirst(MetadataConstant.HeaderName.NAMESPACE);
 		// Compatible with TSF
 		if (StringUtils.isBlank(targetNamespace)) {
-			targetNamespace = serverWebExchange.getRequest().getHeaders().getFirst(MetadataConstant.HeaderName.TSF_NAMESPACE_ID);
+			targetNamespace = serverWebExchange.getRequest().getHeaders()
+					.getFirst(MetadataConstant.HeaderName.TSF_NAMESPACE_ID);
 		}
 
 		if (StringUtils.isNotBlank(targetNamespace)) {

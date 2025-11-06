@@ -54,7 +54,7 @@ public class DecodeTransferMetadataReactiveFilterTest {
 
 	@BeforeEach
 	public void setUp() {
-		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter();
+		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter(metadataLocalProperties);
 	}
 
 	@Test

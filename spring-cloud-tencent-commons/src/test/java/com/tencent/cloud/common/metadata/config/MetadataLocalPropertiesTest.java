@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.common.metadata.config;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -25,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link MetadataLocalProperties}.
@@ -42,20 +43,25 @@ public class MetadataLocalPropertiesTest {
 
 	@Test
 	public void test1() {
-		Assertions.assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
-		Assertions.assertThat(metadataLocalProperties.getContent().get("c")).isNull();
+		assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
+		assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
+		assertThat(metadataLocalProperties.getContent().get("c")).isNull();
 	}
 
 	@Test
 	public void test2() {
-		Assertions.assertThat(metadataLocalProperties.getTransitive().contains("b")).isTrue();
+		assertThat(metadataLocalProperties.getTransitive().contains("b")).isTrue();
 	}
 
 	@Test
 	public void test3() {
-		Assertions.assertThat(metadataLocalProperties.getHeaders().contains("c")).isTrue();
-		Assertions.assertThat(metadataLocalProperties.getHeaders().contains("d")).isTrue();
+		assertThat(metadataLocalProperties.getHeaders().contains("c")).isTrue();
+		assertThat(metadataLocalProperties.getHeaders().contains("d")).isTrue();
+	}
+
+	@Test
+	public void test4() {
+		assertThat(metadataLocalProperties.getAsync().getEnabled()).isTrue();
 	}
 
 	@SpringBootApplication
