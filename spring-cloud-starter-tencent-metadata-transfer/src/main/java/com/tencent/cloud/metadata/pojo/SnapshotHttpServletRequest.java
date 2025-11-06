@@ -27,24 +27,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletConnection;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpUpgradeHandler;
-import jakarta.servlet.http.Part;
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
+import javax.servlet.http.Part;
 
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.http.HttpHeaders;
 
 /**
  * Snapshot of HttpServletRequest.
@@ -71,7 +69,7 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 	/**
 	 * HTTP headers.
 	 */
-	private final MultiValueMap<String, String> headers;
+	private final HttpHeaders headers;
 
 	/**
 	 * HTTP cookies.
@@ -82,8 +80,8 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 		this.method = builder.method;
 		this.requestURI = builder.requestURI;
 		this.queryString = builder.queryString;
-		this.headers = new LinkedMultiValueMap<>(builder.headers);
-		this.cookies = builder.cookies;
+		this.headers = HttpHeaders.readOnlyHttpHeaders(builder.headers);
+		this.cookies = builder.cookies != null ? builder.cookies.clone() : null;
 	}
 
 	/**
@@ -136,7 +134,6 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getHeader(String name) {
-		// 返回第一个值
 		return headers.getFirst(name);
 	}
 
@@ -156,15 +153,14 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public Cookie[] getCookies() {
-		return cookies;
+		return cookies != null ? cookies.clone() : null;
 	}
 
+	// ========== Unsupported operations ==========
 	@Override
 	public String getAuthType() {
 		throw new UnsupportedOperationException("Snapshot request does not support this operation");
 	}
-
-	// 以下是HttpServletRequest接口的其他方法，抛出UnsupportedOperationException
 
 	@Override
 	public String getPathInfo() {
@@ -238,6 +234,11 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public boolean isRequestedSessionIdFromURL() {
+		throw new UnsupportedOperationException("Snapshot request does not support this operation");
+	}
+
+	@Override
+	public boolean isRequestedSessionIdFromUrl() {
 		throw new UnsupportedOperationException("Snapshot request does not support this operation");
 	}
 
@@ -367,6 +368,11 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
+	public String getRealPath(String path) {
+		throw new UnsupportedOperationException("Snapshot request does not support this operation");
+	}
+
+	@Override
 	public int getRemotePort() {
 		throw new UnsupportedOperationException("Snapshot request does not support this operation");
 	}
@@ -422,21 +428,6 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public String getRequestId() {
-		throw new UnsupportedOperationException("Snapshot request does not support this operation");
-	}
-
-	@Override
-	public String getProtocolRequestId() {
-		throw new UnsupportedOperationException("Snapshot request does not support this operation");
-	}
-
-	@Override
-	public ServletConnection getServletConnection() {
-		throw new UnsupportedOperationException("Snapshot request does not support this operation");
-	}
-
-	@Override
 	public Object getAttribute(String name) {
 		throw new UnsupportedOperationException("Snapshot request does not support this operation");
 	}
@@ -480,7 +471,7 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 		private String method;
 		private String requestURI;
 		private String queryString;
-		private MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		private HttpHeaders headers = new HttpHeaders();
 		private Cookie[] cookies;
 
 		public Builder method(String method) {
