@@ -27,3 +27,4 @@
 - [test:add junit tests to sct-common.](https://github.com/Tencent/spring-cloud-tencent/pull/1726)
 - [test:add junit tests to sct-gw-plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1729)
 - [feat:compatible metadata transfer with TSF SDK version 1.x.](https://github.com/Tencent/spring-cloud-tencent/pull/1734)
+- [fix: tsf gateway config support tsf-data-access.](https://github.com/Tencent/spring-cloud-tencent/pull/1745)
