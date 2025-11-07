@@ -71,7 +71,9 @@ public enum PluginType {
 				return pluginType;
 			}
 		}
-		logger.warn("Unknown plugin type exception, please upgrade your gateway sdk");
+		if (logger.isDebugEnabled()) {
+			logger.debug("Unknown plugin type:{} exception, please upgrade your gateway sdk", name);
+		}
 		return null;
 	}
 
