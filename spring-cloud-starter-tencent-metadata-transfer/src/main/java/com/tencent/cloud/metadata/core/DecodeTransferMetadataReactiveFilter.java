@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.tencent.cloud.common.async.PolarisAsyncProperties;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
@@ -57,10 +57,10 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataReactiveFilter.class);
 
-	private final MetadataLocalProperties metadataLocalProperties;
+	private final PolarisAsyncProperties polarisAsyncProperties;
 
-	public DecodeTransferMetadataReactiveFilter(MetadataLocalProperties metadataLocalProperties) {
-		this.metadataLocalProperties = metadataLocalProperties;
+	public DecodeTransferMetadataReactiveFilter(PolarisAsyncProperties polarisAsyncProperties) {
+		this.polarisAsyncProperties = polarisAsyncProperties;
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		}).build();
 		// message metadata
 		ReactiveMetadataProvider callerMessageMetadataProvider = new ReactiveMetadataProvider(serverHttpRequest,
-				callerIp.get(), metadataLocalProperties.getAsync().getEnabled());
+				callerIp.get(), polarisAsyncProperties.getEnabled());
 
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 

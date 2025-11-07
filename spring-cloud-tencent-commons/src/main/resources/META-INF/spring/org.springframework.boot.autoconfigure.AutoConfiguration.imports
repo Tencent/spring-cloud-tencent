@@ -2,3 +2,6 @@ com.tencent.cloud.common.util.ApplicationContextAwareUtils
 com.tencent.cloud.common.metadata.config.MetadataAutoConfiguration
 com.tencent.cloud.common.metadata.endpoint.PolarisMetadataEndpointAutoConfiguration
 com.tencent.cloud.common.util.inet.PolarisInetUtilsAutoConfiguration
+com.tencent.cloud.common.async.PolarisAsyncPropertiesAutoConfiguration
+com.tencent.cloud.common.async.PolarisAsyncConfiguration
+

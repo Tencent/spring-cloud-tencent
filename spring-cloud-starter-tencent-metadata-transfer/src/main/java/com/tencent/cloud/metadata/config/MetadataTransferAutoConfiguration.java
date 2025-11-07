@@ -17,8 +17,8 @@
 
 package com.tencent.cloud.metadata.config;
 
+import com.tencent.cloud.common.async.PolarisAsyncProperties;
 import com.tencent.cloud.common.constant.OrderConstant;
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignEnhancedPlugin;
@@ -65,8 +65,8 @@ public class MetadataTransferAutoConfiguration {
 		}
 
 		@Bean
-		public DecodeTransferMetadataServletFilter metadataServletFilter(MetadataLocalProperties metadataLocalProperties) {
-			return new DecodeTransferMetadataServletFilter(metadataLocalProperties);
+		public DecodeTransferMetadataServletFilter metadataServletFilter(PolarisAsyncProperties polarisAsyncProperties) {
+			return new DecodeTransferMetadataServletFilter(polarisAsyncProperties);
 		}
 	}
 
@@ -78,8 +78,8 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataReactiveFilterConfig {
 
 		@Bean
-		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter(MetadataLocalProperties metadataLocalProperties) {
-			return new DecodeTransferMetadataReactiveFilter(metadataLocalProperties);
+		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter(PolarisAsyncProperties polarisAsyncProperties) {
+			return new DecodeTransferMetadataReactiveFilter(polarisAsyncProperties);
 		}
 	}
 
