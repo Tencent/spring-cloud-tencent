@@ -17,7 +17,10 @@
 
 package com.tencent.cloud.metadata.core;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -35,6 +38,7 @@ import com.tencent.polaris.metadata.core.MetadataType;
 import shade.polaris.com.google.common.collect.ImmutableMap;
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.tsf.core.filter.ContextToHeaderInterceptor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -48,6 +52,13 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  * @author Shedfree Wu
  */
 public class EncodeTransferMedataScgEnhancedPlugin implements EnhancedPlugin {
+
+	private List<ContextToHeaderInterceptor> contextToHeaderInterceptorList;
+
+	public EncodeTransferMedataScgEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+		this.contextToHeaderInterceptorList = Optional.ofNullable(contextToHeaderInterceptorList).orElse(Collections.EMPTY_LIST);
+	}
+
 	@Override
 	public EnhancedPluginType getType() {
 		return EnhancedPluginType.Client.PRE;
@@ -69,6 +80,8 @@ public class EncodeTransferMedataScgEnhancedPlugin implements EnhancedPlugin {
 			metadataContext = MetadataContextHolder.get();
 		}
 
+		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::beforeContextToHeader);
+
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
@@ -85,6 +98,8 @@ public class EncodeTransferMedataScgEnhancedPlugin implements EnhancedPlugin {
 		this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 		this.buildMetadataHeader(builder, applicationMetadata, APPLICATION_METADATA);
 		TransHeadersTransfer.transfer(exchange.getRequest());
+
+		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::afterContextToHeader);
 
 		context.setOriginRequest(exchange.mutate().request(builder.build()).build());
 	}

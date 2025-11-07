@@ -20,8 +20,10 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.tsf.core.entity.Tag;
+import org.springframework.tsf.core.util.TagUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -216,5 +220,15 @@ public class ProviderController {
 
 		LOG.info("provider-demo -- response info: [" + resultMap + "]");
 		return resultMap;
+	}
+
+	@GetMapping("/tagUtils")
+	public String tagUtils(@RequestParam("key") String key, @RequestParam("value") String value) {
+		Tag tag = new Tag(key, value);
+		String json = TagUtils.serializeToJson(Collections.singletonList(tag));
+
+		List<Tag> tagList = TagUtils.deserializeTagList(json);
+
+		return "serializeToJson: " + json + ", deserializeTagList: " + tagList;
 	}
 }
