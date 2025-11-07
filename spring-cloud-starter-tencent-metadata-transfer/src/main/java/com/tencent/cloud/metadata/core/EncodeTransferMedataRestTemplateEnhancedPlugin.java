@@ -17,7 +17,10 @@
 
 package com.tencent.cloud.metadata.core;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -33,7 +36,9 @@ import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataType;
 import shade.polaris.com.google.common.collect.ImmutableMap;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpRequest;
+import org.springframework.tsf.core.filter.ContextToHeaderInterceptor;
 import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
@@ -46,6 +51,13 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  * @author Shedfree Wu
  */
 public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedPlugin {
+
+	private @Lazy List<ContextToHeaderInterceptor> contextToHeaderInterceptorList;
+
+	public EncodeTransferMedataRestTemplateEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+		this.contextToHeaderInterceptorList = Optional.ofNullable(contextToHeaderInterceptorList).orElse(Collections.EMPTY_LIST);
+	}
+
 	@Override
 	public EnhancedPluginType getType() {
 		return EnhancedPluginType.Client.BEFORE_CALLING;
@@ -57,6 +69,8 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 			return;
 		}
 		HttpRequest httpRequest = (HttpRequest) context.getOriginRequest();
+
+		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::beforeContextToHeader);
 
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
@@ -86,6 +100,8 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(httpRequest, transHeaders);
+
+		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::afterContextToHeader);
 	}
 
 	private void buildTransmittedHeader(HttpRequest request, Map<String, String> transHeaders) {
