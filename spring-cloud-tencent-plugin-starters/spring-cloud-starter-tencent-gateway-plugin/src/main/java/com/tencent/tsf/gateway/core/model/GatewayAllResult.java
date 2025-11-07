@@ -28,12 +28,16 @@ public class GatewayAllResult {
 
 	private PathWildcardResult pathWildcardResult;
 
+	private PluginInstanceInfoResult pluginInstanceInfoResult;
+
 	public GatewayAllResult(GroupResult groupResult, GroupApiResult groupApiResult,
-			PathRewriteResult pathRewriteResult, PathWildcardResult pathWildcardResult) {
+			PathRewriteResult pathRewriteResult, PathWildcardResult pathWildcardResult,
+			PluginInstanceInfoResult pluginInstanceInfoResult) {
 		this.groupResult = groupResult;
 		this.groupApiResult = groupApiResult;
 		this.pathRewriteResult = pathRewriteResult;
 		this.pathWildcardResult = pathWildcardResult;
+		this.pluginInstanceInfoResult = pluginInstanceInfoResult;
 	}
 
 	public GroupResult getGroupResult() {
@@ -66,5 +70,13 @@ public class GatewayAllResult {
 
 	public void setPathWildcardResult(PathWildcardResult pathWildcardResult) {
 		this.pathWildcardResult = pathWildcardResult;
+	}
+
+	public PluginInstanceInfoResult getPluginInstanceInfoResult() {
+		return pluginInstanceInfoResult;
+	}
+
+	public void setPluginInstanceInfoResult(PluginInstanceInfoResult pluginInstanceInfoResult) {
+		this.pluginInstanceInfoResult = pluginInstanceInfoResult;
 	}
 }

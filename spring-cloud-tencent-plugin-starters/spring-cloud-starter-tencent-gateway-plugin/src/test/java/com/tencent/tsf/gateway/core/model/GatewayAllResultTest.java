@@ -30,15 +30,17 @@ public class GatewayAllResultTest {
 
 	@Test
 	public void testGatewayAllResult() {
-		GatewayAllResult gatewayAllResult = new GatewayAllResult(null, null, null, null);
+		GatewayAllResult gatewayAllResult = new GatewayAllResult(null, null, null, null, null);
 		gatewayAllResult.setGroupResult(new GroupResult());
 		gatewayAllResult.setGroupApiResult(new GroupApiResult());
 		gatewayAllResult.setPathRewriteResult(new PathRewriteResult());
 		gatewayAllResult.setPathWildcardResult(new PathWildcardResult());
+		gatewayAllResult.setPluginInstanceInfoResult(new PluginInstanceInfoResult());
 
 		assertThat(gatewayAllResult.getGroupResult()).isNotNull();
 		assertThat(gatewayAllResult.getGroupApiResult()).isNotNull();
 		assertThat(gatewayAllResult.getPathRewriteResult()).isNotNull();
 		assertThat(gatewayAllResult.getPathWildcardResult()).isNotNull();
+		assertThat(gatewayAllResult.getPluginInstanceInfoResult()).isNotNull();
 	}
 }
