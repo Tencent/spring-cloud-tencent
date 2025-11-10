@@ -74,7 +74,7 @@
 		<revision>2.1.1.0-2021.0.9-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>2.1.0.0</polaris.version>
+		<polaris.version>2.1.1.0-SNAPSHOT</polaris.version>
 
 		<!-- Dependencies -->
 		<bcpkix-jdk18on.version>1.78.1</bcpkix-jdk18on.version>

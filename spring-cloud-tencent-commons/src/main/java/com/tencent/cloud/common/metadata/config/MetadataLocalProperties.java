@@ -96,4 +96,14 @@ public class MetadataLocalProperties {
 	public void setHeaders(List<String> headers) {
 		this.headers = headers;
 	}
+
+	@Override
+	public String toString() {
+		return "MetadataLocalProperties{" +
+				"content=" + content +
+				", transitive=" + transitive +
+				", disposable=" + disposable +
+				", headers=" + headers +
+				'}';
+	}
 }

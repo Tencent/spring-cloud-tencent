@@ -20,10 +20,12 @@ package com.tencent.cloud.quickstart.caller;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.PolarisCompletableFutureUtils;
 import com.tencent.cloud.quickstart.caller.pojo.User;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
@@ -34,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -227,6 +230,52 @@ public class QuickstartCallerController {
 	public String test1(@PathVariable int num) {
 		String path = "http://QuickstartCalleeService/quickstart/callee/test/" + num + "/echo";
 		return restTemplate.getForObject(path, String.class);
+	}
+
+	/**
+	 * Get information of callee with async and delay.
+	 * @param headerMap request headers
+	 * @param delay delay time in milliseconds
+	 * @return information of callee
+	 */
+	@GetMapping("/rest-async")
+	public ResponseEntity<String> restAsync(@RequestHeader Map<String, String> headerMap,
+			@RequestParam(defaultValue = "1000") long delay) {
+		String url = "http://QuickstartCalleeService/quickstart/callee/info";
+
+		HttpHeaders headers = new HttpHeaders();
+		for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+			if (StringUtils.isNotBlank(entry.getKey()) && StringUtils.isNotBlank(entry.getValue())
+					&& !entry.getKey().contains("sct-")
+					&& !entry.getKey().contains("SCT-")
+					&& !entry.getKey().contains("polaris-")
+					&& !entry.getKey().contains("POLARIS-")) {
+				headers.add(entry.getKey(), entry.getValue());
+			}
+		}
+
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+
+		PolarisCompletableFutureUtils.runAsync(() -> {
+			try {
+				TimeUnit.MILLISECONDS.sleep(delay);
+				LOG.info("begin rest");
+				ResponseEntity<String> result = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+				LOG.info("result: {}", result.getBody());
+			}
+			catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
+				LOG.error("HttpClientErrorException: {}", httpClientErrorException.getResponseBodyAsString());
+			}
+			catch (InterruptedException e) {
+				LOG.error("InterruptedException: {}", e.getMessage());
+			}
+			catch (Throwable t) {
+				LOG.error("Throwable", t);
+			}
+		});
+
+		LOG.info("return ok");
+		return new ResponseEntity<>("ok", HttpStatus.OK);
 	}
 
 	/**

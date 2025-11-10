@@ -22,6 +22,8 @@ import java.util.function.Supplier;
 
 import com.tencent.polaris.threadlocal.cross.CompletableFutureUtils;
 
+import org.springframework.util.Assert;
+
 import static com.tencent.cloud.common.metadata.CrossThreadMetadataContext.CROSS_THREAD_METADATA_CONTEXT_CONSUMER;
 import static com.tencent.cloud.common.metadata.CrossThreadMetadataContext.CROSS_THREAD_METADATA_CONTEXT_SUPPLIER;
 
@@ -36,10 +38,14 @@ public final class PolarisCompletableFutureUtils {
 	}
 
 	public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier) {
+		Assert.notNull(supplier, "Supplier must not be null");
+
 		return CompletableFutureUtils.supplyAsync(supplier, CROSS_THREAD_METADATA_CONTEXT_SUPPLIER, CROSS_THREAD_METADATA_CONTEXT_CONSUMER);
 	}
 
 	public static CompletableFuture<Void> runAsync(Runnable runnable) {
+		Assert.notNull(runnable, "Runnable must not be null");
+
 		return CompletableFutureUtils.runAsync(runnable, CROSS_THREAD_METADATA_CONTEXT_SUPPLIER, CROSS_THREAD_METADATA_CONTEXT_CONSUMER);
 	}
 }

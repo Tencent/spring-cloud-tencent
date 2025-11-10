@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
+import com.tencent.cloud.metadata.pojo.SnapshotHttpServletRequest;
+import com.tencent.polaris.annonation.JustForTest;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataProvider;
 
@@ -32,40 +34,54 @@ import com.tencent.polaris.metadata.core.MetadataProvider;
  */
 public class ServletMetadataProvider implements MetadataProvider {
 
-	private HttpServletRequest httpServletRequest;
+	private final HttpServletRequest httpServletRequest;
 
-	private String callerIp;
+	private final String callerIp;
 
 	public ServletMetadataProvider(HttpServletRequest httpServletRequest, String callerIp) {
-		this.httpServletRequest = httpServletRequest;
+		this(httpServletRequest, callerIp, false);
+	}
+
+	public ServletMetadataProvider(HttpServletRequest httpServletRequest, String callerIp, boolean isAsync) {
+		if (isAsync) {
+			this.httpServletRequest = SnapshotHttpServletRequest.from(httpServletRequest);
+		}
+		else {
+			this.httpServletRequest = httpServletRequest;
+		}
 		this.callerIp = callerIp;
 	}
 
 	@Override
-	public String getRawMetadataStringValue(String key) {
+	public String doGetRawMetadataStringValue(String key) {
 		switch (key) {
-			case MessageMetadataContainer.LABEL_KEY_METHOD:
-				return httpServletRequest.getMethod();
-			case MessageMetadataContainer.LABEL_KEY_PATH:
-				return UrlUtils.decode(httpServletRequest.getRequestURI());
-			case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
-				return callerIp;
-			default:
-				return null;
+		case MessageMetadataContainer.LABEL_KEY_METHOD:
+			return httpServletRequest.getMethod();
+		case MessageMetadataContainer.LABEL_KEY_PATH:
+			return UrlUtils.decode(httpServletRequest.getRequestURI());
+		case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
+			return callerIp;
+		default:
+			return null;
 		}
 	}
 
 	@Override
-	public String getRawMetadataMapValue(String key, String mapKey) {
+	public String doGetRawMetadataMapValue(String key, String mapKey) {
 		switch (key) {
-			case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
-				return UrlUtils.decode(httpServletRequest.getHeader(mapKey));
-			case MessageMetadataContainer.LABEL_MAP_KEY_COOKIE:
-				return UrlUtils.decode(ServletExpressionLabelUtils.getCookieValue(httpServletRequest.getCookies(), mapKey, null));
-			case MessageMetadataContainer.LABEL_MAP_KEY_QUERY:
-				return UrlUtils.decode(ExpressionLabelUtils.getQueryValue(httpServletRequest.getQueryString(), mapKey, null));
-			default:
-				return null;
+		case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
+			return UrlUtils.decode(httpServletRequest.getHeader(mapKey));
+		case MessageMetadataContainer.LABEL_MAP_KEY_COOKIE:
+			return UrlUtils.decode(ServletExpressionLabelUtils.getCookieValue(httpServletRequest.getCookies(), mapKey, null));
+		case MessageMetadataContainer.LABEL_MAP_KEY_QUERY:
+			return UrlUtils.decode(ExpressionLabelUtils.getQueryValue(httpServletRequest.getQueryString(), mapKey, null));
+		default:
+			return null;
 		}
+	}
+
+	@JustForTest
+	HttpServletRequest getHttpServletRequest() {
+		return httpServletRequest;
 	}
 }
