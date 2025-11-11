@@ -175,10 +175,12 @@ public final class TsfTagUtils {
 		Map<String, String> tsfDisposableMetadata = new HashMap<>(tagSize);
 		if (CollectionUtils.isNotEmpty(tsfUserTagList)) {
 			for (Tag tag : tsfUserTagList) {
-				if (Tag.ControlFlag.TRANSITIVE.equals(tag.getFlags())) {
+				if (tag.getFlags() != null && tag.getFlags().contains(Tag.ControlFlag.TRANSITIVE)) {
 					tsfTransitiveMetadata.put(tag.getKey(), tag.getValue());
 				}
-				tsfDisposableMetadata.put(tag.getKey(), tag.getValue());
+				else {
+					tsfDisposableMetadata.put(tag.getKey(), tag.getValue());
+				}
 			}
 			mergedTransitiveMetadata.putAll(tsfTransitiveMetadata);
 			mergedDisposableMetadata.putAll(tsfDisposableMetadata);

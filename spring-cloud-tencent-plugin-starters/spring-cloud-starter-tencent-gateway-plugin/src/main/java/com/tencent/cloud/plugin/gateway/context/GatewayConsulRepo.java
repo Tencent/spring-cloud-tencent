@@ -311,7 +311,12 @@ public class GatewayConsulRepo {
 				}
 
 				GroupContext groupContext = groups.get(wildcardRule.getGroupId());
-				groupContext.getRoutes().add(contextRoute);
+				if (groupContext != null && groupContext.getRoutes() != null) {
+					groupContext.getRoutes().add(contextRoute);
+				}
+				else {
+					logger.warn("path wildcard rule {} not found in group {}", wildcardRule.getWildCardId(), wildcardRule.getGroupId());
+				}
 			}
 		}
 
@@ -319,8 +324,9 @@ public class GatewayConsulRepo {
 		contextGatewayProperties.setRoutes(routes);
 		contextGatewayProperties.setPathRewrites(Optional.ofNullable(pathRewriteResult).map(PathRewriteResult::getResult)
 				.orElse(new ArrayList<>()));
-
-		logger.debug("Gateway config loaded. :{}", JacksonUtils.serialize2Json(contextGatewayProperties));
+		if (logger.isDebugEnabled()) {
+			logger.debug("Gateway config loaded. :{}", JacksonUtils.serialize2Json(contextGatewayProperties));
+		}
 
 		contextGatewayPropertiesManager.setPathRewrites(contextGatewayProperties.getPathRewrites());
 
