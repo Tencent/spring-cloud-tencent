@@ -90,21 +90,27 @@ public class GatewayConsulConfig {
 			Response<List<GetValue>> watchResponse = consulClient.getKVValues(keyPrefix,
 					consulConfigContext.getAclToken(), new QueryParams(consulConfigContext.getWaitTime(), index));
 
+			Long newIndex = watchResponse.getConsulIndex();
+			if (logger.isDebugEnabled()) {
+				logger.debug("[watch] keyPrefix:{}, index: {}, newIndex: {}, response is empty:{}", keyPrefix, index, newIndex, watchResponse.getValue() == null);
+			}
+
+			boolean change = false;
+			if (newIndex != null && !Objects.equals(index, newIndex)) {
+				change = true;
+				index = newIndex;
+			}
+
 			if (watchResponse.getValue() == null) {
-				gatewayAllResult = loadResponseFromFile();
-				if (!isFirstLoad) {
-					refreshAction.run();
+				// only load from the cache file when the first load and response is empty.
+				if (isFirstLoad) {
+					gatewayAllResult = loadResponseFromFile();
+					logger.debug("[watch] loadResponseFromFile, keyPrefix: {}", keyPrefix);
 				}
 				return;
 			}
 
-			Long newIndex = watchResponse.getConsulIndex();
-			if (logger.isDebugEnabled()) {
-				logger.debug("[watch] keyPrefix:{}, index: {}, newIndex: {}", keyPrefix, index, newIndex);
-			}
-
-			if (newIndex != null && !Objects.equals(index, newIndex)) {
-				index = newIndex;
+			if (change) {
 				gatewayAllResult = parseGroupResponse(watchResponse);
 				if (!isFirstLoad) {
 					refreshAction.run();
