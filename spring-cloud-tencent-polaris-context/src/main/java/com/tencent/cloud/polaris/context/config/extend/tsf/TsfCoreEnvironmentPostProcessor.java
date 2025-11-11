@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.common.tsf.TsfContextUtils;
+import com.tencent.polaris.api.utils.IPAddressUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.apache.commons.logging.Log;
 
@@ -164,7 +165,7 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 					defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
 					defaultProperties.put("spring.cloud.polaris.config.internal-enabled", "false");
 					defaultProperties.put("spring.cloud.polaris.config.data-source", "consul");
-					defaultProperties.put("spring.cloud.polaris.config.address", "http://" + tsfConsulIp + ":" + tsfConsulPort);
+					defaultProperties.put("spring.cloud.polaris.config.address", "http://" + IPAddressUtils.getIpCompatible(tsfConsulIp) + ":" + tsfConsulPort);
 					defaultProperties.put("spring.cloud.polaris.config.port", tsfConsulPort);
 					defaultProperties.put("spring.cloud.polaris.config.token", tsfConsulToken);
 					defaultProperties.put("spring.cloud.polaris.config.groups[0].namespace", "config");
