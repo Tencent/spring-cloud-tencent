@@ -139,8 +139,8 @@ public final class PluginUtil {
 					if (path.charAt(0) != '/') {
 						path = "/" + path;
 					}
-
-					String apiPath = StringUtils.substring(path, StringUtils.ordinalIndexOf(path, "/", 4));
+					// apiPath is the path of downstream service.
+					String apiPath = path;
 					boolean matched = antPathMatcher.match(preTagName, apiPath);
 					if (matched) {
 						Map<String, String> pathTagMap = antPathMatcher.extractUriTemplateVariables(preTagName, apiPath);

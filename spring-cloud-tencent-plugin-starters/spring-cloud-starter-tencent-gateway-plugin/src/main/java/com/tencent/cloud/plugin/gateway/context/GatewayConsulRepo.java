@@ -311,7 +311,12 @@ public class GatewayConsulRepo {
 				}
 
 				GroupContext groupContext = groups.get(wildcardRule.getGroupId());
-				groupContext.getRoutes().add(contextRoute);
+				if (groupContext != null && groupContext.getRoutes() != null) {
+					groupContext.getRoutes().add(contextRoute);
+				}
+				else {
+					logger.warn("path wildcard rule {} not found in group {}", wildcardRule.getWildCardId(), wildcardRule.getGroupId());
+				}
 			}
 		}
 

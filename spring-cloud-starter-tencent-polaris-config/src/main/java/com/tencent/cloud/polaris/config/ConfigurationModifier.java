@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -163,11 +164,23 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	private void checkAddressAccessible(List<String> configAddresses) {
 		// check address can connect
 		configAddresses.forEach(address -> {
-			String[] ipPort = address.split(":");
+			String[] ipPort;
+			// check ipv6 address, format: [ipv6_ip]:port
+			if (address.contains("[") && address.contains("]")) {
+				int lastColonIndex = address.lastIndexOf(':');
+				String port = address.substring(lastColonIndex + 1);
+				String ip = address.substring(1, lastColonIndex - 1);
+				ipPort = new String[]{ip, port};
+			}
+			else {
+				ipPort = address.split(":");
+			}
 
 			if (ipPort.length != 2) {
 				throw new IllegalArgumentException("Config server address (" + address + ") is wrong, please check address like grpc://183.47.111.8:8091.");
 			}
+
+			LOGGER.info("[SCT] Check config server ipPort: {}", Arrays.asList(ipPort));
 
 			if (!AddressUtils.accessible(ipPort[0], Integer.parseInt(ipPort[1]), 3000)) {
 				String errMsg = "Config server address (" + address + ") can not be connected. Please check your config in bootstrap.yml"
