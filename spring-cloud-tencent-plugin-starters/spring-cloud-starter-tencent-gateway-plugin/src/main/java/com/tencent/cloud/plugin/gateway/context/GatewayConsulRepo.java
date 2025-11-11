@@ -324,8 +324,9 @@ public class GatewayConsulRepo {
 		contextGatewayProperties.setRoutes(routes);
 		contextGatewayProperties.setPathRewrites(Optional.ofNullable(pathRewriteResult).map(PathRewriteResult::getResult)
 				.orElse(new ArrayList<>()));
-
-		logger.debug("Gateway config loaded. :{}", JacksonUtils.serialize2Json(contextGatewayProperties));
+		if (logger.isDebugEnabled()) {
+			logger.debug("Gateway config loaded. :{}", JacksonUtils.serialize2Json(contextGatewayProperties));
+		}
 
 		contextGatewayPropertiesManager.setPathRewrites(contextGatewayProperties.getPathRewrites());
 
