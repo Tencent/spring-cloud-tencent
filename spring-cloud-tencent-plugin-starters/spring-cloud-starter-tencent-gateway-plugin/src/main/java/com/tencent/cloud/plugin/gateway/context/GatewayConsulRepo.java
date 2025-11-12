@@ -35,6 +35,7 @@ import com.ecwid.consul.v1.ConsulRawClient;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.IPAddressUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.util.NamedThreadFactory;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
@@ -115,7 +116,7 @@ public class GatewayConsulRepo {
 
 		String address = connectorConfig.getAddresses().get(0);
 		int lastIndex = address.lastIndexOf(":");
-		String agentHost = address.substring(0, lastIndex);
+		String agentHost = IPAddressUtils.getIpCompatible(address.substring(0, lastIndex));
 		int agentPort = Integer.parseInt(address.substring(lastIndex + 1));
 		logger.info("Connect to consul config server : [{}].", address);
 
