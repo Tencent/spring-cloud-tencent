@@ -22,7 +22,6 @@ import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -35,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
  * @author shuiqingliu
  **/
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Endpoint.class)
+@ConditionalOnClass(name = "org.springframework.boot.actuate.endpoint.annotation.Endpoint")
 @ConditionalOnPolarisDiscoveryEnabled
 public class PolarisDiscoveryEndpointAutoConfiguration {
 
