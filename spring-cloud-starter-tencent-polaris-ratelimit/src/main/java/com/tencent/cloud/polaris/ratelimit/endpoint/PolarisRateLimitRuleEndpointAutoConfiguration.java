@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @author shuiqingliu
  **/
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Endpoint.class)
+@ConditionalOnClass(name = "org.springframework.boot.actuate.endpoint.annotation.Endpoint")
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(name = "spring.cloud.polaris.ratelimit.enabled", matchIfMissing = true)
 public class PolarisRateLimitRuleEndpointAutoConfiguration {

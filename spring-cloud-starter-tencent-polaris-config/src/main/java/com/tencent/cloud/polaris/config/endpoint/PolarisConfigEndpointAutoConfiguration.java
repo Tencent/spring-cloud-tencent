@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @author shuiqingliu
  **/
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Endpoint.class)
+@ConditionalOnClass(name = "org.springframework.boot.actuate.endpoint.annotation.Endpoint")
 @ConditionalOnPolarisConfigEnabled
 public class PolarisConfigEndpointAutoConfiguration {
 

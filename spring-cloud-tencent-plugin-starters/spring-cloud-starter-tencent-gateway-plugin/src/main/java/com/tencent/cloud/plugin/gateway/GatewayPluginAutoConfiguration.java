@@ -70,7 +70,7 @@ public class GatewayPluginAutoConfiguration {
 	@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.context.enabled", matchIfMissing = true)
 	@ConditionalOnPolarisConfigEnabled
 	@AutoConfigureBefore(GatewayAutoConfiguration.class)
-	@ConditionalOnClass(GlobalFilter.class)
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
 	@Import(ContextGatewayProperties.class)
 	public static class ContextPluginConfiguration {
 

@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Scope;
  * @author seansyyu 2023-02-28
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({Feign.class, FeignClientFactoryBean.class})
+@ConditionalOnClass(name = {"feign.Feign","org.springframework.cloud.openfeign.FeignClientFactoryBean"})
 @ConditionalOnPolarisCircuitBreakerEnabled
 public class PolarisCircuitBreakerFeignClientAutoConfiguration {
 
