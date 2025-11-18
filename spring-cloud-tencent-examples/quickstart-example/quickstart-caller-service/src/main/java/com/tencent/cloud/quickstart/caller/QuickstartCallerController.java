@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.polaris.discovery.PolarisServiceDiscovery;
 import com.tencent.cloud.quickstart.caller.pojo.User;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
@@ -69,6 +71,8 @@ public class QuickstartCallerController {
 	@Autowired
 	private WebClient.Builder webClientBuilder;
 
+	@Autowired
+	PolarisServiceDiscovery polarisServiceDiscovery;
 	/**
 	 * Get sum of two value.
 	 * @param value1 value 1
@@ -263,5 +267,10 @@ public class QuickstartCallerController {
 	@PostMapping("/user")
 	public String user(@RequestBody User user) {
 		return restTemplate.postForObject("http://QuickstartCalleeService/quickstart/callee/user", user, String.class);
+	}
+
+	@GetMapping(value = "/getServices", produces = "application/json")
+	public String services() {
+		return JacksonUtils.serialize2Json(polarisServiceDiscovery.getServices());
 	}
 }
