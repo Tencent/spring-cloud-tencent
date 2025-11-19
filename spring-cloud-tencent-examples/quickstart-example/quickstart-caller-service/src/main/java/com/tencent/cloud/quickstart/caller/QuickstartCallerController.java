@@ -273,7 +273,8 @@ public class QuickstartCallerController {
 	public String services() {
 		try {
 			return JacksonUtils.serialize2Json(polarisServiceDiscovery.getServices());
-		} catch (NullPointerException e) {
+		}
+		catch (NullPointerException e) {
 			return "Polaris Discovery is not enabled. Please set spring.cloud.polaris.discovery.enabled=true";
 		}
 	}
