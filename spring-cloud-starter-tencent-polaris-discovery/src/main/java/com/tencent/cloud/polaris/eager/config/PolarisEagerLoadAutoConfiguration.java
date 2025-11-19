@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.eager.config;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClient;
 import com.tencent.cloud.polaris.eager.instrument.feign.FeignEagerLoadSmartLifecycle;
+import com.tencent.cloud.polaris.eager.instrument.services.ServicesEagerLoadSmartLifecycle;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,6 +40,13 @@ public class PolarisEagerLoadAutoConfiguration {
 			ApplicationContext applicationContext, @Autowired(required = false) PolarisDiscoveryClient polarisDiscoveryClient,
 			@Autowired(required = false) PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient) {
 		return new FeignEagerLoadSmartLifecycle(applicationContext, polarisDiscoveryClient, polarisReactiveDiscoveryClient);
+	}
+	@Bean
+	@ConditionalOnProperty(name = "spring.cloud.polaris.discovery.eager-load.services.enabled", havingValue = "true", matchIfMissing = true)
+	public ServicesEagerLoadSmartLifecycle serviceEagerLoadSmartLifecycle(
+			ApplicationContext applicationContext, @Autowired(required = false) PolarisDiscoveryClient polarisDiscoveryClient,
+			@Autowired(required = false) PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient) {
+		return new ServicesEagerLoadSmartLifecycle(applicationContext, polarisDiscoveryClient, polarisReactiveDiscoveryClient);
 	}
 }
 
