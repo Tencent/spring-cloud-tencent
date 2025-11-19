@@ -71,7 +71,7 @@ public class QuickstartCallerController {
 	@Autowired
 	private WebClient.Builder webClientBuilder;
 
-	@Autowired
+	@Autowired(required = false)
 	PolarisServiceDiscovery polarisServiceDiscovery;
 	/**
 	 * Get sum of two value.
@@ -271,6 +271,10 @@ public class QuickstartCallerController {
 
 	@GetMapping(value = "/getServices", produces = "application/json")
 	public String services() {
-		return JacksonUtils.serialize2Json(polarisServiceDiscovery.getServices());
+		try {
+			return JacksonUtils.serialize2Json(polarisServiceDiscovery.getServices());
+		} catch (NullPointerException e) {
+			return "Polaris Discovery is not enabled. Please set spring.cloud.polaris.discovery.enabled=true";
+		}
 	}
 }
