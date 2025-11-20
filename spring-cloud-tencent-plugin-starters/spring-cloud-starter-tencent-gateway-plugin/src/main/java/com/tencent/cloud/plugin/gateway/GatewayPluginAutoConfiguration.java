@@ -43,7 +43,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.gateway.config.GatewayAutoConfiguration;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -70,7 +69,7 @@ public class GatewayPluginAutoConfiguration {
 	@ConditionalOnProperty(value = "spring.cloud.tencent.plugin.scg.context.enabled", matchIfMissing = true)
 	@ConditionalOnPolarisConfigEnabled
 	@AutoConfigureBefore(GatewayAutoConfiguration.class)
-	@ConditionalOnClass(GlobalFilter.class)
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
 	@Import(ContextGatewayProperties.class)
 	public static class ContextPluginConfiguration {
 
