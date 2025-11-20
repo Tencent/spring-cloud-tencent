@@ -19,8 +19,11 @@ package com.tencent.cloud.metadata.core;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -38,6 +41,7 @@ import com.tencent.polaris.metadata.core.MetadataType;
 import feign.Request;
 import shade.polaris.com.google.common.collect.ImmutableMap;
 
+import org.springframework.tsf.core.filter.ContextToHeaderInterceptor;
 import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
@@ -50,6 +54,13 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  * @author Shedfree Wu
  */
 public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
+
+	private List<ContextToHeaderInterceptor> contextToHeaderInterceptorList;
+
+	public EncodeTransferMedataFeignEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+		this.contextToHeaderInterceptorList = Optional.ofNullable(contextToHeaderInterceptorList).orElse(Collections.EMPTY_LIST);
+	}
+
 	@Override
 	public EnhancedPluginType getType() {
 		return EnhancedPluginType.Client.PRE;
@@ -61,6 +72,7 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 			return;
 		}
 		Request request = (Request) context.getOriginRequest();
+		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::beforeContextToHeader);
 
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
@@ -89,6 +101,8 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(request, transHeaders);
+
+		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::afterContextToHeader);
 	}
 
 	private void buildTransmittedHeader(Request request, Map<String, String> transHeaders) {

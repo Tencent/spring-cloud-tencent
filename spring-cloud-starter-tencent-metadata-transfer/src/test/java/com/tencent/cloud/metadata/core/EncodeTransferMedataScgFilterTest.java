@@ -19,6 +19,7 @@ package com.tencent.cloud.metadata.core;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
@@ -114,7 +115,7 @@ public class EncodeTransferMedataScgFilterTest {
 
 		MockServerHttpRequest mockServerHttpRequest = MockServerHttpRequest.get("/test").build();
 
-		EncodeTransferMedataScgEnhancedPlugin plugin = new EncodeTransferMedataScgEnhancedPlugin();
+		EncodeTransferMedataScgEnhancedPlugin plugin = new EncodeTransferMedataScgEnhancedPlugin(new ArrayList<>());
 		plugin.getOrder();
 		EnhancedGatewayGlobalFilter filter = new EnhancedGatewayGlobalFilter(new DefaultEnhancedPluginRunner(Arrays.asList(plugin), registration, null));
 		filter.getOrder();
