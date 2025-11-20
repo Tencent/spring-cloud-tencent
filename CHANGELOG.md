@@ -5,4 +5,5 @@
 - [refactor:optimize auto configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1739)
 - [refactor:optimize config locate.](https://github.com/Tencent/spring-cloud-tencent/pull/1741)
 - [feat:support async metadata transfer.](https://github.com/Tencent/spring-cloud-tencent/pull/1743)
+- [fix:replace with string inside @ConditionalOnClass.](https://github.com/Tencent/spring-cloud-tencent/pull/1750)
 - [feat: support TagUtils, ContextToHeaderInterceptor in TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1754)

@@ -21,7 +21,6 @@ import com.tencent.cloud.polaris.circuitbreaker.config.ConditionalOnPolarisCircu
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @author wenxuan70
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Endpoint.class)
+@ConditionalOnClass(name = "org.springframework.boot.actuate.endpoint.annotation.Endpoint")
 @ConditionalOnPolarisCircuitBreakerEnabled
 public class PolarisCircuitBreakerEndpointAutoConfiguration {
 
