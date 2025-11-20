@@ -25,7 +25,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.PolarisCompletableFutureUtils;
+import com.tencent.cloud.polaris.discovery.PolarisServiceDiscovery;
 import com.tencent.cloud.quickstart.caller.pojo.User;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
@@ -62,13 +64,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class QuickstartCallerController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(QuickstartCallerController.class);
-
+	@Autowired(required = false)
+	PolarisServiceDiscovery polarisServiceDiscovery;
 	@Autowired
 	private RestTemplate restTemplate;
-
 	@Autowired
 	private QuickstartCalleeService quickstartCalleeService;
-
 	@Autowired
 	private WebClient.Builder webClientBuilder;
 
@@ -312,5 +313,15 @@ public class QuickstartCallerController {
 	@PostMapping("/user")
 	public String user(@RequestBody User user) {
 		return restTemplate.postForObject("http://QuickstartCalleeService/quickstart/callee/user", user, String.class);
+	}
+
+	@GetMapping(value = "/getServices", produces = "application/json")
+	public String services() {
+		try {
+			return JacksonUtils.serialize2Json(polarisServiceDiscovery.getServices());
+		}
+		catch (NullPointerException e) {
+			return "Polaris Discovery is not enabled. Please set spring.cloud.polaris.discovery.enabled=true";
+		}
 	}
 }
