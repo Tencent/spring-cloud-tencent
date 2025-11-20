@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "spring.cloud.gateway.enabled", matchIfMissing = true)
-@ConditionalOnClass(name = {"org.springframework.web.reactive.DispatcherHandler","org.springframework.cloud.gateway.config.GatewayAutoConfiguration"})
+@ConditionalOnClass(name = {"org.springframework.web.reactive.DispatcherHandler", "org.springframework.cloud.gateway.config.GatewayAutoConfiguration"})
 public class GatewayPolarisCircuitBreakerAutoConfiguration {
 
 	@Bean
