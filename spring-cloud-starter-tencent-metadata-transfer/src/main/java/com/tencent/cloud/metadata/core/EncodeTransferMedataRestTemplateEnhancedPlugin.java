@@ -36,7 +36,6 @@ import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataType;
 import shade.polaris.com.google.common.collect.ImmutableMap;
 
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpRequest;
 import org.springframework.tsf.core.filter.ContextToHeaderInterceptor;
 import org.springframework.util.CollectionUtils;
@@ -52,7 +51,7 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  */
 public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedPlugin {
 
-	private @Lazy List<ContextToHeaderInterceptor> contextToHeaderInterceptorList;
+	private List<ContextToHeaderInterceptor> contextToHeaderInterceptorList;
 
 	public EncodeTransferMedataRestTemplateEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
 		this.contextToHeaderInterceptorList = Optional.ofNullable(contextToHeaderInterceptorList).orElse(Collections.EMPTY_LIST);
