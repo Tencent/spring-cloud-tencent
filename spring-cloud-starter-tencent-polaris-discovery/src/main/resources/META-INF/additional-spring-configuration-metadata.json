@@ -109,6 +109,12 @@
       "description": "Feign eager load switch. Default: true."
     },
     {
+      "name": "spring.cloud.polaris.discovery.eager-load.services.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Services eager load switch. Default: true."
+    },
+    {
       "name": "spring.cloud.nacos.discovery.enabled",
       "type": "java.lang.Boolean",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
