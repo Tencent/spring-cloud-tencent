@@ -17,7 +17,10 @@
 
 package com.tencent.cloud.metadata.core;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -33,6 +36,7 @@ import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataType;
 import shade.polaris.com.google.common.collect.ImmutableMap;
 
+import org.springframework.tsf.core.filter.ContextToHeaderInterceptor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.ClientRequest;
 
@@ -46,6 +50,13 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
  * @author Shedfree Wu
  */
 public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlugin {
+
+	private List<ContextToHeaderInterceptor> contextToHeaderInterceptorList;
+
+	public EncodeTransferMedataWebClientEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+		this.contextToHeaderInterceptorList = Optional.ofNullable(contextToHeaderInterceptorList).orElse(Collections.EMPTY_LIST);
+	}
+
 	@Override
 	public EnhancedPluginType getType() {
 		return EnhancedPluginType.Client.PRE;
@@ -56,6 +67,8 @@ public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlug
 		if (!(context.getOriginRequest() instanceof ClientRequest)) {
 			return;
 		}
+		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::beforeContextToHeader);
+
 		ClientRequest clientRequest = (ClientRequest) context.getOriginRequest();
 
 		MetadataContext metadataContext = MetadataContextHolder.get();
@@ -77,6 +90,9 @@ public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlug
 		this.buildMetadataHeader(requestBuilder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
 		this.buildMetadataHeader(requestBuilder, applicationMetadata, APPLICATION_METADATA);
 		this.buildTransmittedHeader(requestBuilder, transHeaders);
+
+		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::beforeContextToHeader);
+
 		context.setOriginRequest(requestBuilder.build());
 	}
 

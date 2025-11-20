@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.metadata.config;
 
+import java.util.List;
+
 import com.tencent.cloud.common.async.PolarisAsyncProperties;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
@@ -26,12 +28,14 @@ import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateEnhancedP
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgEnhancedPlugin;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientEnhancedPlugin;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.tsf.core.filter.ContextToHeaderInterceptor;
 
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
@@ -92,8 +96,9 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataTransferScgFilterConfig {
 
 		@Bean
-		public EncodeTransferMedataScgEnhancedPlugin encodeTransferMedataScgEnhancedPlugin() {
-			return new EncodeTransferMedataScgEnhancedPlugin();
+		public EncodeTransferMedataScgEnhancedPlugin encodeTransferMedataScgEnhancedPlugin(
+				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+			return new EncodeTransferMedataScgEnhancedPlugin(contextToHeaderInterceptorList);
 		}
 	}
 
@@ -106,8 +111,9 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataTransferFeignInterceptorConfig {
 
 		@Bean
-		public EncodeTransferMedataFeignEnhancedPlugin encodeTransferMedataFeignEnhancedPlugin() {
-			return new EncodeTransferMedataFeignEnhancedPlugin();
+		public EncodeTransferMedataFeignEnhancedPlugin encodeTransferMedataFeignEnhancedPlugin(
+				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+			return new EncodeTransferMedataFeignEnhancedPlugin(contextToHeaderInterceptorList);
 		}
 	}
 
@@ -120,8 +126,9 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataTransferRestTemplateConfig {
 
 		@Bean
-		public EncodeTransferMedataRestTemplateEnhancedPlugin encodeTransferMedataRestTemplateEnhancedPlugin() {
-			return new EncodeTransferMedataRestTemplateEnhancedPlugin();
+		public EncodeTransferMedataRestTemplateEnhancedPlugin encodeTransferMedataRestTemplateEnhancedPlugin(
+				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+			return new EncodeTransferMedataRestTemplateEnhancedPlugin(contextToHeaderInterceptorList);
 		}
 	}
 
@@ -134,8 +141,9 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataTransferWebClientConfig {
 
 		@Bean
-		public EncodeTransferMedataWebClientEnhancedPlugin encodeTransferMedataWebClientEnhancedPlugin() {
-			return new EncodeTransferMedataWebClientEnhancedPlugin();
+		public EncodeTransferMedataWebClientEnhancedPlugin encodeTransferMedataWebClientEnhancedPlugin(
+				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+			return new EncodeTransferMedataWebClientEnhancedPlugin(contextToHeaderInterceptorList);
 		}
 	}
 }
