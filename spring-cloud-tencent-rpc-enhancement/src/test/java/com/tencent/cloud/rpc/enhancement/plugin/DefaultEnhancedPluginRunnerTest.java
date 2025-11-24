@@ -20,12 +20,13 @@ package com.tencent.cloud.rpc.enhancement.plugin;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.serviceregistry.Registration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DefaultEnhancedPluginRunner}.
@@ -48,7 +49,7 @@ public class DefaultEnhancedPluginRunnerTest {
 		Registration result = DefaultEnhancedPluginRunner.getPolarisRegistration(registrations);
 
 		// Assert
-		Assertions.assertSame(normalReg, result);
+		assertThat(result).isSameAs(normalReg);
 	}
 
 	// Helper method to create mock Registration objects

@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.plugin.gateway;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -28,6 +27,7 @@ import org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.ApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,7 +62,7 @@ public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 	@Test
 	void testGetOrder() {
 		int order = processor.getOrder();
-		Assertions.assertEquals(PolarisReactiveLoadBalancerClientFilterBeanPostProcessor.ORDER, order);
+		assertThat(order).isEqualTo(PolarisReactiveLoadBalancerClientFilterBeanPostProcessor.ORDER);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 		Object result = processor.postProcessAfterInitialization(originalInterceptor, beanName);
 
 		// Assert
-		Assertions.assertInstanceOf(PolarisReactiveLoadBalancerClientFilter.class, result);
+		assertThat(result).isInstanceOf(PolarisReactiveLoadBalancerClientFilter.class);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class PolarisReactiveLoadBalancerClientFilterBeanPostProcessorTest {
 		Object result = processor.postProcessAfterInitialization(originalBean, beanName);
 
 		// Assert
-		Assertions.assertSame(originalBean, result);
+		assertThat(result).isSameAs(originalBean);
 	}
 
 }

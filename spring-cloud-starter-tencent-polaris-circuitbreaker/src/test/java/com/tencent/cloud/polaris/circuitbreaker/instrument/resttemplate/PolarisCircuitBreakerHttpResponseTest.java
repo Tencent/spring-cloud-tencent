@@ -23,10 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link PolarisCircuitBreakerHttpResponse}.
@@ -39,10 +42,10 @@ public class PolarisCircuitBreakerHttpResponseTest {
 	void testConstructorWithCodeOnly() throws IOException {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200);
 
-		Assertions.assertEquals(200, response.getStatusCode().value());
-		Assertions.assertNotNull(response.getHeaders());
-		Assertions.assertTrue(response.getHeaders().isEmpty());
-		Assertions.assertNull(response.getBody());
+		assertThat(response.getStatusCode().value()).isEqualTo(200);
+		assertThat(response.getHeaders()).isNotNull();
+		assertThat(response.getHeaders()).isEmpty();
+		assertThat(response.getBody()).isNull();
 	}
 
 	@Test
@@ -50,10 +53,10 @@ public class PolarisCircuitBreakerHttpResponseTest {
 		String body = "test body";
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200, body);
 
-		Assertions.assertEquals(200, response.getStatusCode().value());
-		Assertions.assertNotNull(response.getHeaders());
-		Assertions.assertTrue(response.getHeaders().isEmpty());
-		Assertions.assertNotNull(response.getBody());
+		assertThat(response.getStatusCode().value()).isEqualTo(200);
+		assertThat(response.getHeaders()).isNotNull();
+		assertThat(response.getHeaders()).isEmpty();
+		assertThat(response.getBody()).isNotNull();
 	}
 
 	@Test
@@ -65,12 +68,12 @@ public class PolarisCircuitBreakerHttpResponseTest {
 
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200, headers, body);
 
-		Assertions.assertEquals(200, response.getStatusCode().value());
-		Assertions.assertNotNull(response.getHeaders());
-		Assertions.assertEquals(2, response.getHeaders().size());
-		Assertions.assertTrue(response.getHeaders().containsKey("Content-Type"));
-		Assertions.assertTrue(response.getHeaders().containsKey("Authorization"));
-		Assertions.assertNotNull(response.getBody());
+		assertThat(response.getStatusCode().value()).isEqualTo(200);
+		assertThat(response.getHeaders()).isNotNull();
+		assertThat(response.getHeaders().size()).isEqualTo(2);
+		assertThat(response.getHeaders()).containsKey("Content-Type");
+		assertThat(response.getHeaders()).containsKey("Authorization");
+		assertThat(response.getBody()).isNotNull();
 	}
 
 	@Test
@@ -81,44 +84,44 @@ public class PolarisCircuitBreakerHttpResponseTest {
 
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(fallbackInfo);
 
-		Assertions.assertEquals(200, response.getStatusCode().value());
-		Assertions.assertEquals(fallbackInfo, response.getFallbackInfo());
-		Assertions.assertNotNull(response.getHeaders());
-		Assertions.assertTrue(response.getHeaders().containsKey("Content-Type"));
-		Assertions.assertNotNull(response.getBody());
+		assertThat(response.getStatusCode().value()).isEqualTo(200);
+		assertThat(response.getFallbackInfo()).isEqualTo(fallbackInfo);
+		assertThat(response.getHeaders()).isNotNull();
+		assertThat(response.getHeaders()).containsKey("Content-Type");
+		assertThat(response.getBody()).isNotNull();
 	}
 
 	@Test
 	void testGetStatusTextWithValidHttpStatus() {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200);
-		Assertions.assertEquals("OK", response.getStatusText());
+		assertThat(response.getStatusText()).isEqualTo("OK");
 	}
 
 	@Test
 	void testGetStatusTextWithInvalidHttpStatus() {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(999);
 		//SCT 2024 will throw IllegalArgumentException when getStatusText() is called with invalid http status code
-		Assertions.assertThrows(IllegalArgumentException.class, () -> response.getStatusText());
+		assertThatThrownBy(() -> response.getStatusText()).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
 	void testClose() {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200, "test body");
 		InputStream body = response.getBody();
-		Assertions.assertNotNull(body);
+		assertThat(body).isNotNull();
 
 		response.close();
 
 		// Verify that reading from closed stream throws exception
-		Assertions.assertDoesNotThrow(() -> body.read());
+		assertThatCode(() -> body.read()).doesNotThrowAnyException();
 	}
 
 	@Test
 	void testCloseWithNullBody() {
 		PolarisCircuitBreakerHttpResponse response = new PolarisCircuitBreakerHttpResponse(200);
-		Assertions.assertNull(response.getBody());
+		assertThat(response.getBody()).isNull();
 
 		// Should not throw exception when closing null body
-		Assertions.assertDoesNotThrow(() -> response.close());
+		assertThatCode(() -> response.close()).doesNotThrowAnyException();
 	}
 }
