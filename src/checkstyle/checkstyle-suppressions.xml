@@ -4,5 +4,4 @@
 		"https://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 <suppressions>
 	<suppress files=".*" checks="RegexpHeader"/>
-	<suppress files=".*" checks="IllegalImport"/>
 </suppressions>
