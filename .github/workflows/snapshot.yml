@@ -21,7 +21,7 @@ jobs:
       IS_SNAPSHOT: ${{ steps.check-deploy-type.outputs.IS_SNAPSHOT }}
     steps:
       - name: Checkout codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Check deploy type
         id: check-deploy-type
         run: |
@@ -65,9 +65,9 @@ jobs:
     if: ${{ needs.check-snapshot.outputs.IS_SNAPSHOT == 'true' }}
     steps:
       - name: Checkout codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up JDK ${{ needs.set-jdk.outputs.jdk }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ needs.set-jdk.outputs.jdk }}
           distribution: 'temurin'

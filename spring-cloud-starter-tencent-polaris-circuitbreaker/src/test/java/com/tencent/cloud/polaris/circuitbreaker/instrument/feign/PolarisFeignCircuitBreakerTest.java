@@ -20,12 +20,12 @@ package com.tencent.cloud.polaris.circuitbreaker.instrument.feign;
 import feign.Feign;
 import feign.RequestLine;
 import feign.Target;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.cloud.openfeign.FallbackFactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,7 +45,7 @@ public class PolarisFeignCircuitBreakerTest {
 
 	@Test
 	public void testBuilderNotNull() {
-		Assertions.assertNotNull(builder);
+		assertThat(builder).isNotNull();
 	}
 
 	@Test
@@ -67,8 +67,8 @@ public class PolarisFeignCircuitBreakerTest {
 		MyService result = builder.target(target, fallback);
 
 		// Verify that the result is not null and the fallback factory is used
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals("Fallback Hello", result.sayHello());
+		assertThat(result).isNotNull();
+		assertThat(result.sayHello()).isEqualTo("Fallback Hello");
 	}
 
 	@Test
@@ -93,8 +93,8 @@ public class PolarisFeignCircuitBreakerTest {
 		MyService result = builder.target(target, fallbackFactory);
 
 		// Verify that the result is not null and the fallback factory is used
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals("Fallback Hello", result.sayHello());
+		assertThat(result).isNotNull();
+		assertThat(result.sayHello()).isEqualTo("Fallback Hello");
 	}
 
 	@Test
@@ -112,8 +112,7 @@ public class PolarisFeignCircuitBreakerTest {
 		MyService result = builder.target(target);
 
 		// Verify that the result is not null
-		Assertions.assertNotNull(result);
-		// Additional verifications can be added here based on the implementation
+		assertThat(result).isNotNull();
 	}
 
 	@Test
@@ -122,8 +121,7 @@ public class PolarisFeignCircuitBreakerTest {
 		Feign feign = builder.build(null);
 
 		// Verify that the Feign instance is not null
-		Assertions.assertNotNull(feign);
-		// Additional verifications can be added here based on the implementation
+		assertThat(feign).isNotNull();
 	}
 
 	public interface MyService {

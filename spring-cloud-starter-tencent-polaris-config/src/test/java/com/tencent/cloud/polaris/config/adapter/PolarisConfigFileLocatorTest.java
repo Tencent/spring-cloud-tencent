@@ -32,7 +32,6 @@ import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.client.internal.RevisableConfigFileGroup;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -302,21 +301,21 @@ public class PolarisConfigFileLocatorTest {
 		testProperties.setCheckAddress(checkAddress);
 		testProperties.setShutdownIfConnectToConfigServerFailed(shutdownIfConnectToConfigServerFailed);
 
-		Assertions.assertEquals(enabled, testProperties.isEnabled());
-		Assertions.assertEquals(address, testProperties.getAddress());
-		Assertions.assertEquals(port, testProperties.getPort());
-		Assertions.assertEquals(token, testProperties.getToken());
-		Assertions.assertEquals(autoRefresh, testProperties.isAutoRefresh());
-		Assertions.assertEquals(refreshType, testProperties.getRefreshType());
-		Assertions.assertEquals(groups, testProperties.getGroups());
-		Assertions.assertEquals(preference, testProperties.isPreference());
-		Assertions.assertEquals(dataSource, testProperties.getDataSource());
-		Assertions.assertEquals(localFileRootPath, testProperties.getLocalFileRootPath());
-		Assertions.assertEquals(internalEnabled, testProperties.isInternalEnabled());
-		Assertions.assertEquals(checkAddress, testProperties.isCheckAddress());
-		Assertions.assertEquals(shutdownIfConnectToConfigServerFailed, testProperties.isShutdownIfConnectToConfigServerFailed());
+		assertThat(testProperties.isEnabled()).isEqualTo(enabled);
+		assertThat(testProperties.getAddress()).isEqualTo(address);
+		assertThat(testProperties.getPort()).isEqualTo(port);
+		assertThat(testProperties.getToken()).isEqualTo(token);
+		assertThat(testProperties.isAutoRefresh()).isEqualTo(autoRefresh);
+		assertThat(testProperties.getRefreshType()).isEqualTo(refreshType);
+		assertThat(testProperties.getGroups()).isEqualTo(groups);
+		assertThat(testProperties.isPreference()).isEqualTo(preference);
+		assertThat(testProperties.getDataSource()).isEqualTo(dataSource);
+		assertThat(testProperties.getLocalFileRootPath()).isEqualTo(localFileRootPath);
+		assertThat(testProperties.isInternalEnabled()).isEqualTo(internalEnabled);
+		assertThat(testProperties.isCheckAddress()).isEqualTo(checkAddress);
+		assertThat(testProperties.isShutdownIfConnectToConfigServerFailed()).isEqualTo(shutdownIfConnectToConfigServerFailed);
 
-		Assertions.assertNotNull(testProperties.toString());
+		assertThat(testProperties.toString()).isNotNull();
 	}
 
 	private void clearCompositePropertySourceCache() {

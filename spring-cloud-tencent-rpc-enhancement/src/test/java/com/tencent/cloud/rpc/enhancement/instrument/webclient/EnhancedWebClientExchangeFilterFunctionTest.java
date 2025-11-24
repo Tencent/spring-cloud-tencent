@@ -36,7 +36,6 @@ import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.client.api.SDKContext;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -170,7 +169,7 @@ public class EnhancedWebClientExchangeFilterFunctionTest {
 		// Assert
 		StepVerifier.create(responseMono)
 				.expectNextMatches(response -> {
-					Assertions.assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.statusCode());
+					assertThat(response.statusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 					assertThat(response.headers().asHttpHeaders().containsKey("header-key")).isTrue();
 					return true;
 				})

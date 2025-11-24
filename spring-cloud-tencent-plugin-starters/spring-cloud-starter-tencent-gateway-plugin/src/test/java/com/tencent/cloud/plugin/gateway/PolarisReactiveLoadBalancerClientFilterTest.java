@@ -20,7 +20,6 @@ package com.tencent.cloud.plugin.gateway;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +43,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PolarisReactiveLoadBalancerClientFilterTest {
 
+	private final MetadataContext testContext = new MetadataContext();
 	@Mock
 	private LoadBalancerClientFactory clientFactory;
 	@Mock
@@ -54,9 +54,7 @@ class PolarisReactiveLoadBalancerClientFilterTest {
 	private ServerWebExchange exchange;
 	@Mock
 	private GatewayFilterChain chain;
-
 	private PolarisReactiveLoadBalancerClientFilter polarisFilter;
-	private final MetadataContext testContext = new MetadataContext();
 
 	@BeforeEach
 	void setUp() {
@@ -82,11 +80,11 @@ class PolarisReactiveLoadBalancerClientFilterTest {
 		when(originalFilter.filter(exchange, chain))
 				.thenReturn(Mono.empty());
 		MetadataContext before = MetadataContextHolder.get();
-		Assertions.assertNotEquals(testContext, before);
+		assertThat(before).isNotEqualTo(testContext);
 		// Act
 		polarisFilter.filter(exchange, chain);
 		MetadataContext after = MetadataContextHolder.get();
-		Assertions.assertEquals(testContext, after);
+		assertThat(after).isEqualTo(testContext);
 	}
 
 	@Test
@@ -102,6 +100,6 @@ class PolarisReactiveLoadBalancerClientFilterTest {
 		MetadataContext after = MetadataContextHolder.get();
 
 		// Assert
-		Assertions.assertEquals(before, after);
+		assertThat(after).isEqualTo(before);
 	}
 }

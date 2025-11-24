@@ -19,12 +19,13 @@ package com.tencent.cloud.polaris.circuitbreaker.common;
 
 import java.lang.reflect.Method;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for ${@link PolarisResultToErrorCode}.
@@ -38,7 +39,7 @@ class PolarisResultToErrorCodeTest {
 
 	@Test
 	void testOnSuccess() {
-		Assertions.assertEquals(200, converter.onSuccess("any value"));
+		assertThat(converter.onSuccess("any value")).isEqualTo(200);
 	}
 
 	@Test
@@ -51,7 +52,7 @@ class PolarisResultToErrorCodeTest {
 		int errorCode = converter.onError(exception);
 
 		// Then
-		Assertions.assertEquals(404, errorCode);
+		assertThat(errorCode).isEqualTo(404);
 	}
 
 	@Test
@@ -60,7 +61,7 @@ class PolarisResultToErrorCodeTest {
 		int errorCode = converter.onError(new RuntimeException("test"));
 
 		// Then
-		Assertions.assertEquals(-1, errorCode);
+		assertThat(errorCode).isEqualTo(-1);
 	}
 
 	@Test
@@ -72,7 +73,7 @@ class PolarisResultToErrorCodeTest {
 		int errorCode = converter.onError(exception);
 
 		// Then
-		Assertions.assertEquals(-1, errorCode);
+		assertThat(errorCode).isEqualTo(-1);
 	}
 
 	@Test
@@ -85,10 +86,11 @@ class PolarisResultToErrorCodeTest {
 
 		// test exist class
 		boolean result1 = (boolean) checkClassExist.invoke(converter, "java.lang.String");
-		Assertions.assertTrue(result1);
+		assertThat(result1).isTrue();
+
 
 		// test not exist class
 		boolean result2 = (boolean) checkClassExist.invoke(converter, "com.nonexistent.Class");
-		Assertions.assertFalse(result2);
+		assertThat(result2).isFalse();
 	}
 }
