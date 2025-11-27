@@ -8,3 +8,4 @@
 - [fix:replace with string inside @ConditionalOnClass.](https://github.com/Tencent/spring-cloud-tencent/pull/1750)
 - [feat: support TagUtils, ContextToHeaderInterceptor in TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1754)
 - [deps:upgrade to spring boot 3.4.12.](https://github.com/Tencent/spring-cloud-tencent/pull/1756)
+- [fix: send unit header in tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1758)

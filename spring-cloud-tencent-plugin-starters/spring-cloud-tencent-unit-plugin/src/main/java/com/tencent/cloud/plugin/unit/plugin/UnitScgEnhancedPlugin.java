@@ -27,6 +27,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.PluginOrderConstant;
 import com.tencent.tsf.unit.core.TencentUnitContext;
+import com.tencent.tsf.unit.core.TencentUnitManager;
 import shade.polaris.com.google.common.collect.ImmutableMap;
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -47,6 +48,10 @@ public class UnitScgEnhancedPlugin implements EnhancedPlugin {
 	@Override
 	public void run(EnhancedPluginContext context) throws Throwable {
 		if (!(context.getOriginRequest() instanceof ServerWebExchange exchange)) {
+			return;
+		}
+
+		if (!TencentUnitManager.isEnable()) {
 			return;
 		}
 
