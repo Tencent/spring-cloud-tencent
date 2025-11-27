@@ -8,3 +8,4 @@
 - [feat: support TagUtils, ContextToHeaderInterceptor in TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1753)
 - [fix:replace with string inside @ConditionalOnClass.](https://github.com/Tencent/spring-cloud-tencent/pull/1755)
 - [deps:upgrade GitHub Actions to v5.](https://github.com/Tencent/spring-cloud-tencent/pull/1757)
+- [fix: send unit header in tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1759)
