@@ -85,9 +85,9 @@ public class QuickstartCalleeController {
 	 * @return information of callee
 	 */
 	@GetMapping("/info")
-	public String info() {
-		LOG.info("Quickstart [{}] Service [{}:{}] is called. datasource = [{}].", appName, ip, port, dataSourceProperties);
-		return String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, dataSourceProperties);
+	public String info(@RequestParam(required = false) String param) {
+		LOG.info("Quickstart [{}] Service [{}:{}] is called with param [{}]. datasource = [{}].", appName, ip, port, param, dataSourceProperties);
+		return String.format("Quickstart [%s] Service [%s:%s] is called with param [%s]. datasource = [%s].", appName, ip, port, param, dataSourceProperties);
 	}
 
 	/**
@@ -124,12 +124,12 @@ public class QuickstartCalleeController {
 			return new ResponseEntity<>(result, HttpStatus.BAD_GATEWAY);
 		}
 		if (delay > 0) {
-			String result =  String.format("Quickstart Callee Service [%s:%s] is called after %sms.", ip, port, delay);
+			String result = String.format("Quickstart Callee Service [%s:%s] is called after %sms.", ip, port, delay);
 			Thread.sleep(delay);
 			LOG.info(result);
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		}
-		String result =  String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port);
+		String result = String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port);
 		LOG.info(result);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -147,12 +147,12 @@ public class QuickstartCalleeController {
 			return new ResponseEntity<>(result, HttpStatus.BAD_GATEWAY);
 		}
 		if (delay > 0) {
-			String result =  String.format("Quickstart Callee Service uid %s [%s:%s] is called after %sms.", uid, ip, port, delay);
+			String result = String.format("Quickstart Callee Service uid %s [%s:%s] is called after %sms.", uid, ip, port, delay);
 			Thread.sleep(delay);
 			LOG.info(result);
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		}
-		String result =  String.format("Quickstart Callee Service uid %s [%s:%s] is called right.", uid, ip, port);
+		String result = String.format("Quickstart Callee Service uid %s [%s:%s] is called right.", uid, ip, port);
 		LOG.info(result);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -198,7 +198,7 @@ public class QuickstartCalleeController {
 			LOG.info(result);
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		}
-		String result =  String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port);
+		String result = String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port);
 		LOG.info(result);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
