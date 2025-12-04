@@ -87,9 +87,9 @@ public class QuickstartCalleeController {
 	 * @return information of callee
 	 */
 	@GetMapping("/info")
-	public String info() {
-		LOG.info("Quickstart [{}] Service [{}:{}] is called. datasource = [{}].", appName, ip, port, dataSourceProperties);
-		return String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, dataSourceProperties);
+	public String info(@RequestParam(required = false) String param) {
+		LOG.info("Quickstart [{}] Service [{}:{}] is called with param [{}]. datasource = [{}].", appName, ip, port, param, dataSourceProperties);
+		return String.format("Quickstart [%s] Service [%s:%s] is called with param [%s]. datasource = [%s].", appName, ip, port, param, dataSourceProperties);
 	}
 
 	@PostMapping("/user")

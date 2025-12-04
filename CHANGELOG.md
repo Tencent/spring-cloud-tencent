@@ -34,3 +34,4 @@
 - [fix: fix multiple bugs in tsf.](https://github.com/Tencent/spring-cloud-tencent/pull/1746)
 - [fix: fix get gateway config in tsf ipv6.](https://github.com/Tencent/spring-cloud-tencent/pull/1747)
 - [fix: fix nacos service discovery. ](https://github.com/Tencent/spring-cloud-tencent/pull/1751)
+- [fix:fix NPE when rate-limiting with null value.](https://github.com/Tencent/spring-cloud-tencent/pull/1764)
