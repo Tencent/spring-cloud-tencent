@@ -9,3 +9,4 @@
 - [fix:replace with string inside @ConditionalOnClass.](https://github.com/Tencent/spring-cloud-tencent/pull/1755)
 - [deps:upgrade GitHub Actions to v5.](https://github.com/Tencent/spring-cloud-tencent/pull/1757)
 - [fix: send unit header in tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1759)
+- [feat: add new key for java agent nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1766)
