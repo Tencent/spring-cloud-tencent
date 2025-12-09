@@ -91,8 +91,8 @@ public class QuickstartCallerController {
 	 * @return information of callee
 	 */
 	@GetMapping("/rest")
-	public ResponseEntity<String> rest(@RequestHeader Map<String, String> headerMap) {
-		String url = "http://QuickstartCalleeService/quickstart/callee/info";
+	public ResponseEntity<String> rest(@RequestHeader Map<String, String> headerMap, @RequestParam(required = false) String param) {
+		String url = "http://QuickstartCalleeService/quickstart/callee/info?param=" + param;
 
 		HttpHeaders headers = new HttpHeaders();
 		for (Map.Entry<String, String> entry : headerMap.entrySet()) {
