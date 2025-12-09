@@ -61,6 +61,7 @@ public class NacosContextPropertiesTest {
 
 	@Test
 	public void testDefaultInitialization() {
+		assertThat(nacosContextProperties.isDiscoveryEnabled()).isTrue();
 		assertThat(nacosContextProperties).isNotNull();
 		assertThat(nacosContextProperties.getServerAddr()).isEqualTo("127.0.0.1:8848");
 		assertThat(nacosContextProperties.isRegisterEnabled()).isTrue();
@@ -94,12 +95,6 @@ public class NacosContextPropertiesTest {
 		assertThat(metadata.get(NAMESPACE)).isEqualTo(nacosContextProperties.getNamespace());
 		assertThat(metadata.get(NACOS_GROUP_KEY)).isEqualTo(nacosContextProperties.getGroup());
 		assertThat(metadata.get(NACOS_CLUSTER_KEY)).isEqualTo(nacosContextProperties.getClusterName());
-	}
-
-	@Test
-	public void testDiscoveryEnabledProperty() {
-		// Test that discoveryEnabled is true from spring.cloud.nacos.discovery.enabled
-		assertThat(nacosContextProperties.isDiscoveryEnabled()).isTrue();
 	}
 
 	@SpringBootApplication
