@@ -23,7 +23,6 @@ spring:
         ip-address: 127.0.0.1
         prefer-ip-address: true
     nacos:
-      enabled: true
       context-path: /nacos
       discovery:
         enabled: true
