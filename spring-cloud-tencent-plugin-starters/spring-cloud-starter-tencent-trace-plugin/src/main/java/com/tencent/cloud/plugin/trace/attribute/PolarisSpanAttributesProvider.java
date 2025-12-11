@@ -56,13 +56,16 @@ public class PolarisSpanAttributesProvider implements SpanAttributesProvider {
 				attributes.put("custom." + entry.getKey(), entry.getValue());
 			}
 		}
+		Map<String, String> upstreamDisposableApplicationAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_UPSTREAM_APPLICATION);
+		if (CollectionUtils.isNotEmpty(upstreamDisposableApplicationAttributes)
+				&& upstreamDisposableApplicationAttributes.containsKey(MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME)) {
+			attributes.put("net.peer.service",
+					upstreamDisposableApplicationAttributes.get(MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME));
+		}
 		Map<String, String> upstreamDisposableCustomAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_UPSTREAM_DISPOSABLE);
 		if (CollectionUtils.isNotEmpty(upstreamDisposableCustomAttributes)) {
 			for (Map.Entry<String, String> entry : upstreamDisposableCustomAttributes.entrySet()) {
 				attributes.put("custom." + entry.getKey(), entry.getValue());
-				if (MetadataConstant.DefaultMetadata.DEFAULT_METADATA_SOURCE_SERVICE_NAME.equals(entry.getKey())) {
-					attributes.put("net.peer.service", entry.getValue());
-				}
 			}
 		}
 		attributes.put("http.port", CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
