@@ -100,12 +100,27 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 	@Override
 	public Map<String, String> getServerFinallySpanAttributes(EnhancedPluginContext context) {
 		Map<String, String> attributes = new HashMap<>();
-		MetadataObjectValue<Map<String, String>> extraTraceAttributeObject = MetadataContextHolder.get().
+		MetadataContext metadataContext = MetadataContextHolder.get();
+
+		MetadataObjectValue<Map<String, String>> extraTraceAttributeObject = metadataContext.
 				getMetadataContainer(MetadataType.CUSTOM, false).
 				getMetadataValue(ContextConstant.Trace.EXTRA_TRACE_ATTRIBUTES);
 		if (MetadataContextUtils.existMetadataValue(extraTraceAttributeObject)) {
 			Map<String, String> extraTraceAttributes = extraTraceAttributeObject.getObjectValue().get();
 			attributes.putAll(extraTraceAttributes);
+		}
+
+		Map<String, String> transitiveCustomAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
+		if (CollectionUtils.isNotEmpty(transitiveCustomAttributes)) {
+			for (Map.Entry<String, String> entry : transitiveCustomAttributes.entrySet()) {
+				attributes.put("custom." + entry.getKey(), entry.getValue());
+			}
+		}
+		Map<String, String> disposableCustomAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
+		if (CollectionUtils.isNotEmpty(disposableCustomAttributes)) {
+			for (Map.Entry<String, String> entry : disposableCustomAttributes.entrySet()) {
+				attributes.put("custom." + entry.getKey(), entry.getValue());
+			}
 		}
 		return attributes;
 	}
