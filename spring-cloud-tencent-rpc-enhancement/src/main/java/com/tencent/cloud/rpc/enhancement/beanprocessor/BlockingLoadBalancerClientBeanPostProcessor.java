@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.beanprocessor;
 
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.PolarisBlockingLoadBalancerClient;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 
@@ -54,7 +55,8 @@ public class BlockingLoadBalancerClientBeanPostProcessor implements BeanPostProc
 			BlockingLoadBalancerClient delegate = (BlockingLoadBalancerClient) bean;
 			ReactiveLoadBalancer.Factory<ServiceInstance> requestFactory = this.factory.getBean(ReactiveLoadBalancer.Factory.class);
 			EnhancedPluginRunner pluginRunner = this.factory.getBean(EnhancedPluginRunner.class);
-			return new PolarisBlockingLoadBalancerClient(requestFactory, delegate, pluginRunner);
+			RpcEnhancementProperties rpcEnhancementProperties = this.factory.getBean(RpcEnhancementProperties.class);
+			return new PolarisBlockingLoadBalancerClient(requestFactory, delegate, pluginRunner, rpcEnhancementProperties);
 		}
 		return bean;
 	}

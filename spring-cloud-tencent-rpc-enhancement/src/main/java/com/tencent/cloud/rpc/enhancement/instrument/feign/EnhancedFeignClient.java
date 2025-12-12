@@ -29,6 +29,7 @@ import java.util.Map;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -61,9 +62,12 @@ public class EnhancedFeignClient implements Client {
 
 	private final EnhancedPluginRunner pluginRunner;
 
-	public EnhancedFeignClient(Client target, EnhancedPluginRunner pluginRunner) {
+	private final RpcEnhancementProperties rpcEnhancementProperties;
+
+	public EnhancedFeignClient(Client target, EnhancedPluginRunner pluginRunner, RpcEnhancementProperties rpcEnhancementProperties) {
 		this.delegate = checkNotNull(target, "target");
 		this.pluginRunner = pluginRunner;
+		this.rpcEnhancementProperties = rpcEnhancementProperties;
 	}
 
 	@Override
@@ -88,7 +92,7 @@ public class EnhancedFeignClient implements Client {
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(request);
-		if (request.body() != null) {
+		if (request.body() != null && !rpcEnhancementProperties.isIgnoreBody()) {
 			enhancedPluginContext.setOriginBody(request.body());
 		}
 

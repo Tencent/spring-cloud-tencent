@@ -25,6 +25,7 @@ import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -56,9 +57,13 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 
 	private final LoadBalancerClient delegate;
 
-	public EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(EnhancedPluginRunner pluginRunner, LoadBalancerClient delegate) {
+	private final RpcEnhancementProperties rpcEnhancementProperties;
+
+	public EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(EnhancedPluginRunner pluginRunner,
+			LoadBalancerClient delegate, RpcEnhancementProperties rpcEnhancementProperties) {
 		this.pluginRunner = pluginRunner;
 		this.delegate = delegate;
+		this.rpcEnhancementProperties = rpcEnhancementProperties;
 	}
 
 
@@ -84,7 +89,7 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
 		enhancedPluginContext.setOriginRequest(httpRequest);
-		if (body != null) {
+		if (body != null && !rpcEnhancementProperties.isIgnoreBody()) {
 			enhancedPluginContext.setOriginBody(body);
 		}
 

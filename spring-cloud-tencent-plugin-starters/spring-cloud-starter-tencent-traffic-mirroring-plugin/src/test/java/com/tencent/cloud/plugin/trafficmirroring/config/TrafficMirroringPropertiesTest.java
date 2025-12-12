@@ -31,7 +31,7 @@ public class TrafficMirroringPropertiesTest {
 	void testDefaultValues() {
 		TrafficMirroringProperties properties = new TrafficMirroringProperties();
 
-		assertThat(properties.isEnabled()).isTrue();
+		assertThat(properties.isEnabled()).isFalse();
 		assertThat(properties.getRequestPoolSize()).isEqualTo(100);
 		assertThat(properties.getRequestConnectionTimeout()).isEqualTo(5000L);
 	}
@@ -40,9 +40,9 @@ public class TrafficMirroringPropertiesTest {
 	void testEnabledProperty() {
 		TrafficMirroringProperties properties = new TrafficMirroringProperties();
 
-		properties.setEnabled(false);
+		properties.setEnabled(true);
 
-		assertThat(properties.isEnabled()).isFalse();
+		assertThat(properties.isEnabled()).isTrue();
 	}
 
 	@Test
@@ -88,14 +88,14 @@ public class TrafficMirroringPropertiesTest {
 	@Test
 	void testToString() {
 		TrafficMirroringProperties properties = new TrafficMirroringProperties();
-		properties.setEnabled(false);
+		properties.setEnabled(true);
 		properties.setRequestPoolSize(8);
 		properties.setRequestConnectionTimeout(2000);
 
 		String result = properties.toString();
 
 		assertThat(result)
-				.contains("enabled=false")
+				.contains("enabled=true")
 				.contains("requestPoolSize=8")
 				.contains("requestConnectionTimeout=2000");
 	}
