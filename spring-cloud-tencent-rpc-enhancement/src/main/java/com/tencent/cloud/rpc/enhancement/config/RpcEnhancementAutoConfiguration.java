@@ -164,8 +164,8 @@ public class RpcEnhancementAutoConfiguration {
 	protected static class PolarisFeignClientAutoConfiguration {
 
 		@Bean
-		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(@Lazy EnhancedPluginRunner pluginRunner) {
-			return new EnhancedFeignBeanPostProcessor(pluginRunner);
+		public EnhancedFeignBeanPostProcessor polarisFeignBeanPostProcessor(@Lazy EnhancedPluginRunner pluginRunner, RpcEnhancementProperties rpcEnhancementProperties) {
+			return new EnhancedFeignBeanPostProcessor(pluginRunner, rpcEnhancementProperties);
 		}
 
 		@Bean

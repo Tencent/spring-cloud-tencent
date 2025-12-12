@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.DefaultEnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -67,7 +68,7 @@ public class EnhancedFeignClientTest {
 	@Test
 	public void testConstructor() {
 		try {
-			new EnhancedFeignClient(null, null);
+			new EnhancedFeignClient(null, null, null);
 			fail("NullPointerException should be thrown.");
 		}
 		catch (Throwable e) {
@@ -76,7 +77,7 @@ public class EnhancedFeignClientTest {
 		}
 
 		try {
-			new EnhancedFeignClient(mock(Client.class), null);
+			new EnhancedFeignClient(mock(Client.class), null, null);
 		}
 		catch (Throwable e) {
 			fail("Exception encountered.", e);
@@ -85,7 +86,8 @@ public class EnhancedFeignClientTest {
 		List<EnhancedPlugin> enhancedPlugins = getMockEnhancedFeignPlugins();
 		try {
 			new EnhancedFeignClient(mock(Client.class),
-					new DefaultEnhancedPluginRunner(enhancedPlugins, new ArrayList<>(), polarisSDKContextManager.getSDKContext()));
+					new DefaultEnhancedPluginRunner(enhancedPlugins, new ArrayList<>(), polarisSDKContextManager.getSDKContext()),
+					new RpcEnhancementProperties());
 		}
 		catch (Throwable e) {
 			fail("Exception encountered.", e);
@@ -115,7 +117,8 @@ public class EnhancedFeignClientTest {
 		requestTemplate.feignTarget(target);
 
 		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate,
-				new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins(), new ArrayList<>(), polarisSDKContextManager.getSDKContext()));
+				new DefaultEnhancedPluginRunner(getMockEnhancedFeignPlugins(), new ArrayList<>(), polarisSDKContextManager.getSDKContext()),
+				new RpcEnhancementProperties());
 
 		// 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",
@@ -162,7 +165,8 @@ public class EnhancedFeignClientTest {
 		requestTemplate.feignTarget(target);
 
 		EnhancedFeignClient polarisFeignClient = new EnhancedFeignClient(delegate,
-				new DefaultEnhancedPluginRunner(getMockCallAbortedExceptionEnhancedFeignPlugins(null), new ArrayList<>(), polarisSDKContextManager.getSDKContext()));
+				new DefaultEnhancedPluginRunner(getMockCallAbortedExceptionEnhancedFeignPlugins(null), new ArrayList<>(), polarisSDKContextManager.getSDKContext()),
+				new RpcEnhancementProperties());
 
 		// Exception
 		try {
@@ -177,7 +181,8 @@ public class EnhancedFeignClientTest {
 
 		polarisFeignClient = new EnhancedFeignClient(delegate,
 				new DefaultEnhancedPluginRunner(getMockCallAbortedExceptionEnhancedFeignPlugins(
-						new CircuitBreakerStatus.FallbackInfo(200, new HashMap<>(), "mock ok")), new ArrayList<>(), polarisSDKContextManager.getSDKContext()));
+						new CircuitBreakerStatus.FallbackInfo(200, new HashMap<>(), "mock ok")), new ArrayList<>(), polarisSDKContextManager.getSDKContext()),
+				new RpcEnhancementProperties());
 
 		// fallback 200
 		Response response = polarisFeignClient.execute(Request.create(Request.HttpMethod.GET, "http://localhost:8080/test",

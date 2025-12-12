@@ -28,9 +28,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class TrafficMirroringProperties {
 
 	/**
-	 * If traffic mirroring is enabled. Default is true.
+	 * If traffic mirroring is enabled. Default is false.
 	 */
-	private boolean enabled = true;
+	private boolean enabled = false;
 
 	/**
 	 * Traffic mirroring request pool size. Default is 100.
