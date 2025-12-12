@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.instrument.feign;
 
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import feign.Client;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ public class EnhancedFeignBeanPostProcessorTest {
 
 	@BeforeEach
 	void setUp() {
-		enhancedFeignBeanPostProcessor = new EnhancedFeignBeanPostProcessor(null);
+		enhancedFeignBeanPostProcessor = new EnhancedFeignBeanPostProcessor(null, null);
 	}
 
 	@Test
@@ -62,6 +63,9 @@ public class EnhancedFeignBeanPostProcessorTest {
 			}
 			if (clazz.equals(LoadBalancerClientFactory.class)) {
 				return mock(LoadBalancerClientFactory.class);
+			}
+			if (RpcEnhancementProperties.class.equals(clazz)) {
+				return mock(RpcEnhancementProperties.class);
 			}
 			return null;
 		}).when(beanFactory).getBean(any(Class.class));
