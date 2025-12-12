@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.rpc.enhancement.instrument.feign;
 
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import feign.Client;
 
@@ -41,10 +42,13 @@ public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFa
 
 	private final EnhancedPluginRunner pluginRunner;
 
+	private final RpcEnhancementProperties rpcEnhancementProperties;
+
 	private BeanFactory factory;
 
-	public EnhancedFeignBeanPostProcessor(EnhancedPluginRunner pluginRunner) {
+	public EnhancedFeignBeanPostProcessor(EnhancedPluginRunner pluginRunner, RpcEnhancementProperties rpcEnhancementProperties) {
 		this.pluginRunner = pluginRunner;
+		this.rpcEnhancementProperties = rpcEnhancementProperties;
 	}
 
 	@Override
@@ -85,7 +89,7 @@ public class EnhancedFeignBeanPostProcessor implements BeanPostProcessor, BeanFa
 	}
 
 	private EnhancedFeignClient createPolarisFeignClient(Client delegate) {
-		return new EnhancedFeignClient(delegate, pluginRunner);
+		return new EnhancedFeignClient(delegate, pluginRunner, rpcEnhancementProperties);
 	}
 
 	@Override

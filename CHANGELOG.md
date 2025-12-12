@@ -34,3 +34,4 @@
 - [fix: fix nacos service discovery. ](https://github.com/Tencent/spring-cloud-tencent/pull/1751)
 - [fix:fix NPE when rate-limiting with null value.](https://github.com/Tencent/spring-cloud-tencent/pull/1764)
 - [fix: get source service name from upstream application meta in getServerPreSpanAttributes & set custom tag in current server span in tsf.](https://github.com/Tencent/spring-cloud-tencent/pull/1767)
+- [feat:support body store switch.](https://github.com/Tencent/spring-cloud-tencent/pull/1771)

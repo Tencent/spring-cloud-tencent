@@ -36,6 +36,12 @@ public class RpcEnhancementPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public RpcEnhancementProperties rpcEnhancementProperties() {
+		return new RpcEnhancementProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public RpcEnhancementReporterProperties rpcEnhancementReporterProperties() {
 		return new RpcEnhancementReporterProperties();
 	}

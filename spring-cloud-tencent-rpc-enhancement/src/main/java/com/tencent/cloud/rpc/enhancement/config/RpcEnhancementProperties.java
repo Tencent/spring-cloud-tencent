@@ -15,22 +15,27 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.fault.config;
+package com.tencent.cloud.rpc.enhancement.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Properties for fault injection.
+ * Properties of RPC enhancement.
  *
  * @author Haotian Zhang
  */
-@ConfigurationProperties("spring.cloud.polaris.fault-injection")
-public class FaultInjectionProperties {
+@ConfigurationProperties("spring.cloud.tencent.rpc-enhancement")
+public class RpcEnhancementProperties {
 
 	/**
-	 * If traffic mirroring is enabled. Default is false.
+	 * Whether report call result to polaris.
 	 */
-	private boolean enabled = false;
+	private boolean enabled = true;
+
+	/**
+	 * Whether to ignore the body of the request.
+	 */
+	private boolean ignoreBody = true;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -40,10 +45,11 @@ public class FaultInjectionProperties {
 		this.enabled = enabled;
 	}
 
-	@Override
-	public String toString() {
-		return "FaultInjectionProperties{" +
-				"enabled=" + enabled +
-				'}';
+	public boolean isIgnoreBody() {
+		return ignoreBody;
+	}
+
+	public void setIgnoreBody(boolean ignoreBody) {
+		this.ignoreBody = ignoreBody;
 	}
 }
