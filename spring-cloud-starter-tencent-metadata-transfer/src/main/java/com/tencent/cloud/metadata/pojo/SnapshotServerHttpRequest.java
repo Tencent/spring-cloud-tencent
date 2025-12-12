@@ -113,7 +113,6 @@ public final class SnapshotServerHttpRequest implements ServerHttpRequest {
 		return new Builder()
 				.method(request.getMethod())
 				.uri(request.getURI())
-				.attributes(request.getAttributes())
 				.path(request.getPath().value())
 				.headers(request.getHeaders())
 				.queryParams(request.getQueryParams())
@@ -136,11 +135,6 @@ public final class SnapshotServerHttpRequest implements ServerHttpRequest {
 	@Override
 	public URI getURI() {
 		return uri;
-	}
-
-	@Override
-	public Map<String, Object> getAttributes() {
-		return attributes;
 	}
 
 	@Override
