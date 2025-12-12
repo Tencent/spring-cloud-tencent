@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 
 /**
- * Properties of Polaris CircuitBreaker .
+ * Properties of RPC enhancement reporter.
  *
  * @author <a href="mailto:iskp.me@gmail.com">Elve.Xu</a> 2022-07-08
  */
