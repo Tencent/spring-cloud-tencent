@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(value = "spring.cloud.polaris.fault-injection.enabled", matchIfMissing = true)
+@ConditionalOnProperty("spring.cloud.polaris.fault-injection.enabled")
 @EnableConfigurationProperties(FaultInjectionProperties.class)
 public class FaultInjectionAutoConfiguration {
 

@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisRouterEnabled
-@ConditionalOnProperty(value = "spring.cloud.polaris.traffic-mirroring.enabled", matchIfMissing = true)
+@ConditionalOnProperty("spring.cloud.polaris.traffic-mirroring.enabled")
 @EnableConfigurationProperties(TrafficMirroringProperties.class)
 public class TrafficMirroringAutoConfiguration {
 
