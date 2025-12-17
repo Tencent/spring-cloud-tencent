@@ -61,6 +61,7 @@ public class NacosContextPropertiesTest {
 
 	@Test
 	public void testDefaultInitialization() {
+		assertThat(nacosContextProperties.isDiscoveryEnabled()).isTrue();
 		assertThat(nacosContextProperties).isNotNull();
 		assertThat(nacosContextProperties.getServerAddr()).isEqualTo("127.0.0.1:8848");
 		assertThat(nacosContextProperties.isRegisterEnabled()).isTrue();

@@ -32,7 +32,7 @@ import static shade.polaris.com.alibaba.nacos.api.common.Constants.DEFAULT_NAMES
 @ConfigurationProperties("spring.cloud.nacos")
 public class NacosContextProperties {
 
-	@Value("${spring.cloud.nacos.discovery.enabled:#{'false'}}")
+	@Value("${polaris.agent.nacos.discovery.enabled:${spring.cloud.nacos.discovery.enabled:#{'false'}}}")
 	private boolean discoveryEnabled;
 
 	/**
