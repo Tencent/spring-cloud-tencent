@@ -40,10 +40,12 @@ public class RegisterEnabledCondition implements Condition {
 
 		isRegisterEnabled |= isConsulRegisterEnabled;
 
-		boolean isNacosRegisterEnabled = Boolean
-				.parseBoolean(conditionContext.getEnvironment()
-						.getProperty("spring.cloud.nacos.enabled", "false"))
-				&& Boolean.parseBoolean(conditionContext.getEnvironment()
+		boolean isNacosDiscoveryEnabled = Boolean.parseBoolean(
+				conditionContext.getEnvironment().getProperty("spring.cloud.nacos.discovery.enabled", "false")) ||
+				Boolean.parseBoolean(
+						conditionContext.getEnvironment()
+								.getProperty("polaris.agent.nacos.discovery.enabled", "false"));
+		boolean isNacosRegisterEnabled = isNacosDiscoveryEnabled && Boolean.parseBoolean(conditionContext.getEnvironment()
 				.getProperty("spring.cloud.nacos.discovery.register-enabled", "true"));
 
 		isRegisterEnabled |= isNacosRegisterEnabled;

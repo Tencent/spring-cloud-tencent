@@ -43,3 +43,4 @@
 - [fix:replace with string inside @ConditionalOnClass.](https://github.com/Tencent/spring-cloud-tencent/pull/1750)
 - [feat: support TagUtils, ContextToHeaderInterceptor in TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1754)
 - [fix: send unit header in tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1758)
+- [feat: add new key for java agent nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1769)
