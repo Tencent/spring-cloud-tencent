@@ -14,21 +14,23 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
+package com.tencent.cloud.common.async;
 
-package com.tencent.cloud.polaris.ratelimit.config;
-
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
- * Autoconfiguration of rate limit at bootstrap phase.
+ * Autoconfiguration of polaris async.
  *
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import(PolarisRateLimitPropertiesAutoConfiguration.class)
-public class PolarisRateLimitPropertiesBootstrapConfiguration {
+public class PolarisAsyncPropertiesAutoConfiguration {
 
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisAsyncProperties polarisAsyncProperties() {
+		return new PolarisAsyncProperties();
+	}
 }

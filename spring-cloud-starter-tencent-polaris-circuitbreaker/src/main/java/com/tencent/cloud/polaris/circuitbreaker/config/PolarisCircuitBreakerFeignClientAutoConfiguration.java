@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.openfeign.CircuitBreakerNameResolver;
-import org.springframework.cloud.openfeign.FeignClientFactoryBean;
 import org.springframework.cloud.openfeign.Targeter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +38,7 @@ import org.springframework.context.annotation.Scope;
  * @author seansyyu 2023-02-28
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({Feign.class, FeignClientFactoryBean.class})
+@ConditionalOnClass(name = {"feign.Feign", "org.springframework.cloud.openfeign.FeignClientFactoryBean"})
 @ConditionalOnPolarisCircuitBreakerEnabled
 public class PolarisCircuitBreakerFeignClientAutoConfiguration {
 

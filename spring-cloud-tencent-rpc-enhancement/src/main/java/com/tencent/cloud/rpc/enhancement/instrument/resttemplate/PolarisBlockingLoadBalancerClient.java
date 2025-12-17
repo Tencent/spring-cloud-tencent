@@ -19,6 +19,7 @@ package com.tencent.cloud.rpc.enhancement.instrument.resttemplate;
 
 import java.io.IOException;
 
+import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 
 import org.springframework.cloud.client.ServiceInstance;
@@ -36,13 +37,15 @@ import org.springframework.http.HttpRequest;
 public class PolarisBlockingLoadBalancerClient extends BlockingLoadBalancerClient {
 
 	private final EnhancedPluginRunner enhancedPluginRunner;
-	private BlockingLoadBalancerClient delegate;
+	private final BlockingLoadBalancerClient delegate;
+	private final RpcEnhancementProperties rpcEnhancementProperties;
 
 	public PolarisBlockingLoadBalancerClient(ReactiveLoadBalancer.Factory<ServiceInstance> loadBalancerClientFactory,
-			BlockingLoadBalancerClient delegate, EnhancedPluginRunner enhancedPluginRunner) {
+			BlockingLoadBalancerClient delegate, EnhancedPluginRunner enhancedPluginRunner, RpcEnhancementProperties rpcEnhancementProperties) {
 		super(loadBalancerClientFactory);
 		this.delegate = delegate;
 		this.enhancedPluginRunner = enhancedPluginRunner;
+		this.rpcEnhancementProperties = rpcEnhancementProperties;
 	}
 
 	/**
@@ -55,7 +58,7 @@ public class PolarisBlockingLoadBalancerClient extends BlockingLoadBalancerClien
 			return delegate.execute(serviceId, request);
 		}
 		byte[] body = LoadBalancerUtils.getHttpBodyIfAvailable(request);
-		EnhancedRestTemplateBlockingLoadBalancerClientInterceptor enhancedRestTemplateBlockingLoadBalancerClientInterceptor = new EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(enhancedPluginRunner, delegate);
+		EnhancedRestTemplateBlockingLoadBalancerClientInterceptor enhancedRestTemplateBlockingLoadBalancerClientInterceptor = new EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(enhancedPluginRunner, delegate, rpcEnhancementProperties);
 		return enhancedRestTemplateBlockingLoadBalancerClientInterceptor.intercept(httpRequest, body, serviceId, null, request);
 	}
 
@@ -69,7 +72,7 @@ public class PolarisBlockingLoadBalancerClient extends BlockingLoadBalancerClien
 			return delegate.execute(serviceId, serviceInstance, request);
 		}
 		byte[] body = LoadBalancerUtils.getHttpBodyIfAvailable(request);
-		EnhancedRestTemplateBlockingLoadBalancerClientInterceptor enhancedRestTemplateBlockingLoadBalancerClientInterceptor = new EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(enhancedPluginRunner, delegate);
+		EnhancedRestTemplateBlockingLoadBalancerClientInterceptor enhancedRestTemplateBlockingLoadBalancerClientInterceptor = new EnhancedRestTemplateBlockingLoadBalancerClientInterceptor(enhancedPluginRunner, delegate, rpcEnhancementProperties);
 		return enhancedRestTemplateBlockingLoadBalancerClientInterceptor.intercept(httpRequest, body, serviceId, serviceInstance, request);
 	}
 }

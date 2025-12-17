@@ -15,20 +15,41 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.contract.config;
+package com.tencent.cloud.rpc.enhancement.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Bootstrap configuration for Polaris contract properties.
+ * Properties of RPC enhancement.
  *
  * @author Haotian Zhang
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import(PolarisContractPropertiesAutoConfiguration.class)
-public class PolarisContractPropertiesBootstrapConfiguration {
+@ConfigurationProperties("spring.cloud.tencent.rpc-enhancement")
+public class RpcEnhancementProperties {
 
+	/**
+	 * Whether report call result to polaris.
+	 */
+	private boolean enabled = true;
+
+	/**
+	 * Whether to ignore the body of the request.
+	 */
+	private boolean ignoreBody = true;
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isIgnoreBody() {
+		return ignoreBody;
+	}
+
+	public void setIgnoreBody(boolean ignoreBody) {
+		this.ignoreBody = ignoreBody;
+	}
 }

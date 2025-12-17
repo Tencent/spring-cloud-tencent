@@ -15,15 +15,16 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.trace.config;
+package org.springframework.tsf.core.filter;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+/**
+ * Compatible with old versions TSF SDK.
+ *
+ * @author Shedfree Wu
+ */
+public interface ContextToHeaderInterceptor {
 
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import(TraceConfigModifierAutoConfiguration.class)
-public class TraceConfigModifierBootstrapAutoConfiguration {
+	void beforeContextToHeader();
 
+	void afterContextToHeader();
 }

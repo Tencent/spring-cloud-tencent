@@ -22,18 +22,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tencent.cloud.polaris.config.PolarisConfigSDKContextManager;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigCustomExtensionLayer;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFilePuller;
 import com.tencent.cloud.polaris.config.adapter.PolarisServiceLoaderUtil;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
 import org.apache.commons.logging.Log;
 
-import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.boot.context.config.ConfigDataLoader;
 import org.springframework.boot.context.config.ConfigDataLoaderContext;
@@ -42,8 +43,6 @@ import org.springframework.boot.context.config.Profiles;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import static org.springframework.boot.context.config.ConfigData.Option.IGNORE_IMPORTS;
 import static org.springframework.boot.context.config.ConfigData.Option.IGNORE_PROFILES;
@@ -61,13 +60,17 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 
 	static final AtomicBoolean INTERNAL_CONFIG_FILES_LOADED = new AtomicBoolean(false);
 	static final AtomicBoolean CUSTOM_POLARIS_CONFIG_FILE_LOADED = new AtomicBoolean(false);
+	static final AtomicBoolean TSF_CONFIG_FILE_LOADED = new AtomicBoolean(false);
+	static final AtomicBoolean TSF_TLS_CONFIG_FILE_LOADED = new AtomicBoolean(false);
 	private static final String POLARIS_CONFIG_PROPERTY_SOURCE_NAME = "polaris-config";
 	private final Log log;
+	private final DeferredLogFactory logFactory;
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 	private ConfigFileService configFileService;
 	private PolarisConfigFilePuller puller;
 
 	public PolarisConfigDataLoader(DeferredLogFactory logFactory) {
+		this.logFactory = logFactory;
 		this.log = logFactory.getLog(getClass());
 	}
 
@@ -75,7 +78,7 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 	public ConfigData load(ConfigDataLoaderContext context, PolarisConfigDataResource resource)
 			throws ConfigDataResourceNotFoundException {
 		try {
-			return load(context.getBootstrapContext(), resource);
+			return load(resource);
 		}
 		catch (Exception e) {
 			log.warn("Error getting properties from polaris: " + resource, e);
@@ -86,59 +89,99 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 		}
 	}
 
-	public ConfigData load(ConfigurableBootstrapContext bootstrapContext, PolarisConfigDataResource resource) {
-		CompositePropertySource compositePropertySource = locate(bootstrapContext, resource);
+	public ConfigData load(PolarisConfigDataResource resource) {
+		CompositePropertySource compositePropertySource = locate(resource);
 		List<PropertySource<?>> propertySourceList = new ArrayList<>(compositePropertySource.getPropertySources());
 		Collections.reverse(propertySourceList);
 		return new ConfigData(propertySourceList, getOptions(resource));
 	}
 
-	private CompositePropertySource locate(ConfigurableBootstrapContext bootstrapContext,
-			PolarisConfigDataResource resource) {
+	private CompositePropertySource locate(PolarisConfigDataResource resource) {
 		CompositePropertySource compositePropertySource = new CompositePropertySource(
 				POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
-		SDKContext sdkContext = PolarisSDKContextManager.innerGetConfigSDKContext();
+		SDKContext sdkContext = PolarisConfigSDKContextManager.innerGetConfigSDKContext();
 		if (null == this.configFileService) {
 			this.configFileService = ConfigFileServiceFactory.createConfigFileService(sdkContext);
 		}
 		if (null == this.puller) {
-			this.puller = PolarisConfigFilePuller.get(resource.getPolarisContextProperties(), configFileService);
+			this.puller = PolarisConfigFilePuller.get(resource.getPolarisContextProperties(), configFileService, logFactory);
 		}
-		// load custom config extension files
-		if (polarisConfigCustomExtensionLayer != null) {
-			polarisConfigCustomExtensionLayer.initConfigFiles(null, compositePropertySource, configFileService);
-		}
-		// load spring boot default config files
 		PolarisConfigProperties polarisConfigProperties = resource.getPolarisConfigProperties();
+		try {
+			// load custom config extension files
+			initCustomPolarisConfigExtensionFiles(compositePropertySource);
+			// load spring boot default config files
+			initInternalConfigFiles(compositePropertySource, polarisConfigProperties, resource);
+			// load custom config files
+			initCustomPolarisConfigFiles(compositePropertySource, polarisConfigProperties);
+			// load config data
+			initCustomPolarisConfigDataFiles(compositePropertySource, resource);
+			// load tsf default config group
+			initTsfConfigGroups(compositePropertySource);
+			// load tsf tls properties if need.
+			initTsfTlsPropertySource(compositePropertySource, resource);
+		}
+		finally {
+			afterLocatePolarisConfigExtension(compositePropertySource);
+		}
+
+		return compositePropertySource;
+	}
+
+	private void initCustomPolarisConfigExtensionFiles(CompositePropertySource compositePropertySource) {
+		if (polarisConfigCustomExtensionLayer == null) {
+			log.debug("[SCT Config] PolarisConfigCustomExtensionLayer is not init, ignore the following execution steps");
+			return;
+		}
+		polarisConfigCustomExtensionLayer.initConfigFiles(null, compositePropertySource, configFileService);
+	}
+
+	private void afterLocatePolarisConfigExtension(CompositePropertySource compositePropertySource) {
+		if (polarisConfigCustomExtensionLayer == null) {
+			log.debug("[SCT Config] PolarisConfigCustomExtensionLayer is not init, ignore the following execution steps");
+			return;
+		}
+		polarisConfigCustomExtensionLayer.executeAfterLocateConfigReturning(compositePropertySource);
+	}
+
+	private void initInternalConfigFiles(CompositePropertySource compositePropertySource,
+			PolarisConfigProperties polarisConfigProperties, PolarisConfigDataResource resource) {
 		Profiles profiles = resource.getProfiles();
 		if (polarisConfigProperties.isInternalEnabled() && INTERNAL_CONFIG_FILES_LOADED.compareAndSet(false, true)) {
-			log.info("loading internal config files");
 			String[] activeProfiles = profiles.getActive().toArray(new String[] {});
 			String[] defaultProfiles = profiles.getDefault().toArray(new String[] {});
 			this.puller.initInternalConfigFiles(
 					compositePropertySource, activeProfiles, defaultProfiles, resource.getServiceName());
 		}
-		// load custom config files
+	}
+
+	private void initCustomPolarisConfigFiles(CompositePropertySource compositePropertySource,
+			PolarisConfigProperties polarisConfigProperties) {
 		if (!CollectionUtils.isEmpty(polarisConfigProperties.getGroups()) &&
 				CUSTOM_POLARIS_CONFIG_FILE_LOADED.compareAndSet(false, true)) {
-			log.info("loading custom config files");
 			this.puller.initCustomPolarisConfigFiles(compositePropertySource,
 					polarisConfigProperties.getGroups());
 		}
-		// load config data
-		if (StringUtils.hasText(resource.getFileName())) {
-			log.info("loading config data config file, group:" + resource.getGroupName() + " file: " + resource.getFileName());
+	}
+
+	private void initCustomPolarisConfigDataFiles(CompositePropertySource compositePropertySource,
+			PolarisConfigDataResource resource) {
+		if (StringUtils.isNotBlank(resource.getFileName())) {
+			log.info("[SCT Config] Loading polaris custom config data file, group:" + resource.getGroupName() + " file: " + resource.getFileName());
 			this.puller.initCustomPolarisConfigFile(compositePropertySource, configFileGroup(resource));
 		}
-		// load tsf default config group
-		this.puller.initTsfConfigGroups(compositePropertySource);
-		// load tsf tls properties if need.
-		this.puller.initTsfTlsPropertySource(compositePropertySource, resource.getTsfTlsProperties(), resource.getServiceName());
-		if (polarisConfigCustomExtensionLayer != null) {
-			polarisConfigCustomExtensionLayer.executeAfterLocateConfigReturning(compositePropertySource);
-		}
+	}
 
-		return compositePropertySource;
+	private void initTsfConfigGroups(CompositePropertySource compositePropertySource) {
+		if (TSF_CONFIG_FILE_LOADED.compareAndSet(false, true)) {
+			this.puller.initTsfConfigGroups(compositePropertySource);
+		}
+	}
+
+	private void initTsfTlsPropertySource(CompositePropertySource compositePropertySource, PolarisConfigDataResource resource) {
+		if (TSF_TLS_CONFIG_FILE_LOADED.compareAndSet(false, true)) {
+			this.puller.initTsfTlsPropertySource(compositePropertySource, resource.getTsfTlsProperties(), null, resource.getServiceName());
+		}
 	}
 
 	private ConfigData.Option[] getOptions(PolarisConfigDataResource resource) {

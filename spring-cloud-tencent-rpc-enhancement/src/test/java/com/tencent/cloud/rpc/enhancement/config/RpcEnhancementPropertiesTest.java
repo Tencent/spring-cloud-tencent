@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.common.metadata.config;
+package com.tencent.cloud.rpc.enhancement.config;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,40 +23,34 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link MetadataLocalProperties}.
+ * Test For {@link RpcEnhancementProperties}.
  *
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = MetadataLocalPropertiesTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml"})
-public class MetadataLocalPropertiesTest {
+@SpringBootTest(classes = RpcEnhancementPropertiesTest.TestApplication.class, properties = {
+		"spring.application.name=test",
+		"spring.cloud.gateway.enabled=false",
+		"spring.cloud.tencent.rpc-enhancement=true",
+		"spring.cloud.tencent.rpc-enhancement.ignore-body=false"
+})
+@ActiveProfiles("test")
+public class RpcEnhancementPropertiesTest {
 
 	@Autowired
-	private MetadataLocalProperties metadataLocalProperties;
+	private RpcEnhancementProperties rpcEnhancementProperties;
 
 	@Test
-	public void test1() {
-		assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
-		assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
-		assertThat(metadataLocalProperties.getContent().get("c")).isNull();
-	}
-
-	@Test
-	public void test2() {
-		assertThat(metadataLocalProperties.getTransitive().contains("b")).isTrue();
-	}
-
-	@Test
-	public void test3() {
-		assertThat(metadataLocalProperties.getHeaders().contains("c")).isTrue();
-		assertThat(metadataLocalProperties.getHeaders().contains("d")).isTrue();
+	public void testDefaultInitialization() {
+		assertThat(rpcEnhancementProperties).isNotNull();
+		assertThat(rpcEnhancementProperties.isEnabled()).isTrue();
+		assertThat(rpcEnhancementProperties.isIgnoreBody()).isFalse();
 	}
 
 	@SpringBootApplication

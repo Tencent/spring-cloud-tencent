@@ -18,10 +18,8 @@
 package com.tencent.cloud.polaris.context.config.extend.tsf;
 
 import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +30,6 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 @ConditionalOnOnlyTsfConsulEnabled
 public class TsfContextAutoConfiguration {
 

@@ -17,3 +17,5 @@ spring:
         headers:
           - c
           - d
+      async:
+        enabled: true

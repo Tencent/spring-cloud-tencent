@@ -15,20 +15,35 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.ratelimit.tsf;
+package com.tencent.cloud.common.async;
 
-import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Bootstrap configuration for TSF rate limit.
+ * Metadata Properties from local properties file.
  *
  * @author Haotian Zhang
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnOnlyTsfConsulEnabled
-@Import(TsfRateLimitAutoConfiguration.class)
-public class TsfRateLimitBootstrapConfiguration {
+@ConfigurationProperties(prefix = "spring.cloud.tencent.async")
+public class PolarisAsyncProperties {
+
+	/**
+	 * Enable async or not.
+	 */
+	private Boolean enabled = false;
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	@Override
+	public String toString() {
+		return "PolarisAsyncProperties{" +
+				"enabled=" + enabled +
+				'}';
+	}
 }

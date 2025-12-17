@@ -18,6 +18,7 @@
 package com.tencent.cloud.plugin.unit.config;
 
 import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
+import com.tencent.cloud.plugin.unit.plugin.UnitScgEnhancedPlugin;
 import com.tencent.tsf.unit.core.GatewayUnitArchCallback;
 import com.tencent.tsf.unit.core.TencentUnitManager;
 import com.tencent.tsf.unit.core.TsfZoneFilterUnitCallback;
@@ -26,6 +27,7 @@ import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
@@ -43,6 +45,11 @@ public class GatewayUnitAutoConfiguration {
 		@Value("${spring.application.name:}")
 		private String applicationName;
 
+
+		@Bean
+		public UnitScgEnhancedPlugin unitScgEnhancedPlugin() {
+			return new UnitScgEnhancedPlugin();
+		}
 
 		@PostConstruct
 		public void init() {

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.plugin.lossless.config.LosslessAutoConfiguration;
-import com.tencent.cloud.plugin.lossless.config.LosslessPropertiesBootstrapConfiguration;
+import com.tencent.cloud.plugin.lossless.config.LosslessPropertiesAutoConfiguration;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
@@ -74,7 +74,7 @@ public class LosslessRegistryAspectTest {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					LosslessAutoConfiguration.class,
-					LosslessPropertiesBootstrapConfiguration.class,
+					LosslessPropertiesAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
 					PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
@@ -95,7 +95,7 @@ public class LosslessRegistryAspectTest {
 	private final WebApplicationContextRunner contextRunner2 = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					LosslessAutoConfiguration.class,
-					LosslessPropertiesBootstrapConfiguration.class,
+					LosslessPropertiesAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
 					PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,
@@ -117,7 +117,7 @@ public class LosslessRegistryAspectTest {
 			.withConfiguration(AutoConfigurations.of(
 					MockDiscoveryConfiguration.class,
 					LosslessAutoConfiguration.class,
-					LosslessPropertiesBootstrapConfiguration.class,
+					LosslessPropertiesAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
 					PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,

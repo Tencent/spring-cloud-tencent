@@ -15,18 +15,26 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context.config.extend.tsf;
+package com.tencent.cloud.tsf.demo.consumer;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * TSF context bootstrap configuration.
- *
- * @author Haotian Zhang
- */
-@Configuration(proxyBeanMethods = false)
-@Import(TsfContextAutoConfiguration.class)
-public class TsfContextBootstrapConfiguration {
+import org.springframework.stereotype.Component;
+import org.springframework.tsf.core.filter.ContextToHeaderInterceptor;
 
+@Component
+public class TestContextToHeaderInterceptor implements ContextToHeaderInterceptor {
+
+	private static final Logger LOG = LoggerFactory.getLogger(TestContextToHeaderInterceptor.class);
+
+	@Override
+	public void beforeContextToHeader() {
+		LOG.info("beforeContextToHeader");
+	}
+
+	@Override
+	public void afterContextToHeader() {
+		LOG.info("afterContextToHeader");
+	}
 }

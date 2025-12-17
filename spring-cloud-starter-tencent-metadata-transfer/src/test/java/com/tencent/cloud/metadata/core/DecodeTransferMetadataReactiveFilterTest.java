@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.metadata.core;
 
+import com.tencent.cloud.common.async.PolarisAsyncProperties;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
@@ -50,11 +51,14 @@ public class DecodeTransferMetadataReactiveFilterTest {
 	@Autowired
 	private MetadataLocalProperties metadataLocalProperties;
 
+	@Autowired
+	private PolarisAsyncProperties polarisAsyncProperties;
+
 	private DecodeTransferMetadataReactiveFilter metadataReactiveFilter;
 
 	@BeforeEach
 	public void setUp() {
-		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter();
+		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter(polarisAsyncProperties);
 	}
 
 	@Test
