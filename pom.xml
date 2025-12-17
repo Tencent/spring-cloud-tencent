@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>4.2.3</version>
+		<version>4.2.4</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -90,16 +90,16 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.1.1.0-2024.0.2-SNAPSHOT</revision>
+		<revision>2.1.1.0-2024.0.3-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>6.2.14</spring.framework.version>
+		<spring.framework.version>6.2.15</spring.framework.version>
 
 		<!-- Spring Boot -->
 		<spring.boot.version>3.4.12</spring.boot.version>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2024.0.2</spring.cloud.version>
+		<spring.cloud.version>2024.0.3</spring.cloud.version>
 
 		<!-- Test -->
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
