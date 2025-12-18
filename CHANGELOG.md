@@ -44,3 +44,4 @@
 - [feat: support TagUtils, ContextToHeaderInterceptor in TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1754)
 - [fix: send unit header in tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1758)
 - [feat: add new key for java agent nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1769)
+- [fix: beautify ServicesEagerLoadSmartLifecycle logging.](https://github.com/Tencent/spring-cloud-tencent/pull/1774)

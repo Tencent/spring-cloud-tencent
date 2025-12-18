@@ -44,9 +44,9 @@ public class PolarisEagerLoadAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "spring.cloud.polaris.discovery.eager-load.services.enabled", havingValue = "true", matchIfMissing = true)
 	public ServicesEagerLoadSmartLifecycle serviceEagerLoadSmartLifecycle(
-			ApplicationContext applicationContext, @Autowired(required = false) PolarisDiscoveryClient polarisDiscoveryClient,
+			@Autowired(required = false) PolarisDiscoveryClient polarisDiscoveryClient,
 			@Autowired(required = false) PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient) {
-		return new ServicesEagerLoadSmartLifecycle(applicationContext, polarisDiscoveryClient, polarisReactiveDiscoveryClient);
+		return new ServicesEagerLoadSmartLifecycle(polarisDiscoveryClient, polarisReactiveDiscoveryClient);
 	}
 }
 

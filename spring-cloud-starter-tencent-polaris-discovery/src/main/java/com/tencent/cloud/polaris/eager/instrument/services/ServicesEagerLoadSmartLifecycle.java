@@ -24,22 +24,18 @@ import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClie
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
 
 public class ServicesEagerLoadSmartLifecycle implements SmartLifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServicesEagerLoadSmartLifecycle.class);
 
-	private final ApplicationContext applicationContext;
-
 	private final PolarisDiscoveryClient polarisDiscoveryClient;
 
 	private final PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient;
 
-	public ServicesEagerLoadSmartLifecycle(ApplicationContext applicationContext, PolarisDiscoveryClient polarisDiscoveryClient,
+	public ServicesEagerLoadSmartLifecycle(PolarisDiscoveryClient polarisDiscoveryClient,
 			PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient) {
-		this.applicationContext = applicationContext;
 		this.polarisDiscoveryClient = polarisDiscoveryClient;
 		this.polarisReactiveDiscoveryClient = polarisReactiveDiscoveryClient;
 	}
@@ -53,7 +49,7 @@ public class ServicesEagerLoadSmartLifecycle implements SmartLifecycle {
 				LOG.info("eager-load got services: {}", servicesList);
 			}
 			else if (polarisReactiveDiscoveryClient != null) {
-				polarisReactiveDiscoveryClient.getServices().subscribe(services -> {
+				polarisReactiveDiscoveryClient.getServices().collectList().subscribe(services -> {
 					LOG.info("eager-load got services: {}", services);
 				});
 			}
