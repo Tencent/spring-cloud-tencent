@@ -10,3 +10,4 @@
 - [deps:upgrade GitHub Actions to v5.](https://github.com/Tencent/spring-cloud-tencent/pull/1757)
 - [fix: send unit header in tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1759)
 - [feat: add new key for java agent nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1768)
+- [fix: beautify ServicesEagerLoadSmartLifecycle logging.](https://github.com/Tencent/spring-cloud-tencent/pull/1774)
