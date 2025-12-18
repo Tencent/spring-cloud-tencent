@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration;
 import com.tencent.cloud.polaris.config.enums.RefreshType;
@@ -123,6 +124,8 @@ public class RefreshScopeSpringProcessorTest {
 			assertThat(springValueRegistry.isRefreshScopeKey("test.properties2.array[0]")).isTrue();
 			assertThat(springValueRegistry.isRefreshScopeKey("test.properties2.map")).isTrue();
 			assertThat(springValueRegistry.isRefreshScopeKey("test.properties2.map.key")).isTrue();
+			assertThat(springValueRegistry.isRefreshScopeKey("test.properties2.timeUnit")).isTrue();
+			assertThat(springValueRegistry.isRefreshScopeKey("test.properties2.time-unit")).isTrue();
 
 			assertThat(springValueRegistry.isRefreshScopeKey("test.properties2.notExist")).isFalse();
 			// @RefreshScope and @ConfigurationProperties on @Component bean
@@ -274,6 +277,8 @@ public class RefreshScopeSpringProcessorTest {
 
 		private InnerProperties inner;
 
+		private TimeUnit timeUnit;
+
 		public String getName() {
 			return name;
 		}
@@ -320,6 +325,14 @@ public class RefreshScopeSpringProcessorTest {
 
 		public void setInner(InnerProperties inner) {
 			this.inner = inner;
+		}
+
+		public TimeUnit getTimeUnit() {
+			return timeUnit;
+		}
+
+		public void setTimeUnit(TimeUnit timeUnit) {
+			this.timeUnit = timeUnit;
 		}
 	}
 

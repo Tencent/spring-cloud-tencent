@@ -117,6 +117,15 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		return clazz.isArray() || Collection.class.isAssignableFrom(clazz) || Map.class.isAssignableFrom(clazz);
 	}
 
+	/**
+	 * whether the class is enum.
+	 * @param clazz the class under analysis.
+	 * @return true if the class is enum, otherwise false.
+	 */
+	private static boolean isEnum(Class<?> clazz) {
+		return clazz.isEnum();
+	}
+
 	@Override
 	public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
@@ -267,6 +276,11 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 			else if (isCollection(field.getType())) {
 				springValueRegistry.putRefreshScopePrefixKey(prefix + field.getName());
 				springValueRegistry.putRefreshScopePrefixKey(
+						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()));
+			}
+			else if (isEnum(field.getType())) {
+				springValueRegistry.putRefreshScopeKey(prefix + field.getName());
+				springValueRegistry.putRefreshScopeKey(
 						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()));
 			}
 			else {

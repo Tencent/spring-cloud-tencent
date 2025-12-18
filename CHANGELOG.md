@@ -11,3 +11,4 @@
 - [fix: send unit header in tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1758)
 - [feat: add new key for java agent nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1766)
 - [fix: beautify ServicesEagerLoadSmartLifecycle logging.](https://github.com/Tencent/spring-cloud-tencent/pull/1774)
+- [fix:fix enum in dynamic configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1775)
