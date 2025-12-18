@@ -132,7 +132,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		}
 
 		if (StringUtils.isNotBlank(targetNamespace)) {
-			MetadataContextHolder.get().putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+			MetadataContextHolder.get().putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 					MetadataConstant.POLARIS_TARGET_NAMESPACE, targetNamespace);
 		}
 		TransHeadersTransfer.transfer(serverHttpRequest);

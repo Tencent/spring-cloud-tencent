@@ -10,3 +10,4 @@
 - [deps:upgrade to spring boot 3.4.12.](https://github.com/Tencent/spring-cloud-tencent/pull/1756)
 - [fix: send unit header in tsf gw.](https://github.com/Tencent/spring-cloud-tencent/pull/1758)
 - [feat: add new key for java agent nacos discovery.](https://github.com/Tencent/spring-cloud-tencent/pull/1766)
+- [refactor:optimize metadata context operation.](https://github.com/Tencent/spring-cloud-tencent/pull/1773)

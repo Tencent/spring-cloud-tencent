@@ -52,7 +52,7 @@ public class PolarisDiscoveryHandler {
 	 * @return list of healthy instances
 	 */
 	public InstancesResponse getHealthyInstances(String service) {
-		String namespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+		String namespace = MetadataContextHolder.get().getContextWithDefault(MetadataContext.FRAGMENT_APPLICATION_NONE,
 				MetadataConstant.POLARIS_TARGET_NAMESPACE, polarisDiscoveryProperties.getNamespace());
 
 		GetHealthyInstancesRequest getHealthyInstancesRequest = new GetHealthyInstancesRequest();

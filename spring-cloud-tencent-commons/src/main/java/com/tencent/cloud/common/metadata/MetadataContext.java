@@ -21,10 +21,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataMapValue;
 import com.tencent.polaris.metadata.core.MetadataObjectValue;
@@ -35,8 +35,11 @@ import com.tencent.polaris.metadata.core.TransitiveType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.util.StringUtils;
-
+/**
+ * MetadataContext to be stored in the thread.
+ *
+ * @author Haotian Zhang
+ */
 public class MetadataContext extends com.tencent.polaris.metadata.core.manager.MetadataContext {
 
 	/**
@@ -48,6 +51,11 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	 * disposable Context.
 	 */
 	public static final String FRAGMENT_DISPOSABLE = "disposable";
+
+	/**
+	 * none context.
+	 */
+	public static final String FRAGMENT_NONE = "none";
 
 	/**
 	 * upstream disposable Context.
@@ -97,12 +105,12 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	static {
 		String namespace = ApplicationContextAwareUtils
 				.getProperties("spring.cloud.polaris.namespace");
-		if (!StringUtils.hasText(namespace)) {
+		if (StringUtils.isBlank(namespace)) {
 			namespace = ApplicationContextAwareUtils
 					.getProperties("spring.cloud.polaris.discovery.namespace", "default");
 		}
 
-		if (!StringUtils.hasText(namespace)) {
+		if (StringUtils.isBlank(namespace)) {
 			LOG.error("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
 					+ "spring.cloud.polaris.discovery.namespace");
 		}
@@ -110,12 +118,12 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 
 		String serviceName = ApplicationContextAwareUtils
 				.getProperties("spring.cloud.polaris.service");
-		if (!StringUtils.hasText(serviceName)) {
+		if (StringUtils.isBlank(serviceName)) {
 			serviceName = ApplicationContextAwareUtils.getProperties(
 					"spring.cloud.polaris.discovery.service", ApplicationContextAwareUtils
 							.getProperties("spring.application.name", null));
 		}
-		if (!StringUtils.hasText(serviceName)) {
+		if (StringUtils.isBlank(serviceName)) {
 			LOG.warn("service name should not be blank. please configure spring.cloud.polaris.service or "
 					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 		}
@@ -134,58 +142,85 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		LOCAL_NAMESPACE = namespace;
 	}
 
-	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean caller) {
-		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
-		Map<String, String> values = new HashMap<>();
-		metadataContainer.iterateMetadataValues(new BiConsumer<String, MetadataValue>() {
-			@Override
-			public void accept(String s, MetadataValue metadataValue) {
-				if (metadataValue instanceof MetadataStringValue) {
-					MetadataStringValue metadataStringValue = (MetadataStringValue) metadataValue;
-					if (metadataStringValue.getTransitiveType() == transitiveType) {
-						values.put(s, metadataStringValue.getStringValue());
-					}
-				}
-			}
-		});
-		return values;
+	/**
+	 * Get context with default value with fragment DISPOSABLE.
+	 *
+	 * @param key key
+	 * @param defaultValue default value
+	 * @return value
+	 */
+	public String getContextWithDefault(String key, String defaultValue) {
+		String value = getContext(key);
+		return StringUtils.isBlank(value) ? defaultValue : value;
 	}
 
-	public void putMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean caller, Map<String, String> values) {
-		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
-		for (Map.Entry<String, String> entry : values.entrySet()) {
-			metadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), transitiveType);
+	/**
+	 * Get context with fragment DISPOSABLE.
+	 *
+	 * @param key key
+	 * @return value
+	 */
+	public String getContext(String key) {
+		Map<String, String> fragmentContext = getFragmentContext(FRAGMENT_DISPOSABLE);
+		if (fragmentContext == null) {
+			return null;
 		}
+		return fragmentContext.get(key);
 	}
 
-	private Map<String, String> getMapMetadataAsMap(MetadataType metadataType, String mapKey, TransitiveType transitiveType, boolean caller) {
-		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
-		Map<String, String> values = new HashMap<>();
-		MetadataValue metadataValue = metadataContainer.getMetadataValue(mapKey);
-		if (!(metadataValue instanceof MetadataMapValue)) {
-			return values;
+	/**
+	 * Get context with default value with fragment.
+	 *
+	 * @param fragment @see FRAGMENT_*
+	 * @param key key
+	 * @param defaultValue default value
+	 * @return value
+	 */
+	public String getContextWithDefault(String fragment, String key, String defaultValue) {
+		Map<String, String> fragmentContext = getFragmentContext(fragment);
+		if (fragmentContext == null) {
+			return defaultValue;
 		}
-		MetadataMapValue metadataMapValue = (MetadataMapValue) metadataValue;
-		metadataMapValue.iterateMapValues(new BiConsumer<String, MetadataValue>() {
-			@Override
-			public void accept(String s, MetadataValue metadataValue) {
-				if (metadataValue instanceof MetadataStringValue) {
-					MetadataStringValue metadataStringValue = (MetadataStringValue) metadataValue;
-					if (metadataStringValue.getTransitiveType() == transitiveType) {
-						values.put(s, metadataStringValue.getStringValue());
-					}
-				}
-			}
-		});
-		return values;
+		String value = fragmentContext.get(key);
+		return StringUtils.isBlank(value) ? defaultValue : value;
 	}
 
-	private void putMapMetadataAsMap(MetadataType metadataType, String mapKey,
-			TransitiveType transitiveType, boolean caller, Map<String, String> values) {
-		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
-		for (Map.Entry<String, String> entry : values.entrySet()) {
-			metadataContainer.putMetadataMapValue(mapKey, entry.getKey(), entry.getValue(), transitiveType);
+	/**
+	 * Get context with fragment.
+	 *
+	 * @param fragment @see FRAGMENT_*
+	 * @param key key
+	 * @return value
+	 */
+	public String getContext(String fragment, String key) {
+		Map<String, String> fragmentContext = getFragmentContext(fragment);
+		if (fragmentContext == null) {
+			return null;
 		}
+		return fragmentContext.get(key);
+	}
+
+	/**
+	 * Put context with fragment DISPOSABLE.
+	 *
+	 * @param key key
+	 * @param value value
+	 */
+	public void putContext(String key, String value) {
+		putContext(FRAGMENT_DISPOSABLE, key, value);
+	}
+
+	/**
+	 * Put context with fragment.
+	 *
+	 * @param fragment @see FRAGMENT_*
+	 * @param key key
+	 * @param value value
+	 */
+	public void putContext(String fragment, String key, String value) {
+		Map<String, String> values = new HashMap<>(1);
+		values.put(key, value);
+		putFragmentContext(fragment, values);
 	}
 
 	public Map<String, String> getDisposableMetadata() {
@@ -208,25 +243,20 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		return getFragmentContext(FRAGMENT_APPLICATION);
 	}
 
-	public Map<String, String> getCustomMetadata() {
-		Map<String, String> transitiveMetadata = this.getTransitiveMetadata();
-		Map<String, String> disposableMetadata = this.getDisposableMetadata();
-		Map<String, String> customMetadata = new HashMap<>();
-		// Clean up one-time metadata coming from upstream .
-		transitiveMetadata.forEach((key, value) -> {
-			if (!disposableMetadata.containsKey(key)) {
-				customMetadata.put(key, value);
-			}
-		});
-		return Collections.unmodifiableMap(customMetadata);
+	public Map<String, String> getTransHeaders() {
+		return getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
 	}
 
-	public Map<String, String> getTransHeaders() {
-		return this.getFragmentContext(FRAGMENT_RAW_TRANSHEADERS);
+	public void setTransHeaders(String key, String value) {
+		putContext(FRAGMENT_RAW_TRANSHEADERS, key, value);
 	}
 
 	public Map<String, String> getTransHeadersKV() {
 		return getFragmentContext(FRAGMENT_RAW_TRANSHEADERS_KV);
+	}
+
+	public void setTransHeadersKV(String key, String value) {
+		putContext(FRAGMENT_RAW_TRANSHEADERS_KV, key, value);
 	}
 
 	public Map<String, Object> getLoadbalancerMetadata() {
@@ -235,13 +265,10 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		Map<String, Object> values = new HashMap<>();
 		if (metadataValue instanceof MetadataMapValue) {
 			MetadataMapValue metadataMapValue = (MetadataMapValue) metadataValue;
-			metadataMapValue.iterateMapValues(new BiConsumer<String, MetadataValue>() {
-				@Override
-				public void accept(String s, MetadataValue metadataValue) {
-					if (metadataValue instanceof MetadataObjectValue) {
-						Optional<?> objectValue = ((MetadataObjectValue<?>) metadataValue).getObjectValue();
-						objectValue.ifPresent(o -> values.put(s, o));
-					}
+			metadataMapValue.iterateMapValues((s, metadataValue1) -> {
+				if (metadataValue1 instanceof MetadataObjectValue) {
+					Optional<?> objectValue = ((MetadataObjectValue<?>) metadataValue1).getObjectValue();
+					objectValue.ifPresent(o -> values.put(s, o));
 				}
 			});
 		}
@@ -251,18 +278,6 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	public void setLoadbalancer(String key, Object value) {
 		MetadataContainer metadataContainer = getMetadataContainer(MetadataType.CUSTOM, false);
 		metadataContainer.putMetadataMapObjectValue(FRAGMENT_LB_METADATA, key, value);
-	}
-
-	public void setUpstreamDisposableMetadata(Map<String, String> upstreamDisposableMetadata) {
-		putFragmentContext(FRAGMENT_UPSTREAM_DISPOSABLE, Collections.unmodifiableMap(upstreamDisposableMetadata));
-	}
-
-	public void setTransHeadersKV(String key, String value) {
-		putContext(FRAGMENT_RAW_TRANSHEADERS_KV, key, value);
-	}
-
-	public void setTransHeaders(String key, String value) {
-		putContext(FRAGMENT_RAW_TRANSHEADERS, key, value);
 	}
 
 	public Map<String, String> getFragmentContext(String fragment) {
@@ -288,24 +303,6 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		}
 	}
 
-	public String getContext(String fragment, String key, String defaultValue) {
-		return getFragmentContext(fragment).getOrDefault(key, defaultValue);
-	}
-
-	public String getContext(String fragment, String key) {
-		Map<String, String> fragmentContext = getFragmentContext(fragment);
-		if (fragmentContext == null) {
-			return null;
-		}
-		return fragmentContext.get(key);
-	}
-
-	public void putContext(String fragment, String key, String value) {
-		Map<String, String> values = new HashMap<>();
-		values.put(key, value);
-		putFragmentContext(fragment, values);
-	}
-
 	public void putFragmentContext(String fragment, Map<String, String> context) {
 		switch (fragment) {
 		case FRAGMENT_TRANSITIVE:
@@ -313,6 +310,9 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 			break;
 		case FRAGMENT_DISPOSABLE:
 			putMetadataAsMap(MetadataType.CUSTOM, TransitiveType.DISPOSABLE, false, context);
+			break;
+		case FRAGMENT_NONE:
+			putMetadataAsMap(MetadataType.CUSTOM, TransitiveType.NONE, false, context);
 			break;
 		case FRAGMENT_UPSTREAM_DISPOSABLE:
 			putMetadataAsMap(MetadataType.CUSTOM, TransitiveType.DISPOSABLE, true, context);
@@ -338,9 +338,51 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		}
 	}
 
-	public void putFragmentContext(String fragment, String key, String value) {
-		Map<String, String> context = new HashMap<>(1);
-		context.put(key, value);
-		putFragmentContext(fragment, context);
+	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean caller) {
+		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
+		Map<String, String> values = new HashMap<>();
+		metadataContainer.iterateMetadataValues((s, metadataValue) -> {
+			if (metadataValue instanceof MetadataStringValue) {
+				MetadataStringValue metadataStringValue = (MetadataStringValue) metadataValue;
+				if (metadataStringValue.getTransitiveType() == transitiveType) {
+					values.put(s, metadataStringValue.getStringValue());
+				}
+			}
+		});
+		return values;
+	}
+
+	private Map<String, String> getMapMetadataAsMap(MetadataType metadataType, String mapKey, TransitiveType transitiveType, boolean caller) {
+		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
+		Map<String, String> values = new HashMap<>();
+		MetadataValue metadataValue = metadataContainer.getMetadataValue(mapKey);
+		if (!(metadataValue instanceof MetadataMapValue)) {
+			return values;
+		}
+		MetadataMapValue metadataMapValue = (MetadataMapValue) metadataValue;
+		metadataMapValue.iterateMapValues((s, metadataValue1) -> {
+			if (metadataValue1 instanceof MetadataStringValue) {
+				MetadataStringValue metadataStringValue = (MetadataStringValue) metadataValue1;
+				if (metadataStringValue.getTransitiveType() == transitiveType) {
+					values.put(s, metadataStringValue.getStringValue());
+				}
+			}
+		});
+		return values;
+	}
+
+	private void putMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean caller, Map<String, String> values) {
+		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
+		for (Map.Entry<String, String> entry : values.entrySet()) {
+			metadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), transitiveType);
+		}
+	}
+
+	private void putMapMetadataAsMap(MetadataType metadataType, String mapKey,
+			TransitiveType transitiveType, boolean caller, Map<String, String> values) {
+		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
+		for (Map.Entry<String, String> entry : values.entrySet()) {
+			metadataContainer.putMetadataMapValue(mapKey, entry.getKey(), entry.getValue(), transitiveType);
+		}
 	}
 }

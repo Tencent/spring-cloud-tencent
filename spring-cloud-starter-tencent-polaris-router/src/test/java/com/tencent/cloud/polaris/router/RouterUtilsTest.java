@@ -74,7 +74,7 @@ public class RouterUtilsTest {
 					.thenReturn(testNamespaceAndService);
 			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
 			mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
-			Mockito.when(metadataContext.getContext(anyString(), anyString(), anyString()))
+			Mockito.when(metadataContext.getContextWithDefault(anyString(), anyString(), anyString()))
 					.thenReturn(testNamespaceAndService);
 			Mockito.when(metadataContext.getContext(anyString(), anyString()))
 					.thenReturn(testNamespaceAndService);
