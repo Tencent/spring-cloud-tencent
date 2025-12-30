@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>spring-cloud-starter-tencent-mq-plugin</artifactId>
-	<name>Spring Cloud Starter Tencent Kafka Lane plugin</name>
+	<name>Spring Cloud Starter Tencent Message Queue plugin</name>
 
 
 	<dependencies>
