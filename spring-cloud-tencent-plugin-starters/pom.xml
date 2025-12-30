@@ -26,6 +26,7 @@
 		<module>spring-cloud-starter-tencent-traffic-mirroring-plugin</module>
 		<module>spring-cloud-starter-tencent-fault-injection-plugin</module>
 		<module>spring-cloud-starter-tencent-tsf-tls-plugin</module>
+		<module>spring-cloud-starter-tencent-mq-plugin</module>
 	</modules>
 
 </project>

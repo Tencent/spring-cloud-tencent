@@ -53,3 +53,4 @@
 - [feat: support traffic gray lane router](https://github.com/Tencent/spring-cloud-tencent/pull/1785)
 - [fix: fix NPE when application context is null #1787](https://github.com/Tencent/spring-cloud-tencent/pull/1787)
 - [fix: fix lane router property name.](https://github.com/Tencent/spring-cloud-tencent/pull/1789)
+- [feat: support kafka lane.](https://github.com/Tencent/spring-cloud-tencent/pull/1765)
