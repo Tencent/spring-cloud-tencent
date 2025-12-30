@@ -101,6 +101,7 @@ public class ServiceInstanceChangeCallbackManager implements ApplicationListener
 		if (clz.isAnnotationPresent(ServiceInstanceChangeListener.class)) {
 			ServiceInstanceChangeListener serviceInstanceChangeListener = clz.getAnnotation(ServiceInstanceChangeListener.class);
 			serviceName = serviceInstanceChangeListener.serviceName();
+			serviceName = ApplicationContextAwareUtils.getApplicationContext().getEnvironment().resolvePlaceholders(serviceName);
 		}
 
 		if (StringUtils.isBlank(serviceName)) {
