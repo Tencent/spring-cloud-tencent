@@ -167,7 +167,34 @@ public class KafkaLaneAspectTest {
 		kafkaLaneAspect.aroundProducerMessage(pjp);
 
 		// Then
-		Iterator<Header> headers = producerRecord.headers().headers("tsf_laneId").iterator();
+		Iterator<Header> headers = producerRecord.headers().headers("X-Polaris-Metadata-Transitive-service-lane").iterator();
+		assertThat(headers.hasNext()).isTrue();
+		Header laneHeader = headers.next();
+		assertThat(new String(laneHeader.value(), StandardCharsets.UTF_8)).isEqualTo(laneId);
+	}
+
+	@Test
+	public void testProducerAspectWithProducerRecord2() throws Throwable {
+
+
+		// Given
+		kafkaLaneProperties.setLaneOn(true);
+		String laneId = "test-lane-id";
+		laneUtilsMockedStatic.when(() -> LaneUtils.fetchLaneByCaller(any(), any(), any())).thenReturn(laneId);
+
+		ProceedingJoinPoint pjp = mock(ProceedingJoinPoint.class);
+		KafkaTemplate kafkaTemplate = mock(KafkaTemplate.class);
+		ProducerRecord producerRecord = new ProducerRecord<>("test-topic", "test-value");
+
+		when(pjp.getTarget()).thenReturn(kafkaTemplate);
+		when(pjp.getArgs()).thenReturn(new Object[] {producerRecord});
+		when(kafkaTemplate.send(producerRecord)).thenReturn(null);
+
+		// When
+		kafkaLaneAspect.aroundProducerMessage(pjp);
+
+		// Then
+		Iterator<Header> headers = producerRecord.headers().headers("X-Polaris-Metadata-Transitive-service-lane").iterator();
 		assertThat(headers.hasNext()).isTrue();
 		Header laneHeader = headers.next();
 		assertThat(new String(laneHeader.value(), StandardCharsets.UTF_8)).isEqualTo(laneId);
@@ -220,7 +247,7 @@ public class KafkaLaneAspectTest {
 		String laneId = "test-lane-id";
 
 		ConsumerRecord consumerRecord = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value");
-		consumerRecord.headers().add("tsf_laneId", laneId.getBytes(StandardCharsets.UTF_8));
+		consumerRecord.headers().add("X-Polaris-Metadata-Transitive-service-lane", laneId.getBytes(StandardCharsets.UTF_8));
 
 		ProceedingJoinPoint pjp = mock(ProceedingJoinPoint.class);
 		Object[] args = new Object[] {consumerRecord};
@@ -239,7 +266,7 @@ public class KafkaLaneAspectTest {
 		// Given
 		ConsumerRecord consumerRecord = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value");
 		String expectedLaneId = "test-lane-id";
-		consumerRecord.headers().add("tsf_laneId", expectedLaneId.getBytes(StandardCharsets.UTF_8));
+		consumerRecord.headers().add("X-Polaris-Metadata-Transitive-service-lane", expectedLaneId.getBytes(StandardCharsets.UTF_8));
 
 		// When
 		String laneId = kafkaLaneAspect.getConsumerRecordLaneId(consumerRecord);
@@ -305,9 +332,9 @@ public class KafkaLaneAspectTest {
 
 		List<ConsumerRecord> messageList = new ArrayList<>();
 		ConsumerRecord record1 = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value1");
-		record1.headers().add("tsf_laneId", "lane1".getBytes(StandardCharsets.UTF_8));
+		record1.headers().add("X-Polaris-Metadata-Transitive-service-lane", "lane1".getBytes(StandardCharsets.UTF_8));
 		ConsumerRecord record2 = new ConsumerRecord<>("test-topic", 0, 1L, "key", "value2");
-		record2.headers().add("tsf_laneId", "lane2".getBytes(StandardCharsets.UTF_8));
+		record2.headers().add("X-Polaris-Metadata-Transitive-service-lane", "lane2".getBytes(StandardCharsets.UTF_8));
 
 		messageList.add(record1);
 		messageList.add(record2);
