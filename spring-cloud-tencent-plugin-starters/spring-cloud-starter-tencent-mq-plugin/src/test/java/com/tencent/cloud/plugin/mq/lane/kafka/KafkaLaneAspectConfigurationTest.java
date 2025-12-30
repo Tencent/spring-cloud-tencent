@@ -15,13 +15,13 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.lane.kafka;
+package com.tencent.cloud.plugin.mq.lane.kafka;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.tsf.TsfContextUtils;
-import com.tencent.cloud.plugin.lane.tsf.TsfActiveLane;
+import com.tencent.cloud.plugin.mq.lane.tsf.TsfActiveLane;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import org.junit.jupiter.api.AfterEach;

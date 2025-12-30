@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.lane.kafka;
+package com.tencent.cloud.plugin.mq.lane.kafka;
 
 import org.junit.jupiter.api.Test;
 

@@ -15,18 +15,17 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.lane.kafka;
+package com.tencent.cloud.plugin.mq.lane.kafka;
 
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.tsf.TsfContextUtils;
-import com.tencent.cloud.plugin.lane.tsf.TsfActiveLane;
+import com.tencent.cloud.plugin.mq.lane.tsf.TsfActiveLane;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.plugins.router.lane.LaneUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -52,9 +51,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link KafkaLaneAspect}, with only tsf consul enabled.
+ * Test for {@link KafkaLaneAspect}.
  */
-public class TsfKafkaLaneAspectTest {
+public class KafkaLaneAspectTest {
 
 	private KafkaLaneAspect kafkaLaneAspect;
 	private PolarisSDKContextManager polarisSDKContextManager;
@@ -71,7 +70,6 @@ public class TsfKafkaLaneAspectTest {
 
 		laneUtilsMockedStatic = Mockito.mockStatic(LaneUtils.class);
 		tsfContextUtilsMockedStatic = Mockito.mockStatic(TsfContextUtils.class);
-		tsfContextUtilsMockedStatic.when(TsfContextUtils::isOnlyTsfConsulEnabled).thenReturn(true);
 
 		kafkaLaneAspect = new KafkaLaneAspect(polarisSDKContextManager, kafkaLaneProperties, tsfActiveLane);
 	}
@@ -168,7 +166,7 @@ public class TsfKafkaLaneAspectTest {
 		kafkaLaneAspect.aroundProducerMessage(pjp);
 
 		// Then
-		Iterator<Header> headers = producerRecord.headers().headers("tsf_laneId").iterator();
+		Iterator<Header> headers = producerRecord.headers().headers("X-Polaris-Metadata-Transitive-service-lane").iterator();
 		assertThat(headers.hasNext()).isTrue();
 		Header laneHeader = headers.next();
 		assertThat(new String(laneHeader.value(), StandardCharsets.UTF_8)).isEqualTo(laneId);
@@ -219,10 +217,9 @@ public class TsfKafkaLaneAspectTest {
 		// Given
 		kafkaLaneProperties.setLaneOn(true);
 		String laneId = "test-lane-id";
-		when(tsfActiveLane.isLaneExist(laneId)).thenReturn(true);
 
 		ConsumerRecord consumerRecord = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value");
-		consumerRecord.headers().add("tsf_laneId", laneId.getBytes(StandardCharsets.UTF_8));
+		consumerRecord.headers().add("X-Polaris-Metadata-Transitive-service-lane", laneId.getBytes(StandardCharsets.UTF_8));
 
 		ProceedingJoinPoint pjp = mock(ProceedingJoinPoint.class);
 		Object[] args = new Object[] {consumerRecord};
@@ -241,7 +238,7 @@ public class TsfKafkaLaneAspectTest {
 		// Given
 		ConsumerRecord consumerRecord = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value");
 		String expectedLaneId = "test-lane-id";
-		consumerRecord.headers().add("tsf_laneId", expectedLaneId.getBytes(StandardCharsets.UTF_8));
+		consumerRecord.headers().add("X-Polaris-Metadata-Transitive-service-lane", expectedLaneId.getBytes(StandardCharsets.UTF_8));
 
 		// When
 		String laneId = kafkaLaneAspect.getConsumerRecordLaneId(consumerRecord);
@@ -287,28 +284,15 @@ public class TsfKafkaLaneAspectTest {
 	}
 
 	@Test
-	public void testIfConsumeInTsfWithNoLaneId() {
-		// Given
-		kafkaLaneProperties.setLaneConsumeMain(true);
-		when(tsfActiveLane.getCurrentGroupLaneIds()).thenReturn(Collections.emptySet());
-
-		// When
-		boolean shouldConsume = kafkaLaneAspect.ifConsume("");
-
-		// Then
-		assertThat(shouldConsume).isTrue(); // Because laneConsumeMain is true
-	}
-
-	@Test
 	public void testConsumerAspectWithBatchMessages() throws Throwable {
 		// Given
 		kafkaLaneProperties.setLaneOn(true);
 
 		List<ConsumerRecord> messageList = new ArrayList<>();
 		ConsumerRecord record1 = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value1");
-		record1.headers().add("tsf_laneId", "lane1".getBytes(StandardCharsets.UTF_8));
+		record1.headers().add("X-Polaris-Metadata-Transitive-service-lane", "lane1".getBytes(StandardCharsets.UTF_8));
 		ConsumerRecord record2 = new ConsumerRecord<>("test-topic", 0, 1L, "key", "value2");
-		record2.headers().add("tsf_laneId", "lane2".getBytes(StandardCharsets.UTF_8));
+		record2.headers().add("X-Polaris-Metadata-Transitive-service-lane", "lane2".getBytes(StandardCharsets.UTF_8));
 
 		messageList.add(record1);
 		messageList.add(record2);

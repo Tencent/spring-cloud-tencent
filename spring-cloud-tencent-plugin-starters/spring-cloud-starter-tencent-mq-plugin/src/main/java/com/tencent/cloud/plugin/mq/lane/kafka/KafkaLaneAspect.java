@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.lane.kafka;
+package com.tencent.cloud.plugin.mq.lane.kafka;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.Set;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.tsf.TsfContextUtils;
-import com.tencent.cloud.plugin.lane.tsf.TsfActiveLane;
+import com.tencent.cloud.plugin.mq.lane.tsf.TsfActiveLane;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.utils.StringUtils;

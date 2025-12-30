@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.tencent.cloud.plugin.lane.kafka.KafkaLaneAspectConfiguration
+  com.tencent.cloud.plugin.mq.lane.kafka.KafkaLaneAspectConfiguration
