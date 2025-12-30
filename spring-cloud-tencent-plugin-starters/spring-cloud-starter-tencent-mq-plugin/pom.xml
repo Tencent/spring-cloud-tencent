@@ -10,7 +10,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>spring-cloud-starter-tencent-message-queue-plugin</artifactId>
+	<artifactId>spring-cloud-starter-tencent-mq-plugin</artifactId>
 	<name>Spring Cloud Starter Tencent Kafka Lane plugin</name>
 
 
@@ -27,6 +27,10 @@
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
