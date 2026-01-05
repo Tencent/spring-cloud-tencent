@@ -90,11 +90,17 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 	}
 
 	public static <T> T getBeanIfExists(Class<T> requiredType) {
+		return getBeanIfExists(requiredType, false);
+	}
+
+	public static <T> T getBeanIfExists(Class<T> requiredType, boolean warnIfNotFailed) {
 		try {
 			return applicationContext.getBean(requiredType);
 		}
 		catch (Throwable e) {
-			LOGGER.warn("get bean failed, bean type: {}", requiredType.getName());
+			if (warnIfNotFailed) {
+				LOGGER.warn("get bean failed, bean type: {}", requiredType.getName());
+			}
 			return null;
 		}
 	}

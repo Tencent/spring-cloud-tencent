@@ -140,8 +140,8 @@ public class ServiceInstanceChangeCallbackManager implements ApplicationListener
 
 	@Override
 	public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
-		PolarisDiscoveryClient polarisDiscoveryClient = ApplicationContextAwareUtils.getBeanIfExists(PolarisDiscoveryClient.class);
-		PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient = ApplicationContextAwareUtils.getBeanIfExists(PolarisReactiveDiscoveryClient.class);
+		PolarisDiscoveryClient polarisDiscoveryClient = ApplicationContextAwareUtils.getBeanIfExists(PolarisDiscoveryClient.class, false);
+		PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient = ApplicationContextAwareUtils.getBeanIfExists(PolarisReactiveDiscoveryClient.class, false);
 		for (String serviceName : callbackMap.keySet()) {
 			try {
 				if (polarisDiscoveryClient != null) {
