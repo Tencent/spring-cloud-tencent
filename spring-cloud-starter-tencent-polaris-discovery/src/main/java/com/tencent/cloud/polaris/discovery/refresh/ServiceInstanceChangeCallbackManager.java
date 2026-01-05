@@ -35,6 +35,7 @@ import reactor.util.annotation.NonNull;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -50,7 +51,10 @@ public class ServiceInstanceChangeCallbackManager implements ApplicationListener
 
 	private final ScheduledThreadPoolExecutor serviceChangeListenerExecutor;
 
-	public ServiceInstanceChangeCallbackManager() {
+	private final Environment environment;
+
+	public ServiceInstanceChangeCallbackManager(Environment environment) {
+		this.environment = environment;
 		this.serviceChangeListenerExecutor = new ScheduledThreadPoolExecutor(4, new NamedThreadFactory("service-change-listener"));
 	}
 
@@ -101,7 +105,7 @@ public class ServiceInstanceChangeCallbackManager implements ApplicationListener
 		if (clz.isAnnotationPresent(ServiceInstanceChangeListener.class)) {
 			ServiceInstanceChangeListener serviceInstanceChangeListener = clz.getAnnotation(ServiceInstanceChangeListener.class);
 			serviceName = serviceInstanceChangeListener.serviceName();
-			serviceName = ApplicationContextAwareUtils.getApplicationContext().getEnvironment().resolvePlaceholders(serviceName);
+			serviceName = environment.resolvePlaceholders(serviceName);
 		}
 
 		if (StringUtils.isBlank(serviceName)) {
