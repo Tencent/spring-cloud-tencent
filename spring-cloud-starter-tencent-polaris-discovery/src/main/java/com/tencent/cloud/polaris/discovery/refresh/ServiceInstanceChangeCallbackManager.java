@@ -105,7 +105,19 @@ public class ServiceInstanceChangeCallbackManager implements ApplicationListener
 		if (clz.isAnnotationPresent(ServiceInstanceChangeListener.class)) {
 			ServiceInstanceChangeListener serviceInstanceChangeListener = clz.getAnnotation(ServiceInstanceChangeListener.class);
 			serviceName = serviceInstanceChangeListener.serviceName();
-			serviceName = environment.resolvePlaceholders(serviceName);
+			String message = null;
+			try {
+				serviceName = environment.resolveRequiredPlaceholders(serviceName);
+			}
+			catch (Exception e) {
+				// resolve failed, reset service name.
+				message = e.getMessage();
+				serviceName = null;
+			}
+			if (StringUtils.isBlank(serviceName)) {
+				LOG.warn("resolve service name failed, bean name:{}, config service name:{}, message:{}",
+						beanName, serviceInstanceChangeListener.serviceName(), message);
+			}
 		}
 
 		if (StringUtils.isBlank(serviceName)) {

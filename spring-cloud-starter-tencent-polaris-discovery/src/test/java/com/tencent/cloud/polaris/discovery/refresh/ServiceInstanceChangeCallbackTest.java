@@ -63,6 +63,8 @@ public class ServiceInstanceChangeCallbackTest {
 			// Verify
 			assertThat(callbackMap.containsKey("java_provider_test")).isTrue();
 			assertThat(callbackMap.containsKey("QuickstartCalleeService")).isTrue();
+			// ignore error and empty
+			assertThat(callbackMap.size()).isEqualTo(2);
 
 		}
 		catch (Exception e) {
@@ -84,6 +86,21 @@ public class ServiceInstanceChangeCallbackTest {
 		}
 
 		@Bean
+		public ErrorServiceChangeCallback errorServiceChangeCallback() {
+			return new ErrorServiceChangeCallback();
+		}
+
+		@Bean
+		public EmptyServiceChangeCallback emptyServiceChangeCallback() {
+			return new EmptyServiceChangeCallback();
+		}
+
+		@Bean
+		public ParsingEmptyServiceChangeCallback parseEmptyServiceChangeCallback() {
+			return new ParsingEmptyServiceChangeCallback();
+		}
+
+		@Bean
 		public TestBeanPostProcessor testBeanPostProcessor() {
 			return new TestBeanPostProcessor();
 		}
@@ -92,6 +109,33 @@ public class ServiceInstanceChangeCallbackTest {
 
 	@ServiceInstanceChangeListener(serviceName = "${spring.application.name}")
 	static class SelfServiceChangeCallback implements ServiceInstanceChangeCallback {
+
+		@Override
+		public void callback(List<Instance> currentServiceInstances, List<Instance> addServiceInstances, List<Instance> deleteServiceInstances) {
+
+		}
+	}
+
+	@ServiceInstanceChangeListener(serviceName = "${error.name}")
+	static class ErrorServiceChangeCallback implements ServiceInstanceChangeCallback {
+
+		@Override
+		public void callback(List<Instance> currentServiceInstances, List<Instance> addServiceInstances, List<Instance> deleteServiceInstances) {
+
+		}
+	}
+
+	@ServiceInstanceChangeListener(serviceName = "${test.empty}")
+	static class ParsingEmptyServiceChangeCallback implements ServiceInstanceChangeCallback {
+
+		@Override
+		public void callback(List<Instance> currentServiceInstances, List<Instance> addServiceInstances, List<Instance> deleteServiceInstances) {
+
+		}
+	}
+
+	@ServiceInstanceChangeListener(serviceName = "")
+	static class EmptyServiceChangeCallback implements ServiceInstanceChangeCallback {
 
 		@Override
 		public void callback(List<Instance> currentServiceInstances, List<Instance> addServiceInstances, List<Instance> deleteServiceInstances) {
