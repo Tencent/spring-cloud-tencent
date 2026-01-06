@@ -82,6 +82,9 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 		if (StringUtils.isBlank(property)) {
 			property = System.getenv(key);
 		}
+		if (StringUtils.isBlank(property)) {
+			property = defaultValue;
+		}
 		return property;
 	}
 
