@@ -32,3 +32,5 @@ spring:
         username: nacos
         password: nacos
         cluster-name: polaris
+test:
+  empty:
