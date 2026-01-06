@@ -81,7 +81,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 			metadataContext = MetadataContextHolder.get();
 		}
 
-		String governanceNamespace = metadataContext.getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+		String governanceNamespace = metadataContext.getContextWithDefault(MetadataContext.FRAGMENT_APPLICATION_NONE,
 				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
 
 

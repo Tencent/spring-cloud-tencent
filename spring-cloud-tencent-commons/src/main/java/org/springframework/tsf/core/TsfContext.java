@@ -24,10 +24,13 @@ import java.util.Map;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.TransitiveType;
 
 import org.springframework.tsf.core.entity.Tag;
+
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_DISPOSABLE;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_NONE;
+import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_TRANSITIVE;
 
 public final class TsfContext {
 
@@ -56,7 +59,12 @@ public final class TsfContext {
 		for (Map.Entry<String, String> entry : tagMap.entrySet()) {
 			validateTag(entry.getKey(), entry.getValue());
 		}
-		tsfCoreContext.putMetadataAsMap(MetadataType.CUSTOM, transitive, false, tagMap);
+		if (transitive == TransitiveType.PASS_THROUGH) {
+			tsfCoreContext.putFragmentContext(FRAGMENT_TRANSITIVE, tagMap);
+		}
+		else {
+			tsfCoreContext.putFragmentContext(FRAGMENT_DISPOSABLE, tagMap);
+		}
 	}
 
 	public static void putTag(String key, String value, Tag.ControlFlag... flags) {
@@ -89,6 +97,6 @@ public final class TsfContext {
 		catch (Throwable throwable) {
 			throw new RuntimeException("Failed to parse custom metadata", throwable);
 		}
-		tsfCoreContext.putMetadataAsMap(MetadataType.CUSTOM, TransitiveType.NONE, false, tagMap);
+		tsfCoreContext.putFragmentContext(FRAGMENT_NONE, tagMap);
 	}
 }

@@ -82,7 +82,7 @@ public class EncodeTransferMedataScgEnhancedPlugin implements EnhancedPlugin {
 
 		contextToHeaderInterceptorList.forEach(ContextToHeaderInterceptor::beforeContextToHeader);
 
-		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
+		Map<String, String> customMetadata = metadataContext.getTransitiveMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
 

@@ -288,7 +288,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			// priority: namespace id(tsf) > namespace name(polaris)
 			String routeNamespace = StringUtils.isBlank(contextRoute.getNamespaceId()) ?
 					contextRoute.getNamespace() : contextRoute.getNamespaceId();
-			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+			metadataContext.putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 					MetadataConstant.POLARIS_TARGET_NAMESPACE, routeNamespace);
 		}
 		URI requestUri = URI.create("lb://" + contextRoute.getService() + apis[1]);
@@ -348,7 +348,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		if (metadataContext != null) {
 			// get unit ns
 			String routeNamespace = TencentUnitContext.getSystemTag(TencentUnitContext.CLOUD_SPACE_TARGET_NAMESPACE_ID);
-			metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+			metadataContext.putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 					MetadataConstant.POLARIS_TARGET_NAMESPACE, routeNamespace);
 		}
 		URI requestUri = URI.create("lb://" + contextRoute.getService() + apis[1]);

@@ -13,3 +13,4 @@
 - [fix: beautify ServicesEagerLoadSmartLifecycle logging.](https://github.com/Tencent/spring-cloud-tencent/pull/1774)
 - [feat: support kafka lane.](https://github.com/Tencent/spring-cloud-tencent/pull/1765)
 - [fix: ApplicationContextAwareUtils may not be ready in postProcessAfterInitialization.](https://github.com/Tencent/spring-cloud-tencent/pull/1779)
+- [refactor:optimize metadata context operation.](https://github.com/Tencent/spring-cloud-tencent/pull/1773)

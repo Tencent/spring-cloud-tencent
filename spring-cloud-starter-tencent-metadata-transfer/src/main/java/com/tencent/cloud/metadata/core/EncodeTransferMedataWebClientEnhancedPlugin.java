@@ -72,7 +72,7 @@ public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlug
 		ClientRequest clientRequest = (ClientRequest) context.getOriginRequest();
 
 		MetadataContext metadataContext = MetadataContextHolder.get();
-		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
+		Map<String, String> customMetadata = metadataContext.getTransitiveMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
