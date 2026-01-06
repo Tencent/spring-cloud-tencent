@@ -54,3 +54,4 @@
 - [fix: fix NPE when application context is null #1787](https://github.com/Tencent/spring-cloud-tencent/pull/1787)
 - [fix: fix lane router property name.](https://github.com/Tencent/spring-cloud-tencent/pull/1789)
 - [feat: support kafka lane.](https://github.com/Tencent/spring-cloud-tencent/pull/1765)
+- [fix: ApplicationContextAwareUtils may not be ready in postProcessAfterInitialization.](https://github.com/Tencent/spring-cloud-tencent/pull/1779)
