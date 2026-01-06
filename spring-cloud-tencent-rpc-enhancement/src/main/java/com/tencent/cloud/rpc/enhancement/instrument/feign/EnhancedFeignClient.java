@@ -80,7 +80,8 @@ public class EnhancedFeignClient implements Client {
 
 		URI serviceUrl = url.resolve(request.requestTemplate().url());
 
-		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+		String governanceNamespace = MetadataContextHolder.get()
+				.getContextWithDefault(MetadataContext.FRAGMENT_APPLICATION_NONE,
 				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()

@@ -63,13 +63,13 @@ public class UnitPolarisDiscoveryClient extends PolarisDiscoveryClient {
 				String namespace = TencentUnitContext.getStringRouteTag(TencentUnitContext.CLOUD_SPACE_ROUTE_TARGET_NAMESPACE_ID);
 
 				MetadataContext metadataContext = MetadataContextHolder.get();
-				metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				metadataContext.putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 						MetadataConstant.POLARIS_TARGET_NAMESPACE, namespace);
 				return delegate.getInstances(service);
 			}
 			else {
 				MetadataContext metadataContext = MetadataContextHolder.get();
-				metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				metadataContext.putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 						MetadataConstant.POLARIS_TARGET_NAMESPACE, parts[0]);
 
 				return delegate.getInstances(parts[1]);

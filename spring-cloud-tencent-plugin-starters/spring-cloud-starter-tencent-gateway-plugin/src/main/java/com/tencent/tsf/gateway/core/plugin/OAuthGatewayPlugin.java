@@ -184,7 +184,7 @@ public class OAuthGatewayPlugin implements IGatewayPlugin<OAuthPlugin> {
 			serviceName = parts[1];
 		}
 		try {
-			MetadataContextHolder.get().putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+			MetadataContextHolder.get().putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 					MetadataConstant.POLARIS_TARGET_NAMESPACE, namespace);
 			ReactorLoadBalancer<ServiceInstance> loadBalancer = this.clientFactory.getInstance(serviceName,
 					ReactorServiceInstanceLoadBalancer.class);
@@ -219,7 +219,7 @@ public class OAuthGatewayPlugin implements IGatewayPlugin<OAuthPlugin> {
 		}
 		finally {
 			// restore context
-			MetadataContextHolder.get().putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+			MetadataContextHolder.get().putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 					MetadataConstant.POLARIS_TARGET_NAMESPACE, backupNamespace);
 		}
 	}

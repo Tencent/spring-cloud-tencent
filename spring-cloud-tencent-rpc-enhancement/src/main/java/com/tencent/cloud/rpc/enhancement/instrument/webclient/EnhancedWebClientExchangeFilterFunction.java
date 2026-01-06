@@ -60,8 +60,8 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 	public Mono<ClientResponse> filter(ClientRequest originRequest, ExchangeFunction next) {
 		EnhancedPluginContext enhancedPluginContext = EnhancedPluginUtils.createEnhancedPluginContext();
 
-		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
-				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
+		String governanceNamespace = MetadataContextHolder.get()
+				.getContextWithDefault(MetadataContext.FRAGMENT_APPLICATION_NONE, MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
 				.httpHeaders(originRequest.headers())
