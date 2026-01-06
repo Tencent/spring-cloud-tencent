@@ -74,7 +74,7 @@ public final class RouterUtils {
 			serviceMetadata = instanceList.get(0).getServiceMetadata();
 		}
 
-		String namespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+		String namespace = MetadataContextHolder.get().getContextWithDefault(MetadataContext.FRAGMENT_APPLICATION_NONE,
 				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
 
 		ServiceKey serviceKey = new ServiceKey(namespace, serviceName);

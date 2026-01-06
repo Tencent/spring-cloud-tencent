@@ -257,7 +257,7 @@ public class ContextGatewayPropertiesManager {
 		String service = contextRoute.getService();
 		if (StringUtils.isNotEmpty(namespace) && StringUtils.isNotEmpty(service)) {
 			logger.info("[{},{}] eager-load start", namespace, service);
-			MetadataContextHolder.get().putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+			MetadataContextHolder.get().putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 					MetadataConstant.POLARIS_TARGET_NAMESPACE, namespace);
 
 			if (polarisDiscoveryClient != null) {

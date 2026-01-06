@@ -76,7 +76,7 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 
 		// get metadata of current thread
 		MetadataContext metadataContext = MetadataContextHolder.get();
-		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
+		Map<String, String> customMetadata = metadataContext.getTransitiveMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
 		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();

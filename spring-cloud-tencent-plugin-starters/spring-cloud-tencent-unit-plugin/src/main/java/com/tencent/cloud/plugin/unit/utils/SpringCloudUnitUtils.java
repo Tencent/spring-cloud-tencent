@@ -461,7 +461,7 @@ public final class SpringCloudUnitUtils {
 				setUnitContext(unitId, namespace, serviceName);
 				// 设置治理 ns
 				MetadataContext metadataContext = MetadataContextHolder.get();
-				metadataContext.putFragmentContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+				metadataContext.putContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
 						MetadataConstant.POLARIS_TARGET_NAMESPACE, namespace.getId());
 				return true;
 			}

@@ -77,7 +77,8 @@ public class EnhancedRestTemplateBlockingLoadBalancerClientInterceptor {
 			serviceUrl = ((ServiceRequestWrapper) httpRequest).getRequest().getURI();
 		}
 
-		String governanceNamespace = MetadataContextHolder.get().getContext(MetadataContext.FRAGMENT_APPLICATION_NONE,
+		String governanceNamespace = MetadataContextHolder.get()
+				.getContextWithDefault(MetadataContext.FRAGMENT_APPLICATION_NONE,
 				MetadataConstant.POLARIS_TARGET_NAMESPACE, MetadataContext.LOCAL_NAMESPACE);
 
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
