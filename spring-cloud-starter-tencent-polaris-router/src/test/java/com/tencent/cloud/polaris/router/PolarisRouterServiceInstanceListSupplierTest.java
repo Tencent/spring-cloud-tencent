@@ -48,6 +48,7 @@ import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.TransitiveType;
+import com.tencent.polaris.metadata.core.manager.MetadataContainerGroup;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouter;
 import com.tencent.polaris.plugins.router.rule.RuleBasedRouter;
@@ -62,6 +63,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.DefaultRequest;
@@ -128,7 +130,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
 
-			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
+			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext, MetadataContextHolder.get());
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
 			String result = metadataContainer.getRawMetadataMapValue(MetadataRouter.ROUTER_TYPE_METADATA, MetadataRouter.KEY_METADATA_KEYS);
@@ -152,7 +154,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
 
-			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
+			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext, MetadataContextHolder.get());
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
 			MetadataContainer metadataContainer = MetadataContextHolder.get()
@@ -178,7 +180,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
 
-			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
+			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext, MetadataContextHolder.get());
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
 			MetadataContainer metadataContainer = MetadataContextHolder.get()
@@ -246,9 +248,8 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 					.thenReturn(testCallerService);
 			MetadataContextHolder.set(new MetadataContext());
-			mockedApplicationContextAwareUtils.when(() -> delegate.get())
-					.thenReturn(assembleServers());
-			mockedApplicationContextAwareUtils.when(() -> routerAPI.processRouters(any()))
+			when(delegate.get()).thenReturn(assembleServers());
+			when(routerAPI.processRouters(any()))
 					.thenReturn(new ProcessRoutersResponse(new DefaultServiceInstances(null, new ArrayList<>())));
 
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
@@ -260,8 +261,90 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 					.build();
 			RequestDataContext requestDataContext = new RequestDataContext(new RequestData(httpRequest), "blue");
 			DefaultRequest request = new DefaultRequest(requestDataContext);
-			assertThat(polarisSupplier.get(request)).isNotNull();
+			List<ServiceInstance> instances = polarisSupplier.get(request).blockFirst();
+			assertThat(instances).isNotNull();
 		}
+	}
+
+	@Test
+	public void testConcurrencyContext() {
+		// 1. Setup
+		int concurrency = 100;
+
+		// Mock delegate to return servers on a different thread to simulate async behavior
+		// Force thread switching to verify if ThreadLocal is correctly captured and propagated
+		when(delegate.get()).thenAnswer(inv ->
+				assembleServers().publishOn(Schedulers.newSingle("delegate-thread"))
+		);
+
+		// Mock RouterAPI
+		// Verification logic: Extract ID from request and put it into response for subsequent verification
+		when(routerAPI.processRouters(any())).thenAnswer(invocation -> {
+			ProcessRoutersRequest req = invocation.getArgument(0);
+			MetadataContainerGroup group = req.getMetadataContainerGroup();
+			MetadataContainer container = group.getCustomMetadataContainer();
+
+			// Get ID from request context
+			String reqId = container.getRawMetadataStringValue("req-id");
+
+			// Put ID into returned service instance Metadata
+			DefaultInstance instance = new DefaultInstance();
+			instance.setMetadata(Collections.singletonMap("req-id", reqId));
+			List<Instance> instances = new ArrayList<>();
+			instances.add(instance);
+			ServiceInstances serviceInstances = new DefaultServiceInstances(new ServiceKey(testNamespace, testCalleeService), instances);
+
+			return new ProcessRoutersResponse(serviceInstances);
+		});
+
+		// Use empty interceptor list to avoid complex Mock
+		PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
+				delegate, routerAPI, Collections.emptyList(), null, new PolarisInstanceTransformer());
+
+		// 2. Execute Concurrently
+		List<String> results = Flux.range(0, concurrency)
+				.parallel()
+				.runOn(Schedulers.parallel())
+				.flatMap(i -> {
+					String reqId = "id-" + i;
+					// Setup ThreadLocal: Set unique Context for each request
+					MetadataContext context = new MetadataContext();
+					context.getMetadataContainer(MetadataType.CUSTOM, false)
+							.putMetadataStringValue("req-id", reqId, TransitiveType.NONE);
+					MetadataContextHolder.set(context);
+
+					// Build Request
+					MockServerHttpRequest httpRequest = MockServerHttpRequest.get("/" + testCalleeService + "/users")
+							.build();
+					RequestDataContext requestDataContext = new RequestDataContext(new RequestData(httpRequest));
+					DefaultRequest request = new DefaultRequest(requestDataContext);
+
+					// Call & Verify
+					return polarisSupplier.get(request)
+							.map(instances -> {
+								if (instances.isEmpty()) {
+									return "empty";
+								}
+								ServiceInstance instance = instances.get(0);
+								String returnedId = instance.getMetadata().get("req-id");
+								// Verify if returned ID matches current request ID
+								if (reqId.equals(returnedId)) {
+									return "ok";
+								}
+								else {
+									return "error: expected " + reqId + " but got " + returnedId;
+								}
+							})
+							// Clear ThreadLocal
+							.doFinally(signal -> MetadataContextHolder.remove());
+				})
+				.sequential()
+				.collectList()
+				.block();
+
+		// 3. Verify All
+		assertThat(results).hasSize(concurrency);
+		assertThat(results).allMatch(s -> s.equals("ok"));
 	}
 
 	private void setTransitiveMetadata() {

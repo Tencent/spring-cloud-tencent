@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
@@ -46,7 +45,7 @@ public class MetadataRouterRequestInterceptor implements RouterRequestIntercepto
 			return;
 		}
 		// set metadata router label keys
-		MetadataContainer metadataContainer = MetadataContextHolder.get()
+		MetadataContainer metadataContainer = request.getMetadataContext()
 				.getMetadataContainer(MetadataType.CUSTOM, false);
 		String metadataRouteKeys = metadataContainer.getRawMetadataStringValue(LABEL_KEY_METADATA_ROUTER_KEYS);
 		metadataContainer.putMetadataMapValue(MetadataRouter.ROUTER_TYPE_METADATA, MetadataRouter.KEY_METADATA_KEYS, metadataRouteKeys, TransitiveType.NONE);

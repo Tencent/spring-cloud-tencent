@@ -20,12 +20,10 @@ package com.tencent.cloud.polaris.router;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
@@ -40,6 +38,7 @@ import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInfo;
 import com.tencent.polaris.api.pojo.ServiceInstances;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.router.api.core.RouterAPI;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersResponse;
@@ -52,7 +51,6 @@ import org.springframework.cloud.client.loadbalancer.RequestDataContext;
 import org.springframework.cloud.loadbalancer.core.DelegatingServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import org.springframework.http.HttpHeaders;
-import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
@@ -113,62 +111,64 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 	}
 
 	PolarisRouterContext buildRouterContext(HttpHeaders headers) {
-		Collection<String> labelHeaderValues = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
-		if (CollectionUtils.isEmpty(labelHeaderValues)) {
-			labelHeaderValues = new ArrayList<>();
-		}
-		PolarisRouterContext routerContext = new PolarisRouterContext();
-
+		List<String> labelHeaderValues = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
-		try {
-			Optional<String> labelHeaderValuesOptional = labelHeaderValues.stream().findFirst();
-			if (labelHeaderValuesOptional.isPresent()) {
-				String labelHeaderValuesContent = labelHeaderValuesOptional.get();
-				labelHeaderValuesMap.putAll(
-						JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, UTF_8)));
+
+		if (!CollectionUtils.isEmpty(labelHeaderValues)) {
+			try {
+				String labelHeaderValuesContent = labelHeaderValues.get(0);
+				Map<String, String> map = JacksonUtils.deserialize2Map(URLDecoder.decode(labelHeaderValuesContent, UTF_8));
+				labelHeaderValuesMap.putAll(map);
+			}
+			catch (UnsupportedEncodingException e) {
+				throw new RuntimeException("unsupported charset exception " + UTF_8);
 			}
 		}
-		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("unsupported charset exception " + UTF_8);
-		}
+
+		PolarisRouterContext routerContext = new PolarisRouterContext();
 		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labelHeaderValuesMap);
 		return routerContext;
 	}
 
 	Flux<List<ServiceInstance>> doRouter(Flux<List<ServiceInstance>> allServers, PolarisRouterContext routerContext) {
-		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(allServers, instanceTransformer);
+		MetadataContext metadataContext = MetadataContextHolder.get();
+		return RouterUtils.transferServersToServiceInstances(allServers, instanceTransformer)
+				.flatMapMany(serviceInstances -> {
+					List<ServiceInstance> filteredInstances = new ArrayList<>();
+					if (CollectionUtils.isNotEmpty(serviceInstances.getInstances())) {
+						// filter instance by routers
+						ProcessRoutersRequest processRoutersRequest = buildProcessRoutersRequest(
+								serviceInstances, routerContext, metadataContext);
 
-		List<ServiceInstance> filteredInstances = new ArrayList<>();
-		if (serviceInstances.getInstances().size() > 0) {
-			// filter instance by routers
-			ProcessRoutersRequest processRoutersRequest = buildProcessRoutersRequest(serviceInstances, routerContext);
+						// process request interceptors
+						processRouterRequestInterceptors(processRoutersRequest, routerContext);
 
-			// process request interceptors
-			processRouterRequestInterceptors(processRoutersRequest, routerContext);
+						// process router chain
+						ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
 
-			// process router chain
-			ProcessRoutersResponse processRoutersResponse = routerAPI.processRouters(processRoutersRequest);
+						// process response interceptors
+						processRouterResponseInterceptors(routerContext, processRoutersResponse);
 
-			// process response interceptors
-			processRouterResponseInterceptors(routerContext, processRoutersResponse);
-
-			// transfer polaris server to ServiceInstance
-			ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
-			for (Instance instance : filteredServiceInstances.getInstances()) {
-				filteredInstances.add(new PolarisServiceInstance(instance));
-			}
-		}
-		return Flux.fromIterable(Collections.singletonList(filteredInstances));
+						// transfer polaris server to ServiceInstance
+						ServiceInstances filteredServiceInstances = processRoutersResponse.getServiceInstances();
+						for (Instance instance : filteredServiceInstances.getInstances()) {
+							filteredInstances.add(new PolarisServiceInstance(instance));
+						}
+					}
+					return Flux.fromIterable(Collections.singletonList(filteredInstances));
+				});
 	}
 
-	ProcessRoutersRequest buildProcessRoutersRequest(ServiceInstances serviceInstances, PolarisRouterContext key) {
+	ProcessRoutersRequest buildProcessRoutersRequest(ServiceInstances serviceInstances, PolarisRouterContext key,
+			MetadataContext metadataContext) {
 		ProcessRoutersRequest processRoutersRequest = new ProcessRoutersRequest();
 		processRoutersRequest.setDstInstances(serviceInstances);
 		ServiceInfo serviceInfo = new ServiceInfo();
 		serviceInfo.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		serviceInfo.setService(MetadataContext.LOCAL_SERVICE);
 		processRoutersRequest.setSourceService(serviceInfo);
-		processRoutersRequest.setMetadataContainerGroup(MetadataContextHolder.get().getMetadataContainerGroup(false));
+		processRoutersRequest.setMetadataContainerGroup(metadataContext.getMetadataContainerGroup(false));
+		processRoutersRequest.setMetadataContext(metadataContext);
 		return processRoutersRequest;
 	}
 

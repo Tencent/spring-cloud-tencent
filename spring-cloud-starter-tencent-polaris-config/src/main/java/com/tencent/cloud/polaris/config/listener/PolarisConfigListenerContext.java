@@ -137,7 +137,7 @@ public final class PolarisConfigListenerContext {
 			Map<String, Object> origin = new HashMap<>(properties.asMap());
 			Map<String, ConfigPropertyChangeInfo> deleted = new HashMap<>();
 
-			origin.keySet().parallelStream().forEach(key -> {
+			origin.keySet().forEach(key -> {
 				if (!ret.containsKey(key)) {
 					deleted.put(key, new ConfigPropertyChangeInfo(key, String.valueOf(origin.get(key)), null, DELETED));
 					properties.invalidate(key);
@@ -145,7 +145,7 @@ public final class PolarisConfigListenerContext {
 			});
 			changes.putAll(deleted);
 
-			ret.keySet().parallelStream().forEach(key -> {
+			ret.keySet().forEach(key -> {
 				Object oldValue = properties.getIfPresent(key);
 				Object newValue = ret.get(key);
 				if (newValue == null) {
@@ -192,7 +192,7 @@ public final class PolarisConfigListenerContext {
 		for (ConfigChangeListener listener : listeners) {
 			Set<String> interestedChangedKeys = resolveInterestedChangedKeys(listener, changedKeys);
 			Map<String, ConfigPropertyChangeInfo> modifiedChanges = new HashMap<>(interestedChangedKeys.size());
-			interestedChangedKeys.parallelStream().forEach(key -> modifiedChanges.put(key, changes.get(key)));
+			interestedChangedKeys.forEach(key -> modifiedChanges.put(key, changes.get(key)));
 			ConfigChangeEvent event = new ConfigChangeEvent(modifiedChanges, interestedChangedKeys);
 
 			if (listener instanceof SyncConfigChangeListener) {

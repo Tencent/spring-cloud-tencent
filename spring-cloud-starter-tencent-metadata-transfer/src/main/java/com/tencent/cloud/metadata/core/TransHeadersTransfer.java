@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -53,18 +52,18 @@ public final class TransHeadersTransfer {
 		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
 		Map<String, String> transHeaderMetadata = MetadataContextHolder.get().getTransHeaders();
 		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
-			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
+			String transHeaders = transHeaderMetadata.keySet().iterator().next();
 			String[] transHeaderArray = transHeaders.split(",");
 			Enumeration<String> httpHeaders = httpServletRequest.getHeaderNames();
 			while (httpHeaders.hasMoreElements()) {
 				String httpHeader = httpHeaders.nextElement();
-				Arrays.stream(transHeaderArray).forEach(transHeader -> {
+				for (String transHeader : transHeaderArray) {
 					if (transHeader.equals(httpHeader)) {
 						String httpHeaderValue = httpServletRequest.getHeader(httpHeader);
 						// for example, {"trans-headers-kv" : {"header1":"v1","header2":"v2"...}}
 						MetadataContextHolder.get().setTransHeadersKV(httpHeader, httpHeaderValue);
 					}
-				});
+				}
 			}
 		}
 	}
@@ -79,19 +78,19 @@ public final class TransHeadersTransfer {
 		// transHeaderMetadata: for example, {"trans-headers" : {"header1,header2,header3":""}}
 		Map<String, String> transHeaderMetadata = MetadataContextHolder.get().getTransHeaders();
 		if (!CollectionUtils.isEmpty(transHeaderMetadata)) {
-			String transHeaders = transHeaderMetadata.keySet().stream().findFirst().orElse("");
+			String transHeaders = transHeaderMetadata.keySet().iterator().next();
 			String[] transHeaderArray = transHeaders.split(",");
 			HttpHeaders headers = serverHttpRequest.getHeaders();
 			Set<String> headerKeys = headers.keySet();
 			for (String httpHeader : headerKeys) {
-				Arrays.stream(transHeaderArray).forEach(transHeader -> {
+				for (String transHeader : transHeaderArray) {
 					if (transHeader.equals(httpHeader)) {
 						List<String> list = headers.get(httpHeader);
 						String httpHeaderValue = JacksonUtils.serialize2Json(list);
 						// for example, {"trans-headers-kv" : {"header1":"v1","header2":"v2"...}}
 						MetadataContextHolder.get().setTransHeadersKV(httpHeader, httpHeaderValue);
 					}
-				});
+				}
 			}
 		}
 	}
