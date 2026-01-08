@@ -24,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.quickstart.callee.config.DataSourceProperties;
+import com.tencent.cloud.quickstart.callee.config.RefreshScopeProperties;
 import com.tencent.cloud.quickstart.callee.pojo.User;
 import com.tencent.cloud.quickstart.callee.service.FaultToleranceService;
 import org.slf4j.Logger;
@@ -70,6 +71,9 @@ public class QuickstartCalleeController {
 	@Autowired
 	private FaultToleranceService faultToleranceService;
 
+	@Autowired
+	private RefreshScopeProperties refreshScopeProperties;
+
 	/**
 	 * Get sum of two value.
 	 * @param value1 value 1
@@ -88,8 +92,8 @@ public class QuickstartCalleeController {
 	 */
 	@GetMapping("/info")
 	public String info(@RequestParam(required = false) String param) {
-		LOG.info("Quickstart [{}] Service [{}:{}] is called with param [{}]. datasource = [{}].", appName, ip, port, param, dataSourceProperties);
-		return String.format("Quickstart [%s] Service [%s:%s] is called with param [%s]. datasource = [%s].", appName, ip, port, param, dataSourceProperties);
+		LOG.info("Quickstart [{}] Service [{}:{}] is called with param [{}]. datasource = [{}]. refreshscope = [{}].", appName, ip, port, param, dataSourceProperties, refreshScopeProperties);
+		return String.format("Quickstart [%s] Service [%s:%s] is called with param [%s]. datasource = [%s]. refreshscope = [%s].", appName, ip, port, param, dataSourceProperties, refreshScopeProperties);
 	}
 
 	@PostMapping("/user")
