@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.plugin.mq.lane.tsf;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.plugin.mq.lane.kafka.KafkaLaneProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.api.plugin.compose.Extensions;
@@ -46,8 +49,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -58,9 +59,11 @@ public class TsfActiveLaneTest {
 	private TsfActiveLane tsfActiveLane;
 	private PolarisSDKContextManager polarisSDKContextManager;
 	private PolarisDiscoveryHandler discoveryClient;
+	private KafkaLaneProperties kafkaLaneProperties;
 	private SDKContext sdkContext;
 	private Extensions extensions;
 	private MockedStatic<LaneUtils> laneUtilsMockedStatic;
+	private MockedStatic<JacksonUtils> jacksonUtilsMockedStatic;
 
 	@BeforeEach
 	public void setUp() {
@@ -68,13 +71,18 @@ public class TsfActiveLaneTest {
 		discoveryClient = mock(PolarisDiscoveryHandler.class);
 		sdkContext = mock(SDKContext.class);
 		extensions = mock(Extensions.class);
+		kafkaLaneProperties = new KafkaLaneProperties();
 
 		laneUtilsMockedStatic = Mockito.mockStatic(LaneUtils.class);
+
+		jacksonUtilsMockedStatic = Mockito.mockStatic(JacksonUtils.class);
+		jacksonUtilsMockedStatic.when(() -> JacksonUtils.serialize2Json(any())).thenReturn("{}");
 
 		when(polarisSDKContextManager.getSDKContext()).thenReturn(sdkContext);
 		when(sdkContext.getExtensions()).thenReturn(extensions);
 
-		tsfActiveLane = new TsfActiveLane(polarisSDKContextManager, discoveryClient);
+		tsfActiveLane = new TsfActiveLane(polarisSDKContextManager, discoveryClient, kafkaLaneProperties);
+
 
 		// Set up field values using reflection
 		ReflectionTestUtils.setField(tsfActiveLane, "tsfNamespaceId", "test-namespace");
@@ -86,25 +94,16 @@ public class TsfActiveLaneTest {
 	@AfterEach
 	public void tearDown() {
 		laneUtilsMockedStatic.close();
-	}
-
-	@Test
-	public void testConstructorInitialization() {
-		// Verify that constructor properly initializes dependencies
-		assertThat(tsfActiveLane).isNotNull();
-		verify(polarisSDKContextManager, times(1)).getSDKContext();
-		verify(sdkContext, times(1)).getExtensions();
+		jacksonUtilsMockedStatic.close();
 	}
 
 	@Test
 	public void testCallbackWithEmptyInstances() {
 		// Given
 		List<Instance> currentInstances = Collections.emptyList();
-		List<Instance> addInstances = Collections.emptyList();
-		List<Instance> deleteInstances = Collections.emptyList();
 
 		// When
-		tsfActiveLane.callback(currentInstances, addInstances, deleteInstances);
+		tsfActiveLane.callback(currentInstances);
 
 		// Then
 		// Should not throw any exceptions and handle empty instances gracefully
@@ -234,6 +233,68 @@ public class TsfActiveLaneTest {
 		// Then
 		Set<String> activeGroupSet = (Set<String>) ReflectionTestUtils.getField(tsfActiveLane, "activeGroupSet");
 		assertThat(activeGroupSet).contains("group1");
+	}
+
+	@Test
+	public void testCallback() throws Throwable {
+		Field tsfNamespaceIdField = TsfActiveLane.class.getDeclaredField("tsfNamespaceId");
+		tsfNamespaceIdField.setAccessible(true);
+		tsfNamespaceIdField.set(tsfActiveLane, "ns1");
+
+		Field tsfGroupIdField = TsfActiveLane.class.getDeclaredField("tsfGroupId");
+		tsfGroupIdField.setAccessible(true);
+		tsfGroupIdField.set(tsfActiveLane, "group1");
+
+		Field tsfApplicationIdField = TsfActiveLane.class.getDeclaredField("tsfApplicationId");
+		tsfApplicationIdField.setAccessible(true);
+		tsfApplicationIdField.set(tsfActiveLane, "app1");
+
+		// not in lane
+		assertThat(tsfActiveLane.getCurrentGroupLaneIds()).isEmpty();
+
+		// in lane
+		// given
+		LaneProto.LaneGroup group = mock(LaneProto.LaneGroup.class);
+		LaneProto.LaneRule laneRule = mock(LaneProto.LaneRule.class);
+		Map<String, String> metadataMap = new HashMap<>();
+		metadataMap.put("ns1,app1", TsfMetadataConstants.TSF_NAMESPACE_ID + "," + TsfMetadataConstants.TSF_APPLICATION_ID);
+		when(group.getMetadataMap()).thenReturn(metadataMap);
+		when(group.getRulesList()).thenReturn(Collections.singletonList(laneRule));
+		when(laneRule.getLabelKey()).thenReturn(TsfMetadataConstants.TSF_GROUP_ID);
+		when(laneRule.getDefaultLabelValue()).thenReturn("group1");
+		when(laneRule.getId()).thenReturn("lane1");
+		laneUtilsMockedStatic.when(() -> LaneUtils.getLaneGroups(any(), any()))
+				.thenReturn(Collections.singletonList(group));
+
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("TSF_NAMESPACE_ID", "ns1");
+		metadata.put("TSF_GROUP_ID", "group1");
+		metadata.put("TSF_APPLICATION_ID", "app1");
+
+		Instance instance = mock(Instance.class);
+		when(instance.getMetadata()).thenReturn(metadata);
+
+		// act
+		tsfActiveLane.callback(Collections.singletonList(instance));
+
+		assertThat(tsfActiveLane.getCurrentGroupLaneIds().contains("lane1")).isTrue();
+
+		// instance not in lane, change the rule
+		when(laneRule.getDefaultLabelValue()).thenReturn("group2");
+		tsfActiveLane.freshLaneStatus(); // rule listener will call this method
+		assertThat(tsfActiveLane.getCurrentGroupLaneIds().contains("lane1")).isFalse();
+
+		// reset, instance in lane
+		when(laneRule.getDefaultLabelValue()).thenReturn("group1");
+		tsfActiveLane.freshLaneStatus(); // rule listener will call this method
+		assertThat(tsfActiveLane.getCurrentGroupLaneIds().contains("lane1")).isTrue();
+
+		// service not in lane
+		metadataMap.clear();
+		metadataMap.put("ns1,app2", TsfMetadataConstants.TSF_NAMESPACE_ID + "," + TsfMetadataConstants.TSF_APPLICATION_ID);
+		when(laneRule.getDefaultLabelValue()).thenReturn("group2");
+		tsfActiveLane.freshLaneStatus(); // rule listener will call this method
+		assertThat(tsfActiveLane.getCurrentGroupLaneIds().contains("lane1")).isFalse();
 	}
 
 	private Map<String, String> createMetadata(String namespaceId, String groupId, String applicationId) {

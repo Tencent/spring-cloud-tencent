@@ -54,9 +54,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link KafkaLaneAspect}. Instance in lane.
+ * Test for {@link KafkaLaneAspect}. Instance and service not in lane.
  */
-public class KafkaLaneAspectTest {
+public class KafkaLaneAspectTest2 {
 
 	private KafkaLaneAspect kafkaLaneAspect;
 	private PolarisSDKContextManager polarisSDKContextManager;
@@ -74,9 +74,10 @@ public class KafkaLaneAspectTest {
 		polarisActiveLane = new PolarisActiveLane(mock(PolarisSDKContextManager.class), mock(PolarisDiscoveryHandler.class), kafkaLaneProperties, mock(Registration.class));
 		laneUtilsMockedStatic = Mockito.mockStatic(LaneUtils.class);
 		tsfContextUtilsMockedStatic = Mockito.mockStatic(TsfContextUtils.class);
+
 		Field laneField = PolarisActiveLane.class.getDeclaredField("lane");
 		laneField.setAccessible(true);
-		laneField.set(polarisActiveLane, "test-lane"); // in lane
+		laneField.set(polarisActiveLane, ""); // not in lane
 
 		Field groupsField = PolarisActiveLane.class.getDeclaredField("groups");
 		groupsField.setAccessible(true);
@@ -84,7 +85,7 @@ public class KafkaLaneAspectTest {
 
 		Field serviceInLaneField = PolarisActiveLane.class.getDeclaredField("serviceInLane");
 		serviceInLaneField.setAccessible(true);
-		serviceInLaneField.setBoolean(polarisActiveLane, true);
+		serviceInLaneField.setBoolean(polarisActiveLane, false);
 
 
 		kafkaLaneAspect = new KafkaLaneAspect(polarisSDKContextManager, kafkaLaneProperties, polarisActiveLane);
@@ -223,7 +224,16 @@ public class KafkaLaneAspectTest {
 		Object result = kafkaLaneAspect.aroundConsumerMessage(pjp);
 
 		// Then
+		assertThat(result).isEqualTo(KafkaLaneAspect.EMPTY_OBJECT);
+
+		// change main consume lane
+		kafkaLaneProperties.setMainConsumeLane(true);
+		result = kafkaLaneAspect.aroundConsumerMessage(pjp);
 		assertThat(result).isEqualTo("result");
+
+		//reset
+		kafkaLaneProperties.setMainConsumeLane(false);
+
 	}
 
 	@Test
@@ -262,14 +272,14 @@ public class KafkaLaneAspectTest {
 		// When
 		boolean shouldConsume = kafkaLaneAspect.ifConsume("");
 		// Then
-		assertThat(shouldConsume).isTrue(); // Because laneConsumeMain is true
+		assertThat(shouldConsume).isTrue(); // as baseline
 
 		// Given
 		kafkaLaneProperties.setLaneConsumeMain(false);
 		// When
 		shouldConsume = kafkaLaneAspect.ifConsume("");
 		// Then
-		assertThat(shouldConsume).isFalse(); // Because laneConsumeMain is false
+		assertThat(shouldConsume).isTrue(); // unrelated to LaneConsumeMain
 	}
 
 	@Test

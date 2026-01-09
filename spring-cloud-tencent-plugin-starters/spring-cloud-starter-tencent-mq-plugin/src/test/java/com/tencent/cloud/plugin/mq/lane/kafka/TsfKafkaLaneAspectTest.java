@@ -20,14 +20,16 @@ package com.tencent.cloud.plugin.mq.lane.kafka;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.plugin.mq.lane.tsf.TsfActiveLane;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.plugins.router.lane.LaneUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -52,7 +54,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link KafkaLaneAspect}, with only tsf consul enabled.
+ * Test for {@link KafkaLaneAspect}, with only tsf consul enabled. Instance in lane.
  */
 public class TsfKafkaLaneAspectTest {
 
@@ -64,14 +66,18 @@ public class TsfKafkaLaneAspectTest {
 	private MockedStatic<TsfContextUtils> tsfContextUtilsMockedStatic;
 
 	@BeforeEach
-	public void setUp() {
+	public void setUp() throws Exception {
 		polarisSDKContextManager = mock(PolarisSDKContextManager.class);
 		kafkaLaneProperties = new KafkaLaneProperties();
-		tsfActiveLane = mock(TsfActiveLane.class);
-
+		tsfActiveLane = new TsfActiveLane(polarisSDKContextManager, mock(PolarisDiscoveryHandler.class), kafkaLaneProperties);
 		laneUtilsMockedStatic = Mockito.mockStatic(LaneUtils.class);
 		tsfContextUtilsMockedStatic = Mockito.mockStatic(TsfContextUtils.class);
 		tsfContextUtilsMockedStatic.when(TsfContextUtils::isOnlyTsfConsulEnabled).thenReturn(true);
+
+		// reset currentGroupLaneIds, instance in lane
+		Field currentGroupLaneIdsField = TsfActiveLane.class.getDeclaredField("currentGroupLaneIds");
+		currentGroupLaneIdsField.setAccessible(true);
+		currentGroupLaneIdsField.set(tsfActiveLane, new HashSet<>(Collections.singletonList("lane1")));
 
 		kafkaLaneAspect = new KafkaLaneAspect(polarisSDKContextManager, kafkaLaneProperties, tsfActiveLane);
 	}
@@ -80,37 +86,6 @@ public class TsfKafkaLaneAspectTest {
 	public void tearDown() {
 		laneUtilsMockedStatic.close();
 		tsfContextUtilsMockedStatic.close();
-		resetTsfContextUtilsStaticFields();
-	}
-
-	private void resetTsfContextUtilsStaticFields() {
-		try {
-			// Reset isOnlyTsfConsulEnabledFirstConfiguration
-			Field isOnlyTsfConsulEnabledFirstConfigurationField = TsfContextUtils.class.getDeclaredField("isOnlyTsfConsulEnabledFirstConfiguration");
-			isOnlyTsfConsulEnabledFirstConfigurationField.setAccessible(true);
-			AtomicBoolean isOnlyTsfConsulEnabledFirstConfiguration = (AtomicBoolean) isOnlyTsfConsulEnabledFirstConfigurationField.get(null);
-			isOnlyTsfConsulEnabledFirstConfiguration.set(true);
-
-			// Reset isTsfConsulEnabledFirstConfiguration
-			Field isTsfConsulEnabledFirstConfigurationField = TsfContextUtils.class.getDeclaredField("isTsfConsulEnabledFirstConfiguration");
-			isTsfConsulEnabledFirstConfigurationField.setAccessible(true);
-			AtomicBoolean isTsfConsulEnabledFirstConfiguration = (AtomicBoolean) isTsfConsulEnabledFirstConfigurationField.get(null);
-			isTsfConsulEnabledFirstConfiguration.set(true);
-
-			// Reset tsfConsulEnabled
-			Field tsfConsulEnabledField = TsfContextUtils.class.getDeclaredField("tsfConsulEnabled");
-			tsfConsulEnabledField.setAccessible(true);
-			tsfConsulEnabledField.setBoolean(null, false);
-
-			// Reset onlyTsfConsulEnabled
-			Field onlyTsfConsulEnabledField = TsfContextUtils.class.getDeclaredField("onlyTsfConsulEnabled");
-			onlyTsfConsulEnabledField.setAccessible(true);
-			onlyTsfConsulEnabledField.setBoolean(null, false);
-
-		}
-		catch (Exception e) {
-			throw new RuntimeException("Failed to reset TsfContextUtils static fields", e);
-		}
 	}
 
 	@Test
@@ -168,7 +143,7 @@ public class TsfKafkaLaneAspectTest {
 		kafkaLaneAspect.aroundProducerMessage(pjp);
 
 		// Then
-		Iterator<Header> headers = producerRecord.headers().headers("tsf_laneId").iterator();
+		Iterator<Header> headers = producerRecord.headers().headers(tsfActiveLane.getLaneHeaderKey()).iterator();
 		assertThat(headers.hasNext()).isTrue();
 		Header laneHeader = headers.next();
 		assertThat(new String(laneHeader.value(), StandardCharsets.UTF_8)).isEqualTo(laneId);
@@ -215,14 +190,16 @@ public class TsfKafkaLaneAspectTest {
 	}
 
 	@Test
-	public void testConsumerAspectWithLaneHeader() throws Throwable {
+	public void testConsumerAspectWithLaneHeader_LaneIdExist() throws Throwable {
 		// Given
 		kafkaLaneProperties.setLaneOn(true);
-		String laneId = "test-lane-id";
-		when(tsfActiveLane.isLaneExist(laneId)).thenReturn(true);
+		Field currentGroupLaneIdsField = TsfActiveLane.class.getDeclaredField("currentGroupLaneIds");
+		currentGroupLaneIdsField.setAccessible(true);
+		currentGroupLaneIdsField.set(tsfActiveLane, new HashSet<>(Collections.singletonList("lane-test")));
+		String laneId = "tsf/lane-test"; // valid lane id
 
 		ConsumerRecord consumerRecord = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value");
-		consumerRecord.headers().add("tsf_laneId", laneId.getBytes(StandardCharsets.UTF_8));
+		consumerRecord.headers().add(tsfActiveLane.getLaneHeaderKey(), laneId.getBytes(StandardCharsets.UTF_8));
 
 		ProceedingJoinPoint pjp = mock(ProceedingJoinPoint.class);
 		Object[] args = new Object[] {consumerRecord};
@@ -233,7 +210,7 @@ public class TsfKafkaLaneAspectTest {
 		Object result = kafkaLaneAspect.aroundConsumerMessage(pjp);
 
 		// Then
-		assertThat(result).isEqualTo(KafkaLaneAspect.EMPTY_OBJECT);
+		assertThat(result).isEqualTo("result");
 	}
 
 	@Test
@@ -241,7 +218,7 @@ public class TsfKafkaLaneAspectTest {
 		// Given
 		ConsumerRecord consumerRecord = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value");
 		String expectedLaneId = "test-lane-id";
-		consumerRecord.headers().add("tsf_laneId", expectedLaneId.getBytes(StandardCharsets.UTF_8));
+		consumerRecord.headers().add(tsfActiveLane.getLaneHeaderKey(), expectedLaneId.getBytes(StandardCharsets.UTF_8));
 
 		// When
 		String laneId = kafkaLaneAspect.getConsumerRecordLaneId(consumerRecord);
@@ -265,38 +242,25 @@ public class TsfKafkaLaneAspectTest {
 	}
 
 	@Test
-	public void testIfConsumeInPolarisWithNoLaneId() {
+	public void testIfConsumeWithNoLaneId() throws Exception {
+
+		Field currentGroupLaneIdsField = TsfActiveLane.class.getDeclaredField("currentGroupLaneIds");
+		currentGroupLaneIdsField.setAccessible(true);
+		currentGroupLaneIdsField.set(tsfActiveLane, new HashSet<>(Arrays.asList("lane1", "lane2")));
+
 		// Given
 		kafkaLaneProperties.setLaneConsumeMain(true);
-
-		// Use reflection to set the lane field
-		try {
-			Field laneField = KafkaLaneAspect.class.getDeclaredField("lane");
-			laneField.setAccessible(true);
-			laneField.set(kafkaLaneAspect, "test-lane");
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
 		// When
 		boolean shouldConsume = kafkaLaneAspect.ifConsume("");
-
 		// Then
 		assertThat(shouldConsume).isTrue(); // Because laneConsumeMain is true
-	}
 
-	@Test
-	public void testIfConsumeInTsfWithNoLaneId() {
 		// Given
-		kafkaLaneProperties.setLaneConsumeMain(true);
-		when(tsfActiveLane.getCurrentGroupLaneIds()).thenReturn(Collections.emptySet());
-
+		kafkaLaneProperties.setLaneConsumeMain(false);
 		// When
-		boolean shouldConsume = kafkaLaneAspect.ifConsume("");
-
+		shouldConsume = kafkaLaneAspect.ifConsume("");
 		// Then
-		assertThat(shouldConsume).isTrue(); // Because laneConsumeMain is true
+		assertThat(shouldConsume).isFalse(); // Because laneConsumeMain is false
 	}
 
 	@Test
@@ -306,9 +270,9 @@ public class TsfKafkaLaneAspectTest {
 
 		List<ConsumerRecord> messageList = new ArrayList<>();
 		ConsumerRecord record1 = new ConsumerRecord<>("test-topic", 0, 0L, "key", "value1");
-		record1.headers().add("tsf_laneId", "lane1".getBytes(StandardCharsets.UTF_8));
+		record1.headers().add(tsfActiveLane.getLaneHeaderKey(), "lane1".getBytes(StandardCharsets.UTF_8));
 		ConsumerRecord record2 = new ConsumerRecord<>("test-topic", 0, 1L, "key", "value2");
-		record2.headers().add("tsf_laneId", "lane2".getBytes(StandardCharsets.UTF_8));
+		record2.headers().add(tsfActiveLane.getLaneHeaderKey(), "lane2".getBytes(StandardCharsets.UTF_8));
 
 		messageList.add(record1);
 		messageList.add(record2);

@@ -15,8 +15,9 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.mq.lane.tsf;
+package com.tencent.cloud.plugin.mq.lane;
 
+import com.tencent.cloud.plugin.mq.lane.tsf.TsfActiveLane;
 import com.tencent.polaris.api.pojo.RegistryCacheValue;
 import com.tencent.polaris.api.pojo.ServiceEventKey;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,23 +30,23 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link TsfLaneRuleListener}.
+ * Test for {@link LaneRuleListener}.
  */
-public class TsfLaneRuleListenerTest {
+public class LaneRuleListenerTest {
 
 	private TsfActiveLane tsfActiveLane;
-	private TsfLaneRuleListener tsfLaneRuleListener;
+	private LaneRuleListener laneRuleListener;
 
 	@BeforeEach
 	public void setUp() {
 		tsfActiveLane = mock(TsfActiveLane.class);
-		tsfLaneRuleListener = new TsfLaneRuleListener(tsfActiveLane);
+		laneRuleListener = new LaneRuleListener(tsfActiveLane::freshLaneStatus);
 	}
 
 	@Test
 	public void testConstructorInitialization() {
 		// Verify that constructor properly initializes the TsfActiveLane dependency
-		assert tsfLaneRuleListener != null;
+		assert laneRuleListener != null;
 	}
 
 	@Test
@@ -57,7 +58,7 @@ public class TsfLaneRuleListenerTest {
 		when(svcEventKey.getEventType()).thenReturn(ServiceEventKey.EventType.LANE_RULE);
 
 		// When
-		tsfLaneRuleListener.onResourceAdd(svcEventKey, newValue);
+		laneRuleListener.onResourceAdd(svcEventKey, newValue);
 
 		// Then
 		verify(tsfActiveLane).freshLaneStatus();
@@ -72,7 +73,7 @@ public class TsfLaneRuleListenerTest {
 		when(svcEventKey.getEventType()).thenReturn(ServiceEventKey.EventType.INSTANCE);
 
 		// When
-		tsfLaneRuleListener.onResourceAdd(svcEventKey, newValue);
+		laneRuleListener.onResourceAdd(svcEventKey, newValue);
 
 		// Then
 		verify(tsfActiveLane, never()).freshLaneStatus();
@@ -88,7 +89,7 @@ public class TsfLaneRuleListenerTest {
 		when(svcEventKey.getEventType()).thenReturn(ServiceEventKey.EventType.LANE_RULE);
 
 		// When
-		tsfLaneRuleListener.onResourceUpdated(svcEventKey, oldValue, newValue);
+		laneRuleListener.onResourceUpdated(svcEventKey, oldValue, newValue);
 
 		// Then
 		verify(tsfActiveLane).freshLaneStatus();
@@ -104,7 +105,7 @@ public class TsfLaneRuleListenerTest {
 		when(svcEventKey.getEventType()).thenReturn(ServiceEventKey.EventType.SERVICE);
 
 		// When
-		tsfLaneRuleListener.onResourceUpdated(svcEventKey, oldValue, newValue);
+		laneRuleListener.onResourceUpdated(svcEventKey, oldValue, newValue);
 
 		// Then
 		verify(tsfActiveLane, never()).freshLaneStatus();
@@ -119,7 +120,7 @@ public class TsfLaneRuleListenerTest {
 		when(svcEventKey.getEventType()).thenReturn(ServiceEventKey.EventType.LANE_RULE);
 
 		// When
-		tsfLaneRuleListener.onResourceDeleted(svcEventKey, oldValue);
+		laneRuleListener.onResourceDeleted(svcEventKey, oldValue);
 
 		// Then
 		verify(tsfActiveLane).freshLaneStatus();
@@ -134,7 +135,7 @@ public class TsfLaneRuleListenerTest {
 		when(svcEventKey.getEventType()).thenReturn(ServiceEventKey.EventType.ROUTING);
 
 		// When
-		tsfLaneRuleListener.onResourceDeleted(svcEventKey, oldValue);
+		laneRuleListener.onResourceDeleted(svcEventKey, oldValue);
 
 		// Then
 		verify(tsfActiveLane, never()).freshLaneStatus();
@@ -150,7 +151,7 @@ public class TsfLaneRuleListenerTest {
 			when(svcEventKey.getEventType()).thenReturn(eventType);
 
 			// When
-			tsfLaneRuleListener.onResourceAdd(svcEventKey, value);
+			laneRuleListener.onResourceAdd(svcEventKey, value);
 
 			// Then
 			if (eventType == ServiceEventKey.EventType.LANE_RULE) {

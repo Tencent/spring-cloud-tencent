@@ -19,23 +19,16 @@ package com.tencent.cloud.plugin.mq.lane.kafka;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.tsf.TsfContextUtils;
-import com.tencent.cloud.plugin.mq.lane.tsf.TsfActiveLane;
+import com.tencent.cloud.plugin.mq.lane.AbstractActiveLane;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
-import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.plugins.router.lane.LaneRouter;
 import com.tencent.polaris.plugins.router.lane.LaneUtils;
-import com.tencent.polaris.specification.api.v1.traffic.manage.LaneProto;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
@@ -47,7 +40,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
@@ -64,24 +56,19 @@ public class KafkaLaneAspect {
 	 */
 	public static final Object EMPTY_OBJECT = new Object();
 
-	private static final String TSF_LANE_ID = "tsf_laneId";
-
 	private final PolarisSDKContextManager polarisSDKContextManager;
 
 	private final KafkaLaneProperties kafkaLaneProperties;
 
-	private final TsfActiveLane tsfActiveLane;
+	private final AbstractActiveLane activeLane;
 
 	private final String laneHeaderKey;
 
-	@Value("${spring.cloud.tencent.metadata.content.lane:}")
-	private String lane;
-
-	public KafkaLaneAspect(PolarisSDKContextManager polarisSDKContextManager, KafkaLaneProperties kafkaLaneProperties, TsfActiveLane tsfActiveLane) {
+	public KafkaLaneAspect(PolarisSDKContextManager polarisSDKContextManager, KafkaLaneProperties kafkaLaneProperties, AbstractActiveLane activeLane) {
 		this.polarisSDKContextManager = polarisSDKContextManager;
 		this.kafkaLaneProperties = kafkaLaneProperties;
-		this.tsfActiveLane = tsfActiveLane;
-		laneHeaderKey = TsfContextUtils.isOnlyTsfConsulEnabled() ? TSF_LANE_ID : MetadataContext.DEFAULT_TRANSITIVE_PREFIX + LaneRouter.TRAFFIC_STAIN_LABEL;
+		this.activeLane = activeLane;
+		laneHeaderKey = activeLane.getLaneHeaderKey();
 	}
 
 	@Pointcut("execution(* org.springframework.kafka.core.KafkaTemplate.send(..))")
@@ -263,11 +250,9 @@ public class KafkaLaneAspect {
 		// falls back to the laneId from the metadata context (set by the user's aspect) if the header is empty
 		if (StringUtils.isBlank(laneId)) {
 			laneId = LaneUtils.getCallerLaneId();
-			// format laneId
-			if (laneId != null && !laneId.contains("/") && laneId.startsWith("lane-")) {
-				laneId = "tsf/" + laneId;
-			}
 		}
+		// format laneId
+		laneId = activeLane.formatLaneId(laneId);
 		return laneId;
 	}
 
@@ -277,91 +262,6 @@ public class KafkaLaneAspect {
 	 * @return whether to consume.
 	 */
 	boolean ifConsume(String messageLaneId) {
-		if (TsfContextUtils.isOnlyTsfConsulEnabled() && tsfActiveLane != null) {
-			return ifConsumeInTsf(messageLaneId);
-		}
-		else {
-			return ifConsumeInPolaris(messageLaneId);
-		}
-	}
-
-	private boolean ifConsumeInTsf(String originMessageLaneId) {
-		String laneId = originMessageLaneId;
-		if (laneId != null && laneId.contains("/")) {
-			laneId = laneId.split("/")[1];
-		}
-
-		Set<String> groupLaneIdSet = tsfActiveLane.getCurrentGroupLaneIds();
-		// message has no lane id
-		if (StringUtils.isEmpty(laneId)) {
-			if (groupLaneIdSet.isEmpty()) {
-				// baseline service, consume directly
-				return true;
-			}
-			else {
-				// lane listener consumes baseline message
-				return this.kafkaLaneProperties.getLaneConsumeMain();
-			}
-		}
-		else {
-			LaneUtils.setCallerLaneId(originMessageLaneId);
-
-			// message has lane id
-			if (groupLaneIdSet.isEmpty()) {
-				// baseline service
-				// message carries lane id but the current service's lane has no deployment groups, consume baseline
-				boolean consume = !tsfActiveLane.isLaneExist(laneId);
-
-				// message carries lane id, but the current service's lane has deployment groups but is not active (or manually taken offline), consume baseline based on switch configuration, default is not to consume
-				consume = consume ||
-						(this.kafkaLaneProperties.getMainConsumeLane() &&
-								tsfActiveLane.isLaneExist(laneId) &&
-								!tsfActiveLane.isActiveLane(laneId)
-						);
-				return consume;
-			}
-			else {
-				return groupLaneIdSet.contains(laneId);
-			}
-		}
-	}
-
-	private boolean ifConsumeInPolaris(String messageLaneId) {
-		// message has no lane id
-		if (StringUtils.isEmpty(messageLaneId)) {
-			if (StringUtils.isEmpty(lane)) {
-				// baseline service, consume directly
-				return true;
-			}
-			else {
-				// lane listener consumes baseline message
-				return this.kafkaLaneProperties.getLaneConsumeMain();
-			}
-		}
-		else {
-			LaneUtils.setCallerLaneId(messageLaneId);
-
-			// message has lane id
-			if (StringUtils.isEmpty(lane)) {
-				// baseline service
-				return this.kafkaLaneProperties.getMainConsumeLane();
-			}
-			else {
-				ServiceKey localService = new ServiceKey(com.tencent.cloud.common.metadata.MetadataContext.LOCAL_NAMESPACE,
-						com.tencent.cloud.common.metadata.MetadataContext.LOCAL_SERVICE);
-
-				Collection<LaneProto.LaneGroup> groups = LaneUtils.getLaneGroups(localService, polarisSDKContextManager.getSDKContext().getExtensions());
-				// whether the message lane id is the same as the lane id of the listener
-				for (LaneProto.LaneGroup group : groups) {
-					for (LaneProto.LaneRule rule : group.getRulesList()) {
-						if (StringUtils.equals(messageLaneId, LaneUtils.buildStainLabel(rule))
-								&& StringUtils.equals(rule.getDefaultLabelValue(), lane)) {
-							return true;
-						}
-					}
-				}
-				return false;
-			}
-		}
+		return activeLane.ifConsume(messageLaneId);
 	}
 }

@@ -25,10 +25,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.plugin.mq.lane.AbstractActiveLane;
+import com.tencent.cloud.plugin.mq.lane.LaneRuleListener;
+import com.tencent.cloud.plugin.mq.lane.kafka.KafkaLaneProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import com.tencent.cloud.polaris.discovery.refresh.ServiceInstanceChangeCallback;
-import com.tencent.cloud.polaris.discovery.refresh.ServiceInstanceChangeListener;
 import com.tencent.polaris.api.plugin.compose.Extensions;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceKey;
@@ -44,20 +45,24 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 
 
-@ServiceInstanceChangeListener(serviceName = "${spring.application.name}")
-public class TsfActiveLane implements ServiceInstanceChangeCallback, InitializingBean {
+public class TsfActiveLane extends AbstractActiveLane implements InitializingBean {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TsfActiveLane.class);
+
+	private static final String TSF_LANE_ID = "tsf_laneId";
 
 	private final PolarisSDKContextManager polarisSDKContextManager;
 
 	private final PolarisDiscoveryHandler discoveryClient;
+
+	private final KafkaLaneProperties kafkaLaneProperties;
+
 	/**
 	 * Online deployment groups for this service (same namespace id and application id required).
 	 */
 	private volatile Set<String> activeGroupSet = new HashSet<>();
 
-	private volatile Set<String> currentGroupLaneIds = null;
+	private volatile Set<String> currentGroupLaneIds = new HashSet<>();
 	/**
 	 * key: laneId.
 	 * value: true - online, false - offline.
@@ -76,12 +81,17 @@ public class TsfActiveLane implements ServiceInstanceChangeCallback, Initializin
 	@Value("${spring.application.name:}")
 	private String springApplicationName;
 
-	public TsfActiveLane(PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler discoveryClient) {
+	public TsfActiveLane(PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler discoveryClient, KafkaLaneProperties kafkaLaneProperties) {
 		this.polarisSDKContextManager = polarisSDKContextManager;
 		this.discoveryClient = discoveryClient;
+		this.kafkaLaneProperties = kafkaLaneProperties;
 		Optional.ofNullable(polarisSDKContextManager).map(PolarisSDKContextManager::getSDKContext)
 				.map(SDKContext::getExtensions).map(Extensions::getLocalRegistry)
-				.ifPresent(localRegistry -> localRegistry.registerResourceListener(new TsfLaneRuleListener(this)));
+				.ifPresent(localRegistry -> localRegistry.registerResourceListener(new LaneRuleListener(this::freshLaneStatus)));
+
+		Optional.ofNullable(polarisSDKContextManager).map(PolarisSDKContextManager::getSDKContext)
+				.map(SDKContext::getExtensions).map(Extensions::getLocalRegistry)
+				.ifPresent(localRegistry -> localRegistry.registerResourceListener(this));
 	}
 
 	@Override
@@ -91,16 +101,16 @@ public class TsfActiveLane implements ServiceInstanceChangeCallback, Initializin
 	}
 
 	@Override
-	public void callback(List<Instance> currentServiceInstances, List<Instance> addServiceInstances, List<Instance> deleteServiceInstances) {
+	public void callback(List<Instance> currentServiceInstances) {
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("ConsulServiceChangeCallback currentServices: {}", JacksonUtils.serialize2Json(currentServiceInstances));
+			LOG.debug("currentServices: {}", JacksonUtils.serialize2Json(currentServiceInstances));
 			LOG.debug("current namespaceId: {}, groupId: {}, applicationId: {}", tsfNamespaceId, tsfGroupId, tsfApplicationId);
 		}
 
 		freshWhenInstancesChange(currentServiceInstances);
 
 		if (LOG.isDebugEnabled()) {
-			LOG.info("current lane active status: {}", JacksonUtils.serialize2Json(laneActiveMap));
+			LOG.debug("current lane active status: {}", JacksonUtils.serialize2Json(laneActiveMap));
 		}
 	}
 
@@ -183,4 +193,61 @@ public class TsfActiveLane implements ServiceInstanceChangeCallback, Initializin
 		return currentGroupLaneIds;
 	}
 
+	@Override
+	public boolean ifConsume(String originMessageLaneId) {
+		String laneId = originMessageLaneId;
+		if (laneId != null && laneId.contains("/")) {
+			laneId = laneId.split("/")[1];
+		}
+
+		Set<String> groupLaneIdSet = getCurrentGroupLaneIds();
+		// message has no lane id
+		if (StringUtils.isEmpty(laneId)) {
+			if (groupLaneIdSet.isEmpty()) {
+				// baseline service, consume directly
+				return true;
+			}
+			else {
+				// lane listener consumes baseline message
+				return this.kafkaLaneProperties.getLaneConsumeMain();
+			}
+		}
+		else {
+			LaneUtils.setCallerLaneId(originMessageLaneId);
+
+			// message has lane id
+			if (groupLaneIdSet.isEmpty()) {
+				// baseline service
+				// message carries lane id but the current service's lane has no deployment groups, consume baseline
+				boolean consume = !isLaneExist(laneId);
+
+				// message carries lane id, but the current service's lane has deployment groups but is not active (or manually taken offline), consume baseline based on switch configuration, default is not to consume
+				consume = consume ||
+						(this.kafkaLaneProperties.getMainConsumeLane() &&
+								isLaneExist(laneId) &&
+								!isActiveLane(laneId)
+						);
+				return consume;
+			}
+			else {
+				return groupLaneIdSet.contains(laneId);
+			}
+		}
+	}
+
+	@Override
+	public String getLaneHeaderKey() {
+		return TSF_LANE_ID;
+	}
+
+	@Override
+	public String formatLaneId(String laneId) {
+		if (StringUtils.isEmpty(laneId)) {
+			return laneId;
+		}
+		if (!laneId.contains("/") && laneId.startsWith("lane-")) {
+			laneId = "tsf/" + laneId;
+		}
+		return laneId;
+	}
 }
