@@ -117,6 +117,28 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		return clazz.isArray() || Collection.class.isAssignableFrom(clazz) || Map.class.isAssignableFrom(clazz);
 	}
 
+	/**
+	 * whether the class is enum.
+	 * @param clazz the class under analysis.
+	 * @return true if the class is enum, otherwise false.
+	 */
+	private static boolean isEnum(Class<?> clazz) {
+		return clazz.isEnum();
+	}
+
+	/**
+	 * whether the class is jdk built-in class.
+	 * @param clazz the class under analysis.
+	 * @return true if the class is jdk built-in class, otherwise false.
+	 */
+	private static boolean isJdkBuiltInClass(Class<?> clazz) {
+		String packageName = clazz.getPackageName();
+		// match java.*, javax.* and jakarta.* as built-in classes
+		return packageName.startsWith("java.")
+				|| packageName.startsWith("javax.")
+				|| packageName.startsWith("jakarta.");
+	}
+
 	@Override
 	public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
@@ -256,24 +278,38 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 	 * @param prefix prefix or subclass's prefix of @ConfigurationProperties bean.
 	 */
 	private void parseConfigKeys(Class<?> configClazz, String prefix) {
+		parseConfigKeys(configClazz, prefix, 0);
+	}
+
+	private void parseConfigKeys(Class<?> configClazz, String prefix, int depth) {
+		// Prevent infinite recursion and StackOverflowError
+		if (depth > 5) {
+			LOGGER.debug("Recursion depth limit reached for class: {}, prefix: {}", configClazz.getName(), prefix);
+			return;
+		}
+
 		for (Field field : findAllField(configClazz)) {
-			if (isPrimitiveOrWrapper(field.getType())) {
+			if (field.getType().equals(configClazz)) {
+				// ignore self reference
+				continue;
+			}
+			if (isCollection(field.getType())) {
 				// lowerCamel format
-				springValueRegistry.putRefreshScopeKey(prefix + field.getName());
+				springValueRegistry.putRefreshScopePrefixKey(prefix + field.getName());
 				// lower-hyphen format
-				springValueRegistry.putRefreshScopeKey(
+				springValueRegistry.putRefreshScopePrefixKey(
 						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()));
 			}
-			else if (isCollection(field.getType())) {
-				springValueRegistry.putRefreshScopePrefixKey(prefix + field.getName());
-				springValueRegistry.putRefreshScopePrefixKey(
+			else if (isPrimitiveOrWrapper(field.getType()) || isEnum(field.getType()) || isJdkBuiltInClass(field.getType())) {
+				springValueRegistry.putRefreshScopeKey(prefix + field.getName());
+				springValueRegistry.putRefreshScopeKey(
 						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()));
 			}
 			else {
 				// complex type, recursive parse
-				parseConfigKeys(field.getType(), prefix + field.getName() + ".");
+				parseConfigKeys(field.getType(), prefix + field.getName() + ".", depth + 1);
 				parseConfigKeys(field.getType(),
-						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()) + ".");
+						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()) + ".", depth + 1);
 			}
 		}
 	}
