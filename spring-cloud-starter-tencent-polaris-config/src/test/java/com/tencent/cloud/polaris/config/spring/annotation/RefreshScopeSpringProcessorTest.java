@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.config.spring.annotation;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,6 +78,27 @@ public class RefreshScopeSpringProcessorTest {
 		if (Objects.nonNull(serverSocket)) {
 			serverSocket.close();
 		}
+	}
+
+	@Test
+	public void isJdkBuiltInClassTest() throws Exception {
+		// reflect method
+		Method isJdkBuiltInClassMethod = SpringValueProcessor.class.getDeclaredMethod("isJdkBuiltInClass", Class.class);
+		isJdkBuiltInClassMethod.setAccessible(true);
+
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, int.class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, Integer.class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, int[].class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, Integer[].class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, String.class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, Date.class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, ArrayList.class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, HashMap.class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, HashSet.class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, ServerSocket.class)).isTrue();
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, TimeUnit.class)).isTrue();
+
+		assertThat((Boolean) isJdkBuiltInClassMethod.invoke(null, TestBean.class)).isFalse();
 	}
 
 	@Test
