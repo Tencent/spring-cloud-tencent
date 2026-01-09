@@ -854,5 +854,4 @@ public class RefreshScopeSpringProcessorTest {
 			this.level6Value = level6Value;
 		}
 	}
-
 }
