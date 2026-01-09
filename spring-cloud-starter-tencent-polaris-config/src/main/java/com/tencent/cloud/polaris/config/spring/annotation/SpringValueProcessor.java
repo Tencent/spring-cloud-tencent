@@ -132,7 +132,12 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 	 * @return true if the class is jdk built-in class, otherwise false.
 	 */
 	private static boolean isJdkBuiltInClass(Class<?> clazz) {
-		String packageName = clazz.getPackageName();
+		if (clazz.getPackage() == null) {
+			// For primitive or array types, the package is null. This block is typically unreachable as isPrimitiveOrWrapper would have handled them earlier.
+			LOGGER.debug("clazz:{}, getPackage() is null", clazz.getName());
+			return true;
+		}
+		String packageName = clazz.getPackage().getName();
 		// match java.*, javax.* and jakarta.* as built-in classes
 		return packageName.startsWith("java.")
 				|| packageName.startsWith("javax.")
