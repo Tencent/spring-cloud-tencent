@@ -15,3 +15,4 @@
 - [fix: ApplicationContextAwareUtils may not be ready in postProcessAfterInitialization.](https://github.com/Tencent/spring-cloud-tencent/pull/1779)
 - [refactor:optimize metadata context operation.](https://github.com/Tencent/spring-cloud-tencent/pull/1773)
 - [fix: fix parsing ConfigurationProperties value with RefreshScope.](https://github.com/Tencent/spring-cloud-tencent/pull/1781)
+- [fix: fix NacosDiscoveryRegistryAutoConfiguration and PolarisAuthAutoConfiguration still initiation when polaris disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1783)
