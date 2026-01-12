@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.auth.config;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.auth.filter.AuthReactiveFilter;
 import com.tencent.cloud.polaris.auth.filter.AuthServletFilter;
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,6 +42,7 @@ import static javax.servlet.DispatcherType.REQUEST;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisEnabled
 public class PolarisAuthAutoConfiguration {
 
 	/**
