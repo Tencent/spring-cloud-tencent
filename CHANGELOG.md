@@ -16,3 +16,4 @@
 - [refactor:optimize metadata context operation.](https://github.com/Tencent/spring-cloud-tencent/pull/1773)
 - [fix: fix parsing ConfigurationProperties value with RefreshScope.](https://github.com/Tencent/spring-cloud-tencent/pull/1781)
 - [refactor: optimize performance.](https://github.com/Tencent/spring-cloud-tencent/pull/1782)
+- [fix: fix NacosDiscoveryRegistryAutoConfiguration and PolarisAuthAutoConfiguration still initiation when polaris disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1783)
