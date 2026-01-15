@@ -30,3 +30,4 @@
 - [fix:fix PolarisContextProperties instantiated twice causing NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/1642)
 - feat: support service registry and discovery with Polaris and Nacos
 - feat: add new key for java agent nacos discovery.
+- fix: fix NacosDiscoveryRegistryAutoConfiguration and PolarisAuthAutoConfiguration still initiation when polaris disabled.

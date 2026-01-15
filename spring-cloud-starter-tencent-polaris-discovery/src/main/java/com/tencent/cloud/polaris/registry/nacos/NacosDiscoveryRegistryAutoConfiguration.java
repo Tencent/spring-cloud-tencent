@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.registry.nacos;
 
+import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration;
 
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnPolarisEnabled
 @AutoConfigureBefore(PolarisServiceRegistryAutoConfiguration.class)
 public class NacosDiscoveryRegistryAutoConfiguration {
 	@Bean
