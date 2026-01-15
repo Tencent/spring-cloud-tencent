@@ -50,54 +50,18 @@ public class PolarisLaneRouterPropertiesTest {
 	public void testDefaultValues() {
 		contextRunner.run(context -> {
 			PolarisLaneRouterProperties props = context.getBean(PolarisLaneRouterProperties.class);
-			assertThat(props.isEnabled()).isTrue();
 			assertThat(props.getBaseLaneMode()).isEqualTo(BaseLaneMode.ONLY_UNTAGGED_INSTANCE);
 		});
 	}
 
 	@Test
-	public void testEnabledPropertyBinding() {
-		contextRunner
-				.withPropertyValues("spring.cloud.polaris.router.lane-router.enabled=false")
-				.run(context -> {
-					PolarisLaneRouterProperties props = context.getBean(PolarisLaneRouterProperties.class);
-					assertThat(props.isEnabled()).isFalse();
-				});
-	}
-
-	@Test
 	public void testBaseLaneModePropertyBinding() {
 		contextRunner
-				.withPropertyValues("spring.cloud.polaris.router.lane-router.base-lane-mode=EXCLUDE_ENABLED_LANE_INSTANCE")
+				.withPropertyValues("spring.cloud.polaris.router.lane-router.base-lane-mode=" + BaseLaneMode.EXCLUDE_ENABLED_LANE_INSTANCE.name())
 				.run(context -> {
 					PolarisLaneRouterProperties props = context.getBean(PolarisLaneRouterProperties.class);
 					assertThat(props.getBaseLaneMode()).isEqualTo(BaseLaneMode.EXCLUDE_ENABLED_LANE_INSTANCE);
 				});
-	}
-
-	@Test
-	public void testAllPropertiesBinding() {
-		contextRunner
-				.withPropertyValues(
-						"spring.cloud.polaris.router.lane-router.enabled=false",
-						"spring.cloud.polaris.router.lane-router.base-lane-mode=EXCLUDE_ENABLED_LANE_INSTANCE"
-				)
-				.run(context -> {
-					PolarisLaneRouterProperties props = context.getBean(PolarisLaneRouterProperties.class);
-					assertThat(props.isEnabled()).isFalse();
-					assertThat(props.getBaseLaneMode()).isEqualTo(BaseLaneMode.EXCLUDE_ENABLED_LANE_INSTANCE);
-				});
-	}
-
-	@Test
-	public void testIsEnabled() {
-		assertThat(properties.isEnabled()).isEqualTo(true);
-	}
-
-	@Test
-	public void testSetEnabled() {
-		properties.setEnabled(false);
-		assertThat(properties.isEnabled()).isEqualTo(false);
 	}
 
 	@Test

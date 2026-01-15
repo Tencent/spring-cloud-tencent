@@ -16,6 +16,7 @@
  */
 
 package com.tencent.cloud.polaris.router.config.properties;
+
 import com.tencent.polaris.plugins.router.lane.BaseLaneMode;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -28,17 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.cloud.polaris.router.lane-router")
 public class PolarisLaneRouterProperties {
 
-	private boolean enabled = true;
-
 	private BaseLaneMode baseLaneMode = BaseLaneMode.ONLY_UNTAGGED_INSTANCE;
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 
 	public BaseLaneMode getBaseLaneMode() {
 		return baseLaneMode;
@@ -51,8 +42,7 @@ public class PolarisLaneRouterProperties {
 	@Override
 	public String toString() {
 		return "PolarisLaneRouterProperties{" +
-				"enabled=" + enabled +
-				", baseLaneMode=" + baseLaneMode +
+				"baseLaneMode=" + baseLaneMode +
 				'}';
 	}
 }
