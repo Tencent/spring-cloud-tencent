@@ -13,3 +13,4 @@
 - [fix: beautify ServicesEagerLoadSmartLifecycle logging.](https://github.com/Tencent/spring-cloud-tencent/pull/1774)
 - [refactor:optimize metadata context operation.](https://github.com/Tencent/spring-cloud-tencent/pull/1773)
 - [fix: fix parsing ConfigurationProperties value with RefreshScope.](https://github.com/Tencent/spring-cloud-tencent/pull/1780)
+- [refactor: optimize performance.](https://github.com/Tencent/spring-cloud-tencent/pull/1782)

@@ -105,9 +105,7 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 
 	private void buildTransmittedHeader(HttpRequest request, Map<String, String> transHeaders) {
 		if (!CollectionUtils.isEmpty(transHeaders)) {
-			transHeaders.entrySet().stream().forEach(entry -> {
-				request.getHeaders().set(entry.getKey(), entry.getValue());
-			});
+			transHeaders.forEach((key, value) -> request.getHeaders().set(key, value));
 		}
 	}
 

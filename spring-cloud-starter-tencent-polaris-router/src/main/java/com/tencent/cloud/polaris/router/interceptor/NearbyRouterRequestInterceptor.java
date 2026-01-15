@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
@@ -43,7 +42,7 @@ public class NearbyRouterRequestInterceptor implements RouterRequestInterceptor 
 	public void apply(ProcessRoutersRequest request, PolarisRouterContext routerContext) {
 		// set nearby router enable
 		boolean nearbyRouterEnabled = polarisNearByRouterProperties.isEnabled();
-		MetadataContainer metadataContainer = MetadataContextHolder.get()
+		MetadataContainer metadataContainer = request.getMetadataContext()
 				.getMetadataContainer(MetadataType.CUSTOM, false);
 		metadataContainer.putMetadataMapValue(NearbyRouter.ROUTER_TYPE_NEAR_BY, NearbyRouter.ROUTER_ENABLED, String.valueOf(nearbyRouterEnabled), TransitiveType.NONE);
 	}

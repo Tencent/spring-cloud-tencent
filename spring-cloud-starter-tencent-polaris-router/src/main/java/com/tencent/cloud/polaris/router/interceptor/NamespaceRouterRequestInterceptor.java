@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNamespaceRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
@@ -43,7 +42,7 @@ public class NamespaceRouterRequestInterceptor implements RouterRequestIntercept
 	@Override
 	public void apply(ProcessRoutersRequest request, PolarisRouterContext routerContext) {
 		// set namespace router enable
-		MetadataContainer metadataContainer = MetadataContextHolder.get()
+		MetadataContainer metadataContainer = request.getMetadataContext()
 				.getMetadataContainer(MetadataType.CUSTOM, false);
 		metadataContainer.putMetadataMapValue(NamespaceRouter.ROUTER_TYPE_NAMESPACE, NamespaceRouter.ROUTER_ENABLED,
 				String.valueOf(polarisNamespaceRouterProperties.isEnabled()), TransitiveType.NONE);

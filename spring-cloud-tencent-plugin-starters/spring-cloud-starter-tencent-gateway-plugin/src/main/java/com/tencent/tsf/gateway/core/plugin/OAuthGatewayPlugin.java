@@ -205,7 +205,7 @@ public class OAuthGatewayPlugin implements IGatewayPlugin<OAuthPlugin> {
 			// 这个requestUrl是从注册中心拿到服务列表并且balance之后带有IP信息的URL
 			// http://127.0.0.1:8080/group1/namespace1/Consumer-demo/echo-rest/1?user=1
 			URI requestUrl = this.reconstructURI(new OauthDelegatingServiceInstance(instance.getServer()), newUri);
-			logger.debug("LoadBalancerClientFilter url chosen: " + requestUrl);
+			logger.debug("LoadBalancerClientFilter url chosen: {}", requestUrl);
 			String result = sendAuthRequestByHttpMethod(paramsMap, headerParamsMap, requestUrl.toASCIIString(), tokenAuthMethod, timeout);
 
 			if (ClassUtils.isClassPresent("io.opentelemetry.context.Scope") && otScope instanceof Scope) {
