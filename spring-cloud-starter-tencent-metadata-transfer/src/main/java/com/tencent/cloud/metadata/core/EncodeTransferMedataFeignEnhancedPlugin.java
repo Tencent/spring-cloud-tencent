@@ -108,10 +108,7 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 	private void buildTransmittedHeader(Request request, Map<String, String> transHeaders) {
 		if (!CollectionUtils.isEmpty(transHeaders)) {
 			Map<String, Collection<String>> headers = getModifiableHeaders(request);
-			transHeaders.entrySet().stream().forEach(entry -> {
-				headers.remove(entry.getKey());
-				headers.put(entry.getKey(), Arrays.asList(entry.getValue()));
-			});
+			transHeaders.forEach((key, value) -> headers.put(key, Arrays.asList(value)));
 		}
 	}
 

@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
@@ -43,7 +42,7 @@ public class RuleBasedRouterRequestInterceptor implements RouterRequestIntercept
 	public void apply(ProcessRoutersRequest request, PolarisRouterContext routerContext) {
 		// set rule based router enable
 		boolean ruleBasedRouterEnabled = polarisRuleBasedRouterProperties.isEnabled();
-		MetadataContainer metadataContainer = MetadataContextHolder.get()
+		MetadataContainer metadataContainer = request.getMetadataContext()
 				.getMetadataContainer(MetadataType.CUSTOM, false);
 		metadataContainer.putMetadataMapValue(RuleBasedRouter.ROUTER_TYPE_RULE_BASED, RuleBasedRouter.ROUTER_ENABLED, String.valueOf(ruleBasedRouterEnabled), TransitiveType.NONE);
 		// set rule based router fail over type.
