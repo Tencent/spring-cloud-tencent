@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.common.metadata;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
@@ -259,58 +259,43 @@ public class StaticMetadataManager {
 	private void parseLocationMetadata(MetadataLocalProperties metadataLocalProperties,
 			List<InstanceMetadataProvider> instanceMetadataProviders) {
 		// resolve region info
-		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
-			Set<String> providerRegions = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getRegion)
-					.filter(region -> !StringUtils.isBlank(region)).collect(Collectors.toSet());
-			if (!CollectionUtils.isEmpty(providerRegions)) {
-				if (providerRegions.size() > 1) {
-					throw new IllegalArgumentException("Multiple Regions Provided in InstanceMetadataProviders");
-				}
-				region = providerRegions.iterator().next();
-			}
-		}
-		if (StringUtils.isBlank(region)) {
-			region = System.getenv(ENV_METADATA_REGION);
-		}
-		if (StringUtils.isBlank(region)) {
-			region = metadataLocalProperties.getContent().get(LOCATION_KEY_REGION);
-		}
+		region = resolveLocationInfo(instanceMetadataProviders, metadataLocalProperties, ENV_METADATA_REGION,
+				LOCATION_KEY_REGION, InstanceMetadataProvider::getRegion);
 
 		// resolve zone info
-		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
-			Set<String> providerZones = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getZone)
-					.filter(zone -> !StringUtils.isBlank(zone)).collect(Collectors.toSet());
-			if (!CollectionUtils.isEmpty(providerZones)) {
-				if (providerZones.size() > 1) {
-					throw new IllegalArgumentException("Multiple Zones Provided in InstanceMetadataProviders");
-				}
-				zone = providerZones.iterator().next();
-			}
-		}
-		if (StringUtils.isBlank(zone)) {
-			zone = System.getenv(ENV_METADATA_ZONE);
-		}
-		if (StringUtils.isBlank(zone)) {
-			zone = metadataLocalProperties.getContent().get(LOCATION_KEY_ZONE);
-		}
+		zone = resolveLocationInfo(instanceMetadataProviders, metadataLocalProperties, ENV_METADATA_ZONE,
+				LOCATION_KEY_ZONE, InstanceMetadataProvider::getZone);
 
 		// resolve campus info
-		if (!CollectionUtils.isEmpty(instanceMetadataProviders)) {
-			Set<String> providerCampus = instanceMetadataProviders.stream().map(InstanceMetadataProvider::getCampus)
-					.filter(campus -> !StringUtils.isBlank(campus)).collect(Collectors.toSet());
-			if (!CollectionUtils.isEmpty(providerCampus)) {
-				if (providerCampus.size() > 1) {
-					throw new IllegalArgumentException("Multiple Campus Provided in InstanceMetadataProviders");
+		campus = resolveLocationInfo(instanceMetadataProviders, metadataLocalProperties, ENV_METADATA_CAMPUS,
+				LOCATION_KEY_CAMPUS, InstanceMetadataProvider::getCampus);
+	}
+
+	private String resolveLocationInfo(List<InstanceMetadataProvider> providers,
+			MetadataLocalProperties properties, String envKey, String propKey,
+			Function<InstanceMetadataProvider, String> extractor) {
+		// 1. Try providers
+		if (!CollectionUtils.isEmpty(providers)) {
+			Set<String> values = providers.stream()
+					.map(extractor)
+					.filter(StringUtils::isNotBlank)
+					.collect(Collectors.toSet());
+			if (!CollectionUtils.isEmpty(values)) {
+				if (values.size() > 1) {
+					throw new IllegalArgumentException("Multiple values provided for " + propKey);
 				}
-				campus = providerCampus.iterator().next();
+				return values.iterator().next();
 			}
 		}
-		if (StringUtils.isBlank(campus)) {
-			campus = System.getenv(ENV_METADATA_CAMPUS);
+
+		// 2. Try environment variable
+		String value = System.getenv(envKey);
+		if (StringUtils.isNotBlank(value)) {
+			return value;
 		}
-		if (StringUtils.isBlank(campus)) {
-			campus = metadataLocalProperties.getContent().get(LOCATION_KEY_CAMPUS);
-		}
+
+		// 3. Try properties
+		return properties.getContent().get(propKey);
 	}
 
 	public Map<String, String> getAllEnvMetadata() {
@@ -341,7 +326,7 @@ public class StaticMetadataManager {
 		transHeaderSet.addAll(transHeaderFromEnvSet);
 		transHeaderSet.addAll(transHeaderFromConfigSet);
 
-		return new ArrayList<>(transHeaderSet).stream().sorted().collect(Collectors.joining(","));
+		return transHeaderSet.stream().sorted().collect(Collectors.joining(","));
 	}
 
 	public Map<String, String> getEnvTransitiveMetadata() {

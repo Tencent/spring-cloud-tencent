@@ -57,7 +57,7 @@ public class ConsulHeartbeatProperties {
 		int ttlMinus1 = ttlValue - 1;
 		double min = Math.min(ttlMinus1, max);
 		Duration heartbeatInterval = Duration.ofMillis(Math.round(1000 * min));
-		LOGGER.debug("Computed heartbeatInterval: " + heartbeatInterval);
+		LOGGER.debug("Computed heartbeatInterval: {}", heartbeatInterval);
 		return heartbeatInterval;
 	}
 

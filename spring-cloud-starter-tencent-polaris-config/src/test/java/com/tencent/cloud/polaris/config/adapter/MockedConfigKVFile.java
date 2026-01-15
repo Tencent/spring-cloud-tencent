@@ -37,11 +37,11 @@ public class MockedConfigKVFile implements ConfigKVFile {
 
 	private final Map<String, Object> properties;
 
-	private String fileName;
+	private String fileName = "MockedFileName";
 
-	private String fileGroup;
+	private String fileGroup = "MockedFileGroup";
 
-	private String namespace;
+	private String namespace = "MockedNamespace";
 
 	private final List<ConfigKVFileChangeListener> listeners = new ArrayList<>();
 
