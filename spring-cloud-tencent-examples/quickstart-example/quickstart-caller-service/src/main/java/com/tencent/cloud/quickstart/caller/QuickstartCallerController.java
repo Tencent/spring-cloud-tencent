@@ -19,7 +19,10 @@ package com.tencent.cloud.quickstart.caller;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -323,5 +326,72 @@ public class QuickstartCallerController {
 		catch (NullPointerException e) {
 			return "Polaris Discovery is not enabled. Please set spring.cloud.polaris.discovery.enabled=true";
 		}
+	}
+
+	/**
+	 * Concurrent call QuickstartCalleeService with 10 threads for 5 minutes.
+	 * @return execution result
+	 */
+	@GetMapping("/concurrent-load")
+	public String concurrentLoad() {
+		int threads = 30;
+		int minutes = 2;
+		long duration = minutes * 60 * 1000;
+		long endTime = System.currentTimeMillis() + duration;
+		Random random = new Random();
+
+		// Use a separate thread to manage the load test to avoid blocking the response
+		new Thread(() -> {
+			ExecutorService executorService = Executors.newFixedThreadPool(threads);
+			for (int i = 0; i < threads; i++) {
+				executorService.submit(() -> {
+					String url = "http://QuickStartGatewayService/QuickstartCalleeService/quickstart/callee/info";
+					while (System.currentTimeMillis() < endTime) {
+						HttpHeaders headers = new HttpHeaders();
+
+						boolean headerIf = random.nextBoolean();
+						if (headerIf) {
+//							MetadataContextHolder.get().putContext(FRAGMENT_NONE, "k1", "v1");
+							headers.add("X-Polaris-Metadata-Transitive-k1", "v1");
+						}
+						else {
+//							MetadataContextHolder.get().putContext(FRAGMENT_NONE, "k1", "v2");
+							headers.add("X-Polaris-Metadata-Transitive-k1", "v2");
+						}
+
+						// 创建 HttpEntity 实例并传入 HttpHeaders
+						HttpEntity<String> entity = new HttpEntity<>(headers);
+
+						// 使用 exchange 方法发送 GET 请求，并获取响应
+						try {
+							ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+							String body = responseEntity.getBody();
+							if (headerIf && !StringUtils.contains(body, "38081")) {
+								LOG.error("Error: " + body + " with headerIf: " + headerIf);
+							}
+							else if (!headerIf && !StringUtils.contains(body, "48084")) {
+								LOG.error("Error: " + body + " with headerIf: " + headerIf);
+							}
+						}
+						catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
+							// ignore
+						}
+					}
+				});
+			}
+			executorService.shutdown();
+			try {
+				if (!executorService.awaitTermination(6, TimeUnit.MINUTES)) {
+					executorService.shutdownNow();
+				}
+			}
+			catch (InterruptedException e) {
+				executorService.shutdownNow();
+				Thread.currentThread().interrupt();
+			}
+			LOG.info("Concurrent load test finished.");
+		}).start();
+
+		return "Concurrent load test started. " + threads + " threads will run for " + minutes + " minutes.";
 	}
 }
