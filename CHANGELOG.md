@@ -17,3 +17,4 @@
 - [fix: fix parsing ConfigurationProperties value with RefreshScope.](https://github.com/Tencent/spring-cloud-tencent/pull/1781)
 - [refactor: optimize performance.](https://github.com/Tencent/spring-cloud-tencent/pull/1782)
 - [fix: fix NacosDiscoveryRegistryAutoConfiguration and PolarisAuthAutoConfiguration still initiation when polaris disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1783)
+- [fix: fix cb rule no update bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1786)
