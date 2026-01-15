@@ -64,9 +64,9 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
-		configuration.getGlobal().getAPI().setReportEnable(false);
 		configuration.getGlobal().getStatReporter().setEnable(false);
 		configuration.getConsumer().getOutlierDetection().setWhen(OutlierDetectionConfig.When.never);
+		configuration.getConsumer().getCircuitBreaker().setEnable(false);
 
 		if (!polarisContextProperties.getEnabled() || !polarisConfigProperties.isEnabled()) {
 			return;
