@@ -59,7 +59,9 @@ public class RouterUtilsTest {
 
 	@Test
 	public void testTransferEmptyInstances() {
-		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.empty(), new PolarisInstanceTransformer());
+		ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.empty(), new PolarisInstanceTransformer())
+				.block();
+		assertThat(serviceInstances).isNotNull();
 		assertThat(serviceInstances.getInstances()).isNotNull();
 		assertThat(serviceInstances.getInstances()).isEmpty();
 	}
@@ -93,8 +95,9 @@ public class RouterUtilsTest {
 				instances.add(new PolarisServiceInstance(instance));
 			}
 
-			ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.just(instances), new PolarisInstanceTransformer());
-
+			ServiceInstances serviceInstances = RouterUtils.transferServersToServiceInstances(Flux.just(instances), new PolarisInstanceTransformer())
+					.block();
+			assertThat(serviceInstances).isNotNull();
 			assertThat(serviceInstances.getInstances()).isNotNull();
 			assertThat(serviceInstances.getInstances().size()).isEqualTo(instanceSize);
 
