@@ -23,6 +23,7 @@ import java.util.Map;
 import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.polaris.api.utils.IPAddressUtils;
 import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.plugins.router.lane.BaseLaneMode;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.SpringApplication;
@@ -182,6 +183,10 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 							environment.getProperty("spring.cloud.polaris.router.namespace-router.enabled", "true"));
 					defaultProperties.put("spring.cloud.polaris.discovery.all-recover-enabled",
 							environment.getProperty("spring.cloud.polaris.discovery.all-recover-enabled", "false"));
+					defaultProperties.put("spring.cloud.polaris.lane.router.enabled",
+							environment.getProperty("spring.cloud.polaris.lane.router.enabled", "true"));
+					defaultProperties.put("spring.cloud.polaris.lane.router.baseLaneMode",
+							environment.getProperty("spring.cloud.polaris.lane.router.baseLaneMode", BaseLaneMode.EXCLUDE_ENABLED_LANE_INSTANCE.name()));
 				}
 			}
 

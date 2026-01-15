@@ -19,11 +19,13 @@ package com.tencent.cloud.polaris.router;
 
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.cloud.polaris.router.config.properties.PolarisLaneRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
+import com.tencent.polaris.plugins.router.lane.LaneRouterConfig;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouterConfig;
 import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 
@@ -36,8 +38,11 @@ public class RouterConfigModifier implements PolarisConfigModifier {
 
 	private final PolarisNearByRouterProperties polarisNearByRouterProperties;
 
-	public RouterConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties) {
+	private final PolarisLaneRouterProperties polarisLaneRouterProperties;
+
+	public RouterConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties, PolarisLaneRouterProperties polarisLaneRouterProperties) {
 		this.polarisNearByRouterProperties = polarisNearByRouterProperties;
+		this.polarisLaneRouterProperties = polarisLaneRouterProperties;
 	}
 
 	@Override
@@ -59,7 +64,11 @@ public class RouterConfigModifier implements PolarisConfigModifier {
 			configuration.getConsumer().getServiceRouter()
 					.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_NEARBY, nearbyRouterConfig);
 		}
-
+		LaneRouterConfig laneRouterConfig = configuration.getConsumer().getServiceRouter().getPluginConfig(
+				ServiceRouterConfig.DEFAULT_ROUTER_LANE, LaneRouterConfig.class);
+		laneRouterConfig.setBaseLaneMode(polarisLaneRouterProperties.getBaseLaneMode());
+		configuration.getConsumer().getServiceRouter()
+				.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_LANE, laneRouterConfig);
 	}
 
 	@Override
