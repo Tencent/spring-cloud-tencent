@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.router.RouterConfigModifier;
+import com.tencent.cloud.polaris.router.config.properties.PolarisLaneRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNamespaceRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
@@ -36,13 +37,14 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisRouterEnabled
 @Import({PolarisNearByRouterProperties.class, PolarisMetadataRouterProperties.class, PolarisRuleBasedRouterProperties.class,
-		PolarisNamespaceRouterProperties.class})
+		PolarisNamespaceRouterProperties.class, PolarisLaneRouterProperties.class})
 public class RouterConfigModifierAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RouterConfigModifier routerConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties) {
-		return new RouterConfigModifier(polarisNearByRouterProperties);
+	public RouterConfigModifier routerConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties,
+			PolarisLaneRouterProperties polarisLaneRouterProperties) {
+		return new RouterConfigModifier(polarisNearByRouterProperties, polarisLaneRouterProperties);
 	}
 
 }
