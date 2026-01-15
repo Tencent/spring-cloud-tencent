@@ -297,9 +297,11 @@ public class PolarisConfigDataLocationResolver implements
 		if (!bootstrapContext.isRegistered(SDKContext.class)) {
 			SDKContext sdkContext = sdkContext(resolverContext,
 					polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
-			// not init reporter when creating config data temp SDK context.
 			if (sdkContext.getConfig() instanceof ConfigurationImpl) {
+				// not init reporter when creating config data temp SDK context.
 				((ConfigurationImpl) sdkContext.getConfig()).getGlobal().getStatReporter().setEnable(false);
+				// not init circuit breaker when creating config data temp SDK context.
+				((ConfigurationImpl) sdkContext.getConfig()).getConsumer().getCircuitBreaker().setEnable(false);
 			}
 			sdkContext.init();
 			PolarisConfigSDKContextManager.setConfigSDKContext(sdkContext);
