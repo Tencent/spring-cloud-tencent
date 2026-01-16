@@ -26,13 +26,18 @@ import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.plugin.mq.lane.kafka.KafkaLaneProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
+import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.config.consumer.ConsumerConfig;
+import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
 import com.tencent.polaris.api.plugin.compose.Extensions;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.plugins.router.lane.BaseLaneMode;
 import com.tencent.polaris.plugins.router.lane.LaneRouter;
+import com.tencent.polaris.plugins.router.lane.LaneRouterConfig;
 import com.tencent.polaris.plugins.router.lane.LaneUtils;
 import com.tencent.polaris.specification.api.v1.traffic.manage.LaneProto;
 import org.slf4j.Logger;
@@ -55,14 +60,18 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 
 	@Value("${spring.application.name:}")
 	private String springApplicationName;
-
-	private volatile String lane = "";
+	/**
+	 * current instance lane tag, related to baseLaneMode.
+	 */
+	private volatile String instanceLaneTag = "";
 
 	private volatile boolean serviceInLane = false;
 
 	private volatile List<LaneProto.LaneGroup> groups;
 
 	private Registration registration;
+
+	private BaseLaneMode baseLaneMode = BaseLaneMode.ONLY_UNTAGGED_INSTANCE;
 
 	public PolarisActiveLane(PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler discoveryClient,
 			KafkaLaneProperties kafkaLaneProperties, Registration registration) {
@@ -77,6 +86,14 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 		Optional.ofNullable(polarisSDKContextManager).map(PolarisSDKContextManager::getSDKContext)
 				.map(SDKContext::getExtensions).map(Extensions::getLocalRegistry)
 				.ifPresent(localRegistry -> localRegistry.registerResourceListener(this));
+
+		Optional.ofNullable(polarisSDKContextManager).map(PolarisSDKContextManager::getSDKContext)
+				.map(SDKContext::getConfig).map(Configuration::getConsumer).map(ConsumerConfig::getServiceRouter).ifPresent(serviceRouterConfig -> {
+					LaneRouterConfig laneRouterConfig = serviceRouterConfig.getPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_LANE, LaneRouterConfig.class);
+					if (laneRouterConfig != null) {
+						baseLaneMode = laneRouterConfig.getBaseLaneMode();
+					}
+				});
 	}
 
 	@Override
@@ -94,24 +111,39 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 		freshWhenInstancesChange(currentServiceInstances);
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("current lane:{},  serviceInLane: {}", lane, serviceInLane);
+			LOG.debug("current instanceLaneTag:{}, serviceInLane: {}, baseLaneMode:{}", instanceLaneTag, serviceInLane, baseLaneMode);
 		}
 	}
 
 	private void freshWhenInstancesChange(List<Instance> currentServices) {
-		if (currentServices == null || currentServices.isEmpty()) {
-			return;
-		}
+		freshLaneStatus();
 
+		String tempInstanceLaneTag = "";
 		// get all active groups
-		for (Instance healthService : currentServices) {
-			if (StringUtils.equals(healthService.getId(), registration.getInstanceId())) {
-				this.lane = healthService.getMetadata().get("lane");
-				break;
+		if (CollectionUtils.isNotEmpty(currentServices)) {
+			for (Instance healthService : currentServices) {
+				if (StringUtils.equals(healthService.getId(), registration.getInstanceId())) {
+					tempInstanceLaneTag = healthService.getMetadata().get("lane");
+					break;
+				}
 			}
 		}
 
-		freshLaneStatus();
+		if (BaseLaneMode.ONLY_UNTAGGED_INSTANCE.equals(baseLaneMode)) {
+			instanceLaneTag = tempInstanceLaneTag;
+		}
+		else {
+			// if baseLaneMode is EXCLUDE_ENABLED_LANE_INSTANCE, check if the instance lane tag is in the lane
+			boolean laneTagExist = false;
+			for (LaneProto.LaneGroup group : getGroups()) {
+				for (LaneProto.LaneRule rule : group.getRulesList()) {
+					if (StringUtils.equals(rule.getDefaultLabelValue(), tempInstanceLaneTag)) {
+						laneTagExist = true;
+					}
+				}
+			}
+			instanceLaneTag = laneTagExist ? tempInstanceLaneTag : "";
+		}
 	}
 
 	/**
@@ -128,11 +160,11 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 	}
 
 	public boolean currentInstanceInLane() {
-		return StringUtils.isNotEmpty(lane) && serviceInLane;
+		return StringUtils.isNotEmpty(instanceLaneTag) && serviceInLane;
 	}
 
-	public String getLane() {
-		return lane;
+	public String getInstanceLaneTag() {
+		return instanceLaneTag;
 	}
 
 	public List<LaneProto.LaneGroup> getGroups() {
@@ -165,7 +197,7 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 				for (LaneProto.LaneGroup group : getGroups()) {
 					for (LaneProto.LaneRule rule : group.getRulesList()) {
 						if (StringUtils.equals(messageLaneId, LaneUtils.buildStainLabel(rule))
-								&& StringUtils.equals(rule.getDefaultLabelValue(), getLane())) {
+								&& StringUtils.equals(rule.getDefaultLabelValue(), getInstanceLaneTag())) {
 							return true;
 						}
 					}

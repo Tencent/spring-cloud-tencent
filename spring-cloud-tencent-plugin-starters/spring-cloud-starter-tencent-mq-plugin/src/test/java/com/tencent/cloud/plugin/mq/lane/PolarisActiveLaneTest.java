@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.plugin.mq.lane;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.plugins.router.lane.BaseLaneMode;
 import com.tencent.polaris.plugins.router.lane.LaneUtils;
 import com.tencent.polaris.specification.api.v1.traffic.manage.LaneProto;
 import org.junit.jupiter.api.AfterEach;
@@ -118,5 +120,61 @@ public class PolarisActiveLaneTest {
 		laneUtilsMockedStatic.when(() -> LaneUtils.getLaneGroups(any(), any())).thenReturn(Collections.emptyList());
 		polarisActiveLane.freshLaneStatus(); // rule listener will call this method
 		assertThat(polarisActiveLane.currentInstanceInLane()).isFalse();
+	}
+
+	@Test
+	public void testCallback_baseLaneMode1() throws Throwable {
+		Field baseLaneModeField = PolarisActiveLane.class.getDeclaredField("baseLaneMode");
+		baseLaneModeField.setAccessible(true);
+		baseLaneModeField.set(polarisActiveLane, BaseLaneMode.EXCLUDE_ENABLED_LANE_INSTANCE);
+
+		// not in lane
+		assertThat(polarisActiveLane.currentInstanceInLane()).isFalse();
+
+		// not in lane
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("lane", "lane-not-exist");
+
+		Instance instance = mock(Instance.class);
+		when(instance.getId()).thenReturn(CURRENT_INSTANCE_ID);
+		when(instance.getMetadata()).thenReturn(metadata);
+		laneUtilsMockedStatic.when(() -> LaneUtils.getLaneGroups(any(), any()))
+				.thenReturn(Collections.singletonList(group));
+
+		LaneProto.LaneRule rule = mock(LaneProto.LaneRule.class);
+		when(rule.getDefaultLabelValue()).thenReturn("lane-exist");
+		when(group.getRulesList()).thenReturn(Collections.singletonList(rule));
+
+		polarisActiveLane.callback(Collections.singletonList(instance));
+
+		assertThat(polarisActiveLane.currentInstanceInLane()).isFalse();
+	}
+
+	@Test
+	public void testCallback_baseLaneMode2() throws Throwable {
+		Field baseLaneModeField = PolarisActiveLane.class.getDeclaredField("baseLaneMode");
+		baseLaneModeField.setAccessible(true);
+		baseLaneModeField.set(polarisActiveLane, BaseLaneMode.EXCLUDE_ENABLED_LANE_INSTANCE);
+
+		// not in lane
+		assertThat(polarisActiveLane.currentInstanceInLane()).isFalse();
+
+		// in lane
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("lane", "lane-exist");
+
+		Instance instance = mock(Instance.class);
+		when(instance.getId()).thenReturn(CURRENT_INSTANCE_ID);
+		when(instance.getMetadata()).thenReturn(metadata);
+		laneUtilsMockedStatic.when(() -> LaneUtils.getLaneGroups(any(), any()))
+				.thenReturn(Collections.singletonList(group));
+
+		LaneProto.LaneRule rule = mock(LaneProto.LaneRule.class);
+		when(rule.getDefaultLabelValue()).thenReturn("lane-exist");
+		when(group.getRulesList()).thenReturn(Collections.singletonList(rule));
+
+		polarisActiveLane.callback(Collections.singletonList(instance));
+
+		assertThat(polarisActiveLane.currentInstanceInLane()).isTrue();
 	}
 }

@@ -74,7 +74,7 @@ public class KafkaLaneAspectTest {
 		polarisActiveLane = new PolarisActiveLane(mock(PolarisSDKContextManager.class), mock(PolarisDiscoveryHandler.class), kafkaLaneProperties, mock(Registration.class));
 		laneUtilsMockedStatic = Mockito.mockStatic(LaneUtils.class);
 		tsfContextUtilsMockedStatic = Mockito.mockStatic(TsfContextUtils.class);
-		Field laneField = PolarisActiveLane.class.getDeclaredField("lane");
+		Field laneField = PolarisActiveLane.class.getDeclaredField("instanceLaneTag");
 		laneField.setAccessible(true);
 		laneField.set(polarisActiveLane, "test-lane"); // in lane
 

@@ -78,7 +78,7 @@ public class KafkaLaneAspectTest3 {
 	@Test
 	public void testConsumerAspectWithLaneHeader_toInLane() throws Throwable {
 		// not in lane
-		Field laneField = PolarisActiveLane.class.getDeclaredField("lane");
+		Field laneField = PolarisActiveLane.class.getDeclaredField("instanceLaneTag");
 		laneField.setAccessible(true);
 		laneField.set(polarisActiveLane, "");
 
@@ -133,7 +133,7 @@ public class KafkaLaneAspectTest3 {
 		when(rule.getDefaultLabelValue()).thenReturn("test-lane");
 		laneUtilsMockedStatic.when(() -> LaneUtils.buildStainLabel(rule)).thenReturn(laneId);
 
-		Field laneField = PolarisActiveLane.class.getDeclaredField("lane");
+		Field laneField = PolarisActiveLane.class.getDeclaredField("instanceLaneTag");
 		laneField.setAccessible(true);
 		laneField.set(polarisActiveLane, "test-lane");
 
