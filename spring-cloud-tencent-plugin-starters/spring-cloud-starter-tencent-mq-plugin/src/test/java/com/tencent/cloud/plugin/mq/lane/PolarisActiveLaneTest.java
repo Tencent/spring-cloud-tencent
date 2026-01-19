@@ -176,5 +176,6 @@ public class PolarisActiveLaneTest {
 		polarisActiveLane.callback(Collections.singletonList(instance));
 
 		assertThat(polarisActiveLane.currentInstanceInLane()).isTrue();
+
 	}
 }
