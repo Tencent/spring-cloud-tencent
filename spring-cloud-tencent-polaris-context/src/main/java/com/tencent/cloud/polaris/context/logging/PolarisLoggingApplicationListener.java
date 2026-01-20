@@ -28,6 +28,7 @@ import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -69,7 +70,11 @@ public class PolarisLoggingApplicationListener implements GenericApplicationList
 			environment = ((ApplicationEnvironmentPreparedEvent) applicationEvent).getEnvironment();
 		}
 		else if (ApplicationFailedEvent.class.isAssignableFrom(applicationEvent.getClass())) {
-			environment = ((ApplicationFailedEvent) applicationEvent).getApplicationContext().getEnvironment();
+			ConfigurableApplicationContext configurableApplicationContext = ((ApplicationFailedEvent) applicationEvent)
+					.getApplicationContext();
+			if (configurableApplicationContext != null) {
+				environment = configurableApplicationContext.getEnvironment();
+			}
 		}
 
 		if (environment != null) {
