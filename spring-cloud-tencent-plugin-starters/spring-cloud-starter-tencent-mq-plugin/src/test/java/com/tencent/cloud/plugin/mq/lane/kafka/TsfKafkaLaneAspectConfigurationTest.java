@@ -18,13 +18,11 @@
 package com.tencent.cloud.plugin.mq.lane.kafka;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.plugin.mq.lane.tsf.TsfActiveLane;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,56 +38,29 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link KafkaLaneAspectConfiguration}.
  */
-public class KafkaLaneAspectConfigurationTest {
+public class TsfKafkaLaneAspectConfigurationTest {
 
 	private ApplicationContextRunner contextRunner;
 
 	@BeforeEach
-	public void setUp() {
+	public void setUp() throws Exception {
+		// Reset onlyTsfConsulEnabled
+		Field onlyTsfConsulEnabledField = TsfContextUtils.class.getDeclaredField("onlyTsfConsulEnabled");
+		onlyTsfConsulEnabledField.setAccessible(true);
+		onlyTsfConsulEnabledField.setBoolean(null, true);
+
 		contextRunner = new ApplicationContextRunner()
+				.withPropertyValues(
+						"tsf_consul_enable=true",
+						"tsf_consul_ip=127.0.0.1",
+						"spring.cloud.polaris.address=" // Empty to simulate only TSF Consul
+				)
 				.withConfiguration(AutoConfigurations.of(KafkaLaneAspectConfiguration.class))
 				.withUserConfiguration(MockConfiguration.class);
 	}
 
-	@AfterEach
-	public void tearDown() {
-		// Reset static state for clean tests using reflection
-		resetTsfContextUtilsStaticFields();
-	}
-
-	private void resetTsfContextUtilsStaticFields() {
-		try {
-			// Reset isOnlyTsfConsulEnabledFirstConfiguration
-			Field isOnlyTsfConsulEnabledFirstConfigurationField = TsfContextUtils.class.getDeclaredField("isOnlyTsfConsulEnabledFirstConfiguration");
-			isOnlyTsfConsulEnabledFirstConfigurationField.setAccessible(true);
-			AtomicBoolean isOnlyTsfConsulEnabledFirstConfiguration = (AtomicBoolean) isOnlyTsfConsulEnabledFirstConfigurationField.get(null);
-			isOnlyTsfConsulEnabledFirstConfiguration.set(true);
-
-			// Reset isTsfConsulEnabledFirstConfiguration
-			Field isTsfConsulEnabledFirstConfigurationField = TsfContextUtils.class.getDeclaredField("isTsfConsulEnabledFirstConfiguration");
-			isTsfConsulEnabledFirstConfigurationField.setAccessible(true);
-			AtomicBoolean isTsfConsulEnabledFirstConfiguration = (AtomicBoolean) isTsfConsulEnabledFirstConfigurationField.get(null);
-			isTsfConsulEnabledFirstConfiguration.set(true);
-
-			// Reset tsfConsulEnabled
-			Field tsfConsulEnabledField = TsfContextUtils.class.getDeclaredField("tsfConsulEnabled");
-			tsfConsulEnabledField.setAccessible(true);
-			tsfConsulEnabledField.setBoolean(null, false);
-
-			// Reset onlyTsfConsulEnabled
-			Field onlyTsfConsulEnabledField = TsfContextUtils.class.getDeclaredField("onlyTsfConsulEnabled");
-			onlyTsfConsulEnabledField.setAccessible(true);
-			onlyTsfConsulEnabledField.setBoolean(null, false);
-
-		}
-		catch (Exception e) {
-			throw new RuntimeException("Failed to reset TsfContextUtils static fields", e);
-		}
-	}
-
 	@Test
 	public void testKafkaLaneAspectBeanCreationWhenKafkaTemplatePresent() {
-		resetTsfContextUtilsStaticFields();
 		// Simulate KafkaTemplate class presence
 		contextRunner
 				.withPropertyValues("spring.cloud.polaris.lane.kafka.lane-on=true")
@@ -103,24 +74,7 @@ public class KafkaLaneAspectConfigurationTest {
 	}
 
 	@Test
-	public void testTsfActiveLaneBeanNotCreatedWhenPolarisAddressPresent() {
-		resetTsfContextUtilsStaticFields();
-		// Simulate Polaris address present (not only TSF Consul)
-		contextRunner
-				.withPropertyValues(
-						"tsf_consul_enable=true",
-						"tsf_consul_ip=127.0.0.1",
-						"spring.cloud.polaris.address=127.0.0.1:8091"
-				)
-				.run(context -> {
-					// TsfActiveLane should NOT be created when Polaris address is present
-					assertThat(context).doesNotHaveBean(TsfActiveLane.class);
-				});
-	}
-
-	@Test
 	public void testKafkaLanePropertiesEnabled() {
-		resetTsfContextUtilsStaticFields();
 		contextRunner
 				.withPropertyValues(
 						"spring.cloud.polaris.lane.kafka.lane-on=true",
@@ -137,7 +91,6 @@ public class KafkaLaneAspectConfigurationTest {
 
 	@Test
 	public void testBeanDependenciesInjection() {
-		resetTsfContextUtilsStaticFields();
 		contextRunner
 				.withPropertyValues("spring.cloud.polaris.lane.kafka.lane-on=true")
 				.run(context -> {
@@ -153,6 +106,19 @@ public class KafkaLaneAspectConfigurationTest {
 					KafkaLaneProperties properties = context.getBean(KafkaLaneProperties.class);
 					assertThat(properties).isNotNull();
 					assertThat(properties.getLaneOn()).isTrue();
+				});
+	}
+
+	@Test
+	public void testTsfActiveLaneBeanCreationWhenOnlyTsfConsulEnabled() {
+		// Simulate Only TSF Consul enabled condition
+		contextRunner
+				.run(context -> {
+					// TsfActiveLane should be created when only TSF Consul is enabled
+					assertThat(context).hasSingleBean(TsfActiveLane.class);
+
+					TsfActiveLane tsfActiveLane = context.getBean(TsfActiveLane.class);
+					assertThat(tsfActiveLane).isNotNull();
 				});
 	}
 

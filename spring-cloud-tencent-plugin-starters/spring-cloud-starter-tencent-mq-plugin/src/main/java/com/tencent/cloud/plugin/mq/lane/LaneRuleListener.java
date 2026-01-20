@@ -15,18 +15,18 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.mq.lane.tsf;
+package com.tencent.cloud.plugin.mq.lane;
 
 import com.tencent.polaris.api.plugin.registry.AbstractResourceEventListener;
 import com.tencent.polaris.api.pojo.RegistryCacheValue;
 import com.tencent.polaris.api.pojo.ServiceEventKey;
 
-public class TsfLaneRuleListener extends AbstractResourceEventListener {
+public class LaneRuleListener extends AbstractResourceEventListener {
 
-	private final TsfActiveLane tsfActiveLane;
+	private final Runnable refreshAction;
 
-	public TsfLaneRuleListener(TsfActiveLane tsfActiveLane) {
-		this.tsfActiveLane = tsfActiveLane;
+	public LaneRuleListener(Runnable refreshAction) {
+		this.refreshAction = refreshAction;
 	}
 
 	@Override
@@ -34,8 +34,7 @@ public class TsfLaneRuleListener extends AbstractResourceEventListener {
 		if (svcEventKey.getEventType() != ServiceEventKey.EventType.LANE_RULE) {
 			return;
 		}
-
-		tsfActiveLane.freshLaneStatus();
+		refreshAction.run();
 	}
 
 	@Override
@@ -43,8 +42,7 @@ public class TsfLaneRuleListener extends AbstractResourceEventListener {
 		if (svcEventKey.getEventType() != ServiceEventKey.EventType.LANE_RULE) {
 			return;
 		}
-
-		tsfActiveLane.freshLaneStatus();
+		refreshAction.run();
 	}
 
 	@Override
@@ -52,7 +50,6 @@ public class TsfLaneRuleListener extends AbstractResourceEventListener {
 		if (svcEventKey.getEventType() != ServiceEventKey.EventType.LANE_RULE) {
 			return;
 		}
-
-		tsfActiveLane.freshLaneStatus();
+		refreshAction.run();
 	}
 }
