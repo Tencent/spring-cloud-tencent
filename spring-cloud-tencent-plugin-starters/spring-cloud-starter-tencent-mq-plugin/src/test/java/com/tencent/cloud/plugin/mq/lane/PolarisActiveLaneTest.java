@@ -71,7 +71,7 @@ public class PolarisActiveLaneTest {
 		when(polarisSDKContextManager.getSDKContext()).thenReturn(mock(SDKContext.class));
 		registration = mock(Registration.class);
 		when(registration.getInstanceId()).thenReturn(CURRENT_INSTANCE_ID);
-		polarisActiveLane = new PolarisActiveLane(polarisSDKContextManager, mock(PolarisDiscoveryHandler.class), kafkaLaneProperties, registration);
+		polarisActiveLane = new PolarisActiveLane(polarisSDKContextManager, mock(PolarisDiscoveryHandler.class), registration);
 		laneUtilsMockedStatic = Mockito.mockStatic(LaneUtils.class);
 		jacksonUtilsMockedStatic = Mockito.mockStatic(JacksonUtils.class);
 		tsfContextUtilsMockedStatic = Mockito.mockStatic(TsfContextUtils.class);

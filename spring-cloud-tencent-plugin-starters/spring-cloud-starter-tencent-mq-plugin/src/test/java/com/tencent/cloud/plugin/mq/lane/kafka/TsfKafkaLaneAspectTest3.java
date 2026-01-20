@@ -61,7 +61,7 @@ public class TsfKafkaLaneAspectTest3 {
 		group = mock(LaneProto.LaneGroup.class);
 		kafkaLaneProperties = new KafkaLaneProperties();
 		kafkaLaneProperties.setLaneOn(true);
-		tsfActiveLane = new TsfActiveLane(mock(PolarisSDKContextManager.class), mock(PolarisDiscoveryHandler.class), kafkaLaneProperties);
+		tsfActiveLane = new TsfActiveLane(mock(PolarisSDKContextManager.class), mock(PolarisDiscoveryHandler.class));
 		laneUtilsMockedStatic = Mockito.mockStatic(LaneUtils.class);
 		tsfContextUtilsMockedStatic = Mockito.mockStatic(TsfContextUtils.class);
 

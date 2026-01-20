@@ -46,13 +46,13 @@ public class KafkaLaneAspectConfiguration {
 	@Bean
 	@ConditionalOnClass(name = {"org.springframework.kafka.core.KafkaTemplate"})
 	@ConditionalOnMissingBean
-	public AbstractActiveLane activeLane(PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler discoveryClient,
-			KafkaLaneProperties kafkaLaneProperties, Registration registration) {
+	public AbstractActiveLane activeLane(PolarisSDKContextManager polarisSDKContextManager,
+			PolarisDiscoveryHandler discoveryClient, Registration registration) {
 		if (TsfContextUtils.isOnlyTsfConsulEnabled()) {
-			return new TsfActiveLane(polarisSDKContextManager, discoveryClient, kafkaLaneProperties);
+			return new TsfActiveLane(polarisSDKContextManager, discoveryClient);
 		}
 		else {
-			return new PolarisActiveLane(polarisSDKContextManager, discoveryClient, kafkaLaneProperties, registration);
+			return new PolarisActiveLane(polarisSDKContextManager, discoveryClient, registration);
 		}
 	}
 }

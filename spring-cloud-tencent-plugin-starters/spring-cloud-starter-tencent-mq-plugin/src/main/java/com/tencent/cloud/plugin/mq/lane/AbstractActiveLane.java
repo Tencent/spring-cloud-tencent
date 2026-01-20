@@ -29,7 +29,7 @@ import com.tencent.polaris.client.pojo.ServiceInstancesByProto;
 
 public abstract class AbstractActiveLane extends AbstractResourceEventListener {
 
-	public abstract boolean ifConsume(String laneId);
+	public abstract boolean ifConsume(String laneId, MqLaneProperties mqLaneProperties);
 
 	public abstract String getLaneHeaderKey();
 

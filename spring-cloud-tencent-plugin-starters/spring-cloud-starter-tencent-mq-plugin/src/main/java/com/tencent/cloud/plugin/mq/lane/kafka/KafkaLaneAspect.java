@@ -262,6 +262,6 @@ public class KafkaLaneAspect {
 	 * @return whether to consume.
 	 */
 	boolean ifConsume(String messageLaneId) {
-		return activeLane.ifConsume(messageLaneId);
+		return activeLane.ifConsume(messageLaneId, kafkaLaneProperties);
 	}
 }

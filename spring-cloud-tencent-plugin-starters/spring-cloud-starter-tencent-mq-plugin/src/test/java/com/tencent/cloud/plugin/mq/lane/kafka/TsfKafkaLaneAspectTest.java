@@ -69,7 +69,7 @@ public class TsfKafkaLaneAspectTest {
 	public void setUp() throws Exception {
 		polarisSDKContextManager = mock(PolarisSDKContextManager.class);
 		kafkaLaneProperties = new KafkaLaneProperties();
-		tsfActiveLane = new TsfActiveLane(polarisSDKContextManager, mock(PolarisDiscoveryHandler.class), kafkaLaneProperties);
+		tsfActiveLane = new TsfActiveLane(polarisSDKContextManager, mock(PolarisDiscoveryHandler.class));
 		laneUtilsMockedStatic = Mockito.mockStatic(LaneUtils.class);
 		tsfContextUtilsMockedStatic = Mockito.mockStatic(TsfContextUtils.class);
 		tsfContextUtilsMockedStatic.when(TsfContextUtils::isOnlyTsfConsulEnabled).thenReturn(true);

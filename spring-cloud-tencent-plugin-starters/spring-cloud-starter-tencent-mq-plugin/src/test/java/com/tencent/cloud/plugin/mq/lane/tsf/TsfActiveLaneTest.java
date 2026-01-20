@@ -81,7 +81,7 @@ public class TsfActiveLaneTest {
 		when(polarisSDKContextManager.getSDKContext()).thenReturn(sdkContext);
 		when(sdkContext.getExtensions()).thenReturn(extensions);
 
-		tsfActiveLane = new TsfActiveLane(polarisSDKContextManager, discoveryClient, kafkaLaneProperties);
+		tsfActiveLane = new TsfActiveLane(polarisSDKContextManager, discoveryClient);
 
 
 		// Set up field values using reflection

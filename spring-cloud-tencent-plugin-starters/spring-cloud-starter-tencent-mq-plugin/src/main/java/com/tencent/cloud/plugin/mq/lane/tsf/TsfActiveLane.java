@@ -27,7 +27,7 @@ import java.util.Set;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.plugin.mq.lane.AbstractActiveLane;
 import com.tencent.cloud.plugin.mq.lane.LaneRuleListener;
-import com.tencent.cloud.plugin.mq.lane.kafka.KafkaLaneProperties;
+import com.tencent.cloud.plugin.mq.lane.MqLaneProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.api.plugin.compose.Extensions;
@@ -55,8 +55,6 @@ public class TsfActiveLane extends AbstractActiveLane implements InitializingBea
 
 	private final PolarisDiscoveryHandler discoveryClient;
 
-	private final KafkaLaneProperties kafkaLaneProperties;
-
 	/**
 	 * Online deployment groups for this service (same namespace id and application id required).
 	 */
@@ -81,10 +79,9 @@ public class TsfActiveLane extends AbstractActiveLane implements InitializingBea
 	@Value("${spring.application.name:}")
 	private String springApplicationName;
 
-	public TsfActiveLane(PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler discoveryClient, KafkaLaneProperties kafkaLaneProperties) {
+	public TsfActiveLane(PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler discoveryClient) {
 		this.polarisSDKContextManager = polarisSDKContextManager;
 		this.discoveryClient = discoveryClient;
-		this.kafkaLaneProperties = kafkaLaneProperties;
 		Optional.ofNullable(polarisSDKContextManager).map(PolarisSDKContextManager::getSDKContext)
 				.map(SDKContext::getExtensions).map(Extensions::getLocalRegistry)
 				.ifPresent(localRegistry -> localRegistry.registerResourceListener(new LaneRuleListener(this::freshLaneStatus)));
@@ -126,7 +123,7 @@ public class TsfActiveLane extends AbstractActiveLane implements InitializingBea
 			String nsId = healthService.getMetadata().get("TSF_NAMESPACE_ID");
 			String groupId = healthService.getMetadata().get("TSF_GROUP_ID");
 			String applicationId = healthService.getMetadata().get("TSF_APPLICATION_ID");
-			if (tsfNamespaceId.equals(nsId) && tsfApplicationId.equals(applicationId) && StringUtils.isNotEmpty(groupId)) {
+			if (StringUtils.equals(tsfNamespaceId, nsId) && StringUtils.equals(tsfApplicationId, applicationId) && StringUtils.isNotEmpty(groupId)) {
 				currentActiveGroupSet.add(groupId);
 			}
 		}
@@ -194,7 +191,7 @@ public class TsfActiveLane extends AbstractActiveLane implements InitializingBea
 	}
 
 	@Override
-	public boolean ifConsume(String originMessageLaneId) {
+	public boolean ifConsume(String originMessageLaneId, MqLaneProperties mqLaneProperties) {
 		String laneId = originMessageLaneId;
 		if (laneId != null && laneId.contains("/")) {
 			laneId = laneId.split("/")[1];
@@ -209,7 +206,7 @@ public class TsfActiveLane extends AbstractActiveLane implements InitializingBea
 			}
 			else {
 				// lane listener consumes baseline message
-				return this.kafkaLaneProperties.getLaneConsumeMain();
+				return mqLaneProperties.getLaneConsumeMain();
 			}
 		}
 		else {
@@ -223,7 +220,7 @@ public class TsfActiveLane extends AbstractActiveLane implements InitializingBea
 
 				// message carries lane id, but the current service's lane has deployment groups but is not active (or manually taken offline), consume baseline based on switch configuration, default is not to consume
 				consume = consume ||
-						(this.kafkaLaneProperties.getMainConsumeLane() &&
+						(mqLaneProperties.getMainConsumeLane() &&
 								isLaneExist(laneId) &&
 								!isActiveLane(laneId)
 						);

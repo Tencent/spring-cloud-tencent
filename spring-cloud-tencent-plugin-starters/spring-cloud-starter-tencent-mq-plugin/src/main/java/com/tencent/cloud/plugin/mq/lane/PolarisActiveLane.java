@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.plugin.mq.lane.kafka.KafkaLaneProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 import com.tencent.polaris.api.config.Configuration;
@@ -56,8 +55,6 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 
 	private final PolarisDiscoveryHandler discoveryClient;
 
-	private final KafkaLaneProperties kafkaLaneProperties;
-
 	@Value("${spring.application.name:}")
 	private String springApplicationName;
 	/**
@@ -73,11 +70,10 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 
 	private BaseLaneMode baseLaneMode = BaseLaneMode.ONLY_UNTAGGED_INSTANCE;
 
-	public PolarisActiveLane(PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler discoveryClient,
-			KafkaLaneProperties kafkaLaneProperties, Registration registration) {
+	public PolarisActiveLane(PolarisSDKContextManager polarisSDKContextManager,
+			PolarisDiscoveryHandler discoveryClient, Registration registration) {
 		this.polarisSDKContextManager = polarisSDKContextManager;
 		this.discoveryClient = discoveryClient;
-		this.kafkaLaneProperties = kafkaLaneProperties;
 		this.registration = registration;
 		Optional.ofNullable(polarisSDKContextManager).map(PolarisSDKContextManager::getSDKContext)
 				.map(SDKContext::getExtensions).map(Extensions::getLocalRegistry)
@@ -172,7 +168,7 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 	}
 
 	@Override
-	public boolean ifConsume(String messageLaneId) {
+	public boolean ifConsume(String messageLaneId, MqLaneProperties mqLaneProperties) {
 		// message has no lane id
 		if (StringUtils.isEmpty(messageLaneId)) {
 			if (!currentInstanceInLane()) {
@@ -181,7 +177,7 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 			}
 			else {
 				// lane listener consumes baseline message
-				return this.kafkaLaneProperties.getLaneConsumeMain();
+				return mqLaneProperties.getLaneConsumeMain();
 			}
 		}
 		else {
@@ -190,7 +186,7 @@ public class PolarisActiveLane extends AbstractActiveLane implements Initializin
 			// message has lane id
 			if (!currentInstanceInLane()) {
 				// baseline service
-				return this.kafkaLaneProperties.getMainConsumeLane();
+				return mqLaneProperties.getMainConsumeLane();
 			}
 			else {
 				// whether the message lane id is the same as the lane id of the listener
