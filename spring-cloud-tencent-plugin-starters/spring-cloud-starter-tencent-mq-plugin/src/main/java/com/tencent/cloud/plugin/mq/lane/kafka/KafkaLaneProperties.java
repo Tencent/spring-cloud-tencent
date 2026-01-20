@@ -17,10 +17,12 @@
 
 package com.tencent.cloud.plugin.mq.lane.kafka;
 
+import com.tencent.cloud.plugin.mq.lane.MqLaneProperties;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "spring.cloud.polaris.lane.kafka")
-public class KafkaLaneProperties {
+public class KafkaLaneProperties implements MqLaneProperties {
 
 	/**
 	 * enable kafka lane.
