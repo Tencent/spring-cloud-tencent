@@ -17,15 +17,17 @@
 
 package com.tencent.cloud.plugin.mq.lane.kafka;
 
-import com.tencent.cloud.common.tsf.ConditionalOnOnlyTsfConsulEnabled;
+import com.tencent.cloud.common.tsf.TsfContextUtils;
+import com.tencent.cloud.plugin.mq.lane.AbstractActiveLane;
+import com.tencent.cloud.plugin.mq.lane.PolarisActiveLane;
 import com.tencent.cloud.plugin.mq.lane.tsf.TsfActiveLane;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,15 +38,21 @@ public class KafkaLaneAspectConfiguration {
 	@Bean
 	@ConditionalOnClass(name = {"org.springframework.kafka.core.KafkaTemplate"})
 	public KafkaLaneAspect kafkaLaneAspect(PolarisSDKContextManager polarisSDKContextManager,
-			KafkaLaneProperties kafkaLaneProperties, @Autowired(required = false) TsfActiveLane tsfActiveLane) {
-		return new KafkaLaneAspect(polarisSDKContextManager, kafkaLaneProperties, tsfActiveLane);
+			KafkaLaneProperties kafkaLaneProperties,
+			AbstractActiveLane activeLane) {
+		return new KafkaLaneAspect(polarisSDKContextManager, kafkaLaneProperties, activeLane);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = {"org.springframework.kafka.core.KafkaTemplate"})
 	@ConditionalOnMissingBean
-	@ConditionalOnOnlyTsfConsulEnabled
-	public TsfActiveLane tsfActiveLane(PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler discoveryClient) {
-		return new TsfActiveLane(polarisSDKContextManager, discoveryClient);
+	public AbstractActiveLane activeLane(PolarisSDKContextManager polarisSDKContextManager,
+			PolarisDiscoveryHandler discoveryClient, Registration registration) {
+		if (TsfContextUtils.isOnlyTsfConsulEnabled()) {
+			return new TsfActiveLane(polarisSDKContextManager, discoveryClient);
+		}
+		else {
+			return new PolarisActiveLane(polarisSDKContextManager, discoveryClient, registration);
+		}
 	}
 }

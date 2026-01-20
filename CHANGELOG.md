@@ -19,3 +19,4 @@
 - [fix: fix NacosDiscoveryRegistryAutoConfiguration and PolarisAuthAutoConfiguration still initiation when polaris disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1783)
 - [fix: fix cb rule no update bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1786)
 - [feat: support traffic gray lane router](https://github.com/Tencent/spring-cloud-tencent/pull/1785)
+- [fix: kafka lane support dynamic lane tag.](https://github.com/Tencent/spring-cloud-tencent/pull/1784)
