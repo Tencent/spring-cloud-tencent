@@ -183,9 +183,9 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 							environment.getProperty("spring.cloud.polaris.router.namespace-router.enabled", "true"));
 					defaultProperties.put("spring.cloud.polaris.discovery.all-recover-enabled",
 							environment.getProperty("spring.cloud.polaris.discovery.all-recover-enabled", "false"));
-					defaultProperties.put("spring.cloud.polaris.lane.router.enabled",
+					defaultProperties.put("spring.cloud.polaris.router.lane-router.enabled",
 							environment.getProperty("spring.cloud.polaris.router.lane-router.enabled", "true"));
-					defaultProperties.put("spring.cloud.polaris.lane.router.baseLaneMode",
+					defaultProperties.put("spring.cloud.polaris.router.lane-router.baseLaneMode",
 							environment.getProperty("spring.cloud.polaris.router.lane-router.baseLaneMode", BaseLaneMode.EXCLUDE_ENABLED_LANE_INSTANCE.name()));
 				}
 			}
