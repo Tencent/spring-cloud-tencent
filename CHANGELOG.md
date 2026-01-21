@@ -21,4 +21,4 @@
 - [feat: support traffic gray lane router](https://github.com/Tencent/spring-cloud-tencent/pull/1785)
 - [fix: kafka lane support dynamic lane tag.](https://github.com/Tencent/spring-cloud-tencent/pull/1784)
 - [fix: fix NPE when application context is null #1787](https://github.com/Tencent/spring-cloud-tencent/pull/1787)
-- [fix: fix lane router property name.](https://github.com/Tencent/spring-cloud-tencent/pull/1788)
+- [fix: fix lane router property name.](https://github.com/Tencent/spring-cloud-tencent/pull/1789)
