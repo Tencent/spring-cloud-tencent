@@ -35,6 +35,7 @@ import reactor.util.annotation.NonNull;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -50,7 +51,10 @@ public class ServiceInstanceChangeCallbackManager implements ApplicationListener
 
 	private final ScheduledThreadPoolExecutor serviceChangeListenerExecutor;
 
-	public ServiceInstanceChangeCallbackManager() {
+	private final Environment environment;
+
+	public ServiceInstanceChangeCallbackManager(Environment environment) {
+		this.environment = environment;
 		this.serviceChangeListenerExecutor = new ScheduledThreadPoolExecutor(4, new NamedThreadFactory("service-change-listener"));
 	}
 
@@ -101,6 +105,19 @@ public class ServiceInstanceChangeCallbackManager implements ApplicationListener
 		if (clz.isAnnotationPresent(ServiceInstanceChangeListener.class)) {
 			ServiceInstanceChangeListener serviceInstanceChangeListener = clz.getAnnotation(ServiceInstanceChangeListener.class);
 			serviceName = serviceInstanceChangeListener.serviceName();
+			String message = null;
+			try {
+				serviceName = environment.resolveRequiredPlaceholders(serviceName);
+			}
+			catch (Exception e) {
+				// resolve failed, reset service name.
+				message = e.getMessage();
+				serviceName = null;
+			}
+			if (StringUtils.isBlank(serviceName)) {
+				LOG.warn("resolve service name failed, bean name:{}, config service name:{}, message:{}",
+						beanName, serviceInstanceChangeListener.serviceName(), message);
+			}
 		}
 
 		if (StringUtils.isBlank(serviceName)) {
@@ -123,8 +140,8 @@ public class ServiceInstanceChangeCallbackManager implements ApplicationListener
 
 	@Override
 	public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
-		PolarisDiscoveryClient polarisDiscoveryClient = ApplicationContextAwareUtils.getBeanIfExists(PolarisDiscoveryClient.class);
-		PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient = ApplicationContextAwareUtils.getBeanIfExists(PolarisReactiveDiscoveryClient.class);
+		PolarisDiscoveryClient polarisDiscoveryClient = ApplicationContextAwareUtils.getBeanIfExists(PolarisDiscoveryClient.class, false);
+		PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient = ApplicationContextAwareUtils.getBeanIfExists(PolarisReactiveDiscoveryClient.class, false);
 		for (String serviceName : callbackMap.keySet()) {
 			try {
 				if (polarisDiscoveryClient != null) {

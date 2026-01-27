@@ -23,6 +23,7 @@ import com.tencent.cloud.polaris.discovery.ConditionalOnPolarisDiscoveryEnabled;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * Configuration for listening the change of service status.
@@ -41,8 +42,8 @@ public class PolarisRefreshConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ServiceInstanceChangeCallbackManager serviceInstanceChangeCallbackManager() {
-		return new ServiceInstanceChangeCallbackManager();
+	public ServiceInstanceChangeCallbackManager serviceInstanceChangeCallbackManager(Environment environment) {
+		return new ServiceInstanceChangeCallbackManager(environment);
 	}
 
 	@Bean
