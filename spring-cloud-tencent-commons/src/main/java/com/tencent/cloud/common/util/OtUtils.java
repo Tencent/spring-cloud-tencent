@@ -37,6 +37,11 @@ public final class OtUtils {
 	 */
 	public static final String OTEL_LANE_ID_KEY = "lane-id";
 
+	/**
+	 * Key of prefer ipv6.
+	 */
+	public static final String OTEL_PREFER_IPV6_KEY = "prefer.ipv6";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(OtUtils.class);
 
 	private static String otServiceName = null;

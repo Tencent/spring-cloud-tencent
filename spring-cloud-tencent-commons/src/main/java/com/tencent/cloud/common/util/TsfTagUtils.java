@@ -150,6 +150,9 @@ public final class TsfTagUtils {
 			case TsfMetadataConstants.TSF_NAMESPACE_ID:
 				metadata.setNamespaceId(entry.getValue());
 				break;
+			case TsfMetadataConstants.TSF_PREFER_IPV6:
+				metadata.setPreferIpv6(Boolean.parseBoolean(entry.getValue()));
+				break;
 			}
 		}
 		tsfMetadataMap.put(MetadataConstant.HeaderName.TSF_METADATA, JacksonUtils.serialize2Json(metadata));
@@ -221,6 +224,7 @@ public final class TsfTagUtils {
 			if (StringUtils.isNotEmpty(metadata.getLocalIp())) {
 				mergedApplicationMetadata.put(MetadataConstants.LOCAL_IP, metadata.getLocalIp());
 			}
+			mergedApplicationMetadata.put(TsfMetadataConstants.TSF_PREFER_IPV6, String.valueOf(metadata.isPreferIpv6()));
 		}
 
 		if (LOGGER.isDebugEnabled()) {
