@@ -94,6 +94,11 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 				}
 			}
 		}
+
+		Map<String, String> upstreamApplicationAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_UPSTREAM_APPLICATION);
+		attributes.put(OtUtils.OTEL_PREFER_IPV6_KEY,
+				upstreamApplicationAttributes.getOrDefault(TsfMetadataConstants.TSF_PREFER_IPV6, "false"));
+
 		return attributes;
 	}
 
