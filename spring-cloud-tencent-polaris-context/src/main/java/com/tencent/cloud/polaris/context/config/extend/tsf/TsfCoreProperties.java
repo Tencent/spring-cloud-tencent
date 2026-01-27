@@ -135,6 +135,9 @@ public class TsfCoreProperties {
 	@Value("${tsf_ratelimit_master_port:7000}")
 	private Integer ratelimitMasterPort;
 
+	@Value("${tsf_prefer_ipv6:false}")
+	private Boolean preferIpv6;
+
 	public String getAppId() {
 		return appId;
 	}
@@ -290,6 +293,14 @@ public class TsfCoreProperties {
 		this.ratelimitMasterPort = ratelimitMasterPort;
 	}
 
+	public Boolean getPreferIpv6() {
+		return preferIpv6;
+	}
+
+	public void setPreferIpv6(Boolean preferIpv6) {
+		this.preferIpv6 = preferIpv6;
+	}
+
 	@Override
 	public String toString() {
 		return "TsfCoreProperties{" +
@@ -311,6 +322,7 @@ public class TsfCoreProperties {
 				", eventMasterPort=" + eventMasterPort +
 				", ratelimitMasterIp='" + ratelimitMasterIp + '\'' +
 				", ratelimitMasterPort=" + ratelimitMasterPort +
+				", preferIpv6=" + preferIpv6 +
 				'}';
 	}
 }

@@ -54,3 +54,4 @@
 - [fix: fix NPE when application context is null #1787](https://github.com/Tencent/spring-cloud-tencent/pull/1787)
 - [fix: fix lane router property name.](https://github.com/Tencent/spring-cloud-tencent/pull/1789)
 - [feat: support kafka lane.](https://github.com/Tencent/spring-cloud-tencent/pull/1791)
+- [feat: server span support preferIpv6 in tsf.](https://github.com/Tencent/spring-cloud-tencent/pull/1790)

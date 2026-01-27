@@ -82,6 +82,9 @@ public class TsfInstanceMetadataProvider implements InstanceMetadataProvider {
 		if (StringUtils.isNotBlank(ipv6Address)) {
 			tsfMetadata.put(TsfMetadataConstants.TSF_ADDRESS_IPV6, ipv6Address);
 		}
+		if (tsfCoreProperties.getPreferIpv6() != null) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_PREFER_IPV6, tsfCoreProperties.getPreferIpv6().toString());
+		}
 		return tsfMetadata;
 	}
 }
