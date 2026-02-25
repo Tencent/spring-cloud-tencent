@@ -46,6 +46,8 @@ dependency-reduced-pom.xml
 logs/
 lib/
 applog/
+.arthas/
+.codebuddy/
 
 # Maven ignore
 .flattened-pom.xml
