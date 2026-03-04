@@ -49,6 +49,7 @@ applog/
 .arthas/
 .codebuddy/
 CLAUDE.md
+.claude/
 
 # Maven ignore
 .flattened-pom.xml
