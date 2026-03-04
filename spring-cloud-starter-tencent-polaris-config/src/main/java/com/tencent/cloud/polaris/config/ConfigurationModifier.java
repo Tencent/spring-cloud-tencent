@@ -34,6 +34,7 @@ import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.configuration.ConfigFilterConfigImpl;
 import com.tencent.polaris.factory.config.configuration.ConnectorConfigImpl;
+import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,6 +126,16 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		connectorConfig.setEmptyProtectionEnable(polarisConfigProperties.isEmptyProtectionEnabled());
 		connectorConfig.setEmptyProtectionExpiredInterval(polarisConfigProperties.getEmptyProtectionExpiredInterval());
 
+		ServerConnectorConfigImpl reportClientConnectorConfig = configuration.getGlobal().getServerConnector();
+		if (StringUtils.isNotBlank(polarisContextProperties.getAddress())) {
+			reportClientConnectorConfig.setAddresses(AddressUtils.parseAddressList(polarisContextProperties.getAddress()));
+		}
+		else {
+			reportClientConnectorConfig.setAddresses(resolvePolarisAddressFromConfigAddress(polarisConfigProperties.getAddress()));
+		}
+		reportClientConnectorConfig.setLbPolicy(polarisContextProperties.getAddressLbPolicy());
+		reportClientConnectorConfig.setServerSwitchInterval(polarisContextProperties.getServerSwitchInterval());
+
 		LOGGER.info("[SCT] Run spring cloud tencent config in polaris data source.");
 	}
 
@@ -159,6 +170,29 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		}
 
 		return configAddresses;
+	}
+
+	private List<String> resolvePolarisAddressFromConfigAddress(String configAddress) {
+		if (StringUtils.isEmpty(configAddress)) {
+			return null;
+		}
+
+		List<String> configAddresses = AddressUtils.parseAddressList(configAddress);
+		List<String> polarisAddresses = new ArrayList<>(configAddresses.size());
+
+		for (String address : configAddresses) {
+			if (StringUtils.isNotBlank(address)) {
+				int pos = address.lastIndexOf(":");
+				if (pos != -1) {
+					polarisAddresses.add(address.substring(0, pos) + ":8091");
+				}
+				else {
+					polarisAddresses.add(address);
+				}
+			}
+		}
+
+		return polarisAddresses;
 	}
 
 	private void checkAddressAccessible(List<String> configAddresses) {
