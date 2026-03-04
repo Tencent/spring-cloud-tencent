@@ -273,16 +273,22 @@ public class PolarisConfigDataLocationResolver implements
 			PolarisContextProperties polarisContextProperties) {
 		ConfigurableBootstrapContext bootstrapContext = resolverContext.getBootstrapContext();
 		if (!bootstrapContext.isRegistered(SDKContext.class)) {
-			SDKContext sdkContext = sdkContext(resolverContext,
-					polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
-			if (sdkContext.getConfig() instanceof ConfigurationImpl) {
-				// not init reporter when creating config data temp SDK context.
-				((ConfigurationImpl) sdkContext.getConfig()).getGlobal().getStatReporter().setEnable(false);
-				// not init circuit breaker when creating config data temp SDK context.
-				((ConfigurationImpl) sdkContext.getConfig()).getConsumer().getCircuitBreaker().setEnable(false);
+			SDKContext sdkContext;
+			try {
+				sdkContext = PolarisConfigSDKContextManager.innerGetConfigSDKContext();
 			}
-			sdkContext.init();
-			PolarisConfigSDKContextManager.setConfigSDKContext(sdkContext);
+			catch (IllegalArgumentException e) {
+				sdkContext = sdkContext(resolverContext,
+						polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+				if (sdkContext.getConfig() instanceof ConfigurationImpl) {
+					// not init reporter when creating config data temp SDK context.
+					((ConfigurationImpl) sdkContext.getConfig()).getGlobal().getStatReporter().setEnable(false);
+					// not init circuit breaker when creating config data temp SDK context.
+					((ConfigurationImpl) sdkContext.getConfig()).getConsumer().getCircuitBreaker().setEnable(false);
+				}
+				sdkContext.init();
+				PolarisConfigSDKContextManager.setConfigSDKContext(sdkContext);
+			}
 		}
 
 	}
