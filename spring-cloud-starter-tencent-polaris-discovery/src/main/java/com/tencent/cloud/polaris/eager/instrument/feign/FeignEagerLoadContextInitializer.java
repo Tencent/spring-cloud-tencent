@@ -20,9 +20,11 @@ package com.tencent.cloud.polaris.eager.instrument.feign;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
-import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClient;
+import com.tencent.cloud.polaris.eager.instrument.loadbalancer.LoadBalancerEagerLoadProperties;
+import com.tencent.cloud.polaris.eager.instrument.loadbalancer.LoadBalancerWarmUpUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import feign.Target;
 import org.slf4j.Logger;
@@ -30,30 +32,48 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.framework.JdkDynamicAopProxyUtils;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.SmartLifecycle;
+import org.springframework.context.ApplicationListener;
 
-public class FeignEagerLoadSmartLifecycle implements SmartLifecycle {
+/**
+ * Feign eager load context initializer.
+ * Implements ApplicationListener<ApplicationReadyEvent> to warm up FeignClient services
+ * after the application is ready.
+ *
+ * @author Yuwei Fu
+ */
+public class FeignEagerLoadContextInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FeignEagerLoadSmartLifecycle.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FeignEagerLoadContextInitializer.class);
 
-	private final ApplicationContext applicationContext;
+	private ApplicationContext applicationContext;
 
-	private final PolarisDiscoveryClient polarisDiscoveryClient;
+	private LoadBalancerClientFactory loadBalancerClientFactory;
 
-	private final PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient;
+	private LoadBalancerEagerLoadProperties loadBalancerEagerLoadProperties;
 
-	public FeignEagerLoadSmartLifecycle(ApplicationContext applicationContext, PolarisDiscoveryClient polarisDiscoveryClient,
-			PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient) {
+	public FeignEagerLoadContextInitializer(ApplicationContext applicationContext,
+			LoadBalancerClientFactory loadBalancerClientFactory,
+			LoadBalancerEagerLoadProperties loadBalancerEagerLoadProperties) {
 		this.applicationContext = applicationContext;
-		this.polarisDiscoveryClient = polarisDiscoveryClient;
-		this.polarisReactiveDiscoveryClient = polarisReactiveDiscoveryClient;
+		this.loadBalancerClientFactory = loadBalancerClientFactory;
+		this.loadBalancerEagerLoadProperties = loadBalancerEagerLoadProperties;
 	}
 
 	@Override
-	public void start() {
+	public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
 		LOG.info("feign eager-load start");
+		
+		// Get services that are already warmed by LoadBalancerEagerContextInitializer
+		Set<String> skipServices = getLoadBalancerEagerLoadServices();
+		
+		// Set to track already warmed services
+		Set<String> warmedServices = new HashSet<>();
+		
+		// Warm up FeignClient services
 		for (Object bean : applicationContext.getBeansWithAnnotation(FeignClient.class).values()) {
 			try {
 				if (Proxy.isProxyClass(bean.getClass())) {
@@ -70,17 +90,22 @@ public class FeignEagerLoadSmartLifecycle implements SmartLifecycle {
 							}
 							String serviceName = URI.create(url).getHost();
 
+							// Skip if already warmed by LoadBalancerEagerContextInitializer
+							if (skipServices.contains(serviceName)) {
+								LOG.debug("[{}] skip eager-load, already configured in LoadBalancerEagerLoadProperties.clients", serviceName);
+								continue;
+							}
+							
+							// Skip if already warmed in this round
+							if (warmedServices.contains(serviceName)) {
+								LOG.debug("[{}] already warmed, skip.", serviceName);
+								continue;
+							}
+
 							LOG.info("[{}] eager-load start, feign name: {}", serviceName, hardCodedTarget.name());
-							if (polarisDiscoveryClient != null) {
-								polarisDiscoveryClient.getInstances(serviceName);
-							}
-							else if (polarisReactiveDiscoveryClient != null) {
-								polarisReactiveDiscoveryClient.getInstances(serviceName).subscribe();
-							}
-							else {
-								LOG.warn("[{}] no discovery client found.", serviceName);
-							}
-							LOG.info("[{}] eager-load end", serviceName);
+							LoadBalancerWarmUpUtils.warmUp(loadBalancerClientFactory, serviceName);
+
+							warmedServices.add(serviceName);
 						}
 					}
 				}
@@ -90,14 +115,28 @@ public class FeignEagerLoadSmartLifecycle implements SmartLifecycle {
 			}
 		}
 		LOG.info("feign eager-load end");
+	}
 
+	/**
+	 * Get services configured in LoadBalancerEagerLoadProperties.
+	 * These services are warmed by LoadBalancerEagerContextInitializer.
+	 * @return set of service names to skip
+	 */
+	private Set<String> getLoadBalancerEagerLoadServices() {
+		Set<String> services = new HashSet<>();
+		if (loadBalancerEagerLoadProperties != null 
+				&& loadBalancerEagerLoadProperties.isEnabled()
+				&& loadBalancerEagerLoadProperties.getClients() != null) {
+			services.addAll(loadBalancerEagerLoadProperties.getClients());
+		}
+		return services;
 	}
 
 	public static Target.HardCodedTarget<?> getHardCodedTarget(Object proxy) {
 		try {
 			int count = 0;
 			Object invocationHandler = proxy;
-			// 避免死循环
+			// Avoid infinite loop
 			while (count++ < 100) {
 				invocationHandler = Proxy.getInvocationHandler(invocationHandler);
 				if (invocationHandler instanceof AopProxy) {
@@ -121,20 +160,5 @@ public class FeignEagerLoadSmartLifecycle implements SmartLifecycle {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public void stop() {
-
-	}
-
-	@Override
-	public boolean isRunning() {
-		return false;
-	}
-
-	@Override
-	public int getPhase() {
-		return 10;
 	}
 }

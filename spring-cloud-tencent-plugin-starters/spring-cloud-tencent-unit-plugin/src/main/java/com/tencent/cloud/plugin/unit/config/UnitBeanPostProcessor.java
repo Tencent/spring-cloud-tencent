@@ -17,10 +17,12 @@
 
 package com.tencent.cloud.plugin.unit.config;
 
-import com.tencent.cloud.plugin.unit.discovery.UnitFeignEagerLoadSmartLifecycle;
+import com.tencent.cloud.plugin.unit.discovery.UnitFeignEagerLoadContextInitializer;
+import com.tencent.cloud.plugin.unit.discovery.UnitLoadBalancerEagerContextInitializer;
 import com.tencent.cloud.plugin.unit.discovery.UnitPolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
-import com.tencent.cloud.polaris.eager.instrument.feign.FeignEagerLoadSmartLifecycle;
+import com.tencent.cloud.polaris.eager.instrument.feign.FeignEagerLoadContextInitializer;
+import com.tencent.cloud.polaris.eager.instrument.loadbalancer.LoadBalancerEagerContextInitializer;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -35,8 +37,12 @@ public class UnitBeanPostProcessor implements BeanPostProcessor {
 			return new UnitPolarisDiscoveryClient(discoveryClient);
 		}
 
-		if (bean instanceof FeignEagerLoadSmartLifecycle) {
-			return new UnitFeignEagerLoadSmartLifecycle();
+		if (bean instanceof FeignEagerLoadContextInitializer) {
+			return new UnitFeignEagerLoadContextInitializer();
+		}
+
+		if (bean instanceof LoadBalancerEagerContextInitializer) {
+			return new UnitLoadBalancerEagerContextInitializer();
 		}
 
 		return bean;
