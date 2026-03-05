@@ -2,3 +2,4 @@
 ---
 
 - [feat: Add config address to report client url conversion.](https://github.com/Tencent/spring-cloud-tencent/pull/1795)
+- [feat: Update config server IP to 127.0.0.1 and adjust tests.](https://github.com/Tencent/spring-cloud-tencent/pull/1796)
