@@ -107,18 +107,18 @@ class ConfigurationModifierTest {
 
 	/**
 	* Test resolvePolarisAddressFromConfigAddress with a single address containing port.
-	* Scenario: pass a single config address "grpc://192.168.1.100:8093".
+	* Scenario: pass a single config address "grpc://127.0.0.1:8093".
 	* Expect: the port should be replaced with 8091.
 	*/
 	@DisplayName("resolvePolarisAddressFromConfigAddress should replace port with 8091 for single address")
 	@Test
 	void testResolvePolarisAddressFromConfigAddress_SingleAddress() throws Exception {
 		// Arrange
-		String configAddress = "grpc://192.168.1.100:8093";
+	String configAddress = "grpc://127.0.0.1:8093";
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList(anyString()))
-					.thenReturn(Collections.singletonList("192.168.1.100:8093"));
+					.thenReturn(Collections.singletonList("127.0.0.1:8093"));
 
 			// Act
 			List<String> result = invokeResolvePolarisAddressFromConfigAddress(configAddress);
@@ -126,7 +126,7 @@ class ConfigurationModifierTest {
 			// Assert
 			assertThat(result).isNotNull();
 			assertThat(result).hasSize(1);
-			assertThat(result.get(0)).isEqualTo("192.168.1.100:8091");
+			assertThat(result.get(0)).isEqualTo("127.0.0.1:8091");
 		}
 	}
 
@@ -139,11 +139,11 @@ class ConfigurationModifierTest {
 	@Test
 	void testResolvePolarisAddressFromConfigAddress_MultipleAddresses() throws Exception {
 		// Arrange
-		String configAddress = "grpc://10.0.1.1:8093,grpc://10.0.1.2:8094";
+	String configAddress = "grpc://127.0.0.1:8093,grpc://127.0.0.1:8094";
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList(anyString()))
-					.thenReturn(Arrays.asList("10.0.1.1:8093", "10.0.1.2:8094"));
+					.thenReturn(Arrays.asList("127.0.0.1:8093", "127.0.0.1:8094"));
 
 			// Act
 			List<String> result = invokeResolvePolarisAddressFromConfigAddress(configAddress);
@@ -151,8 +151,8 @@ class ConfigurationModifierTest {
 			// Assert
 			assertThat(result).isNotNull();
 			assertThat(result).hasSize(2);
-			assertThat(result.get(0)).isEqualTo("10.0.1.1:8091");
-			assertThat(result.get(1)).isEqualTo("10.0.1.2:8091");
+			assertThat(result.get(0)).isEqualTo("127.0.0.1:8091");
+			assertThat(result.get(1)).isEqualTo("127.0.0.1:8091");
 		}
 	}
 
@@ -190,11 +190,11 @@ class ConfigurationModifierTest {
 	@Test
 	void testResolvePolarisAddressFromConfigAddress_BlankAddressSkipped() throws Exception {
 		// Arrange
-		String configAddress = "grpc://172.16.0.1:8093, ,grpc://172.16.0.2:9090";
+	String configAddress = "grpc://127.0.0.1:8093, ,grpc://127.0.0.1:9090";
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList(anyString()))
-					.thenReturn(Arrays.asList("172.16.0.1:8093", " ", "172.16.0.2:9090"));
+					.thenReturn(Arrays.asList("127.0.0.1:8093", " ", "127.0.0.1:9090"));
 
 			// Act
 			List<String> result = invokeResolvePolarisAddressFromConfigAddress(configAddress);
@@ -202,8 +202,8 @@ class ConfigurationModifierTest {
 			// Assert
 			assertThat(result).isNotNull();
 			assertThat(result).hasSize(2);
-			assertThat(result.get(0)).isEqualTo("172.16.0.1:8091");
-			assertThat(result.get(1)).isEqualTo("172.16.0.2:8091");
+			assertThat(result.get(0)).isEqualTo("127.0.0.1:8091");
+			assertThat(result.get(1)).isEqualTo("127.0.0.1:8091");
 		}
 	}
 
