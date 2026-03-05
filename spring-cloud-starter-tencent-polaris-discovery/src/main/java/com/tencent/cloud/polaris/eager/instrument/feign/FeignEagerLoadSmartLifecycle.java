@@ -28,6 +28,8 @@ import feign.Target;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.aop.framework.AopProxy;
+import org.springframework.aop.framework.JdkDynamicAopProxyUtils;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
@@ -93,7 +95,17 @@ public class FeignEagerLoadSmartLifecycle implements SmartLifecycle {
 
 	public static Target.HardCodedTarget<?> getHardCodedTarget(Object proxy) {
 		try {
-			Object invocationHandler = Proxy.getInvocationHandler(proxy);
+			int count = 0;
+			Object invocationHandler = proxy;
+			// 避免死循环
+			while (count++ < 100) {
+				invocationHandler = Proxy.getInvocationHandler(invocationHandler);
+				if (invocationHandler instanceof AopProxy) {
+					invocationHandler = JdkDynamicAopProxyUtils.getTarget(invocationHandler);
+					continue;
+				}
+				break;
+			}
 
 			for (Field field : invocationHandler.getClass().getDeclaredFields()) {
 				field.setAccessible(true);
