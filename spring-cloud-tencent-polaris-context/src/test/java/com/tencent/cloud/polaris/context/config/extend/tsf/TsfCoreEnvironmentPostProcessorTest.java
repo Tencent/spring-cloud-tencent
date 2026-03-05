@@ -217,9 +217,17 @@ class TsfCoreEnvironmentPostProcessorTest {
 		assertThat(environment.getProperty("spring.cloud.polaris.discovery.instance-id")).isEqualTo("instance-001");
 		assertThat(environment.getProperty("spring.cloud.polaris.namespace")).isEqualTo("namespace-001");
 
+		// discovery - zero protection and warmup
+		assertThat(environment.getProperty("spring.cloud.polaris.discovery.zero-protection.enabled")).isEqualTo("true");
+		assertThat(environment.getProperty("spring.cloud.polaris.discovery.zero-protection.is-need-test-connectivity")).isEqualTo("true");
+		assertThat(environment.getProperty("spring.cloud.discovery.client.health-indicator.enabled")).isEqualTo("false");
+		assertThat(environment.getProperty("spring.cloud.polaris.warmup.enabled")).isEqualTo("true");
+
 		// contract
 		assertThat(environment.getProperty("spring.cloud.polaris.contract.enabled")).isEqualTo("true");
 		assertThat(environment.getProperty("spring.cloud.polaris.contract.name")).isEqualTo("application-001");
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.exposure")).isEqualTo("true");
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.report.enabled")).isEqualTo("true");
 
 		// should NOT have only-consul properties
 		assertThat(environment.getProperty("spring.cloud.polaris.discovery.enabled")).isNull();
@@ -257,6 +265,7 @@ class TsfCoreEnvironmentPostProcessorTest {
 		// configuration
 		assertThat(environment.getProperty("spring.cloud.polaris.config.enabled")).isEqualTo("true");
 		assertThat(environment.getProperty("spring.cloud.polaris.config.internal-enabled")).isEqualTo("false");
+		assertThat(environment.getProperty("spring.cloud.polaris.config.check-address")).isEqualTo("false");
 		assertThat(environment.getProperty("spring.cloud.polaris.config.data-source")).isEqualTo("consul");
 		assertThat(environment.getProperty("spring.cloud.polaris.config.address")).isEqualTo("http://127.0.0.1:8500");
 		assertThat(environment.getProperty("spring.cloud.polaris.config.port")).isEqualTo("8500");
