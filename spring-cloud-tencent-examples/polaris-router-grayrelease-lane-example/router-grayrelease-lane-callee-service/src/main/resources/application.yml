@@ -23,7 +23,7 @@ spring:
       #          enabled: true
       #          address: 127.0.0.1:9091
       config:
-        address: grpc://9.134.5.52:8093
+        address: grpc://119.91.66.223:8093
         auto-refresh: true
         groups:
           - name: ${spring.application.name}

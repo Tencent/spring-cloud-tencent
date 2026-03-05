@@ -211,7 +211,7 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 			}
 
 			if (ipPort.length != 2) {
-				throw new IllegalArgumentException("Config server address (" + address + ") is wrong, please check address like grpc://183.47.111.8:8091.");
+				throw new IllegalArgumentException("Config server address (" + address + ") is wrong, please check address like grpc://127.0.0.1:8091.");
 			}
 
 			LOGGER.info("[SCT] Check config server ipPort: {}", Arrays.asList(ipPort));
