@@ -163,8 +163,9 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 					defaultProperties.put("spring.cloud.polaris.discovery.register", "false");
 
 					// configuration
-					defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
+					defaultProperties.put("spring.cloud.polaris.config.enabled", environment.getProperty("spring.cloud.polaris.config.enabled", "true"));
 					defaultProperties.put("spring.cloud.polaris.config.internal-enabled", "false");
+					defaultProperties.put("spring.cloud.polaris.config.check-address", "false");
 					defaultProperties.put("spring.cloud.polaris.config.data-source", "consul");
 					defaultProperties.put("spring.cloud.polaris.config.address", "http://" + IPAddressUtils.getIpCompatible(tsfConsulIp) + ":" + tsfConsulPort);
 					defaultProperties.put("spring.cloud.polaris.config.port", tsfConsulPort);
