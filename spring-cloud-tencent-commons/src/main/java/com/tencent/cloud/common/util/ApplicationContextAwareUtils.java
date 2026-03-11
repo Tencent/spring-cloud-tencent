@@ -18,7 +18,6 @@
 package com.tencent.cloud.common.util;
 
 import com.tencent.polaris.api.utils.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +103,7 @@ public class ApplicationContextAwareUtils implements ApplicationContextInitializ
 	}
 
 	@Override
-	public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
+	public void initialize(ConfigurableApplicationContext applicationContext) {
 		ApplicationContextAwareUtils.applicationContext = applicationContext;
 	}
 }
