@@ -40,9 +40,10 @@ public class FeignAutoConfigurationTest {
 					RouterAutoConfiguration.class,
 					RouterConfigModifierAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
-					FeignAutoConfiguration.class,
-					ApplicationContextAwareUtils.class
-			)).withPropertyValues("spring.application.name=test");
+					FeignAutoConfiguration.class
+			))
+			.withInitializer(new ApplicationContextAwareUtils())
+			.withPropertyValues("spring.application.name=test");
 
 	@Test
 	public void routerLabelInterceptor() {

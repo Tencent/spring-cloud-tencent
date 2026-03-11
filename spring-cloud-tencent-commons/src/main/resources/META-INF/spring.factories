@@ -1,2 +1,4 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.common.util.inet.PolarisInetUtilsBootstrapConfiguration
+org.springframework.context.ApplicationContextInitializer=\
+  com.tencent.cloud.common.util.ApplicationContextAwareUtils
