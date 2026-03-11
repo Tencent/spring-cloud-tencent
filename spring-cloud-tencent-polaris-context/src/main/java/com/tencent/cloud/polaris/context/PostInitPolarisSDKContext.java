@@ -36,15 +36,17 @@ public class PostInitPolarisSDKContext {
 		String zone = staticMetadataManager.getZone();
 		String campus = staticMetadataManager.getCampus();
 
-		ValueContext valueContext = sdkContext.getValueContext();
-		if (StringUtils.isNotBlank(region)) {
-			valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.REGION.name(), region);
-		}
-		if (zone != null) {
-			valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.ZONE.name(), zone);
-		}
-		if (StringUtils.isNotBlank(campus)) {
-			valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.CAMPUS.name(), campus);
+		if (!StringUtils.isAllEmpty(region, zone, campus)) {
+			ValueContext valueContext = sdkContext.getValueContext();
+			if (StringUtils.isNotBlank(region)) {
+				valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.REGION.name(), region);
+			}
+			if (zone != null) {
+				valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.ZONE.name(), zone);
+			}
+			if (StringUtils.isNotBlank(campus)) {
+				valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.CAMPUS.name(), campus);
+			}
 		}
 	}
 }
