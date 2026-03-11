@@ -374,9 +374,10 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			matchPath.append("/").append(pathSegments[i]);
 			realPath.append("/").append(pathSegments[i]);
 		}
-		if (path.endsWith("/")) {
-			matchPath.append("/");
-			realPath.append("/");
+		String trailingSlashes = getTrailingSlashes(path);
+		if (StringUtils.isNotEmpty(trailingSlashes)) {
+			matchPath.append(trailingSlashes);
+			realPath.append(trailingSlashes);
 		}
 		return new String[] {matchPath.toString(), realPath.toString()};
 	}
@@ -394,9 +395,10 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			matchPath.append("/").append(pathSegments[i]);
 			realPath.append("/").append(pathSegments[i]);
 		}
-		if (path.endsWith("/")) {
-			matchPath.append("/");
-			realPath.append("/");
+		String trailingSlashes = getTrailingSlashes(path);
+		if (StringUtils.isNotEmpty(trailingSlashes)) {
+			matchPath.append(trailingSlashes);
+			realPath.append(trailingSlashes);
 		}
 		return new String[] {matchPath.toString(), realPath.toString()};
 	}
@@ -450,9 +452,10 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			matchPath.append("/").append(pathSegments[i]);
 			realPath.append("/").append(pathSegments[i]);
 		}
-		if (path.endsWith("/")) {
-			matchPath.append("/");
-			realPath.append("/");
+		String trailingSlashes = getTrailingSlashes(path);
+		if (StringUtils.isNotEmpty(trailingSlashes)) {
+			matchPath.append(trailingSlashes);
+			realPath.append(trailingSlashes);
 		}
 
 		return new String[] {matchPath.toString(), realPath.toString()};
@@ -613,5 +616,17 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		traceAttributes.put("localComponent", "msgw");
 
 		MetadataContextUtils.putMetadataObjectValue(ContextConstant.Trace.EXTRA_TRACE_ATTRIBUTES, traceAttributes);
+	}
+
+	/**
+	 * Returns all trailing slashes of the given path, e.g. "/api/test///" → "///"
+	 */
+	private String getTrailingSlashes(String path) {
+		int end = path.length();
+		int start = end;
+		while (start > 0 && path.charAt(start - 1) == '/') {
+			start--;
+		}
+		return path.substring(start, end);
 	}
 }

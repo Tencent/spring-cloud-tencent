@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.plugin.gateway.context;
 
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Collections;
 
@@ -117,6 +118,20 @@ class ContextGatewayFilterTest {
 		exchange.getAttributes().remove(MetadataConstant.HeaderName.METADATA_CONTEXT);
 		filter.filter(exchange, mockChain);
 
+	}
+
+	// Test getTrailingSlashes via reflection
+	@Test
+	void shouldGetTrailingSlashesCorrectly() throws Exception {
+		Method method = ContextGatewayFilter.class.getDeclaredMethod("getTrailingSlashes", String.class);
+		method.setAccessible(true);
+
+		assertThat(method.invoke(filter, "/api/test///")).isEqualTo("///");
+		assertThat(method.invoke(filter, "/api/test/")).isEqualTo("/");
+		assertThat(method.invoke(filter, "/api/test")).isEqualTo("");
+		assertThat(method.invoke(filter, "/")).isEqualTo("/");
+		assertThat(method.invoke(filter, "///")).isEqualTo("///");
+		assertThat(method.invoke(filter, "")).isEqualTo("");
 	}
 
 	// Helper method to create test predicate
