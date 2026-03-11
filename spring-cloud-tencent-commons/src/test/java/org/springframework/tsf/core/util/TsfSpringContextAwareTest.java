@@ -22,8 +22,8 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -37,7 +37,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class TsfSpringContextAwareTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ApplicationContextAwareUtils.class))
+			.withInitializer(new ApplicationContextAwareUtils())
+			.withUserConfiguration(TestConfig.class)
 			.withPropertyValues("key1=value1");
 
 	@Test
@@ -56,10 +57,15 @@ public class TsfSpringContextAwareTest {
 			assertThat(TsfSpringContextAware.getProperties("key2", "defaultValue")).isEqualTo("defaultValue");
 
 			// test getBean
-			assertThat(TsfSpringContextAware.getBean(ApplicationContextAwareUtils.class)).isNotNull();
+			assertThat(TsfSpringContextAware.getBean(TestConfig.class)).isNotNull();
 			assertThatThrownBy(() -> {
 				TsfSpringContextAware.getBean(PolarisAsyncConfiguration.class);
 			}).isInstanceOf(NoSuchBeanDefinitionException.class);
 		});
+	}
+
+	@Configuration
+	static class TestConfig {
+
 	}
 }

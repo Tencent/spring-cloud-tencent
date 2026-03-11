@@ -52,7 +52,8 @@ public class MetadataAutoConfigurationTest {
 	@Test
 	public void test1() {
 		this.applicationContextRunner
-				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class, ApplicationContextAwareUtils.class))
+				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
+				.withInitializer(new ApplicationContextAwareUtils())
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 				});
@@ -64,7 +65,8 @@ public class MetadataAutoConfigurationTest {
 	@Test
 	public void test2() {
 		this.webApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class, ApplicationContextAwareUtils.class))
+				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
+				.withInitializer(new ApplicationContextAwareUtils())
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 				});
@@ -76,7 +78,8 @@ public class MetadataAutoConfigurationTest {
 	@Test
 	public void test3() {
 		this.reactiveWebApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class, ApplicationContextAwareUtils.class))
+				.withConfiguration(AutoConfigurations.of(MetadataAutoConfiguration.class))
+				.withInitializer(new ApplicationContextAwareUtils())
 				.run(context -> {
 					Assertions.assertThat(context).hasSingleBean(MetadataLocalProperties.class);
 				});
