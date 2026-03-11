@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 public class PolarisCircuitBreakerEndpointTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(ApplicationContextAwareUtils.class)
+			.withInitializer(new ApplicationContextAwareUtils())
 			.withPropertyValues("spring.cloud.polaris.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.service=" + SERVICE_PROVIDER);
 

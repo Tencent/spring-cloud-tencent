@@ -18,20 +18,20 @@
 package com.tencent.cloud.common.util;
 
 import com.tencent.polaris.api.utils.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.NonNull;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Spring Context Util.
  *
  * @author Hongwei Zhu
  */
-public class ApplicationContextAwareUtils implements ApplicationContextAware {
+public class ApplicationContextAwareUtils implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContextAwareUtils.class);
 
@@ -43,11 +43,6 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 	 */
 	public static ApplicationContext getApplicationContext() {
 		return applicationContext;
-	}
-
-	@Override
-	public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-		ApplicationContextAwareUtils.applicationContext = applicationContext;
 	}
 
 	/**
@@ -106,5 +101,10 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 			}
 			return null;
 		}
+	}
+
+	@Override
+	public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
+		ApplicationContextAwareUtils.applicationContext = applicationContext;
 	}
 }

@@ -42,8 +42,8 @@ public class TlsReadyApplicationListener implements ApplicationListener<Applicat
 
 	@Override
 	public void onApplicationEvent(@NotNull ApplicationStartedEvent event) {
-		SslBundles sslBundles = ApplicationContextAwareUtils.getBeanIfExists(SslBundles.class);
-		ContextRefresher contextRefresher = ApplicationContextAwareUtils.getBeanIfExists(ContextRefresher.class);
+		SslBundles sslBundles = ApplicationContextAwareUtils.getBeanIfExists(SslBundles.class, true);
+		ContextRefresher contextRefresher = ApplicationContextAwareUtils.getBeanIfExists(ContextRefresher.class, true);
 		try {
 			if (sslBundles != null && contextRefresher != null && isSet.compareAndSet(false, true)
 					&& sslBundles.getBundleNames().contains("tsf")) {

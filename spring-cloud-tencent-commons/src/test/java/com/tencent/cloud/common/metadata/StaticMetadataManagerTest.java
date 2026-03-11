@@ -133,7 +133,7 @@ public class StaticMetadataManagerTest {
 		when(metadataLocalProperties.getTransitive()).thenReturn(Collections.singletonList("k1"));
 
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties,
-				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider(null)));
+				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider()));
 
 		Map<String, String> metadata = metadataManager.getAllCustomMetadata();
 		assertThat(metadata.size()).isGreaterThanOrEqualTo(5);
@@ -178,7 +178,7 @@ public class StaticMetadataManagerTest {
 		when(metadataLocalProperties.getHeaders()).thenReturn(Arrays.asList("b", "d"));
 
 		StaticMetadataManager metadataManager = new StaticMetadataManager(metadataLocalProperties,
-				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider(null)));
+				Arrays.asList(new MockedMetadataProvider(), new DefaultInstanceMetadataProvider()));
 
 		Map<String, String> metadata = metadataManager.getMergedStaticMetadata();
 		assertThat(metadata.size()).isGreaterThanOrEqualTo(8);

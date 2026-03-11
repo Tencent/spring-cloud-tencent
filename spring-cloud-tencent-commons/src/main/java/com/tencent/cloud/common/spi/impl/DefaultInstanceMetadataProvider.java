@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
-import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.inet.PolarisInetUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.metadata.core.constant.MetadataConstants;
@@ -41,13 +40,6 @@ import static com.tencent.cloud.common.metadata.MetadataContext.LOCAL_SERVICE;
  * @author sean yu
  */
 public class DefaultInstanceMetadataProvider implements InstanceMetadataProvider {
-
-	private final ApplicationContextAwareUtils applicationContextAwareUtils;
-
-	// ensure ApplicationContextAwareUtils init before
-	public DefaultInstanceMetadataProvider(ApplicationContextAwareUtils applicationContextAwareUtils) {
-		this.applicationContextAwareUtils = applicationContextAwareUtils;
-	}
 
 	@Override
 	public Map<String, String> getMetadata() {
