@@ -21,8 +21,8 @@ import com.tencent.cloud.common.async.PolarisAsyncConfiguration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -35,13 +35,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ApplicationContextAwareUtilsTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ApplicationContextAwareUtils.class))
+			.withInitializer(new ApplicationContextAwareUtils())
+			.withUserConfiguration(TestConfig.class)
 			.withPropertyValues("key1=value1");
 
 	@Test
 	public void testApplicationContextAwareUtils() {
 		this.contextRunner.run(context -> {
-			assertThat(context).hasSingleBean(ApplicationContextAwareUtils.class);
 			assertThat(ApplicationContextAwareUtils.getApplicationContext()).isNotNull();
 
 			// test getProperties
@@ -53,14 +53,19 @@ public class ApplicationContextAwareUtilsTest {
 			assertThat(ApplicationContextAwareUtils.getProperties("key2", "defaultValue")).isEqualTo("defaultValue");
 
 			// test getBean
-			assertThat(ApplicationContextAwareUtils.getBean(ApplicationContextAwareUtils.class)).isNotNull();
+			assertThat(ApplicationContextAwareUtils.getBean(TestConfig.class)).isNotNull();
 			assertThatThrownBy(() -> {
 				ApplicationContextAwareUtils.getBean(PolarisAsyncConfiguration.class);
 			}).isInstanceOf(NoSuchBeanDefinitionException.class);
 
 			// test getBeanIfExists
-			assertThat(ApplicationContextAwareUtils.getBeanIfExists(ApplicationContextAwareUtils.class)).isNotNull();
-			assertThat(ApplicationContextAwareUtils.getBeanIfExists(PolarisAsyncConfiguration.class)).isNull();
+			assertThat(ApplicationContextAwareUtils.getBeanIfExists(TestConfig.class)).isNotNull();
+			assertThat(ApplicationContextAwareUtils.getBeanIfExists(PolarisAsyncConfiguration.class, true)).isNull();
 		});
+	}
+
+	@Configuration
+	static class TestConfig {
+
 	}
 }

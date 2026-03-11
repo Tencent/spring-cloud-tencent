@@ -43,9 +43,10 @@ public class RouterAutoConfigurationTests {
 					RouterAutoConfiguration.class,
 					RouterConfigModifierAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
-					RouterAutoConfiguration.RouterLabelRestTemplateConfig.class,
-					ApplicationContextAwareUtils.class
-			)).withPropertyValues("spring.application.name=test");
+					RouterAutoConfiguration.RouterLabelRestTemplateConfig.class
+			))
+			.withInitializer(new ApplicationContextAwareUtils())
+			.withPropertyValues("spring.application.name=test");
 
 	@Test
 	public void testRouterLabelRestTemplateConfig() {

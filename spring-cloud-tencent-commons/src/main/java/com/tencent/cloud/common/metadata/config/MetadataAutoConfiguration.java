@@ -22,7 +22,6 @@ import java.util.List;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
 import com.tencent.cloud.common.spi.impl.DefaultInstanceMetadataProvider;
-import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,8 +45,8 @@ public class MetadataAutoConfiguration {
 	}
 
 	@Bean
-	public InstanceMetadataProvider defaultInstanceMetadataProvider(ApplicationContextAwareUtils applicationContextAwareUtils) {
-		return new DefaultInstanceMetadataProvider(applicationContextAwareUtils);
+	public InstanceMetadataProvider defaultInstanceMetadataProvider() {
+		return new DefaultInstanceMetadataProvider();
 	}
 
 	@Bean

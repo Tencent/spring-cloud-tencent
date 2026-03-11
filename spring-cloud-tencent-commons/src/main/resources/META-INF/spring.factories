@@ -1,9 +1,10 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.common.util.inet.PolarisInetUtilsAutoConfiguration,\
-  com.tencent.cloud.common.util.ApplicationContextAwareUtils,\
   com.tencent.cloud.common.metadata.config.MetadataAutoConfiguration,\
   com.tencent.cloud.common.metadata.endpoint.PolarisMetadataEndpointAutoConfiguration,\
   com.tencent.cloud.common.async.PolarisAsyncPropertiesAutoConfiguration,\
   com.tencent.cloud.common.async.PolarisAsyncConfiguration
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.common.util.inet.PolarisInetUtilsBootstrapConfiguration
+org.springframework.context.ApplicationContextInitializer=\
+  com.tencent.cloud.common.util.ApplicationContextAwareUtils
