@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JdkDynamicAopProxyUtils {
+public final class JdkDynamicAopProxyUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JdkDynamicAopProxyUtils.class);
 

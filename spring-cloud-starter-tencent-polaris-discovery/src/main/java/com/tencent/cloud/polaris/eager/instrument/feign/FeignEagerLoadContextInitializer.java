@@ -49,11 +49,11 @@ public class FeignEagerLoadContextInitializer implements ApplicationListener<App
 
 	private static final Logger LOG = LoggerFactory.getLogger(FeignEagerLoadContextInitializer.class);
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-	private LoadBalancerClientFactory loadBalancerClientFactory;
+	private final LoadBalancerClientFactory loadBalancerClientFactory;
 
-	private LoadBalancerEagerLoadProperties loadBalancerEagerLoadProperties;
+	private final LoadBalancerEagerLoadProperties loadBalancerEagerLoadProperties;
 
 	public FeignEagerLoadContextInitializer(ApplicationContext applicationContext,
 			LoadBalancerClientFactory loadBalancerClientFactory,
@@ -61,75 +61,6 @@ public class FeignEagerLoadContextInitializer implements ApplicationListener<App
 		this.applicationContext = applicationContext;
 		this.loadBalancerClientFactory = loadBalancerClientFactory;
 		this.loadBalancerEagerLoadProperties = loadBalancerEagerLoadProperties;
-	}
-
-	@Override
-	public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-		LOG.info("feign eager-load start");
-		
-		// Get services that are already warmed by LoadBalancerEagerContextInitializer
-		Set<String> skipServices = getLoadBalancerEagerLoadServices();
-		
-		// Set to track already warmed services
-		Set<String> warmedServices = new HashSet<>();
-		
-		// Warm up FeignClient services
-		for (Object bean : applicationContext.getBeansWithAnnotation(FeignClient.class).values()) {
-			try {
-				if (Proxy.isProxyClass(bean.getClass())) {
-					Target.HardCodedTarget<?> hardCodedTarget = getHardCodedTarget(bean);
-					if (hardCodedTarget != null) {
-						FeignClient feignClient = hardCodedTarget.type().getAnnotation(FeignClient.class);
-						// if feignClient contains url, it doesn't need to eager load.
-						if (StringUtils.isEmpty(feignClient.url())) {
-							// support variables and default values.
-							String url = hardCodedTarget.name();
-							// refer to FeignClientFactoryBean, convert to URL, then take the host as the service name.
-							if (!url.startsWith("http://") && !url.startsWith("https://")) {
-								url = "http://" + url;
-							}
-							String serviceName = URI.create(url).getHost();
-
-							// Skip if already warmed by LoadBalancerEagerContextInitializer
-							if (skipServices.contains(serviceName)) {
-								LOG.debug("[{}] skip eager-load, already configured in LoadBalancerEagerLoadProperties.clients", serviceName);
-								continue;
-							}
-							
-							// Skip if already warmed in this round
-							if (warmedServices.contains(serviceName)) {
-								LOG.debug("[{}] already warmed, skip.", serviceName);
-								continue;
-							}
-
-							LOG.info("[{}] eager-load start, feign name: {}", serviceName, hardCodedTarget.name());
-							LoadBalancerWarmUpUtils.warmUp(loadBalancerClientFactory, serviceName);
-
-							warmedServices.add(serviceName);
-						}
-					}
-				}
-			}
-			catch (Exception e) {
-				LOG.debug("[{}] eager-load failed.", bean, e);
-			}
-		}
-		LOG.info("feign eager-load end");
-	}
-
-	/**
-	 * Get services configured in LoadBalancerEagerLoadProperties.
-	 * These services are warmed by LoadBalancerEagerContextInitializer.
-	 * @return set of service names to skip
-	 */
-	private Set<String> getLoadBalancerEagerLoadServices() {
-		Set<String> services = new HashSet<>();
-		if (loadBalancerEagerLoadProperties != null 
-				&& loadBalancerEagerLoadProperties.isEnabled()
-				&& loadBalancerEagerLoadProperties.getClients() != null) {
-			services.addAll(loadBalancerEagerLoadProperties.getClients());
-		}
-		return services;
 	}
 
 	public static Target.HardCodedTarget<?> getHardCodedTarget(Object proxy) {
@@ -160,5 +91,74 @@ public class FeignEagerLoadContextInitializer implements ApplicationListener<App
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
+		LOG.info("feign eager-load start");
+
+		// Get services that are already warmed by LoadBalancerEagerContextInitializer
+		Set<String> skipServices = getLoadBalancerEagerLoadServices();
+
+		// Set to track already warmed services
+		Set<String> warmedServices = new HashSet<>();
+
+		// Warm up FeignClient services
+		for (Object bean : applicationContext.getBeansWithAnnotation(FeignClient.class).values()) {
+			try {
+				if (Proxy.isProxyClass(bean.getClass())) {
+					Target.HardCodedTarget<?> hardCodedTarget = getHardCodedTarget(bean);
+					if (hardCodedTarget != null) {
+						FeignClient feignClient = hardCodedTarget.type().getAnnotation(FeignClient.class);
+						// if feignClient contains url, it doesn't need to eager load.
+						if (StringUtils.isEmpty(feignClient.url())) {
+							// support variables and default values.
+							String url = hardCodedTarget.name();
+							// refer to FeignClientFactoryBean, convert to URL, then take the host as the service name.
+							if (!url.startsWith("http://") && !url.startsWith("https://")) {
+								url = "http://" + url;
+							}
+							String serviceName = URI.create(url).getHost();
+
+							// Skip if already warmed by LoadBalancerEagerContextInitializer
+							if (skipServices.contains(serviceName)) {
+								LOG.debug("[{}] skip eager-load, already configured in LoadBalancerEagerLoadProperties.clients", serviceName);
+								continue;
+							}
+
+							// Skip if already warmed in this round
+							if (warmedServices.contains(serviceName)) {
+								LOG.debug("[{}] already warmed, skip.", serviceName);
+								continue;
+							}
+
+							LOG.info("[{}] eager-load start, feign name: {}", serviceName, hardCodedTarget.name());
+							LoadBalancerWarmUpUtils.warmUp(loadBalancerClientFactory, serviceName);
+
+							warmedServices.add(serviceName);
+						}
+					}
+				}
+			}
+			catch (Exception e) {
+				LOG.debug("[{}] eager-load failed.", bean, e);
+			}
+		}
+		LOG.info("feign eager-load end");
+	}
+
+	/**
+	 * Get services configured in LoadBalancerEagerLoadProperties.
+	 * These services are warmed by LoadBalancerEagerContextInitializer.
+	 * @return set of service names to skip
+	 */
+	private Set<String> getLoadBalancerEagerLoadServices() {
+		Set<String> services = new HashSet<>();
+		if (loadBalancerEagerLoadProperties != null
+				&& loadBalancerEagerLoadProperties.isEnabled()
+				&& loadBalancerEagerLoadProperties.getClients() != null) {
+			services.addAll(loadBalancerEagerLoadProperties.getClients());
+		}
+		return services;
 	}
 }
