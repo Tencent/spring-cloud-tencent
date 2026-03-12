@@ -29,6 +29,8 @@ import com.tencent.cloud.polaris.context.admin.PolarisAdminProperties;
 import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
 import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
 import com.tencent.cloud.polaris.context.config.extend.tsf.TsfInstanceMetadataProvider;
+import com.tencent.cloud.polaris.context.config.location.PolarisLocationConfigModifier;
+import com.tencent.cloud.polaris.context.config.location.PolarisLocationProperties;
 import com.tencent.cloud.polaris.context.event.PushGatewayEventReporterConfigModifier;
 import com.tencent.cloud.polaris.context.event.PushGatewayEventReporterProperties;
 import com.tencent.cloud.polaris.context.listener.PolarisContextApplicationEventListener;
@@ -113,5 +115,17 @@ public class PolarisContextAutoConfiguration {
 	@ConditionalOnMissingBean
 	public TsfInstanceMetadataProvider tsfInstanceMetadataProvider(TsfCoreProperties tsfCoreProperties) {
 		return new TsfInstanceMetadataProvider(tsfCoreProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisLocationProperties polarisLocationProperties() {
+		return new PolarisLocationProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisLocationConfigModifier polarisLocationConfigModifier(PolarisLocationProperties polarisLocationProperties) {
+		return new PolarisLocationConfigModifier(polarisLocationProperties);
 	}
 }

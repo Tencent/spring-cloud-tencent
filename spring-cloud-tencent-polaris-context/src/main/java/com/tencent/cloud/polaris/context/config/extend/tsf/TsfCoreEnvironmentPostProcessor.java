@@ -159,6 +159,9 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 
 				if (TsfContextUtils.isOnlyTsfConsulEnabled(environment)) {
 					// context
+					defaultProperties.put("spring.cloud.polaris.location.cloud.enabled", environment.getProperty("spring.cloud.polaris.location.cloud.enabled", "false"));
+
+					// discovery
 					defaultProperties.put("spring.cloud.polaris.discovery.enabled", "false");
 					defaultProperties.put("spring.cloud.polaris.discovery.register", "false");
 

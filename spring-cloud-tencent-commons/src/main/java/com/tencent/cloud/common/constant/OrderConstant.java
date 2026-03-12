@@ -229,5 +229,10 @@ public class OrderConstant {
 		 * Order of fault injection modifier.
 		 */
 		public static Integer FAULT_INJECTION_ORDER = 2;
+
+		/**
+		 * Order of location configuration modifier.
+		 */
+		public static Integer LOCATION_ORDER = 2;
 	}
 }
