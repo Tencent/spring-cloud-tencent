@@ -40,7 +40,7 @@ import org.springframework.context.ApplicationListener;
 
 /**
  * Feign eager load context initializer.
- * Implements ApplicationListener<ApplicationReadyEvent> to warm up FeignClient services
+ * Implements ApplicationListener&lt;ApplicationReadyEvent&gt; to warm up FeignClient services
  * after the application is ready.
  *
  * @author Yuwei Fu
