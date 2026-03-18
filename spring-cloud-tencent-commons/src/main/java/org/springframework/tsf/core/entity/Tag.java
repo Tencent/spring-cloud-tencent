@@ -40,7 +40,7 @@ public class Tag implements Serializable {
 	public Tag(String key, String value, ControlFlag... flags) {
 		this.key = key;
 		this.value = value;
-		this.flags = new HashSet<>(Arrays.asList(flags));
+		this.flags = flags != null ? new HashSet<>(Arrays.asList(flags)) : new HashSet<>();
 	}
 
 	public Tag() {

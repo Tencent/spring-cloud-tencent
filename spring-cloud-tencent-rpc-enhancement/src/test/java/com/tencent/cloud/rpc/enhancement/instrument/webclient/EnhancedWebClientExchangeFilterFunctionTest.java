@@ -170,7 +170,7 @@ public class EnhancedWebClientExchangeFilterFunctionTest {
 		StepVerifier.create(responseMono)
 				.expectNextMatches(response -> {
 					assertThat(response.statusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
-					assertThat(response.headers().asHttpHeaders().containsKey("header-key")).isTrue();
+					assertThat(response.headers().asHttpHeaders().containsHeader("header-key")).isTrue();
 					return true;
 				})
 				.verifyComplete();

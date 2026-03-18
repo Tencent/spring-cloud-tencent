@@ -36,7 +36,7 @@
 		<!-- spring cloud gateway dependencies start -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-gateway-server</artifactId>
+			<artifactId>spring-cloud-gateway-server-webflux</artifactId>
 			<optional>true</optional>
 		</dependency>
 
@@ -50,7 +50,7 @@
 		<!-- spring cloud gateway mvc dependencies start -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-gateway-server-mvc</artifactId>
+			<artifactId>spring-cloud-gateway-server-webmvc</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<!-- spring cloud gateway mvc dependencies end -->

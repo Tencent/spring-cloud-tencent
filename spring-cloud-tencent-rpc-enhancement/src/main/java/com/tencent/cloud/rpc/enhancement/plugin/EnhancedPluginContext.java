@@ -121,7 +121,7 @@ public class EnhancedPluginContext {
 			this.targetServiceInstance = targetServiceInstance;
 		}
 		else if (Objects.nonNull(url)) {
-			DefaultServiceInstance defaultServiceInstance = new DefaultServiceInstance();
+			DefaultServiceInstance defaultServiceInstance = new DefaultServiceInstance(null, null, null, 0, false);
 			defaultServiceInstance.setUri(url);
 			if (defaultServiceInstance.isSecure()) {
 				defaultServiceInstance.setPort(443);
@@ -132,7 +132,7 @@ public class EnhancedPluginContext {
 			this.targetServiceInstance = defaultServiceInstance;
 		}
 		else {
-			this.targetServiceInstance = new DefaultServiceInstance();
+			this.targetServiceInstance = new DefaultServiceInstance(null, null, null, 0, false);
 			LOGGER.warn("TargetServiceInstance is empty.");
 		}
 	}

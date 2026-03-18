@@ -49,7 +49,8 @@ public class RpcEnhancementAutoConfigurationTest {
 					RpcEnhancementAutoConfiguration.class,
 					PolarisRestTemplateAutoConfigurationTester.class,
 					FeignLoadBalancerAutoConfiguration.class))
-			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true", "spring.application.name=test", "spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true", "spring.application.name=test", "spring.cloud.gateway.enabled=false",
+					"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration");
 
 	@Test
 	public void testDefaultInitialization() {

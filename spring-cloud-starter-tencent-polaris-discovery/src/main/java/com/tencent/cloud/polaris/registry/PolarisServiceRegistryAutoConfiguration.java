@@ -34,11 +34,12 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -81,13 +82,14 @@ public class PolarisServiceRegistryAutoConfiguration {
 
 	@Bean
 	public PolarisAutoServiceRegistration polarisAutoServiceRegistration(
+			ApplicationContext context,
 			PolarisServiceRegistry registry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
 			PolarisRegistration registration,
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisSDKContextManager polarisSDKContextManager
 	) {
-		return new PolarisAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration,
+		return new PolarisAutoServiceRegistration(context, registry, autoServiceRegistrationProperties, registration,
 				polarisDiscoveryProperties, polarisSDKContextManager.getAssemblyAPI());
 	}
 

@@ -84,7 +84,7 @@ public class SuccessCircuitBreakerReporter implements EnhancedPlugin {
 		EnhancedRequestContext request = context.getRequest();
 		EnhancedResponseContext response = context.getResponse();
 		ServiceInstance serviceInstance = Optional.ofNullable(context.getTargetServiceInstance())
-				.orElse(new DefaultServiceInstance());
+				.orElse(new DefaultServiceInstance(null, null, null, 0, false));
 
 		ResourceStat resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat(
 				serviceInstance.getServiceId(),

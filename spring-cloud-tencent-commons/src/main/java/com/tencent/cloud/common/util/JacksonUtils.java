@@ -22,14 +22,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.util.StringUtils;
 
@@ -43,12 +43,12 @@ public final class JacksonUtils {
 	/**
 	 * Object Mapper.
 	 */
-	public static final ObjectMapper OM = new ObjectMapper();
+	public static final JsonMapper OM = new JsonMapper();
 
 	private static final Logger LOG = LoggerFactory.getLogger(JacksonUtils.class);
 
 	static {
-		OM.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		OM.rebuild().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	private JacksonUtils() {
@@ -81,7 +81,7 @@ public final class JacksonUtils {
 				return OM.writeValueAsString(object);
 			}
 		}
-		catch (JsonProcessingException e) {
+		catch (JacksonException e) {
 			LOG.error("Object to Json failed. {}", object, e);
 			throw new RuntimeException("Object to Json failed.", e);
 		}
@@ -91,7 +91,7 @@ public final class JacksonUtils {
 		try {
 			return OM.readValue(jsonStr, type);
 		}
-		catch (JsonProcessingException e) {
+		catch (JacksonException e) {
 			LOG.error("Json to object failed. {}", type, e);
 			throw new RuntimeException("Json to object failed.", e);
 		}
@@ -101,7 +101,7 @@ public final class JacksonUtils {
 		try {
 			return OM.readValue(jsonStr, typeReference);
 		}
-		catch (JsonProcessingException e) {
+		catch (JacksonException e) {
 			LOG.error("Json to object failed. {}", typeReference, e);
 			throw new RuntimeException("Json to object failed.", e);
 		}
@@ -138,7 +138,7 @@ public final class JacksonUtils {
 			}
 			return new HashMap<>();
 		}
-		catch (JsonProcessingException e) {
+		catch (JacksonException e) {
 			LOG.error(
 					"Json to map failed. check if the format of the json string[{}] is correct.", jsonStr, e);
 			throw new RuntimeException("Json to map failed.", e);

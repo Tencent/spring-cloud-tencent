@@ -50,7 +50,6 @@ import shade.polaris.com.google.protobuf.util.JsonFormat;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
@@ -182,8 +181,7 @@ public class QuotaCheckReactiveFilterTest {
 		ServerWebExchange testApp3Exchange = MockServerWebExchange.from(request);
 		quotaCheckReactiveFilter.filter(testApp3Exchange, webFilterChain);
 		ServerHttpResponse response = testApp3Exchange.getResponse();
-		assertThat(response.getRawStatusCode()).isEqualTo(419);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INSUFFICIENT_SPACE_ON_RESOURCE);
+		assertThat(response.getStatusCode().value()).isEqualTo(419);
 		assertThat(response.getHeaders()
 				.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)).isEqualTo(Collections.singletonList("MOCK_RULE"));
 
@@ -227,7 +225,7 @@ public class QuotaCheckReactiveFilterTest {
 		MetadataContext.LOCAL_SERVICE = "TestApp3";
 		quotaCheckWithRateLimiterLimitedFallbackReactiveFilter.filter(exchange, webFilterChain);
 		ServerHttpResponse response = exchange.getResponse();
-		assertThat(response.getRawStatusCode()).isEqualTo(polarisRateLimiterLimitedFallback.rejectHttpCode());
+		assertThat(response.getStatusCode().value()).isEqualTo(polarisRateLimiterLimitedFallback.rejectHttpCode());
 		assertThat(response.getHeaders().getContentType()).isEqualTo(polarisRateLimiterLimitedFallback.mediaType());
 
 		// Exception

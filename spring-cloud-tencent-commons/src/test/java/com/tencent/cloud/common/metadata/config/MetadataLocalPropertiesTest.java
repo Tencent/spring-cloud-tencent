@@ -35,7 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = MetadataLocalPropertiesTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml"})
+		properties = {"spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = servlet",
+				"spring.cloud.gateway.enabled = false",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class MetadataLocalPropertiesTest {
 
 	@Autowired

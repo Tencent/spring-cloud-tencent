@@ -45,7 +45,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = MOCK,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive"})
+		properties = {"spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class DecodeTransferMetadataReactiveFilterTest {
 
 	@Autowired

@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.cloud.gateway.config.GatewayAutoConfiguration;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,11 +51,11 @@ class GatewayPluginAutoConfigurationTest {
 					ConfigurationPropertiesAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
-					GatewayAutoConfiguration.class,
 					GatewayPluginAutoConfiguration.class
 			))
 			.withPropertyValues(
-					"spring.cloud.gateway.enabled=false", // not needed for this test
+					"spring.cloud.gateway.enabled=false",
+					"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration",
 					"spring.cloud.tencent.plugin.scg.enabled=true",
 					"spring.cloud.tencent.plugin.scg.context.enabled=true",
 					"spring.cloud.tencent.gateway.routes.test_group.uri=lb://test-group"

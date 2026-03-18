@@ -44,7 +44,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
 		assertThat(response.getHeaders()).isNotNull();
-		assertThat(response.getHeaders()).isEmpty();
+		assertThat(response.getHeaders().isEmpty()).isTrue();
 		assertThat(response.getBody()).isNull();
 	}
 
@@ -55,7 +55,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
 		assertThat(response.getHeaders()).isNotNull();
-		assertThat(response.getHeaders()).isEmpty();
+		assertThat(response.getHeaders().isEmpty()).isTrue();
 		assertThat(response.getBody()).isNotNull();
 	}
 
@@ -71,8 +71,8 @@ public class PolarisCircuitBreakerHttpResponseTest {
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
 		assertThat(response.getHeaders()).isNotNull();
 		assertThat(response.getHeaders().size()).isEqualTo(2);
-		assertThat(response.getHeaders()).containsKey("Content-Type");
-		assertThat(response.getHeaders()).containsKey("Authorization");
+		assertThat(response.getHeaders().containsHeader("Content-Type")).isTrue();
+		assertThat(response.getHeaders().containsHeader("Authorization")).isTrue();
 		assertThat(response.getBody()).isNotNull();
 	}
 
@@ -87,7 +87,7 @@ public class PolarisCircuitBreakerHttpResponseTest {
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
 		assertThat(response.getFallbackInfo()).isEqualTo(fallbackInfo);
 		assertThat(response.getHeaders()).isNotNull();
-		assertThat(response.getHeaders()).containsKey("Content-Type");
+		assertThat(response.getHeaders().containsHeader("Content-Type")).isTrue();
 		assertThat(response.getBody()).isNotNull();
 	}
 

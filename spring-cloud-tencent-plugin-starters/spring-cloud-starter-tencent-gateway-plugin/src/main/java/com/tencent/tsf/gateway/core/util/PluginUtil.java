@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.plugin.gateway.context.Position;
 import com.tencent.polaris.api.utils.CollectionUtils;
@@ -50,6 +49,7 @@ import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import shade.polaris.com.google.common.base.Joiner;
+import tools.jackson.core.type.TypeReference;
 
 import org.springframework.tsf.core.TsfContext;
 import org.springframework.tsf.core.entity.Tag;

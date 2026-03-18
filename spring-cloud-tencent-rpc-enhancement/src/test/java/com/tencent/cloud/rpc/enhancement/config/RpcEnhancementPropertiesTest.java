@@ -38,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"spring.application.name=test",
 		"spring.cloud.gateway.enabled=false",
 		"spring.cloud.tencent.rpc-enhancement=true",
-		"spring.cloud.tencent.rpc-enhancement.ignore-body=false"
+		"spring.cloud.tencent.rpc-enhancement.ignore-body=false",
+		"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"
 })
 @ActiveProfiles("test")
 public class RpcEnhancementPropertiesTest {

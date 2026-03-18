@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.util.GzipUtil;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -46,6 +45,7 @@ import org.springdoc.api.AbstractOpenApiResourceUtil;
 import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springdoc.webflux.api.OpenApiWebFluxUtil;
 import org.springdoc.webmvc.api.OpenApiWebMvcUtil;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -115,8 +115,9 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 						jsonValue = springdocObjectMapperProvider.jsonMapper().writeValueAsString(openAPI);
 					}
 					else {
-						ObjectMapper mapper = new ObjectMapper();
-						mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+						JsonMapper mapper = JsonMapper.builder()
+								.changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_NULL))
+								.build();
 						jsonValue = mapper.writeValueAsString(openAPI);
 					}
 					String serviceApiMeta = GzipUtil.compressBase64Encode(jsonValue, "utf-8");
@@ -159,8 +160,9 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 						jsonValue = springdocObjectMapperProvider.jsonMapper().writeValueAsString(o.getValue());
 					}
 					else {
-						ObjectMapper mapper = new ObjectMapper();
-						mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+						JsonMapper mapper = JsonMapper.builder()
+								.changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_NULL))
+								.build();
 						jsonValue = mapper.writeValueAsString(o.getValue());
 					}
 					interfaceDescriptor.setContent(GzipUtil.compressBase64Encode(jsonValue, "utf-8"));

@@ -1,2 +1,2 @@
-org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.EnvironmentPostProcessor=\
   com.tencent.cloud.plugin.tsf.tls.TlsEnvironmentPostProcessor

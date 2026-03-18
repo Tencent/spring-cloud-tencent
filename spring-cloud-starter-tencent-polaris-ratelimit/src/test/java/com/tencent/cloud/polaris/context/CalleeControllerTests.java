@@ -38,11 +38,11 @@ import shade.polaris.com.google.protobuf.StringValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException.TooManyRequests;
 import org.springframework.web.client.RestClientException;
@@ -77,7 +77,7 @@ public class CalleeControllerTests {
 	@Autowired
 	private RestTemplate restTemplate;
 
-	@MockBean
+	@MockitoBean
 	private LimitAPI limitAPI;
 
 	@BeforeAll

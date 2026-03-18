@@ -42,7 +42,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml"})
+		properties = {"spring.config.location = classpath:application-test.yml",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class TransHeadersTransferTest {
 	@AfterAll
 	static void afterAll() {

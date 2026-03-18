@@ -52,7 +52,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = EnhancedRestTemplateInterceptorTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml",
-				"spring.main.web-application-type = reactive"})
+				"spring.main.web-application-type = reactive",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class EnhancedRestTemplateInterceptorTest {
 
 	@Autowired

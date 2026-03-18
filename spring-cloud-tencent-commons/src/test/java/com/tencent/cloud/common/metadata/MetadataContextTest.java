@@ -39,7 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = MetadataContextTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml",
-				"spring.main.web-application-type = reactive"})
+				"spring.main.web-application-type = reactive",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class MetadataContextTest {
 
 	private MetadataContext metadataContext;

@@ -31,9 +31,9 @@ import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
 
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
-import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.lang.Nullable;
 /**
@@ -180,7 +180,7 @@ public class PolarisRegistration implements Registration {
 
 	@Override
 	public URI getUri() {
-		return DefaultServiceInstance.getUri(this);
+		return ServiceInstance.createUri(this);
 	}
 
 	@Override

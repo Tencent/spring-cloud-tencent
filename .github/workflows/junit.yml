@@ -3,6 +3,7 @@ name: Junit Test
 on:
   push:
     branches:
+      - 2025
       - 2024
       - 2023
       - 2022
@@ -15,6 +16,7 @@ on:
       - '**.md'
   pull_request:
     branches:
+      - 2025
       - 2024
       - 2023
       - 2022
@@ -41,7 +43,9 @@ jobs:
              branch_name=${{ github.base_ref }}
           fi
           echo $branch_name
-          if [[ "$branch_name" == "2024" ]]; then
+          if [[ "$branch_name" == "2025" ]]; then
+            echo "jdks=[17,21,25]" >> $GITHUB_OUTPUT
+          elif [[ "$branch_name" == "2024" ]]; then
             echo "jdks=[17,21]" >> $GITHUB_OUTPUT
           elif [[ "$branch_name" == "2023" ]]; then
             echo "jdks=[17,21]" >> $GITHUB_OUTPUT

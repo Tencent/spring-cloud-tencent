@@ -46,6 +46,7 @@ import org.springframework.cloud.gateway.route.Route;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -177,7 +178,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-							.httpStatus(exchange.getResponse().getRawStatusCode())
+							.httpStatus(Optional.ofNullable(exchange.getResponse().getStatusCode()).map(HttpStatusCode::value).orElse(null))
 							.httpHeaders(exchange.getResponse().getHeaders())
 							.build();
 					enhancedPluginContext.setResponse(enhancedResponseContext);
@@ -222,7 +223,7 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 		if (uri != null) {
 			if (route != null && route.getUri().getScheme()
 					.contains("lb") && StringUtils.isNotEmpty(serviceId)) {
-				DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+				DefaultServiceInstance serviceInstance = new DefaultServiceInstance(null, null, null, 0, false);
 				serviceInstance.setServiceId(serviceId);
 				serviceInstance.setHost(uri.getHost());
 				serviceInstance.setPort(uri.getPort());

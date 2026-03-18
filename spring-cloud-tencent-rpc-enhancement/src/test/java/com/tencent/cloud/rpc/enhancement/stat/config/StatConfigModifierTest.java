@@ -45,7 +45,8 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.stat.port=20000")
 			.withPropertyValues("spring.cloud.polaris.stat.path=/xxx")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.enabled=false")
+			.withPropertyValues("spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration");
 
 	private final ApplicationContextRunner pushContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
@@ -58,14 +59,16 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.namespace=test-namespace")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.service=test-service")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.enabled=false")
+			.withPropertyValues("spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration");
 
 	private final ApplicationContextRunner disabledContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.enabled=false")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.enabled=false")
+			.withPropertyValues("spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration");
 
 	@BeforeEach
 	void setUp() {

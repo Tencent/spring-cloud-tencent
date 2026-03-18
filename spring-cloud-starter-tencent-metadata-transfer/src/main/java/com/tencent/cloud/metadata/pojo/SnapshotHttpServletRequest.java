@@ -149,7 +149,7 @@ public final class SnapshotHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public Enumeration<String> getHeaderNames() {
-		return Collections.enumeration(headers.keySet());
+		return Collections.enumeration(headers.headerNames());
 	}
 
 	@Override

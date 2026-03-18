@@ -26,7 +26,6 @@ import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 
 /**
@@ -94,7 +93,7 @@ public class PolarisServiceInstance implements ServiceInstance {
 
 	@Override
 	public URI getUri() {
-		return DefaultServiceInstance.getUri(this);
+		return ServiceInstance.createUri(this);
 	}
 
 	@Override

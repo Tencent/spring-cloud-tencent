@@ -69,7 +69,7 @@ public class EnhancedReactiveFilter implements WebFilter, Ordered {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
 
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-							.httpStatus(exchange.getResponse().getRawStatusCode())
+							.httpStatus(exchange.getResponse().getStatusCode().value())
 							.httpHeaders(exchange.getResponse().getHeaders())
 							.build();
 					enhancedPluginContext.setResponse(enhancedResponseContext);

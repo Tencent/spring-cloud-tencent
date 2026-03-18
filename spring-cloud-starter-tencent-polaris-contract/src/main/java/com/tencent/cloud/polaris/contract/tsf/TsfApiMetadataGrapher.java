@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.contract.tsf;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.common.util.GzipUtil;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.slf4j.Logger;
@@ -30,6 +29,7 @@ import org.springdoc.api.AbstractOpenApiResourceUtil;
 import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springdoc.webflux.api.OpenApiWebFluxUtil;
 import org.springdoc.webmvc.api.OpenApiWebMvcUtil;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
@@ -89,8 +89,9 @@ public class TsfApiMetadataGrapher implements SmartLifecycle {
 				jsonValue = springdocObjectMapperProvider.jsonMapper().writeValueAsString(openAPI);
 			}
 			else {
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+				JsonMapper mapper = JsonMapper.builder()
+						.changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_NULL))
+						.build();
 				jsonValue = mapper.writeValueAsString(openAPI);
 			}
 			if (openAPI != null && !StringUtils.isEmpty(jsonValue)) {

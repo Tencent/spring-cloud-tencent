@@ -80,7 +80,7 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 
 		EnhancedRequestContext request = context.getRequest();
 		ServiceInstance serviceInstance = Optional.ofNullable(context.getTargetServiceInstance())
-				.orElse(new DefaultServiceInstance());
+				.orElse(new DefaultServiceInstance(null, null, null, 0, false));
 
 		ResourceStat resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat(
 				serviceInstance.getServiceId(),

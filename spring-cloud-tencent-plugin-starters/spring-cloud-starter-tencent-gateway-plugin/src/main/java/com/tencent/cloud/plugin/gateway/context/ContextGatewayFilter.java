@@ -529,7 +529,7 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 	private Map<String, String> copyRequestHeader(ServerHttpRequest request) {
 		Map<String, String> headerMap = new LinkedHashMap<>();
 		HttpHeaders headers = request.getHeaders();
-		for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+		for (Map.Entry<String, List<String>> entry : headers.headerSet()) {
 			if (!entry.getValue().isEmpty()) {
 				headerMap.put(entry.getKey(), entry.getValue().get(0));
 			}

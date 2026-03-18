@@ -44,7 +44,7 @@ public final class CustomTransitiveMetadataResolver {
 		Map<String, String> result = new HashMap<>();
 
 		HttpHeaders headers = exchange.getRequest().getHeaders();
-		for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+		for (Map.Entry<String, List<String>> entry : headers.headerSet()) {
 			String key = entry.getKey();
 			if (StringUtils.isBlank(key)) {
 				continue;

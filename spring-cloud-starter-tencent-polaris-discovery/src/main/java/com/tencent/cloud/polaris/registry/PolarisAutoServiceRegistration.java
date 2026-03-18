@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
 /**
@@ -49,13 +50,14 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 	private final AssemblyAPI assemblyAPI;
 
 	public PolarisAutoServiceRegistration(
+			ApplicationContext context,
 			ServiceRegistry<PolarisRegistration> serviceRegistry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
 			PolarisRegistration registration,
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			AssemblyAPI assemblyAPI
 	) {
-		super(serviceRegistry, autoServiceRegistrationProperties);
+		super(context, serviceRegistry, autoServiceRegistrationProperties);
 		this.registration = registration;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.assemblyAPI = assemblyAPI;

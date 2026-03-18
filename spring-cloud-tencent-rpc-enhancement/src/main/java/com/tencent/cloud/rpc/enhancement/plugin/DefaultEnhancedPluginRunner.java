@@ -67,7 +67,7 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 			localServiceInstance = registration;
 		}
 		else {
-			DefaultServiceInstance defaultServiceInstance = new DefaultServiceInstance();
+			DefaultServiceInstance defaultServiceInstance = new DefaultServiceInstance(null, null, null, 0, false);
 			defaultServiceInstance.setServiceId(MetadataContext.LOCAL_SERVICE);
 			defaultServiceInstance.setHost(sdkContext.getConfig().getGlobal().getAPI().getBindIP());
 			localServiceInstance = defaultServiceInstance;

@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(description = "swagger 测试", name = "swaggerValue1")
 public class SwaggerApiController {
 
-	@RequestMapping(value = "/swagger/findMessages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/swagger/findMessages", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(method = "POST",
 			summary = "根据任务ID查询任务列表",
 			description = "根据任务ID查询任务列表Note")
@@ -85,7 +85,7 @@ public class SwaggerApiController {
 
 	@Operation(summary = "获取消息详情", method = "GET", description = "获取消息内容Note")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "abcdef", content = @Content(schema = @Schema(implementation = MessageModel.class)))})
-	@RequestMapping(value = "/swagger/getMessageDetail", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/swagger/getMessageDetail", produces = MediaType.APPLICATION_JSON_VALUE)
 	public MessageModel getMessageDetail(@RequestParam(name = "id")
 	@Parameter(description = "消息ID", name = "id") String msgId) {
 		MessageModel messageModel = new MessageModel();
@@ -109,7 +109,7 @@ public class SwaggerApiController {
 
 	@Operation(summary = "获取投递箱详情", method = "GET", description = "")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "获取投递箱成功", content = @Content(schema = @Schema(implementation = MessageBox.class)))})
-	@RequestMapping(value = "/swagger/getMessageBox", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/swagger/getMessageBox", produces = MediaType.APPLICATION_JSON_VALUE)
 	public MessageBox getMessageBox(@RequestParam @Parameter(required = true, description = "投递箱ID") String boxId,
 			@RequestParam @Parameter(name = "sizeLimit", example = "10", description = "投递箱最大投递数") int maxSizeLimit) {
 		return new MessageBox();
@@ -117,7 +117,7 @@ public class SwaggerApiController {
 
 	@Operation(summary = "获取投递箱详情V2", method = "POST", description = "")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "获取投递箱成功", content = @Content(schema = @Schema(implementation = MessageBox.class)))})
-	@RequestMapping(value = "/swagger/v2/getMessageBox", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/swagger/v2/getMessageBox", produces = MediaType.APPLICATION_JSON_VALUE)
 	public MessageBox getMessageBoxV2(@RequestBody
 	@Parameter(required = true, name = "messageBox", example = "投递箱信息") MessageBox messageBox) {
 		return new MessageBox();
@@ -125,7 +125,7 @@ public class SwaggerApiController {
 
 	@Operation(summary = "获取投递箱详情V3", method = "POST", description = "")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "获取投递箱成功", content = @Content(schema = @Schema(implementation = Map.class)))})
-	@RequestMapping(value = "/swagger/v3/getMessageBox", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/swagger/v3/getMessageBox", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryMessageBoxV3(@RequestBody
 	@Parameter(required = true, name = "messageBox", example = "投递箱信息") MessageBox messageBox) {
 
