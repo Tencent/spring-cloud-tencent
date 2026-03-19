@@ -62,5 +62,11 @@
 			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
