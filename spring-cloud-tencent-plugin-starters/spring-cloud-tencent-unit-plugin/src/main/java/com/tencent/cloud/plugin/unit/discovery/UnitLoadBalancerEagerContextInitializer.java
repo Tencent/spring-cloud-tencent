@@ -17,21 +17,26 @@
 
 package com.tencent.cloud.plugin.unit.discovery;
 
-import com.tencent.cloud.polaris.eager.instrument.feign.FeignEagerLoadSmartLifecycle;
+import com.tencent.cloud.polaris.eager.instrument.loadbalancer.PolarisLoadBalancerEagerContextInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UnitFeignEagerLoadSmartLifecycle extends FeignEagerLoadSmartLifecycle {
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 
-	private static final Logger LOG = LoggerFactory.getLogger(UnitFeignEagerLoadSmartLifecycle.class);
+/**
+ * Unit LoadBalancer eager load context initializer.
+ * Ignores loadbalancer eager load in unit mode.
+ */
+public class UnitLoadBalancerEagerContextInitializer extends PolarisLoadBalancerEagerContextInitializer {
 
+	private static final Logger LOG = LoggerFactory.getLogger(UnitLoadBalancerEagerContextInitializer.class);
 
-	public UnitFeignEagerLoadSmartLifecycle() {
-		super(null, null, null);
+	public UnitLoadBalancerEagerContextInitializer() {
+		super(null, null);
 	}
 
 	@Override
-	public void start() {
-		LOG.info("ignore feign eager load in unit mode");
+	public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
+		LOG.info("ignore loadbalancer eager load in unit mode");
 	}
 }
