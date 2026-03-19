@@ -26,9 +26,9 @@ import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.plugins.router.lane.BaseLaneMode;
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;

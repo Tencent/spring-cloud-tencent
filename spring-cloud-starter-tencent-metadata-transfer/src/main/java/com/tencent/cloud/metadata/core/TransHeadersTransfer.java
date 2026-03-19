@@ -84,7 +84,7 @@ public final class TransHeadersTransfer {
 			if (transHeaders != null) {
 				String[] transHeaderArray = transHeaders.split(",");
 				HttpHeaders headers = serverHttpRequest.getHeaders();
-				Set<String> headerKeys = headers.keySet();
+				Set<String> headerKeys = headers.headerNames();
 				for (String httpHeader : headerKeys) {
 					for (String transHeader : transHeaderArray) {
 						if (transHeader.equals(httpHeader)) {

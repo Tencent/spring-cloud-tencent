@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>com.alibaba.cloud</groupId>
 			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-			<version>2023.0.0.0-RC1</version>
+			<version>2025.1.0.0</version>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>

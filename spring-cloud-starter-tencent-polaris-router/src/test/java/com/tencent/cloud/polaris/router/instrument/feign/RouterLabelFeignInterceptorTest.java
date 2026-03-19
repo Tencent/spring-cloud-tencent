@@ -48,7 +48,8 @@ import static org.mockito.Mockito.mock;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RouterLabelFeignInterceptorTest.TestApplication.class,
-		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.cloud.gateway.enabled=false"})
+		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.cloud.gateway.enabled=false",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class RouterLabelFeignInterceptorTest {
 
 	@Test

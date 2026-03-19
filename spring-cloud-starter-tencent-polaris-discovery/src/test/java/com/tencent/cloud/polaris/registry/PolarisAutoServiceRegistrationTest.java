@@ -30,6 +30,7 @@ import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationP
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,12 +74,15 @@ public class PolarisAutoServiceRegistrationTest {
 		doNothing().when(serviceRegistry).register(nullable(PolarisRegistration.class));
 		doNothing().when(serviceRegistry).deregister(nullable(PolarisRegistration.class));
 
-		polarisAutoServiceRegistration =
-				new PolarisAutoServiceRegistration(serviceRegistry, autoServiceRegistrationProperties, registration,
-						polarisDiscoveryProperties, null);
+		// Use MockEnvironment to simulate real Spring environment
+		MockEnvironment mockEnvironment = new MockEnvironment();
+		mockEnvironment.setProperty("spring.application.name", "application");
 
-		doReturn(environment).when(applicationContext).getEnvironment();
-		polarisAutoServiceRegistration.setApplicationContext(applicationContext);
+		doReturn(mockEnvironment).when(applicationContext).getEnvironment();
+
+		polarisAutoServiceRegistration =
+				new PolarisAutoServiceRegistration(applicationContext, serviceRegistry, autoServiceRegistrationProperties, registration,
+						polarisDiscoveryProperties, null);
 	}
 
 	@Test

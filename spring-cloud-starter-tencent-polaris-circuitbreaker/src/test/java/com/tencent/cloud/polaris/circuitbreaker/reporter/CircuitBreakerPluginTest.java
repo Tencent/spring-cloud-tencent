@@ -125,7 +125,7 @@ public class CircuitBreakerPluginTest {
 		EnhancedResponseContext response = EnhancedResponseContext.builder()
 				.httpStatus(200)
 				.build();
-		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance(null, null, null, 0, false);
 		serviceInstance.setServiceId(SERVICE_PROVIDER);
 
 		pluginContext.setRequest(request);
@@ -157,7 +157,7 @@ public class CircuitBreakerPluginTest {
 		EnhancedResponseContext response = EnhancedResponseContext.builder()
 				.httpStatus(200)
 				.build();
-		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance(null, null, null, 0, false);
 		serviceInstance.setServiceId(SERVICE_PROVIDER);
 
 		pluginContext.setRequest(request);

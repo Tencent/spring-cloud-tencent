@@ -121,7 +121,7 @@ public class EnhancedPluginContextTest {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 		enhancedPluginContext.setRequest(requestContext);
 		enhancedPluginContext.setResponse(responseContext);
-		enhancedPluginContext.setTargetServiceInstance(new DefaultServiceInstance(), null);
+		enhancedPluginContext.setTargetServiceInstance(new DefaultServiceInstance(null, null, null, 0, false), null);
 		enhancedPluginContext.setThrowable(mock(Exception.class));
 		enhancedPluginContext.setDelay(0);
 		assertThat(enhancedPluginContext.getRequest()).isNotNull();
@@ -161,7 +161,7 @@ public class EnhancedPluginContextTest {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 
 		// targetServiceInstance != null
-		DefaultServiceInstance testDefaultServiceInstance = new DefaultServiceInstance();
+		DefaultServiceInstance testDefaultServiceInstance = new DefaultServiceInstance(null, null, null, 1, false);
 		testDefaultServiceInstance.setPort(1);
 		enhancedPluginContext.setTargetServiceInstance(testDefaultServiceInstance, null);
 		assertThat(enhancedPluginContext.getTargetServiceInstance().getPort()).isEqualTo(1);

@@ -31,6 +31,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,9 +54,10 @@ import static org.mockito.Mockito.when;
  *
  * @author liuye, Haotian Zhang
  */
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, MockitoExtension.class})
 @SpringBootTest(classes = RouterLabelRestTemplateInterceptorTest.TestApplication.class,
-		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.cloud.gateway.enabled=false"})
+		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.cloud.gateway.enabled=false",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class RouterLabelRestTemplateInterceptorTest {
 
 	@Mock

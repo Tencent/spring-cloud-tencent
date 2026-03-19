@@ -46,6 +46,7 @@ public class LoadBalancerConfigurationTest {
 		contextRunner.withConfiguration(AutoConfigurations.of(
 						PolarisContextAutoConfiguration.class,
 						LoadBalancerConfiguration.class))
+				.withPropertyValues("loadbalancer.client.name=test")
 				.run(context -> {
 					assertThat(context).hasSingleBean(LoadBalancerConfiguration.class);
 				});
@@ -59,6 +60,7 @@ public class LoadBalancerConfigurationTest {
 				.withBean(SimpleReactiveDiscoveryProperties.class)
 				.withBean(SimpleReactiveDiscoveryClient.class)
 				.withBean(PolarisInstanceTransformer.class)
+				.withPropertyValues("loadbalancer.client.name=test")
 				.run(context -> {
 					assertThat(context).hasSingleBean(LoadBalancerConfiguration.PolarisReactiveSupportConfiguration.class);
 					assertThat(context).hasSingleBean(ReactiveDiscoveryClient.class);
@@ -75,6 +77,7 @@ public class LoadBalancerConfigurationTest {
 				.withBean(SimpleDiscoveryProperties.class)
 				.withBean(SimpleDiscoveryClient.class)
 				.withBean(PolarisInstanceTransformer.class)
+				.withPropertyValues("loadbalancer.client.name=test")
 				.run(context -> {
 					assertThat(context).hasSingleBean(LoadBalancerConfiguration.PolarisBlockingSupportConfiguration.class);
 					assertThat(context).hasSingleBean(DiscoveryClient.class);

@@ -20,11 +20,11 @@ package com.tencent.tsf.gateway.core.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.plugin.gateway.context.Position;
 import com.tencent.tsf.gateway.core.exception.TsfGatewayException;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.type.TypeReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;

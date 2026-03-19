@@ -211,7 +211,7 @@ public class SpringValueProcessorTest {
 	}
 
 	@Component
-	private static class ValueTest {
+	private static final class ValueTest {
 		private static String name;
 		@Value("${timeout:1000}")
 		private int timeout;

@@ -41,7 +41,8 @@ import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
 @SpringBootTest(classes = RpcEnhancementReporterPropertiesTest.TestApplication.class, properties = {
 		"spring.application.name=test",
 		"spring.cloud.gateway.enabled=false",
-		"spring.cloud.tencent.rpc-enhancement.reporter=true"
+		"spring.cloud.tencent.rpc-enhancement.reporter=true",
+		"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"
 })
 @ActiveProfiles("test")
 public class RpcEnhancementReporterPropertiesTest {

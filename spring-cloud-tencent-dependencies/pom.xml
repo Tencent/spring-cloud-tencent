@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-dependencies-parent</artifactId>
-		<version>4.2.4</version>
+		<version>5.0.1</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -71,7 +71,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.1.2.0-2024.0.3-SNAPSHOT</revision>
+		<revision>2.1.2.0-2025.1.1-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
 		<polaris.version>2.1.2.0-SNAPSHOT</polaris.version>

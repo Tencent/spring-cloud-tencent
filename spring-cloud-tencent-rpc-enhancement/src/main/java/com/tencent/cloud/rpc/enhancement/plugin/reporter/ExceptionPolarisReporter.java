@@ -72,8 +72,8 @@ public class ExceptionPolarisReporter implements EnhancedPlugin {
 		}
 
 		EnhancedRequestContext request = context.getRequest();
-		ServiceInstance callerServiceInstance = Optional.ofNullable(context.getLocalServiceInstance()).orElse(new DefaultServiceInstance());
-		ServiceInstance calleeServiceInstance = Optional.ofNullable(context.getTargetServiceInstance()).orElse(new DefaultServiceInstance());
+		ServiceInstance callerServiceInstance = Optional.ofNullable(context.getLocalServiceInstance()).orElse(new DefaultServiceInstance(null, null, null, 0, false));
+		ServiceInstance calleeServiceInstance = Optional.ofNullable(context.getTargetServiceInstance()).orElse(new DefaultServiceInstance(null, null, null, 0, false));
 
 		ServiceCallResult resultRequest = PolarisEnhancedPluginUtils.createServiceCallResult(
 				callerServiceInstance.getHost(),

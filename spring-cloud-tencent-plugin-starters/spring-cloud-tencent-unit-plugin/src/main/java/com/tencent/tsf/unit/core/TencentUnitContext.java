@@ -26,7 +26,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.MetadataContextUtils;
@@ -36,6 +35,7 @@ import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.tsf.unit.core.model.UnitRouteInfo.GrayMatchRouteUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.type.TypeReference;
 
 public final class TencentUnitContext {
 

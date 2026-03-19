@@ -18,11 +18,11 @@
 package com.tencent.tsf.gateway.core.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.tsf.gateway.core.exception.TsfGatewayError;
 import com.tencent.tsf.gateway.core.exception.TsfGatewayException;
+import tools.jackson.core.type.TypeReference;
 
 public class RequestTransformerPlugin extends PluginInfo {
 

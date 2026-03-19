@@ -21,16 +21,15 @@ import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.model.GetValue;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.tencent.cloud.common.util.GzipUtil;
 import com.tencent.tsf.unit.core.Env;
 import com.tencent.tsf.unit.core.TencentUnitManager;
 import com.tencent.tsf.unit.core.model.UnitArch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 public final class TencentUnitArchKVLoader {
 
@@ -91,11 +90,11 @@ public final class TencentUnitArchKVLoader {
 		}
 	}
 
-	public static void loadUnitArch(String content) throws JsonProcessingException {
+	public static void loadUnitArch(String content) throws JacksonException {
 		LOGGER.info("[unit] unit arch config old raw content:\n{}", rawContent);
 
-		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		YAMLMapper mapper = new YAMLMapper();
+		mapper.rebuild().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		TencentUnitManager.setUnitArch(mapper.readValue(content, UnitArch.class));
 
 		rawContent = content;

@@ -26,6 +26,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,6 +113,11 @@ public class BeanFactoryUtilsTest {
 
 		@Override
 		public <T> ObjectProvider<T> getBeanProvider(ResolvableType resolvableType) {
+			return null;
+		}
+
+		@Override
+		public <T> ObjectProvider<T> getBeanProvider(ParameterizedTypeReference<T> requiredType) {
 			return null;
 		}
 

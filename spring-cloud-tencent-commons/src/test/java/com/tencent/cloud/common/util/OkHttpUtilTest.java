@@ -42,7 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 		properties = {
 			"spring.application.name=test",
 			"spring.cloud.polaris.discovery.register=false",
-			"spring.cloud.gateway.enabled=false"
+			"spring.cloud.gateway.enabled=false",
+			"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"
 		})
 public class OkHttpUtilTest {
 

@@ -49,7 +49,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
 		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml",
 				"spring.main.web-application-type = servlet",
-				"spring.cloud.gateway.enabled = false"})
+				"spring.cloud.gateway.enabled = false",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired

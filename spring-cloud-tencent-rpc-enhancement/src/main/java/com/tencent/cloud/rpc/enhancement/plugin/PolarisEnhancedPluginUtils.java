@@ -29,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.RouterConstant;
@@ -50,6 +47,9 @@ import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.BeansException;
 import org.springframework.http.HttpHeaders;
@@ -204,7 +204,7 @@ public final class PolarisEnhancedPluginUtils {
 	}
 
 	static RetStatus getRetStatusFromRequest(HttpHeaders headers, RetStatus defaultVal) {
-		if (headers != null && headers.containsKey(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
+		if (headers != null && headers.containsHeader(HeaderConstant.INTERNAL_CALLEE_RET_STATUS)) {
 			List<String> values = headers.get(HeaderConstant.INTERNAL_CALLEE_RET_STATUS);
 			if (CollectionUtils.isNotEmpty(values)) {
 				String retStatusVal = com.tencent.polaris.api.utils.StringUtils.defaultString(values.get(0));
@@ -220,7 +220,7 @@ public final class PolarisEnhancedPluginUtils {
 	}
 
 	static String getActiveRuleNameFromRequest(HttpHeaders headers) {
-		if (headers != null && headers.containsKey(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
+		if (headers != null && headers.containsHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)) {
 			Collection<String> values = headers.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME);
 			if (CollectionUtils.isNotEmpty(values)) {
 				String decodedActiveRuleName = "";
@@ -285,9 +285,9 @@ public final class PolarisEnhancedPluginUtils {
 					LOG.error("unsupported charset exception " + UTF_8, e);
 				}
 				try {
-					return new ObjectMapper().readValue(label, new TypeReference<HashMap<String, String>>() { });
+					return new JsonMapper().readValue(label, new TypeReference<HashMap<String, String>>() { });
 				}
-				catch (JsonProcessingException e) {
+				catch (JacksonException e) {
 					LOG.error("parse label map exception", e);
 				}
 			}

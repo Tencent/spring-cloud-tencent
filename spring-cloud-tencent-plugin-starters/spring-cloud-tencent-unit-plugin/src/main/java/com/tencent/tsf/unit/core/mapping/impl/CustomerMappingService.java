@@ -20,7 +20,6 @@ package com.tencent.tsf.unit.core.mapping.impl;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.tsf.unit.core.TencentUnitManager;
 import com.tencent.tsf.unit.core.exception.ErrorCode;
@@ -33,6 +32,7 @@ import shade.polaris.okhttp3.HttpUrl;
 import shade.polaris.okhttp3.OkHttpClient;
 import shade.polaris.okhttp3.Request;
 import shade.polaris.okhttp3.Response;
+import tools.jackson.databind.json.JsonMapper;
 
 public class CustomerMappingService implements IMappingService {
 
@@ -74,8 +74,8 @@ public class CustomerMappingService implements IMappingService {
 				throw new TencentUnitException(ErrorCode.MAPPING_RESPONSE_EMPTY_BODY_ERROR, msg);
 			}
 
-			ObjectMapper objectMapper = new ObjectMapper();
-			MappingEntity entity = objectMapper.readValue(response.body().string(), MappingEntity.class);
+			JsonMapper JsonMapper = new JsonMapper();
+			MappingEntity entity = JsonMapper.readValue(response.body().string(), MappingEntity.class);
 			response.body().close();
 			return entity;
 		}

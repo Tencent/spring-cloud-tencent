@@ -47,7 +47,7 @@ public class PolarisReactiveDiscoveryClientConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
+	@ConditionalOnClass(name = "org.springframework.boot.health.contributor.ReactiveHealthIndicator")
 	@ConditionalOnDiscoveryHealthIndicatorEnabled
 	public ReactiveDiscoveryClientHealthIndicator polarisReactiveDiscoveryClientHealthIndicator(
 			PolarisReactiveDiscoveryClient client, DiscoveryClientHealthIndicatorProperties properties) {
