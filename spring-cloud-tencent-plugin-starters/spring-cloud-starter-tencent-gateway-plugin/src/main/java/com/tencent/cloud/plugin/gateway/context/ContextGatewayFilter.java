@@ -250,6 +250,14 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		ServerHttpRequest request = exchange.getRequest();
 		String[] apis = rebuildExternalApi(request, path.value());
 		GroupContext.ContextRoute contextRoute = manager.getGroupPathRoute(config.getGroup(), apis[0]);
+		// Before Spring 6.0, trailing slashes were matched by default (e.g. "/api/test/" could match "/api/test").
+		// Retry without trailing slashes to maintain backward compatibility.
+		if (contextRoute == null) {
+			String trimmedMatchPath = stripTrailingSlashes(apis[0]);
+			if (!trimmedMatchPath.equals(apis[0])) {
+				contextRoute = manager.getGroupPathRoute(config.getGroup(), trimmedMatchPath);
+			}
+		}
 		if (contextRoute == null) {
 			String msg = String.format("[externalFilter] Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], path.value());
 			logger.warn(msg);
@@ -272,6 +280,14 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		logger.debug("[msFilter] path:{}, apis: {}", path, apis);
 		// check api
 		GroupContext.ContextRoute contextRoute = manager.getGroupPathRoute(config.getGroup(), apis[0]);
+		// Before Spring 6.0, trailing slashes were matched by default (e.g. "/api/test/" could match "/api/test").
+		// Retry without trailing slashes to maintain backward compatibility.
+		if (contextRoute == null) {
+			String trimmedMatchPath = stripTrailingSlashes(apis[0]);
+			if (!trimmedMatchPath.equals(apis[0])) {
+				contextRoute = manager.getGroupPathRoute(config.getGroup(), trimmedMatchPath);
+			}
+		}
 		if (contextRoute == null) {
 			String msg = String.format("[msFilter] Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], path.value());
 			logger.warn(msg);
@@ -327,6 +343,14 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		logger.debug("[unitFilter] path:{}, apis: {}", path, apis);
 		// check api
 		GroupContext.ContextRoute contextRoute = manager.getGroupUnitPathRoute(config.getGroup(), apis[0]);
+		// Before Spring 6.0, trailing slashes were matched by default (e.g. "/api/test/" could match "/api/test").
+		// Retry without trailing slashes to maintain backward compatibility.
+		if (contextRoute == null) {
+			String trimmedMatchPath = stripTrailingSlashes(apis[0]);
+			if (!trimmedMatchPath.equals(apis[0])) {
+				contextRoute = manager.getGroupUnitPathRoute(config.getGroup(), trimmedMatchPath);
+			}
+		}
 		if (contextRoute == null) {
 			String msg = String.format("[unitFilter] Can't find context route for group: %s, path: %s, origin path: %s", config.getGroup(), apis[0], path.value());
 			logger.warn(msg);
@@ -367,9 +391,10 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			matchPath.append("/").append(pathSegments[i]);
 			realPath.append("/").append(pathSegments[i]);
 		}
-		if (path.endsWith("/")) {
-			matchPath.append("/");
-			realPath.append("/");
+		String trailingSlashes = getTrailingSlashes(path);
+		if (StringUtils.isNotEmpty(trailingSlashes)) {
+			matchPath.append(trailingSlashes);
+			realPath.append(trailingSlashes);
 		}
 		return new String[] {matchPath.toString(), realPath.toString()};
 	}
@@ -387,9 +412,10 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			matchPath.append("/").append(pathSegments[i]);
 			realPath.append("/").append(pathSegments[i]);
 		}
-		if (path.endsWith("/")) {
-			matchPath.append("/");
-			realPath.append("/");
+		String trailingSlashes = getTrailingSlashes(path);
+		if (StringUtils.isNotEmpty(trailingSlashes)) {
+			matchPath.append(trailingSlashes);
+			realPath.append(trailingSlashes);
 		}
 		return new String[] {matchPath.toString(), realPath.toString()};
 	}
@@ -443,9 +469,10 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 			matchPath.append("/").append(pathSegments[i]);
 			realPath.append("/").append(pathSegments[i]);
 		}
-		if (path.endsWith("/")) {
-			matchPath.append("/");
-			realPath.append("/");
+		String trailingSlashes = getTrailingSlashes(path);
+		if (StringUtils.isNotEmpty(trailingSlashes)) {
+			matchPath.append(trailingSlashes);
+			realPath.append(trailingSlashes);
 		}
 
 		return new String[] {matchPath.toString(), realPath.toString()};
@@ -600,5 +627,32 @@ public class ContextGatewayFilter implements GatewayFilter, Ordered {
 		traceAttributes.put("localComponent", "msgw");
 
 		MetadataContextUtils.putMetadataObjectValue(ContextConstant.Trace.EXTRA_TRACE_ATTRIBUTES, traceAttributes);
+	}
+
+	/**
+	 * Returns all trailing slashes of the given path, e.g. "/api/test///" → "///"
+	 */
+	private String getTrailingSlashes(String path) {
+		int end = path.length();
+		int start = end;
+		while (start > 0 && path.charAt(start - 1) == '/') {
+			start--;
+		}
+		return path.substring(start, end);
+	}
+
+	/**
+	 * Strips trailing slashes from the given path, e.g. "GET|/api/test/" → "GET|/api/test".
+	 * Returns the original string if no trailing slashes are present.
+	 * <p>
+	 * Used to maintain backward compatibility with pre-Spring-6.0 behavior, where trailing slashes
+	 * were matched by default (e.g. "/api/test/" could match a route configured as "/api/test").
+	 */
+	private String stripTrailingSlashes(String path) {
+		int end = path.length();
+		while (end > 0 && path.charAt(end - 1) == '/') {
+			end--;
+		}
+		return path.substring(0, end);
 	}
 }

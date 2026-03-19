@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.plugin.gateway.context;
 
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Collections;
 
@@ -117,6 +118,139 @@ class ContextGatewayFilterTest {
 		exchange.getAttributes().remove(MetadataConstant.HeaderName.METADATA_CONTEXT);
 		filter.filter(exchange, mockChain);
 
+	}
+
+	// Test getTrailingSlashes via reflection
+	@Test
+	void shouldGetTrailingSlashesCorrectly() throws Exception {
+		Method method = ContextGatewayFilter.class.getDeclaredMethod("getTrailingSlashes", String.class);
+		method.setAccessible(true);
+
+		assertThat(method.invoke(filter, "/api/test///")).isEqualTo("///");
+		assertThat(method.invoke(filter, "/api/test/")).isEqualTo("/");
+		assertThat(method.invoke(filter, "/api/test")).isEqualTo("");
+		assertThat(method.invoke(filter, "/")).isEqualTo("/");
+		assertThat(method.invoke(filter, "///")).isEqualTo("///");
+		assertThat(method.invoke(filter, "")).isEqualTo("");
+	}
+
+	// Test stripTrailingSlashes via reflection
+	@Test
+	void shouldStripTrailingSlashesCorrectly() throws Exception {
+		Method method = ContextGatewayFilter.class.getDeclaredMethod("stripTrailingSlashes", String.class);
+		method.setAccessible(true);
+
+		assertThat(method.invoke(filter, "GET|/api/test/")).isEqualTo("GET|/api/test");
+		assertThat(method.invoke(filter, "GET|/api/test///")).isEqualTo("GET|/api/test");
+		assertThat(method.invoke(filter, "GET|/api/test")).isEqualTo("GET|/api/test");
+		assertThat(method.invoke(filter, "/api/test/")).isEqualTo("/api/test");
+		assertThat(method.invoke(filter, "/")).isEqualTo("");
+		assertThat(method.invoke(filter, "///")).isEqualTo("");
+		assertThat(method.invoke(filter, "")).isEqualTo("");
+	}
+
+	// Test trailing slash backward compatibility: request "/api/test/" should match route configured as "/api/test"
+	@Test
+	void shouldMatchRouteWithTrailingSlashCompatibility() {
+		// Setup group context with route configured WITHOUT trailing slash
+		GroupContext.ContextPredicate predicate = createPredicate(ApiType.EXTERNAL, Position.PATH, Position.PATH);
+		groupContext.setPredicate(predicate);
+		groupContext.setRoutes(Collections.singletonList(
+				createContextRoute("GET|/external/api", "GET", "testNS", "testSvc")
+		));
+
+		// Create test request WITH trailing slash
+		MockServerHttpRequest request = MockServerHttpRequest.get("/context/external/api/").build();
+		ServerWebExchange exchange = MockServerWebExchange.from(request);
+
+		// Exact match (with trailing slash) returns null; stripped match returns the route
+		GroupContext.ContextRoute route = createContextRoute("GET|/external/api", "GET", "http://test.com");
+		when(mockManager.getGroupPathRoute("testGroup", "GET|/external/api/")).thenReturn(null);
+		when(mockManager.getGroupPathRoute("testGroup", "GET|/external/api")).thenReturn(route);
+
+		// Execute filter — should not throw NotFoundException
+		Mono<Void> result = filter.filter(exchange, mockChain);
+
+		// Verify the request URL was resolved correctly (path preserved with trailing slash)
+		URI finalUri = exchange.getRequiredAttribute(GATEWAY_REQUEST_URL_ATTR);
+		assertThat(finalUri.toString()).isEqualTo("http://test.com/external/api/");
+	}
+
+	// Test that exact match (without trailing slash) still works normally
+	@Test
+	void shouldMatchRouteExactlyWithoutTrailingSlash() {
+		// Setup group context
+		GroupContext.ContextPredicate predicate = createPredicate(ApiType.EXTERNAL, Position.PATH, Position.PATH);
+		groupContext.setPredicate(predicate);
+		groupContext.setRoutes(Collections.singletonList(
+				createContextRoute("GET|/external/api", "GET", "testNS", "testSvc")
+		));
+
+		// Create test request WITHOUT trailing slash
+		MockServerHttpRequest request = MockServerHttpRequest.get("/context/external/api").build();
+		ServerWebExchange exchange = MockServerWebExchange.from(request);
+
+		GroupContext.ContextRoute route = createContextRoute("GET|/external/api", "GET", "http://test.com");
+		when(mockManager.getGroupPathRoute("testGroup", "GET|/external/api")).thenReturn(route);
+
+		// Execute filter
+		filter.filter(exchange, mockChain);
+
+		// Verify the request URL was resolved correctly (path preserved without trailing slash)
+		URI finalUri = exchange.getRequiredAttribute(GATEWAY_REQUEST_URL_ATTR);
+		assertThat(finalUri.toString()).isEqualTo("http://test.com/external/api");
+	}
+
+	// Test MS API trailing slash backward compatibility: request "/context/ns/svc/api/test/" should match route configured as "GET|/ns/svc/api/test"
+	@Test
+	void shouldMatchMsRouteWithTrailingSlashCompatibility() {
+		// Setup group context with MS API predicate and route configured WITHOUT trailing slash
+		GroupContext.ContextPredicate predicate = createPredicate(ApiType.MS, Position.PATH, Position.PATH);
+		groupContext.setPredicate(predicate);
+		groupContext.setRoutes(Collections.singletonList(
+			createContextRoute("GET|/testNS/testSvc/api/test", "GET", "testNS", "testSvc")
+		));
+
+		// Create test request WITH trailing slash: /context/namespace/service/api/path/
+		MockServerHttpRequest request = MockServerHttpRequest.get("/context/testNS/testSvc/api/test/").build();
+		ServerWebExchange exchange = MockServerWebExchange.from(request);
+
+		// Exact match (with trailing slash) returns null; stripped match returns the route
+		GroupContext.ContextRoute route = createContextRoute("GET|/testNS/testSvc/api/test", "GET", "testNS", "testSvc");
+		when(mockManager.getGroupPathRoute("testGroup", "GET|/testNS/testSvc/api/test/")).thenReturn(null);
+		when(mockManager.getGroupPathRoute("testGroup", "GET|/testNS/testSvc/api/test")).thenReturn(route);
+
+		// Execute filter — should not throw NotFoundException
+		Mono<Void> result = filter.filter(exchange, mockChain);
+
+		// Verify the request URL was resolved correctly (path preserved with trailing slash)
+		URI finalUri = exchange.getRequiredAttribute(GATEWAY_REQUEST_URL_ATTR);
+		assertThat(finalUri.toString()).isEqualTo("lb://testSvc/api/test/");
+	}
+
+	// Test that exact match for MS API (without trailing slash) still works normally
+	@Test
+	void shouldMatchMsRouteExactlyWithoutTrailingSlash() {
+		// Setup group context with MS API predicate
+		GroupContext.ContextPredicate predicate = createPredicate(ApiType.MS, Position.PATH, Position.PATH);
+		groupContext.setPredicate(predicate);
+		groupContext.setRoutes(Collections.singletonList(
+			createContextRoute("GET|/testNS/testSvc/api/test", "GET", "testNS", "testSvc")
+		));
+
+		// Create test request WITHOUT trailing slash
+		MockServerHttpRequest request = MockServerHttpRequest.get("/context/testNS/testSvc/api/test").build();
+		ServerWebExchange exchange = MockServerWebExchange.from(request);
+
+		GroupContext.ContextRoute route = createContextRoute("GET|/testNS/testSvc/api/test", "GET", "testNS", "testSvc");
+		when(mockManager.getGroupPathRoute("testGroup", "GET|/testNS/testSvc/api/test")).thenReturn(route);
+
+		// Execute filter
+		filter.filter(exchange, mockChain);
+
+		// Verify the request URL was resolved correctly (path preserved without trailing slash)
+		URI finalUri = exchange.getRequiredAttribute(GATEWAY_REQUEST_URL_ATTR);
+		assertThat(finalUri.toString()).isEqualTo("lb://testSvc/api/test");
 	}
 
 	// Helper method to create test predicate

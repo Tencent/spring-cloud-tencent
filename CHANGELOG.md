@@ -6,4 +6,5 @@
 - [feat: Support Polaris config env value and add related tests](https://github.com/Tencent/spring-cloud-tencent/pull/1797)
 - [refactor: modify the initialization of ApplicationContextAwareUtils.](https://github.com/Tencent/spring-cloud-tencent/pull/1798)
 - [feat: support enable/disable cloud location provider via configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1799)
+- [feat: refactor Feign eager load, add LoadBalancer warm-up, and fix gateway trailing slash compatibility](https://github.com/Tencent/spring-cloud-tencent/pull/1800)
 - [feat: Upgrade to Spring Cloud 2025.1.1.](https://github.com/Tencent/spring-cloud-tencent/pull/1801)
