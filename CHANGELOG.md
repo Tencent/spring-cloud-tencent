@@ -8,3 +8,4 @@
 - [feat: support enable/disable cloud location provider via configuration.](https://github.com/Tencent/spring-cloud-tencent/pull/1799)
 - [feat: refactor Feign eager load, add LoadBalancer warm-up, and fix gateway trailing slash compatibility](https://github.com/Tencent/spring-cloud-tencent/pull/1800)
 - [feat: Upgrade to Spring Cloud 2025.1.1.](https://github.com/Tencent/spring-cloud-tencent/pull/1801)
+- [test: add unit tests for ConfigurationModifier and fix TsfConsul report logic](https://github.com/Tencent/spring-cloud-tencent/pull/1802)
