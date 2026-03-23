@@ -498,7 +498,7 @@ class ConfigurationModifierTest {
 		when(polarisContextProperties.getEnabled()).thenReturn(true);
 		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getDataSource()).thenReturn("polaris");
-		when(polarisConfigProperties.getAddress()).thenReturn("grpc://10.0.0.1:8093");
+		when(polarisConfigProperties.getAddress()).thenReturn("grpc://127.0.0.1:9093");
 		when(polarisConfigProperties.isCheckAddress()).thenReturn(false);
 		when(polarisConfigProperties.isEmptyProtectionEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getEmptyProtectionExpiredInterval()).thenReturn(604800000L);
@@ -507,11 +507,11 @@ class ConfigurationModifierTest {
 		when(polarisContextProperties.getAddressLbPolicy()).thenReturn("roundRobin");
 		when(polarisContextProperties.getServerSwitchInterval()).thenReturn(600000L);
 
-		List<String> parsedConfigAddresses = Collections.singletonList("10.0.0.1:8093");
+		List<String> parsedConfigAddresses = Collections.singletonList("127.0.0.1:9093");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
 			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
-			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://10.0.0.1:8093"))
+			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:9093"))
 					.thenReturn(parsedConfigAddresses);
 			mockedTsf.when(TsfContextUtils::isOnlyTsfConsulEnabled).thenReturn(false);
 
@@ -520,7 +520,7 @@ class ConfigurationModifierTest {
 
 			// Assert
 			ServerConnectorConfigImpl reportConnector = configuration.getGlobal().getServerConnector();
-			verify(reportConnector).setAddresses(Collections.singletonList("10.0.0.1:8091"));
+			verify(reportConnector).setAddresses(Collections.singletonList("127.0.0.1:8091"));
 		}
 	}
 
@@ -790,16 +790,16 @@ class ConfigurationModifierTest {
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList(anyString()))
-					.thenReturn(Arrays.asList("127.0.0.1:8091", "10.0.0.1:8091"));
+					.thenReturn(Arrays.asList("127.0.0.1:8091", "127.0.0.1:9091"));
 
 			// Act
-			List<String> result = invokeResolveConfigAddressFromPolarisAddress("grpc://127.0.0.1:8091,grpc://10.0.0.1:8091");
+			List<String> result = invokeResolveConfigAddressFromPolarisAddress("grpc://127.0.0.1:8091,grpc://127.0.0.1:9091");
 
 			// Assert
 			assertThat(result).isNotNull();
 			assertThat(result).hasSize(2);
 			assertThat(result.get(0)).isEqualTo("127.0.0.1:8093");
-			assertThat(result.get(1)).isEqualTo("10.0.0.1:8093");
+			assertThat(result.get(1)).isEqualTo("127.0.0.1:8093");
 		}
 	}
 
@@ -839,16 +839,16 @@ class ConfigurationModifierTest {
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList(anyString()))
-					.thenReturn(Arrays.asList("127.0.0.1:8091", " ", "10.0.0.1:8091"));
+					.thenReturn(Arrays.asList("127.0.0.1:8091", " ", "127.0.0.1:9091"));
 
 			// Act
-			List<String> result = invokeResolveConfigAddressFromPolarisAddress("grpc://127.0.0.1:8091, ,grpc://10.0.0.1:8091");
+			List<String> result = invokeResolveConfigAddressFromPolarisAddress("grpc://127.0.0.1:8091, ,grpc://127.0.0.1:9091");
 
 			// Assert
 			assertThat(result).isNotNull();
 			assertThat(result).hasSize(2);
 			assertThat(result.get(0)).isEqualTo("127.0.0.1:8093");
-			assertThat(result.get(1)).isEqualTo("10.0.0.1:8093");
+			assertThat(result.get(1)).isEqualTo("127.0.0.1:8093");
 		}
 	}
 
