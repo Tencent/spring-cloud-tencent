@@ -230,7 +230,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("127.0.0.1:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8091"))
@@ -276,7 +276,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("127.0.0.1:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8091"))
 					.thenReturn(parsedPolarisAddresses);
 			mockedTsf.when(TsfContextUtils::isOnlyTsfConsulEnabled).thenReturn(false);
@@ -338,7 +338,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("127.0.0.1:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8091"))
@@ -384,7 +384,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("127.0.0.1:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8091"))
@@ -428,7 +428,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("127.0.0.1:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8091"))
@@ -470,7 +470,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("127.0.0.1:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8091"))
@@ -510,7 +510,7 @@ class ConfigurationModifierTest {
 		List<String> parsedConfigAddresses = Collections.singletonList("127.0.0.1:9093");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:9093"))
 					.thenReturn(parsedConfigAddresses);
 			mockedTsf.when(TsfContextUtils::isOnlyTsfConsulEnabled).thenReturn(false);
@@ -550,7 +550,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("127.0.0.1:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8091"))
@@ -585,7 +585,7 @@ class ConfigurationModifierTest {
 		List<String> parsedAddresses = Collections.singletonList("127.0.0.1:8093");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.accessible("127.0.0.1", 8093, 3000))
@@ -625,7 +625,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("127.0.0.1:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:8091"))
@@ -665,7 +665,7 @@ class ConfigurationModifierTest {
 		List<String> parsedPolarisAddresses = Collections.singletonList("[::1]:8091");
 
 		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class);
-			 MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
+				MockedStatic<TsfContextUtils> mockedTsf = Mockito.mockStatic(TsfContextUtils.class)) {
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://[::1]:8093"))
 					.thenReturn(parsedAddresses);
 			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://[::1]:8091"))
