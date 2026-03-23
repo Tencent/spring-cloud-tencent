@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
@@ -126,7 +127,11 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		connectorConfig.setEmptyProtectionEnable(polarisConfigProperties.isEmptyProtectionEnabled());
 		connectorConfig.setEmptyProtectionExpiredInterval(polarisConfigProperties.getEmptyProtectionExpiredInterval());
 
+		// config report client address
 		ServerConnectorConfigImpl reportClientConnectorConfig = configuration.getGlobal().getServerConnector();
+		if (TsfContextUtils.isOnlyTsfConsulEnabled()) {
+			configuration.getGlobal().getAPI().setReportEnable(false);
+		}
 		if (StringUtils.isNotBlank(polarisContextProperties.getAddress())) {
 			reportClientConnectorConfig.setAddresses(AddressUtils.parseAddressList(polarisContextProperties.getAddress()));
 		}
