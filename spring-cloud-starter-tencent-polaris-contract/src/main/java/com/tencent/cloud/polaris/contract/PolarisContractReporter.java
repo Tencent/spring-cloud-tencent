@@ -70,16 +70,20 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 
 	private final ObjectMapperProvider springdocObjectMapperProvider;
 
+	private final String contextPath;
+
 	public PolarisContractReporter(org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource,
 			org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource,
 			PolarisContractProperties polarisContractProperties, ProviderAPI providerAPI,
-			PolarisDiscoveryProperties polarisDiscoveryProperties, ObjectMapperProvider springdocObjectMapperProvider) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, ObjectMapperProvider springdocObjectMapperProvider,
+			String contextPath) {
 		this.multipleOpenApiWebMvcResource = multipleOpenApiWebMvcResource;
 		this.multipleOpenApiWebFluxResource = multipleOpenApiWebFluxResource;
 		this.polarisContractProperties = polarisContractProperties;
 		this.providerAPI = providerAPI;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
 		this.springdocObjectMapperProvider = springdocObjectMapperProvider;
+		this.contextPath = contextPath;
 	}
 
 	@Override
@@ -110,6 +114,13 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 					request.setVersion(polarisDiscoveryProperties.getVersion());
 					List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(openAPI);
 					request.setInterfaceDescriptors(interfaceDescriptorList);
+					if (StringUtils.isNotBlank(contextPath)) {
+						Paths newPaths = new Paths();
+						for (Map.Entry<String, PathItem> entry : openAPI.getPaths().entrySet()) {
+							newPaths.addPathItem(contextPath + entry.getKey(), entry.getValue());
+						}
+						openAPI.setPaths(newPaths);
+					}
 					String jsonValue;
 					if (springdocObjectMapperProvider != null && springdocObjectMapperProvider.jsonMapper() != null) {
 						jsonValue = springdocObjectMapperProvider.jsonMapper().writeValueAsString(openAPI);
@@ -151,7 +162,7 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 			}
 			for (Map.Entry<String, Operation> o : operationMap.entrySet()) {
 				InterfaceDescriptor interfaceDescriptor = new InterfaceDescriptor();
-				interfaceDescriptor.setPath(p.getKey());
+				interfaceDescriptor.setPath(contextPath + p.getKey());
 				interfaceDescriptor.setMethod(o.getKey());
 				try {
 					String jsonValue;
