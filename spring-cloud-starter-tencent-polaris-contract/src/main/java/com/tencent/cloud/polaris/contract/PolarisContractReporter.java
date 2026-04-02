@@ -114,7 +114,7 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 					request.setVersion(polarisDiscoveryProperties.getVersion());
 					List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(openAPI);
 					request.setInterfaceDescriptors(interfaceDescriptorList);
-					if (StringUtils.isNotBlank(contextPath)) {
+					if (StringUtils.isNotBlank(contextPath) && openAPI.getPaths() != null) {
 						Paths newPaths = new Paths();
 						for (Map.Entry<String, PathItem> entry : openAPI.getPaths().entrySet()) {
 							newPaths.addPathItem(contextPath + entry.getKey(), entry.getValue());
@@ -154,6 +154,9 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 	private List<InterfaceDescriptor> getInterfaceDescriptorFromSwagger(OpenAPI openAPI) {
 		List<InterfaceDescriptor> interfaceDescriptorList = new ArrayList<>();
 		Paths paths = openAPI.getPaths();
+		if (paths == null) {
+			return interfaceDescriptorList;
+		}
 		for (Map.Entry<String, PathItem> p : paths.entrySet()) {
 			PathItem path = p.getValue();
 			Map<String, Operation> operationMap = getOperationMapFromPath(path);
@@ -162,7 +165,12 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 			}
 			for (Map.Entry<String, Operation> o : operationMap.entrySet()) {
 				InterfaceDescriptor interfaceDescriptor = new InterfaceDescriptor();
-				interfaceDescriptor.setPath(contextPath + p.getKey());
+				if (StringUtils.isNotBlank(contextPath)) {
+					interfaceDescriptor.setPath(contextPath + p.getKey());
+				}
+				else {
+					interfaceDescriptor.setPath(p.getKey());
+				}
 				interfaceDescriptor.setMethod(o.getKey());
 				try {
 					String jsonValue;

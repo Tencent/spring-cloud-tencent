@@ -161,4 +161,26 @@ class PolarisContractReporterTest {
 				.extracting(InterfaceDescriptor::getPath)
 				.allMatch(path -> path.startsWith("/api/"));
 	}
+
+	/**
+	 * Test that null paths in OpenAPI returns an empty descriptor list without NPE.
+	 * When OpenAPI.getPaths() returns null, the method should gracefully return
+	 * an empty list instead of throwing NullPointerException.
+	 */
+	@DisplayName("null paths in OpenAPI returns empty descriptor list")
+	@Test
+	void testNullPathsReturnsEmptyList() throws Exception {
+		// Arrange
+		PolarisContractReporter reporter = new PolarisContractReporter(
+				null, null, polarisContractProperties, providerAPI,
+				polarisDiscoveryProperties, springdocObjectMapperProvider, "/context");
+		OpenAPI openAPI = new OpenAPI();
+		// Do not call openAPI.setPaths(), so getPaths() returns null
+
+		// Act
+		List<InterfaceDescriptor> descriptors = invokeGetInterfaceDescriptorFromSwagger(reporter, openAPI);
+
+		// Assert
+		assertThat(descriptors).isNotNull().isEmpty();
+	}
 }
