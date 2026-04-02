@@ -17,11 +17,14 @@
 
 package com.tencent.cloud.polaris.contract.tsf;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tencent.cloud.common.util.GzipUtil;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.api.AbstractOpenApiResource;
@@ -45,15 +48,18 @@ public class TsfApiMetadataGrapher implements SmartLifecycle {
 	private final ObjectMapperProvider springdocObjectMapperProvider;
 	private final ApplicationContext applicationContext;
 	private final String groupName;
+	private final String contextPath;
 
 	public TsfApiMetadataGrapher(org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource,
 			org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource,
-			String groupName, ApplicationContext applicationContext, ObjectMapperProvider springdocObjectMapperProvider) {
+			String groupName, ApplicationContext applicationContext, ObjectMapperProvider springdocObjectMapperProvider,
+			String contextPath) {
 		this.applicationContext = applicationContext;
 		this.multipleOpenApiWebMvcResource = multipleOpenApiWebMvcResource;
 		this.multipleOpenApiWebFluxResource = multipleOpenApiWebFluxResource;
 		this.groupName = groupName;
 		this.springdocObjectMapperProvider = springdocObjectMapperProvider;
+		this.contextPath = contextPath;
 	}
 
 	@Override
@@ -83,6 +89,14 @@ public class TsfApiMetadataGrapher implements SmartLifecycle {
 			OpenAPI openAPI = null;
 			if (openApiResource != null) {
 				openAPI = AbstractOpenApiResourceUtil.getOpenApi(openApiResource);
+			}
+			if (openAPI != null && contextPath != null && !contextPath.isEmpty()
+					&& openAPI.getPaths() != null) {
+				Paths newPaths = new Paths();
+				for (Map.Entry<String, PathItem> entry : openAPI.getPaths().entrySet()) {
+					newPaths.addPathItem(contextPath + entry.getKey(), entry.getValue());
+				}
+				openAPI.setPaths(newPaths);
 			}
 			String jsonValue;
 			if (springdocObjectMapperProvider != null && springdocObjectMapperProvider.jsonMapper() != null) {
