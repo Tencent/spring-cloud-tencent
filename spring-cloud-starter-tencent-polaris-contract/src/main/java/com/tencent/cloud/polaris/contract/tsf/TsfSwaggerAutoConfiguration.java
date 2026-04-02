@@ -28,7 +28,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 @Configuration
 @ConditionalOnTsfConsulEnabled
@@ -39,8 +41,16 @@ public class TsfSwaggerAutoConfiguration {
 	@ConditionalOnBean(OpenAPI.class)
 	public TsfApiMetadataGrapher tsfApiMetadataGrapher(@Nullable MultipleOpenApiWebMvcResource multipleOpenApiWebMvcResource,
 			@Nullable MultipleOpenApiWebFluxResource multipleOpenApiWebFluxResource, ApplicationContext context,
-			PolarisContractProperties polarisContractProperties, ObjectMapperProvider springdocObjectMapperProvider) {
+			PolarisContractProperties polarisContractProperties, ObjectMapperProvider springdocObjectMapperProvider,
+			Environment environment) {
+		String contextPath = environment.getProperty("server.servlet.context-path", "");
+		if (!StringUtils.hasText(contextPath)) {
+			contextPath = environment.getProperty("spring.webflux.base-path", "");
+		}
+		if (contextPath.endsWith("/")) {
+			contextPath = contextPath.substring(0, contextPath.length() - 1);
+		}
 		return new TsfApiMetadataGrapher(multipleOpenApiWebMvcResource, multipleOpenApiWebFluxResource,
-				polarisContractProperties.getGroup(), context, springdocObjectMapperProvider);
+				polarisContractProperties.getGroup(), context, springdocObjectMapperProvider, contextPath);
 	}
 }

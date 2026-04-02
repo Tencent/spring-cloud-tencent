@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -100,9 +101,18 @@ public class PolarisSwaggerAutoConfiguration {
 			@Nullable MultipleOpenApiWebMvcResource multipleOpenApiWebMvcResource,
 			@Nullable MultipleOpenApiWebFluxResource multipleOpenApiWebFluxResource,
 			PolarisContractProperties polarisContractProperties, PolarisSDKContextManager polarisSDKContextManager,
-			PolarisDiscoveryProperties polarisDiscoveryProperties, ObjectMapperProvider springdocObjectMapperProvider) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, ObjectMapperProvider springdocObjectMapperProvider,
+			Environment environment) {
+		String contextPath = environment.getProperty("server.servlet.context-path", "");
+		if (!StringUtils.hasText(contextPath)) {
+			contextPath = environment.getProperty("spring.webflux.base-path", "");
+		}
+		if (contextPath.endsWith("/")) {
+			contextPath = contextPath.substring(0, contextPath.length() - 1);
+		}
 		return new PolarisContractReporter(multipleOpenApiWebMvcResource, multipleOpenApiWebFluxResource,
-				polarisContractProperties, polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties, springdocObjectMapperProvider);
+				polarisContractProperties, polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties,
+				springdocObjectMapperProvider, contextPath);
 	}
 
 	@Bean
