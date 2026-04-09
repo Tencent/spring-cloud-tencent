@@ -40,6 +40,11 @@
       "type": "java.lang.Long",
       "defaultValue": "30",
       "description": "Remote limiter service task base interval. Unit: ms."
+    },
+    {
+      "name": "spring.cloud.polaris.ratelimit.limiterOverrideHost",
+      "type": "java.lang.String",
+      "description": "Override host for remote limiter service. When set, all limiter instance IPs will be replaced with this value while preserving original ports."
     }
   ]
 }

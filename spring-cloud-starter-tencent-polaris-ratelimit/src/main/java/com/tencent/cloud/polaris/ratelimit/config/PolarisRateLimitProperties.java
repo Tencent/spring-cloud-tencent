@@ -50,6 +50,8 @@ public class PolarisRateLimitProperties {
 
 	private String limiterAddresses;
 
+	private String limiterOverrideHost;
+
 	private long remoteTaskInterval = 30L;
 
 	String getLimiterAddresses() {
@@ -58,6 +60,14 @@ public class PolarisRateLimitProperties {
 
 	void setLimiterAddresses(String limiterAddresses) {
 		this.limiterAddresses = limiterAddresses;
+	}
+
+	String getLimiterOverrideHost() {
+		return limiterOverrideHost;
+	}
+
+	void setLimiterOverrideHost(String limiterOverrideHost) {
+		this.limiterOverrideHost = limiterOverrideHost;
 	}
 
 	public String getRejectRequestTips() {

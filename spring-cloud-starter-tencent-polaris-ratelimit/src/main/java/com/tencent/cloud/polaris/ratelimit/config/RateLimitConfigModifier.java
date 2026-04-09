@@ -43,6 +43,7 @@ public class RateLimitConfigModifier implements PolarisConfigModifier {
 		configuration.getProvider().getRateLimit()
 				.setLimiterAddresses(AddressUtils.parseHostPortList(polarisRateLimitProperties.getLimiterAddresses()));
 		configuration.getProvider().getRateLimit().setRemoteTaskIntervalMilli(polarisRateLimitProperties.getRemoteTaskInterval());
+		configuration.getProvider().getRateLimit().setLimiterOverrideHost(polarisRateLimitProperties.getLimiterOverrideHost());
 	}
 
 	@Override

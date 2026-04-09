@@ -54,6 +54,7 @@ public class PolarisRateLimitPropertiesTest {
 		assertThat(polarisRateLimitProperties.getRemoteTaskInterval()).isEqualTo(50L);
 		List<String> limiterAddresses = AddressUtils.parseHostPortList(polarisRateLimitProperties.getLimiterAddresses());
 		assertThat(limiterAddresses.get(0)).isEqualTo("127.0.0.1:8080");
+		assertThat(polarisRateLimitProperties.getLimiterOverrideHost()).isEqualTo("127.0.0.1");
 
 	}
 
