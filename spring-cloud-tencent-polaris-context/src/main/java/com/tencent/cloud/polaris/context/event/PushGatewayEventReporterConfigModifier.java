@@ -55,6 +55,7 @@ public class PushGatewayEventReporterConfigModifier implements PolarisConfigModi
 		pushGatewayEventReporterConfig.setMaxBatchSize(properties.getMaxBatchSize());
 		pushGatewayEventReporterConfig.setNamespace(properties.getNamespace());
 		pushGatewayEventReporterConfig.setService(properties.getService());
+		pushGatewayEventReporterConfig.setOverrideHost(properties.getOverrideHost());
 
 		configuration.getGlobal().getEventReporter()
 				.setPluginConfig(DefaultPlugins.PUSH_GATEWAY_EVENT_REPORTER_TYPE, pushGatewayEventReporterConfig);
