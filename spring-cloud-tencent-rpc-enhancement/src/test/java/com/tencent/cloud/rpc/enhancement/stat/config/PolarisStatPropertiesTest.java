@@ -44,6 +44,7 @@ public class PolarisStatPropertiesTest {
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.namespace=test-namespace")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.service=test-service")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.override-host=127.0.0.1")
 			.withPropertyValues("spring.cloud.gateway.enabled=false");
 
 	@Test
@@ -61,6 +62,7 @@ public class PolarisStatPropertiesTest {
 			assertThat(polarisStatProperties.getStatNamespace()).isEqualTo("test-namespace");
 			assertThat(polarisStatProperties.getStatService()).isEqualTo("test-service");
 			assertThat(polarisStatProperties.getPushGatewayPushInterval().toString()).isEqualTo("1000");
+			assertThat(polarisStatProperties.getPushGatewayOverrideHost()).isEqualTo("127.0.0.1");
 		});
 	}
 

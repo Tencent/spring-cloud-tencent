@@ -57,6 +57,7 @@ public class StatConfigModifier implements PolarisConfigModifier {
 				prometheusHandlerConfig.setService(polarisStatProperties.getStatService());
 				prometheusHandlerConfig.setPushInterval(polarisStatProperties.getPushGatewayPushInterval());
 				prometheusHandlerConfig.setOpenGzip(polarisStatProperties.getOpenGzip());
+				prometheusHandlerConfig.setOverrideHost(polarisStatProperties.getPushGatewayOverrideHost());
 			}
 			else {
 				// pull metrics

@@ -58,6 +58,7 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.open-gzip=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.namespace=test-namespace")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.service=test-service")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.override-host=127.0.0.1")
 			.withPropertyValues("spring.application.name=test")
 			.withPropertyValues("spring.cloud.gateway.enabled=false")
 			.withPropertyValues("spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration");
@@ -100,6 +101,7 @@ public class StatConfigModifierTest {
 			assertThat(prometheusHandlerConfig.isOpenGzip()).isTrue();
 			assertThat(prometheusHandlerConfig.getNamespace()).isEqualTo("test-namespace");
 			assertThat(prometheusHandlerConfig.getService()).isEqualTo("test-service");
+			assertThat(prometheusHandlerConfig.getOverrideHost()).isEqualTo("127.0.0.1");
 		});
 	}
 
