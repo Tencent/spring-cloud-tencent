@@ -83,6 +83,12 @@ public class PolarisStatProperties {
 	 */
 	private List<String> pathRegexList = new ArrayList<>();
 
+	/**
+	 * Override host for prometheus push gateway.
+	 */
+	@Value("${spring.cloud.polaris.stat.pushgateway.override-host:}")
+	private String pushGatewayOverrideHost;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -155,6 +161,14 @@ public class PolarisStatProperties {
 		this.pathRegexList = pathRegexList;
 	}
 
+	public String getPushGatewayOverrideHost() {
+		return pushGatewayOverrideHost;
+	}
+
+	public void setPushGatewayOverrideHost(String pushGatewayOverrideHost) {
+		this.pushGatewayOverrideHost = pushGatewayOverrideHost;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisStatProperties{" +
@@ -167,6 +181,7 @@ public class PolarisStatProperties {
 				", pushGatewayPushInterval=" + pushGatewayPushInterval +
 				", openGzip=" + openGzip +
 				", pathRegexList=" + pathRegexList +
+				", pushGatewayOverrideHost='" + pushGatewayOverrideHost + '\'' +
 				'}';
 	}
 }

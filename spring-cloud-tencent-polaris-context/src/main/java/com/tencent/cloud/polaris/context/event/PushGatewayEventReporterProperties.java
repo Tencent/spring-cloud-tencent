@@ -58,6 +58,11 @@ public class PushGatewayEventReporterProperties {
 	 */
 	private String service = "polaris.pushgateway";
 
+	/**
+	 * Override host for push gateway event reporter.
+	 */
+	private String overrideHost;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -106,6 +111,14 @@ public class PushGatewayEventReporterProperties {
 		this.service = service;
 	}
 
+	public String getOverrideHost() {
+		return overrideHost;
+	}
+
+	public void setOverrideHost(String overrideHost) {
+		this.overrideHost = overrideHost;
+	}
+
 	@Override
 	public String toString() {
 		return "PushGatewayEventReporterProperties{" +
@@ -115,6 +128,7 @@ public class PushGatewayEventReporterProperties {
 				", maxBatchSize=" + maxBatchSize +
 				", namespace='" + namespace + '\'' +
 				", service='" + service + '\'' +
+				", overrideHost='" + overrideHost + '\'' +
 				'}';
 	}
 }

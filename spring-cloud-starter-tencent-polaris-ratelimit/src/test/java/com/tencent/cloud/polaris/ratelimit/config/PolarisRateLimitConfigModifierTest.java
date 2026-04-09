@@ -34,7 +34,8 @@ public class PolarisRateLimitConfigModifierTest {
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
 			.withPropertyValues("spring.cloud.polaris.ratelimit.maxQueuingTime=500")
 			.withPropertyValues("spring.cloud.polaris.ratelimit.limiterAddresses=127.0.0.1:8080,127.0.0.1:8081")
-			.withPropertyValues("spring.cloud.polaris.ratelimit.remoteTaskInterval=50");
+			.withPropertyValues("spring.cloud.polaris.ratelimit.remoteTaskInterval=50")
+			.withPropertyValues("spring.cloud.polaris.ratelimit.limiterOverrideHost=127.0.0.1");
 
 	@BeforeEach
 	void setUp() {
@@ -52,6 +53,7 @@ public class PolarisRateLimitConfigModifierTest {
 			assertThat(config.getLimiterAddresses().get(1)).isEqualTo("127.0.0.1:8081");
 			assertThat(config.getMaxQueuingTime()).isEqualTo(500);
 			assertThat(config.getRemoteTaskIntervalMilli()).isEqualTo(50);
+			assertThat(config.getLimiterOverrideHost()).isEqualTo("127.0.0.1");
 		});
 	}
 
