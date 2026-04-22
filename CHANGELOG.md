@@ -10,3 +10,4 @@
 - [test: add unit tests for ConfigurationModifier and fix TsfConsul report logic](https://github.com/Tencent/spring-cloud-tencent/pull/1802)
 - [fix: prepend context-path to contract reporter API paths](https://github.com/Tencent/spring-cloud-tencent/pull/1803)
 - [feat: support overrideHost configuration for ratelimit, event reporter and stat modules](https://github.com/Tencent/spring-cloud-tencent/pull/1804)
+- [fix: add condition for eager load autoconfiguration](https://github.com/Tencent/spring-cloud-tencent/pull/1805)
