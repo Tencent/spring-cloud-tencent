@@ -47,6 +47,7 @@ public class PolarisEagerLoadAutoConfiguration {
 			LoadBalancerEagerLoadProperties loadBalancerEagerLoadProperties) {
 		return new FeignEagerLoadContextInitializer(applicationContext, loadBalancerClientFactory, loadBalancerEagerLoadProperties);
 	}
+
 	@Bean
 	@ConditionalOnProperty(name = "spring.cloud.polaris.discovery.eager-load.services.enabled", havingValue = "true", matchIfMissing = true)
 	public ServicesEagerLoadSmartLifecycle serviceEagerLoadSmartLifecycle(
@@ -57,6 +58,7 @@ public class PolarisEagerLoadAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "spring.cloud.loadbalancer.eager-load.enabled", matchIfMissing = true)
+	@ConditionalOnClass(name = "org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory")
 	public LoadBalancerEagerContextInitializer loadBalancerEagerContextInitializer(
 			LoadBalancerClientFactory loadBalancerClientFactory, LoadBalancerEagerLoadProperties properties) {
 		return new LoadBalancerEagerContextInitializer(loadBalancerClientFactory, properties.getClients());
