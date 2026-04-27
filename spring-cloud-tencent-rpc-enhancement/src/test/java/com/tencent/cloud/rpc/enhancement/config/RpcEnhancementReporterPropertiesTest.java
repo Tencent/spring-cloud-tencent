@@ -40,7 +40,7 @@ import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RpcEnhancementReporterPropertiesTest.TestApplication.class, properties = {
 		"spring.application.name=test",
-		"spring.cloud.gateway.enabled=false",
+		"spring.cloud.gateway.server.webflux.enabled=false",
 		"spring.cloud.tencent.rpc-enhancement.reporter=true"
 })
 @ActiveProfiles("test")

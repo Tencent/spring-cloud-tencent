@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-dependencies-parent</artifactId>
-		<version>4.2.4</version>
+		<version>4.3.3</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
 	<packaging>pom</packaging>
 	<name>Spring Cloud Tencent Dependencies</name>
 	<description>Spring Cloud Tencent Dependencies</description>
-	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2024</url>
+	<url>https://github.com/Tencent/spring-cloud-tencent/tree/2025.0</url>
 
 	<organization>
 		<name>Tencent</name>
@@ -26,7 +26,7 @@
 	<licenses>
 		<license>
 			<name>The BSD 3-Clause License (BSD3)</name>
-			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2024/LICENSE</url>
+			<url>https://raw.githubusercontent.com/Tencent/spring-cloud-tencent/2025.0/LICENSE</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -71,7 +71,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.1.2.0-2024.0.3-SNAPSHOT</revision>
+		<revision>2.1.2.0-2025.0.2-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
 		<polaris.version>2.1.2.0-SNAPSHOT</polaris.version>

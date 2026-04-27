@@ -45,7 +45,7 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.stat.port=20000")
 			.withPropertyValues("spring.cloud.polaris.stat.path=/xxx")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	private final ApplicationContextRunner pushContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
@@ -59,14 +59,14 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.service=test-service")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.override-host=127.0.0.1")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	private final ApplicationContextRunner disabledContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.enabled=false")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	@BeforeEach
 	void setUp() {

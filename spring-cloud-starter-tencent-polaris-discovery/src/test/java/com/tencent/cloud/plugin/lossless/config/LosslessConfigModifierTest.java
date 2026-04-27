@@ -44,7 +44,7 @@ public class LosslessConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.admin.port=20000")
 			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=10")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	private final ApplicationContextRunner healthCheckContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
@@ -55,14 +55,14 @@ public class LosslessConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=/xxx")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckInterval=5")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 	private final ApplicationContextRunner disabledContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.enabled=false")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	@BeforeEach
 	void setUp() {

@@ -56,7 +56,7 @@ class GatewayPluginAutoConfigurationTest {
 					GatewayPluginAutoConfiguration.class
 			))
 			.withPropertyValues(
-					"spring.cloud.gateway.enabled=false", // not needed for this test
+					"spring.cloud.gateway.server.webflux.enabled=false", // not needed for this test
 					"spring.cloud.tencent.plugin.scg.enabled=true",
 					"spring.cloud.tencent.plugin.scg.context.enabled=true",
 					"spring.cloud.tencent.gateway.routes.test_group.uri=lb://test-group"

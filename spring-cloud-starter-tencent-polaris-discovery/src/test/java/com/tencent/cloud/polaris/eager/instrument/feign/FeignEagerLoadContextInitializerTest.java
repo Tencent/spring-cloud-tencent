@@ -68,7 +68,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 				"server.port=48085",
 				"spring.config.location = classpath:application-test.yml",
 				"spring.main.web-application-type = servlet",
-				"spring.cloud.gateway.enabled = false",
+				"spring.cloud.gateway.server.webflux.enabled = false",
 				"spring.cloud.polaris.discovery.eager-load.enabled = true",
 				"spring.cloud.polaris.discovery.eager-load.feign.enabled = true",
 				"spring.cloud.loadbalancer.eager-load.enabled = true",

@@ -59,7 +59,7 @@ import static org.mockito.Mockito.mock;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EnhancedFeignClientTest.TestApplication.class,
-		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp", "spring.cloud.gateway.enabled=false"})
+		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp", "spring.cloud.gateway.server.webflux.enabled=false"})
 public class EnhancedFeignClientTest {
 
 	@Autowired

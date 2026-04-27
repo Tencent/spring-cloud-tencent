@@ -42,14 +42,14 @@ public class WarmupConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.warmup.enabled=true")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 	private final ApplicationContextRunner disabledContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.warmup.enabled=false")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	@BeforeEach
 	void setUp() {

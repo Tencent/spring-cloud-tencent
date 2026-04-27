@@ -45,7 +45,7 @@ public class PolarisStatPropertiesTest {
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.service=test-service")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.override-host=127.0.0.1")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	@Test
 	public void testDefaultInitialization() {

@@ -49,7 +49,7 @@ public class RpcEnhancementAutoConfigurationTest {
 					RpcEnhancementAutoConfiguration.class,
 					PolarisRestTemplateAutoConfigurationTester.class,
 					FeignLoadBalancerAutoConfiguration.class))
-			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true", "spring.application.name=test", "spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true", "spring.application.name=test", "spring.cloud.gateway.server.webflux.enabled=false");
 
 	@Test
 	public void testDefaultInitialization() {

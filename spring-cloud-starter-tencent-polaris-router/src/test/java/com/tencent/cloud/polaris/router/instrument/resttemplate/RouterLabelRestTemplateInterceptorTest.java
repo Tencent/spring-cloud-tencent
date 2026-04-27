@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RouterLabelRestTemplateInterceptorTest.TestApplication.class,
-		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.cloud.gateway.enabled=false"})
+		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.cloud.gateway.server.webflux.enabled=false"})
 public class RouterLabelRestTemplateInterceptorTest {
 
 	@Mock

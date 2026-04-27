@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 		properties = {
 			"spring.application.name=test",
 			"spring.cloud.polaris.discovery.register=false",
-			"spring.cloud.gateway.enabled=false"
+			"spring.cloud.gateway.server.webflux.enabled=false"
 		})
 public class OkHttpUtilTest {
 

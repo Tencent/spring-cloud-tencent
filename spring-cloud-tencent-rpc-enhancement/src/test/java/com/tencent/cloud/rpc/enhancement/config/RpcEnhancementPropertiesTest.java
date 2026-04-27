@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RpcEnhancementPropertiesTest.TestApplication.class, properties = {
 		"spring.application.name=test",
-		"spring.cloud.gateway.enabled=false",
+		"spring.cloud.gateway.server.webflux.enabled=false",
 		"spring.cloud.tencent.rpc-enhancement=true",
 		"spring.cloud.tencent.rpc-enhancement.ignore-body=false"
 })

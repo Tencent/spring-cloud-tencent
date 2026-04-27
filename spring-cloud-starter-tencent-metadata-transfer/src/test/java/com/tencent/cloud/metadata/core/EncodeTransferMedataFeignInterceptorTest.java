@@ -49,7 +49,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
 		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml",
 				"spring.main.web-application-type = servlet",
-				"spring.cloud.gateway.enabled = false"})
+				"spring.cloud.gateway.server.webflux.enabled = false"})
 public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired

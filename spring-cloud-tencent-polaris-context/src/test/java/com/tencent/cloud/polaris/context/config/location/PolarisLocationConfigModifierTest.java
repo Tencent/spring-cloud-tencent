@@ -43,14 +43,14 @@ class PolarisLocationConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.location.cloud.enabled=true")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	private final ApplicationContextRunner disabledContextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestApplication.class)
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.location.cloud.enabled=false")
 			.withPropertyValues("spring.application.name=test")
-			.withPropertyValues("spring.cloud.gateway.enabled=false");
+			.withPropertyValues("spring.cloud.gateway.server.webflux.enabled=false");
 
 	@BeforeEach
 	void setUp() {

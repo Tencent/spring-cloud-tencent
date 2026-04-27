@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @author seanyu 2023-02-27
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(name = "spring.cloud.gateway.enabled", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.cloud.gateway.server.webflux.enabled", matchIfMissing = true)
 @ConditionalOnClass(name = {"org.springframework.web.reactive.DispatcherHandler", "org.springframework.cloud.gateway.config.GatewayAutoConfiguration"})
 public class GatewayPolarisCircuitBreakerAutoConfiguration {
 

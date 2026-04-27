@@ -45,7 +45,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		classes = ServiceInstanceChangeCallbackTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml",
 				"spring.main.web-application-type = servlet",
-				"spring.cloud.gateway.enabled = false"})
+				"spring.cloud.gateway.server.webflux.enabled = false"})
 public class ServiceInstanceChangeCallbackTest {
 
 	@Autowired
