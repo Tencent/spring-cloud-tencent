@@ -3,7 +3,8 @@ name: License checker
 on:
   push:
     branches:
-      - 2025
+      - 2025.1
+      - 2025.0
       - 2024
       - 2023
       - 2022
@@ -16,7 +17,8 @@ on:
       - '**.md'
   pull_request:
     branches:
-      - 2025
+      - 2025.1
+      - 2025.0
       - 2024
       - 2023
       - 2022

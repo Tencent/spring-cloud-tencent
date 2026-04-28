@@ -3,7 +3,8 @@ name: Snapshot
 on:
   push:
     branches:
-      - 2025
+      - 2025.1
+      - 2025.0
       - 2024
       - 2023
       - 2022
@@ -42,7 +43,9 @@ jobs:
         id: set-jdk
         run: |
           shopt -s nocasematch
-          if [[ "${{ github.ref_name }}" == "2025" ]]; then
+          if [[ "${{ github.ref_name }}" == "2025.1" ]]; then
+            echo "jdk=17" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "2025.0" ]]; then
             echo "jdk=17" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "2024" ]]; then
             echo "jdk=17" >> $GITHUB_OUTPUT
