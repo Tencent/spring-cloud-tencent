@@ -1,5 +1,7 @@
 server:
   port: 18081
+#  servlet:
+#    context-path: /api
 spring:
   application:
     name: provider-demo

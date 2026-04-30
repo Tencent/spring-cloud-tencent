@@ -21,7 +21,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.tsf.annotation.EnableTsf;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.tencent.cloud.tsf.demo.provider", "com.tencent.cloud.tsf"})
 @EnableTsf
 public class ProviderApplication {
 
