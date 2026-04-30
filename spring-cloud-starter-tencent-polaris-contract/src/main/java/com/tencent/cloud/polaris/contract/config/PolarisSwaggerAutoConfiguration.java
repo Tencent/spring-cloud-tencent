@@ -67,6 +67,10 @@ public class PolarisSwaggerAutoConfiguration {
 	@Bean
 	public GroupedOpenApi polarisGroupedOpenApi(PolarisContractProperties polarisContractProperties) {
 		String basePackage = PackageUtil.scanPackage(polarisContractProperties.getBasePackage());
+		String[] basePackages = {};
+		if (StringUtils.hasText(basePackage)) {
+			basePackages = basePackage.split(SPLITTER);
+		}
 		String[] basePaths = {};
 		if (StringUtils.hasText(polarisContractProperties.getBasePath())) {
 			basePaths = polarisContractProperties.getBasePath().split(SPLITTER);
@@ -76,7 +80,7 @@ public class PolarisSwaggerAutoConfiguration {
 			excludePaths = polarisContractProperties.getExcludePath().split(SPLITTER);
 		}
 		return GroupedOpenApi.builder()
-				.packagesToScan(basePackage)
+				.packagesToScan(basePackages)
 				.pathsToMatch(basePaths)
 				.pathsToExclude(excludePaths)
 				.group(polarisContractProperties.getGroup())
