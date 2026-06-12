@@ -240,6 +240,7 @@ public class StaticMetadataManager {
 		mergedMetadataResult.putAll(configMetadata);
 		mergedMetadataResult.putAll(envMetadata);
 		mergedMetadataResult.putAll(customSPIMetadata);
+		mergedMetadataResult.putAll(getLocationMetadata());
 
 		this.mergedStaticMetadata = Collections.unmodifiableMap(mergedMetadataResult);
 
