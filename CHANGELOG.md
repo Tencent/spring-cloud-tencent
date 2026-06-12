@@ -11,3 +11,4 @@
 - [fix: prepend context-path to contract reporter API paths](https://github.com/Tencent/spring-cloud-tencent/pull/1803)
 - [feat: support overrideHost configuration for ratelimit, event reporter and stat modules](https://github.com/Tencent/spring-cloud-tencent/pull/1804)
 - [fix: split contract base-package for springdoc scan](https://github.com/Tencent/spring-cloud-tencent/pull/1807)
+- [refactor: Merge location metadata into static metadata map](https://github.com/Tencent/spring-cloud-tencent/pull/1808)
