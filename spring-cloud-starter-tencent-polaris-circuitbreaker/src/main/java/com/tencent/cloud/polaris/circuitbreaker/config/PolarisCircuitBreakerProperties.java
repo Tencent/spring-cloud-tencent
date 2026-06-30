@@ -64,6 +64,11 @@ public class PolarisCircuitBreakerProperties {
 	 */
 	private int defaultMinimumRequest = 10;
 
+	/**
+	 * Counters expire interval for circuit-breaker, unit millisecond. 0 means never expire. Default is 0.
+	 */
+	private long countersExpireInterval = 300000;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -120,6 +125,14 @@ public class PolarisCircuitBreakerProperties {
 		this.defaultMinimumRequest = defaultMinimumRequest;
 	}
 
+	public long getCountersExpireInterval() {
+		return countersExpireInterval;
+	}
+
+	public void setCountersExpireInterval(long countersExpireInterval) {
+		this.countersExpireInterval = countersExpireInterval;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisCircuitBreakerProperties{" +
@@ -130,6 +143,7 @@ public class PolarisCircuitBreakerProperties {
 				", defaultErrorPercent=" + defaultErrorPercent +
 				", defaultInterval=" + defaultInterval +
 				", defaultMinimumRequest=" + defaultMinimumRequest +
+				", countersExpireInterval=" + countersExpireInterval +
 				'}';
 	}
 }

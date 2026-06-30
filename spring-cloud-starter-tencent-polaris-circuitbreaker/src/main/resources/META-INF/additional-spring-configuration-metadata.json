@@ -41,6 +41,12 @@
       "type": "java.lang.Integer",
       "defaultValue": 10,
       "description": "Error rate circuit-breaker default minimum request."
+    },
+    {
+      "name": "spring.cloud.polaris.circuitbreaker.counters-expire-interval",
+      "type": "java.lang.Long",
+      "defaultValue": 0,
+      "description": "Counters expire interval for circuit-breaker, unit millisecond. 0 means never expire."
     }
   ],
   "hints": []

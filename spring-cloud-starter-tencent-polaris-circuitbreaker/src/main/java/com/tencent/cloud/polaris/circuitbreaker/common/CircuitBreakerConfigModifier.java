@@ -69,6 +69,8 @@ public class CircuitBreakerConfigModifier implements PolarisConfigModifier {
 				.setDefaultInterval(polarisCircuitBreakerProperties.getDefaultInterval());
 		configuration.getConsumer().getCircuitBreaker()
 				.setDefaultMinimumRequest(polarisCircuitBreakerProperties.getDefaultMinimumRequest());
+		configuration.getConsumer().getCircuitBreaker()
+				.setCountersExpireInterval(polarisCircuitBreakerProperties.getCountersExpireInterval());
 	}
 
 	@Override
