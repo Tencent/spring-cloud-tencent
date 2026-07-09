@@ -30,6 +30,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
+import com.tencent.cloud.rpc.enhancement.util.OtelBaggageScopeHelper;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.fault.client.exception.FaultInjectionException;
@@ -134,7 +135,11 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 		}
 		// request may be changed by plugin
 		ClientRequest request = (ClientRequest) enhancedPluginContext.getOriginRequest();
-		return next.exchange(request)
+		// Inject the baggage attributes staged in the pre stage as a W3C baggage header on the
+		// downstream request. This avoids any dependency on the OTel Context ThreadLocal lifecycle
+		// and prevents Scope.close from failing across async boundaries.
+		ClientRequest downstreamRequest = injectPendingBaggageHeader(request, enhancedPluginContext);
+		return next.exchange(downstreamRequest)
 				.doOnSuccess(response -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 
@@ -158,6 +163,26 @@ public class EnhancedWebClientExchangeFilterFunction implements ExchangeFilterFu
 					// Run finally enhanced plugins.
 					pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 				});
+	}
+
+	/**
+	 * Inject pending baggage attributes into the downstream ClientRequest as a W3C baggage HTTP
+	 * header. This avoids any dependency on the OTel Context ThreadLocal lifecycle and prevents
+	 * Scope.close from failing across async boundaries.
+	 *
+	 * @param request original ClientRequest
+	 * @param ctx enhanced plugin context (holds the baggage attributes to write)
+	 * @return the original request when there is nothing to write, otherwise a mutated ClientRequest
+	 */
+	private ClientRequest injectPendingBaggageHeader(ClientRequest request, EnhancedPluginContext ctx) {
+		String existing = request.headers().getFirst(OtelBaggageScopeHelper.BAGGAGE_HEADER);
+		String merged = OtelBaggageScopeHelper.resolvePendingBaggageHeader(ctx, existing);
+		if (merged == null) {
+			return request;
+		}
+		return ClientRequest.from(request)
+				.headers(headers -> headers.set(OtelBaggageScopeHelper.BAGGAGE_HEADER, merged))
+				.build();
 	}
 
 	private URI getServiceUri(ClientRequest clientRequest) {
