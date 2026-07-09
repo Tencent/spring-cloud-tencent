@@ -31,6 +31,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import com.tencent.cloud.rpc.enhancement.util.EnhancedPluginUtils;
+import com.tencent.cloud.rpc.enhancement.util.OtelBaggageScopeHelper;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
@@ -163,11 +164,23 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 		}
 		// Exchange may be changed in plugin
 		ServerWebExchange exchange = (ServerWebExchange) enhancedPluginContext.getOriginRequest();
-		return chain.filter(exchange)
-				.doOnSubscribe(v -> {
-					setTargetServiceInstance(exchange, enhancedPluginContext, serviceId);
-					pluginRunner.run(EnhancedPluginType.Client.BEFORE_CALLING, enhancedPluginContext);
-				})
+
+		// Run BEFORE_CALLING synchronously, before chain.filter, instead of inside doOnSubscribe as
+		// before. TraceClientPreEnhancedPlugin stages the baggage attributes into
+		// enhancedPluginContext.extraData (PENDING_BAGGAGE_ATTRIBUTES_KEY) here so they can be written
+		// into the downstream request headers below, which must happen before the request is sent.
+		// Moving it earlier is safe today: setTargetServiceInstance only needs GATEWAY_REQUEST_URL_ATTR,
+		// already rewritten by ReactiveLoadBalancerClientFilter (lower order, runs first), and the only
+		// reactive BEFORE_CALLING plugin is the trace plugin. A future plugin that relies on
+		// subscribe-time context would observe a different timing.
+		setTargetServiceInstance(exchange, enhancedPluginContext, serviceId);
+		pluginRunner.run(EnhancedPluginType.Client.BEFORE_CALLING, enhancedPluginContext);
+
+		// Inject the pending baggage as a W3C baggage header on the downstream request before
+		// subscribing. This avoids any dependency on the OTel Context ThreadLocal lifecycle and
+		// prevents Scope.close from failing across async boundaries.
+		ServerWebExchange downstreamExchange = injectPendingBaggageHeader(exchange, enhancedPluginContext);
+		return chain.filter(downstreamExchange)
 				.doOnSuccess(v -> {
 					MetadataContext metadataContextOnSuccess = originExchange.getAttribute(
 							MetadataConstant.HeaderName.METADATA_CONTEXT);
@@ -177,8 +190,8 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-							.httpStatus(exchange.getResponse().getRawStatusCode())
-							.httpHeaders(exchange.getResponse().getHeaders())
+							.httpStatus(downstreamExchange.getResponse().getRawStatusCode())
+							.httpHeaders(downstreamExchange.getResponse().getHeaders())
 							.build();
 					enhancedPluginContext.setResponse(enhancedResponseContext);
 
@@ -208,6 +221,26 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 					// Run finally enhanced plugins.
 					pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
 				});
+	}
+
+	/**
+	 * Inject pending baggage attributes into the downstream request as a W3C baggage HTTP header.
+	 * This avoids any dependency on the OTel Context ThreadLocal lifecycle and prevents Scope.close
+	 * from failing across async boundaries.
+	 *
+	 * @param exchange original ServerWebExchange
+	 * @param ctx enhanced plugin context (holds the baggage attributes to write)
+	 * @return the original exchange when there is nothing to write, otherwise a mutated exchange
+	 */
+	private ServerWebExchange injectPendingBaggageHeader(ServerWebExchange exchange, EnhancedPluginContext ctx) {
+		String existing = exchange.getRequest().getHeaders().getFirst(OtelBaggageScopeHelper.BAGGAGE_HEADER);
+		String merged = OtelBaggageScopeHelper.resolvePendingBaggageHeader(ctx, existing);
+		if (merged == null) {
+			return exchange;
+		}
+		return exchange.mutate().request(builder -> builder.headers(headers ->
+				headers.set(OtelBaggageScopeHelper.BAGGAGE_HEADER, merged)
+		)).build();
 	}
 
 	@Override

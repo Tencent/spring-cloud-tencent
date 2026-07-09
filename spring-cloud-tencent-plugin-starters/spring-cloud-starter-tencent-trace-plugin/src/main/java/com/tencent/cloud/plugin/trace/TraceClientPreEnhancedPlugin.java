@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.tencent.cloud.plugin.trace.attribute.SpanAttributesProvider;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedContextKeys;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -58,7 +59,21 @@ public class TraceClientPreEnhancedPlugin implements EnhancedPlugin {
 				}
 			}
 		}
+		if (CollectionUtils.isEmpty(attributes)) {
+			return;
+		}
 
+		// Reactive scenarios (SCG / WebClient): only stage the baggage attributes to be written; the
+		// downstream interceptor injects them as a W3C baggage header on the outgoing request, so no
+		// OTel Scope is attached here and there is no ThreadLocal lifecycle to close across async
+		// boundaries.
+		if (isReactiveScenario(context)) {
+			context.getExtraData().put(EnhancedContextKeys.PENDING_BAGGAGE_ATTRIBUTES_KEY, attributes);
+			return;
+		}
+
+		// Blocking scenarios (Feign / RestTemplate): keep the original semantics, attaching to the
+		// current thread so the FINALLY stage can close it.
 		TraceAttributes traceAttributes = new TraceAttributes();
 		traceAttributes.setAttributes(attributes);
 		traceAttributes.setAttributeLocation(TraceAttributes.AttributeLocation.BAGGAGE);
@@ -69,6 +84,27 @@ public class TraceClientPreEnhancedPlugin implements EnhancedPlugin {
 		if (otScope != null) {
 			context.getExtraData().put(SpanAttributesProvider.OT_SCOPE_KEY, otScope);
 		}
+	}
+
+	/**
+	 * Whether current invocation is a reactive client scenario (SCG / WebClient). Matched by class
+	 * name prefix to avoid a hard dependency on spring-webflux / spring-cloud-gateway.
+	 *
+	 * @param context enhanced plugin context
+	 * @return true if the current call is a reactive scenario
+	 */
+	private boolean isReactiveScenario(EnhancedPluginContext context) {
+		Object origin = context.getOriginRequest();
+		if (origin == null) {
+			return false;
+		}
+		String className = origin.getClass().getName();
+		// SCG: org.springframework.web.server.ServerWebExchange implementation
+		// WebClient: org.springframework.web.reactive.function.client.ClientRequest implementation
+		return className.startsWith("org.springframework.web.server.")
+				|| className.startsWith("org.springframework.mock.web.server.")
+				|| className.startsWith("org.springframework.web.reactive.function.client.")
+				|| className.startsWith("org.springframework.cloud.gateway.");
 	}
 
 	@Override
