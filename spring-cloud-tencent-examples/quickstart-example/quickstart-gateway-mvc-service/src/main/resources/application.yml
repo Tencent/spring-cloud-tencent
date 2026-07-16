@@ -18,13 +18,14 @@ spring:
         enabled: true
         port: 28085
     gateway:
-      mvc:
-        routes:
-          - id: QuickstartCallerService
-            uri: lb://QuickstartCallerService
-            predicates:
-              - Path=/QuickstartCallerService/**
-            filters:
-              - StripPrefix=1
+      server:
+        webmvc:
+          routes:
+            - id: QuickstartCallerService
+              uri: lb://QuickstartCallerService
+              predicates:
+                - Path=/QuickstartCallerService/**
+              filters:
+                - StripPrefix=1
 
 

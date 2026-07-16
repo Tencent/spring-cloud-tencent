@@ -19,22 +19,24 @@ spring:
       stat:
         enabled: true
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          'predicates[0]':
-            name: Path
-            args:
-              patterns: '''/'' + serviceId + ''/**'''
-          'filters[0]':
-            name: RewritePath
-            args:
-              regexp: '''/'' + serviceId + ''/(?<remaining>.*)'''
-              replacement: '''/$\{remaining}'''
-      routes:
-        - id: LaneRouterCallerService
-          uri: lb://LaneCallerService
-          predicates:
-            - Path=/LaneCallerService/**
-          filters:
-            - StripPrefix=1
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              'predicates[0]':
+                name: Path
+                args:
+                  patterns: '''/'' + serviceId + ''/**'''
+              'filters[0]':
+                name: RewritePath
+                args:
+                  regexp: '''/'' + serviceId + ''/(?<remaining>.*)'''
+                  replacement: '''/$\{remaining}'''
+          routes:
+            - id: LaneRouterCallerService
+              uri: lb://LaneCallerService
+              predicates:
+                - Path=/LaneCallerService/**
+              filters:
+                - StripPrefix=1
