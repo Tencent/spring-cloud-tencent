@@ -1,8 +1,8 @@
 server:
   port: 48081
 spring:
-#  profiles:
-#    active: context
+  #  profiles:
+  #    active: context
   application:
     name: QuickStartGatewayService
   config:
@@ -33,31 +33,33 @@ spring:
       stat:
         enabled: true
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          'predicates[0]':
-            name: Path
-            args:
-              patterns: '''/'' + serviceId + ''/**'''
-          'filters[0]':
-            name: RewritePath
-            args:
-              regexp: '''/'' + serviceId + ''/(?<remaining>.*)'''
-              replacement: '''/$\{remaining}'''
-      routes:
-        - id: QuickstartCallerService
-          uri: lb://QuickstartCallerService
-          predicates:
-            - Path=/QuickstartCallerService/**
-          filters:
-            - StripPrefix=1
-        - id: QuickstartCalleeService
-          uri: lb://QuickstartCalleeService
-          predicates:
-            - Path=/QuickstartCalleeService/**
-          filters:
-            - StripPrefix=1
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              'predicates[0]':
+                name: Path
+                args:
+                  patterns: '''/'' + serviceId + ''/**'''
+              'filters[0]':
+                name: RewritePath
+                args:
+                  regexp: '''/'' + serviceId + ''/(?<remaining>.*)'''
+                  replacement: '''/$\{remaining}'''
+          routes:
+            - id: QuickstartCallerService
+              uri: lb://QuickstartCallerService
+              predicates:
+                - Path=/QuickstartCallerService/**
+              filters:
+                - StripPrefix=1
+            - id: QuickstartCalleeService
+              uri: lb://QuickstartCalleeService
+              predicates:
+                - Path=/QuickstartCalleeService/**
+              filters:
+                - StripPrefix=1
 logging:
   file:
     name: /sct-demo-logs/${spring.application.name}/root.log
