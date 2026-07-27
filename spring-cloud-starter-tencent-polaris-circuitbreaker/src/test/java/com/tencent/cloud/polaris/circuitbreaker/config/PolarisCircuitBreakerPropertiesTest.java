@@ -41,7 +41,8 @@ public class PolarisCircuitBreakerPropertiesTest {
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.default-error-count=1")
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.default-error-percent=2")
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.default-interval=3")
-			.withPropertyValues("spring.cloud.polaris.circuitbreaker.default-minimum-request=4");
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.default-minimum-request=4")
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.counters-expire-interval=60000");
 
 	@Test
 	public void testDefaultInitialization() {
@@ -53,6 +54,7 @@ public class PolarisCircuitBreakerPropertiesTest {
 			assertThat(polarisCircuitBreakerProperties.getDefaultErrorPercent()).isEqualTo(2);
 			assertThat(polarisCircuitBreakerProperties.getDefaultInterval()).isEqualTo(3);
 			assertThat(polarisCircuitBreakerProperties.getDefaultMinimumRequest()).isEqualTo(4);
+			assertThat(polarisCircuitBreakerProperties.getCountersExpireInterval()).isEqualTo(60000);
 		});
 	}
 
