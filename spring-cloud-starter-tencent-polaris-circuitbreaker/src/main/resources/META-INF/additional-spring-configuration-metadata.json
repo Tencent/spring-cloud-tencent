@@ -45,7 +45,7 @@
     {
       "name": "spring.cloud.polaris.circuitbreaker.counters-expire-interval",
       "type": "java.lang.Long",
-      "defaultValue": 0,
+      "defaultValue": 300000,
       "description": "Counters expire interval for circuit-breaker, unit millisecond. 0 means never expire."
     }
   ],
