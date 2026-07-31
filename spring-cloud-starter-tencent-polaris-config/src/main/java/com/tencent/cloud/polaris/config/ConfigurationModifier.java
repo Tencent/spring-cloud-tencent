@@ -67,6 +67,8 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		configuration.getGlobal().getStatReporter().setEnable(false);
+		// Enable client reporter to report config watch metadata via ReportClient.
+		configuration.getGlobal().getClientReporter().setEnable(true);
 		configuration.getConsumer().getOutlierDetection().setWhen(OutlierDetectionConfig.When.never);
 		configuration.getConsumer().getCircuitBreaker().setEnable(false);
 
