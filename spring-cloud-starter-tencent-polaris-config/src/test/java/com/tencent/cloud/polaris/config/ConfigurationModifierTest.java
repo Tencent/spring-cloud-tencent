@@ -32,6 +32,8 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
+import com.tencent.polaris.configuration.client.internal.ConfigWatchClientReporter;
+import com.tencent.polaris.configuration.client.internal.ConfigWatchReporterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.configuration.ConfigFileConfigImpl;
 import com.tencent.polaris.factory.config.configuration.ConfigFilterConfigImpl;
@@ -79,6 +81,9 @@ class ConfigurationModifierTest {
 	@Mock
 	private PolarisContextProperties polarisContextProperties;
 
+	@Mock
+	private ConfigWatchReporterConfig configWatchReporter;
+
 	private ConfigurationModifier configurationModifier;
 
 	@BeforeEach
@@ -100,6 +105,8 @@ class ConfigurationModifierTest {
 		APIConfigImpl apiConfig = mock(APIConfigImpl.class);
 		when(globalConfig.getStatReporter()).thenReturn(statReporter);
 		when(globalConfig.getClientReporter()).thenReturn(clientReporter);
+		when(clientReporter.getPluginConfig(ConfigWatchClientReporter.NAME, ConfigWatchReporterConfig.class))
+				.thenReturn(configWatchReporter);
 		Mockito.lenient().when(globalConfig.getServerConnector()).thenReturn(serverConnector);
 		Mockito.lenient().when(globalConfig.getAPI()).thenReturn(apiConfig);
 		when(configuration.getGlobal()).thenReturn(globalConfig);
@@ -157,6 +164,10 @@ class ConfigurationModifierTest {
 		// Assert
 		verify(configuration.getGlobal().getStatReporter()).setEnable(false);
 		verify(configuration.getGlobal().getClientReporter()).setEnable(true);
+		verify(configuration.getGlobal().getClientReporter()
+				.getPluginConfig(ConfigWatchClientReporter.NAME, ConfigWatchReporterConfig.class)).setEnable(true);
+		verify(configuration.getGlobal().getClientReporter())
+				.setPluginConfig(ConfigWatchClientReporter.NAME, configWatchReporter);
 		verify(configuration.getConsumer().getOutlierDetection()).setWhen(OutlierDetectionConfig.When.never);
 		verify(configuration.getConsumer().getCircuitBreaker()).setEnable(false);
 		verify(configuration.getConfigFile(), never()).getServerConnector();
@@ -181,6 +192,10 @@ class ConfigurationModifierTest {
 		// Assert
 		verify(configuration.getGlobal().getStatReporter()).setEnable(false);
 		verify(configuration.getGlobal().getClientReporter()).setEnable(true);
+		verify(configuration.getGlobal().getClientReporter()
+				.getPluginConfig(ConfigWatchClientReporter.NAME, ConfigWatchReporterConfig.class)).setEnable(true);
+		verify(configuration.getGlobal().getClientReporter())
+				.setPluginConfig(ConfigWatchClientReporter.NAME, configWatchReporter);
 		verify(configuration.getConfigFile(), never()).getServerConnector();
 	}
 

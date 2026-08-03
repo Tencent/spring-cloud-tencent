@@ -32,9 +32,12 @@ import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.configuration.client.internal.ConfigWatchClientReporter;
+import com.tencent.polaris.configuration.client.internal.ConfigWatchReporterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.configuration.ConfigFilterConfigImpl;
 import com.tencent.polaris.factory.config.configuration.ConnectorConfigImpl;
+import com.tencent.polaris.factory.config.global.ClientReporterConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,8 +70,12 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		configuration.getGlobal().getStatReporter().setEnable(false);
-		// Enable client reporter to report config watch metadata via ReportClient.
-		configuration.getGlobal().getClientReporter().setEnable(true);
+		ClientReporterConfigImpl clientReporterConfig = configuration.getGlobal().getClientReporter();
+		clientReporterConfig.setEnable(true);
+		ConfigWatchReporterConfig configWatchReporterConfig = clientReporterConfig.getPluginConfig(
+				ConfigWatchClientReporter.NAME, ConfigWatchReporterConfig.class);
+		configWatchReporterConfig.setEnable(true);
+		clientReporterConfig.setPluginConfig(ConfigWatchClientReporter.NAME, configWatchReporterConfig);
 		configuration.getConsumer().getOutlierDetection().setWhen(OutlierDetectionConfig.When.never);
 		configuration.getConsumer().getCircuitBreaker().setEnable(false);
 
