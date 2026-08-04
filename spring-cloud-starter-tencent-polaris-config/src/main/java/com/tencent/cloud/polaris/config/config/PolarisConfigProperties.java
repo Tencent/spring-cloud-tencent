@@ -110,6 +110,12 @@ public class PolarisConfigProperties {
 	 */
 	private long emptyProtectionExpiredInterval = 7 * 24 * 3600 * 1000L;
 
+	/**
+	 * If config watch metadata reporting is enabled.
+	 */
+	@Value("${spring.cloud.polaris.config.report.enabled:#{'true'}}")
+	private boolean reportEnabled = true;
+
 
 	public boolean isEnabled() {
 		return enabled;
@@ -231,6 +237,14 @@ public class PolarisConfigProperties {
 		this.emptyProtectionExpiredInterval = emptyProtectionExpiredInterval;
 	}
 
+	public boolean isReportEnabled() {
+		return reportEnabled;
+	}
+
+	public void setReportEnabled(boolean reportEnabled) {
+		this.reportEnabled = reportEnabled;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisConfigProperties{" +
@@ -249,6 +263,7 @@ public class PolarisConfigProperties {
 				", checkAddress=" + checkAddress +
 				", emptyProtectionEnabled=" + emptyProtectionEnabled +
 				", emptyProtectionExpiredInterval=" + emptyProtectionExpiredInterval +
+				", reportEnabled=" + reportEnabled +
 				'}';
 	}
 }

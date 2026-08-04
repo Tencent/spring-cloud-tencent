@@ -90,6 +90,7 @@ class ConfigurationModifierTest {
 	void setUp() {
 		configurationModifier = new ConfigurationModifier(
 				polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+		Mockito.lenient().when(polarisConfigProperties.isReportEnabled()).thenReturn(true);
 	}
 
 	/**
@@ -194,6 +195,21 @@ class ConfigurationModifierTest {
 		verify(configuration.getGlobal().getClientReporter()).setEnable(true);
 		verify(configuration.getGlobal().getClientReporter()
 				.getPluginConfig(ConfigWatchClientReporter.NAME, ConfigWatchReporterConfig.class)).setEnable(true);
+		verify(configuration.getGlobal().getClientReporter())
+				.setPluginConfig(ConfigWatchClientReporter.NAME, configWatchReporter);
+		verify(configuration.getConfigFile(), never()).getServerConnector();
+	}
+
+	@DisplayName("modify should disable config watch reporter when configured")
+	@Test
+	void testModify_ConfigWatchReportDisabled() {
+		ConfigurationImpl configuration = buildMockConfiguration();
+		when(polarisConfigProperties.isReportEnabled()).thenReturn(false);
+		when(polarisContextProperties.getEnabled()).thenReturn(false);
+
+		configurationModifier.modify(configuration);
+
+		verify(configWatchReporter).setEnable(false);
 		verify(configuration.getGlobal().getClientReporter())
 				.setPluginConfig(ConfigWatchClientReporter.NAME, configWatchReporter);
 		verify(configuration.getConfigFile(), never()).getServerConnector();
