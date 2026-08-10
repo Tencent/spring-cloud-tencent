@@ -1,3 +1,4 @@
 com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration
+com.tencent.cloud.rpc.enhancement.audit.config.PolarisAuditLogPropertiesAutoConfiguration
 com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatPropertiesAutoConfiguration
 com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesAutoConfiguration
