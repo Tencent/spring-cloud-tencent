@@ -32,12 +32,12 @@ import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
-import com.tencent.polaris.configuration.client.internal.ConfigWatchClientReporter;
-import com.tencent.polaris.configuration.client.internal.ConfigWatchReporterConfig;
+import com.tencent.polaris.configuration.client.internal.ConfigWatchReportRequestCustomizer;
+import com.tencent.polaris.configuration.client.internal.ConfigWatchReportRequestCustomizerConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.configuration.ConfigFilterConfigImpl;
 import com.tencent.polaris.factory.config.configuration.ConnectorConfigImpl;
-import com.tencent.polaris.factory.config.global.ClientReporterConfigImpl;
+import com.tencent.polaris.factory.config.global.ReportClientRequestCustomizerConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,12 +70,13 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		configuration.getGlobal().getStatReporter().setEnable(false);
-		ClientReporterConfigImpl clientReporterConfig = configuration.getGlobal().getClientReporter();
-		clientReporterConfig.setEnable(true);
-		ConfigWatchReporterConfig configWatchReporterConfig = clientReporterConfig.getPluginConfig(
-				ConfigWatchClientReporter.NAME, ConfigWatchReporterConfig.class);
-		configWatchReporterConfig.setEnable(polarisConfigProperties.isReportEnabled());
-		clientReporterConfig.setPluginConfig(ConfigWatchClientReporter.NAME, configWatchReporterConfig);
+		ReportClientRequestCustomizerConfigImpl customizerConfig = configuration.getGlobal()
+				.getReportClientRequestCustomizer();
+		customizerConfig.setEnable(true);
+		ConfigWatchReportRequestCustomizerConfig configWatchCustomizerConfig = customizerConfig.getPluginConfig(
+				ConfigWatchReportRequestCustomizer.NAME, ConfigWatchReportRequestCustomizerConfig.class);
+		configWatchCustomizerConfig.setEnable(polarisConfigProperties.isReportEnabled());
+		customizerConfig.setPluginConfig(ConfigWatchReportRequestCustomizer.NAME, configWatchCustomizerConfig);
 		configuration.getConsumer().getOutlierDetection().setWhen(OutlierDetectionConfig.When.never);
 		configuration.getConsumer().getCircuitBreaker().setEnable(false);
 
