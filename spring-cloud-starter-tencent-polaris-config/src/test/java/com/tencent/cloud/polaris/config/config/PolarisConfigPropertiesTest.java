@@ -35,8 +35,8 @@ public class PolarisConfigPropertiesTest {
 	@Test
 	public void testReportEnabledDefaultTrue() {
 		this.contextRunner.run(context -> {
-			PolarisConfigProperties properties = context.getBean(PolarisConfigProperties.class);
-			assertThat(properties.isReportEnabled()).isTrue();
+				PolarisConfigProperties properties = context.getBean(PolarisConfigProperties.class);
+				assertThat(properties.getReport().isEnabled()).isTrue();
 		});
 	}
 
@@ -45,8 +45,8 @@ public class PolarisConfigPropertiesTest {
 		this.contextRunner
 				.withPropertyValues("spring.cloud.polaris.config.report.enabled=false")
 				.run(context -> {
-					PolarisConfigProperties properties = context.getBean(PolarisConfigProperties.class);
-					assertThat(properties.isReportEnabled()).isFalse();
+						PolarisConfigProperties properties = context.getBean(PolarisConfigProperties.class);
+						assertThat(properties.getReport().isEnabled()).isFalse();
 				});
 	}
 

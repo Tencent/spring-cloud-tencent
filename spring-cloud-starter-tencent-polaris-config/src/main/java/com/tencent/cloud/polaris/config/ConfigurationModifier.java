@@ -75,7 +75,7 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		customizerConfig.setEnable(true);
 		ConfigWatchReportRequestCustomizerConfig configWatchCustomizerConfig = customizerConfig.getPluginConfig(
 				ConfigWatchReportRequestCustomizer.NAME, ConfigWatchReportRequestCustomizerConfig.class);
-		configWatchCustomizerConfig.setEnable(polarisConfigProperties.isReportEnabled());
+		configWatchCustomizerConfig.setEnable(polarisConfigProperties.getReport().isEnabled());
 		customizerConfig.setPluginConfig(ConfigWatchReportRequestCustomizer.NAME, configWatchCustomizerConfig);
 		configuration.getConsumer().getOutlierDetection().setWhen(OutlierDetectionConfig.When.never);
 		configuration.getConsumer().getCircuitBreaker().setEnable(false);

@@ -79,6 +79,9 @@ class ConfigurationModifierTest {
 	private PolarisCryptoConfigProperties polarisCryptoConfigProperties;
 
 	@Mock
+	private PolarisConfigProperties.Report report;
+
+	@Mock
 	private PolarisContextProperties polarisContextProperties;
 
 	@Mock
@@ -90,7 +93,8 @@ class ConfigurationModifierTest {
 	void setUp() {
 		configurationModifier = new ConfigurationModifier(
 				polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
-		Mockito.lenient().when(polarisConfigProperties.isReportEnabled()).thenReturn(true);
+		Mockito.lenient().when(polarisConfigProperties.getReport()).thenReturn(report);
+		Mockito.lenient().when(report.isEnabled()).thenReturn(true);
 	}
 
 	/**
@@ -207,7 +211,7 @@ class ConfigurationModifierTest {
 	@Test
 	void testModify_ConfigWatchReportDisabled() {
 		ConfigurationImpl configuration = buildMockConfiguration();
-		when(polarisConfigProperties.isReportEnabled()).thenReturn(false);
+		when(report.isEnabled()).thenReturn(false);
 		when(polarisContextProperties.getEnabled()).thenReturn(false);
 
 		configurationModifier.modify(configuration);
