@@ -14,3 +14,4 @@
 - [fix: split contract base-package for springdoc scan](https://github.com/Tencent/spring-cloud-tencent/pull/1807)
 - [fix: fix route failure caused by Spring Cloud Gateway 5.x property prefix change](https://github.com/Tencent/spring-cloud-tencent/pull/1811)
 - [feat: support using seperated cb in wildcard-api level and add cb counters expire interval config](https://github.com/Tencent/spring-cloud-tencent/pull/1809)
+- [feat: adapt to polaris-java ReportClientRequestCustomizer plugin for config watch reporting](https://github.com/Tencent/spring-cloud-tencent/pull/1813)
