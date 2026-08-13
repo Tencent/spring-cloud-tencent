@@ -71,10 +71,10 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.1.2.0-2024.0.3</revision>
+		<revision>2.2.0.0-2024.0.3-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>2.1.2.0</polaris.version>
+		<polaris.version>2.2.0.0-SNAPSHOT</polaris.version>
 
 		<!-- Dependencies -->
 		<springdoc.version>2.8.14</springdoc.version>
