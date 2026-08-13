@@ -43,9 +43,9 @@ import com.tencent.polaris.factory.config.consumer.ConsumerConfigImpl;
 import com.tencent.polaris.factory.config.consumer.OutlierDetectionConfigImpl;
 import com.tencent.polaris.factory.config.global.APIConfigImpl;
 import com.tencent.polaris.factory.config.global.GlobalConfigImpl;
+import com.tencent.polaris.factory.config.global.ReportClientRequestCustomizerConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import com.tencent.polaris.factory.config.global.StatReporterConfigImpl;
-import com.tencent.polaris.factory.config.plugin.PluginConfigImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -105,7 +105,8 @@ class ConfigurationModifierTest {
 
 		GlobalConfigImpl globalConfig = mock(GlobalConfigImpl.class);
 		StatReporterConfigImpl statReporter = mock(StatReporterConfigImpl.class);
-		PluginConfigImpl requestCustomizer = mock(PluginConfigImpl.class);
+		ReportClientRequestCustomizerConfigImpl requestCustomizer =
+				mock(ReportClientRequestCustomizerConfigImpl.class);
 		ServerConnectorConfigImpl serverConnector = mock(ServerConnectorConfigImpl.class);
 		APIConfigImpl apiConfig = mock(APIConfigImpl.class);
 		when(globalConfig.getStatReporter()).thenReturn(statReporter);

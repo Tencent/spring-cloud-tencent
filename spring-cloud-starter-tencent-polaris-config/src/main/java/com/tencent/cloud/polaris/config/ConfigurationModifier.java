@@ -37,8 +37,8 @@ import com.tencent.polaris.configuration.client.internal.ConfigWatchReportReques
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.configuration.ConfigFilterConfigImpl;
 import com.tencent.polaris.factory.config.configuration.ConnectorConfigImpl;
+import com.tencent.polaris.factory.config.global.ReportClientRequestCustomizerConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
-import com.tencent.polaris.factory.config.plugin.PluginConfigImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +70,7 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		configuration.getGlobal().getStatReporter().setEnable(false);
-		PluginConfigImpl customizerConfig = configuration.getGlobal()
+		ReportClientRequestCustomizerConfigImpl customizerConfig = configuration.getGlobal()
 				.getReportClientRequestCustomizer();
 		ConfigWatchReportRequestCustomizerConfig configWatchCustomizerConfig = customizerConfig.getPluginConfig(
 				ConfigWatchReportRequestCustomizer.NAME, ConfigWatchReportRequestCustomizerConfig.class);
