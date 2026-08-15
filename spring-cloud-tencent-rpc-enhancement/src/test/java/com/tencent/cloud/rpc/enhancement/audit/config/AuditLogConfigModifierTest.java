@@ -20,10 +20,11 @@ package com.tencent.cloud.rpc.enhancement.audit.config;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.polaris.api.config.consumer.AuditLogConfig;
+import com.tencent.polaris.api.config.global.StatReporterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
-import com.tencent.polaris.factory.config.consumer.AuditLogConfigImpl;
-import com.tencent.polaris.factory.config.consumer.ConsumerConfigImpl;
+import com.tencent.polaris.factory.config.global.GlobalConfigImpl;
+import com.tencent.polaris.factory.config.global.StatReporterConfigImpl;
+import com.tencent.polaris.plugins.stat.audit.AuditLogConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +33,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -61,16 +61,20 @@ public class AuditLogConfigModifierTest {
 		properties.setEnabled(true);
 		properties.setFormat("json");
 		ConfigurationImpl configuration = mock(ConfigurationImpl.class);
-		ConsumerConfigImpl consumerConfig = mock(ConsumerConfigImpl.class);
-		AuditLogConfigImpl auditLogConfig = mock(AuditLogConfigImpl.class);
-		when(configuration.getConsumer()).thenReturn(consumerConfig);
-		when(consumerConfig.getAuditLog()).thenReturn(auditLogConfig);
+		GlobalConfigImpl globalConfig = mock(GlobalConfigImpl.class);
+		StatReporterConfigImpl statReporterConfig = mock(StatReporterConfigImpl.class);
+		AuditLogConfig auditLogConfig = new AuditLogConfig();
+		when(configuration.getGlobal()).thenReturn(globalConfig);
+		when(globalConfig.getStatReporter()).thenReturn(statReporterConfig);
+		when(statReporterConfig.getPluginConfig(
+				StatReporterConfig.DEFAULT_REPORTER_AUDIT_LOG, AuditLogConfig.class))
+				.thenReturn(auditLogConfig);
 
 		AuditLogConfigModifier modifier = new AuditLogConfigModifier(properties);
 		modifier.modify(configuration);
 
-		verify(auditLogConfig).setEnable(true);
-		verify(auditLogConfig).setFormat("json");
+		assertThat(auditLogConfig.isEnable()).isTrue();
+		assertThat(auditLogConfig.getFormat()).isEqualTo("json");
 		assertThat(modifier.getOrder()).isEqualTo(OrderConstant.Modifier.AUDIT_LOG_ORDER);
 	}
 
@@ -81,7 +85,10 @@ public class AuditLogConfigModifierTest {
 				.withPropertyValues("spring.cloud.polaris.audit-log.format=json")
 				.run(context -> {
 					PolarisSDKContextManager contextManager = context.getBean(PolarisSDKContextManager.class);
-					AuditLogConfig auditLogConfig = contextManager.getSDKContext().getConfig().getConsumer().getAuditLog();
+					StatReporterConfig statReporter = contextManager.getSDKContext().getConfig()
+							.getGlobal().getStatReporter();
+					AuditLogConfig auditLogConfig = statReporter.getPluginConfig(
+							StatReporterConfig.DEFAULT_REPORTER_AUDIT_LOG, AuditLogConfig.class);
 					assertThat(auditLogConfig.isEnable()).isTrue();
 					assertThat(auditLogConfig.getFormat()).isEqualTo("json");
 				});
@@ -91,7 +98,10 @@ public class AuditLogConfigModifierTest {
 	void testAuditLogDisabledByDefault() {
 		contextRunner.run(context -> {
 			PolarisSDKContextManager contextManager = context.getBean(PolarisSDKContextManager.class);
-			AuditLogConfig auditLogConfig = contextManager.getSDKContext().getConfig().getConsumer().getAuditLog();
+			StatReporterConfig statReporter = contextManager.getSDKContext().getConfig()
+					.getGlobal().getStatReporter();
+			AuditLogConfig auditLogConfig = statReporter.getPluginConfig(
+					StatReporterConfig.DEFAULT_REPORTER_AUDIT_LOG, AuditLogConfig.class);
 			assertThat(auditLogConfig.isEnable()).isFalse();
 			assertThat(auditLogConfig.getFormat()).isEqualTo("json");
 		});

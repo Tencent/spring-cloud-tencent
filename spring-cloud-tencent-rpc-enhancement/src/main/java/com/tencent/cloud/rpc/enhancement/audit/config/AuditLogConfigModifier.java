@@ -19,8 +19,10 @@ package com.tencent.cloud.rpc.enhancement.audit.config;
 
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.api.config.global.StatReporterConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
-import com.tencent.polaris.factory.config.consumer.AuditLogConfigImpl;
+import com.tencent.polaris.factory.config.global.StatReporterConfigImpl;
+import com.tencent.polaris.plugins.stat.audit.AuditLogConfig;
 
 /**
  * Config modifier for Polaris service call audit logging.
@@ -37,9 +39,12 @@ public class AuditLogConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
-		AuditLogConfigImpl auditLogConfig = configuration.getConsumer().getAuditLog();
+		StatReporterConfigImpl statReporterConfig = configuration.getGlobal().getStatReporter();
+		AuditLogConfig auditLogConfig = statReporterConfig.getPluginConfig(
+				StatReporterConfig.DEFAULT_REPORTER_AUDIT_LOG, AuditLogConfig.class);
 		auditLogConfig.setEnable(auditLogProperties.isEnabled());
 		auditLogConfig.setFormat(auditLogProperties.getFormat());
+		statReporterConfig.setPluginConfig(StatReporterConfig.DEFAULT_REPORTER_AUDIT_LOG, auditLogConfig);
 	}
 
 	@Override
