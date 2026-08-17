@@ -160,7 +160,8 @@ public class PolarisConfigDataLocationResolver implements
 
 		// prepare and init earlier Polaris SDKContext to pull config files from remote.
 		try {
-			prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+			prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties,
+					polarisCryptoConfigProperties, polarisContextProperties);
 		}
 		catch (Throwable throwable) {
 			if (location.isOptional()) {
@@ -185,7 +186,8 @@ public class PolarisConfigDataLocationResolver implements
 				BootstrapRegistry.InstanceSupplier.of(tsfTlsProperties));
 
 		return loadConfigDataResources(resolverContext,
-				location, profiles, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties, tsfTlsProperties);
+				location, profiles, polarisConfigProperties, polarisCryptoConfigProperties,
+				polarisContextProperties, tsfTlsProperties);
 	}
 
 	@Override
@@ -318,7 +320,8 @@ public class PolarisConfigDataLocationResolver implements
 	private SDKContext sdkContext(ConfigDataLocationResolverContext resolverContext,
 			PolarisConfigProperties polarisConfigProperties, PolarisCryptoConfigProperties polarisCryptoConfigProperties,
 			PolarisContextProperties polarisContextProperties) {
-		List<PolarisConfigModifier> modifierList = modifierList(polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+		List<PolarisConfigModifier> modifierList = modifierList(polarisConfigProperties,
+				polarisCryptoConfigProperties, polarisContextProperties);
 		return SDKContext.initContextByConfig(polarisContextProperties.configuration(
 				modifierList,
 				() -> loadPolarisConfigProperties(resolverContext, String.class, "spring.cloud.client.ip-address"),
@@ -347,4 +350,3 @@ public class PolarisConfigDataLocationResolver implements
 				Boolean.class.isAssignableFrom(typeClass);
 	}
 }
-

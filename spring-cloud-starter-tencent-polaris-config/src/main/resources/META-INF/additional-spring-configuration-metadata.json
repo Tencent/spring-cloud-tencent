@@ -86,6 +86,13 @@
       "description": "Where to load config file, polaris or local."
     },
     {
+      "name": "spring.cloud.polaris.config.report.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to report config watch metadata through the Polaris client reporter.",
+      "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    },
+    {
       "name": "spring.cloud.polaris.config.crypto.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true",
