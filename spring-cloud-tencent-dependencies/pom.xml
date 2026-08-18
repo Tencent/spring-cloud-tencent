@@ -251,6 +251,16 @@
 				<groupId>com.tencent.polaris</groupId>
 				<version>${polaris.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.tencent.polaris</groupId>
+				<artifactId>stat-audit</artifactId>
+				<version>${polaris.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.tencent.polaris</groupId>
+				<artifactId>polaris-config</artifactId>
+				<version>${polaris.version}</version>
+			</dependency>
 
 			<dependency>
 				<artifactId>polaris-threadlocal</artifactId>
