@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.cloud.polaris.config.PolarisConfigSDKContextManager;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySource;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
@@ -50,6 +51,22 @@ public class PolarisConfigEndpoint {
 		List<PolarisPropertySource> propertySourceList = PolarisPropertySourceManager.getAllPropertySources();
 		configInfo.put("PolarisPropertySource", propertySourceList);
 
+		configInfo.put("ClientId", getClientId());
+
 		return configInfo;
+	}
+
+	/**
+	 * The config SDK context is created in the config-data phase, so its startup logs may be
+	 * dropped before the polaris log appenders are ready. Exposing the client id here gives
+	 * tooling a reliable source instead of grepping logs.
+	 */
+	private String getClientId() {
+		try {
+			return PolarisConfigSDKContextManager.innerGetConfigSDKContext().getValueContext().getClientId();
+		}
+		catch (Throwable throwable) {
+			return null;
+		}
 	}
 }
