@@ -32,6 +32,7 @@ import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.configuration.client.internal.ConfigEffectiveQueryConfig;
 import com.tencent.polaris.configuration.client.internal.ConfigWatchReportRequestCustomizer;
 import com.tencent.polaris.configuration.client.internal.ConfigWatchReportRequestCustomizerConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -76,6 +77,14 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 				ConfigWatchReportRequestCustomizer.NAME, ConfigWatchReportRequestCustomizerConfig.class);
 		configWatchCustomizerConfig.setEnable(polarisConfigProperties.getReport().isEnabled());
 		customizerConfig.setPluginConfig(ConfigWatchReportRequestCustomizer.NAME, configWatchCustomizerConfig);
+		// enabled by default like the config watch report, and cascaded under report.enabled:
+		// disabling the whole report switch also disables the effective-time query channel
+		ConfigEffectiveQueryConfig configEffectiveConfig = customizerConfig.getPluginConfig(
+				ConfigEffectiveQueryConfig.NAME, ConfigEffectiveQueryConfig.class);
+		boolean effectiveEnabled = polarisConfigProperties.getReport().isEnabled()
+				&& polarisConfigProperties.getReport().getEffective().isEnabled();
+		configEffectiveConfig.setEnable(effectiveEnabled);
+		customizerConfig.setPluginConfig(ConfigEffectiveQueryConfig.NAME, configEffectiveConfig);
 		configuration.getConsumer().getOutlierDetection().setWhen(OutlierDetectionConfig.When.never);
 		configuration.getConsumer().getCircuitBreaker().setEnable(false);
 

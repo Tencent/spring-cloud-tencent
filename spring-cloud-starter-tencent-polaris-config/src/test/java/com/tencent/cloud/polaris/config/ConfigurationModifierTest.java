@@ -32,6 +32,7 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.config.consumer.OutlierDetectionConfig;
+import com.tencent.polaris.configuration.client.internal.ConfigEffectiveQueryConfig;
 import com.tencent.polaris.configuration.client.internal.ConfigWatchReportRequestCustomizer;
 import com.tencent.polaris.configuration.client.internal.ConfigWatchReportRequestCustomizerConfig;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -82,10 +83,16 @@ class ConfigurationModifierTest {
 	private PolarisConfigProperties.Report report;
 
 	@Mock
+	private PolarisConfigProperties.Report.Effective effective;
+
+	@Mock
 	private PolarisContextProperties polarisContextProperties;
 
 	@Mock
 	private ConfigWatchReportRequestCustomizerConfig configWatchCustomizer;
+
+	@Mock
+	private ConfigEffectiveQueryConfig configEffectiveCustomizer;
 
 	private ConfigurationModifier configurationModifier;
 
@@ -95,6 +102,8 @@ class ConfigurationModifierTest {
 				polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
 		Mockito.lenient().when(polarisConfigProperties.getReport()).thenReturn(report);
 		Mockito.lenient().when(report.isEnabled()).thenReturn(true);
+		Mockito.lenient().when(report.getEffective()).thenReturn(effective);
+		Mockito.lenient().when(effective.isEnabled()).thenReturn(true);
 	}
 
 	/**
@@ -113,6 +122,8 @@ class ConfigurationModifierTest {
 		when(globalConfig.getReportClientRequestCustomizer()).thenReturn(requestCustomizer);
 		when(requestCustomizer.getPluginConfig(ConfigWatchReportRequestCustomizer.NAME,
 				ConfigWatchReportRequestCustomizerConfig.class)).thenReturn(configWatchCustomizer);
+		when(requestCustomizer.getPluginConfig(ConfigEffectiveQueryConfig.NAME,
+				ConfigEffectiveQueryConfig.class)).thenReturn(configEffectiveCustomizer);
 		Mockito.lenient().when(globalConfig.getServerConnector()).thenReturn(serverConnector);
 		Mockito.lenient().when(globalConfig.getAPI()).thenReturn(apiConfig);
 		when(configuration.getGlobal()).thenReturn(globalConfig);
@@ -217,6 +228,55 @@ class ConfigurationModifierTest {
 		verify(configWatchCustomizer).setEnable(false);
 		verify(configuration.getGlobal().getReportClientRequestCustomizer())
 				.setPluginConfig(ConfigWatchReportRequestCustomizer.NAME, configWatchCustomizer);
+		verify(configuration.getConfigFile(), never()).getServerConnector();
+	}
+
+	@DisplayName("modify should disable config effective query when configured")
+	@Test
+	void testModify_ConfigEffectiveQueryDisabled() {
+		ConfigurationImpl configuration = buildMockConfiguration();
+		when(effective.isEnabled()).thenReturn(false);
+		when(polarisContextProperties.getEnabled()).thenReturn(false);
+
+		configurationModifier.modify(configuration);
+
+		// an explicit false always overrides the SDK-side default
+		verify(configEffectiveCustomizer).setEnable(false);
+		verify(configuration.getGlobal().getReportClientRequestCustomizer())
+				.setPluginConfig(ConfigEffectiveQueryConfig.NAME, configEffectiveCustomizer);
+		verify(configuration.getConfigFile(), never()).getServerConnector();
+	}
+
+	@DisplayName("modify should enable config effective query when configured")
+	@Test
+	void testModify_ConfigEffectiveQueryEnabled() {
+		ConfigurationImpl configuration = buildMockConfiguration();
+		when(effective.isEnabled()).thenReturn(true);
+		when(polarisContextProperties.getEnabled()).thenReturn(false);
+
+		configurationModifier.modify(configuration);
+
+		verify(configEffectiveCustomizer).setEnable(true);
+		verify(configuration.getGlobal().getReportClientRequestCustomizer())
+				.setPluginConfig(ConfigEffectiveQueryConfig.NAME, configEffectiveCustomizer);
+		verify(configuration.getConfigFile(), never()).getServerConnector();
+	}
+
+	@DisplayName("modify should cascade: report disabled also disables config effective query")
+	@Test
+	void testModify_ConfigEffectiveQueryCascadesWithReportDisabled() {
+		ConfigurationImpl configuration = buildMockConfiguration();
+		// report.enabled=false 级联关闭 effective query,即使 effective.enabled 显式为 true
+		// (级联短路后 effective.isEnabled() 不再被读取,故用 lenient)
+		when(report.isEnabled()).thenReturn(false);
+		Mockito.lenient().when(effective.isEnabled()).thenReturn(true);
+		when(polarisContextProperties.getEnabled()).thenReturn(false);
+
+		configurationModifier.modify(configuration);
+
+		verify(configEffectiveCustomizer).setEnable(false);
+		verify(configuration.getGlobal().getReportClientRequestCustomizer())
+				.setPluginConfig(ConfigEffectiveQueryConfig.NAME, configEffectiveCustomizer);
 		verify(configuration.getConfigFile(), never()).getServerConnector();
 	}
 

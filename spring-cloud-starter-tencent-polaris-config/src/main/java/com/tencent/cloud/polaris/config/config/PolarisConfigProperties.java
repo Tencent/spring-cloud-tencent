@@ -275,6 +275,11 @@ public class PolarisConfigProperties {
 		 */
 		private boolean enabled = true;
 
+		/**
+		 * Config effective-time realtime query settings.
+		 */
+		private Effective effective = new Effective();
+
 		public boolean isEnabled() {
 			return enabled;
 		}
@@ -283,11 +288,48 @@ public class PolarisConfigProperties {
 			this.enabled = enabled;
 		}
 
+		public Effective getEffective() {
+			return effective;
+		}
+
+		public void setEffective(Effective effective) {
+			this.effective = effective;
+		}
+
 		@Override
 		public String toString() {
 			return "Report{" +
 					"enabled=" + enabled +
+					", effective=" + effective +
 					'}';
+		}
+
+		/**
+		 * Config effective-time realtime query settings.
+		 */
+		public static class Effective {
+
+			/**
+			 * Whether to enable config effective-time realtime query.
+			 * Default true, aligned with the config watch metadata report switch.
+			 * Effective only when {@link Report#enabled} is also true (cascaded).
+			 */
+			private boolean enabled = true;
+
+			public boolean isEnabled() {
+				return enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			@Override
+			public String toString() {
+				return "Effective{" +
+						"enabled=" + enabled +
+						'}';
+			}
 		}
 	}
 }
