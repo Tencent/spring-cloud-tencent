@@ -81,6 +81,7 @@
 
 		<!-- Maven Plugin Versions -->
 		<flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
 		<central.publishing.maven.plugin.version>0.8.0</central.publishing.maven.plugin.version>
 	</properties>
 
@@ -335,6 +336,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven-gpg-plugin.version}</version>
 						<executions>
 							<execution>
 								<phase>verify</phase>
