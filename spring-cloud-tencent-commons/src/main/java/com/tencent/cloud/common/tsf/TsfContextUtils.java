@@ -90,8 +90,18 @@ public final class TsfContextUtils {
 	 * This method should be called after {@link com.tencent.cloud.common.tsf.TsfContextUtils#isTsfConsulEnabled(Environment)}.
 	 * @return whether Tsf Consul is enabled
 	 */
-
 	public static boolean isTsfConsulEnabled() {
 		return tsfConsulEnabled;
+	}
+
+	/**
+	 * Whether TSF HTTP headers should be encoded or decoded.
+	 * <p>True when TSF Consul is enabled, or when
+	 * {@code spring.cloud.tencent.metadata.tsf-header-compatible} is true.
+	 * @param configuredTsfHeaderCompatible configured tsf-header-compatible value
+	 * @return whether TSF headers should be processed
+	 */
+	public static boolean isTsfHeaderCompatible(boolean configuredTsfHeaderCompatible) {
+		return configuredTsfHeaderCompatible || isTsfConsulEnabled();
 	}
 }

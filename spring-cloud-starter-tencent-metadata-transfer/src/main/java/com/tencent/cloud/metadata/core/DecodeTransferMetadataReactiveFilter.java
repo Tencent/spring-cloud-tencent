@@ -26,6 +26,8 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
@@ -59,8 +61,12 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 	private final PolarisAsyncProperties polarisAsyncProperties;
 
-	public DecodeTransferMetadataReactiveFilter(PolarisAsyncProperties polarisAsyncProperties) {
+	private final MetadataLocalProperties metadataLocalProperties;
+
+	public DecodeTransferMetadataReactiveFilter(PolarisAsyncProperties polarisAsyncProperties,
+			MetadataLocalProperties metadataLocalProperties) {
 		this.polarisAsyncProperties = polarisAsyncProperties;
+		this.metadataLocalProperties = metadataLocalProperties;
 	}
 
 	@Override
@@ -84,7 +90,8 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				mergedApplicationMetadata, addHeaders, callerIp,
 				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_TAGS),
 				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_SYSTEM_TAG),
-				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_METADATA));
+				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_METADATA),
+				TsfContextUtils.isTsfHeaderCompatible(isTsfHeaderCompatible()));
 
 		// transitive metadata
 		// from specific header
@@ -146,5 +153,9 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
 		return JacksonUtils.deserialize2Map(customMetadataStr);
+	}
+
+	private boolean isTsfHeaderCompatible() {
+		return metadataLocalProperties != null && metadataLocalProperties.isTsfHeaderCompatible();
 	}
 }

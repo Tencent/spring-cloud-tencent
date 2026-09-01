@@ -18,6 +18,10 @@ spring:
     consul:
       enabled: true
       scheme: HTTP
+    tencent:
+      metadata:
+        # 连接北极星且需要编解码 TSF-Tags 时设为 true（默认 false，有 tsf_consul_ip 时无需打开）
+        # tsf-header-compatible: true
 
 logging:
   level:

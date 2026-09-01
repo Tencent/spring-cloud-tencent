@@ -26,6 +26,8 @@ import com.tencent.cloud.common.async.PolarisAsyncProperties;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.TsfTagUtils;
 import com.tencent.cloud.common.util.UrlUtils;
@@ -60,8 +62,12 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 	private final PolarisAsyncProperties polarisAsyncProperties;
 
-	public DecodeTransferMetadataServletFilter(PolarisAsyncProperties polarisAsyncProperties) {
+	private final MetadataLocalProperties metadataLocalProperties;
+
+	public DecodeTransferMetadataServletFilter(PolarisAsyncProperties polarisAsyncProperties,
+			MetadataLocalProperties metadataLocalProperties) {
 		this.polarisAsyncProperties = polarisAsyncProperties;
+		this.metadataLocalProperties = metadataLocalProperties;
 	}
 
 	@Override
@@ -79,7 +85,8 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 				mergedApplicationMetadata, addHeaders, callerIp,
 				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_TAGS),
 				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_SYSTEM_TAG),
-				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_METADATA));
+				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_METADATA),
+				TsfContextUtils.isTsfHeaderCompatible(isTsfHeaderCompatible()));
 
 		// transitive metadata
 		// from specific header
@@ -128,5 +135,9 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 		// create custom metadata.
 		return JacksonUtils.deserialize2Map(customMetadataStr);
+	}
+
+	private boolean isTsfHeaderCompatible() {
+		return metadataLocalProperties != null && metadataLocalProperties.isTsfHeaderCompatible();
 	}
 }

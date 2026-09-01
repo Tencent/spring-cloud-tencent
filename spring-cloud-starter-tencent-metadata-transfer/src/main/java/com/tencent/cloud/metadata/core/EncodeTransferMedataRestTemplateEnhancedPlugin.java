@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.TsfTagUtils;
@@ -53,8 +54,16 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 
 	private List<ContextToHeaderInterceptor> contextToHeaderInterceptorList;
 
+	private MetadataLocalProperties metadataLocalProperties;
+
 	public EncodeTransferMedataRestTemplateEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+		this(contextToHeaderInterceptorList, null);
+	}
+
+	public EncodeTransferMedataRestTemplateEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList,
+			MetadataLocalProperties metadataLocalProperties) {
 		this.contextToHeaderInterceptorList = Optional.ofNullable(contextToHeaderInterceptorList).orElse(Collections.EMPTY_LIST);
+		this.metadataLocalProperties = metadataLocalProperties;
 	}
 
 	@Override
@@ -81,7 +90,7 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
 
-		if (TsfContextUtils.isTsfConsulEnabled()) {
+		if (TsfContextUtils.isTsfHeaderCompatible(isTsfHeaderCompatible())) {
 			Map<String, String> tsfMetadataMap = TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata);
 			this.buildHeaderMap(httpRequest, tsfMetadataMap);
 		}
@@ -131,5 +140,9 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 	@Override
 	public int getOrder() {
 		return PluginOrderConstant.ClientPluginOrder.CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER;
+	}
+
+	private boolean isTsfHeaderCompatible() {
+		return metadataLocalProperties != null && metadataLocalProperties.isTsfHeaderCompatible();
 	}
 }
