@@ -19,6 +19,7 @@ package com.tencent.cloud.common.tsf;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,5 +104,18 @@ public final class TsfContextUtils {
 	 */
 	public static boolean isTsfHeaderCompatible(boolean configuredTsfHeaderCompatible) {
 		return configuredTsfHeaderCompatible || isTsfConsulEnabled();
+	}
+
+	/**
+	 * Whether TSF HTTP headers should be encoded or decoded.
+	 * <p>True when TSF Consul is enabled, or when
+	 * {@code spring.cloud.tencent.metadata.tsf-header-compatible} is true.
+	 * @param metadataLocalProperties local metadata properties, may be {@code null}
+	 * @return whether TSF headers should be processed
+	 */
+	public static boolean isTsfHeaderCompatible(MetadataLocalProperties metadataLocalProperties) {
+		boolean configured = metadataLocalProperties != null
+				&& metadataLocalProperties.isTsfHeaderCompatible();
+		return isTsfHeaderCompatible(configured);
 	}
 }

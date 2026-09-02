@@ -90,7 +90,7 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
 
-		if (TsfContextUtils.isTsfHeaderCompatible(isTsfHeaderCompatible())) {
+		if (TsfContextUtils.isTsfHeaderCompatible(metadataLocalProperties)) {
 			Map<String, String> tsfMetadataMap = TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata);
 			this.buildHeaderMap(httpRequest, tsfMetadataMap);
 		}
@@ -140,9 +140,5 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 	@Override
 	public int getOrder() {
 		return PluginOrderConstant.ClientPluginOrder.CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER;
-	}
-
-	private boolean isTsfHeaderCompatible() {
-		return metadataLocalProperties != null && metadataLocalProperties.isTsfHeaderCompatible();
 	}
 }

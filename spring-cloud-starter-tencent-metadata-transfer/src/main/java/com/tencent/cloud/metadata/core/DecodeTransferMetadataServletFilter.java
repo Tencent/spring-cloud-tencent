@@ -86,7 +86,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_TAGS),
 				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_SYSTEM_TAG),
 				httpServletRequest.getHeader(MetadataConstant.HeaderName.TSF_METADATA),
-				TsfContextUtils.isTsfHeaderCompatible(isTsfHeaderCompatible()));
+				TsfContextUtils.isTsfHeaderCompatible(metadataLocalProperties));
 
 		// transitive metadata
 		// from specific header
@@ -135,9 +135,5 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 		// create custom metadata.
 		return JacksonUtils.deserialize2Map(customMetadataStr);
-	}
-
-	private boolean isTsfHeaderCompatible() {
-		return metadataLocalProperties != null && metadataLocalProperties.isTsfHeaderCompatible();
 	}
 }

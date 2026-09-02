@@ -91,7 +91,7 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_TAGS),
 				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_SYSTEM_TAG),
 				serverHttpRequest.getHeaders().getFirst(MetadataConstant.HeaderName.TSF_METADATA),
-				TsfContextUtils.isTsfHeaderCompatible(isTsfHeaderCompatible()));
+				TsfContextUtils.isTsfHeaderCompatible(metadataLocalProperties));
 
 		// transitive metadata
 		// from specific header
@@ -153,9 +153,5 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
 		return JacksonUtils.deserialize2Map(customMetadataStr);
-	}
-
-	private boolean isTsfHeaderCompatible() {
-		return metadataLocalProperties != null && metadataLocalProperties.isTsfHeaderCompatible();
 	}
 }

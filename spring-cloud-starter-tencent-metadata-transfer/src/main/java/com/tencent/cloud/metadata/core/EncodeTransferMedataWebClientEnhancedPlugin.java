@@ -89,7 +89,7 @@ public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlug
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
 
 		ClientRequest.Builder requestBuilder = ClientRequest.from(clientRequest);
-		if (TsfContextUtils.isTsfHeaderCompatible(isTsfHeaderCompatible())) {
+		if (TsfContextUtils.isTsfHeaderCompatible(metadataLocalProperties)) {
 			this.buildHeaderMap(requestBuilder, TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata));
 		}
 		// currently only support transitive header from calleeMessageMetadataContainer
@@ -132,9 +132,5 @@ public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlug
 	@Override
 	public int getOrder() {
 		return PluginOrderConstant.ClientPluginOrder.CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER;
-	}
-
-	private boolean isTsfHeaderCompatible() {
-		return metadataLocalProperties != null && metadataLocalProperties.isTsfHeaderCompatible();
 	}
 }

@@ -20,6 +20,7 @@ package com.tencent.cloud.common.tsf;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,5 +62,17 @@ public class TsfContextUtilsTest {
 	@Test
 	public void testIsTsfHeaderCompatibleWhenDisabled() {
 		assertThat(TsfContextUtils.isTsfHeaderCompatible(false)).isFalse();
+	}
+
+	@Test
+	public void testIsTsfHeaderCompatibleFromProperties() {
+		assertThat(TsfContextUtils.isTsfHeaderCompatible((MetadataLocalProperties) null))
+				.isFalse();
+
+		MetadataLocalProperties properties = new MetadataLocalProperties();
+		assertThat(TsfContextUtils.isTsfHeaderCompatible(properties)).isFalse();
+
+		properties.setTsfHeaderCompatible(true);
+		assertThat(TsfContextUtils.isTsfHeaderCompatible(properties)).isTrue();
 	}
 }
