@@ -17,7 +17,10 @@
 
 package com.tencent.cloud.common.util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
@@ -78,5 +81,53 @@ public class TsfTagUtilsTest {
 
 		assertThat(TsfTagUtils.deserializeMetadata(null)).isNull();
 		assertThat(TsfTagUtils.deserializeMetadata("")).isNull();
+	}
+
+	@Test
+	public void testUpdateTsfMetadataWhenCompatible() {
+		Map<String, String> transitive = new HashMap<>();
+		Map<String, String> disposable = new HashMap<>();
+		Map<String, String> application = new HashMap<>();
+		Map<String, String> addHeaders = new HashMap<>();
+		AtomicReference<String> callerIp = new AtomicReference<>("");
+		String encodedTags = UrlUtils.encode("[{\"k\":\"feat\",\"v\":\"test\",\"f\":[\"0\"]}]");
+
+		TsfTagUtils.updateTsfMetadata(transitive, disposable, application, addHeaders, callerIp,
+				encodedTags, null, null, true);
+
+		assertThat(transitive).containsEntry("feat", "test");
+		assertThat(disposable).isEmpty();
+	}
+
+	@Test
+	public void testUpdateTsfMetadataWhenIncompatible() {
+		Map<String, String> transitive = new HashMap<>();
+		Map<String, String> disposable = new HashMap<>();
+		Map<String, String> application = new HashMap<>();
+		Map<String, String> addHeaders = new HashMap<>();
+		AtomicReference<String> callerIp = new AtomicReference<>("");
+		String encodedTags = UrlUtils.encode("[{\"k\":\"feat\",\"v\":\"test\",\"f\":[\"0\"]}]");
+
+		TsfTagUtils.updateTsfMetadata(transitive, disposable, application, addHeaders, callerIp,
+				encodedTags, null, null, false);
+
+		assertThat(transitive).isEmpty();
+		assertThat(disposable).isEmpty();
+	}
+
+	@Test
+	public void testUpdateTsfMetadataDisposableWhenCompatible() {
+		Map<String, String> transitive = new HashMap<>();
+		Map<String, String> disposable = new HashMap<>();
+		Map<String, String> application = new HashMap<>();
+		Map<String, String> addHeaders = new HashMap<>();
+		AtomicReference<String> callerIp = new AtomicReference<>("");
+		String encodedTags = UrlUtils.encode("[{\"k\":\"operation\",\"v\":\"rest\",\"f\":[]}]");
+
+		TsfTagUtils.updateTsfMetadata(transitive, disposable, application, addHeaders, callerIp,
+				encodedTags, null, null, true);
+
+		assertThat(transitive).isEmpty();
+		assertThat(disposable).containsEntry("operation", "rest");
 	}
 }

@@ -15,3 +15,4 @@
 - [feat: adapt to polaris-java ReportClientRequestCustomizer plugin for config watch reporting](https://github.com/Tencent/spring-cloud-tencent/pull/1813)
 - [feat: support audit log](https://github.com/Tencent/spring-cloud-tencent/pull/1812)
 - [feat: support config effective value ](https://github.com/Tencent/spring-cloud-tencent/pull/1815)
+- [feat: support encoding and decoding TSF headers without TSF Consul](https://github.com/Tencent/spring-cloud-tencent/pull/1816)

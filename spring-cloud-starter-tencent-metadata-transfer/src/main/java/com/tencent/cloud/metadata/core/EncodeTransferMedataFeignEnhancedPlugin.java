@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.tsf.TsfContextUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.ReflectionUtils;
@@ -57,8 +58,16 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 
 	private List<ContextToHeaderInterceptor> contextToHeaderInterceptorList;
 
+	private MetadataLocalProperties metadataLocalProperties;
+
 	public EncodeTransferMedataFeignEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
+		this(contextToHeaderInterceptorList, null);
+	}
+
+	public EncodeTransferMedataFeignEnhancedPlugin(List<ContextToHeaderInterceptor> contextToHeaderInterceptorList,
+			MetadataLocalProperties metadataLocalProperties) {
 		this.contextToHeaderInterceptorList = Optional.ofNullable(contextToHeaderInterceptorList).orElse(Collections.EMPTY_LIST);
+		this.metadataLocalProperties = metadataLocalProperties;
 	}
 
 	@Override
@@ -83,7 +92,7 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
-		if (TsfContextUtils.isTsfConsulEnabled()) {
+		if (TsfContextUtils.isTsfHeaderCompatible(metadataLocalProperties)) {
 			Map<String, String> tsfMetadataMap = TsfTagUtils.getTsfMetadataMap(calleeTransitiveHeaders, disposableMetadata, customMetadata, applicationMetadata);
 			this.buildHeaderMap(request, tsfMetadataMap);
 		}

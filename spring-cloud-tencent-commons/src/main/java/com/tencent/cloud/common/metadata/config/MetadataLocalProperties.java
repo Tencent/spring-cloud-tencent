@@ -53,6 +53,12 @@ public class MetadataLocalProperties {
 	 */
 	private List<String> headers;
 
+	/**
+	 * Whether to encode/decode TSF-Tags headers when TSF Consul is not enabled.
+	 * Default false.
+	 */
+	private boolean tsfHeaderCompatible;
+
 	public Map<String, String> getContent() {
 		if (CollectionUtils.isEmpty(content)) {
 			content = new HashMap<>();
@@ -97,6 +103,14 @@ public class MetadataLocalProperties {
 		this.headers = headers;
 	}
 
+	public boolean isTsfHeaderCompatible() {
+		return tsfHeaderCompatible;
+	}
+
+	public void setTsfHeaderCompatible(boolean tsfHeaderCompatible) {
+		this.tsfHeaderCompatible = tsfHeaderCompatible;
+	}
+
 	@Override
 	public String toString() {
 		return "MetadataLocalProperties{" +
@@ -104,6 +118,7 @@ public class MetadataLocalProperties {
 				", transitive=" + transitive +
 				", disposable=" + disposable +
 				", headers=" + headers +
+				", tsfHeaderCompatible=" + tsfHeaderCompatible +
 				'}';
 	}
 }

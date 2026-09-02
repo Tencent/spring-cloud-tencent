@@ -21,6 +21,12 @@
       "description": "Custom transitive http header key list."
     },
     {
+      "name": "spring.cloud.tencent.metadata.tsf-header-compatible",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Encode and decode TSF-Tags headers when TSF Consul is not enabled. Default: false."
+    },
+    {
       "name": "spring.cloud.tencent.async.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": false,

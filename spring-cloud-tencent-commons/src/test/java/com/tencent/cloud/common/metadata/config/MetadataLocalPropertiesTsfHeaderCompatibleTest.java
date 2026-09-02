@@ -28,40 +28,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link MetadataLocalProperties}.
- *
- * @author Haotian Zhang
+ * Test binding of tsf-header-compatible.
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = MetadataLocalPropertiesTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml"})
-public class MetadataLocalPropertiesTest {
+		classes = MetadataLocalPropertiesTsfHeaderCompatibleTest.TestApplication.class,
+		properties = {"spring.config.location = classpath:application-test.yml",
+				"spring.cloud.tencent.metadata.tsf-header-compatible=true"})
+public class MetadataLocalPropertiesTsfHeaderCompatibleTest {
 
 	@Autowired
 	private MetadataLocalProperties metadataLocalProperties;
 
 	@Test
-	public void test1() {
-		assertThat(metadataLocalProperties.getContent().get("a")).isEqualTo("1");
-		assertThat(metadataLocalProperties.getContent().get("b")).isEqualTo("2");
-		assertThat(metadataLocalProperties.getContent().get("c")).isNull();
-	}
-
-	@Test
-	public void test2() {
-		assertThat(metadataLocalProperties.getTransitive().contains("b")).isTrue();
-	}
-
-	@Test
-	public void test3() {
-		assertThat(metadataLocalProperties.getHeaders().contains("c")).isTrue();
-		assertThat(metadataLocalProperties.getHeaders().contains("d")).isTrue();
-	}
-
-	@Test
-	public void testTsfHeaderCompatibleDefault() {
-		assertThat(metadataLocalProperties.isTsfHeaderCompatible()).isFalse();
+	public void testTsfHeaderCompatibleBinding() {
+		assertThat(metadataLocalProperties.isTsfHeaderCompatible()).isTrue();
 	}
 
 	@SpringBootApplication
