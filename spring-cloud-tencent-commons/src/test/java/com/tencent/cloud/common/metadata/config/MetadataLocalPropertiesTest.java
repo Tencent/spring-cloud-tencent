@@ -59,6 +59,11 @@ public class MetadataLocalPropertiesTest {
 		assertThat(metadataLocalProperties.getHeaders().contains("d")).isTrue();
 	}
 
+	@Test
+	public void testTsfHeaderCompatibleDefault() {
+		assertThat(metadataLocalProperties.isTsfHeaderCompatible()).isFalse();
+	}
+
 	@SpringBootApplication
 	protected static class TestApplication {
 

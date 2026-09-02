@@ -58,7 +58,7 @@ public class DecodeTransferMetadataReactiveFilterTest {
 
 	@BeforeEach
 	public void setUp() {
-		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter(polarisAsyncProperties);
+		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter(polarisAsyncProperties, metadataLocalProperties);
 	}
 
 	@Test

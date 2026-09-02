@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.tencent.cloud.common.async.PolarisAsyncProperties;
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignEnhancedPlugin;
@@ -69,8 +70,9 @@ public class MetadataTransferAutoConfiguration {
 		}
 
 		@Bean
-		public DecodeTransferMetadataServletFilter metadataServletFilter(PolarisAsyncProperties polarisAsyncProperties) {
-			return new DecodeTransferMetadataServletFilter(polarisAsyncProperties);
+		public DecodeTransferMetadataServletFilter metadataServletFilter(PolarisAsyncProperties polarisAsyncProperties,
+				@Autowired(required = false) MetadataLocalProperties metadataLocalProperties) {
+			return new DecodeTransferMetadataServletFilter(polarisAsyncProperties, metadataLocalProperties);
 		}
 	}
 
@@ -82,8 +84,9 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataReactiveFilterConfig {
 
 		@Bean
-		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter(PolarisAsyncProperties polarisAsyncProperties) {
-			return new DecodeTransferMetadataReactiveFilter(polarisAsyncProperties);
+		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter(PolarisAsyncProperties polarisAsyncProperties,
+				@Autowired(required = false) MetadataLocalProperties metadataLocalProperties) {
+			return new DecodeTransferMetadataReactiveFilter(polarisAsyncProperties, metadataLocalProperties);
 		}
 	}
 
@@ -97,8 +100,9 @@ public class MetadataTransferAutoConfiguration {
 
 		@Bean
 		public EncodeTransferMedataScgEnhancedPlugin encodeTransferMedataScgEnhancedPlugin(
-				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
-			return new EncodeTransferMedataScgEnhancedPlugin(contextToHeaderInterceptorList);
+				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList,
+				@Autowired(required = false) MetadataLocalProperties metadataLocalProperties) {
+			return new EncodeTransferMedataScgEnhancedPlugin(contextToHeaderInterceptorList, metadataLocalProperties);
 		}
 	}
 
@@ -112,8 +116,9 @@ public class MetadataTransferAutoConfiguration {
 
 		@Bean
 		public EncodeTransferMedataFeignEnhancedPlugin encodeTransferMedataFeignEnhancedPlugin(
-				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
-			return new EncodeTransferMedataFeignEnhancedPlugin(contextToHeaderInterceptorList);
+				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList,
+				@Autowired(required = false) MetadataLocalProperties metadataLocalProperties) {
+			return new EncodeTransferMedataFeignEnhancedPlugin(contextToHeaderInterceptorList, metadataLocalProperties);
 		}
 	}
 
@@ -127,8 +132,9 @@ public class MetadataTransferAutoConfiguration {
 
 		@Bean
 		public EncodeTransferMedataRestTemplateEnhancedPlugin encodeTransferMedataRestTemplateEnhancedPlugin(
-				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
-			return new EncodeTransferMedataRestTemplateEnhancedPlugin(contextToHeaderInterceptorList);
+				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList,
+				@Autowired(required = false) MetadataLocalProperties metadataLocalProperties) {
+			return new EncodeTransferMedataRestTemplateEnhancedPlugin(contextToHeaderInterceptorList, metadataLocalProperties);
 		}
 	}
 
@@ -142,8 +148,9 @@ public class MetadataTransferAutoConfiguration {
 
 		@Bean
 		public EncodeTransferMedataWebClientEnhancedPlugin encodeTransferMedataWebClientEnhancedPlugin(
-				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList) {
-			return new EncodeTransferMedataWebClientEnhancedPlugin(contextToHeaderInterceptorList);
+				@Autowired(required = false) List<ContextToHeaderInterceptor> contextToHeaderInterceptorList,
+				@Autowired(required = false) MetadataLocalProperties metadataLocalProperties) {
+			return new EncodeTransferMedataWebClientEnhancedPlugin(contextToHeaderInterceptorList, metadataLocalProperties);
 		}
 	}
 }
