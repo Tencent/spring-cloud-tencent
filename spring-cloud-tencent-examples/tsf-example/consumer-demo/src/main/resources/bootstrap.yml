@@ -8,6 +8,13 @@ feign:
   tsf:
     enabled: true
 
+# 连接北极星且需要编解码 TSF-Tags 时打开（默认 false，有 tsf_consul_ip 时无需打开）
+#spring:
+#  cloud:
+#    tencent:
+#      metadata:
+#        tsf-header-compatible: true
+
 #本地测试时打开
 #tsf_namespace_id: default_namespace
 

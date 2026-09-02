@@ -167,9 +167,10 @@ public final class TsfTagUtils {
 
 	public static void updateTsfMetadata(Map<String, String> mergedTransitiveMetadata,
 			Map<String, String> mergedDisposableMetadata, Map<String, String> mergedApplicationMetadata, Map<String, String> addHeaders,
-			AtomicReference<String> callerIp, String encodedUserTagList, String encodedSystemTagList, String encodedMetadata) {
+			AtomicReference<String> callerIp, String encodedUserTagList, String encodedSystemTagList, String encodedMetadata,
+			boolean tsfHeaderCompatible) {
 
-		if (!TsfContextUtils.isTsfConsulEnabled()) {
+		if (!TsfContextUtils.isTsfHeaderCompatible(tsfHeaderCompatible)) {
 			return;
 		}
 		List<Tag> tsfUserTagList = TsfTagUtils.deserializeTagList(encodedUserTagList);

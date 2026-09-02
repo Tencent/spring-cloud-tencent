@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.tsf.demo.consumer.proxy;
 
+import java.util.Map;
+
 import com.tencent.cloud.tsf.demo.consumer.entity.User;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -39,4 +41,7 @@ public interface ProviderDemoService {
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
 	String user(@RequestBody User user);
+
+	@RequestMapping(value = "/metadata", method = RequestMethod.GET)
+	Map<String, Object> metadata();
 }
