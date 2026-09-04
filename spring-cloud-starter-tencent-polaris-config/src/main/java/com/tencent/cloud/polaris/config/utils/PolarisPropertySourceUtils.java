@@ -82,9 +82,10 @@ public final class PolarisPropertySourceUtils {
 		}
 
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("namespace='" + namespace + '\''
-					+ ", group='" + group + '\'' + ", fileName='" + compositeConfigFile + '\''
-					+ ", map='" + map + '\'');
+			// only coordinates and key names: values of encrypted config files must not be logged.
+			// This method cannot tell whether the group holds encrypted files, so no value is logged at all.
+			LOGGER.debug("[SCT Config] load group property source. namespace = {}, group = {}, propertyCount = {}, keys = {}",
+					namespace, group, map.size(), map.keySet());
 		}
 
 		return new PolarisPropertySource(namespace, group, "", compositeConfigFile, map);
