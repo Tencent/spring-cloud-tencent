@@ -123,6 +123,8 @@ class SpringConfigEffectiveValueProviderTest {
 		assertThat(value.getFileValue()).isEqualTo("8080");
 		assertThat(value.getEffectiveValue()).isEqualTo("9090");
 		assertThat(value.getPropertySource()).isEqualTo("commandLineArgs");
+		// not a polaris config file: no coordinate, so the SDK falls back to its conservative path
+		assertThat(value.getSourceFile()).isNull();
 	}
 
 	@Test
@@ -140,6 +142,11 @@ class SpringConfigEffectiveValueProviderTest {
 		assertThat(value.getEffectiveValue()).isEqualTo("8081");
 		// still sourced from the polaris file itself: normalized coordinate
 		assertThat(value.getPropertySource()).isEqualTo("polaris:default/order-service/application.yaml");
+		// the structured coordinate lets the SDK look up that file's encryption state
+		assertThat(value.getSourceFile()).isNotNull();
+		assertThat(value.getSourceFile().getNamespace()).isEqualTo(NAMESPACE);
+		assertThat(value.getSourceFile().getFileGroup()).isEqualTo(GROUP);
+		assertThat(value.getSourceFile().getFileName()).isEqualTo(FILE_NAME);
 	}
 
 	@Test
@@ -199,6 +206,10 @@ class SpringConfigEffectiveValueProviderTest {
 		assertThat(value.getEffectiveValue()).isEqualTo("1");
 		// property source points to the winning sub file, not the opaque group source name
 		assertThat(value.getPropertySource()).isEqualTo("polaris:default/mygroup/a.yaml");
+		// coordinate follows the same winning sub file, so encryption is judged per sub file
+		assertThat(value.getSourceFile()).isNotNull();
+		assertThat(value.getSourceFile().getFileName()).isEqualTo("a.yaml");
+		assertThat(value.getSourceFile().getFileGroup()).isEqualTo("mygroup");
 
 		// conflicts are sub-file grained: b is excluded, a is reported
 		List<ConfigKeyConflict> conflicts = provider.resolveConflicts("k", metadata(NAMESPACE, "mygroup", "b.yaml"));

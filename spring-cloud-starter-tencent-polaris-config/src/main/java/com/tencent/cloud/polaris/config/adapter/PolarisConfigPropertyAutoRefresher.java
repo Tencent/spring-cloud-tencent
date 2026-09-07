@@ -185,6 +185,9 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					changedKeys.addAll(p.getSource().keySet());
 					this.registerPolarisConfigPublishChangeListener(p, polarisPropertySource);
 					PolarisPropertySourceManager.addPropertySource(p);
+					// the loaded file carries the per-file encrypted flag, so register its keys
+					// right here rather than waiting for the first change event on that file
+					markEncryptedKeys(p.getConfigKVFile());
 					for (String changedKey : p.getSource().keySet()) {
 						polarisPropertySource.getSource().put(changedKey, p.getSource().get(changedKey));
 						refreshSpringValue(changedKey);
@@ -215,7 +218,8 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 					// the change event is the only place carrying the plugin-level ConfigFile,
 					// which is where the server-side per-file encrypted flag can be read
-					markEncryptedKeys(listenPolarisPropertySource.getConfigKVFile(), configKVFileChangeEvent.getConfigFile());
+					markEncryptedKeys(listenPolarisPropertySource.getConfigKVFile(),
+							configKVFileChangeEvent.getConfigFile(), configKVFileChangeEvent.changedKeys());
 
 					Map<String, Object> effectSource = effectPolarisPropertySource.getSource();
 					Map<String, Object> listenSource = listenPolarisPropertySource.getSource();
@@ -245,6 +249,8 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 							if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
 								String loggerName = changedKey.substring(14);
 								String newValue = (String) configPropertyChangeInfo.getNewValue();
+								// not masked even in an encrypted file: encryption is per file, and
+								// the value here is a log level, never a secret
 								LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
 								PolarisConfigLoggerContext.setLevel(loggerName, newValue);
 							}
@@ -310,11 +316,37 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 	 * by the server. The request-side object is not usable as a criterion, because the crypto
 	 * filter unconditionally sets it to true to declare crypto support.
 	 *
-	 * @param kvFile     the config file whose property names will be registered
-	 * @param configFile the plugin-level config file carrying the encrypted flag, may be null
+	 * @param kvFile      the config file whose property names will be registered
+	 * @param configFile  the plugin-level config file carrying the encrypted flag, may be null
+	 * @param changedKeys keys from the change event; an ADDED key may not be in
+	 *                    {@code kvFile.getPropertyNames()} yet
 	 */
-	private void markEncryptedKeys(ConfigKVFile kvFile, ConfigFile configFile) {
-		if (kvFile == null || configFile == null || !configFile.isEncrypted()) {
+	private void markEncryptedKeys(ConfigKVFile kvFile, ConfigFile configFile, Set<String> changedKeys) {
+		if (configFile == null || !configFile.isEncrypted()) {
+			return;
+		}
+		if (kvFile != null) {
+			Set<String> propertyNames = kvFile.getPropertyNames();
+			if (!CollectionUtils.isEmpty(propertyNames)) {
+				encryptedPropertyKeys.addAll(propertyNames);
+			}
+		}
+		if (!CollectionUtils.isEmpty(changedKeys)) {
+			encryptedPropertyKeys.addAll(changedKeys);
+		}
+	}
+
+	/**
+	 * Registers the property keys of a config file that reports itself as encrypted.
+	 * <p>
+	 * Used where no change event is available, e.g. a file newly added to a watched group.
+	 * {@code ConfigKVFile#isEncrypted()} resolves to the server-pushed per-file flag, so it is
+	 * usable from the very first load.
+	 *
+	 * @param kvFile the loaded config file, may be null
+	 */
+	private void markEncryptedKeys(ConfigKVFile kvFile) {
+		if (kvFile == null || !kvFile.isEncrypted()) {
 			return;
 		}
 		Set<String> propertyNames = kvFile.getPropertyNames();

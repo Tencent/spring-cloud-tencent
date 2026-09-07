@@ -19,10 +19,13 @@ package com.tencent.cloud.polaris.config.adapter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -40,6 +43,8 @@ import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
+import com.tencent.polaris.configuration.client.internal.CompositeConfigFile;
+import com.tencent.polaris.configuration.client.internal.RevisableConfigFileGroup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -210,10 +215,14 @@ public class PolarisConfigSensitiveDataMaskingTest {
 	}
 
 	/**
-	 * Item 2: a plain config file keeps the original behaviour and logs the raw value.
+	 * Item 2: a plain config file keeps the original behaviour, i.e. the SDK's own
+	 * ConfigPropertyChangeInfo rendering, with no masking applied by us.
+	 * <p>
+	 * That rendering carries the key and the change type but no values, so this asserts the
+	 * absence of the mask marker rather than the presence of the raw value.
 	 */
 	@Test
-	public void testPlainConfigChangeLogKeepsRawValue() {
+	public void testPlainConfigChangeLogIsNotMasked() {
 		PolarisConfigPropertyAutoRefresher refresher = buildRefresher();
 		ListAppender<ILoggingEvent> appender = attachAppender(PolarisConfigPropertyAutoRefresher.class);
 
@@ -222,7 +231,7 @@ public class PolarisConfigSensitiveDataMaskingTest {
 				new ConfigPropertyChangeInfo("app.name", "old-name", PLAIN_VALUE, ChangeType.MODIFIED));
 
 		String logs = renderLogs(appender);
-		assertThat(logs).contains(PLAIN_VALUE).doesNotContain("***(len=");
+		assertThat(logs).contains("app.name").contains("MODIFIED").doesNotContain("***(len=");
 	}
 
 	/**
@@ -275,18 +284,40 @@ public class PolarisConfigSensitiveDataMaskingTest {
 	}
 
 	/**
-	 * Item 7: the group-dimension DEBUG log carries key names only, never values.
+	 * Item 7: a group holding an encrypted file logs key names only, never values.
 	 */
 	@Test
-	public void testGroupPropertySourceDebugLogCarriesNoValue() {
+	public void testGroupPropertySourceDebugLogCarriesNoValueWhenEncrypted() {
+		String logs = loadGroupAndRenderDebugLogs("db.password", SENSITIVE_VALUE, true);
+
+		assertThat(logs).doesNotContain(SENSITIVE_VALUE);
+		assertThat(logs).contains("db.password").contains("propertyCount = 1").contains("values omitted");
+	}
+
+	/**
+	 * A group with no encrypted file keeps the original behaviour and logs the merged map, so the
+	 * unencrypted scenario loses no diagnosability.
+	 */
+	@Test
+	public void testGroupPropertySourceDebugLogKeepsMapWhenNotEncrypted() {
+		String logs = loadGroupAndRenderDebugLogs("app.name", PLAIN_VALUE, false);
+
+		assertThat(logs).contains("app.name").contains(PLAIN_VALUE).contains("map = ");
+	}
+
+	/**
+	 * Loads a one-file group at DEBUG level and returns what the loader logged.
+	 */
+	private String loadGroupAndRenderDebugLogs(String key, String value, boolean encrypted) {
 		ch.qos.logback.classic.Logger logger =
 				(ch.qos.logback.classic.Logger) LoggerFactory.getLogger(PolarisPropertySourceUtils.class);
 		Level originalLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);
 		ListAppender<ILoggingEvent> appender = attachAppender(PolarisPropertySourceUtils.class);
 		try {
-			MockedConfigKVFile file = new MockedConfigKVFile(contentOf("db.password", SENSITIVE_VALUE),
+			MockedConfigKVFile file = new MockedConfigKVFile(contentOf(key, value),
 					testFileName, testFileGroup, testNamespace);
+			file.setEncrypted(encrypted);
 			com.tencent.polaris.configuration.api.core.ConfigFileGroup group =
 					new com.tencent.polaris.configuration.client.internal.RevisableConfigFileGroup(
 							testNamespace, testFileGroup, java.util.Collections.singletonList(file), "v1");
@@ -298,9 +329,7 @@ public class PolarisConfigSensitiveDataMaskingTest {
 					.loadGroupPolarisPropertySource(configFileService, testNamespace, testFileGroup);
 
 			assertThat(source).isNotNull();
-			String logs = renderLogs(appender);
-			assertThat(logs).doesNotContain(SENSITIVE_VALUE);
-			assertThat(logs).contains("db.password").contains("propertyCount = 1");
+			return renderLogs(appender);
 		}
 		finally {
 			logger.setLevel(originalLevel);
@@ -332,6 +361,116 @@ public class PolarisConfigSensitiveDataMaskingTest {
 	}
 
 	/**
+	 * An ADDED key may be absent from {@code ConfigKVFile#getPropertyNames()} when the listener
+	 * runs; it must still be registered from {@code changedKeys()}.
+	 */
+	@Test
+	public void testAddedEncryptedKeyIsRegisteredFromChangeEvent() {
+		PolarisConfigPropertyAutoRefresher refresher = buildRefresher();
+		ListAppender<ILoggingEvent> appender = attachAppender(PolarisConfigPropertyAutoRefresher.class);
+
+		MockedConfigKVFile file = new MockedConfigKVFile(contentOf("existing.key", PLAIN_VALUE));
+		fireChange(refresher, file, encryptedConfigFile(), "db.password",
+				new ConfigPropertyChangeInfo("db.password", null, SENSITIVE_VALUE, ChangeType.ADDED));
+
+		assertThat(refresher.isEncryptedKey("db.password")).isTrue();
+		assertThat(renderLogs(appender)).doesNotContain(SENSITIVE_VALUE).contains("***(len=");
+	}
+
+	/**
+	 * A log level is not a secret, so the logging.level line keeps the raw value even when the
+	 * file is encrypted. Encryption is a per-file flag, so it also covers harmless keys.
+	 */
+	@Test
+	public void testEncryptedLoggingLevelChangeKeepsRawValue() {
+		PolarisConfigPropertyAutoRefresher refresher = buildRefresher();
+		ListAppender<ILoggingEvent> appender = attachAppender(PolarisConfigPropertyAutoRefresher.class);
+
+		String levelKey = "logging.level.com.example";
+		MockedConfigKVFile file = new MockedConfigKVFile(contentOf(levelKey, "DEBUG"));
+		fireChange(refresher, file, encryptedConfigFile(), levelKey,
+				new ConfigPropertyChangeInfo(levelKey, "INFO", "DEBUG", ChangeType.MODIFIED));
+
+		assertThat(renderLogs(appender)).contains("set logging.level loggerName:com.example, newValue:DEBUG");
+	}
+
+	/**
+	 * A file newly added to a watched group carries its own encrypted flag, so its keys are
+	 * registered at load time and the first @Value refresh log is already masked.
+	 */
+	@Test
+	public void testGroupAddOfEncryptedFileMasksSpringValueRefreshLog() throws Exception {
+		PolarisRefreshAffectedContextRefresher refresher = buildAffectedRefresher(SENSITIVE_VALUE);
+		ListAppender<ILoggingEvent> appender = attachAppender(PolarisRefreshAffectedContextRefresher.class);
+
+		fireGroupAdd(refresher, "encrypted-add.properties", SENSITIVE_VALUE, true);
+
+		assertThat(refresher.isEncryptedKey("db.password")).isTrue();
+		assertThat(renderLogs(appender)).contains("Auto update polaris changed value successfully")
+				.doesNotContain(SENSITIVE_VALUE)
+				.contains("***(len=");
+	}
+
+	/**
+	 * A plain file added to a watched group keeps the original behaviour and logs the raw value:
+	 * judging per file means the unencrypted scenario loses no diagnosability.
+	 */
+	@Test
+	public void testGroupAddOfPlainFileKeepsRawValue() throws Exception {
+		PolarisRefreshAffectedContextRefresher refresher = buildAffectedRefresher(PLAIN_VALUE);
+		ListAppender<ILoggingEvent> appender = attachAppender(PolarisRefreshAffectedContextRefresher.class);
+
+		fireGroupAdd(refresher, "plain-add.properties", PLAIN_VALUE, false);
+
+		assertThat(refresher.isEncryptedKey("db.password")).isFalse();
+		assertThat(renderLogs(appender)).contains(PLAIN_VALUE).doesNotContain("***(len=");
+	}
+
+	/**
+	 * Registers a one-file group, then adds {@code addedFileName} carrying {@code addedValue}
+	 * under {@code db.password} and waits for the group-add refresh to land.
+	 * <p>
+	 * Each caller must pass a distinct {@code addedFileName}: the registered-property-source set
+	 * behind the group listener is static and grow-only, so a reused name is silently skipped.
+	 */
+	private void fireGroupAdd(PolarisRefreshAffectedContextRefresher refresher, String addedFileName,
+			String addedValue, boolean addedFileEncrypted) throws InterruptedException {
+		Map<String, Object> existing = new ConcurrentHashMap<>();
+		existing.put("app.name", PLAIN_VALUE);
+		MockedConfigKVFile file = new MockedConfigKVFile(existing, testFileName, testFileGroup, testNamespace);
+		when(configFileService.getConfigPropertiesFile(testNamespace, testFileGroup, testFileName))
+				.thenReturn(file);
+
+		CompositeConfigFile compositeConfigFile = new CompositeConfigFile(Collections.singletonList(file));
+		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testFileGroup,
+				testFileName, compositeConfigFile, new ConcurrentHashMap<>(existing));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+
+		RevisableConfigFileGroup group = new RevisableConfigFileGroup(testNamespace, testFileGroup,
+				Collections.singletonList(file), "v1");
+		when(configFileService.getConfigFileGroup(testNamespace, testFileGroup)).thenReturn(group);
+		when(sdkContext.getExtensions()).thenReturn(extensions);
+		when(extensions.getValueContext()).thenReturn(valueContext);
+
+		refresher.onApplicationEvent(null);
+
+		Map<String, Object> added = new ConcurrentHashMap<>();
+		added.put("db.password", addedValue);
+		MockedConfigKVFile file2 = new MockedConfigKVFile(added, addedFileName, testFileGroup, testNamespace);
+		file2.setEncrypted(addedFileEncrypted);
+		when(configFileService.getConfigPropertiesFile(testNamespace, testFileGroup, addedFileName))
+				.thenReturn(file2);
+
+		group.updateConfigFileList(Arrays.asList(file, file2), "v2");
+
+		long deadline = System.currentTimeMillis() + 5000;
+		while (System.currentTimeMillis() < deadline && polarisPropertySource.getProperty("db.password") == null) {
+			Thread.sleep(50);
+		}
+		assertThat(polarisPropertySource.getProperty("db.password")).isEqualTo(addedValue);
+	}
+
+	/**
 	 * The affected-context refresher is used throughout: it is the default implementation and the
 	 * only one whose {@code refreshConfigurationProperties} works against a mocked context.
 	 */
@@ -352,8 +491,8 @@ public class PolarisConfigSensitiveDataMaskingTest {
 		when(valueContext.getHost()).thenReturn("mockHost");
 
 		PolarisRefreshAffectedContextRefresher refresher = new PolarisRefreshAffectedContextRefresher(
-				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService, contextRefresher,
-				sdkContext);
+				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService,
+				contextRefresher, sdkContext);
 
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);

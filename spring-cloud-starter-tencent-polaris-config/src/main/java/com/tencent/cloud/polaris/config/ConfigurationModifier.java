@@ -265,9 +265,27 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		if (StringUtils.isBlank(rootPath)) {
 			return false;
 		}
-		// Polaris config cache file names follow namespace#group#fileName.yaml.
-		File[] files = new File(rootPath).listFiles(file -> file.isFile()
-				&& file.getName().endsWith(".yaml") && file.getName().contains("#"));
+		File[] files = new File(rootPath).listFiles(this::isPolarisConfigCacheFile);
 		return files != null && files.length > 0;
+	}
+
+	/**
+	 * Polaris persist files use {@code encodedNamespace#encodedFileGroup#encodedFileName.yaml}.
+	 * Empty files and names that only happen to contain {@code #} are ignored.
+	 */
+	private boolean isPolarisConfigCacheFile(File file) {
+		if (file == null || !file.isFile() || file.length() <= 0) {
+			return false;
+		}
+		String name = file.getName();
+		if (!name.endsWith(".yaml")) {
+			return false;
+		}
+		String stem = name.substring(0, name.length() - ".yaml".length());
+		String[] parts = stem.split("#", -1);
+		return parts.length == 3
+				&& StringUtils.isNotBlank(parts[0])
+				&& StringUtils.isNotBlank(parts[1])
+				&& StringUtils.isNotBlank(parts[2]);
 	}
 }

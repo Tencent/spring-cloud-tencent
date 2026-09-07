@@ -28,6 +28,7 @@ import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.api.core.ConfigKeyConflict;
 import com.tencent.polaris.configuration.api.core.EffectiveValue;
 import com.tencent.polaris.configuration.client.internal.CompositeConfigFile;
+import com.tencent.polaris.configuration.client.internal.DefaultConfigFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,18 +104,23 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 		}
 		String effectiveValue = null;
 		String propertySource = null;
+		ConfigFileMetadata sourceFile = null;
 		try {
 			// Effective value: Environment has already converged by precedence and
 			// resolves ${} placeholders, i.e. the value the application actually reads.
 			effectiveValue = environment.getProperty(key);
-			propertySource = resolvePropertySourceName(key);
+			SourceMatch match = resolveSourceMatch(key);
+			if (match != null) {
+				propertySource = match.getName();
+				sourceFile = match.getFile();
+			}
 		}
 		catch (Throwable t) {
 			// Only degrade the effective-value dimension; the file value already in hand is returned.
 			LOG.warn("[SCT Config] Resolve effective value failed, key = {}, error = {}", key,
 					t.getClass().getSimpleName());
 		}
-		return new EffectiveValue(fileValue, effectiveValue, propertySource);
+		return new EffectiveValue(fileValue, effectiveValue, propertySource, sourceFile);
 	}
 
 	@Override
@@ -138,15 +144,15 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 	}
 
 	/**
-	 * Walks the ordered PropertySource chain of the Environment and returns the source
-	 * identity of the first one containing the key. Iteration order of
-	 * MutablePropertySources is exactly Spring's precedence order.
+	 * Walks the ordered PropertySource chain of the Environment and returns the match for
+	 * the first source containing the key. Iteration order of MutablePropertySources is
+	 * exactly Spring's precedence order.
 	 */
-	private String resolvePropertySourceName(String key) {
+	private SourceMatch resolveSourceMatch(String key) {
 		for (PropertySource<?> source : environment.getPropertySources()) {
-			String name = matchSource(source, key);
-			if (name != null) {
-				return name;
+			SourceMatch match = matchSource(source, key);
+			if (match != null) {
+				return match;
 			}
 		}
 		return null;
@@ -157,17 +163,18 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 	 * in bootstrap mode polaris sources are wrapped into a CompositePropertySource
 	 * ("polaris-config") and then into BootstrapPropertySource, so recursion is needed
 	 * to reach the real PolarisPropertySource. Polaris sources are translated to a
-	 * normalized coordinate {@code polaris:namespace/group/fileName}.
+	 * normalized coordinate {@code polaris:namespace/group/fileName} plus the structured
+	 * file coordinate the SDK needs to tell whether that source file is encrypted.
 	 */
-	private String matchSource(PropertySource<?> source, String key) {
+	private SourceMatch matchSource(PropertySource<?> source, String key) {
 		if (CONFIGURATION_PROPERTIES_SOURCE_NAME.equals(source.getName())) {
 			return null;
 		}
 		if (source instanceof CompositePropertySource) {
 			for (PropertySource<?> sub : ((CompositePropertySource) source).getPropertySources()) {
-				String name = matchSource(sub, key);
-				if (name != null) {
-					return name;
+				SourceMatch match = matchSource(sub, key);
+				if (match != null) {
+					return match;
 				}
 			}
 			return null;
@@ -186,21 +193,22 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 				// file containing the key is the effective one.
 				for (ConfigKVFile sub : ((CompositeConfigFile) file).getConfigKVFiles()) {
 					if (sub.getProperty(key, null) != null) {
-						return formatCoordinate(sub);
+						return toMatch(sub);
 					}
 				}
 				// Fallback: the composite's sub list is frozen at startup and does not cover
 				// files added to the group at runtime; look them up by group coordinate.
 				ConfigKVFile added = findInGroup(polarisSource.getNamespace(), polarisSource.getGroup(), key);
 				if (added != null) {
-					return formatCoordinate(added);
+					return toMatch(added);
 				}
 			}
 			else {
-				return formatCoordinate(file);
+				return toMatch(file);
 			}
 		}
-		return source.getName();
+		// Not a polaris config file: the SDK cannot judge encryption, so no coordinate.
+		return new SourceMatch(source.getName(), null);
 	}
 
 	/**
@@ -275,6 +283,11 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 				&& Objects.equals(candidate.getFileName(), metadata.getFileName());
 	}
 
+	private SourceMatch toMatch(ConfigKVFile file) {
+		return new SourceMatch(formatCoordinate(file),
+				new DefaultConfigFileMetadata(file.getNamespace(), file.getFileGroup(), file.getFileName()));
+	}
+
 	private String formatCoordinate(ConfigKVFile file) {
 		return SOURCE_PREFIX + file.getNamespace() + "/" + file.getFileGroup() + "/" + file.getFileName();
 	}
@@ -284,5 +297,31 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 			return "null";
 		}
 		return metadata.getNamespace() + "/" + metadata.getFileGroup() + "/" + metadata.getFileName();
+	}
+
+	/**
+	 * A matched property source: the display identity plus, for polaris config files, the
+	 * structured coordinate. The coordinate lets the SDK look up that file's own snapshot to
+	 * decide whether the effective value came from an encrypted file; it is consumed inside
+	 * the SDK and never reported.
+	 */
+	private static final class SourceMatch {
+
+		private final String name;
+
+		private final ConfigFileMetadata file;
+
+		SourceMatch(String name, ConfigFileMetadata file) {
+			this.name = name;
+			this.file = file;
+		}
+
+		String getName() {
+			return name;
+		}
+
+		ConfigFileMetadata getFile() {
+			return file;
+		}
 	}
 }

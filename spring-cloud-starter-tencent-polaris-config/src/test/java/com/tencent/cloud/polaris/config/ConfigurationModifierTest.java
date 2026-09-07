@@ -718,7 +718,8 @@ class ConfigurationModifierTest {
 	void testModify_CheckAddressNotAccessibleWithLocalCacheFallback() throws Exception {
 		ConfigurationImpl configuration = buildMockConfiguration();
 		ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
-		Path cacheFile = Files.createFile(tempDir.resolve("default#group#application.properties.yaml"));
+		Path cacheFile = Files.writeString(tempDir.resolve("default#group#application.properties.yaml"),
+				"content: cached");
 
 		when(polarisContextProperties.getEnabled()).thenReturn(true);
 		when(polarisConfigProperties.isEnabled()).thenReturn(true);
@@ -752,6 +753,72 @@ class ConfigurationModifierTest {
 			verify(connectorConfig).setPersistDir(tempDir.toString());
 			verify(connectorConfig).setAddresses(parsedAddresses);
 			assertThat(cacheFile).exists();
+		}
+	}
+
+	/**
+	 * Fallback is enabled but the persist directory has no usable cache file.
+	 * Expect: startup still aborts.
+	 */
+	@DisplayName("modify should still abort when fallback is enabled but cache dir is empty")
+	@Test
+	void testModify_CheckAddressNotAccessibleWithEmptyCacheDir() {
+		ConfigurationImpl configuration = buildMockConfiguration();
+		ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
+
+		when(polarisContextProperties.getEnabled()).thenReturn(true);
+		when(polarisConfigProperties.isEnabled()).thenReturn(true);
+		when(polarisConfigProperties.getDataSource()).thenReturn("polaris");
+		when(polarisConfigProperties.getLocalFileRootPath()).thenReturn(tempDir.toString());
+		when(polarisConfigProperties.getAddress()).thenReturn("grpc://127.0.0.1:1");
+		when(polarisConfigProperties.isCheckAddress()).thenReturn(true);
+		when(polarisConfigProperties.isShutdownIfConnectToConfigServerFailed()).thenReturn(true);
+		when(connectorConfig.getFallbackToLocalCache()).thenReturn(true);
+
+		List<String> parsedAddresses = Collections.singletonList("127.0.0.1:1");
+		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class)) {
+			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:1"))
+					.thenReturn(parsedAddresses);
+			mockedAddressUtils.when(() -> AddressUtils.accessible("127.0.0.1", 1, 3000))
+					.thenReturn(false);
+
+			assertThatThrownBy(() -> configurationModifier.modify(configuration))
+					.isInstanceOf(IllegalArgumentException.class)
+					.hasMessageContaining("can not be connected");
+		}
+	}
+
+	/**
+	 * A leftover yaml that only contains '#' must not count as a Polaris persist cache.
+	 */
+	@DisplayName("modify should ignore non-cache yaml files when deciding local fallback")
+	@Test
+	void testModify_CheckAddressNotAccessibleWithInvalidCacheFileName() throws Exception {
+		ConfigurationImpl configuration = buildMockConfiguration();
+		ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
+		Files.writeString(tempDir.resolve("not-a-cache.yaml"), "content");
+		Files.writeString(tempDir.resolve("only#two.yaml"), "content");
+		Files.createFile(tempDir.resolve("default#group#application.properties.yaml"));
+
+		when(polarisContextProperties.getEnabled()).thenReturn(true);
+		when(polarisConfigProperties.isEnabled()).thenReturn(true);
+		when(polarisConfigProperties.getDataSource()).thenReturn("polaris");
+		when(polarisConfigProperties.getLocalFileRootPath()).thenReturn(tempDir.toString());
+		when(polarisConfigProperties.getAddress()).thenReturn("grpc://127.0.0.1:1");
+		when(polarisConfigProperties.isCheckAddress()).thenReturn(true);
+		when(polarisConfigProperties.isShutdownIfConnectToConfigServerFailed()).thenReturn(true);
+		when(connectorConfig.getFallbackToLocalCache()).thenReturn(true);
+
+		List<String> parsedAddresses = Collections.singletonList("127.0.0.1:1");
+		try (MockedStatic<AddressUtils> mockedAddressUtils = Mockito.mockStatic(AddressUtils.class)) {
+			mockedAddressUtils.when(() -> AddressUtils.parseAddressList("grpc://127.0.0.1:1"))
+					.thenReturn(parsedAddresses);
+			mockedAddressUtils.when(() -> AddressUtils.accessible("127.0.0.1", 1, 3000))
+					.thenReturn(false);
+
+			assertThatThrownBy(() -> configurationModifier.modify(configuration))
+					.isInstanceOf(IllegalArgumentException.class)
+					.hasMessageContaining("can not be connected");
 		}
 	}
 
