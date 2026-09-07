@@ -377,6 +377,7 @@
 						<extensions>true</extensions>
 						<configuration>
 							<publishingServerId>central-portal</publishingServerId>
+							<deploymentName>spring-cloud-tencent-${project.version}</deploymentName>
 							<excludeArtifacts>
 								<excludeArtifact>spring-cloud-tencent-coverage</excludeArtifact>
 								<excludeArtifact>spring-cloud-tencent-examples</excludeArtifact>
