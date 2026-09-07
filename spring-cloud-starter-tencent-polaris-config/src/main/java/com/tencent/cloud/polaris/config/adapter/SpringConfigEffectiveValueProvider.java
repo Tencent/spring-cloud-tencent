@@ -105,6 +105,9 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 		String effectiveValue = null;
 		String propertySource = null;
 		ConfigFileMetadata sourceFile = null;
+		// Stays UNKNOWN when source attribution is unavailable, so the SDK keeps its
+		// conservative branch instead of assuming the value is safe to report.
+		EffectiveValue.SourceKind sourceKind = EffectiveValue.SourceKind.UNKNOWN;
 		try {
 			// Effective value: Environment has already converged by precedence and
 			// resolves ${} placeholders, i.e. the value the application actually reads.
@@ -113,6 +116,7 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 			if (match != null) {
 				propertySource = match.getName();
 				sourceFile = match.getFile();
+				sourceKind = match.getKind();
 			}
 		}
 		catch (Throwable t) {
@@ -120,7 +124,7 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 			LOG.warn("[SCT Config] Resolve effective value failed, key = {}, error = {}", key,
 					t.getClass().getSimpleName());
 		}
-		return new EffectiveValue(fileValue, effectiveValue, propertySource, sourceFile);
+		return new EffectiveValue(fileValue, effectiveValue, propertySource, sourceFile, sourceKind);
 	}
 
 	@Override
@@ -207,8 +211,11 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 				return toMatch(file);
 			}
 		}
-		// Not a polaris config file: the SDK cannot judge encryption, so no coordinate.
-		return new SourceMatch(source.getName(), null);
+		// Not a polaris config file (command line, system properties, environment variables,
+		// local files...). No coordinate to give, but the value provably does not come from
+		// the config server, hence cannot be an encrypted config's plaintext: say so
+		// explicitly rather than leaving the SDK to guess and omit the effective value.
+		return new SourceMatch(source.getName(), null, EffectiveValue.SourceKind.EXTERNAL);
 	}
 
 	/**
@@ -285,7 +292,8 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 
 	private SourceMatch toMatch(ConfigKVFile file) {
 		return new SourceMatch(formatCoordinate(file),
-				new DefaultConfigFileMetadata(file.getNamespace(), file.getFileGroup(), file.getFileName()));
+				new DefaultConfigFileMetadata(file.getNamespace(), file.getFileGroup(), file.getFileName()),
+				EffectiveValue.SourceKind.POLARIS_FILE);
 	}
 
 	private String formatCoordinate(ConfigKVFile file) {
@@ -300,10 +308,10 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 	}
 
 	/**
-	 * A matched property source: the display identity plus, for polaris config files, the
-	 * structured coordinate. The coordinate lets the SDK look up that file's own snapshot to
-	 * decide whether the effective value came from an encrypted file; it is consumed inside
-	 * the SDK and never reported.
+	 * A matched property source: the display identity, the attribution verdict, and — for
+	 * polaris config files — the structured coordinate. The coordinate lets the SDK look up
+	 * that file's own snapshot to decide whether the effective value came from an encrypted
+	 * file; it is consumed inside the SDK and never reported.
 	 */
 	private static final class SourceMatch {
 
@@ -311,9 +319,12 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 
 		private final ConfigFileMetadata file;
 
-		SourceMatch(String name, ConfigFileMetadata file) {
+		private final EffectiveValue.SourceKind kind;
+
+		SourceMatch(String name, ConfigFileMetadata file, EffectiveValue.SourceKind kind) {
 			this.name = name;
 			this.file = file;
+			this.kind = kind;
 		}
 
 		String getName() {
@@ -322,6 +333,10 @@ public class SpringConfigEffectiveValueProvider implements ConfigEffectiveValueP
 
 		ConfigFileMetadata getFile() {
 			return file;
+		}
+
+		EffectiveValue.SourceKind getKind() {
+			return kind;
 		}
 	}
 }
