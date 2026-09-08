@@ -495,7 +495,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 	 * Just for junit test. {@code encryptedPropertyKeys} is static and grow-only, so it has to be
 	 * reset between test methods.
 	 */
-	public static void clearEncryptedPropertyKeys() {
+	static void clearEncryptedPropertyKeys() {
 		encryptedPropertyKeys.clear();
 	}
 }
