@@ -17,6 +17,10 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,6 +70,24 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigPropertyAutoRefresher.class);
 	private static final Set<String> registeredPolarisPropertySets = Sets.newConcurrentHashSet();
+	/**
+	 * Property keys contributed by encrypted config files. Values of these keys must never be
+	 * written to logs in plain text.
+	 * <p>
+	 * Grow-only on purpose: once a key is known to be sensitive, keep masking it even after the
+	 * encrypted file drops it. Over-masking only costs troubleshooting convenience, while
+	 * under-masking is a leak.
+	 */
+	private static final Set<String> encryptedPropertyKeys = Sets.newConcurrentHashSet();
+	private static final String FINGERPRINT_ALGORITHM = "SHA-256";
+	/**
+	 * Number of digest bytes kept in a fingerprint. 4 bytes are enough to tell two values apart.
+	 */
+	private static final int FINGERPRINT_BYTES = 4;
+	/**
+	 * Random per JVM: see {@link #fingerprint(String)} for why the digest must be salted.
+	 */
+	private static final byte[] FINGERPRINT_SALT = newFingerprintSalt();
 	private final PolarisConfigProperties polarisConfigProperties;
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 	// this class provides customized logic for some customers to configure special business group files
@@ -163,6 +185,9 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					changedKeys.addAll(p.getSource().keySet());
 					this.registerPolarisConfigPublishChangeListener(p, polarisPropertySource);
 					PolarisPropertySourceManager.addPropertySource(p);
+					// the loaded file carries the per-file encrypted flag, so register its keys
+					// right here rather than waiting for the first change event on that file
+					markEncryptedKeys(p.getConfigKVFile());
 					for (String changedKey : p.getSource().keySet()) {
 						polarisPropertySource.getSource().put(changedKey, p.getSource().get(changedKey));
 						refreshSpringValue(changedKey);
@@ -191,6 +216,11 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					LOGGER.info("[SCT Config] received polaris config change event and will refresh spring context." + " namespace = {}, group = {}, fileName = {}",
 							listenPolarisPropertySource.getNamespace(), listenPolarisPropertySource.getGroup(), listenPolarisPropertySource.getFileName());
 
+					// the change event is the only place carrying the plugin-level ConfigFile,
+					// which is where the server-side per-file encrypted flag can be read
+					markEncryptedKeys(listenPolarisPropertySource.getConfigKVFile(),
+							configKVFileChangeEvent.getConfigFile(), configKVFileChangeEvent.changedKeys());
+
 					Map<String, Object> effectSource = effectPolarisPropertySource.getSource();
 					Map<String, Object> listenSource = listenPolarisPropertySource.getSource();
 					boolean isGroupRefresh = !listenPolarisPropertySource.equals(effectPolarisPropertySource);
@@ -204,13 +234,23 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					for (String changedKey : configKVFileChangeEvent.changedKeys()) {
 						ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent.getChangeInfo(changedKey);
 
-						LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
+						if (isEncryptedKey(changedKey)) {
+							LOGGER.info("[SCT Config] changed property = [key={}, changeType={}, oldValue={}, newValue={}]",
+									configPropertyChangeInfo.getPropertyName(), configPropertyChangeInfo.getChangeType(),
+									maskValue(configPropertyChangeInfo.getOldValue()),
+									maskValue(configPropertyChangeInfo.getNewValue()));
+						}
+						else {
+							LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
+						}
 
 						// new ability to dynamically change log levels
 						try {
 							if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
 								String loggerName = changedKey.substring(14);
 								String newValue = (String) configPropertyChangeInfo.getNewValue();
+								// not masked even in an encrypted file: encryption is per file, and
+								// the value here is a log level, never a secret
 								LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
 								PolarisConfigLoggerContext.setLevel(loggerName, newValue);
 							}
@@ -265,6 +305,122 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			return;
 		}
 		polarisConfigCustomExtensionLayer.executeRegisterPublishChangeListener(listenPolarisPropertySource, effectPolarisPropertySource);
+	}
+
+	/**
+	 * Registers the property keys of an encrypted config file, so that their values can be masked
+	 * in logs afterwards.
+	 * <p>
+	 * {@code configFile} must come from {@link ConfigKVFileChangeEvent#getConfigFile()}: that
+	 * object belongs to the response chain, where {@code encrypted} is the per-file value pushed
+	 * by the server. The request-side object is not usable as a criterion, because the crypto
+	 * filter unconditionally sets it to true to declare crypto support.
+	 *
+	 * @param kvFile      the config file whose property names will be registered
+	 * @param configFile  the plugin-level config file carrying the encrypted flag, may be null
+	 * @param changedKeys keys from the change event; an ADDED key may not be in
+	 *                    {@code kvFile.getPropertyNames()} yet
+	 */
+	private void markEncryptedKeys(ConfigKVFile kvFile, ConfigFile configFile, Set<String> changedKeys) {
+		if (configFile == null || !configFile.isEncrypted()) {
+			return;
+		}
+		if (kvFile != null) {
+			Set<String> propertyNames = kvFile.getPropertyNames();
+			if (!CollectionUtils.isEmpty(propertyNames)) {
+				encryptedPropertyKeys.addAll(propertyNames);
+			}
+		}
+		if (!CollectionUtils.isEmpty(changedKeys)) {
+			encryptedPropertyKeys.addAll(changedKeys);
+		}
+	}
+
+	/**
+	 * Registers the property keys of a config file that reports itself as encrypted.
+	 * <p>
+	 * Used where no change event is available, e.g. a file newly added to a watched group.
+	 * {@code ConfigKVFile#isEncrypted()} resolves to the server-pushed per-file flag, so it is
+	 * usable from the very first load.
+	 *
+	 * @param kvFile the loaded config file, may be null
+	 */
+	private void markEncryptedKeys(ConfigKVFile kvFile) {
+		if (kvFile == null || !kvFile.isEncrypted()) {
+			return;
+		}
+		Set<String> propertyNames = kvFile.getPropertyNames();
+		if (!CollectionUtils.isEmpty(propertyNames)) {
+			encryptedPropertyKeys.addAll(propertyNames);
+		}
+	}
+
+	/**
+	 * @param key the property key
+	 * @return whether the value of the given key comes from an encrypted config file
+	 */
+	protected boolean isEncryptedKey(String key) {
+		return encryptedPropertyKeys.contains(key);
+	}
+
+	/**
+	 * Masks a property value of an encrypted config file. The length and a fingerprint are kept as
+	 * hints for troubleshooting, the content is not exposed.
+	 * <p>
+	 * Takes an Object rather than a String: both {@code ConfigPropertyChangeInfo#getOldValue()}
+	 * and the resolved {@code @Value} result are declared as Object.
+	 *
+	 * @param value the raw value
+	 * @return the masked value
+	 */
+	protected static String maskValue(Object value) {
+		if (value == null) {
+			return null;
+		}
+		String text = String.valueOf(value);
+		if (text.isEmpty()) {
+			return "";
+		}
+		return "***(len=" + text.length() + ", fp=" + fingerprint(text) + ")";
+	}
+
+	/**
+	 * Salted and truncated digest of a value, so that two masked values can be told apart even when
+	 * their lengths are equal (e.g. an old and a new password of the same length).
+	 * <p>
+	 * The salt is random per JVM on purpose. An unsalted digest of a single config value would be
+	 * reversible by dictionary attack, since config values carry little entropy - that would defeat
+	 * the masking. With a per-process salt the fingerprint stays comparable within one log file,
+	 * which is what change diagnosis needs, and carries no information outside it.
+	 * <p>
+	 * Truncated to 4 bytes: a collision only makes two different values look alike, it never
+	 * exposes a value.
+	 *
+	 * @param text the raw value
+	 * @return an 8-char hex fingerprint
+	 */
+	private static byte[] newFingerprintSalt() {
+		byte[] salt = new byte[16];
+		new SecureRandom().nextBytes(salt);
+		return salt;
+	}
+
+	private static String fingerprint(String text) {
+		try {
+			MessageDigest digest = MessageDigest.getInstance(FINGERPRINT_ALGORITHM);
+			digest.update(FINGERPRINT_SALT);
+			byte[] hash = digest.digest(text.getBytes(StandardCharsets.UTF_8));
+			StringBuilder builder = new StringBuilder(FINGERPRINT_BYTES * 2);
+			for (int i = 0; i < FINGERPRINT_BYTES; i++) {
+				builder.append(Character.forDigit((hash[i] >> 4) & 0xF, 16));
+				builder.append(Character.forDigit(hash[i] & 0xF, 16));
+			}
+			return builder.toString();
+		}
+		catch (NoSuchAlgorithmException e) {
+			// SHA-256 is mandated by the JDK spec, so this is unreachable in practice
+			return "unavailable";
+		}
 	}
 
 	private Map<String, ConfigFileMetadata> calculateUnregister(List<ConfigFileMetadata> oldConfigFileMetadataList,
@@ -333,5 +489,13 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 	 */
 	public void setRegistered(boolean registered) {
 		this.registered.set(registered);
+	}
+
+	/**
+	 * Just for junit test. {@code encryptedPropertyKeys} is static and grow-only, so it has to be
+	 * reset between test methods.
+	 */
+	static void clearEncryptedPropertyKeys() {
+		encryptedPropertyKeys.clear();
 	}
 }

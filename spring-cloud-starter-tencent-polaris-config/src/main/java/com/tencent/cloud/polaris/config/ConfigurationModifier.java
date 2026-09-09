@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,9 +107,10 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
 		// set connector type
 		connectorConfig.setConnectorType(polarisConfigProperties.getDataSource());
+		String localFileRootPath = polarisConfigProperties.getLocalFileRootPath();
+		// The same directory stores local-source files and remote-source fallback caches.
+		connectorConfig.setPersistDir(localFileRootPath);
 		if (StringUtils.equalsIgnoreCase(polarisConfigProperties.getDataSource(), LOCAL_FILE_CONNECTOR_TYPE)) {
-			String localFileRootPath = polarisConfigProperties.getLocalFileRootPath();
-			connectorConfig.setPersistDir(localFileRootPath);
 			LOGGER.info("[SCT] Run spring cloud tencent config with local data source. localFileRootPath = {}", localFileRootPath);
 			return;
 		}
@@ -131,7 +133,7 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 
 		// enable close check address for unit tests
 		if (polarisConfigProperties.isCheckAddress()) {
-			checkAddressAccessible(configAddresses);
+			checkAddressAccessible(configAddresses, connectorConfig.getFallbackToLocalCache());
 		}
 
 		connectorConfig.setAddresses(configAddresses);
@@ -218,7 +220,7 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 		return polarisAddresses;
 	}
 
-	private void checkAddressAccessible(List<String> configAddresses) {
+	private void checkAddressAccessible(List<String> configAddresses, Boolean fallbackToLocalCache) {
 		// check address can connect
 		configAddresses.forEach(address -> {
 			String[] ipPort;
@@ -243,12 +245,47 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 				String errMsg = "Config server address (" + address + ") can not be connected. Please check your config in bootstrap.yml"
 						+ " with spring.cloud.polaris.address or spring.cloud.polaris.config.address.";
 				if (polarisConfigProperties.isShutdownIfConnectToConfigServerFailed()) {
-					throw new IllegalArgumentException(errMsg);
+					if (Boolean.TRUE.equals(fallbackToLocalCache) && hasLocalConfigCache()) {
+						LOGGER.warn("{} Continue startup to fall back to cached config files in {}.",
+								errMsg, polarisConfigProperties.getLocalFileRootPath());
+					}
+					else {
+						throw new IllegalArgumentException(errMsg);
+					}
 				}
 				else {
 					LOGGER.error(errMsg);
 				}
 			}
 		});
+	}
+
+	private boolean hasLocalConfigCache() {
+		String rootPath = polarisConfigProperties.getLocalFileRootPath();
+		if (StringUtils.isBlank(rootPath)) {
+			return false;
+		}
+		File[] files = new File(rootPath).listFiles(this::isPolarisConfigCacheFile);
+		return files != null && files.length > 0;
+	}
+
+	/**
+	 * Polaris persist files use {@code encodedNamespace#encodedFileGroup#encodedFileName.yaml}.
+	 * Empty files and names that only happen to contain {@code #} are ignored.
+	 */
+	private boolean isPolarisConfigCacheFile(File file) {
+		if (file == null || !file.isFile() || file.length() <= 0) {
+			return false;
+		}
+		String name = file.getName();
+		if (!name.endsWith(".yaml")) {
+			return false;
+		}
+		String stem = name.substring(0, name.length() - ".yaml".length());
+		String[] parts = stem.split("#", -1);
+		return parts.length == 3
+				&& StringUtils.isNotBlank(parts[0])
+				&& StringUtils.isNotBlank(parts[1])
+				&& StringUtils.isNotBlank(parts[2]);
 	}
 }

@@ -82,9 +82,19 @@ public final class PolarisPropertySourceUtils {
 		}
 
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("namespace='" + namespace + '\''
-					+ ", group='" + group + '\'' + ", fileName='" + compositeConfigFile + '\''
-					+ ", map='" + map + '\'');
+			// Encryption is a per-file flag and a group merges several files, so a single
+			// encrypted member is enough to keep every value out of the log: the merged map
+			// gives no per-key attribution here. With none encrypted the original behaviour
+			// is preserved and values are logged as before.
+			if (compositeConfigFile.isEncrypted()) {
+				LOGGER.debug("[SCT Config] load group property source. namespace = {}, group = {}, "
+								+ "propertyCount = {}, keys = {} (values omitted: group holds encrypted files)",
+						namespace, group, map.size(), map.keySet());
+			}
+			else {
+				LOGGER.debug("[SCT Config] load group property source. namespace = {}, group = {}, "
+						+ "propertyCount = {}, map = {}", namespace, group, map.size(), map);
+			}
 		}
 
 		return new PolarisPropertySource(namespace, group, "", compositeConfigFile, map);
