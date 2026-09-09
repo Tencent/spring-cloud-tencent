@@ -45,6 +45,8 @@ public class MockedConfigKVFile implements ConfigKVFile {
 
 	private final List<ConfigKVFileChangeListener> listeners = new ArrayList<>();
 
+	private boolean encrypted;
+
 	public MockedConfigKVFile(Map<String, Object> properties) {
 		this.properties = properties;
 	}
@@ -196,5 +198,14 @@ public class MockedConfigKVFile implements ConfigKVFile {
 	@Override
 	public String getFileVersion() {
 		return "";
+	}
+
+	@Override
+	public boolean isEncrypted() {
+		return encrypted;
+	}
+
+	public void setEncrypted(boolean encrypted) {
+		this.encrypted = encrypted;
 	}
 }

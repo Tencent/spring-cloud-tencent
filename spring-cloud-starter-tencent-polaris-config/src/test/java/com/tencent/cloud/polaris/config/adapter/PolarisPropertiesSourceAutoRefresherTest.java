@@ -100,7 +100,8 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Test
 	public void testConfigFileChanged() throws Exception {
 		PolarisRefreshAffectedContextRefresher refresher = new PolarisRefreshAffectedContextRefresher(
-				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService, contextRefresher, sdkContext);
+				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService,
+				contextRefresher, sdkContext);
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
 		TypeConverter typeConverter = mock(TypeConverter.class);
@@ -159,7 +160,8 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Test
 	public void testConfigFileGroupChanged() throws Exception {
 		PolarisRefreshAffectedContextRefresher refresher = new PolarisRefreshAffectedContextRefresher(
-				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService, contextRefresher, sdkContext);
+				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService,
+				contextRefresher, sdkContext);
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
 		TypeConverter typeConverter = mock(TypeConverter.class);
