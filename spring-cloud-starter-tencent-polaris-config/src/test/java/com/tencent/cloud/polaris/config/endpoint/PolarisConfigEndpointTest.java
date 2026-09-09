@@ -17,10 +17,11 @@
 
 package com.tencent.cloud.polaris.config.endpoint;
 
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.polaris.config.PolarisConfigSDKContextManager;
 import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySource;
@@ -28,6 +29,7 @@ import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.polaris.api.plugin.common.ValueContext;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.configuration.client.internal.CompositeConfigFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,20 +66,57 @@ public class PolarisConfigEndpointTest {
 	}
 
 	@Test
-	public void testPolarisConfigEndpoint() {
+	@SuppressWarnings("unchecked")
+	public void testPolarisConfigEndpoint() throws Exception {
+		PolarisConfigProperties properties = new PolarisConfigProperties();
+		properties.setToken("endpoint-must-not-expose-this-token");
 		Map<String, Object> content = new HashMap<>();
-		content.put("k1", "v1");
-		content.put("k2", "v2");
-		content.put("k3", "v3");
+		content.put("k1", "sensitive-value-one");
+		content.put("k2", "sensitive-value-two");
+		content.put("k3", "sensitive-value-three");
 		MockedConfigKVFile file = new MockedConfigKVFile(content);
 		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testServiceName, testFileName,
 				file, content);
 		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
-		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(polarisConfigProperties);
+		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(properties);
 		Map<String, Object> info = endpoint.polarisConfig();
-		assertThat(polarisConfigProperties).isEqualTo(info.get("PolarisConfigProperties"));
-		assertThat(Collections.singletonList(polarisPropertySource)).isEqualTo(info.get("PolarisPropertySource"));
+		assertThat(info.get("PolarisConfigProperties")).isInstanceOf(Map.class);
+		List<Map<String, Object>> sources = (List<Map<String, Object>>) info.get("PolarisPropertySource");
+		assertThat(sources).hasSize(1);
+		assertThat(sources.get(0)).containsEntry("namespace", testNamespace)
+				.containsEntry("group", testServiceName)
+				.containsEntry("fileName", testFileName);
+
+		// Actuator serializes the return value. Keep it to plain DTO structures and never expose
+		// property values through this diagnostic endpoint.
+		String json = new ObjectMapper().writeValueAsString(info);
+		assertThat(json).contains("\"ClientId\":null", "\"propertyNames\":[")
+				.doesNotContain("sensitive-value-one", "sensitive-value-two", "sensitive-value-three",
+						"endpoint-must-not-expose-this-token");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testPolarisConfigEndpointExposesCompositeFileMetadata() {
+		MockedConfigKVFile first = new MockedConfigKVFile(Map.of("first.key", "first-value"),
+				"first.properties", testServiceName, testNamespace);
+		MockedConfigKVFile second = new MockedConfigKVFile(Map.of("second.key", "second-value"),
+				"second.properties", testServiceName, testNamespace);
+		CompositeConfigFile composite = new CompositeConfigFile(List.of(first, second));
+		PolarisPropertySource source = new PolarisPropertySource(testNamespace, testServiceName, "",
+				composite, new HashMap<>());
+		PolarisPropertySourceManager.addPropertySource(source);
+
+		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(polarisConfigProperties);
+		List<Map<String, Object>> sources =
+				(List<Map<String, Object>>) endpoint.polarisConfig().get("PolarisPropertySource");
+		Map<String, Object> configKVFile = (Map<String, Object>) sources.get(0).get("configKVFile");
+		List<Map<String, Object>> files =
+				(List<Map<String, Object>>) configKVFile.get("configKVFiles");
+
+		assertThat(files).extracting(file -> file.get("fileName"))
+				.containsExactly("first.properties", "second.properties");
 	}
 
 	@Test
