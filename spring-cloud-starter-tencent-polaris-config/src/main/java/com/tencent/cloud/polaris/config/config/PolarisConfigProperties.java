@@ -86,7 +86,7 @@ public class PolarisConfigProperties {
 	private String dataSource = "polaris";
 
 	/**
-	 * The root path of config files, only used in local mode.
+	 * The root path of local config files and remote config fallback caches.
 	 */
 	private String localFileRootPath = "./polaris/backup/config";
 
