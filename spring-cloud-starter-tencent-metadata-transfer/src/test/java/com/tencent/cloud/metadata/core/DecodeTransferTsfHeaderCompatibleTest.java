@@ -48,7 +48,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		properties = {"spring.config.location = classpath:application-test.yml",
 				"spring.main.web-application-type = servlet",
 				"spring.cloud.gateway.enabled = false",
-				"spring.cloud.tencent.metadata.tsf-header-compatible = true"})
+				"spring.cloud.tencent.metadata.tsf-header-compatible = true",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class DecodeTransferTsfHeaderCompatibleTest {
 
 	@Autowired

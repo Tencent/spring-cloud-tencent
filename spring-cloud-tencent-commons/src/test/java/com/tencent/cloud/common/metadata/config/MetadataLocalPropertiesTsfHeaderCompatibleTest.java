@@ -34,7 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = MetadataLocalPropertiesTsfHeaderCompatibleTest.TestApplication.class,
 		properties = {"spring.config.location = classpath:application-test.yml",
-				"spring.cloud.tencent.metadata.tsf-header-compatible=true"})
+				"spring.main.web-application-type = servlet",
+				"spring.cloud.gateway.enabled = false",
+				"spring.cloud.tencent.metadata.tsf-header-compatible=true",
+				"spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayAutoConfiguration,org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration,org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration"})
 public class MetadataLocalPropertiesTsfHeaderCompatibleTest {
 
 	@Autowired

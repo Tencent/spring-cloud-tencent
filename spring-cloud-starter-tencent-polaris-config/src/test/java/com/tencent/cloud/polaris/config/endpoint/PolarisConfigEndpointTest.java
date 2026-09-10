@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.polaris.config.PolarisConfigSDKContextManager;
 import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySource;
@@ -67,7 +66,7 @@ public class PolarisConfigEndpointTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testPolarisConfigEndpoint() throws Exception {
+	public void testPolarisConfigEndpoint() {
 		PolarisConfigProperties properties = new PolarisConfigProperties();
 		properties.setToken("endpoint-must-not-expose-this-token");
 		Map<String, Object> content = new HashMap<>();
@@ -81,19 +80,23 @@ public class PolarisConfigEndpointTest {
 
 		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(properties);
 		Map<String, Object> info = endpoint.polarisConfig();
+		assertThat(info.get("ClientId")).isNull();
 		assertThat(info.get("PolarisConfigProperties")).isInstanceOf(Map.class);
+		Map<String, Object> configProperties = (Map<String, Object>) info.get("PolarisConfigProperties");
+		assertThat(configProperties).doesNotContainKey("token");
 		List<Map<String, Object>> sources = (List<Map<String, Object>>) info.get("PolarisPropertySource");
 		assertThat(sources).hasSize(1);
 		assertThat(sources.get(0)).containsEntry("namespace", testNamespace)
 				.containsEntry("group", testServiceName)
-				.containsEntry("fileName", testFileName);
+				.containsEntry("fileName", testFileName)
+				.containsKey("propertyNames")
+				.doesNotContainKeys("k1", "k2", "k3");
+		assertThat((List<String>) sources.get(0).get("propertyNames")).containsExactlyInAnyOrder("k1", "k2", "k3");
 
-		// Actuator serializes the return value. Keep it to plain DTO structures and never expose
-		// property values through this diagnostic endpoint.
-		String json = new ObjectMapper().writeValueAsString(info);
-		assertThat(json).contains("\"ClientId\":null", "\"propertyNames\":[")
-				.doesNotContain("sensitive-value-one", "sensitive-value-two", "sensitive-value-three",
-						"endpoint-must-not-expose-this-token");
+		// Endpoint returns plain maps for actuator serialization and must not leak credentials
+		// or property values into the diagnostic payload.
+		assertThat(String.valueOf(info)).doesNotContain("sensitive-value-one", "sensitive-value-two",
+				"sensitive-value-three", "endpoint-must-not-expose-this-token");
 	}
 
 	@Test
