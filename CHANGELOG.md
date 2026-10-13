@@ -28,7 +28,8 @@
 - fix:fix RestTemplate trace attribute loss bug.
 - fix:fix polaris_namespace is null when using TSF.
 - [fix:fix PolarisContextProperties instantiated twice causing NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/1642)
-- feat: support service registry and discovery with Polaris and Nacos
 - feat: add new key for java agent nacos discovery.
-- fix: fix NacosDiscoveryRegistryAutoConfiguration and PolarisAuthAutoConfiguration still initiation when polaris disabled.
+- fix: fix NacosDiscoveryRegistryAutoConfiguration and PolarisAuthAutoConfiguration still initiation when polaris
+  disabled.
 - feat: support config event and monitor address list.
+- [feat: support service registry and discovery with Polaris and Nacos](https://github.com/Tencent/spring-cloud-tencent/pull/1821)
