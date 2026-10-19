@@ -18,34 +18,36 @@
 package com.tencent.cloud.polaris.eager.instrument.services;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryClient;
 import com.tencent.cloud.polaris.discovery.reactive.PolarisReactiveDiscoveryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
 
 public class ServicesEagerLoadSmartLifecycle implements SmartLifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServicesEagerLoadSmartLifecycle.class);
 
-	private final ApplicationContext applicationContext;
-
 	private final PolarisDiscoveryClient polarisDiscoveryClient;
 
 	private final PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient;
 
-	public ServicesEagerLoadSmartLifecycle(ApplicationContext applicationContext, PolarisDiscoveryClient polarisDiscoveryClient,
+	private final AtomicBoolean running = new AtomicBoolean();
+
+	public ServicesEagerLoadSmartLifecycle(PolarisDiscoveryClient polarisDiscoveryClient,
 			PolarisReactiveDiscoveryClient polarisReactiveDiscoveryClient) {
-		this.applicationContext = applicationContext;
 		this.polarisDiscoveryClient = polarisDiscoveryClient;
 		this.polarisReactiveDiscoveryClient = polarisReactiveDiscoveryClient;
 	}
 
 	@Override
 	public void start() {
+		if (!this.running.compareAndSet(false, true)) {
+			return;
+		}
 		LOG.info("services eager-load start");
 		try {
 			if (polarisDiscoveryClient != null) {
@@ -53,28 +55,30 @@ public class ServicesEagerLoadSmartLifecycle implements SmartLifecycle {
 				LOG.info("eager-load got services: {}", servicesList);
 			}
 			else if (polarisReactiveDiscoveryClient != null) {
-				polarisReactiveDiscoveryClient.getServices().subscribe(services -> {
-					LOG.info("eager-load got services: {}", services);
-				});
+				polarisReactiveDiscoveryClient.getServices()
+						.collectList()
+						.doOnSuccess(services -> LOG.info("eager-load got services: {}", services))
+						.doOnError(e -> LOG.warn("services eager-load failed.", e))
+						.subscribe();
 			}
 			else {
 				LOG.warn("no discovery client found.");
 			}
 		}
 		catch (Exception e) {
-			LOG.debug("services eager-load failed.", e);
+			LOG.warn("services eager-load failed.", e);
 		}
 		LOG.info("services eager-load end");
 	}
 
 	@Override
 	public void stop() {
-
+		this.running.set(false);
 	}
 
 	@Override
 	public boolean isRunning() {
-		return false;
+		return this.running.get();
 	}
 
 	@Override
