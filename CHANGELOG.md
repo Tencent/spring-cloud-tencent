@@ -29,7 +29,13 @@
 - fix:fix polaris_namespace is null when using TSF.
 - [fix:fix PolarisContextProperties instantiated twice causing NPE.](https://github.com/Tencent/spring-cloud-tencent/pull/1642)
 - feat: add new key for java agent nacos discovery.
-- fix: fix NacosDiscoveryRegistryAutoConfiguration and PolarisAuthAutoConfiguration still initiation when polaris
-  disabled.
+- fix: fix NacosDiscoveryRegistryAutoConfiguration still initiation when polaris disabled.
 - feat: support config event and monitor address list.
 - [feat: support service registry and discovery with Polaris and Nacos](https://github.com/Tencent/spring-cloud-tencent/pull/1821)
+  - Nacos discovery switch migration: `spring.cloud.nacos.enabled` is no longer read. Use
+    `spring.cloud.nacos.discovery.enabled=true` (or `polaris.agent.nacos.discovery.enabled` for java agent
+    scenarios) to enable Nacos discovery.
+  - Upgrade Polaris SDK to 2.1.2.0, and adapt to the renamed `MetadataProvider` methods (`doGet*`).
+  - Bump revision to `2.1.2.0-Hoxton.SR12-SNAPSHOT`.
+  - `connector-nacos` is removed from BOM and shipped inside `polaris-all` instead. Do not add another
+    `connector-nacos` dependency, otherwise the SPI will be registered twice.

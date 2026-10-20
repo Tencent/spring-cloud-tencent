@@ -53,12 +53,21 @@ public class ServicesEagerLoadSmartLifecycle implements SmartLifecycle {
 			if (polarisDiscoveryClient != null) {
 				List<String> servicesList = polarisDiscoveryClient.getServices();
 				LOG.info("eager-load got services: {}", servicesList);
+				LOG.info("services eager-load end");
 			}
 			else if (polarisReactiveDiscoveryClient != null) {
+				// getServices() is asynchronous, so the completion log is emitted
+				// from the callbacks below rather than after subscribe().
 				polarisReactiveDiscoveryClient.getServices()
 						.collectList()
-						.doOnSuccess(services -> LOG.info("eager-load got services: {}", services))
-						.doOnError(e -> LOG.warn("services eager-load failed.", e))
+						.doOnSuccess(services -> {
+							LOG.info("eager-load got services: {}", services);
+							LOG.info("services eager-load end");
+						})
+						.doOnError(e -> {
+							LOG.warn("services eager-load failed.", e);
+							LOG.info("services eager-load end");
+						})
 						.subscribe();
 			}
 			else {
@@ -68,7 +77,6 @@ public class ServicesEagerLoadSmartLifecycle implements SmartLifecycle {
 		catch (Exception e) {
 			LOG.warn("services eager-load failed.", e);
 		}
-		LOG.info("services eager-load end");
 	}
 
 	@Override
