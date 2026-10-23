@@ -16,6 +16,7 @@
  */
 
 package com.tencent.cloud.metadata.provider;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.tencent.cloud.common.util.UrlUtils;
@@ -42,30 +43,30 @@ public class ServletMetadataProvider implements MetadataProvider {
 	}
 
 	@Override
-	public String getRawMetadataStringValue(String key) {
+	public String doGetRawMetadataStringValue(String key) {
 		switch (key) {
-			case MessageMetadataContainer.LABEL_KEY_METHOD:
-				return httpServletRequest.getMethod();
-			case MessageMetadataContainer.LABEL_KEY_PATH:
-				return UrlUtils.decode(httpServletRequest.getRequestURI());
-			case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
-				return callerIp;
-			default:
-				return null;
+		case MessageMetadataContainer.LABEL_KEY_METHOD:
+			return httpServletRequest.getMethod();
+		case MessageMetadataContainer.LABEL_KEY_PATH:
+			return UrlUtils.decode(httpServletRequest.getRequestURI());
+		case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
+			return callerIp;
+		default:
+			return null;
 		}
 	}
 
 	@Override
-	public String getRawMetadataMapValue(String key, String mapKey) {
+	public String doGetRawMetadataMapValue(String key, String mapKey) {
 		switch (key) {
-			case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
-				return UrlUtils.decode(httpServletRequest.getHeader(mapKey));
-			case MessageMetadataContainer.LABEL_MAP_KEY_COOKIE:
-				return UrlUtils.decode(ServletExpressionLabelUtils.getCookieValue(httpServletRequest.getCookies(), mapKey, null));
-			case MessageMetadataContainer.LABEL_MAP_KEY_QUERY:
-				return UrlUtils.decode(ExpressionLabelUtils.getQueryValue(httpServletRequest.getQueryString(), mapKey, null));
-			default:
-				return null;
+		case MessageMetadataContainer.LABEL_MAP_KEY_HEADER:
+			return UrlUtils.decode(httpServletRequest.getHeader(mapKey));
+		case MessageMetadataContainer.LABEL_MAP_KEY_COOKIE:
+			return UrlUtils.decode(ServletExpressionLabelUtils.getCookieValue(httpServletRequest.getCookies(), mapKey, null));
+		case MessageMetadataContainer.LABEL_MAP_KEY_QUERY:
+			return UrlUtils.decode(ExpressionLabelUtils.getQueryValue(httpServletRequest.getQueryString(), mapKey, null));
+		default:
+			return null;
 		}
 	}
 }
