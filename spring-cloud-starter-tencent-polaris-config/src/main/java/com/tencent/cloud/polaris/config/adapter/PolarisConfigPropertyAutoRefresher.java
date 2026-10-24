@@ -22,10 +22,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,6 +41,7 @@ import com.tencent.polaris.api.plugin.event.ConfigEvent;
 import com.tencent.polaris.api.plugin.event.EventConstants;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.client.flow.BaseFlow;
+import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigFileGroup;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
@@ -90,6 +93,12 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 	private static final byte[] FINGERPRINT_SALT = newFingerprintSalt();
 	private final PolarisConfigProperties polarisConfigProperties;
 	private final AtomicBoolean registered = new AtomicBoolean(false);
+	/**
+	 * Serializes the change listeners and the startup reconciliation. Change events of different
+	 * files and groups are dispatched on different SDK threads, while they all write to the
+	 * environment and refresh the same spring context.
+	 */
+	private final Object refreshLock = new Object();
 	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 	private final ConfigFileService configFileService;
@@ -121,27 +130,166 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			return;
 		}
 
-		// custom register polaris config
-		customInitRegisterPolarisConfig(this);
+		// Held across registration and reconciliation: a change event fired in between waits here,
+		// so it can neither be lost nor be overwritten by an older value read for reconciliation.
+		synchronized (refreshLock) {
+			// custom register polaris config
+			customInitRegisterPolarisConfig(this);
 
-		// register polaris config publish event
-		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
-			// group property source
-			if (polarisPropertySource.getConfigKVFile() instanceof CompositeConfigFile) {
-				CompositeConfigFile configKVFile = (CompositeConfigFile) polarisPropertySource.getConfigKVFile();
-				for (ConfigKVFile cf : configKVFile.getConfigKVFiles()) {
-					PolarisPropertySource p = new PolarisPropertySource(cf.getNamespace(), cf.getFileGroup(), cf.getFileName(), cf, new HashMap<>());
-					registerPolarisConfigPublishChangeListener(p, polarisPropertySource);
-					customRegisterPolarisConfigPublishChangeListener(p, polarisPropertySource);
-					registeredPolarisPropertySets.add(p.getPropertySourceName());
+			// register polaris config publish event
+			for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
+				// group property source
+				if (polarisPropertySource.getConfigKVFile() instanceof CompositeConfigFile) {
+					CompositeConfigFile configKVFile = (CompositeConfigFile) polarisPropertySource.getConfigKVFile();
+					for (ConfigKVFile cf : configKVFile.getConfigKVFiles()) {
+						PolarisPropertySource p = new PolarisPropertySource(cf.getNamespace(), cf.getFileGroup(), cf.getFileName(), cf, new HashMap<>());
+						registerPolarisConfigPublishChangeListener(p, polarisPropertySource);
+						customRegisterPolarisConfigPublishChangeListener(p, polarisPropertySource);
+						registeredPolarisPropertySets.add(p.getPropertySourceName());
+					}
+					registerPolarisConfigGroupChangeListener(polarisPropertySource);
 				}
-				registerPolarisConfigGroupChangeListener(polarisPropertySource);
+				else {
+					registerPolarisConfigPublishChangeListener(polarisPropertySource);
+					customRegisterPolarisConfigPublishChangeListener(polarisPropertySource);
+				}
 			}
-			else {
-				registerPolarisConfigPublishChangeListener(polarisPropertySource);
-				customRegisterPolarisConfigPublishChangeListener(polarisPropertySource);
+
+			// catch up with the changes published before the listeners above were registered
+			reconcileMissedChanges(polarisPropertySources);
+		}
+	}
+
+	/**
+	 * Applies the config changes published between loading the property sources and registering
+	 * the change listeners.
+	 * <p>
+	 * The property sources are loaded while the environment is prepared, but the listeners are only
+	 * registered on {@link ApplicationReadyEvent}. The SDK starts long polling right after loading,
+	 * so a change published during startup updates the SDK cache and fires its change event to no
+	 * listener: the event is lost, and since later changes are diffed against the already updated
+	 * SDK cache, the stale value would stay in the environment, in {@code @Value} fields,
+	 * {@code @ConfigurationProperties} and {@code @RefreshScope} beans until the key changes again.
+	 * Comparing each property source with the current SDK cache recovers those changes.
+	 *
+	 * @param polarisPropertySources the property sources loaded during startup
+	 */
+	private void reconcileMissedChanges(List<PolarisPropertySource> polarisPropertySources) {
+		Set<String> changedKeys = new HashSet<>();
+		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
+			try {
+				if (polarisPropertySource.getConfigKVFile() instanceof CompositeConfigFile) {
+					changedKeys.addAll(reconcileGroupPropertySource(polarisPropertySource));
+				}
+				else {
+					ConfigKVFile configKVFile = polarisPropertySource.getConfigKVFile();
+					markEncryptedKeys(configKVFile);
+					Map<String, String> latest = new HashMap<>();
+					collectProperties(configKVFile, latest);
+					changedKeys.addAll(applyMissedChanges(polarisPropertySource, latest));
+				}
+			}
+			catch (Exception e) {
+				LOGGER.error("[SCT Config] reconcile missed changes exception. property source = {}",
+						polarisPropertySource.getPropertySourceName(), e);
 			}
 		}
+		if (!changedKeys.isEmpty()) {
+			// update @ConfigurationProperties and @RefreshScope beans once for all sources
+			refreshConfigurationProperties(changedKeys);
+		}
+	}
+
+	private Set<String> reconcileGroupPropertySource(PolarisPropertySource groupPropertySource) {
+		CompositeConfigFile compositeConfigFile = (CompositeConfigFile) groupPropertySource.getConfigKVFile();
+		// CompositeConfigFile keeps a snapshot taken at loading time, so merge the member files again,
+		// with the same "first file wins" rule as CompositeConfigFile
+		Map<String, String> latest = new HashMap<>();
+		for (ConfigKVFile configKVFile : compositeConfigFile.getConfigKVFiles()) {
+			markEncryptedKeys(configKVFile);
+			collectProperties(configKVFile, latest);
+		}
+		Set<String> changedKeys = new HashSet<>(applyMissedChanges(groupPropertySource, latest));
+
+		// files added to the group during startup
+		ConfigFileGroup configFileGroup = configFileService.getConfigFileGroup(
+				groupPropertySource.getNamespace(), groupPropertySource.getGroup());
+		if (configFileGroup == null || CollectionUtils.isEmpty(configFileGroup.getConfigFileMetadataList())) {
+			return changedKeys;
+		}
+		Map<String, ConfigFileMetadata> added = new HashMap<>();
+		for (ConfigFileMetadata configFileMetadata : configFileGroup.getConfigFileMetadataList()) {
+			String name = PolarisPropertySourceUtils.generateName(configFileMetadata.getNamespace(),
+					configFileMetadata.getFileGroup(), configFileMetadata.getFileName());
+			if (!registeredPolarisPropertySets.contains(name)) {
+				added.put(name, configFileMetadata);
+			}
+		}
+		if (!added.isEmpty()) {
+			changedKeys.addAll(addGroupConfigFiles(groupPropertySource, added));
+			reportEvent(added);
+		}
+		return changedKeys;
+	}
+
+	private void collectProperties(ConfigKVFile configKVFile, Map<String, String> target) {
+		Set<String> propertyNames = configKVFile.getPropertyNames();
+		if (CollectionUtils.isEmpty(propertyNames)) {
+			return;
+		}
+		for (String name : propertyNames) {
+			String value = configKVFile.getProperty(name, null);
+			if (value != null) {
+				target.putIfAbsent(name, value);
+			}
+		}
+	}
+
+	/**
+	 * Brings the property source in line with the latest properties.
+	 *
+	 * @param polarisPropertySource the property source exposed in the environment
+	 * @param latest                the latest properties in the SDK cache
+	 * @return the changed keys
+	 */
+	private Set<String> applyMissedChanges(PolarisPropertySource polarisPropertySource, Map<String, String> latest) {
+		Map<String, Object> source = polarisPropertySource.getSource();
+		Map<String, ConfigPropertyChangeInfo> changeInfos = new HashMap<>();
+		for (Map.Entry<String, String> entry : latest.entrySet()) {
+			Object oldValue = source.get(entry.getKey());
+			if (oldValue == null) {
+				changeInfos.put(entry.getKey(), new ConfigPropertyChangeInfo(entry.getKey(), null, entry.getValue(), ChangeType.ADDED));
+			}
+			else if (!Objects.equals(String.valueOf(oldValue), entry.getValue())) {
+				changeInfos.put(entry.getKey(), new ConfigPropertyChangeInfo(entry.getKey(), oldValue, entry.getValue(), ChangeType.MODIFIED));
+			}
+		}
+		for (Map.Entry<String, Object> entry : source.entrySet()) {
+			if (!latest.containsKey(entry.getKey())) {
+				changeInfos.put(entry.getKey(), new ConfigPropertyChangeInfo(entry.getKey(), entry.getValue(), null, ChangeType.DELETED));
+			}
+		}
+		if (changeInfos.isEmpty()) {
+			return Collections.emptySet();
+		}
+
+		LOGGER.info("[SCT Config] found config changes published before the change listener was registered, "
+				+ "will refresh spring context. property source = {}", polarisPropertySource.getPropertySourceName());
+		for (ConfigPropertyChangeInfo changeInfo : changeInfos.values()) {
+			String changedKey = changeInfo.getPropertyName();
+			logChangedProperty(changeInfo);
+			refreshLoggingLevel(changeInfo);
+			if (changeInfo.getChangeType() == ChangeType.DELETED) {
+				source.remove(changedKey);
+			}
+			else {
+				source.put(changedKey, changeInfo.getNewValue());
+			}
+			// update the attribute with @Value annotation
+			refreshSpringValue(changedKey);
+		}
+		reportEvent(polarisPropertySource, new ConfigKVFileChangeEvent(changeInfos, null));
+		return changeInfos.keySet();
 	}
 
 	private void customInitRegisterPolarisConfig(PolarisConfigPropertyAutoRefresher polarisConfigPropertyAutoRefresher) {
@@ -160,47 +308,61 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			return;
 		}
 		configFileGroup.addChangeListener(event -> {
-			try {
-				LOGGER.debug("ConfigFileGroup receive onChange event:{}", event);
-				List<ConfigFileMetadata> oldConfigFileMetadataList = event.getOldConfigFileMetadataList();
-				List<ConfigFileMetadata> newConfigFileMetadataList = event.getNewConfigFileMetadataList();
+			synchronized (refreshLock) {
+				try {
+					LOGGER.debug("ConfigFileGroup receive onChange event:{}", event);
+					List<ConfigFileMetadata> oldConfigFileMetadataList = event.getOldConfigFileMetadataList();
+					List<ConfigFileMetadata> newConfigFileMetadataList = event.getNewConfigFileMetadataList();
 
-				Map<String, ConfigFileMetadata> added = calculateUnregister(oldConfigFileMetadataList, newConfigFileMetadataList);
-				if (added.isEmpty()) {
-					return;
-				}
-				Set<String> changedKeys = new HashSet<>();
-
-				for (Map.Entry<String, ConfigFileMetadata> entry : added.entrySet()) {
-					if (registeredPolarisPropertySets.contains(entry.getKey())) {
-						continue;
+					Map<String, ConfigFileMetadata> added = calculateUnregister(oldConfigFileMetadataList, newConfigFileMetadataList);
+					if (added.isEmpty()) {
+						return;
 					}
-					registeredPolarisPropertySets.add(entry.getKey());
-					LOGGER.info("[SCT Config] add polaris config file:{}", entry.getKey());
-					ConfigFileMetadata configFileMetadata = entry.getValue();
-					PolarisPropertySource p = loadPolarisPropertySource(
-							configFileService, configFileMetadata.getNamespace(),
-							configFileMetadata.getFileGroup(), configFileMetadata.getFileName());
-					LOGGER.info("[SCT Config] changed property = {}", p.getSource().keySet());
-					changedKeys.addAll(p.getSource().keySet());
-					this.registerPolarisConfigPublishChangeListener(p, polarisPropertySource);
-					PolarisPropertySourceManager.addPropertySource(p);
-					// the loaded file carries the per-file encrypted flag, so register its keys
-					// right here rather than waiting for the first change event on that file
-					markEncryptedKeys(p.getConfigKVFile());
-					for (String changedKey : p.getSource().keySet()) {
-						polarisPropertySource.getSource().put(changedKey, p.getSource().get(changedKey));
-						refreshSpringValue(changedKey);
-					}
-				}
-				refreshConfigurationProperties(changedKeys);
+					Set<String> changedKeys = addGroupConfigFiles(polarisPropertySource, added);
+					refreshConfigurationProperties(changedKeys);
 
-				reportEvent(added);
-			}
-			catch (Exception e) {
-				LOGGER.error("[SCT Config] receive onChange exception,", e);
+					reportEvent(added);
+				}
+				catch (Exception e) {
+					LOGGER.error("[SCT Config] receive onChange exception,", e);
+				}
 			}
 		});
+	}
+
+	/**
+	 * Loads the config files newly added to a group, registers their change listeners and merges
+	 * their properties into the group property source.
+	 *
+	 * @param groupPropertySource the group property source exposed in the environment
+	 * @param added               the added config files, keyed by property source name
+	 * @return the changed keys
+	 */
+	private Set<String> addGroupConfigFiles(PolarisPropertySource groupPropertySource, Map<String, ConfigFileMetadata> added) {
+		Set<String> changedKeys = new HashSet<>();
+		for (Map.Entry<String, ConfigFileMetadata> entry : added.entrySet()) {
+			if (registeredPolarisPropertySets.contains(entry.getKey())) {
+				continue;
+			}
+			registeredPolarisPropertySets.add(entry.getKey());
+			LOGGER.info("[SCT Config] add polaris config file:{}", entry.getKey());
+			ConfigFileMetadata configFileMetadata = entry.getValue();
+			PolarisPropertySource p = loadPolarisPropertySource(
+					configFileService, configFileMetadata.getNamespace(),
+					configFileMetadata.getFileGroup(), configFileMetadata.getFileName());
+			LOGGER.info("[SCT Config] changed property = {}", p.getSource().keySet());
+			changedKeys.addAll(p.getSource().keySet());
+			this.registerPolarisConfigPublishChangeListener(p, groupPropertySource);
+			PolarisPropertySourceManager.addPropertySource(p);
+			// the loaded file carries the per-file encrypted flag, so register its keys
+			// right here rather than waiting for the first change event on that file
+			markEncryptedKeys(p.getConfigKVFile());
+			for (String changedKey : p.getSource().keySet()) {
+				groupPropertySource.getSource().put(changedKey, p.getSource().get(changedKey));
+				refreshSpringValue(changedKey);
+			}
+		}
+		return changedKeys;
 	}
 
 	public void registerPolarisConfigPublishChangeListener(PolarisPropertySource polarisPropertySource) {
@@ -212,87 +374,101 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 				listenPolarisPropertySource.getPropertySourceName(), effectPolarisPropertySource.getPropertySourceName());
 		listenPolarisPropertySource.getConfigKVFile()
 				.addChangeListener((ConfigKVFileChangeListener) configKVFileChangeEvent -> {
-
-					LOGGER.info("[SCT Config] received polaris config change event and will refresh spring context." + " namespace = {}, group = {}, fileName = {}",
-							listenPolarisPropertySource.getNamespace(), listenPolarisPropertySource.getGroup(), listenPolarisPropertySource.getFileName());
-
-					// the change event is the only place carrying the plugin-level ConfigFile,
-					// which is where the server-side per-file encrypted flag can be read
-					markEncryptedKeys(listenPolarisPropertySource.getConfigKVFile(),
-							configKVFileChangeEvent.getConfigFile(), configKVFileChangeEvent.changedKeys());
-
-					Map<String, Object> effectSource = effectPolarisPropertySource.getSource();
-					Map<String, Object> listenSource = listenPolarisPropertySource.getSource();
-					boolean isGroupRefresh = !listenPolarisPropertySource.equals(effectPolarisPropertySource);
-
-					PolarisPropertySource newGroupSource = null;
-					if (isGroupRefresh) {
-						newGroupSource = loadGroupPolarisPropertySource(configFileService,
-								effectPolarisPropertySource.getNamespace(), effectPolarisPropertySource.getGroup());
+					synchronized (refreshLock) {
+						onConfigKVFileChange(listenPolarisPropertySource, effectPolarisPropertySource, configKVFileChangeEvent);
 					}
-
-					for (String changedKey : configKVFileChangeEvent.changedKeys()) {
-						ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent.getChangeInfo(changedKey);
-
-						if (isEncryptedKey(changedKey)) {
-							LOGGER.info("[SCT Config] changed property = [key={}, changeType={}, oldValue={}, newValue={}]",
-									configPropertyChangeInfo.getPropertyName(), configPropertyChangeInfo.getChangeType(),
-									maskValue(configPropertyChangeInfo.getOldValue()),
-									maskValue(configPropertyChangeInfo.getNewValue()));
-						}
-						else {
-							LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
-						}
-
-						// new ability to dynamically change log levels
-						try {
-							if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
-								String loggerName = changedKey.substring(14);
-								String newValue = (String) configPropertyChangeInfo.getNewValue();
-								// not masked even in an encrypted file: encryption is per file, and
-								// the value here is a log level, never a secret
-								LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
-								PolarisConfigLoggerContext.setLevel(loggerName, newValue);
-							}
-						}
-						catch (Exception e) {
-							LOGGER.error("[SCT Config] set logging.level exception,", e);
-						}
-						switch (configPropertyChangeInfo.getChangeType()) {
-						case MODIFIED:
-						case ADDED:
-							effectSource.put(changedKey, configPropertyChangeInfo.getNewValue());
-							if (isGroupRefresh) {
-								listenSource.put(changedKey, configPropertyChangeInfo.getNewValue());
-							}
-							break;
-						case DELETED:
-							if (isGroupRefresh) {
-								// when the key is deleted, the value should load from group source
-								Object newValue = Optional.ofNullable(newGroupSource).map(PropertySource::getSource).
-										map(source -> source.get(changedKey)).orElse(null);
-								if (newValue != null) {
-									effectSource.put(changedKey, newValue);
-								}
-								else {
-									effectSource.remove(changedKey);
-								}
-								listenSource.remove(changedKey);
-							}
-							else {
-								effectSource.remove(changedKey);
-							}
-							break;
-						}
-						// update the attribute with @Value annotation
-						refreshSpringValue(changedKey);
-					}
-					// update @ConfigurationProperties beans
-					refreshConfigurationProperties(configKVFileChangeEvent.changedKeys());
-
-					reportEvent(listenPolarisPropertySource, configKVFileChangeEvent);
-
 				});
+	}
+
+	private void onConfigKVFileChange(PolarisPropertySource listenPolarisPropertySource,
+			PolarisPropertySource effectPolarisPropertySource, ConfigKVFileChangeEvent configKVFileChangeEvent) {
+		LOGGER.info("[SCT Config] received polaris config change event and will refresh spring context." + " namespace = {}, group = {}, fileName = {}",
+				listenPolarisPropertySource.getNamespace(), listenPolarisPropertySource.getGroup(), listenPolarisPropertySource.getFileName());
+
+		// the change event is the only place carrying the plugin-level ConfigFile,
+		// which is where the server-side per-file encrypted flag can be read
+		markEncryptedKeys(listenPolarisPropertySource.getConfigKVFile(),
+				configKVFileChangeEvent.getConfigFile(), configKVFileChangeEvent.changedKeys());
+
+		Map<String, Object> effectSource = effectPolarisPropertySource.getSource();
+		Map<String, Object> listenSource = listenPolarisPropertySource.getSource();
+		boolean isGroupRefresh = !listenPolarisPropertySource.equals(effectPolarisPropertySource);
+
+		PolarisPropertySource newGroupSource = null;
+		if (isGroupRefresh) {
+			newGroupSource = loadGroupPolarisPropertySource(configFileService,
+					effectPolarisPropertySource.getNamespace(), effectPolarisPropertySource.getGroup());
+		}
+
+		for (String changedKey : configKVFileChangeEvent.changedKeys()) {
+			ConfigPropertyChangeInfo configPropertyChangeInfo = configKVFileChangeEvent.getChangeInfo(changedKey);
+
+			logChangedProperty(configPropertyChangeInfo);
+
+			// new ability to dynamically change log levels
+			refreshLoggingLevel(configPropertyChangeInfo);
+			switch (configPropertyChangeInfo.getChangeType()) {
+			case MODIFIED:
+			case ADDED:
+				effectSource.put(changedKey, configPropertyChangeInfo.getNewValue());
+				if (isGroupRefresh) {
+					listenSource.put(changedKey, configPropertyChangeInfo.getNewValue());
+				}
+				break;
+			case DELETED:
+				if (isGroupRefresh) {
+					// when the key is deleted, the value should load from group source
+					Object newValue = Optional.ofNullable(newGroupSource).map(PropertySource::getSource).
+							map(source -> source.get(changedKey)).orElse(null);
+					if (newValue != null) {
+						effectSource.put(changedKey, newValue);
+					}
+					else {
+						effectSource.remove(changedKey);
+					}
+					listenSource.remove(changedKey);
+				}
+				else {
+					effectSource.remove(changedKey);
+				}
+				break;
+			}
+			// update the attribute with @Value annotation
+			refreshSpringValue(changedKey);
+		}
+		// update @ConfigurationProperties beans
+		refreshConfigurationProperties(configKVFileChangeEvent.changedKeys());
+
+		reportEvent(listenPolarisPropertySource, configKVFileChangeEvent);
+	}
+
+	private void logChangedProperty(ConfigPropertyChangeInfo configPropertyChangeInfo) {
+		if (isEncryptedKey(configPropertyChangeInfo.getPropertyName())) {
+			LOGGER.info("[SCT Config] changed property = [key={}, changeType={}, oldValue={}, newValue={}]",
+					configPropertyChangeInfo.getPropertyName(), configPropertyChangeInfo.getChangeType(),
+					maskValue(configPropertyChangeInfo.getOldValue()),
+					maskValue(configPropertyChangeInfo.getNewValue()));
+		}
+		else {
+			LOGGER.info("[SCT Config] changed property = {}", configPropertyChangeInfo);
+		}
+	}
+
+	private void refreshLoggingLevel(ConfigPropertyChangeInfo configPropertyChangeInfo) {
+		String changedKey = configPropertyChangeInfo.getPropertyName();
+		try {
+			if (changedKey.startsWith("logging.level") && changedKey.length() >= 14) {
+				String loggerName = changedKey.substring(14);
+				String newValue = (String) configPropertyChangeInfo.getNewValue();
+				// not masked even in an encrypted file: encryption is per file, and
+				// the value here is a log level, never a secret
+				LOGGER.info("[SCT Config] set logging.level loggerName:{}, newValue:{}", loggerName, newValue);
+				PolarisConfigLoggerContext.setLevel(loggerName, newValue);
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("[SCT Config] set logging.level exception,", e);
+		}
 	}
 
 	private void customRegisterPolarisConfigPublishChangeListener(PolarisPropertySource polarisPropertySource) {
