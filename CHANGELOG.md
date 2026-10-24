@@ -12,3 +12,4 @@
 - [feat: support overrideHost configuration for ratelimit, event reporter and stat modules](https://github.com/Tencent/spring-cloud-tencent/pull/1804)
 - [fix: split contract base-package for springdoc scan](https://github.com/Tencent/spring-cloud-tencent/pull/1807)
 - [feat: support using seperated cb in wildcard-api level and add cb counters expire interval config](https://github.com/Tencent/spring-cloud-tencent/pull/1809)
+- chore: bump central-publishing-maven-plugin to 0.12.0.
