@@ -43,17 +43,23 @@ import com.tencent.polaris.configuration.client.internal.RevisableConfigFileGrou
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -242,5 +248,164 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		revisableConfigFileGroup.updateConfigFileList(Arrays.asList(file, file2, file3), "v5");
 		Thread.sleep(5000);
 
+	}
+
+	/**
+	 * A change published between loading the property source and registering the listener fires no
+	 * event to SCT, it must be recovered on {@code ApplicationReadyEvent}.
+	 */
+	@Test
+	public void testReconcileConfigFileChangedBeforeListenerRegistered() throws Exception {
+		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
+		PolarisRefreshAffectedContextRefresher refresher = newAffectedContextRefresher(applicationContext, "v11");
+		MockedConfigChange mockedConfigChange = new MockedConfigChange();
+		mockedConfigChange.setK1("v1");
+		Field field = mockedConfigChange.getClass().getDeclaredField("k1");
+		SpringValue springValue = new SpringValue("k1", "placeholder", mockedConfigChange, "mockedConfigChange", field);
+		lenient().when(springValueRegistry.get(any(), eq("k1"))).thenReturn(Collections.singletonList(springValue));
+		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
+		mockReportEvent();
+
+		Map<String, Object> sdkContent = new HashMap<>();
+		sdkContent.put("k1", "v1");
+		sdkContent.put("k2", "v2");
+		sdkContent.put("k3", "v3");
+		MockedConfigKVFile file = new MockedConfigKVFile(sdkContent);
+		// the environment holds a copy taken at loading time
+		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testServiceName, testFileName,
+				file, new ConcurrentHashMap<>(sdkContent));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+
+		// published during startup: the SDK cache is updated, but no listener is registered yet
+		sdkContent.put("k1", "v11");
+		sdkContent.remove("k2");
+		sdkContent.put("k4", "v4");
+
+		refresher.onApplicationEvent(null);
+
+		assertThat(polarisPropertySource.getProperty("k1")).isEqualTo("v11");
+		assertThat(polarisPropertySource.getProperty("k2")).isNull();
+		assertThat(polarisPropertySource.getProperty("k3")).isEqualTo("v3");
+		assertThat(polarisPropertySource.getProperty("k4")).isEqualTo("v4");
+		// @Value field
+		assertThat(mockedConfigChange.getK1()).isEqualTo("v11");
+		// @ConfigurationProperties beans
+		ArgumentCaptor<EnvironmentChangeEvent> captor = ArgumentCaptor.forClass(EnvironmentChangeEvent.class);
+		verify(applicationContext).publishEvent(captor.capture());
+		assertThat(captor.getValue().getKeys()).containsExactlyInAnyOrder("k1", "k2", "k4");
+		verify(contextRefresher, never()).refresh();
+	}
+
+	@Test
+	public void testReconcileRefreshScopeKeyChangedBeforeListenerRegistered() {
+		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
+		PolarisRefreshEntireContextRefresher refresher = new PolarisRefreshEntireContextRefresher(
+				polarisConfigProperties, springValueRegistry, configFileService, contextRefresher, sdkContext);
+		refresher.setApplicationContext(applicationContext);
+		when(springValueRegistry.isRefreshScopeKey("k1")).thenReturn(true);
+		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
+		mockReportEvent();
+
+		Map<String, Object> sdkContent = new HashMap<>();
+		sdkContent.put("k1", "v1");
+		MockedConfigKVFile file = new MockedConfigKVFile(sdkContent);
+		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testServiceName, testFileName,
+				file, new ConcurrentHashMap<>(sdkContent));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+
+		sdkContent.put("k1", "v11");
+
+		refresher.onApplicationEvent(null);
+
+		assertThat(polarisPropertySource.getProperty("k1")).isEqualTo("v11");
+		// @RefreshScope beans
+		verify(contextRefresher).refresh();
+	}
+
+	@Test
+	public void testReconcileConfigFileGroupChangedBeforeListenerRegistered() throws Exception {
+		String group = "reconcileFileGroup";
+		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
+		PolarisRefreshAffectedContextRefresher refresher = newAffectedContextRefresher(applicationContext, "v1.1");
+		when(springValueRegistry.get(any(), any())).thenReturn(Collections.emptyList());
+		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
+		mockReportEvent();
+
+		Map<String, Object> content = new ConcurrentHashMap<>();
+		content.put("k1", "v1");
+		content.put("k2", "v2");
+		MockedConfigKVFile file = new MockedConfigKVFile(content, testFileName, group, testNamespace);
+		CompositeConfigFile compositeConfigFile = new CompositeConfigFile(Collections.singletonList(file));
+		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, group, "",
+				compositeConfigFile, new ConcurrentHashMap<>(content));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+
+		// published during startup: a key of a loaded file changed, and a new file joined the group
+		content.put("k2", "v2.1");
+		Map<String, Object> content2 = new ConcurrentHashMap<>();
+		content2.put("k1", "v1.1");
+		content2.put("k3", "v3");
+		MockedConfigKVFile file2 = new MockedConfigKVFile(content2, "file2.properties", group, testNamespace);
+		when(configFileService.getConfigPropertiesFile(testNamespace, group, testFileName)).thenReturn(file);
+		when(configFileService.getConfigPropertiesFile(testNamespace, group, "file2.properties")).thenReturn(file2);
+		RevisableConfigFileGroup revisableConfigFileGroup = new RevisableConfigFileGroup(testNamespace, group,
+				Arrays.asList(file, file2), "v2");
+		when(configFileService.getConfigFileGroup(testNamespace, group)).thenReturn(revisableConfigFileGroup);
+
+		refresher.onApplicationEvent(null);
+
+		assertThat(polarisPropertySource.getProperty("k2")).isEqualTo("v2.1");
+		assertThat(polarisPropertySource.getProperty("k3")).isEqualTo("v3");
+		// same as a file added after startup, the new file overrides the loaded ones
+		assertThat(polarisPropertySource.getProperty("k1")).isEqualTo("v1.1");
+
+		// the new file is listened to from now on
+		Map<String, ConfigPropertyChangeInfo> changeInfos = new HashMap<>();
+		changeInfos.put("k3", new ConfigPropertyChangeInfo("k3", "v3", "v3.1", ChangeType.MODIFIED));
+		file2.fireChangeListener(new ConfigKVFileChangeEvent(changeInfos, null));
+		assertThat(polarisPropertySource.getProperty("k3")).isEqualTo("v3.1");
+	}
+
+	@Test
+	public void testReconcileNothingChangedBeforeListenerRegistered() {
+		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
+		PolarisRefreshEntireContextRefresher refresher = new PolarisRefreshEntireContextRefresher(
+				polarisConfigProperties, springValueRegistry, configFileService, contextRefresher, sdkContext);
+		refresher.setApplicationContext(applicationContext);
+		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
+
+		Map<String, Object> sdkContent = new HashMap<>();
+		sdkContent.put("k1", "v1");
+		MockedConfigKVFile file = new MockedConfigKVFile(sdkContent);
+		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testServiceName, testFileName,
+				file, new ConcurrentHashMap<>(sdkContent));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+
+		refresher.onApplicationEvent(null);
+
+		assertThat(polarisPropertySource.getProperty("k1")).isEqualTo("v1");
+		verify(contextRefresher, never()).refresh();
+		verify(applicationContext, never()).publishEvent(any());
+	}
+
+	private PolarisRefreshAffectedContextRefresher newAffectedContextRefresher(
+			ConfigurableApplicationContext applicationContext, Object convertedValue) {
+		PolarisRefreshAffectedContextRefresher refresher = new PolarisRefreshAffectedContextRefresher(
+				polarisConfigProperties, springValueRegistry, placeholderHelper, configFileService,
+				contextRefresher, sdkContext);
+		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
+		TypeConverter typeConverter = mock(TypeConverter.class);
+		when(beanFactory.getTypeConverter()).thenReturn(typeConverter);
+		when(applicationContext.getBeanFactory()).thenReturn(beanFactory);
+		lenient().when(typeConverter.convertIfNecessary(any(), any(), (Field) any())).thenReturn(convertedValue);
+		refresher.setApplicationContext(applicationContext);
+		return refresher;
+	}
+
+	private void mockReportEvent() {
+		when(sdkContext.getExtensions()).thenReturn(extensions);
+		when(extensions.getValueContext()).thenReturn(valueContext);
+		lenient().when(valueContext.getClientId()).thenReturn("mockClientId");
+		lenient().when(valueContext.getHost()).thenReturn("mockHost");
 	}
 }
