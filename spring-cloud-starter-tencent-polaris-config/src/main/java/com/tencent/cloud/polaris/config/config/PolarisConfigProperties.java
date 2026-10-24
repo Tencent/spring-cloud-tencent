@@ -110,6 +110,10 @@ public class PolarisConfigProperties {
 	 */
 	private long emptyProtectionExpiredInterval = 7 * 24 * 3600 * 1000L;
 
+	/**
+	 * Config watch metadata report settings.
+	 */
+	private Report report = new Report();
 
 	public boolean isEnabled() {
 		return enabled;
@@ -231,6 +235,14 @@ public class PolarisConfigProperties {
 		this.emptyProtectionExpiredInterval = emptyProtectionExpiredInterval;
 	}
 
+	public Report getReport() {
+		return report;
+	}
+
+	public void setReport(Report report) {
+		this.report = report;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisConfigProperties{" +
@@ -249,6 +261,33 @@ public class PolarisConfigProperties {
 				", checkAddress=" + checkAddress +
 				", emptyProtectionEnabled=" + emptyProtectionEnabled +
 				", emptyProtectionExpiredInterval=" + emptyProtectionExpiredInterval +
+				", report=" + report +
 				'}';
+	}
+
+	/**
+	 * Config watch metadata report settings.
+	 */
+	public static class Report {
+
+		/**
+		 * Whether to report config watch metadata.
+		 */
+		private boolean enabled = true;
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		@Override
+		public String toString() {
+			return "Report{" +
+					"enabled=" + enabled +
+					'}';
+		}
 	}
 }

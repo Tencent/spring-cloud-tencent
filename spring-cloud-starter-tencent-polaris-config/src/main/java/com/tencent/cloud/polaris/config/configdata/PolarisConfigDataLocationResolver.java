@@ -216,7 +216,15 @@ public class PolarisConfigDataLocationResolver implements
 		boolean optional = location.isOptional();
 		String groupFileName = getRealGroupFileName(location);
 		String serviceName = loadPolarisConfigProperties(resolverContext,
-				String.class, "spring.application.name");
+				String.class, "spring.cloud.polaris.discovery.service");
+		if (StringUtils.isBlank(serviceName)) {
+			serviceName = loadPolarisConfigProperties(resolverContext,
+					String.class, "spring.cloud.polaris.service");
+		}
+		if (StringUtils.isBlank(serviceName)) {
+			serviceName = loadPolarisConfigProperties(resolverContext,
+					String.class, "spring.application.name");
+		}
 		if (StringUtils.isBlank(serviceName)) {
 			serviceName = "application";
 			log.warn("No spring.application.name found, defaulting to 'application'");
@@ -325,4 +333,3 @@ public class PolarisConfigDataLocationResolver implements
 				Boolean.class.isAssignableFrom(typeClass);
 	}
 }
-
