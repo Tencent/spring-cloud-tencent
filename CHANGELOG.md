@@ -18,3 +18,4 @@
 - [feat: support encoding and decoding TSF headers without TSF Consul](https://github.com/Tencent/spring-cloud-tencent/pull/1816)
 - [feat: protect encrypted config values and improve config cache fallback](https://github.com/Tencent/spring-cloud-tencent/pull/1818)
 - [fix: wrong default value of spring.cloud.nacos.discovery.register-enabled in metadata](https://github.com/Tencent/spring-cloud-tencent/pull/1834)
+- chore: bump central-publishing-maven-plugin to 0.12.0.
