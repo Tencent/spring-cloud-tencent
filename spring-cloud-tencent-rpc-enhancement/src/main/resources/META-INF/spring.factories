@@ -1,5 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration,\
   com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatPropertiesAutoConfiguration,\
-  com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesAutoConfiguration
+  com.tencent.cloud.rpc.enhancement.config.RpcEnhancementPropertiesAutoConfiguration,\
+  com.tencent.cloud.rpc.enhancement.audit.config.PolarisAuditLogPropertiesAutoConfiguration
 
