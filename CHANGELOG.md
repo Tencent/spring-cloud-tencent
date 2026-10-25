@@ -17,4 +17,3 @@
 - [feat: support config effective value ](https://github.com/Tencent/spring-cloud-tencent/pull/1815)
 - [feat: support encoding and decoding TSF headers without TSF Consul](https://github.com/Tencent/spring-cloud-tencent/pull/1816)
 - [feat: protect encrypted config values and improve config cache fallback](https://github.com/Tencent/spring-cloud-tencent/pull/1818)
-- chore: bump central-publishing-maven-plugin to 0.12.0.
