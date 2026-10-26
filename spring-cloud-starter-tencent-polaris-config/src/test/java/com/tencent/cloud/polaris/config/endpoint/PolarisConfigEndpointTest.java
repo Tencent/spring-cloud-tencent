@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.config.endpoint;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,11 +101,11 @@ public class PolarisConfigEndpointTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testPolarisConfigEndpointExposesCompositeFileMetadata() {
-		MockedConfigKVFile first = new MockedConfigKVFile(Map.of("first.key", "first-value"),
+		MockedConfigKVFile first = new MockedConfigKVFile(Collections.singletonMap("first.key", "first-value"),
 				"first.properties", testServiceName, testNamespace);
-		MockedConfigKVFile second = new MockedConfigKVFile(Map.of("second.key", "second-value"),
+		MockedConfigKVFile second = new MockedConfigKVFile(Collections.singletonMap("second.key", "second-value"),
 				"second.properties", testServiceName, testNamespace);
-		CompositeConfigFile composite = new CompositeConfigFile(List.of(first, second));
+		CompositeConfigFile composite = new CompositeConfigFile(Arrays.asList(first, second));
 		PolarisPropertySource source = new PolarisPropertySource(testNamespace, testServiceName, "",
 				composite, new HashMap<>());
 		PolarisPropertySourceManager.addPropertySource(source);

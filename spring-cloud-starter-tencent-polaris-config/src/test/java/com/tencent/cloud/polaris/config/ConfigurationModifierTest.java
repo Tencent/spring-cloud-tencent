@@ -18,6 +18,7 @@
 package com.tencent.cloud.polaris.config;
 
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -718,8 +719,8 @@ class ConfigurationModifierTest {
 	void testModify_CheckAddressNotAccessibleWithLocalCacheFallback() throws Exception {
 		ConfigurationImpl configuration = buildMockConfiguration();
 		ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
-		Path cacheFile = Files.writeString(tempDir.resolve("default#group#application.properties.yaml"),
-				"content: cached");
+		Path cacheFile = tempDir.resolve("default#group#application.properties.yaml");
+		Files.write(cacheFile, "content: cached".getBytes(StandardCharsets.UTF_8));
 
 		when(polarisContextProperties.getEnabled()).thenReturn(true);
 		when(polarisConfigProperties.isEnabled()).thenReturn(true);
@@ -796,8 +797,8 @@ class ConfigurationModifierTest {
 	void testModify_CheckAddressNotAccessibleWithInvalidCacheFileName() throws Exception {
 		ConfigurationImpl configuration = buildMockConfiguration();
 		ConnectorConfigImpl connectorConfig = configuration.getConfigFile().getServerConnector();
-		Files.writeString(tempDir.resolve("not-a-cache.yaml"), "content");
-		Files.writeString(tempDir.resolve("only#two.yaml"), "content");
+		Files.write(tempDir.resolve("not-a-cache.yaml"), "content".getBytes(StandardCharsets.UTF_8));
+		Files.write(tempDir.resolve("only#two.yaml"), "content".getBytes(StandardCharsets.UTF_8));
 		Files.createFile(tempDir.resolve("default#group#application.properties.yaml"));
 
 		when(polarisContextProperties.getEnabled()).thenReturn(true);
