@@ -196,6 +196,11 @@ public class OrderConstant {
 		public static Integer STAT_REPORTER_ORDER = 1;
 
 		/**
+		 * Order of audit log configuration modifier.
+		 */
+		public static Integer AUDIT_LOG_ORDER = 1;
+
+		/**
 		 * Load Balancer config modifier order.
 		 */
 		public static Integer LOAD_BALANCER_CONFIG_ORDER = 2;
