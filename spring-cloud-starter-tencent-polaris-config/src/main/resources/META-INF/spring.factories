@@ -2,7 +2,8 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.polaris.config.PolarisConfigAutoConfiguration,\
   com.tencent.cloud.polaris.config.endpoint.PolarisConfigEndpointAutoConfiguration,\
   com.tencent.cloud.polaris.config.tsf.PolarisAdaptorTsfConfigAutoConfiguration,\
-  com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration
+  com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration,\
+  com.tencent.cloud.polaris.config.PolarisConfigEffectiveValueAutoConfiguration
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration
 # ConfigData Location Resolvers

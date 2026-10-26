@@ -21,14 +21,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tencent.cloud.polaris.config.PolarisConfigSDKContextManager;
 import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySource;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.polaris.api.plugin.common.ValueContext;
+import com.tencent.polaris.client.api.SDKContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +58,11 @@ public class PolarisConfigEndpointTest {
 		PolarisPropertySourceManager.clearPropertySources();
 	}
 
+	@AfterEach
+	public void tearDown() {
+		PolarisConfigSDKContextManager.innerConfigDestroy();
+	}
+
 	@Test
 	public void testPolarisConfigEndpoint() {
 		Map<String, Object> content = new HashMap<>();
@@ -68,5 +78,25 @@ public class PolarisConfigEndpointTest {
 		Map<String, Object> info = endpoint.polarisConfig();
 		assertThat(polarisConfigProperties).isEqualTo(info.get("PolarisConfigProperties"));
 		assertThat(Collections.singletonList(polarisPropertySource)).isEqualTo(info.get("PolarisPropertySource"));
+	}
+
+	@Test
+	public void testPolarisConfigEndpointExposesClientId() {
+		SDKContext sdkContext = Mockito.mock(SDKContext.class);
+		ValueContext valueContext = Mockito.mock(ValueContext.class);
+		Mockito.when(sdkContext.getValueContext()).thenReturn(valueContext);
+		Mockito.when(valueContext.getClientId()).thenReturn("host_1234_0");
+		PolarisConfigSDKContextManager.setConfigSDKContext(sdkContext);
+
+		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(polarisConfigProperties);
+
+		assertThat(endpoint.polarisConfig().get("ClientId")).isEqualTo("host_1234_0");
+	}
+
+	@Test
+	public void testPolarisConfigEndpointClientIdIsNullWhenContextAbsent() {
+		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(polarisConfigProperties);
+
+		assertThat(endpoint.polarisConfig().get("ClientId")).isNull();
 	}
 }

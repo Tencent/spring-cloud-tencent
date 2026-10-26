@@ -93,6 +93,13 @@
       "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
     },
     {
+      "name": "spring.cloud.polaris.config.report.effective.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to enable config effective-time realtime query. Default true and cascaded under spring.cloud.polaris.config.report.enabled (disabling the whole report switch also disables this query channel).",
+      "sourceType": "com.tencent.cloud.polaris.config.config.PolarisConfigProperties"
+    },
+    {
       "name": "spring.cloud.polaris.config.crypto.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true",
