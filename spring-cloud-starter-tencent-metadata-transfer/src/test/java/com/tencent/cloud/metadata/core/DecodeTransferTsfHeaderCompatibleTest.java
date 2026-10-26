@@ -20,12 +20,13 @@ package com.tencent.cloud.metadata.core;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.UrlUtils;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
