@@ -79,7 +79,7 @@ public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropert
 		}
 		// update the attribute with @Value annotation
 		for (SpringValue val : targetValues) {
-			updateSpringValue(val);
+			updateSpringValue(changedKey, val);
 		}
 	}
 
@@ -101,15 +101,20 @@ public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropert
 		}
 	}
 
-	private void updateSpringValue(SpringValue springValue) {
+	private void updateSpringValue(String changedKey, SpringValue springValue) {
 		try {
 			Object value = resolvePropertyValue(springValue);
 			springValue.update(value);
 
-			LOGGER.info("[SCT Config] Auto update polaris changed value successfully, new value: {}, {}", value,
+			// values of encrypted config files must not be logged in plain text
+			Object displayValue = isEncryptedKey(changedKey) ? maskValue(value) : value;
+			LOGGER.info("[SCT Config] Auto update polaris changed value successfully, new value: {}, {}", displayValue,
 					springValue);
 		}
 		catch (Throwable ex) {
+			// SpringValue.toString() carries no property value, so it is safe to log as is.
+			// The stack trace may still embed the raw value (e.g. unresolvable placeholder),
+			// which is kept on purpose: losing it would make refresh failures undiagnosable.
 			LOGGER.error("[SCT Config] Auto update polaris changed value failed, {}", springValue.toString(), ex);
 		}
 	}
