@@ -46,6 +46,10 @@ dependency-reduced-pom.xml
 logs/
 lib/
 applog/
+.arthas/
+.codebuddy/
+CLAUDE.md
+.claude/
 
 # Maven ignore
 .flattened-pom.xml
@@ -54,3 +58,5 @@ applog/
 */backup
 /backup
 backup
+*/tls
+/.cursor/
