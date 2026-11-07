@@ -10,6 +10,8 @@ on:
       - hoxton
       - greenwich
       - release/*
+    paths-ignore:
+      - '**.md'
   pull_request:
     branches:
       - 2023.0
@@ -19,6 +21,8 @@ on:
       - hoxton
       - greenwich
       - release/*
+    paths-ignore:
+      - '**.md'
 jobs:
   check-license:
     runs-on: ubuntu-latest
