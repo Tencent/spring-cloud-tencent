@@ -292,74 +292,9 @@ polaris-java 提供核心客户端逻辑，Spring Cloud Tencent 用 Spring 抽�
 
 ## Git 提交规范
 
-### Commit Message 格式
-
-使用 [Conventional Commits](https://www.conventionalcommits.org/) 格式：
-
-```text
-<type>: <subject>
-```
-
-常用类型：
-
-- `feat`：新增功能。
-- `fix`：修复缺陷。
-- `refactor`：重构，不改变外部行为。
-- `test`：仅测试代码改动。
-- `docs`：仅文档改动。
-- `chore`：构建脚本、依赖、杂项改动。
-
-变量名、commit message 必须使用英文。
-
-### 必须包含的元数据
-
-每次 commit **必须**包含尾注。按实际执行提交的 Agent 填写，不要混用：
-
-1. **Signed-off-by**（DCO 签名）：使用 `git commit -s` 自动添加。这是上游 DCO 检查的硬性要求，缺失 PR 无法合并。
-2. **Co-Authored-By**：根据本次实际使用的工具填写，二选一，不要同时写两条：
-   - **Cursor**：不要手写。Agent 创建 commit 时会自动追加 `Co-Authored-By: Cursor <cursoragent@cursor.com>`。禁止填写 `noreply@anthropic.com`。
-   - **Claude Code**：根据实际使用的模型、版本和上下文长度填写：
-
-     ```text
-     Co-Authored-By: <模型名> <版本> (<上下文长度>) <noreply@anthropic.com>
-     ```
-
-     例如：
-
-     ```text
-     Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
-     ```
-
-   - **其他工具**（Codex、CodeBuddy 等）：按工具实际生成的署名行填写；不确定时只写工具名。本仓库历史提交中的实际写法：
-
-     ```text
-     Co-Authored-By: kimi-k3 <noreply@moonshot.cn>
-     Co-Authored-By: Cursor <cursoragent@cursor.com>
-     Co-Authored-By: CodeBuddy Code
-     ```
-
-     模型名与参数以当次会话实际使用的为准，不要凭记忆填。
-
-### 提交命令模板
-
-为保证 message 多行格式正确，使用 HEREDOC 传入。`git commit -s` 会自动追加 `Signed-off-by`：
-
-```bash
-git commit -s -m "$(cat <<'EOF'
-docs: short subject in english
-
-Optional body explaining the why.
-
-Co-Authored-By: <工具名/模型名> (<参数>) <noreply 邮箱>
-EOF
-)"
-```
-
-只有单行 message 时也可简写：
-
-```bash
-git commit -s -m "fix: avoid null metadata in discovery"
-```
+- 使用 conventional commits：`<type>: <subject>`，用英文。常用 type：`feat` / `fix` / `refactor` / `test` / `docs` / `chore`
+- Agent 创建 commit 之前，必须实际执行构建验证，通过后再`git commit`
+- 每次提交必须包含 `Signed-off-by` 行，使用 `git commit -s`
 
 ## 单元测试规范
 
