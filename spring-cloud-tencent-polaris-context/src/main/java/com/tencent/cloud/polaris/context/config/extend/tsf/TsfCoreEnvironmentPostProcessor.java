@@ -144,17 +144,16 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 				defaultProperties.put("spring.cloud.polaris.warmup.enabled", environment.getProperty("spring.cloud.polaris.warmup.enabled", "true"));
 
 				// contract
-				defaultProperties.put("spring.cloud.polaris.contract.enabled", environment.getProperty("tsf.swagger.enabled", "true"));
-				if (StringUtils.isNotBlank(environment.getProperty("tsf.swagger.basePackage"))) {
-					defaultProperties.put("spring.cloud.polaris.contract.base-package", environment.getProperty("tsf.swagger.basePackage"));
-				}
-				if (StringUtils.isNotBlank(environment.getProperty("tsf.swagger.excludePath"))) {
-					defaultProperties.put("spring.cloud.polaris.contract.exclude-path", environment.getProperty("tsf.swagger.excludePath"));
-				}
-				defaultProperties.put("spring.cloud.polaris.contract.group", environment.getProperty("tsf.swagger.group", "polaris"));
-				defaultProperties.put("spring.cloud.polaris.contract.base-path", environment.getProperty("tsf.swagger.basePath", "/**"));
-				defaultProperties.put("spring.cloud.polaris.contract.exposure", environment.getProperty("tsf.swagger.doc.auto-startup", "true"));
-				defaultProperties.put("spring.cloud.polaris.contract.report.enabled", environment.getProperty("tsf.swagger.enabled", "true"));
+				// Resolve legacy keys after local and remote configuration loads; explicit contract keys take precedence.
+				Map<String, Object> swaggerProperties = new HashMap<>();
+				swaggerProperties.put("spring.cloud.polaris.contract.enabled", "${tsf.swagger.enabled:true}");
+				swaggerProperties.put("spring.cloud.polaris.contract.base-package", "${tsf.swagger.basePackage:}");
+				swaggerProperties.put("spring.cloud.polaris.contract.exclude-path", "${tsf.swagger.excludePath:}");
+				swaggerProperties.put("spring.cloud.polaris.contract.group", "${tsf.swagger.group:polaris}");
+				swaggerProperties.put("spring.cloud.polaris.contract.base-path", "${tsf.swagger.basePath:/**}");
+				swaggerProperties.put("spring.cloud.polaris.contract.exposure", "${tsf.swagger.doc.auto-startup:true}");
+				swaggerProperties.put("spring.cloud.polaris.contract.report.enabled", "${tsf.swagger.enabled:true}");
+				environment.getPropertySources().addLast(new MapPropertySource("tsf-swagger-properties", swaggerProperties));
 				defaultProperties.put("spring.cloud.polaris.contract.name", tsfApplicationId);
 
 				if (TsfContextUtils.isOnlyTsfConsulEnabled(environment)) {

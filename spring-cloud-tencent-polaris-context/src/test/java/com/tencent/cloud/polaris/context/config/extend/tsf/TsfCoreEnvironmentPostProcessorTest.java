@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.context.config.extend.tsf;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.tsf.TsfContextUtils;
@@ -27,11 +28,15 @@ import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -371,6 +376,181 @@ class TsfCoreEnvironmentPostProcessorTest {
 		PropertySource<?> firstSource = environment.getPropertySources().stream().findFirst().orElse(null);
 		assertThat(firstSource).isNotNull();
 		assertThat(firstSource.getName()).isEqualTo("tsf-polaris-properties");
+	}
+
+	/**
+	 * Verify late-loaded legacy strings are mapped after the bootstrap processor runs.
+	 */
+	@DisplayName("Late-loaded Swagger strings are resolved from the current environment")
+	@ParameterizedTest
+	@CsvSource({
+			"tsf.swagger.group, spring.cloud.polaris.contract.group, remote-group",
+			"tsf.swagger.basePackage, spring.cloud.polaris.contract.base-package, com.example.remote",
+			"tsf.swagger.excludePath, spring.cloud.polaris.contract.exclude-path, /health",
+			"tsf.swagger.basePath, spring.cloud.polaris.contract.base-path, /api/**"
+	})
+	void testLateSwaggerStringProperties(String legacyKey, String contractKey, String value) {
+		// Arrange
+		MockEnvironment environment = createTsfConsulEnvironment();
+		processor.postProcessEnvironment(environment, application);
+
+		// Act
+		environment.getPropertySources().addAfter("tsf-polaris-properties",
+				new MapPropertySource("remote-config", Map.of(legacyKey, value)));
+
+		// Assert
+		assertThat(environment.getProperty(contractKey)).isEqualTo(value);
+	}
+
+	/**
+	 * Verify the legacy boolean controls both contract creation and reporting.
+	 */
+	@DisplayName("Late-loaded Swagger enabled controls contract and report flags")
+	@ParameterizedTest
+	@ValueSource(booleans = {true, false})
+	void testLateSwaggerEnabled(boolean enabled) {
+		// Arrange
+		MockEnvironment environment = createTsfConsulEnvironment();
+		processor.postProcessEnvironment(environment, application);
+
+		// Act
+		environment.getPropertySources().addAfter("tsf-polaris-properties",
+				new MapPropertySource("remote-config", Map.of("tsf.swagger.enabled", enabled)));
+
+		// Assert
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.enabled", Boolean.class)).isEqualTo(enabled);
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.report.enabled", Boolean.class)).isEqualTo(enabled);
+	}
+
+	/**
+	 * Verify the legacy document flag is resolved after remote configuration loads.
+	 */
+	@DisplayName("Late-loaded Swagger document flag controls exposure")
+	@ParameterizedTest
+	@ValueSource(booleans = {true, false})
+	void testLateSwaggerExposure(boolean exposure) {
+		// Arrange
+		MockEnvironment environment = createTsfConsulEnvironment();
+		processor.postProcessEnvironment(environment, application);
+
+		// Act
+		environment.getPropertySources().addAfter("tsf-polaris-properties",
+				new MapPropertySource("remote-config", Map.of("tsf.swagger.doc.auto-startup", exposure)));
+
+		// Assert
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.exposure", Boolean.class)).isEqualTo(exposure);
+	}
+
+	/**
+	 * Verify explicit contract keys take precedence over the legacy compatibility values.
+	 */
+	@DisplayName("Explicit contract configuration overrides legacy Swagger defaults")
+	@Test
+	void testExplicitContractPropertiesOverrideLegacySwagger() {
+		// Arrange
+		MockEnvironment environment = createTsfConsulEnvironment();
+		environment.setProperty("tsf.swagger.group", "legacy-group");
+		environment.setProperty("tsf.swagger.enabled", "false");
+		environment.setProperty("tsf.swagger.basePackage", "com.example.legacy");
+		environment.setProperty("tsf.swagger.excludePath", "/legacy");
+		environment.setProperty("tsf.swagger.basePath", "/legacy/**");
+		environment.setProperty("tsf.swagger.doc.auto-startup", "false");
+		processor.postProcessEnvironment(environment, application);
+		Map<String, Object> explicitProperties = Map.of(
+				"spring.cloud.polaris.contract.group", "explicit-group",
+				"spring.cloud.polaris.contract.enabled", "true",
+				"spring.cloud.polaris.contract.report.enabled", "true",
+				"spring.cloud.polaris.contract.base-package", "com.example.explicit",
+				"spring.cloud.polaris.contract.exclude-path", "/explicit",
+				"spring.cloud.polaris.contract.base-path", "/explicit/**",
+				"spring.cloud.polaris.contract.exposure", "true");
+
+		// Act
+		environment.getPropertySources().addAfter("tsf-polaris-properties",
+				new MapPropertySource("application.yml", explicitProperties));
+
+		// Assert
+		explicitProperties.forEach((key, value) -> assertThat(environment.getProperty(key)).isEqualTo(value));
+	}
+
+	/**
+	 * Verify legacy values follow source priority instead of being frozen at startup.
+	 */
+	@DisplayName("Legacy Swagger group follows property source priority")
+	@ParameterizedTest
+	@CsvSource({"true, remote-group", "false, startup-group"})
+	void testSwaggerGroupPropertySourcePriority(boolean remoteFirst, String expectedGroup) {
+		// Arrange
+		MockEnvironment environment = createTsfConsulEnvironment();
+		environment.setProperty("tsf.swagger.group", "startup-group");
+		processor.postProcessEnvironment(environment, application);
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.group")).isEqualTo("startup-group");
+		MapPropertySource remote = new MapPropertySource("remote-config", Map.of("tsf.swagger.group", "remote-group"));
+
+		// Act
+		if (remoteFirst) {
+			environment.getPropertySources().addFirst(remote);
+		}
+		else {
+			environment.getPropertySources().addLast(remote);
+		}
+
+		// Assert
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.group")).isEqualTo(expectedGroup);
+	}
+
+	/**
+	 * Verify absent Swagger configuration keeps the existing functional defaults.
+	 */
+	@DisplayName("Swagger defaults preserve group, paths and enabled flags")
+	@Test
+	void testSwaggerDefaults() {
+		// Arrange
+		MockEnvironment environment = createTsfConsulEnvironment();
+
+		// Act
+		processor.postProcessEnvironment(environment, application);
+
+		// Assert
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.group")).isEqualTo("polaris");
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.base-path")).isEqualTo("/**");
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.base-package")).isNullOrEmpty();
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.exclude-path")).isNullOrEmpty();
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.enabled", Boolean.class)).isTrue();
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.report.enabled", Boolean.class)).isTrue();
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.exposure", Boolean.class)).isTrue();
+	}
+
+	/**
+	 * Verify Swagger compatibility is only enabled for a TSF Consul deployment.
+	 */
+	@DisplayName("Swagger mappings are absent outside TSF Consul deployments")
+	@Test
+	void testSwaggerMappingWithoutConsul() {
+		// Arrange
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("tsf_app_id", "app-123");
+		environment.setProperty("tsf.swagger.group", "custom-group");
+
+		// Act
+		processor.postProcessEnvironment(environment, application);
+
+		// Assert
+		assertThat(environment.getProperty("spring.cloud.polaris.contract.group")).isNull();
+		assertThat(environment.getPropertySources().contains("tsf-swagger-properties")).isFalse();
+	}
+
+	private MockEnvironment createTsfConsulEnvironment() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("tsf_app_id", "app-123");
+		environment.setProperty("tsf_consul_ip", "127.0.0.1");
+		environment.setProperty("tsf_consul_port", "8500");
+		environment.setProperty("tsf_token", "test-token");
+		environment.setProperty("tsf_instance_id", "instance-001");
+		environment.setProperty("tsf_application_id", "application-001");
+		environment.setProperty("tsf_group_id", "group-001");
+		environment.setProperty("tsf_namespace_id", "namespace-001");
+		return environment;
 	}
 
 	/**
