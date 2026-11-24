@@ -3,10 +3,11 @@ name: License checker
 on:
   push:
     branches:
-      - 2023.0
-      - 2022.0
-      - 2021.0
-      - 2020.0
+      - 2024
+      - 2023
+      - 2022
+      - 2021
+      - 2020
       - hoxton
       - greenwich
       - release/*
@@ -14,10 +15,11 @@ on:
       - '**.md'
   pull_request:
     branches:
-      - 2023.0
-      - 2022.0
-      - 2021.0
-      - 2020.0
+      - 2024
+      - 2023
+      - 2022
+      - 2021
+      - 2020
       - hoxton
       - greenwich
       - release/*
@@ -28,6 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Check License Header
-        uses: apache/skywalking-eyes@v0.4.0
+        uses: apache/skywalking-eyes@v0.8.0
