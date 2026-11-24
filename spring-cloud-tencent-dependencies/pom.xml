@@ -71,7 +71,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.2.0.0-2024.0.3-RC1</revision>
+		<revision>2.2.0.0-2024.0.3</revision>
 
 		<!-- Polaris SDK version -->
 		<polaris.version>2.2.0.0</polaris.version>
