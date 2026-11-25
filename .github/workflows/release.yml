@@ -8,9 +8,9 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -22,6 +22,8 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          MAVEN_GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
         run: |
-          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import;
-          mvn clean deploy -B -U -P release -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -Dmaven.test.skip=true
+          printf '%s\n' "$MAVEN_GPG_SECRET_KEY" | gpg --batch --import
+          mvn clean deploy -B -U -P release -Dmaven.test.skip=true
