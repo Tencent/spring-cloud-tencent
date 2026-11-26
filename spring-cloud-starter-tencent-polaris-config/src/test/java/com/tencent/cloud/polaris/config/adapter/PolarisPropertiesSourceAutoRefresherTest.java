@@ -35,6 +35,10 @@ import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.polaris.api.plugin.common.ValueContext;
 import com.tencent.polaris.api.plugin.compose.Extensions;
+import com.tencent.polaris.api.plugin.event.BaseEvent;
+import com.tencent.polaris.api.plugin.event.ConfigEvent;
+import com.tencent.polaris.api.plugin.event.EventConstants;
+import com.tencent.polaris.api.plugin.event.EventReporter;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigFileMetadata;
@@ -501,6 +505,48 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		assertThat(polarisPropertySource.getProperty("k1")).isEqualTo("v1");
 		verify(contextRefresher, never()).refresh();
 		verify(applicationContext, never()).publishEvent(any());
+	}
+
+	/**
+	 * A change recovered on {@code ApplicationReadyEvent} has no change event, so the config event
+	 * takes the version name of the config currently held by the SDK.
+	 */
+	@Test
+	public void testReconcileReportEventWithFileVersion() {
+		// Arrange
+		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
+		PolarisRefreshEntireContextRefresher refresher = new PolarisRefreshEntireContextRefresher(
+				polarisConfigProperties, springValueRegistry, configFileService, contextRefresher, sdkContext);
+		refresher.setApplicationContext(applicationContext);
+		when(polarisConfigProperties.isAutoRefresh()).thenReturn(true);
+		mockReportEvent();
+		EventReporter eventReporter = mock(EventReporter.class);
+		when(eventReporter.isEnabled()).thenReturn(true);
+		when(eventReporter.reportEvent(any())).thenReturn(true);
+		when(extensions.getEventReporterList()).thenReturn(Collections.singletonList(eventReporter));
+
+		Map<String, Object> sdkContent = new HashMap<>();
+		sdkContent.put("k1", "v1");
+		MockedConfigKVFile file = new MockedConfigKVFile(sdkContent);
+		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testServiceName, testFileName,
+				file, new ConcurrentHashMap<>(sdkContent));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
+		// published during startup: the SDK cache now holds version v2
+		sdkContent.put("k1", "v11");
+		file.setFileVersion("v2");
+
+		// Act
+		refresher.onApplicationEvent(null);
+
+		// Assert
+		ArgumentCaptor<BaseEvent> captor = ArgumentCaptor.forClass(BaseEvent.class);
+		verify(eventReporter).reportEvent(captor.capture());
+		ConfigEvent configEvent = (ConfigEvent) captor.getValue();
+		assertThat(configEvent.getEventName()).isEqualTo(EventConstants.EventName.ConfigUpdated);
+		assertThat(configEvent.getConfigFileVersion()).isEqualTo("v2");
+		assertThat(configEvent.getNamespace()).isEqualTo(testNamespace);
+		assertThat(configEvent.getConfigGroup()).isEqualTo(testServiceName);
+		assertThat(configEvent.getConfigFileName()).isEqualTo(testFileName);
 	}
 
 	private PolarisRefreshAffectedContextRefresher newAffectedContextRefresher(

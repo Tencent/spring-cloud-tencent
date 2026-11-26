@@ -30,6 +30,8 @@ import com.tencent.cloud.polaris.context.ModifyAddress;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.context.config.extend.tsf.TsfTlsProperties;
+import com.tencent.cloud.polaris.context.event.PushGatewayEventReporterConfigModifier;
+import com.tencent.cloud.polaris.context.event.PushGatewayEventReporterProperties;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
@@ -47,6 +49,8 @@ import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.cloud.commons.util.InetUtils;
+import org.springframework.cloud.commons.util.InetUtilsProperties;
 import org.springframework.core.Ordered;
 
 /**
@@ -320,15 +324,33 @@ public class PolarisConfigDataLocationResolver implements
 	private SDKContext sdkContext(ConfigDataLocationResolverContext resolverContext,
 			PolarisConfigProperties polarisConfigProperties, PolarisCryptoConfigProperties polarisCryptoConfigProperties,
 			PolarisContextProperties polarisContextProperties) {
-		List<PolarisConfigModifier> modifierList = modifierList(polarisConfigProperties,
+		List<PolarisConfigModifier> modifierList = modifierList(resolverContext, polarisConfigProperties,
 				polarisCryptoConfigProperties, polarisContextProperties);
 		return SDKContext.initContextByConfig(polarisContextProperties.configuration(
 				modifierList,
-				() -> loadPolarisConfigProperties(resolverContext, String.class, "spring.cloud.client.ip-address"),
+				() -> resolveIpAddress(resolverContext),
 				() -> loadPolarisConfigProperties(resolverContext, Integer.class, "spring.cloud.polaris.local-port")));
 	}
 
-	private List<PolarisConfigModifier> modifierList(PolarisConfigProperties polarisConfigProperties,
+	/**
+	 * spring.cloud.client.ip-address is set by HostInfoEnvironmentPostProcessor after config data is loaded,
+	 * so it is absent here. Resolve it in the same way, otherwise SDK detects another ip on multi-NIC host and
+	 * the config SDK context reports a different client ip from the registered instance.
+	 */
+	String resolveIpAddress(ConfigDataLocationResolverContext resolverContext) {
+		String ipAddress = loadPolarisConfigProperties(resolverContext, String.class, "spring.cloud.client.ip-address");
+		if (StringUtils.isBlank(ipAddress)) {
+			InetUtilsProperties inetUtilsProperties = new InetUtilsProperties();
+			resolverContext.getBinder().bind(InetUtilsProperties.PREFIX, Bindable.ofInstance(inetUtilsProperties));
+			try (InetUtils inetUtils = new InetUtils(inetUtilsProperties)) {
+				ipAddress = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
+			}
+		}
+		return ipAddress;
+	}
+
+	List<PolarisConfigModifier> modifierList(ConfigDataLocationResolverContext resolverContext,
+			PolarisConfigProperties polarisConfigProperties,
 			PolarisCryptoConfigProperties polarisCryptoConfigProperties,
 			PolarisContextProperties polarisContextProperties) {
 		// add ModifyAddress and ConfigurationModifier to load SDKContext
@@ -337,9 +359,25 @@ public class PolarisConfigDataLocationResolver implements
 
 		ConfigurationModifier configurationModifier = new ConfigurationModifier(polarisConfigProperties,
 				polarisCryptoConfigProperties, polarisContextProperties);
+		// config event of initial load is reported by config data temp SDK context, so push gateway is needed here.
+		PushGatewayEventReporterConfigModifier pushGatewayEventReporterConfigModifier =
+				new PushGatewayEventReporterConfigModifier(loadPushGatewayEventReporterProperties(resolverContext));
 		modifierList.add(modifyAddress);
 		modifierList.add(configurationModifier);
+		modifierList.add(pushGatewayEventReporterConfigModifier);
 		return modifierList;
+	}
+
+	private PushGatewayEventReporterProperties loadPushGatewayEventReporterProperties(
+			ConfigDataLocationResolverContext resolverContext) {
+		PushGatewayEventReporterProperties pushGatewayEventReporterProperties = loadPolarisConfigProperties(
+				resolverContext,
+				PushGatewayEventReporterProperties.class,
+				POLARIS_PREFIX + ".event.pushgateway");
+		if (Objects.isNull(pushGatewayEventReporterProperties)) {
+			pushGatewayEventReporterProperties = new PushGatewayEventReporterProperties();
+		}
+		return pushGatewayEventReporterProperties;
 	}
 
 	private boolean registerNotNecessary(Class<?> typeClass) {
