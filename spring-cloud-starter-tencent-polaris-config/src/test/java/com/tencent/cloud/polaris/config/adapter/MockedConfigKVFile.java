@@ -47,6 +47,8 @@ public class MockedConfigKVFile implements ConfigKVFile {
 
 	private boolean encrypted;
 
+	private String fileVersion = "";
+
 	public MockedConfigKVFile(Map<String, Object> properties) {
 		this.properties = properties;
 	}
@@ -197,7 +199,11 @@ public class MockedConfigKVFile implements ConfigKVFile {
 
 	@Override
 	public String getFileVersion() {
-		return "";
+		return fileVersion;
+	}
+
+	public void setFileVersion(String fileVersion) {
+		this.fileVersion = fileVersion;
 	}
 
 	@Override
