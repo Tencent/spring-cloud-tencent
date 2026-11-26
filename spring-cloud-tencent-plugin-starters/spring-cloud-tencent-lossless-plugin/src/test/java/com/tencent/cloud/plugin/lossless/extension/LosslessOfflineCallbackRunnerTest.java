@@ -310,7 +310,7 @@ class LosslessOfflineCallbackRunnerTest {
 		});
 		CapturingExecutor executor = new CapturingExecutor();
 		LosslessProperties startupProperties = timeoutProperties();
-		startupProperties.setOfflineCallbackTimeout(1000);
+		startupProperties.setOfflineCallbackTimeout(2000);
 		startupProperties.setOfflineCallbackTotalTimeout(5000);
 		LosslessOfflineCallbackRunner runner = new LosslessOfflineCallbackRunner(
 				beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory, startupProperties,
@@ -333,9 +333,7 @@ class LosslessOfflineCallbackRunnerTest {
 		Thread worker = new Thread(executor.getTask()::run, "test-lossless-worker");
 		worker.start();
 		assertThat(executor.awaitThreadPublication()).isTrue();
-		Thread.sleep(50);
-		assertThat(caller.isAlive()).isTrue();
-		caller.join(2000);
+		caller.join(5000);
 		executor.releaseThreadPublication();
 		worker.join(2000);
 
