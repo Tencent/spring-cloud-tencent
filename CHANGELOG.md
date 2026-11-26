@@ -20,3 +20,4 @@
 - [fix: wrong default value of spring.cloud.nacos.discovery.register-enabled in metadata](https://github.com/Tencent/spring-cloud-tencent/pull/1834)
 - chore: bump central-publishing-maven-plugin to 0.12.0.
 - [fix: recover config changes published before the change listener is registered](https://github.com/Tencent/spring-cloud-tencent/pull/1859)
+- [feat: report config events via pushgateway in config data context](https://github.com/Tencent/spring-cloud-tencent/pull/1862)
