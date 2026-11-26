@@ -19,3 +19,4 @@
 - [feat: support encoding and decoding TSF headers without TSF Consul](https://github.com/Tencent/spring-cloud-tencent/pull/1846)
 - [feat: protect encrypted config values and improve config cache fallback](https://github.com/Tencent/spring-cloud-tencent/pull/1849)
 - [fix: recover config changes published before the change listener is registered](https://github.com/Tencent/spring-cloud-tencent/pull/1861)
+- [feat: report config events via pushgateway in config data context](https://github.com/Tencent/spring-cloud-tencent/pull/1863)
