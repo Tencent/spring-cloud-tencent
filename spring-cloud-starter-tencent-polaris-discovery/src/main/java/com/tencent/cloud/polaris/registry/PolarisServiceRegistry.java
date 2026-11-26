@@ -20,14 +20,21 @@ package com.tencent.cloud.polaris.registry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.OkHttpUtil;
 import com.tencent.cloud.common.util.OtUtils;
+import com.tencent.cloud.plugin.lossless.extension.LosslessDeregistration;
+import com.tencent.cloud.plugin.lossless.extension.LosslessDeregistrationResult;
+import com.tencent.cloud.plugin.lossless.extension.PolarisLosslessCandidate;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
@@ -55,6 +62,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.http.HttpHeaders;
 
@@ -66,7 +74,8 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng, changjin wei(魏昌进)
  */
-public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistration>, DisposableBean {
+public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistration>, LosslessDeregistration,
+		PolarisLosslessCandidate, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisServiceRegistry.class);
 
@@ -79,6 +88,13 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 	private final StaticMetadataManager staticMetadataManager;
 	private final PolarisStatProperties polarisStatProperties;
 	private final ScheduledExecutorService heartbeatExecutor;
+
+	// Deregister advice may synchronously move the original call to another thread.
+	private final ConcurrentMap<PolarisRegistration, AtomicInteger> losslessDeregistering =
+			new ConcurrentHashMap<>();
+
+	private final ConcurrentMap<PolarisRegistration, AtomicReference<LosslessDeregistrationResult>> losslessDeregistrationOutcomes =
+			new ConcurrentHashMap<>();
 
 	public PolarisServiceRegistry(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryHandler polarisDiscoveryHandler,
@@ -206,11 +222,77 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 	public void deregister(PolarisRegistration registration) {
 		LOGGER.info("De-registering from Polaris Server now...");
 
+		if (losslessDeregistering.containsKey(registration)) {
+			// Keep deregister's return contract so subclass and AOP cleanup can still run.
+			try {
+				deregisterInternal(registration);
+			}
+			catch (Exception e) {
+				LOGGER.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
+			}
+			return;
+		}
+
 		if (StringUtils.isEmpty(registration.getServiceId()) || !PolarisSDKContextManager.isRegistered) {
 			LOGGER.warn("No dom to de-register for polaris client...");
 			return;
 		}
 
+		try {
+			deregisterInternal(registration);
+		}
+		catch (Exception e) {
+			LOGGER.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
+		}
+	}
+
+	@Override
+	public LosslessDeregistrationResult deregisterForLossless(Registration registration, Runnable deregistration) {
+		if (registration == null) {
+			throw new IllegalArgumentException("registration must not be null");
+		}
+		if (!(registration instanceof PolarisRegistration)) {
+			throw new IllegalArgumentException("registration must be a PolarisRegistration");
+		}
+		if (StringUtils.isEmpty(registration.getServiceId())) {
+			throw new IllegalArgumentException("serviceId must not be blank");
+		}
+		if (deregistration == null) {
+			throw new IllegalArgumentException("deregistration must not be null");
+		}
+
+		PolarisRegistration polarisRegistration = (PolarisRegistration) registration;
+		AtomicInteger deregisteringDepth;
+		synchronized (losslessDeregistering) {
+			deregisteringDepth = losslessDeregistering.computeIfAbsent(polarisRegistration,
+					key -> new AtomicInteger());
+			deregisteringDepth.incrementAndGet();
+			losslessDeregistrationOutcomes.computeIfAbsent(polarisRegistration,
+					key -> new AtomicReference<>(LosslessDeregistrationResult.notExecuted()));
+		}
+		LosslessDeregistrationResult result;
+		try {
+			deregistration.run();
+			result = getLosslessDeregistrationOutcome(polarisRegistration);
+		}
+		catch (Exception e) {
+			LOGGER.error("ERR_POLARIS_DEREGISTER, lossless de-register failed...{},", registration, e);
+			LosslessDeregistrationResult currentOutcome = getLosslessDeregistrationOutcome(polarisRegistration);
+			result = currentOutcome != null && currentOutcome.getFailure() != null ? currentOutcome
+					: LosslessDeregistrationResult.failed(e);
+		}
+		finally {
+			synchronized (losslessDeregistering) {
+				if (deregisteringDepth.decrementAndGet() == 0) {
+					losslessDeregistering.remove(polarisRegistration, deregisteringDepth);
+					losslessDeregistrationOutcomes.remove(polarisRegistration);
+				}
+			}
+		}
+		return result;
+	}
+
+	private void deregisterInternal(PolarisRegistration registration) {
 		InstanceDeregisterRequest deRegisterRequest = new InstanceDeregisterRequest();
 		deRegisterRequest.setInstanceID(registration.getInstanceId());
 		deRegisterRequest.setToken(polarisDiscoveryProperties.getToken());
@@ -224,9 +306,11 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 			providerClient.deRegister(deRegisterRequest);
 			PolarisSDKContextManager.isRegistered = false;
 			LOGGER.info("De-registration finished.");
+			recordLosslessDeregistrationOutcome(registration, null);
 		}
 		catch (Exception e) {
-			LOGGER.error("ERR_POLARIS_DEREGISTER, de-register failed...{},", registration, e);
+			recordLosslessDeregistrationOutcome(registration, e);
+			throw e;
 		}
 		finally {
 			if (null != heartbeatExecutor) {
@@ -297,5 +381,24 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		if (heartbeatExecutor != null) {
 			heartbeatExecutor.shutdown();
 		}
+	}
+
+	private void recordLosslessDeregistrationOutcome(PolarisRegistration registration, Exception failure) {
+		AtomicReference<LosslessDeregistrationResult> outcomeReference = losslessDeregistrationOutcomes.get(registration);
+		if (outcomeReference == null) {
+			return;
+		}
+		outcomeReference.updateAndGet(current -> {
+			if (current != null && current.getFailure() != null) {
+				return current;
+			}
+			return failure == null ? LosslessDeregistrationResult.success() : LosslessDeregistrationResult.failed(failure);
+		});
+	}
+
+	private LosslessDeregistrationResult getLosslessDeregistrationOutcome(PolarisRegistration registration) {
+		AtomicReference<LosslessDeregistrationResult> outcomeReference = losslessDeregistrationOutcomes.get(registration);
+		LosslessDeregistrationResult outcome = outcomeReference == null ? null : outcomeReference.get();
+		return outcome == null ? LosslessDeregistrationResult.notExecuted() : outcome;
 	}
 }
