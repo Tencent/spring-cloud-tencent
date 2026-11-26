@@ -41,6 +41,7 @@ import com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils;
 import com.tencent.polaris.api.plugin.configuration.ConfigFile;
 import com.tencent.polaris.api.plugin.event.ConfigEvent;
 import com.tencent.polaris.api.plugin.event.EventConstants;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.client.flow.BaseFlow;
 import com.tencent.polaris.configuration.api.core.ChangeType;
@@ -215,7 +216,6 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 		// loading time, so the member files are read again, and files added to the group during startup
 		// are loaded and listened to from now on.
 		List<ConfigKVFile> currentFiles = new ArrayList<>();
-		Map<String, ConfigFileMetadata> added = new LinkedHashMap<>();
 		ConfigFileGroup configFileGroup = configFileService.getConfigFileGroup(
 				groupPropertySource.getNamespace(), groupPropertySource.getGroup());
 		if (configFileGroup != null && configFileGroup.getConfigFileMetadataList() != null) {
@@ -224,8 +224,8 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 						configFileMetadata.getFileGroup(), configFileMetadata.getFileName());
 				ConfigKVFile configKVFile = memberFiles.remove(name);
 				if (configKVFile == null && !registeredPolarisPropertySets.contains(name)) {
+					// config event of the newly added file is reported by polaris SDK when it is loaded first time.
 					configKVFile = loadGroupConfigFile(groupPropertySource, name, configFileMetadata).getConfigKVFile();
-					added.put(name, configFileMetadata);
 				}
 				if (configKVFile != null) {
 					currentFiles.add(configKVFile);
@@ -242,11 +242,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			markEncryptedKeys(configKVFile);
 			collectProperties(configKVFile, latest);
 		}
-		Set<String> changedKeys = applyMissedChanges(groupPropertySource, latest);
-		if (!added.isEmpty()) {
-			reportEvent(added);
-		}
-		return changedKeys;
+		return applyMissedChanges(groupPropertySource, latest);
 	}
 
 	private void collectProperties(ConfigKVFile configKVFile, Map<String, String> target) {
@@ -305,7 +301,9 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			// update the attribute with @Value annotation
 			refreshSpringValue(changedKey);
 		}
-		reportEvent(polarisPropertySource, new ConfigKVFileChangeEvent(changeInfos, null));
+		// no change event here, so take the version name of the config currently held by the SDK,
+		// which is the one the latest properties above are read from
+		reportEvent(polarisPropertySource, currentFileVersion(polarisPropertySource));
 		return changeInfos.keySet();
 	}
 
@@ -337,8 +335,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 					}
 					Set<String> changedKeys = addGroupConfigFiles(polarisPropertySource, added);
 					refreshConfigurationProperties(changedKeys);
-
-					reportEvent(added);
+					// config event of the newly added file is reported by polaris SDK when it is loaded first time.
 				}
 				catch (Exception e) {
 					LOGGER.error("[SCT Config] receive onChange exception,", e);
@@ -661,6 +658,21 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 	}
 
 	private void reportEvent(PolarisPropertySource polarisPropertySource, ConfigKVFileChangeEvent configKVFileChangeEvent) {
+		reportEvent(polarisPropertySource, Optional.ofNullable(configKVFileChangeEvent.getConfigFile())
+				.map(ConfigFile::getName).orElse(null));
+	}
+
+	/**
+	 * Version name of the config file currently held by the SDK. Blank for a group property source,
+	 * which merges several files.
+	 */
+	private String currentFileVersion(PolarisPropertySource polarisPropertySource) {
+		ConfigKVFile configKVFile = polarisPropertySource.getConfigKVFile();
+		String fileVersion = configKVFile == null ? null : configKVFile.getFileVersion();
+		return StringUtils.isBlank(fileVersion) ? null : fileVersion;
+	}
+
+	private void reportEvent(PolarisPropertySource polarisPropertySource, String configVersion) {
 		ConfigEvent.Builder builder = new ConfigEvent.Builder()
 				.withTimestamp(LocalDateTime.now())
 				.withEventType(EventConstants.EventType.CONFIG)
@@ -669,28 +681,10 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 				.withClientIp(context.getExtensions().getValueContext().getHost())
 				.withNamespace(polarisPropertySource.getNamespace())
 				.withConfigGroup(polarisPropertySource.getGroup())
-				.withConfigVersion(Optional.ofNullable(configKVFileChangeEvent.getConfigFile()).map(ConfigFile::getName)
-						.orElse(null))
+				.withConfigVersion(configVersion)
 				.withConfigFileName(polarisPropertySource.getFileName());
 
 		BaseFlow.reportConfigEvent(context.getExtensions(), builder.build());
-	}
-
-	private void reportEvent(Map<String, ConfigFileMetadata> added) {
-		for (ConfigFileMetadata configFileMetadata : added.values()) {
-			ConfigEvent.Builder builder = new ConfigEvent.Builder()
-					.withTimestamp(LocalDateTime.now())
-					.withEventType(EventConstants.EventType.CONFIG)
-					.withEventName(EventConstants.EventName.ConfigUpdated)
-					.withClientId(context.getExtensions().getValueContext().getClientId())
-					.withClientIp(context.getExtensions().getValueContext().getHost())
-					.withNamespace(configFileMetadata.getNamespace())
-					.withConfigGroup(configFileMetadata.getFileGroup())
-					.withConfigVersion(configFileMetadata.getFileVersion())
-					.withConfigFileName(configFileMetadata.getFileName());
-
-			BaseFlow.reportConfigEvent(context.getExtensions(), builder.build());
-		}
 	}
 
 	/**

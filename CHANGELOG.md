@@ -22,3 +22,4 @@
 - [fix: exclude gateway classpath warning auto configuration in TSF header compatible test](https://github.com/Tencent/spring-cloud-tencent/pull/1820)
 - [fix: wrong default value of spring.cloud.nacos.discovery.register-enabled in metadata](https://github.com/Tencent/spring-cloud-tencent/pull/1836)
 - [fix: recover config changes published before the change listener is registered](https://github.com/Tencent/spring-cloud-tencent/pull/1860)
+- [feat: report config events via pushgateway in config data context](https://github.com/Tencent/spring-cloud-tencent/pull/1864)
