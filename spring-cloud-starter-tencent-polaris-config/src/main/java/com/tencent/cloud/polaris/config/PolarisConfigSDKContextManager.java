@@ -24,8 +24,8 @@ import java.util.Objects;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.PolarisConfigurationConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.cloud.polaris.context.event.PushGatewayEventReporterConfigModifier;
 import com.tencent.polaris.api.config.Configuration;
-import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.client.api.SDKContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,13 +96,10 @@ public class PolarisConfigSDKContextManager {
 	public void initConfig() {
 		// get modifiers for configuration.
 		List<PolarisConfigModifier> modifierList = modifierListProvider.getIfAvailable(ArrayList::new);
-		List<PolarisConfigModifier> configModifierList = new ArrayList<>();
-		for (PolarisConfigModifier modifier : modifierList) {
-			if (modifier instanceof PolarisConfigurationConfigModifier) {
-				configModifierList.add(modifier);
-			}
-		}
-		if (null == configSDKContext && CollectionUtils.isNotEmpty(configModifierList)) {
+		List<PolarisConfigModifier> configModifierList = selectConfigModifiers(modifierList);
+		boolean hasConfigurationModifier = configModifierList.stream()
+				.anyMatch(modifier -> modifier instanceof PolarisConfigurationConfigModifier);
+		if (null == configSDKContext && hasConfigurationModifier) {
 			try {
 				// init config SDKContext
 				Configuration configuration = properties.configuration(configModifierList,
@@ -120,5 +117,20 @@ public class PolarisConfigSDKContextManager {
 				throw throwable;
 			}
 		}
+	}
+
+	/**
+	 * Select modifiers for config SDKContext. Push gateway modifier is included because config event of
+	 * initial load is reported by config SDKContext.
+	 */
+	static List<PolarisConfigModifier> selectConfigModifiers(List<PolarisConfigModifier> modifierList) {
+		List<PolarisConfigModifier> configModifierList = new ArrayList<>();
+		for (PolarisConfigModifier modifier : modifierList) {
+			if (modifier instanceof PolarisConfigurationConfigModifier
+					|| modifier instanceof PushGatewayEventReporterConfigModifier) {
+				configModifierList.add(modifier);
+			}
+		}
+		return configModifierList;
 	}
 }
