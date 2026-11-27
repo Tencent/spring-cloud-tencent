@@ -44,3 +44,7 @@ deregistration. Business side effects are not rolled back automatically.
 
 Repeated offline requests for the same registration lifecycle reuse the completed result and do not run the
 callbacks again. A later re-registration creates a new lifecycle with a fresh callback chain.
+
+In `abort` mode, a callback failure is retained for the current lifecycle. Repeating `/offline` returns the
+same failure without replaying callbacks, including callbacks that completed before the failure. Re-register
+the instance before retrying the callback chain.

@@ -147,8 +147,8 @@ class LosslessOfflineActionManagerTest {
 				context -> executions.incrementAndGet());
 		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, first, second);
 		Runnable action = manager.createDeregisterAction(new TestRegistration(), registry, createInstance());
-		Runnable nextLifecycleAction = manager.createDeregisterAction(new TestRegistration(), registry,
-				createInstance());
+		Runnable registerAction = manager.createRegisterAction(() -> {
+		}, action);
 
 		// Act
 		for (int index = 0; index < 1000; index++) {
@@ -161,7 +161,8 @@ class LosslessOfflineActionManagerTest {
 		assertThat(registry.normalCount).isEqualTo(1);
 
 		// Act
-		nextLifecycleAction.run();
+		registerAction.run();
+		action.run();
 
 		// Assert
 		assertThat(executions.get()).isEqualTo(4);
@@ -287,6 +288,84 @@ class LosslessOfflineActionManagerTest {
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessageContaining("CALLBACK_FAILED");
 		assertThat(names).isEmpty();
+		assertThat(registry.strictCount).isZero();
+	}
+
+	/**
+	 * Verify abort failures are retained for the lifecycle and cleared by a successful register.
+	 */
+	@DisplayName("test abort callback failure is not replayed")
+	@Test
+	void testAbortCallbackFailureIsNotReplayed() {
+		// Arrange
+		RecordingRegistry registry = new RecordingRegistry();
+		AtomicBoolean failNext = new AtomicBoolean(true);
+		RecordingCallback first = new RecordingCallback("first", 100, context -> {
+		});
+		RecordingCallback second = new RecordingCallback("second", 200, context -> {
+			if (failNext.compareAndSet(true, false)) {
+				throw new IllegalStateException("temporary callback failure");
+			}
+		});
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.ABORT, first, second);
+		Runnable action = manager.createDeregisterAction(new TestRegistration(), registry, createInstance());
+		Runnable registerAction = manager.createRegisterAction(() -> {
+		}, action);
+
+		// Act and assert
+		assertThatThrownBy(action::run)
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("CALLBACK_FAILED");
+		assertThat(first.getExecutions()).isEqualTo(1);
+		assertThat(second.getExecutions()).isEqualTo(1);
+		assertThat(registry.strictCount).isZero();
+
+		// Act and assert
+		assertThatThrownBy(action::run)
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("CALLBACK_FAILED");
+		assertThat(first.getExecutions()).isEqualTo(1);
+		assertThat(second.getExecutions()).isEqualTo(1);
+		assertThat(registry.strictCount).isZero();
+
+		// Act
+		registerAction.run();
+		action.run();
+
+		// Assert
+		assertThat(first.getExecutions()).isEqualTo(2);
+		assertThat(second.getExecutions()).isEqualTo(2);
+		assertThat(registry.strictCount).isEqualTo(1);
+	}
+
+	/**
+	 * Verify an abort timeout is terminal for the current lifecycle.
+	 */
+	@DisplayName("test abort callback timeout is not replayed")
+	@Test
+	void testAbortCallbackTimeoutIsNotReplayed() {
+		// Arrange
+		RecordingRegistry registry = new RecordingRegistry();
+		RecordingCallback callback = new RecordingCallback("blocking", 100,
+				context -> Thread.sleep(5000));
+		LosslessProperties properties = managerProperties(OfflineCallbackFailureMode.ABORT, true);
+		properties.setOfflineCallbackTimeout(50);
+		properties.setOfflineCallbackTotalTimeout(500);
+		LosslessOfflineActionManager manager = createManager(properties, callback);
+		Runnable action = manager.createDeregisterAction(new TestRegistration(), registry, createInstance());
+
+		// Act and assert
+		assertThatThrownBy(action::run)
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("TIMEOUT");
+		assertThat(callback.getExecutions()).isEqualTo(1);
+		assertThat(registry.strictCount).isZero();
+
+		// Act and assert
+		assertThatThrownBy(action::run)
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("TIMEOUT");
+		assertThat(callback.getExecutions()).isEqualTo(1);
 		assertThat(registry.strictCount).isZero();
 	}
 
@@ -865,13 +944,17 @@ class LosslessOfflineActionManagerTest {
 
 	private LosslessOfflineActionManager createManager(OfflineCallbackFailureMode failureMode, boolean enabled,
 			RecordingCallback... callbacks) {
+		return createManager(managerProperties(failureMode, enabled), callbacks);
+	}
+
+	private LosslessOfflineActionManager createManager(LosslessProperties properties, RecordingCallback... callbacks) {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		for (RecordingCallback callback : callbacks) {
 			beanFactory.registerSingleton(callback.getName(), callback);
 		}
 		LosslessOfflineActionManager manager = new LosslessOfflineActionManager(
 				beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory,
-				managerProperties(failureMode, enabled));
+				properties);
 		managers.add(manager);
 		return manager;
 	}

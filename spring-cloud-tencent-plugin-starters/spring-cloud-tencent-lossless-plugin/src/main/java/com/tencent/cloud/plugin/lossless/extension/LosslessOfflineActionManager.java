@@ -77,6 +77,13 @@ public class LosslessOfflineActionManager implements DisposableBean {
 				actionIds.incrementAndGet());
 	}
 
+	public Runnable createRegisterAction(Runnable registerAction, Runnable deregisterAction) {
+		if (deregisterAction instanceof CallbackDeregisterAction callbackDeregisterAction) {
+			return callbackDeregisterAction.createRegisterAction(registerAction);
+		}
+		return registerAction;
+	}
+
 	@Override
 	public void destroy() throws Exception {
 		callbackRunner.destroy();
@@ -185,6 +192,8 @@ public class LosslessOfflineActionManager implements DisposableBean {
 
 		private boolean deregistrationCompleted;
 
+		private LosslessOfflineCallbackResult callbackFailureResult;
+
 		private CallbackDeregisterAction(Registration registration, ServiceRegistry<Registration> serviceRegistry,
 				BaseInstance instance, Runnable strictAction, long actionId) {
 			this.registration = registration;
@@ -204,6 +213,10 @@ public class LosslessOfflineActionManager implements DisposableBean {
 					LOGGER.info("Lossless offline action [{}] already completed; skipping repeated request.", actionId);
 					return;
 				}
+				if (callbackFailureResult != null) {
+					LOGGER.error("Lossless offline action [{}] reuses its previous callback failure.", actionId);
+					throw callbackFailure(callbackFailureResult);
+				}
 				if (!callbackPhaseCompleted) {
 					LosslessOfflineContext context = createContext();
 					LosslessOfflineCallbackResult result = callbackRunner.execute(context);
@@ -216,8 +229,10 @@ public class LosslessOfflineActionManager implements DisposableBean {
 								result.getFailure());
 					}
 					if (result.isFailAction()) {
-						throw new IllegalStateException(
-								"Lossless offline callbacks failed: " + result.getStatus(), result.getFailure());
+						if (shouldRetainCallbackFailure(result)) {
+							callbackFailureResult = result;
+						}
+						throw callbackFailure(result);
 					}
 					callbackPhaseCompleted = true;
 				}
@@ -232,6 +247,33 @@ public class LosslessOfflineActionManager implements DisposableBean {
 			finally {
 				actionLock.unlock();
 			}
+		}
+
+		private Runnable createRegisterAction(Runnable registerAction) {
+			return () -> {
+				actionLock.lock();
+				try {
+					registerAction.run();
+					callbackPhaseCompleted = false;
+					deregistrationCompleted = false;
+					callbackFailureResult = null;
+				}
+				finally {
+					actionLock.unlock();
+				}
+			};
+		}
+
+		private IllegalStateException callbackFailure(LosslessOfflineCallbackResult result) {
+			return new IllegalStateException("Lossless offline callbacks failed: " + result.getStatus(),
+					result.getFailure());
+		}
+
+		private boolean shouldRetainCallbackFailure(LosslessOfflineCallbackResult result) {
+			return switch (result.getStatus()) {
+				case TASK_ACTIVE, SUBMIT_REJECTED -> false;
+				default -> true;
+			};
 		}
 
 		private LosslessOfflineContext createContext() {

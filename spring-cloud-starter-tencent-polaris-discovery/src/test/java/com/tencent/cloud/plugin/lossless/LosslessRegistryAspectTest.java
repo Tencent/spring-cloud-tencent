@@ -372,6 +372,8 @@ public class LosslessRegistryAspectTest {
 		Mockito.doReturn((Runnable) () -> {
 		}).when(actionManager).createDeregisterAction(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
 				Mockito.anyBoolean());
+		Mockito.doAnswer(invocation -> invocation.getArgument(0)).when(actionManager)
+				.createRegisterAction(Mockito.any(), Mockito.any());
 		LosslessProperties losslessProperties = new LosslessProperties();
 		losslessProperties.setEnabled(true);
 		LosslessRegistryAspect aspect = new LosslessRegistryAspect(null, registration, null,
@@ -394,6 +396,7 @@ public class LosslessRegistryAspectTest {
 
 		// Assert
 		Mockito.verify(actionManager).createDeregisterAction(registration, outerProxy, instance, targetRegistry, true);
+		Mockito.verify(actionManager).createRegisterAction(Mockito.any(), Mockito.any());
 		Mockito.verify(polarisSDKContextManager.getLosslessAPI()).setLosslessActionProvider(Mockito.eq(instance),
 				Mockito.any(HttpLosslessActionProvider.class));
 		Mockito.verify(polarisSDKContextManager.getLosslessAPI()).losslessRegister(instance);
@@ -423,6 +426,8 @@ public class LosslessRegistryAspectTest {
 		Mockito.doReturn((Runnable) () -> {
 		}).when(actionManager).createDeregisterAction(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
 				Mockito.anyBoolean());
+		Mockito.doAnswer(invocation -> invocation.getArgument(0)).when(actionManager)
+				.createRegisterAction(Mockito.any(), Mockito.any());
 		LosslessProperties losslessProperties = new LosslessProperties();
 		losslessProperties.setEnabled(true);
 		LosslessRegistryAspect aspect = new LosslessRegistryAspect(null, registration, null,
@@ -460,6 +465,7 @@ public class LosslessRegistryAspectTest {
 
 		// Assert
 		Mockito.verify(actionManager).createDeregisterAction(registration, selectedProxy, instance, targetRegistry, true);
+		Mockito.verify(actionManager).createRegisterAction(Mockito.any(), Mockito.any());
 		Mockito.verify(polarisSDKContextManager.getLosslessAPI()).setLosslessActionProvider(Mockito.eq(instance),
 				Mockito.any(HttpLosslessActionProvider.class));
 		Mockito.verify(polarisSDKContextManager.getLosslessAPI()).losslessRegister(instance);

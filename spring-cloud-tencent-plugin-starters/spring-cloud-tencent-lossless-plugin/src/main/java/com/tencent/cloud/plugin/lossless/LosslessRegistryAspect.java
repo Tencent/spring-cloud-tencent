@@ -114,6 +114,9 @@ public class LosslessRegistryAspect {
 		Runnable deregisterAction = actionManager == null ? () -> serviceRegistry.deregister(registration)
 				: actionManager.createDeregisterAction(registration, serviceRegistry, instance,
 						resolveLosslessDeregistration(joinPoint), strictDeregistrationRequired);
+		if (actionManager != null) {
+			registerAction = actionManager.createRegisterAction(registerAction, deregisterAction);
+		}
 		HttpLosslessActionProvider losslessActionProvider =
 				new HttpLosslessActionProvider(registerAction, deregisterAction, registration.getPort(),
 						instance, polarisSDKContextManager.getSDKContext().getExtensions());

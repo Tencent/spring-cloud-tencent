@@ -48,6 +48,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -485,6 +486,7 @@ public class PolarisServiceRegistryTest {
 	/**
 	 * Verify no callbacks keep the original registered-state short circuit.
 	 */
+	@DisplayName("test no callback lossless action keeps registered state short circuit")
 	@Test
 	void testNoCallbackLosslessActionKeepsRegisteredStateShortCircuit() throws Exception {
 		// Arrange
