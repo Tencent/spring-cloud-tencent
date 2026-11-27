@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.plugin.lossless.extension.LosslessRegistrationNamespace;
+import com.tencent.cloud.plugin.lossless.extension.PolarisLosslessCandidate;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
@@ -41,7 +43,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Haotian Zhang, Andrew Shan, Jie Cheng, Palmer.Xu, changjin wei(魏昌进)
  */
-public class PolarisRegistration implements Registration {
+public class PolarisRegistration implements Registration, PolarisLosslessCandidate,
+		LosslessRegistrationNamespace {
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
@@ -209,6 +212,11 @@ public class PolarisRegistration implements Registration {
 	}
 
 	public String getNamespace() {
+		return getLosslessNamespace();
+	}
+
+	@Override
+	public String getLosslessNamespace() {
 		if (polarisDiscoveryProperties != null) {
 			return polarisDiscoveryProperties.getNamespace();
 		}

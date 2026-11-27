@@ -17,10 +17,14 @@
 
 package com.tencent.cloud.plugin.lossless.config;
 
+import com.tencent.cloud.plugin.lossless.extension.OfflineCallbackFailureMode;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("spring.cloud.polaris.lossless")
 public class LosslessProperties {
+
+	private static final long MAX_TOTAL_TIMEOUT_MILLIS = Long.MAX_VALUE / 1_000_000L;
 
 	/**
 	 * the switch for lossless plugin.
@@ -32,6 +36,26 @@ public class LosslessProperties {
 	private Long delayRegisterInterval;
 
 	private Long healthCheckInterval;
+
+	/**
+	 * Whether offline callbacks are enabled.
+	 */
+	private boolean offlineCallbackEnabled = true;
+
+	/**
+	 * Maximum wait time for one offline callback.
+	 */
+	private long offlineCallbackTimeout = 10000;
+
+	/**
+	 * Maximum wait time for the whole offline callback chain.
+	 */
+	private long offlineCallbackTotalTimeout = 20000;
+
+	/**
+	 * Failure strategy used when an offline callback fails.
+	 */
+	private OfflineCallbackFailureMode offlineCallbackFailureMode = OfflineCallbackFailureMode.CONTINUE;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -63,5 +87,49 @@ public class LosslessProperties {
 
 	public void setHealthCheckInterval(Long healthCheckInterval) {
 		this.healthCheckInterval = healthCheckInterval;
+	}
+
+	public boolean isOfflineCallbackEnabled() {
+		return offlineCallbackEnabled;
+	}
+
+	public void setOfflineCallbackEnabled(boolean offlineCallbackEnabled) {
+		this.offlineCallbackEnabled = offlineCallbackEnabled;
+	}
+
+	public long getOfflineCallbackTimeout() {
+		return offlineCallbackTimeout;
+	}
+
+	public void setOfflineCallbackTimeout(long offlineCallbackTimeout) {
+		if (offlineCallbackTimeout <= 0) {
+			throw new IllegalArgumentException("offlineCallbackTimeout must be greater than 0");
+		}
+		this.offlineCallbackTimeout = offlineCallbackTimeout;
+	}
+
+	public long getOfflineCallbackTotalTimeout() {
+		return offlineCallbackTotalTimeout;
+	}
+
+	public void setOfflineCallbackTotalTimeout(long offlineCallbackTotalTimeout) {
+		if (offlineCallbackTotalTimeout <= 0) {
+			throw new IllegalArgumentException("offlineCallbackTotalTimeout must be greater than 0");
+		}
+		if (offlineCallbackTotalTimeout > MAX_TOTAL_TIMEOUT_MILLIS) {
+			throw new IllegalArgumentException("offlineCallbackTotalTimeout is too large");
+		}
+		this.offlineCallbackTotalTimeout = offlineCallbackTotalTimeout;
+	}
+
+	public OfflineCallbackFailureMode getOfflineCallbackFailureMode() {
+		return offlineCallbackFailureMode;
+	}
+
+	public void setOfflineCallbackFailureMode(OfflineCallbackFailureMode offlineCallbackFailureMode) {
+		if (offlineCallbackFailureMode == null) {
+			throw new IllegalArgumentException("offlineCallbackFailureMode must not be null");
+		}
+		this.offlineCallbackFailureMode = offlineCallbackFailureMode;
 	}
 }

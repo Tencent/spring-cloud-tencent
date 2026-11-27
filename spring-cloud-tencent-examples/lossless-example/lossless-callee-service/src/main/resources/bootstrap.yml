@@ -21,6 +21,10 @@ spring:
         enabled: true
       lossless:
         enabled: true
+        offline-callback-enabled: true
+        offline-callback-timeout: 10000
+        offline-callback-total-timeout: 20000
+        offline-callback-failure-mode: continue
         #healthCheckPath: /actuator/health
         #healthCheckInterval: 5000
 lossless:

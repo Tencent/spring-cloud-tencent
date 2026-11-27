@@ -18,19 +18,30 @@
 package com.tencent.cloud.plugin.lossless.config;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import com.tencent.cloud.plugin.lossless.LosslessRegistryAspect;
+import com.tencent.cloud.plugin.lossless.extension.AopTargetUtils;
+import com.tencent.cloud.plugin.lossless.extension.LosslessOfflineActionManager;
+import com.tencent.cloud.plugin.lossless.extension.LosslessOfflineCallback;
+import com.tencent.cloud.plugin.lossless.extension.PolarisLosslessCandidate;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
 
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Autoconfiguration of lossless.
@@ -44,37 +55,65 @@ public class LosslessAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@Conditional(LosslessEnabledCondition.class)
+	public LosslessOfflineActionManager losslessOfflineActionManager(
+			ObjectProvider<LosslessOfflineCallback> callbackProvider, ListableBeanFactory beanFactory,
+			LosslessProperties losslessProperties) {
+		return new LosslessOfflineActionManager(callbackProvider, beanFactory, losslessProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Conditional(LosslessEnabledCondition.class)
 	public LosslessRegistryAspect losslessRegistryAspect(
 			List<ServiceRegistry> serviceRegistryList, List<Registration> registrationList, List<RegistrationTransformer> registrationTransformerList,
-			PolarisContextProperties properties, LosslessProperties losslessProperties, PolarisSDKContextManager polarisSDKContextManager) {
-
-		ServiceRegistry targetServiceRegistry = serviceRegistryList.size() > 0 ? serviceRegistryList.get(0) : null;
-		Registration targetRegistration = registrationList.size() > 0 ? registrationList.get(0) : null;
-		RegistrationTransformer targetRegistrationTransformer = registrationTransformerList.size() > 0 ? registrationTransformerList.get(0) : null;
-		// if contains multiple service registry, find the polaris service registr
-		if (serviceRegistryList.size() > 1) {
-			for (ServiceRegistry serviceRegistry : serviceRegistryList) {
-				if (serviceRegistry.getClass().getName().contains("PolarisServiceRegistry")) {
-					targetServiceRegistry = serviceRegistry;
-				}
-			}
-		}
-		if (registrationList.size() > 1) {
-			for (Registration registration : registrationList) {
-				if (registration.getClass().getName().contains("PolarisRegistration")) {
-					targetRegistration = registration;
-				}
-			}
-		}
-		if (registrationTransformerList.size() > 1) {
-			for (RegistrationTransformer registrationTransformer : registrationTransformerList) {
-				if (registrationTransformer.getClass().getName().contains("PolarisRegistrationTransformer")) {
-					targetRegistrationTransformer = registrationTransformer;
-				}
-			}
-		}
+			PolarisContextProperties properties, LosslessProperties losslessProperties,
+			PolarisSDKContextManager polarisSDKContextManager, LosslessOfflineActionManager actionManager) {
+		ServiceRegistry targetServiceRegistry = selectTarget(serviceRegistryList, "service registry",
+				LosslessAutoConfiguration::isPolarisCandidate);
+		Registration targetRegistration = selectTarget(registrationList, "registration",
+				LosslessAutoConfiguration::isPolarisCandidate);
+		RegistrationTransformer targetRegistrationTransformer = selectTarget(registrationTransformerList,
+				"registration transformer", LosslessAutoConfiguration::isPolarisTransformer);
 		return new LosslessRegistryAspect(targetServiceRegistry, targetRegistration, properties, losslessProperties,
-				polarisSDKContextManager, targetRegistrationTransformer);
+				polarisSDKContextManager, targetRegistrationTransformer, actionManager,
+				isPolarisCandidate(targetServiceRegistry));
+	}
+
+	private static <T> T selectTarget(List<T> candidates, String description, Predicate<T> candidateFilter) {
+		if (candidates.isEmpty()) {
+			throw new IllegalStateException("No candidate " + description + " is available for lossless.");
+		}
+		if (candidates.size() == 1) {
+			return candidates.get(0);
+		}
+		for (T candidate : candidates) {
+			if (candidateFilter.test(candidate)) {
+				return candidate;
+			}
+		}
+		throw new IllegalStateException("Multiple " + description + " candidates are available, but no Polaris candidate can be selected.");
+	}
+
+	private static boolean isPolarisCandidate(Object candidate) {
+		Class<?> targetClass = AopTargetUtils.getUltimateTargetClass(candidate);
+		return targetClass != null && PolarisLosslessCandidate.class.isAssignableFrom(targetClass);
+	}
+
+	private static boolean isPolarisTransformer(RegistrationTransformer candidate) {
+		return "polaris".equalsIgnoreCase(candidate.getRegistry());
+	}
+
+	static final class LosslessEnabledCondition implements Condition {
+
+		private static final String LOSSLESS_ENABLED_PROPERTY = "spring.cloud.polaris.lossless.enabled";
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return context.getEnvironment()
+					.getProperty(LOSSLESS_ENABLED_PROPERTY, Boolean.class, false);
+		}
+
 	}
 
 }
