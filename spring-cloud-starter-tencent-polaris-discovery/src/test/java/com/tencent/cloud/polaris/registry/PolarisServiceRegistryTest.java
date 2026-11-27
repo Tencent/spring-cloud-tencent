@@ -332,9 +332,7 @@ public class PolarisServiceRegistryTest {
 		doThrow(failure).when(providerAPI).deRegister(Mockito.any(InstanceDeregisterRequest.class));
 		PolarisSDKContextManager.isRegistered = true;
 
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		LosslessOfflineActionManager manager = new LosslessOfflineActionManager(
-				beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory, new LosslessProperties());
+		LosslessOfflineActionManager manager = createLosslessActionManager(new LosslessProperties());
 		ProxyFactory proxyFactory = new ProxyFactory(registry);
 		proxyFactory.setProxyTargetClass(true);
 		@SuppressWarnings("unchecked")
@@ -374,9 +372,7 @@ public class PolarisServiceRegistryTest {
 		});
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		LosslessOfflineActionManager manager = new LosslessOfflineActionManager(
-				beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory, new LosslessProperties());
+		LosslessOfflineActionManager manager = createLosslessActionManager(new LosslessProperties());
 		PolarisSDKContextManager.isRegistered = true;
 
 		// Act and assert
@@ -419,9 +415,7 @@ public class PolarisServiceRegistryTest {
 		});
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		LosslessOfflineActionManager manager = new LosslessOfflineActionManager(
-				beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory, new LosslessProperties());
+		LosslessOfflineActionManager manager = createLosslessActionManager(new LosslessProperties());
 		PolarisSDKContextManager.isRegistered = true;
 
 		// Act and assert
@@ -489,6 +483,35 @@ public class PolarisServiceRegistryTest {
 	}
 
 	/**
+	 * Verify no callbacks keep the original registered-state short circuit.
+	 */
+	@Test
+	void testNoCallbackLosslessActionKeepsRegisteredStateShortCircuit() throws Exception {
+		// Arrange
+		TestPolarisServiceRegistry target = createTestPolarisRegistry();
+		ProviderAPI providerAPI = target.getProviderAPI();
+		PolarisRegistration registration = target.getRegistration();
+		ProxyFactory proxyFactory = new ProxyFactory(target);
+		proxyFactory.setProxyTargetClass(true);
+		@SuppressWarnings("unchecked")
+		ServiceRegistry<Registration> registry = (ServiceRegistry<Registration>) proxyFactory.getProxy();
+		LosslessOfflineActionManager manager = createLosslessActionManagerWithoutCallbacks();
+		PolarisSDKContextManager.isRegistered = false;
+
+		// Act and assert
+		try {
+			assertThatCode(() -> manager.createDeregisterAction(registration, registry,
+					Mockito.mock(BaseInstance.class)).run()).doesNotThrowAnyException();
+			Mockito.verify(providerAPI, Mockito.never())
+					.deRegister(Mockito.any(InstanceDeregisterRequest.class));
+		}
+		finally {
+			manager.destroy();
+			target.destroy();
+		}
+	}
+
+	/**
 	 * Verify strict failure propagation survives a synchronous thread switch in deregister advice.
 	 */
 	@Test
@@ -531,9 +554,7 @@ public class PolarisServiceRegistryTest {
 			});
 			@SuppressWarnings("unchecked")
 			ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-			DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-			LosslessOfflineActionManager manager = new LosslessOfflineActionManager(
-					beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory, new LosslessProperties());
+			LosslessOfflineActionManager manager = createLosslessActionManager(new LosslessProperties());
 			PolarisSDKContextManager.isRegistered = true;
 
 			// Act and assert
@@ -563,6 +584,20 @@ public class PolarisServiceRegistryTest {
 
 			assertThatCode(() -> registry.deregister(registration)).doesNotThrowAnyException();
 		});
+	}
+
+	private static LosslessOfflineActionManager createLosslessActionManager(LosslessProperties properties) {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("offlineCallback", (LosslessOfflineCallback) context -> {
+		});
+		return new LosslessOfflineActionManager(beanFactory.getBeanProvider(LosslessOfflineCallback.class),
+				beanFactory, properties);
+	}
+
+	private static LosslessOfflineActionManager createLosslessActionManagerWithoutCallbacks() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		return new LosslessOfflineActionManager(beanFactory.getBeanProvider(LosslessOfflineCallback.class),
+				beanFactory, new LosslessProperties());
 	}
 
 	private static TestPolarisServiceRegistry createTestPolarisRegistry() {
@@ -616,9 +651,7 @@ public class PolarisServiceRegistryTest {
 		});
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		LosslessOfflineActionManager manager = new LosslessOfflineActionManager(
-				beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory, new LosslessProperties());
+		LosslessOfflineActionManager manager = createLosslessActionManager(new LosslessProperties());
 		PolarisSDKContextManager.isRegistered = true;
 
 		// Act
@@ -659,9 +692,7 @@ public class PolarisServiceRegistryTest {
 		});
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		LosslessOfflineActionManager manager = new LosslessOfflineActionManager(
-				beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory, new LosslessProperties());
+		LosslessOfflineActionManager manager = createLosslessActionManager(new LosslessProperties());
 		PolarisSDKContextManager.isRegistered = true;
 
 		// Act and assert
@@ -712,12 +743,20 @@ public class PolarisServiceRegistryTest {
 				beanFactory.getBeanProvider(LosslessOfflineCallback.class), beanFactory, properties);
 		PolarisSDKContextManager.isRegistered = true;
 
+		Runnable action = manager.createDeregisterAction(registration, proxy, Mockito.mock(BaseInstance.class));
+
 		// Act and assert
 		try {
-			assertThatThrownBy(() -> manager.createDeregisterAction(registration, proxy,
-					Mockito.mock(BaseInstance.class)).run())
-							.as("callbackEnabled=" + callbackEnabled)
-							.isEqualTo(failure);
+			if (callbackEnabled) {
+				assertThatThrownBy(action::run)
+						.as("callbackEnabled=true")
+						.isEqualTo(failure);
+			}
+			else {
+				assertThatCode(action::run)
+						.as("callbackEnabled=false")
+						.doesNotThrowAnyException();
+			}
 			assertThat(cleanupCalls.get()).as("callbackEnabled=" + callbackEnabled).isEqualTo(1);
 			assertThat(callbackCalls.get()).as("callbackEnabled=" + callbackEnabled)
 					.isEqualTo(callbackEnabled ? 1 : 0);

@@ -133,9 +133,9 @@ class LosslessOfflineActionManagerTest {
 	}
 
 	/**
-	 * Verify every callback is executed while the worker moves from one completed task to the next.
+	 * Verify a completed action is idempotent until a new registration lifecycle starts.
 	 */
-	@DisplayName("test repeated successful callback chains")
+	@DisplayName("test repeated successful offline action is idempotent")
 	@Test
 	void testRepeatedSuccessfulCallbackChains() {
 		// Arrange
@@ -147,6 +147,8 @@ class LosslessOfflineActionManagerTest {
 				context -> executions.incrementAndGet());
 		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, first, second);
 		Runnable action = manager.createDeregisterAction(new TestRegistration(), registry, createInstance());
+		Runnable nextLifecycleAction = manager.createDeregisterAction(new TestRegistration(), registry,
+				createInstance());
 
 		// Act
 		for (int index = 0; index < 1000; index++) {
@@ -154,8 +156,45 @@ class LosslessOfflineActionManagerTest {
 		}
 
 		// Assert
-		assertThat(executions.get()).isEqualTo(2000);
-		assertThat(registry.strictCount).isEqualTo(1000);
+		assertThat(executions.get()).isEqualTo(2);
+		assertThat(registry.strictCount).isEqualTo(1);
+		assertThat(registry.normalCount).isEqualTo(1);
+
+		// Act
+		nextLifecycleAction.run();
+
+		// Assert
+		assertThat(executions.get()).isEqualTo(4);
+		assertThat(registry.strictCount).isEqualTo(2);
+		assertThat(registry.normalCount).isEqualTo(2);
+	}
+
+	/**
+	 * Verify a failed deregistration is retried without repeating successful callbacks.
+	 */
+	@DisplayName("test deregistration retry after callback success")
+	@Test
+	void testDeregistrationRetryAfterCallbackSuccess() {
+		// Arrange
+		FailOnceStrictRegistry registry = new FailOnceStrictRegistry();
+		RecordingCallback callback = new RecordingCallback("callback", 100, context -> {
+		});
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, callback);
+		Runnable action = manager.createDeregisterAction(new TestRegistration(), registry, createInstance());
+
+		// Act and assert
+		assertThatThrownBy(action::run)
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage("strict deregistration failed");
+		assertThat(callback.getExecutions()).isEqualTo(1);
+		assertThat(registry.strictCount).isEqualTo(1);
+		assertThat(registry.normalCount).isEqualTo(1);
+
+		// Act and assert
+		assertThatCode(action::run).doesNotThrowAnyException();
+		assertThat(callback.getExecutions()).isEqualTo(1);
+		assertThat(registry.strictCount).isEqualTo(2);
+		assertThat(registry.normalCount).isEqualTo(2);
 	}
 
 	/**
@@ -293,7 +332,7 @@ class LosslessOfflineActionManagerTest {
 	}
 
 	/**
-	 * Verify disabled callbacks do not run but strict deregistration remains enabled.
+	 * Verify disabled callbacks keep the original deregistration path.
 	 */
 	@DisplayName("test disabled callback")
 	@Test
@@ -309,7 +348,25 @@ class LosslessOfflineActionManagerTest {
 		assertThatCode(() -> manager.createDeregisterAction(new TestRegistration(), registry, createInstance()).run())
 				.doesNotThrowAnyException();
 		assertThat(callback.getExecutions()).isZero();
-		assertThat(registry.strictCount).isEqualTo(1);
+		assertThat(registry.strictCount).isZero();
+		assertThat(registry.normalCount).isEqualTo(1);
+	}
+
+	/**
+	 * Verify no callback beans keep the original deregistration path.
+	 */
+	@DisplayName("test no callback uses original deregistration")
+	@Test
+	void testNoCallbackUsesOriginalDeregistration() {
+		// Arrange
+		StrictRegistry registry = new StrictRegistry();
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+
+		// Act and assert
+		assertThatCode(() -> manager.createDeregisterAction(new TestRegistration(), registry, createInstance()).run())
+				.doesNotThrowAnyException();
+		assertThat(registry.strictCount).isZero();
+		assertThat(registry.normalCount).isEqualTo(1);
 	}
 
 	/**
@@ -401,7 +458,7 @@ class LosslessOfflineActionManagerTest {
 		proxyFactory.setProxyTargetClass(false);
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 
 		// Act and assert
 		assertThatThrownBy(() -> manager.createDeregisterAction(new TestRegistration(), proxy, createInstance()).run())
@@ -418,7 +475,7 @@ class LosslessOfflineActionManagerTest {
 	@Test
 	void testOpaqueRestrictedJdkProxyDoesNotSilentlyDegrade() {
 		// Arrange
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 
 		// Act and assert
 		StrictRegistry target = new StrictRegistry();
@@ -464,14 +521,22 @@ class LosslessOfflineActionManagerTest {
 				});
 				LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE,
 						callbackEnabled, callback);
+				Runnable action = manager.createDeregisterAction(new TestRegistration(), proxy,
+						new TestInstance(), target);
 
 				// Act and assert
-				assertThatThrownBy(() -> manager.createDeregisterAction(new TestRegistration(), proxy,
-						new TestInstance(), target).run())
-								.as(proxyType + " callbackEnabled=" + callbackEnabled)
-								.isInstanceOf(IllegalStateException.class)
-								.hasMessage("strict deregistration failed");
-				assertThat(target.strictCount).as(proxyType).isEqualTo(1);
+				if (callbackEnabled) {
+					assertThatThrownBy(action::run)
+							.as(proxyType + " callbackEnabled=true")
+							.isInstanceOf(IllegalStateException.class)
+							.hasMessage("strict deregistration failed");
+				}
+				else {
+					assertThatCode(action::run)
+							.as(proxyType + " callbackEnabled=false")
+							.doesNotThrowAnyException();
+				}
+				assertThat(target.strictCount).as(proxyType).isEqualTo(callbackEnabled ? 1 : 0);
 				assertThat(target.normalCount).as(proxyType).isEqualTo(1);
 				assertThat(callback.getExecutions()).as("callbackEnabled=" + callbackEnabled)
 						.isEqualTo(callbackEnabled ? 1 : 0);
@@ -497,7 +562,7 @@ class LosslessOfflineActionManagerTest {
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
 		setServiceRegistry(aspect, proxy);
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 
 		// Act and assert
 		assertThatCode(() -> manager.createDeregisterAction(registration, proxy, new TestInstance(),
@@ -523,7 +588,7 @@ class LosslessOfflineActionManagerTest {
 		proxyFactory.setOpaque(true);
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 		Runnable action = manager.createDeregisterAction(new TestRegistration(), proxy, new TestInstance(),
 				strictTarget);
 
@@ -555,7 +620,7 @@ class LosslessOfflineActionManagerTest {
 		proxyFactory.setProxyTargetClass(false);
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 		Runnable action = manager.createDeregisterAction(new TestRegistration(), proxy, new TestInstance(),
 				firstTarget);
 
@@ -587,7 +652,7 @@ class LosslessOfflineActionManagerTest {
 		proxyFactory.setProxyTargetClass(false);
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 		Runnable action = manager.createDeregisterAction(new TestRegistration(), proxy, new TestInstance(),
 				strictTarget);
 
@@ -625,7 +690,7 @@ class LosslessOfflineActionManagerTest {
 		outerProxyFactory.setProxyTargetClass(false);
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> outerProxy = (ServiceRegistry<Registration>) outerProxyFactory.getProxy();
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 		Runnable action = manager.createDeregisterAction(new TestRegistration(), outerProxy, new TestInstance(),
 				firstTarget);
 
@@ -676,7 +741,7 @@ class LosslessOfflineActionManagerTest {
 			@SuppressWarnings("unchecked")
 			ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
 			proxyReference.set(proxy);
-			LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+			LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 
 			// Act and assert
 			assertThatThrownBy(() -> manager.createDeregisterAction(new TestRegistration(), proxy,
@@ -732,7 +797,7 @@ class LosslessOfflineActionManagerTest {
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> outerProxy = (ServiceRegistry<Registration>) outerProxyFactory.getProxy();
 		setServiceRegistry(aspect, outerProxy);
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 
 		// Act and assert
 		assertThatThrownBy(() -> manager.createDeregisterAction(registration, outerProxy, createInstance(),
@@ -780,7 +845,7 @@ class LosslessOfflineActionManagerTest {
 		@SuppressWarnings("unchecked")
 		ServiceRegistry<Registration> proxy = (ServiceRegistry<Registration>) proxyFactory.getProxy();
 		proxyReference.set(proxy);
-		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE);
+		LosslessOfflineActionManager manager = createManager(OfflineCallbackFailureMode.CONTINUE, noopCallback());
 
 		// Act and assert
 		assertThatThrownBy(() -> manager.createDeregisterAction(registration, proxy, createInstance(),
@@ -817,6 +882,11 @@ class LosslessOfflineActionManagerTest {
 				managerProperties(OfflineCallbackFailureMode.CONTINUE, true));
 		managers.add(manager);
 		return manager;
+	}
+
+	private RecordingCallback noopCallback() {
+		return new RecordingCallback("callback", 100, context -> {
+		});
 	}
 
 	private static void setServiceRegistry(LosslessRegistryAspect aspect,
@@ -1051,6 +1121,48 @@ class LosslessOfflineActionManagerTest {
 			strictCount++;
 			deregistration.run();
 			return LosslessDeregistrationResult.failed(new IllegalStateException("strict deregistration failed"));
+		}
+	}
+
+	private static final class FailOnceStrictRegistry implements ServiceRegistry<Registration>, LosslessDeregistration {
+
+		private int strictCount;
+
+		private int normalCount;
+
+		private boolean failNext = true;
+
+		@Override
+		public void register(Registration registration) {
+		}
+
+		@Override
+		public void deregister(Registration registration) {
+			normalCount++;
+		}
+
+		@Override
+		public void close() {
+		}
+
+		@Override
+		public void setStatus(Registration registration, String status) {
+		}
+
+		@Override
+		public Object getStatus(Registration registration) {
+			return null;
+		}
+
+		@Override
+		public LosslessDeregistrationResult deregisterForLossless(Registration registration, Runnable deregistration) {
+			strictCount++;
+			deregistration.run();
+			if (failNext) {
+				failNext = false;
+				return LosslessDeregistrationResult.failed(new IllegalStateException("strict deregistration failed"));
+			}
+			return LosslessDeregistrationResult.success();
 		}
 	}
 

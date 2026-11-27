@@ -71,7 +71,7 @@ public class LosslessOfflineActionManager implements DisposableBean {
 		Runnable strictAction = new StrictDeregisterAction(registration, serviceRegistry, strictDeregistration,
 				strictDeregistrationRequired);
 		if (!properties.isOfflineCallbackEnabled() || !callbackRunner.hasCallbackBeans()) {
-			return strictAction;
+			return () -> serviceRegistry.deregister(registration);
 		}
 		return new CallbackDeregisterAction(registration, serviceRegistry, instance, strictAction,
 				actionIds.incrementAndGet());
@@ -181,6 +181,10 @@ public class LosslessOfflineActionManager implements DisposableBean {
 
 		private final long actionId;
 
+		private boolean callbackPhaseCompleted;
+
+		private boolean deregistrationCompleted;
+
 		private CallbackDeregisterAction(Registration registration, ServiceRegistry<Registration> serviceRegistry,
 				BaseInstance instance, Runnable strictAction, long actionId) {
 			this.registration = registration;
@@ -196,18 +200,26 @@ public class LosslessOfflineActionManager implements DisposableBean {
 				throw new IllegalStateException("Another lossless offline action is running.");
 			}
 			try {
-				LosslessOfflineContext context = createContext();
-				LosslessOfflineCallbackResult result = callbackRunner.execute(context);
-				LOGGER.info("Lossless offline action [{}] callback result: status={}, successCount={}, "
-								+ "failureCount={}, skippedCount={}, notExecutedCount={}.", actionId, result.getStatus(),
-						result.getSuccessCount(),
-						result.getFailureCount(), result.getSkippedCount(), result.getNotExecutedCount());
-				if (result.getStatus() != LosslessOfflineCallbackResult.Status.SUCCESS) {
-					LOGGER.error("Lossless offline action [{}] did not complete all callbacks.", actionId,
-							result.getFailure());
+				if (deregistrationCompleted) {
+					LOGGER.info("Lossless offline action [{}] already completed; skipping repeated request.", actionId);
+					return;
 				}
-				if (result.isFailAction()) {
-					throw new IllegalStateException("Lossless offline callbacks failed: " + result.getStatus(), result.getFailure());
+				if (!callbackPhaseCompleted) {
+					LosslessOfflineContext context = createContext();
+					LosslessOfflineCallbackResult result = callbackRunner.execute(context);
+					LOGGER.info("Lossless offline action [{}] callback result: status={}, successCount={}, "
+									+ "failureCount={}, skippedCount={}, notExecutedCount={}.", actionId,
+							result.getStatus(), result.getSuccessCount(), result.getFailureCount(),
+							result.getSkippedCount(), result.getNotExecutedCount());
+					if (result.getStatus() != LosslessOfflineCallbackResult.Status.SUCCESS) {
+						LOGGER.error("Lossless offline action [{}] did not complete all callbacks.", actionId,
+								result.getFailure());
+					}
+					if (result.isFailAction()) {
+						throw new IllegalStateException(
+								"Lossless offline callbacks failed: " + result.getStatus(), result.getFailure());
+					}
+					callbackPhaseCompleted = true;
 				}
 				if (Thread.currentThread().isInterrupted()) {
 					LOGGER.error("Lossless offline action [{}] is interrupted before deregistration.", actionId);
@@ -215,6 +227,7 @@ public class LosslessOfflineActionManager implements DisposableBean {
 							"Lossless offline action was interrupted before deregistration.");
 				}
 				strictAction.run();
+				deregistrationCompleted = true;
 			}
 			finally {
 				actionLock.unlock();

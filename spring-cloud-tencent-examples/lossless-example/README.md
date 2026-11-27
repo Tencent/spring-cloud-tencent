@@ -41,3 +41,6 @@ business callback succeeded: callback failures, timeouts, and skipped callbacks 
 
 Set `offline-callback-failure-mode` to `abort` when a callback failure must stop the action before Polaris
 deregistration. Business side effects are not rolled back automatically.
+
+Repeated offline requests for the same registration lifecycle reuse the completed result and do not run the
+callbacks again. A later re-registration creates a new lifecycle with a fresh callback chain.

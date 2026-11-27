@@ -114,7 +114,7 @@ final class LosslessOfflineCallbackRunner implements DisposableBean {
 					() -> resolveCallbacks(), properties.getOfflineCallbackTotalTimeout(), taskStartNanos,
 					deadlineNanos);
 			if (execution.status() != TaskStatus.SUCCESS) {
-				return taskExecutionResult(execution, true, 0, 0, 0, 0);
+				return taskExecutionResult(execution, 0, 0, 0, 0);
 			}
 			entries = execution.value();
 			callbacks = entries;
@@ -162,7 +162,7 @@ final class LosslessOfflineCallbackRunner implements DisposableBean {
 				}
 				continue;
 			}
-			return taskExecutionResult(execution, false, successCount, failureCount, 0,
+			return taskExecutionResult(execution, successCount, failureCount, 0,
 					entries.size() - index - 1);
 		}
 		if (Thread.currentThread().isInterrupted()) {
@@ -200,8 +200,8 @@ final class LosslessOfflineCallbackRunner implements DisposableBean {
 				true, 0, 0, skippedCount, notExecutedCount);
 	}
 
-	private LosslessOfflineCallbackResult taskExecutionResult(TaskExecution<?> execution, boolean resolution,
-			int successCount, int failureCount, int skippedCount, int notExecutedCount) {
+	private LosslessOfflineCallbackResult taskExecutionResult(TaskExecution<?> execution, int successCount,
+			int failureCount, int skippedCount, int notExecutedCount) {
 		boolean abort = properties.getOfflineCallbackFailureMode() == OfflineCallbackFailureMode.ABORT;
 		boolean callerInterrupted = execution.status() == TaskStatus.CALLER_INTERRUPTED;
 		boolean closed = execution.status() == TaskStatus.CLOSED;
@@ -230,9 +230,6 @@ final class LosslessOfflineCallbackRunner implements DisposableBean {
 			default:
 				status = LosslessOfflineCallbackResult.Status.CALLBACK_FAILED;
 				break;
-		}
-		if (resolution && execution.status() == TaskStatus.FAILED) {
-			status = LosslessOfflineCallbackResult.Status.CALLBACK_FAILED;
 		}
 		return LosslessOfflineCallbackResult.of(status, failure, abort || callerInterrupted || closed,
 				successCount, failureCount, skippedCount, notExecutedCount);
