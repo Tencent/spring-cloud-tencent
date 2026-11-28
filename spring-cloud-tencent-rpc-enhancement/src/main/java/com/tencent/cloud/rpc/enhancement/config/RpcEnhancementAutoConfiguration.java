@@ -190,9 +190,10 @@ public class RpcEnhancementAutoConfiguration {
 		@Autowired(required = false)
 		private List<RestTemplate> restTemplates = Collections.emptyList();
 
+		// Register the post-processor before this configuration resolves RestTemplate beans.
 		@Bean
 		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
-		public BlockingLoadBalancerClientBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
+		public static BlockingLoadBalancerClientBeanPostProcessor loadBalancerInterceptorBeanPostProcessor() {
 			return new BlockingLoadBalancerClientBeanPostProcessor();
 		}
 
